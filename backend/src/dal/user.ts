@@ -459,8 +459,9 @@ export async function checkIfPb(
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
     result.acc < 100
-  )
+  ) {
     return false;
+  }
 
   if (mode === "quote") {
     return false;
@@ -510,8 +511,9 @@ export async function checkIfTagPb(
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
     result.acc < 100
-  )
+  ) {
     return [];
+  }
 
   if (mode === "quote") {
     return [];
@@ -605,8 +607,9 @@ export async function linkDiscord(
   discordAvatar?: string,
 ): Promise<void> {
   const updates: Partial<DBUser> = { discordId };
-  if (discordAvatar !== undefined && discordAvatar !== null)
+  if (discordAvatar !== undefined && discordAvatar !== null) {
     updates.discordAvatar = discordAvatar;
+  }
 
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
@@ -1055,10 +1058,11 @@ export async function updateInbox(
 
               // mongo doesnt support ??= i think
               // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              if (inventory === null)
+              if (inventory === null) {
                 inventory = {
                   badges: [],
                 };
+              }
               // mongo doesnt support ??= i think
               // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               if (inventory.badges === null) inventory.badges = [];
@@ -1104,8 +1108,9 @@ export async function updateInbox(
     { $unset: "tmp" },
   ]);
 
-  if (update.matchedCount !== 1)
+  if (update.matchedCount !== 1) {
     throw new MonkeyError(404, "User not found", "update inbox");
+  }
 }
 
 export async function updateStreak(
@@ -1229,12 +1234,13 @@ async function updateUser(
 ): Promise<void> {
   const result = await getUsersCollection().updateOne(filter, update);
 
-  if (result.matchedCount !== 1)
+  if (result.matchedCount !== 1) {
     throw new MonkeyError(
       error.statusCode ?? 404,
       error.message ?? "User not found",
       error.stack,
     );
+  }
 }
 
 export async function getFriends(uid: string): Promise<DBFriend[]> {

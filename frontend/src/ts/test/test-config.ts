@@ -342,8 +342,9 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
       eventKey,
     )
   ) {
-    if (eventValue !== undefined)
+    if (eventValue !== undefined) {
       updateActiveExtraButtons(eventKey, eventValue);
+    }
   }
 });
 

@@ -62,26 +62,30 @@ function getValue(
     result = result[key];
   }
 
-  if (result === undefined || result === null)
+  if (result === undefined || result === null) {
     throw new MonkeyError(
       500,
       `Required configuration doesnt exist: "${path}"`,
     );
-  if (typeof result !== "boolean")
+  }
+  if (typeof result !== "boolean") {
     throw new MonkeyError(
       500,
       `Required configuration is not a boolean: "${path}"`,
     );
+  }
   return result;
 }
 
 function getRequireConfigurations(
   metadata: EndpointMetadata | undefined,
 ): RequireConfiguration[] | undefined {
-  if (metadata === undefined || metadata.requireConfiguration === undefined)
+  if (metadata === undefined || metadata.requireConfiguration === undefined) {
     return undefined;
+  }
 
-  if (Array.isArray(metadata.requireConfiguration))
+  if (Array.isArray(metadata.requireConfiguration)) {
     return metadata.requireConfiguration;
+  }
   return [metadata.requireConfiguration];
 }

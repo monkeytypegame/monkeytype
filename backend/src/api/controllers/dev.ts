@@ -96,8 +96,9 @@ async function createTestResults(
     const results = createArray(day.amount, () =>
       createResult(user, day.timestamp),
     );
-    if (results.length > 0)
+    if (results.length > 0) {
       await ResultDal.getResultCollection().insertMany(results);
+    }
   }
 }
 
@@ -222,8 +223,9 @@ async function updateUser(uid: string): Promise<void> {
     )) as DBResult;
 
     personalBests[mode.mode] ??= {};
-    if (personalBests[mode.mode][mode.mode2] === undefined)
+    if (personalBests[mode.mode][mode.mode2] === undefined) {
       personalBests[mode.mode][mode.mode2] = [];
+    }
 
     const entry = {
       acc: best.acc,
@@ -241,8 +243,9 @@ async function updateUser(uid: string): Promise<void> {
     (personalBests[mode.mode][mode.mode2] as PersonalBest[]).push(entry);
 
     if (mode.mode === "time") {
-      if (lbPersonalBests[mode.mode][mode.mode2] === undefined)
+      if (lbPersonalBests[mode.mode][mode.mode2] === undefined) {
         lbPersonalBests[mode.mode][mode.mode2] = {};
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       lbPersonalBests[mode.mode][mode.mode2][mode.language] = entry;

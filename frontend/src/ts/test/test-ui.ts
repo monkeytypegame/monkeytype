@@ -110,12 +110,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    if (ActivePage.get() === "test")
+    if (ActivePage.get() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });
+    }
   }
 
   if (
@@ -384,8 +385,9 @@ async function updateHintsPosition(): Promise<void> {
     ActivePage.get() !== "test" ||
     TestState.resultVisible ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
-  )
+  ) {
     return;
+  }
 
   let previousHintsContainer: HTMLElement | undefined;
   let hintIndices: number[][] = [];
@@ -465,9 +467,10 @@ function buildWordHTML(word: string, wordIndex: number): string {
     }
   }
   retval += "</div>";
-  if (newlineafter)
+  if (newlineafter) {
     retval +=
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>";
+  }
   return retval;
 }
 
@@ -863,9 +866,11 @@ export async function updateWordLetters({
               Config.indicateTypos === "both"
             ) {
               const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1) {
                 lastBlock.push(i);
-              else hintIndices.push([i]);
+              } else {
+                hintIndices.push([i]);
+              }
             }
           }
         }
@@ -923,11 +928,12 @@ export async function updateWordLetters({
         );
       }
 
-      if (newlineafter)
+      if (newlineafter) {
         wordAtIndex.insertAdjacentHTML(
           "afterend",
           "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
         );
+      }
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
@@ -1126,8 +1132,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
     // if current letter has zero width move the tape to previous positive width letter
-    if (letters[inputLength]?.offsetWidth === 0)
+    if (letters[inputLength]?.offsetWidth === 0) {
       currentWordWidth -= lastPositiveLetterWidth;
+    }
   }
 
   /* change to new #words & .afterNewline margins */

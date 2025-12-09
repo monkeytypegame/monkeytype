@@ -330,8 +330,9 @@ export class SimpleModal {
       };
 
       input.currentValue = () => {
-        if (element.type === "checkbox")
+        if (element.type === "checkbox") {
           return element.checked ? "true" : "false";
+        }
         return element.value;
       };
 

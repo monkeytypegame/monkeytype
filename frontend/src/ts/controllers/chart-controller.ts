@@ -1360,8 +1360,9 @@ async function updateColors<
       ao10accDataset === undefined ||
       ao100wpmDataset === undefined ||
       ao100accDataset === undefined
-    )
+    ) {
       return;
+    }
 
     if (avg10On && avg100On) {
       wpmDataset.pointBackgroundColor = main02;
