@@ -94,7 +94,7 @@ module.exports = {
         //not using
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "import/namespace": "off",
-        "@typescript-eslint/no-unnecessary-condition": "error",
+        "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/switch-exhaustiveness-check": "off",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/unbound-method": "off",
