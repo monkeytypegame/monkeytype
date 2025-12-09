@@ -71,10 +71,7 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
-  let diff = result.difficulty;
-  if (diff === undefined) {
-    diff = "normal";
-  }
+  let diff = result.difficulty ?? "normal";
 
   let icons = `<span aria-label="${result.language?.replace(
     "_",
@@ -300,10 +297,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      let resdiff = result.difficulty;
-      if (resdiff === undefined) {
-        resdiff = "normal";
-      }
+      let resdiff = result.difficulty ?? "normal";
       if (!ResultFilters.getFilter("difficulty", resdiff)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
@@ -1249,17 +1243,15 @@ export const page = new Page<undefined>({
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020,
     );
 
-    if (historyTable === undefined) {
-      historyTable = new SortedTableWithLimit<SnapshotResult<Mode>>({
-        limit: 10,
-        table: ".pageAccount .content .history table",
-        data: filteredResults,
-        buildRow: (val) => {
-          return buildResultRow(val);
-        },
-        initialSort: { property: "timestamp", descending: true },
-      });
-    }
+    historyTable ??= new SortedTableWithLimit<SnapshotResult<Mode>>({
+      limit: 10,
+      table: ".pageAccount .content .history table",
+      data: filteredResults,
+      buildRow: (val) => {
+        return buildResultRow(val);
+      },
+      initialSort: { property: "timestamp", descending: true },
+    });
 
     await update().then(() => {
       void updateChartColors();

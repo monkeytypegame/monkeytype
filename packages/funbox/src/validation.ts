@@ -33,8 +33,8 @@ export function checkCompatibility(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ||
-        f.frontendFunctions?.includes("pullSection") ||
+        f.frontendFunctions?.includes("getWord") ??
+        f.frontendFunctions?.includes("pullSection") ??
         f.frontendFunctions?.includes("withWords"),
     ).length <= 1;
   const oneWordOrderMax =

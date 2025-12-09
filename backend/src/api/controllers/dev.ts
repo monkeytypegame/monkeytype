@@ -221,7 +221,7 @@ async function updateUser(uid: string): Promise<void> {
       { sort: { wpm: -1, timestamp: 1 } },
     )) as DBResult;
 
-    if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
+    personalBests[mode.mode] ??= {};
     if (personalBests[mode.mode][mode.mode2] === undefined)
       personalBests[mode.mode][mode.mode2] = [];
 

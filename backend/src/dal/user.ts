@@ -275,7 +275,7 @@ export async function findByName(name: string): Promise<DBUser | undefined> {
     { collation: { locale: "en", strength: 1 } },
   );
 
-  return found !== null ? found : undefined;
+  return found ?? undefined;
 }
 
 export async function isNameAvailable(
@@ -1053,11 +1053,10 @@ export async function updateInbox(
                 .filter((it) => it.type === "badge")
                 .map((it) => it.item);
 
-              if (inventory === null)
-                inventory = {
-                  badges: [],
-                };
-              if (inventory.badges === null) inventory.badges = [];
+              inventory ??= {
+                badges: [],
+              };
+              inventory.badges ??= [];
 
               const uniqueBadgeIds = new Set();
               const newBadges: Badge[] = [];

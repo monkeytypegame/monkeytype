@@ -77,7 +77,7 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
   showActivityOnPublicProfileInput.checked =
-    showActivityOnPublicProfile || false;
+    showActivityOnPublicProfile ?? false;
 
   badges?.forEach((badge: Badge) => {
     if (badge.selected) {

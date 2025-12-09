@@ -1296,12 +1296,8 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
-      if (dbSnapshot.favoriteQuotes === undefined) {
-        dbSnapshot.favoriteQuotes = {};
-      }
-      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-        dbSnapshot.favoriteQuotes[quoteLang] = [];
-      }
+      dbSnapshot.favoriteQuotes ??= {};
+      dbSnapshot.favoriteQuotes[quoteLang] ??= [];
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
   }

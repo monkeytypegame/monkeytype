@@ -143,7 +143,7 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
     getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider,
-    ) || false
+    ) ?? false
   );
 }
 
