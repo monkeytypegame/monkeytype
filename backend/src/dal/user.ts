@@ -1053,10 +1053,15 @@ export async function updateInbox(
                 .filter((it) => it.type === "badge")
                 .map((it) => it.item);
 
-              inventory ??= {
-                badges: [],
-              };
-              inventory.badges ??= [];
+              // mongo doesnt support ??= i think
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+              if (inventory === null)
+                inventory = {
+                  badges: [],
+                };
+              // mongo doesnt support ??= i think
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+              if (inventory.badges === null) inventory.badges = [];
 
               const uniqueBadgeIds = new Set();
               const newBadges: Badge[] = [];
