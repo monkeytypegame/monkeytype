@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [master]
     types: [opened, reopened, synchronize, ready_for_review]
-  
+
 permissions:
   contents: read
 
@@ -57,7 +57,5 @@ jobs:
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
-            pnpm oxfmt $CHANGED_FILES --check --ignore-path .oxfmtignore --no-error-on-unmatched-pattern && pnpm prettier $CHANGED_FILES --check --log-level=warn -u --no-error-on-unmatched-pattern
+            pnpm oxfmt $CHANGED_FILES --check --no-error-on-unmatched-pattern
           fi
-
-      

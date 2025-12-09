@@ -32,9 +32,10 @@
     "not dead"
   ],
   "lint-staged": {
-    "!(*.js|*.ts)": "prettier --write -u --no-error-on-unmatched-pattern",
+    "*": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ],
     "*.{ts,js}": [
-      "oxfmt",
       "oxlint",
       "eslint"
     ]

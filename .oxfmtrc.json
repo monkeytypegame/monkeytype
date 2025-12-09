@@ -5,5 +5,14 @@
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
   "endOfLine": "lf",
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "ignorePatterns": [
+    ".turbo",
+    "node_modules",
+    "pnpm-lock.yaml",
+    "logs",
+    "coverage",
+    "*.md",
+    "tsconfig.json" //remove after https://github.com/oxc-project/oxc/issues/16637
+  ]
 }

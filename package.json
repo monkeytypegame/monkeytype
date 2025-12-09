@@ -43,8 +43,8 @@
     "hotfix-fe": "monkeytype-release --hotfix --fe",
     "hotfix-be": "monkeytype-release --hotfix --be",
     "hotfix-dry": "monkeytype-release --hotfix --dry",
-    "format-check": "oxfmt . --check --ignore-path .oxfmtignore && prettier . --check",
-    "format-fix": "oxfmt . --ignore-path .oxfmtignore && prettier . --write --log-level=warn",
+    "format-check": "oxfmt . --check",
+    "format-fix": "oxfmt .",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
@@ -68,14 +68,14 @@
     "only-allow": "1.2.1",
     "oxfmt": "0.17.0",
     "oxlint": "1.29.0",
-    "prettier": "3.7.1",
     "turbo": "2.5.6",
     "vitest": "4.0.8"
   },
   "lint-staged": {
-    "!(*.js|*.ts)": "prettier --write -u --no-error-on-unmatched-pattern",
+    "*": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ],
     "*.{ts,js}": [
-      "oxfmt",
       "oxlint",
       "eslint"
     ]
