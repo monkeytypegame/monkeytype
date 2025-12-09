@@ -61,7 +61,7 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "24.11.0"
+    "node": "24.11.0 || 22.21.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
@@ -88,6 +88,6 @@
       "oxlint --type-aware --type-check"
     ]
   },
-  "version": "25.48.0",
+  "version": "25.49.0",
   "packageManager": "pnpm@9.6.0"
 }

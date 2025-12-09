@@ -20,7 +20,7 @@
     "gen-docs": "tsx scripts/openapi.ts dist/static/api/openapi.json && redocly build-docs -o dist/static/api/internal.html internal@v2 && redocly bundle -o dist/static/api/public.json public-filter && redocly build-docs -o dist/static/api/public.html public@v2"
   },
   "engines": {
-    "node": "24.11.0"
+    "node": "24.11.0 || 22.21.0"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -39,7 +39,7 @@
     "date-fns": "3.6.0",
     "dotenv": "16.4.5",
     "etag": "1.8.1",
-    "express": "5.1.0",
+    "express": "5.2.0",
     "express-rate-limit": "7.5.1",
     "firebase-admin": "12.0.0",
     "helmet": "4.6.0",
@@ -48,7 +48,7 @@
     "mjml": "4.15.0",
     "mongodb": "6.3.0",
     "mustache": "4.2.0",
-    "nodemailer": "7.0.7",
+    "nodemailer": "7.0.11",
     "object-hash": "3.0.0",
     "prom-client": "15.1.3",
     "rate-limiter-flexible": "5.0.3",

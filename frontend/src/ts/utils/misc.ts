@@ -448,7 +448,8 @@ export async function promiseAnimate(
   return new Promise((resolve) => {
     animate(el, {
       ...options,
-      onComplete: () => {
+      onComplete: (self, e) => {
+        options.onComplete?.(self, e);
         resolve();
       },
     });

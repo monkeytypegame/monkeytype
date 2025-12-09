@@ -4,6 +4,7 @@ import * as Notifications from "../elements/notifications";
 import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Quote } from "@monkeytype/schemas/quotes";
+import { escapeHTML } from "../utils/misc";
 
 let quotes: Quote[] = [];
 
@@ -12,10 +13,10 @@ function updateList(): void {
   quotes.forEach((quote, index) => {
     const quoteEl = $(`
       <div class="quote" data-id="${index}" data-db-id="${quote._id}">
-        <textarea class="text">${quote.text}</textarea>
-        <input type="text" class="source" placeholder="Source" value="${
-          quote.source
-        }">
+        <textarea class="text">${escapeHTML(quote.text)}</textarea>
+        <input type="text" class="source" placeholder="Source" value="${escapeHTML(
+          quote.source,
+        )}">
         <div class="buttons">
           <button disabled class="textButton undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></button>
           <button class="textButton refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></button>
