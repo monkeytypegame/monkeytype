@@ -607,7 +607,10 @@
   caret-color: transparent;
   resize: none;
   overflow: hidden;
-  white-space: nowrap; // if the text wraps, ctrl backspace will not work on firefox >:|
+  // if the text wraps, ctrl backspace will not work on firefox >:|
+  // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
+  // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
+  text-wrap-mode: nowrap;
 }
 
 #capsWarning {
