@@ -16,6 +16,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 export const keyDataDelimiter = "\uE000";
 
@@ -72,62 +73,67 @@ function findKeyElements(char: string): JQuery {
 
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
-  if (currentKey === "") currentKey = " ";
-  try {
-    $(".activeKey").removeClass("activeKey");
+  requestDebouncedAnimationFrame("keymap.highlightKey", async () => {
+    if (currentKey === "") currentKey = " ";
+    try {
+      document
+        .querySelectorAll(".activeKey")
+        .forEach((el) => el.classList.remove("activeKey"));
 
-    if (Config.language.startsWith("korean")) {
-      currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
-    }
+      if (Config.language.startsWith("korean")) {
+        currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
+      }
 
-    const $target = findKeyElements(currentKey);
-    $target.addClass("activeKey");
-  } catch (e) {
-    if (e instanceof Error) {
-      console.log("could not update highlighted keymap key: " + e.message);
+      const $target = findKeyElements(currentKey);
+      $target.addClass("activeKey");
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log("could not update highlighted keymap key: " + e.message);
+      }
     }
-  }
+  });
 }
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
+  requestDebouncedAnimationFrame(`keymap.flashKey.${key}`, async () => {
+    const $target = findKeyElements(key);
 
-  const $target = findKeyElements(key);
+    const elements = $target.toArray();
+    if (elements.length === 0) return;
 
-  const elements = $target.toArray();
-  if (elements.length === 0) return;
+    const themecolors = await ThemeColors.getAll();
 
-  const themecolors = await ThemeColors.getAll();
-
-  try {
-    let startingStyle = {
-      color: themecolors.bg,
-      backgroundColor: themecolors.sub,
-      borderColor: themecolors.sub,
-    };
-
-    if (correct || Config.blindMode) {
-      startingStyle = {
+    try {
+      let startingStyle = {
         color: themecolors.bg,
-        backgroundColor: themecolors.main,
-        borderColor: themecolors.main,
+        backgroundColor: themecolors.sub,
+        borderColor: themecolors.sub,
       };
-    } else {
-      startingStyle = {
-        color: themecolors.bg,
-        backgroundColor: themecolors.error,
-        borderColor: themecolors.error,
-      };
-    }
 
-    animate(elements, {
-      color: [startingStyle.color, themecolors.sub],
-      backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
-      borderColor: [startingStyle.borderColor, themecolors.sub],
-      duration: 250,
-      easing: "out(5)",
-    });
-  } catch (e) {}
+      if (correct || Config.blindMode) {
+        startingStyle = {
+          color: themecolors.bg,
+          backgroundColor: themecolors.main,
+          borderColor: themecolors.main,
+        };
+      } else {
+        startingStyle = {
+          color: themecolors.bg,
+          backgroundColor: themecolors.error,
+          borderColor: themecolors.error,
+        };
+      }
+
+      animate(elements, {
+        color: [startingStyle.color, themecolors.sub],
+        backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
+        borderColor: [startingStyle.borderColor, themecolors.sub],
+        duration: 250,
+        easing: "out(5)",
+      });
+    } catch (e) {}
+  });
 }
 
 export function hide(): void {

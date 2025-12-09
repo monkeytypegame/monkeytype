@@ -412,9 +412,6 @@ importers:
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
-      dotenv:
-        specifier: 16.4.5
-        version: 16.4.5
       eslint:
         specifier: 8.57.1
         version: 8.57.1
