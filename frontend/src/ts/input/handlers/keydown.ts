@@ -72,6 +72,7 @@ export async function handleEnter(
             },
           );
         }
+        e.preventDefault();
         return;
       } else {
         TestState.setBailedOut(true);
