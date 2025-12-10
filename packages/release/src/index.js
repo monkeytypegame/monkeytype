@@ -255,7 +255,6 @@ const createGithubRelease = async (version, changelogContent) => {
 const main = async () => {
   if (previewFe) {
     console.log(`Starting frontend preview deployment process...`);
-    checkUncommittedChanges();
     installDependencies();
     runProjectRootCommand(
       "NODE_ENV=production npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
