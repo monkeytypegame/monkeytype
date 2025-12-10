@@ -446,7 +446,7 @@ const modal = new AnimatedModal({
     hide();
   },
   setup: async (): Promise<void> => {
-    alertsPopupEl.qs(".accountAlerts")?.onChild(".claimAll", "click", () => {
+    alertsPopupEl.qs(".accountAlerts")?.onChild("click", ".claimAll", () => {
       for (const ie of accountAlerts) {
         if (!ie.read && !mailToMarkRead.includes(ie.id)) {
           markReadAlert(ie.id);
@@ -454,7 +454,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    alertsPopupEl.qs(".accountAlerts")?.onChild(".deleteAll", "click", () => {
+    alertsPopupEl.qs(".accountAlerts")?.onChild("click", ".deleteAll", () => {
       for (const ie of accountAlerts) {
         if (!mailToDelete.includes(ie.id)) {
           deleteAlert(ie.id);
@@ -468,7 +468,7 @@ const modal = new AnimatedModal({
 
     alertsPopupEl
       .qs(".accountAlerts .list")
-      ?.onChild(".item .buttons .deleteAlert", "click", (e) => {
+      ?.onChild("click", ".item .buttons .deleteAlert", (e) => {
         const id = (e.target as HTMLElement | null)
           ?.closest(".item")
           ?.getAttribute("data-id")
@@ -483,7 +483,7 @@ const modal = new AnimatedModal({
 
     alertsPopupEl
       .qs(".accountAlerts .list")
-      ?.onChild(".item .buttons .markReadAlert", "click", (e) => {
+      ?.onChild("click", ".item .buttons .markReadAlert", (e) => {
         const id = (e.target as HTMLElement | null)
           ?.closest(".item")
           ?.getAttribute("data-id")

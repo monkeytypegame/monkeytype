@@ -236,18 +236,18 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Useful for dynamically added elements.
    */
   onChild<K extends keyof HTMLElementEventMap>(
-    query: string,
     event: K,
+    query: string,
     handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
   ): this;
   onChild(
-    query: string,
     event: string,
+    query: string,
     handler: EventListenerOrEventListenerObject,
   ): this;
   onChild(
-    query: string,
     event: keyof HTMLElementEventMap | string,
+    query: string,
     handler:
       | EventListenerOrEventListenerObject
       | ((this: HTMLElement, ev: Event) => void),

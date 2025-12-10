@@ -439,15 +439,15 @@ qs(".pageLogin .register form")?.on("submit", (e) => {
   void signUp();
 });
 
-qs(".pageAccountSettings")?.onChild("#addGoogleAuth", "click", () => {
+qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
   void addGoogleAuth();
 });
 
-qs(".pageAccountSettings")?.onChild("#addGithubAuth", "click", () => {
+qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
   void addGithubAuth();
 });
 
-qs(".pageAccount")?.onChild(".sendVerificationEmail", "click", () => {
+qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,
