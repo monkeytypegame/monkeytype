@@ -3,9 +3,10 @@ import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
-const html = document.querySelector("html") as HTMLElement;
-const body = document.body;
+const html = qsr("html");
+const body = qsr("body");
 
 type Particle = {
   x: number;
@@ -18,7 +19,7 @@ type Particle = {
 
 type CTX = {
   particles: Particle[];
-  caret?: HTMLElement;
+  caret?: ElementWithUtils;
   canvas?: HTMLCanvasElement;
   context2d?: CanvasRenderingContext2D;
   rendering: boolean;
@@ -122,7 +123,7 @@ function updateParticle(particle: Particle): void {
 }
 
 export function init(): void {
-  ctx.caret = document.querySelector("#caret") as HTMLElement;
+  ctx.caret = qsr("#caret");
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
 }
@@ -172,13 +173,16 @@ export function reset(immediate = false): void {
   delete ctx.resetTimeOut;
 
   clearTimeout(ctx.resetTimeOut);
-  body.style.transition = "all .25s, transform 0.8s";
-  body.style.transform = `translate(0,0)`;
+  body.setStyle({
+    transition: "all .25s, transform 0.8s",
+    transform: "translate(0,0)",
+  });
   setTimeout(
     () => {
-      body.style.transition = "all .25s, transform .05s";
-      html.style.overflow = "inherit";
-      html.style.overflowY = "scroll";
+      body.setStyle({
+        transition: "all .25s, transform .05s",
+      });
+      html.setStyle({ overflow: "inherit", overflowY: "scroll" });
     },
     immediate ? 0 : 1000,
   );
@@ -209,21 +213,21 @@ export async function addPower(good = true, extra = false): Promise<void> {
 
     // Shake
     if (["3", "4"].includes(Config.monkeyPowerLevel)) {
-      html.style.overflow = "hidden";
+      html.setStyle({ overflow: "hidden" });
       const shake = [
         Math.round(shakeAmount - Math.random() * shakeAmount),
         Math.round(shakeAmount - Math.random() * shakeAmount),
       ];
-      body.style.transform = `translate(${shake[0]}px, ${shake[1]}px)`;
+      body.setStyle({ transform: `translate(${shake[0]}px, ${shake[1]}px)` });
       if (isSafeNumber(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
       ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
     }
 
     // Sparks
-    const offset = ctx.caret?.getBoundingClientRect();
+    const offset = ctx.caret?.native.getBoundingClientRect();
     const coords = [
       offset?.left ?? 0,
-      (offset?.top ?? 0) + (ctx.caret?.offsetHeight ?? 0) / 2,
+      (offset?.top ?? 0) + (ctx.caret?.native.offsetHeight ?? 0) / 2,
     ];
 
     for (
