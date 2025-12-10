@@ -9,6 +9,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
 import { Language } from "@monkeytype/schemas/languages";
 import { LanguageGroupNames } from "../constants/languages";
+import { qsr } from "../utils/dom";
 
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
@@ -83,7 +84,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
       $("#quoteSubmitModal input").val("");
 
-      new CharacterCounter($("#quoteSubmitModal .newQuoteText"), 250);
+      new CharacterCounter(qsr("#quoteSubmitModal .newQuoteText"), 250);
     },
   });
 }

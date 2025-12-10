@@ -856,7 +856,7 @@ export async function updateWordLetters({
               `<letter class="incorrect ${tabChar}${nlChar}">` +
               (Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
-                ? inputChars[i] === " "
+                ? inputChars[i] === " " || inputChars[i] === "\t"
                   ? "_"
                   : inputChars[i]
                 : currentLetter) +

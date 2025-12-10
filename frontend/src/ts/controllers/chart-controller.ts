@@ -68,6 +68,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -1101,8 +1102,8 @@ function updateAccountChartButton(
   className: ButtonBelowChart,
 ): void {
   isActive
-    ? $(`.pageAccount ${className}`).addClass("active")
-    : $(`.pageAccount ${className}`).removeClass("active");
+    ? qs(`.pageAccount ${className}`)?.addClass("active")
+    : qs(`.pageAccount ${className}`)?.removeClass("active");
 }
 
 function updateResults(updateChart = true): void {
