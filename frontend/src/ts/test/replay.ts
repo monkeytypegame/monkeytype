@@ -149,8 +149,9 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
     const replayWords = document.getElementById("replayWords");
 
-    if (replayWords !== null)
+    if (replayWords !== null) {
       activeWord = replayWords.children[wordPos] as HTMLElement;
+    }
 
     curPos = activeWord.children.length;
     while (activeWord.children[curPos - 1]?.className === "") curPos--;
@@ -219,11 +220,6 @@ function toggleReplayDisplay(): void {
 }
 
 function startReplayRecording(): void {
-  if (!$("#resultReplay").stop(true, true).hasClass("hidden")) {
-    //hide replay display if user left it open
-    toggleReplayDisplay();
-  }
-  $("#replayStats").text("");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;

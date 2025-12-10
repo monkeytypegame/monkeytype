@@ -984,6 +984,9 @@ export async function update(
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
+  $("#result #replayStats").text("");
+  $("#result #resultReplay").addClass("hidden");
+  $("#result #replayWords").empty();
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
     .removeClass("fas")
@@ -1072,43 +1075,40 @@ export async function update(
 
   TestConfig.hide();
 
-  void Misc.swapElements(
-    document.querySelector("#typingTest") as HTMLElement,
-    document.querySelector("#result") as HTMLElement,
-    250,
-    async () => {
-      const result = document.querySelector<HTMLElement>("#result");
-      result?.focus({
-        preventScroll: true,
-      });
-      Misc.scrollToCenterOrTop(result);
-      void AdController.renderResult();
-      TestUI.setResultCalculating(false);
-      $("#words").empty();
-      ChartController.result.resize();
-    },
-    async () => {
-      Focus.set(false);
+  Focus.set(false);
 
-      const canQuickRestart = canQuickRestartFn(
-        Config.mode,
-        Config.words,
-        Config.time,
-        CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false,
-      );
-
-      if (
-        Config.alwaysShowWordsHistory &&
-        canQuickRestart &&
-        !GlarsesMode.get()
-      ) {
-        TestUI.toggleResultWords(true);
-      }
-      AdController.updateFooterAndVerticalAds(true);
-      void Funbox.clear();
-    },
+  const canQuickRestart = canQuickRestartFn(
+    Config.mode,
+    Config.words,
+    Config.time,
+    CustomText.getData(),
+    CustomTextState.isCustomTextLong() ?? false,
   );
+
+  if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
+    TestUI.toggleResultWords(true);
+  }
+  AdController.updateFooterAndVerticalAds(true);
+  void Funbox.clear();
+
+  $(".pageTest .loading").addClass("hidden");
+  $("#result").removeClass("hidden");
+
+  const resultEl = document.querySelector<HTMLElement>("#result");
+  resultEl?.focus({
+    preventScroll: true,
+  });
+
+  await Misc.promiseAnimate("#result", {
+    opacity: [0, 1],
+    duration: Misc.applyReducedMotion(125),
+  });
+
+  Misc.scrollToCenterOrTop(resultEl);
+  void AdController.renderResult();
+  TestUI.setResultCalculating(false);
+  $("#words").empty();
+  ChartController.result.resize();
 }
 
 const resultChartDataVisibility = new LocalStorageWithSchema({
@@ -1296,12 +1296,8 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
-      if (dbSnapshot.favoriteQuotes === undefined) {
-        dbSnapshot.favoriteQuotes = {};
-      }
-      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-        dbSnapshot.favoriteQuotes[quoteLang] = [];
-      }
+      dbSnapshot.favoriteQuotes ??= {};
+      dbSnapshot.favoriteQuotes[quoteLang] ??= [];
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
   }

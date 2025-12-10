@@ -15,8 +15,6 @@
     "madge": " madge --circular --extensions ts ./src",
     "start": "vite preview --port 3000",
     "dev": "vite dev",
-    "deploy-live": "npm run check-assets && npm run build && firebase deploy -P live --only hosting",
-    "deploy-preview": "npm run check-assets && npm run build && firebase hosting:channel:deploy preview -P live --expires 2h",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
@@ -24,7 +22,7 @@
     "docker": "docker compose -f docker/compose.dev.yml up"
   },
   "engines": {
-    "node": "24.11.0"
+    "node": "24.11.0 || 22.21.0"
   },
   "browserslist": [
     "defaults",
@@ -58,7 +56,6 @@
     "@vitest/coverage-v8": "4.0.8",
     "autoprefixer": "10.4.20",
     "concurrently": "8.2.2",
-    "dotenv": "16.4.5",
     "eslint": "8.57.1",
     "eslint-plugin-compat": "6.0.2",
     "firebase-tools": "13.15.1",

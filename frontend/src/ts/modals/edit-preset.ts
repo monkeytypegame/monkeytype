@@ -47,14 +47,12 @@ export function show(action: string, id?: string, name?: string): void {
     beforeAnimation: async () => {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
-      if (!presetNameEl) {
-        presetNameEl = new ValidatedHtmlInputElement(
-          qsr("#editPresetModal .modal input"),
-          {
-            schema: PresetNameSchema,
-          },
-        );
-      }
+      presetNameEl ??= new ValidatedHtmlInputElement(
+        qsr("#editPresetModal .modal input"),
+        {
+          schema: PresetNameSchema,
+        },
+      );
       if (action === "add") {
         $("#editPresetModal .modal").attr("data-action", "add");
         $("#editPresetModal .modal .popupTitle").html("Add new preset");
@@ -383,9 +381,7 @@ function getPartialConfigChanges(
     .forEach((settingName) => {
       const safeSettingName = settingName;
       const newValue =
-        configChanges[safeSettingName] !== undefined
-          ? configChanges[safeSettingName]
-          : defaultConfig[safeSettingName];
+        configChanges[safeSettingName] ?? defaultConfig[safeSettingName];
       // @ts-expect-error cant figure this one out, but it works
       activeConfigChanges[safeSettingName] = newValue;
     });

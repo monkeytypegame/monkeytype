@@ -83,7 +83,6 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
-import * as CompositionDisplay from "../elements/composition-display";
 import {
   getInputElement,
   isInputElementFocused,
@@ -329,13 +328,6 @@ export function restart(options = {} as RestartOptions): void {
       getInputElement().style.left = "0";
       setInputElementValue("");
 
-      if (CompositionDisplay.shouldShow()) {
-        CompositionDisplay.update(" ");
-        CompositionDisplay.show();
-      } else {
-        CompositionDisplay.hide();
-      }
-
       Focus.set(false);
       if (ActivePage.get() === "test") {
         AdController.updateFooterAndVerticalAds(false);
@@ -381,8 +373,9 @@ export function restart(options = {} as RestartOptions): void {
       if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
-      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
+      TestUI.onTestRestart();
 
+      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {
         opacity: [0, 1],
         onBegin: () => {
@@ -930,11 +923,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const now = performance.now();
   TestStats.setEnd(now);
 
+  // fade out the test and show loading
+  // because the css animation has a delay,
+  // if the test calculation is fast the loading will not show
+  await Misc.promiseAnimate("#typingTest", {
+    opacity: 0,
+    duration: Misc.applyReducedMotion(125),
+  });
+  $(".pageTest #typingTest").addClass("hidden");
+  $(".pageTest .loading").removeClass("hidden");
+  await Misc.sleep(0); //allow ui update
+
   if (TestState.isRepeated && Config.mode === "quote") {
     TestState.setRepeated(false);
   }
 
-  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
+  // in case the tests ends with a keypress (not a word submission)
+  // we need to push the current input to history
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();

@@ -73,7 +73,7 @@ importers:
         version: 3.52.1(@types/node@24.9.1)(zod@3.23.8)
       '@ts-rest/express':
         specifier: 3.52.1
-        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.1.0)(zod@3.23.8)
+        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.2.0)(zod@3.23.8)
       '@ts-rest/open-api':
         specifier: 3.52.1
         version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(zod@3.23.8)
@@ -102,11 +102,11 @@ importers:
         specifier: 1.8.1
         version: 1.8.1
       express:
-        specifier: 5.1.0
-        version: 5.1.0
+        specifier: 5.2.0
+        version: 5.2.0
       express-rate-limit:
         specifier: 7.5.1
-        version: 7.5.1(express@5.1.0)
+        version: 7.5.1(express@5.2.0)
       firebase-admin:
         specifier: 12.0.0
         version: 12.0.0(encoding@0.1.13)
@@ -129,8 +129,8 @@ importers:
         specifier: 4.2.0
         version: 4.2.0
       nodemailer:
-        specifier: 7.0.7
-        version: 7.0.7
+        specifier: 7.0.11
+        version: 7.0.11
       object-hash:
         specifier: 3.0.0
         version: 3.0.0
@@ -409,9 +409,6 @@ importers:
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
-      dotenv:
-        specifier: 16.4.5
-        version: 16.4.5
       eslint:
         specifier: 8.57.1
         version: 8.57.1
@@ -3883,8 +3880,8 @@ packages:
     resolution: {integrity: sha512-7rAxByjUMqQ3/bHJy7D6OGXvx/MMc4IqBn/X0fcM1QUcAItpZrBEYhWGem+tzXH90c+G01ypMcYJBO9Y30203g==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
 
-  body-parser@2.2.0:
-    resolution: {integrity: sha512-02qvAaxv8tp7fBa/mw1ga98OGm+eCbqzJOKoRt70sLmfEEi+jyBYVTDGfCL/k06/4EMk/z01gCe7HoCH/f2LTg==}
+  body-parser@2.2.1:
+    resolution: {integrity: sha512-nfDwkulwiZYQIGwxdy0RUmowMhKcFVcYXUU7m4QlKYim1rUtg83xm2yjZ40QjDuc291AJjjeSc9b++AWHSgSHw==}
     engines: {node: '>=18'}
 
   boolbase@1.0.0:
@@ -5187,8 +5184,8 @@ packages:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
     engines: {node: '>= 0.10.0'}
 
-  express@5.1.0:
-    resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
+  express@5.2.0:
+    resolution: {integrity: sha512-XdpJDLxfztVY59X0zPI6sibRiGcxhTPXRD3IhJmjKf2jwMvkRGV1j7loB8U+heeamoU3XvihAaGRTR4aXXUN3A==}
     engines: {node: '>= 18'}
 
   extend@3.0.2:
@@ -6837,10 +6834,6 @@ packages:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
 
-  mime-db@1.53.0:
-    resolution: {integrity: sha512-oHlN/w+3MQ3rba9rqFr6V/ypF10LSkdwUysQL7GkXoTgIWeV+tcXGA852TBxH+gsh8UWoyhR1hKcoMJTuWflpg==}
-    engines: {node: '>= 0.6'}
-
   mime-db@1.54.0:
     resolution: {integrity: sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==}
     engines: {node: '>= 0.6'}
@@ -7293,8 +7286,8 @@ packages:
     resolution: {integrity: sha512-1uiY543L+N7Og4yswvlm5NCKgPKDEXd9AUR9Jh3gen6oOeBsesr6LqhXom1er3eRzSUcVRWXzhv8tSNrIfGHKw==}
     engines: {node: '>=18'}
 
-  nodemailer@7.0.7:
-    resolution: {integrity: sha512-jGOaRznodf62TVzdyhKt/f1Q/c3kYynk8629sgJHpRzGZj01ezbgMMWJSAjHADcwTKxco3B68/R+KHJY2T5BaA==}
+  nodemailer@7.0.11:
+    resolution: {integrity: sha512-gnXhNRE0FNhD7wPSCGhdNh46Hs6nm+uTyg+Kq0cZukNQiYdnCsoQjodNP9BQVG9XrcK/v6/MgpAPBUFyzh9pvw==}
     engines: {node: '>=6.0.0'}
 
   nodemon@3.1.4:
@@ -11672,7 +11665,7 @@ snapshots:
   '@hapi/mimos@7.0.1':
     dependencies:
       '@hapi/hoek': 11.0.4
-      mime-db: 1.53.0
+      mime-db: 1.54.0
 
   '@hapi/nigel@5.0.1':
     dependencies:
@@ -11835,7 +11828,7 @@ snapshots:
 
   '@kwsites/file-exists@1.1.1':
     dependencies:
-      debug: 4.3.6(supports-color@5.5.0)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12548,10 +12541,10 @@ snapshots:
       '@types/node': 24.9.1
       zod: 3.23.8
 
-  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.1.0)(zod@3.23.8)':
+  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.2.0)(zod@3.23.8)':
     dependencies:
       '@ts-rest/core': 3.52.1(@types/node@24.9.1)(zod@3.23.8)
-      express: 5.1.0
+      express: 5.2.0
     optionalDependencies:
       zod: 3.23.8
 
@@ -13508,13 +13501,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  body-parser@2.2.0:
+  body-parser@2.2.1:
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
       debug: 4.4.3
       http-errors: 2.0.0
-      iconv-lite: 0.6.3
+      iconv-lite: 0.7.0
       on-finished: 2.4.1
       qs: 6.14.0
       raw-body: 3.0.1
@@ -15099,9 +15092,9 @@ snapshots:
   exponential-backoff@3.1.1:
     optional: true
 
-  express-rate-limit@7.5.1(express@5.1.0):
+  express-rate-limit@7.5.1(express@5.2.0):
     dependencies:
-      express: 5.1.0
+      express: 5.2.0
 
   express@4.21.2:
     dependencies:
@@ -15139,15 +15132,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  express@5.1.0:
+  express@5.2.0:
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.2.0
+      body-parser: 2.2.1
       content-disposition: 1.0.0
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
       debug: 4.4.3
+      depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -16096,6 +16090,7 @@ snapshots:
   iconv-lite@0.6.3:
     dependencies:
       safer-buffer: 2.1.2
+    optional: true
 
   iconv-lite@0.7.0:
     dependencies:
@@ -17104,8 +17099,6 @@ snapshots:
 
   mime-db@1.52.0: {}
 
-  mime-db@1.53.0: {}
-
   mime-db@1.54.0: {}
 
   mime-types@2.1.35:
@@ -17710,7 +17703,7 @@ snapshots:
     dependencies:
       '@babel/parser': 7.28.5
 
-  nodemailer@7.0.7: {}
+  nodemailer@7.0.11: {}
 
   nodemon@3.1.4:
     dependencies:

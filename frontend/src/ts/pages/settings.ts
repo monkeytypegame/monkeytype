@@ -205,6 +205,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setIndicateTypos,
     "button",
   );
+  groups["compositionDisplay"] = new SettingsGroup(
+    "compositionDisplay",
+    UpdateConfig.setCompositionDisplay,
+    "button",
+  );
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,

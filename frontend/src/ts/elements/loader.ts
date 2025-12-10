@@ -1,33 +1,32 @@
+import { animate, JSAnimation } from "animejs";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qsr } from "../utils/dom";
 
 const element = qsr("#backgroundLoader");
-let timeout: NodeJS.Timeout | null = null;
-let visible = false;
-
-function clearTimeout(): void {
-  if (timeout !== null) {
-    window.clearTimeout(timeout);
-    timeout = null;
-  }
-}
+let showAnim: JSAnimation | null = null;
 
 export function show(instant = false): void {
-  if (visible) return;
-
-  if (instant) {
-    element.show();
-    visible = true;
-  } else {
-    timeout = setTimeout(() => {
-      element.show();
-    }, 125);
-    visible = true;
-  }
+  requestDebouncedAnimationFrame("loader.show", () => {
+    showAnim = animate(element, {
+      opacity: 1,
+      duration: 125,
+      delay: instant ? 0 : 125,
+      onBegin: () => {
+        element.removeClass("hidden");
+      },
+    });
+  });
 }
 
 export function hide(): void {
-  if (!visible) return;
-  clearTimeout();
-  element.hide();
-  visible = false;
+  requestDebouncedAnimationFrame("loader.hide", () => {
+    showAnim?.pause();
+    animate(element, {
+      opacity: 0,
+      duration: 125,
+      onComplete: () => {
+        element.addClass("hidden");
+      },
+    });
+  });
 }

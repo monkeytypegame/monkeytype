@@ -42,8 +42,9 @@ export function getReceiverUid(
   connection: Pick<Connection, "initiatorUid" | "receiverUid">,
 ): string {
   const me = getAuthenticatedUser();
-  if (me === null)
+  if (me === null) {
     throw new Error("expected to be authenticated in getReceiverUid");
+  }
 
   if (me.uid === connection.initiatorUid) return connection.receiverUid;
   return connection.initiatorUid;
@@ -302,7 +303,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         )}</td>
         <td><span aria-label="${formatStreak(
           entry.streak?.maxLength,
-          "max streak",
+          "longest streak",
         )}" data-balloon-pos="up">
           ${formatStreak(entry.streak?.length)} 
         </span></td>

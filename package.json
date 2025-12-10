@@ -34,6 +34,7 @@
     "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && npm run docker",
     "audit-fe": "cd frontend && npm run audit",
+    "preview-fe": "monkeytype-release --preview-fe",
     "release": "monkeytype-release",
     "release-fe": "monkeytype-release --fe",
     "release-be": "monkeytype-release --be",
@@ -61,7 +62,7 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "24.11.0"
+    "node": "24.11.0 || 22.21.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
@@ -89,6 +90,6 @@
       "eslint"
     ]
   },
-  "version": "25.48.0",
+  "version": "25.49.0",
   "packageManager": "pnpm@9.6.0"
 }

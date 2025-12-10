@@ -28,33 +28,30 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageProfileSearch", "main");
 
-    if (nameInputEl === null) {
-      nameInputEl = new ValidatedHtmlInputElement(
-        qsr(".page.pageProfileSearch input"),
-        {
-          schema: UserNameSchema,
-          isValid: remoteValidation(
-            async (name) =>
-              Ape.users.getProfile({ params: { uidOrName: name } }),
-            {
-              check: (data) => {
-                lastProfile = data;
-                return true;
-              },
-              on4xx: () => "Unknown user",
+    nameInputEl ??= new ValidatedHtmlInputElement(
+      qsr(".page.pageProfileSearch input"),
+      {
+        schema: UserNameSchema,
+        isValid: remoteValidation(
+          async (name) => Ape.users.getProfile({ params: { uidOrName: name } }),
+          {
+            check: (data) => {
+              lastProfile = data;
+              return true;
             },
-          ),
-          callback: (result) => {
-            if (result.status === "success") {
-              enableButton();
-            } else {
-              disableButton();
-              lastProfile = null;
-            }
+            on4xx: () => "Unknown user",
           },
+        ),
+        callback: (result) => {
+          if (result.status === "success") {
+            enableButton();
+          } else {
+            disableButton();
+            lastProfile = null;
+          }
         },
-      );
-    }
+      },
+    );
 
     nameInputEl.setValue(null);
     disableButton();
