@@ -64,8 +64,7 @@ export const page = new Page({
 $(".page.pageProfileSearch form").on("submit", (e) => {
   e.preventDefault();
   if (lastProfile === null) return;
-  NavigationEvent.dispatch({
-    url: `/profile/${lastProfile.name}`,
+  NavigationEvent.dispatch(`/profile/${lastProfile.name}`, {
     data: lastProfile,
   });
 });
