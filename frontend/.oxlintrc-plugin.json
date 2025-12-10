@@ -1,0 +1,4 @@
+{
+  "ignorePatterns": ["node_modules", "dist", "coverage", ".firebase", ".turbo"],
+  "extends": ["../packages/oxlint-config/plugin.jsonc"]
+}

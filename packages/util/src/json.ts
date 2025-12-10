@@ -32,7 +32,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
       throw new Error(`Invalid JSON: ` + error.message);
     }
     // todo fix me
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // oxlint-disable-next-line no-unsafe-return
     return fallback as z.infer<T>;
   }
 
@@ -61,7 +61,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
       );
     }
     // todo fix me
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // oxlint-disable-next-line no-unsafe-return
     return fallback as z.infer<T>;
   }
 

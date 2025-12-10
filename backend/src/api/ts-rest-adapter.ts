@@ -11,7 +11,7 @@ export function callController<
   TParams,
   TResponse,
   //ignoring as it might be used in the future
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   TStatus = 200,
 >(
   handler: MonkeyHandler<TQuery, TBody, TParams, TResponse>,

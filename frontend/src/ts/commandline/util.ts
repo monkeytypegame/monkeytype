@@ -28,7 +28,7 @@ function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
 }
 
 export function buildCommandForConfigKey<
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   K extends keyof CommandlineConfigMetadataObject,
 >(key: K): Command {
   const configMeta = configMetadata[key];

@@ -16,7 +16,7 @@ describe("ConfigMeta", () => {
   });
   it("should have changeRequiresRestart defined", () => {
     const configsRequiringRestarts = Object.entries(configMetadata)
-      .filter(([_key, value]) => value.changeRequiresRestart === true)
+      .filter(([_key, value]) => value.changeRequiresRestart)
       .map(([key]) => key)
       .sort();
 

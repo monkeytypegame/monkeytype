@@ -314,7 +314,7 @@ export function toHex(buffer: ArrayBuffer): string {
   // @ts-expect-error modern browsers
   if (Uint8Array.prototype.toHex !== undefined) {
     // @ts-expect-error modern browsers
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-call
     return new Uint8Array(buffer).toHex() as string;
   }
   const hashArray = Array.from(new Uint8Array(buffer));

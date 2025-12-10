@@ -33,11 +33,10 @@ import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
 import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
-import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
-import { SuperTest } from "supertest";
+import Test from "supertest/lib/test";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -2979,7 +2978,7 @@ describe("user controller test", () => {
 
       getUserByNameMock.mockResolvedValue(foundUser as any);
 
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3041,7 +3040,7 @@ describe("user controller test", () => {
         ...foundUser,
         profileDetails: { showActivityOnPublicProfile: true },
       } as any);
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3063,7 +3062,7 @@ describe("user controller test", () => {
         ...foundUser,
         profileDetails: { showActivityOnPublicProfile: false },
       } as any);
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3081,7 +3080,7 @@ describe("user controller test", () => {
         banned: true,
       } as any);
 
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3132,7 +3131,7 @@ describe("user controller test", () => {
       const uid = foundUser.uid;
       getUserMock.mockResolvedValue(foundUser as any);
 
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -4050,7 +4049,7 @@ async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
   );
 }
 
-async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+async function expectFailForDisabledEndpoint(call: Test): Promise<void> {
   await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);
   expect(body.message).toEqual("Connections are not available at this time.");
