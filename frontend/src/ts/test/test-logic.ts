@@ -1168,7 +1168,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     ) {
       // They bailed out
 
-      const historyLength = TestInput.input.getHistory()?.length;
+      const history = TestInput.input.getHistory();
+      let historyLength = history?.length;
+      const wordIndex = historyLength - 1;
+
+      const lastWordInputLength = history[wordIndex]?.length ?? 0;
+
+      if (lastWordInputLength < TestWords.words.get(wordIndex).length) {
+        historyLength--;
+      }
+
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
