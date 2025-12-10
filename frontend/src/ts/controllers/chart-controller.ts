@@ -68,6 +68,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -594,10 +595,7 @@ export const accountHistory = new ChartWithUpdateColors<
                 label += resultData.mode2;
               }
 
-              let diff = resultData.difficulty;
-              if (diff === undefined) {
-                diff = "normal";
-              }
+              let diff = resultData.difficulty ?? "normal";
               label += `\ndifficulty: ${diff}`;
 
               label +=
@@ -1104,8 +1102,8 @@ function updateAccountChartButton(
   className: ButtonBelowChart,
 ): void {
   isActive
-    ? $(`.pageAccount ${className}`).addClass("active")
-    : $(`.pageAccount ${className}`).removeClass("active");
+    ? qs(`.pageAccount ${className}`)?.addClass("active")
+    : qs(`.pageAccount ${className}`)?.removeClass("active");
 }
 
 function updateResults(updateChart = true): void {
@@ -1363,8 +1361,9 @@ async function updateColors<
       ao10accDataset === undefined ||
       ao100wpmDataset === undefined ||
       ao100accDataset === undefined
-    )
+    ) {
       return;
+    }
 
     if (avg10On && avg100On) {
       wpmDataset.pointBackgroundColor = main02;

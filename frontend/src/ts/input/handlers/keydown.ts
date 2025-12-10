@@ -10,7 +10,6 @@ import * as JSONData from "../../utils/json-data";
 import * as Notifications from "../../elements/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
-import * as CompositionState from "../../states/composition";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
@@ -45,7 +44,7 @@ export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
 
 export async function handleEnter(
   e: KeyboardEvent,
-  now: number,
+  _now: number,
 ): Promise<void> {
   if (e.shiftKey) {
     if (Config.mode === "zen") {
@@ -91,14 +90,6 @@ export async function handleEnter(
       TestLogic.restart();
       return;
     }
-  }
-  if (
-    TestWords.hasNewline ||
-    (Config.mode === "zen" && !CompositionState.getComposing())
-  ) {
-    await emulateInsertText({ data: "\n", now });
-    e.preventDefault();
-    return;
   }
 }
 

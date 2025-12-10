@@ -365,6 +365,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "indicate typos",
     changeRequiresRestart: false,
   },
+  compositionDisplay: {
+    icon: "fa-language",
+    displayString: "composition display",
+    changeRequiresRestart: false,
+  },
   hideExtraLetters: {
     icon: "fa-eye-slash",
     displayString: "hide extra letters",

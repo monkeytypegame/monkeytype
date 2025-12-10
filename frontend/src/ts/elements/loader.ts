@@ -1,7 +1,8 @@
 import { animate, JSAnimation } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { qsr } from "../utils/dom";
 
-const element = document.querySelector("#backgroundLoader") as HTMLElement;
+const element = qsr("#backgroundLoader");
 let showAnim: JSAnimation | null = null;
 
 export function show(instant = false): void {
@@ -11,7 +12,7 @@ export function show(instant = false): void {
       duration: 125,
       delay: instant ? 0 : 125,
       onBegin: () => {
-        element.classList.remove("hidden");
+        element.removeClass("hidden");
       },
     });
   });
@@ -24,7 +25,7 @@ export function hide(): void {
       opacity: 0,
       duration: 125,
       onComplete: () => {
-        element.classList.add("hidden");
+        element.addClass("hidden");
       },
     });
   });

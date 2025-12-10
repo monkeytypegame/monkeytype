@@ -149,8 +149,9 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
     const replayWords = document.getElementById("replayWords");
 
-    if (replayWords !== null)
+    if (replayWords !== null) {
       activeWord = replayWords.children[wordPos] as HTMLElement;
+    }
 
     curPos = activeWord.children.length;
     while (activeWord.children[curPos - 1]?.className === "") curPos--;

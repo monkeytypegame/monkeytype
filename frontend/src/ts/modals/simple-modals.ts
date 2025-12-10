@@ -143,7 +143,7 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
     getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider,
-    ) || false
+    ) ?? false
   );
 }
 
@@ -1259,14 +1259,18 @@ list.devGenerateData = new SimpleModal({
       username,
       createUser: createUser === "true",
     };
-    if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0)
+    if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0) {
       request.firstTestTimestamp = Date.parse(firstTestTimestamp);
-    if (lastTestTimestamp !== undefined && lastTestTimestamp.length > 0)
+    }
+    if (lastTestTimestamp !== undefined && lastTestTimestamp.length > 0) {
       request.lastTestTimestamp = Date.parse(lastTestTimestamp);
-    if (minTestsPerDay !== undefined && minTestsPerDay.length > 0)
+    }
+    if (minTestsPerDay !== undefined && minTestsPerDay.length > 0) {
       request.minTestsPerDay = Number.parseInt(minTestsPerDay);
-    if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0)
+    }
+    if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0) {
       request.maxTestsPerDay = Number.parseInt(maxTestsPerDay);
+    }
 
     const result = await Ape.dev.generateData({ body: request });
 
