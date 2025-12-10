@@ -918,7 +918,6 @@ export async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, currentLanguage);
-  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
   if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
@@ -936,6 +935,9 @@ export async function getNextWord(
       wordsBound,
     );
   }
+
+  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
+
   if (Config.numbers) {
     if (random() < 0.1) {
       randomWord = GetText.getNumbers(4);
