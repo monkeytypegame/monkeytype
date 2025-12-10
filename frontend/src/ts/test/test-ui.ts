@@ -884,7 +884,12 @@ export async function updateWordLetters({
             charToShow = compositionChar === " " ? "_" : compositionChar;
           }
 
-          ret += `<letter class="dead">${charToShow}</letter>`;
+          let correctClass = "";
+          if (compositionChar === currentWordChars[input.length + i]) {
+            correctClass = "correct";
+          }
+
+          ret += `<letter class="dead ${correctClass}">${charToShow}</letter>`;
         }
 
         for (
