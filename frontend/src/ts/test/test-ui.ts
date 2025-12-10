@@ -49,6 +49,7 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
+import * as CompositionDisplay from "../elements/composition-display";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -89,10 +90,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     debouncedZipfCheck();
   }
   if (eventKey === "fontSize") {
-    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
-      "fontSize",
-      (eventValue as number) + "rem",
-    );
+    $(
+      "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+    ).css("fontSize", (eventValue as number) + "rem");
     if (!nosave) {
       OutOfFocus.hide();
       updateWordWrapperClasses();
@@ -110,12 +110,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    if (ActivePage.get() === "test")
+    if (ActivePage.get() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });
+    }
   }
 
   if (
@@ -153,14 +154,10 @@ const wordsWrapperEl = document.querySelector(
 ) as HTMLElement;
 
 export let activeWordTop = 0;
+export let activeWordHeight = 0;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
-
-export function setActiveWordTop(): void {
-  const activeWord = getActiveWordElement();
-  activeWordTop = activeWord?.offsetTop ?? 0;
-}
 
 export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
@@ -221,7 +218,7 @@ export function updateActiveElement(
     | { direction: "forward" | "back"; initial?: undefined }
     | { direction?: undefined; initial: true },
 ): void {
-  requestDebouncedAnimationFrame("test-ui.updateActiveElement", () => {
+  requestDebouncedAnimationFrame("test-ui.updateActiveElement", async () => {
     const { direction, initial } = options;
 
     let previousActiveWordTop: number | null = null;
@@ -250,13 +247,10 @@ export function updateActiveElement(
     newActiveWord.classList.remove("typed");
 
     activeWordTop = newActiveWord.offsetTop;
+    activeWordHeight = newActiveWord.offsetHeight;
     console.log("activewordtopupdated");
 
     updateWordsInputPosition();
-
-    if (!initial && Config.tapeMode !== "off") {
-      void scrollTape();
-    }
 
     if (previousActiveWordTop === null) return;
 
@@ -268,8 +262,12 @@ export function updateActiveElement(
     if (isTimedTest || !Config.showAllLines) {
       const newActiveWordTop = newActiveWord.offsetTop;
       if (newActiveWordTop > previousActiveWordTop) {
-        void lineJump(previousActiveWordTop);
+        await lineJump(previousActiveWordTop);
       }
+    }
+
+    if (!initial && Config.tapeMode !== "off") {
+      await scrollTape();
     }
   });
 }
@@ -387,8 +385,9 @@ async function updateHintsPosition(): Promise<void> {
     ActivePage.get() !== "test" ||
     TestState.resultVisible ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
-  )
+  ) {
     return;
+  }
 
   let previousHintsContainer: HTMLElement | undefined;
   let hintIndices: number[][] = [];
@@ -468,9 +467,10 @@ function buildWordHTML(word: string, wordIndex: number): string {
     }
   }
   retval += "</div>";
-  if (newlineafter)
+  if (newlineafter) {
     retval +=
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>";
+  }
   return retval;
 }
 
@@ -866,26 +866,30 @@ export async function updateWordLetters({
               Config.indicateTypos === "both"
             ) {
               const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1) {
                 lastBlock.push(i);
-              else hintIndices.push([i]);
+              } else {
+                hintIndices.push([i]);
+              }
             }
           }
         }
 
         for (let i = 0; i < compositionData.length; i++) {
           const compositionChar = compositionData[i];
-          let charToShow = currentWordChars[input.length + i];
+          let charToShow =
+            currentWordChars[input.length + i] ?? compositionChar;
 
-          if (charToShow === undefined) {
-            charToShow = compositionChar;
-          }
-
-          if (Config.indicateTypos === "replace") {
+          if (Config.compositionDisplay === "replace") {
             charToShow = compositionChar === " " ? "_" : compositionChar;
           }
 
-          ret += `<letter class="dead">${charToShow}</letter>`;
+          let correctClass = "";
+          if (compositionChar === currentWordChars[input.length + i]) {
+            correctClass = "correct";
+          }
+
+          ret += `<letter class="dead ${correctClass}">${charToShow}</letter>`;
         }
 
         for (
@@ -929,11 +933,12 @@ export async function updateWordLetters({
         );
       }
 
-      if (newlineafter)
+      if (newlineafter) {
         wordAtIndex.insertAdjacentHTML(
           "afterend",
           "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
         );
+      }
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
@@ -945,7 +950,7 @@ export async function updateWordLetters({
         if (!Config.showAllLines) {
           const wordTopAfterUpdate = wordAtIndex.offsetTop;
           if (wordTopAfterUpdate > activeWordTop) {
-            void lineJump(activeWordTop, true);
+            await lineJump(activeWordTop, true);
           }
         }
       }
@@ -1132,8 +1137,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
     // if current letter has zero width move the tape to previous positive width letter
-    if (letters[inputLength]?.offsetWidth === 0)
+    if (letters[inputLength]?.offsetWidth === 0) {
       currentWordWidth -= lastPositiveLetterWidth;
+    }
   }
 
   /* change to new #words & .afterNewline margins */
@@ -1213,14 +1219,13 @@ export async function lineJump(
   currentTop: number,
   force = false,
 ): Promise<void> {
-  const { resolve, promise } = Misc.promiseWithResolvers();
   //last word of the line
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop;
 
     const activeWordEl = getActiveWordElement();
     if (!activeWordEl) {
-      resolve();
+      // resolve();
       return;
     }
 
@@ -1247,10 +1252,9 @@ export async function lineJump(
     }
 
     if (lastElementIndexToRemove === undefined) {
-      resolve();
       currentTestLine++;
       updateWordsWrapperHeight();
-      return promise;
+      return;
     }
 
     currentLinesJumping++;
@@ -1268,28 +1272,24 @@ export async function lineJump(
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
-      animate(wordsEl, {
+      await Misc.promiseAnimate(wordsEl, {
         marginTop: newMarginTop,
         duration,
-        onComplete: () => {
-          currentLinesJumping = 0;
-          activeWordTop = activeWordEl.offsetTop;
-          removeTestElements(lastElementIndexToRemove);
-          wordsEl.style.marginTop = "0";
-          lineTransition = false;
-          resolve();
-        },
       });
+      currentLinesJumping = 0;
+      activeWordTop = activeWordEl.offsetTop;
+      activeWordHeight = activeWordEl.offsetHeight;
+      removeTestElements(lastElementIndexToRemove);
+      wordsEl.style.marginTop = "0";
+      lineTransition = false;
     } else {
       currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
-      resolve();
     }
   }
   currentTestLine++;
   updateWordsWrapperHeight();
-
-  return promise;
+  return;
 }
 
 export function setRightToLeft(isEnabled: boolean): void {
@@ -1732,7 +1732,10 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
-export function getActiveWordTopWithDifferentData(data: string): number {
+export function getActiveWordTopAndHeightWithDifferentData(data: string): {
+  top: number;
+  height: number;
+} {
   const activeWord = getActiveWordElement();
 
   if (!activeWord) throw new Error("No active word element found");
@@ -1748,11 +1751,12 @@ export function getActiveWordTopWithDifferentData(data: string): number {
   activeWord.append(...nodes);
 
   const top = activeWord.offsetTop;
+  const height = activeWord.offsetHeight;
   for (const node of nodes) {
     node.remove();
   }
 
-  return top;
+  return { top, height };
 }
 
 // this means input, delete or composition
@@ -1915,6 +1919,15 @@ export function afterTestStart(): void {
   TimerProgress.update();
 }
 
+export function onTestRestart(): void {
+  if (Config.compositionDisplay === "below") {
+    CompositionDisplay.update(" ");
+    CompositionDisplay.show();
+  } else {
+    CompositionDisplay.hide();
+  }
+}
+
 $(".pageTest #copyWordsListButton").on("click", async () => {
   let words;
   if (Config.mode === "zen") {
@@ -2038,5 +2051,13 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "showOutOfFocusWarning" && value === false) {
     OutOfFocus.hide();
+  }
+  if (key === "compositionDisplay") {
+    if (value === "below") {
+      CompositionDisplay.update(" ");
+      CompositionDisplay.show();
+    } else {
+      CompositionDisplay.hide();
+    }
   }
 });

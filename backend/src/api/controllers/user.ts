@@ -1207,8 +1207,9 @@ export function generateCurrentTestActivity(
   let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
   let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
 
-  if (lastYearData === undefined && thisYearData === undefined)
+  if (lastYearData === undefined && thisYearData === undefined) {
     return undefined;
+  }
 
   lastYearData = lastYearData ?? [];
   thisYearData = thisYearData ?? [];

@@ -12,8 +12,9 @@ export async function mockAuthenticateWithApeKey(
   uid: string,
   config: Configuration,
 ): Promise<string> {
-  if (!config.apeKeys.acceptKeys)
+  if (!config.apeKeys.acceptKeys) {
     throw Error("config.apeKeys.acceptedKeys needs to be set to true");
+  }
   const { apeKeyBytes, apeKeySaltRounds } = config.apeKeys;
 
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");

@@ -170,24 +170,12 @@ export async function updateTags(
   await ResultDAL.updateTags(uid, resultId, tagIds);
   const result = await ResultDAL.getResult(uid, resultId);
 
-  if (!result.difficulty) {
-    result.difficulty = "normal";
-  }
-  if (!(result.language ?? "")) {
-    result.language = "english";
-  }
-  if (result.funbox === undefined) {
-    result.funbox = [];
-  }
-  if (!result.lazyMode) {
-    result.lazyMode = false;
-  }
-  if (!result.punctuation) {
-    result.punctuation = false;
-  }
-  if (!result.numbers) {
-    result.numbers = false;
-  }
+  result.difficulty ??= "normal";
+  result.language ??= "english";
+  result.funbox ??= [];
+  result.lazyMode ??= false;
+  result.punctuation ??= false;
+  result.numbers ??= false;
 
   const user = await UserDAL.getPartialUser(uid, "update tags", ["tags"]);
   const tagPbs = await UserDAL.checkIfTagPb(uid, user, result);

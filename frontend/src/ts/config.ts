@@ -629,6 +629,13 @@ export function setIndicateTypos(
   return genericSet("indicateTypos", value, nosave);
 }
 
+export function setCompositionDisplay(
+  value: ConfigSchemas.CompositionDisplay,
+  nosave?: boolean,
+): boolean {
+  return genericSet("compositionDisplay", value, nosave);
+}
+
 export function setAutoSwitchTheme(
   boolean: boolean,
   nosave?: boolean,

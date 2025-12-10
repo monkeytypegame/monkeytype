@@ -69,8 +69,9 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName)
+      if (tmp[0] === parameterName) {
         result = decodeURIComponent(tmp[1] as string);
+      }
     });
   return result;
 }
@@ -448,7 +449,8 @@ export async function promiseAnimate(
   return new Promise((resolve) => {
     animate(el, {
       ...options,
-      onComplete: () => {
+      onComplete: (self, e) => {
+        options.onComplete?.(self, e);
         resolve();
       },
     });
