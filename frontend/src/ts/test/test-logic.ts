@@ -12,6 +12,7 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
+import * as SoundController from "../controllers/sound-controller";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
 import * as Focus from "./focus";
@@ -296,6 +297,7 @@ export function restart(options = {} as RestartOptions): void {
   TestUI.reset();
   CompositionState.setComposing(false);
   CompositionState.setData("");
+  void SoundController.clearAllSounds();
 
   if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
