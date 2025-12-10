@@ -43,7 +43,7 @@ async function fetchJson<T>(url: string): Promise<T> {
  */
 export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
   fn: T,
-  getKey?: (...args: Parameters<T>) => P
+  getKey?: (...args: Parameters<T>) => P,
 ): T {
   const cache = new Map<P, Promise<ReturnType<T>>>();
 
@@ -71,7 +71,7 @@ export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
  * @returns A promise that resolves to the cached JSON data.
  */
 export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
-  fetchJson
+  fetchJson,
 );
 
 /**
@@ -101,7 +101,7 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     const loaded = await cachedFetchJson<LanguageObject>(
-      `/languages/${lang}.json`
+      `/languages/${lang}.json`,
     );
 
     if (!isDevEnvironment()) {
@@ -112,7 +112,7 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
       const hash = toHex(hashBuffer);
       if (hash !== languageHashes[lang]) {
         throw new Error(
-          "Integrity check failed. Try refreshing the page. If this error persists, please contact support."
+          "Integrity check failed. Try refreshing the page. If this error persists, please contact support.",
         );
       }
     }
@@ -122,7 +122,7 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
 }
 
 export async function checkIfLanguageSupportsZipf(
-  language: Language
+  language: Language,
 ): Promise<"yes" | "no" | "unknown"> {
   const lang = await getLanguage(language);
   if (lang.orderedByFrequency === true) return "yes";
@@ -136,7 +136,7 @@ export async function checkIfLanguageSupportsZipf(
  * @returns A promise that resolves to the current language object.
  */
 export async function getCurrentLanguage(
-  languageName: Language
+  languageName: Language,
 ): Promise<LanguageObject> {
   return await getLanguage(languageName);
 }
@@ -233,7 +233,7 @@ type GithubRelease = {
 export async function getLatestReleaseFromGitHub(): Promise<string> {
   type releaseType = { name: string };
   const releases = await cachedFetchJson<releaseType[]>(
-    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1",
   );
   if (releases[0] === undefined || releases[0].name === undefined) {
     throw new Error("No release found");
@@ -247,7 +247,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
  */
 export async function getReleasesFromGitHub(): Promise<GithubRelease[]> {
   return cachedFetchJson(
-    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5",
   );
 }
 

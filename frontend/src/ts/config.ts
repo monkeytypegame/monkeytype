@@ -62,7 +62,7 @@ const saveToDatabase = debounce(1000, () => {
 function saveToLocalStorage(
   key: keyof Config,
   nosave = false,
-  noDbCheck = false
+  noDbCheck = false,
 ): void {
   if (nosave) return;
   configLS.set(config);
@@ -101,7 +101,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
   nosave: boolean = false,
-  tribeOverride: boolean = false
+  tribeOverride: boolean = false,
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
@@ -128,16 +128,17 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     });
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
-        value
-      )}" - no quit funbox active.`
+        value,
+      )}" - no quit funbox active.`,
     );
     return false;
   }
+
   if (metadata.tribeBlocked && !TribeState.canChangeConfig(tribeOverride)) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
-        value
-      )}" - tribe config change not allowed.`
+        value,
+      )}" - tribe config change not allowed.`,
     );
     return false;
   }
@@ -145,8 +146,8 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   if (metadata.isBlocked?.({ value, currentConfig: config })) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
-        value
-      )}" - blocked.`
+        value,
+      )}" - blocked.`,
     );
     return false;
   }
@@ -156,8 +157,8 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   if (!isConfigValueValid(metadata.displayString ?? key, value, schema)) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
-        value
-      )}" - invalid value.`
+        value,
+      )}" - invalid value.`,
     );
     return false;
   }
@@ -165,8 +166,8 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   if (!canSetConfigWithCurrentFunboxes(key, value, config.funbox)) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
-        value
-      )}" - funbox conflict.`
+        value,
+      )}" - funbox conflict.`,
     );
     return false;
   }
@@ -189,7 +190,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
       const set = genericSet(targetKey, targetValue, nosave);
       if (!set) {
         throw new Error(
-          `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
+          `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`,
         );
       }
     }
@@ -213,7 +214,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
 export function setNumbers(
   numb: boolean,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("numbers", numb, nosave, tribeOverride);
 }
@@ -222,7 +223,7 @@ export function setNumbers(
 export function setPunctuation(
   punc: boolean,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("punctuation", punc, nosave, tribeOverride);
 }
@@ -230,35 +231,35 @@ export function setPunctuation(
 export function setMode(
   mode: Mode,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("mode", mode, nosave, tribeOverride);
 }
 
 export function setPlaySoundOnError(
   val: ConfigSchemas.PlaySoundOnError,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("playSoundOnError", val, nosave);
 }
 
 export function setPlaySoundOnClick(
   val: ConfigSchemas.PlaySoundOnClick,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("playSoundOnClick", val, nosave);
 }
 
 export function setSoundVolume(
   val: ConfigSchemas.SoundVolume,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("soundVolume", val, nosave);
 }
 
 export function setPlayTimeWarning(
   value: ConfigSchemas.PlayTimeWarning,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("playTimeWarning", value, nosave);
 }
@@ -267,7 +268,7 @@ export function setPlayTimeWarning(
 export function setDifficulty(
   diff: ConfigSchemas.Difficulty,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("difficulty", diff, nosave, tribeOverride);
 }
@@ -275,7 +276,7 @@ export function setDifficulty(
 //set fav themes
 export function setFavThemes(
   themes: ConfigSchemas.FavThemes,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("favThemes", themes, nosave);
 }
@@ -283,7 +284,7 @@ export function setFavThemes(
 export function setFunbox(
   funbox: ConfigSchemas.Funbox,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("funbox", funbox, nosave, tribeOverride);
 }
@@ -291,7 +292,7 @@ export function setFunbox(
 export function toggleFunbox(
   funbox: FunboxName,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   if (isConfigChangeBlocked()) return false;
 
@@ -327,7 +328,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
 
 export function setAccountChart(
   array: ConfigSchemas.AccountChart,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("accountChart", array, nosave);
 }
@@ -335,28 +336,28 @@ export function setAccountChart(
 export function setStopOnError(
   soe: ConfigSchemas.StopOnError,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("stopOnError", soe, nosave, tribeOverride);
 }
 
 export function setAlwaysShowDecimalPlaces(
   val: boolean,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("alwaysShowDecimalPlaces", val, nosave);
 }
 
 export function setTypingSpeedUnit(
   val: ConfigSchemas.TypingSpeedUnit,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("typingSpeedUnit", val, nosave);
 }
 
 export function setShowOutOfFocusWarning(
   val: boolean,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("showOutOfFocusWarning", val, nosave);
 }
@@ -364,14 +365,14 @@ export function setShowOutOfFocusWarning(
 //pace caret
 export function setPaceCaret(
   val: ConfigSchemas.PaceCaret,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("paceCaret", val, nosave);
 }
 
 export function setPaceCaretCustomSpeed(
   val: ConfigSchemas.PaceCaretCustomSpeed,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("paceCaretCustomSpeed", val, nosave);
 }
@@ -384,7 +385,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 export function setMinWpm(
   minwpm: ConfigSchemas.MinimumWordsPerMinute,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("minWpm", minwpm, nosave, tribeOverride);
 }
@@ -392,7 +393,7 @@ export function setMinWpm(
 export function setMinWpmCustomSpeed(
   val: ConfigSchemas.MinWpmCustomSpeed,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("minWpmCustomSpeed", val, nosave, tribeOverride);
 }
@@ -401,7 +402,7 @@ export function setMinWpmCustomSpeed(
 export function setMinAcc(
   min: ConfigSchemas.MinimumAccuracy,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("minAcc", min, nosave, tribeOverride);
 }
@@ -409,7 +410,7 @@ export function setMinAcc(
 export function setMinAccCustom(
   val: ConfigSchemas.MinimumAccuracyCustom,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("minAccCustom", val, nosave, tribeOverride);
 }
@@ -418,7 +419,7 @@ export function setMinAccCustom(
 export function setMinBurst(
   min: ConfigSchemas.MinimumBurst,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("minBurst", min, nosave, tribeOverride);
 }
@@ -426,7 +427,7 @@ export function setMinBurst(
 export function setMinBurstCustomSpeed(
   val: ConfigSchemas.MinimumBurstCustomSpeed,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("minBurstCustomSpeed", val, nosave, tribeOverride);
 }
@@ -434,7 +435,7 @@ export function setMinBurstCustomSpeed(
 //always show words history
 export function setAlwaysShowWordsHistory(
   val: boolean,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("alwaysShowWordsHistory", val, nosave);
 }
@@ -442,7 +443,7 @@ export function setAlwaysShowWordsHistory(
 //single list command line
 export function setSingleListCommandLine(
   option: ConfigSchemas.SingleListCommandLine,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("singleListCommandLine", option, nosave);
 }
@@ -466,7 +467,7 @@ export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
 
 export function setRepeatQuotes(
   val: ConfigSchemas.RepeatQuotes,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("repeatQuotes", val, nosave);
 }
@@ -489,49 +490,49 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
 //opposite shift space
 export function setOppositeShiftMode(
   val: ConfigSchemas.OppositeShiftMode,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("oppositeShiftMode", val, nosave);
 }
 
 export function setCaretStyle(
   caretStyle: ConfigSchemas.CaretStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("caretStyle", caretStyle, nosave);
 }
 
 export function setPaceCaretStyle(
   caretStyle: ConfigSchemas.CaretStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("paceCaretStyle", caretStyle, nosave);
 }
 
 export function setShowAverage(
   value: ConfigSchemas.ShowAverage,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("showAverage", value, nosave);
 }
 
 export function setHighlightMode(
   mode: ConfigSchemas.HighlightMode,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("highlightMode", mode, nosave);
 }
 
 export function setTapeMode(
   mode: ConfigSchemas.TapeMode,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("tapeMode", mode, nosave);
 }
 
 export function setTapeMargin(
   value: ConfigSchemas.TapeMargin,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("tapeMargin", value, nosave);
 }
@@ -542,41 +543,41 @@ export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
 
 export function setTimerStyle(
   style: ConfigSchemas.TimerStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("timerStyle", style, nosave);
 }
 
 export function setLiveSpeedStyle(
   style: ConfigSchemas.LiveSpeedAccBurstStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("liveSpeedStyle", style, nosave);
 }
 
 export function setLiveAccStyle(
   style: ConfigSchemas.LiveSpeedAccBurstStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("liveAccStyle", style, nosave);
 }
 
 export function setLiveBurstStyle(
   style: ConfigSchemas.LiveSpeedAccBurstStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("liveBurstStyle", style, nosave);
 }
 
 export function setTimerColor(
   color: ConfigSchemas.TimerColor,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("timerColor", color, nosave);
 }
 export function setTimerOpacity(
   opacity: ConfigSchemas.TimerOpacity,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("timerOpacity", opacity, nosave);
 }
@@ -590,7 +591,7 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 export function setTimeConfig(
   time: ConfigSchemas.TimeConfig,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("time", time, nosave, tribeOverride);
 }
@@ -598,14 +599,14 @@ export function setTimeConfig(
 export function setQuoteLength(
   len: ConfigSchemas.QuoteLengthConfig,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("quoteLength", len, nosave, tribeOverride);
 }
 
 export function setQuoteLengthAll(
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("quoteLength", [0, 1, 2, 3], nosave, tribeOverride);
 }
@@ -613,7 +614,7 @@ export function setQuoteLengthAll(
 export function setWordCount(
   wordCount: ConfigSchemas.WordCount,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("words", wordCount, nosave, tribeOverride);
 }
@@ -621,14 +622,14 @@ export function setWordCount(
 //caret
 export function setSmoothCaret(
   mode: ConfigSchemas.SmoothCaret,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("smoothCaret", mode, nosave);
 }
 
 export function setCodeUnindentOnBackspace(
   mode: boolean,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("codeUnindentOnBackspace", mode, nosave);
 }
@@ -645,7 +646,7 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
 //quick restart
 export function setQuickRestartMode(
   mode: ConfigSchemas.QuickRestart,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("quickRestart", mode, nosave);
 }
@@ -662,21 +663,28 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
 
 export function setConfidenceMode(
   cm: ConfigSchemas.ConfidenceMode,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("confidenceMode", cm, nosave);
 }
 
 export function setIndicateTypos(
   value: ConfigSchemas.IndicateTypos,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("indicateTypos", value, nosave);
 }
 
+export function setCompositionDisplay(
+  value: ConfigSchemas.CompositionDisplay,
+  nosave?: boolean,
+): boolean {
+  return genericSet("compositionDisplay", value, nosave);
+}
+
 export function setAutoSwitchTheme(
   boolean: boolean,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("autoSwitchTheme", boolean, nosave);
 }
@@ -687,28 +695,28 @@ export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
 
 export function setTheme(
   name: ConfigSchemas.ThemeName,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("theme", name, nosave);
 }
 
 export function setThemeLight(
   name: ConfigSchemas.ThemeName,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("themeLight", name, nosave);
 }
 
 export function setThemeDark(
   name: ConfigSchemas.ThemeName,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("themeDark", name, nosave);
 }
 
 export function setRandomTheme(
   val: ConfigSchemas.RandomTheme,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("randomTheme", val, nosave);
 }
@@ -720,14 +728,14 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
 export function setLazyMode(
   val: boolean,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("lazyMode", val, nosave, tribeOverride);
 }
 
 export function setCustomThemeColors(
   colors: ConfigSchemas.CustomThemeColors,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("customThemeColors", colors, nosave);
 }
@@ -735,7 +743,7 @@ export function setCustomThemeColors(
 export function setLanguage(
   language: Language,
   nosave?: boolean,
-  tribeOverride = false
+  tribeOverride = false,
 ): boolean {
   return genericSet("language", language, nosave, tribeOverride);
 }
@@ -746,105 +754,105 @@ export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
 
 export function setKeymapMode(
   mode: ConfigSchemas.KeymapMode,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("keymapMode", mode, nosave);
 }
 
 export function setKeymapLegendStyle(
   style: ConfigSchemas.KeymapLegendStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("keymapLegendStyle", style, nosave);
 }
 
 export function setKeymapStyle(
   style: ConfigSchemas.KeymapStyle,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("keymapStyle", style, nosave);
 }
 
 export function setKeymapLayout(
   layout: ConfigSchemas.KeymapLayout,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("keymapLayout", layout, nosave);
 }
 
 export function setKeymapShowTopRow(
   show: ConfigSchemas.KeymapShowTopRow,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("keymapShowTopRow", show, nosave);
 }
 
 export function setKeymapSize(
   keymapSize: ConfigSchemas.KeymapSize,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("keymapSize", keymapSize, nosave);
 }
 
 export function setLayout(
   layout: ConfigSchemas.Layout,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("layout", layout, nosave);
 }
 
 export function setFontSize(
   fontSize: ConfigSchemas.FontSize,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("fontSize", fontSize, nosave);
 }
 
 export function setMaxLineWidth(
   maxLineWidth: ConfigSchemas.MaxLineWidth,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("maxLineWidth", maxLineWidth, nosave);
 }
 
 export function setCustomBackground(
   value: ConfigSchemas.CustomBackground,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("customBackground", value, nosave);
 }
 
 export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("customLayoutfluid", value, nosave);
 }
 
 export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("customPolyglot", value, nosave);
 }
 
 export function setCustomBackgroundSize(
   value: ConfigSchemas.CustomBackgroundSize,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("customBackgroundSize", value, nosave);
 }
 
 export function setCustomBackgroundFilter(
   array: ConfigSchemas.CustomBackgroundFilter,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("customBackgroundFilter", array, nosave);
 }
 
 export function setMonkeyPowerLevel(
   level: ConfigSchemas.MonkeyPowerLevel,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("monkeyPowerLevel", level, nosave);
 }
@@ -855,14 +863,14 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
 
 export function setTribeDelta(
   value: ConfigSchemas.TribeDelta,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("tribeDelta", value, nosave);
 }
 
 export function setTribeCarets(
   value: ConfigSchemas.TribeCarets,
-  nosave?: boolean
+  nosave?: boolean,
 ): boolean {
   return genericSet("tribeCarets", value, nosave);
 }
@@ -899,7 +907,7 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
   const configKeysToReset: (keyof Config)[] = [];
 
   const firstKeys = typedKeys(fullConfig).filter(
-    (key) => !lastConfigsToApply.has(key)
+    (key) => !lastConfigsToApply.has(key),
   );
 
   for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
@@ -921,7 +929,7 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
     undefined,
     undefined,
     undefined,
-    config
+    config,
   );
   ConfigEvent.dispatch("fullConfigChangeFinished");
 }
@@ -969,7 +977,7 @@ export async function applyFromJson(json: string): Promise<void> {
           }
           return migrateConfig(value);
         },
-      }
+      },
     );
     await apply(parsedConfig);
     saveFullConfigToLocalStorage();
@@ -988,7 +996,11 @@ export default config;
 export const __testing = {
   configMetadata,
   replaceConfig: (setConfig: Partial<Config>): void => {
-    config = { ...getDefaultConfig(), ...setConfig };
+    const newConfig = { ...getDefaultConfig(), ...setConfig };
+    for (const key of Object.keys(config)) {
+      Reflect.deleteProperty(config, key);
+    }
+    Object.assign(config, newConfig);
     configToSend = {} as Config;
   },
   getConfig: () => config,

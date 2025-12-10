@@ -141,10 +141,9 @@
     </div>
     <div class="tribeCountdown hidden"></div>
     <div id="wordsWrapper" class="content-grid full-width" translate="no">
-      <input
+      <textarea
         id="wordsInput"
         class="full-width"
-        type="text"
         autocomplete="off"
         autocapitalize="off"
         autocapitalize="none"
@@ -154,7 +153,7 @@
         data-enable-grammarly="false"
         list="autocompleteOff"
         spellcheck="false"
-      />
+      ></textarea>
       <div class="outOfFocusWarning hidden">
         <i class="fas fa-fw fa-mouse-pointer"></i>
         Click here or press any key to focus
@@ -164,9 +163,7 @@
       <div id="words" class="full-width"></div>
     </div>
 
-    <div id="koInputVisualContainer" style="display: none">
-      <div id="koInputVisual" aria-label="Korean Input Visual" class=""></div>
-    </div>
+    <div id="compositionDisplay"></div>
 
     <div id="tribeDeltaBar" class="hidden">
       <div class="behind">
@@ -208,6 +205,9 @@
     </div>
     <div id="premidTestMode" class="hidden"></div>
     <div id="premidSecondsLeft" class="hidden"></div>
+  </div>
+  <div class="loading hidden">
+    <i class="fas fa-circle-notch fa-spin"></i>
   </div>
   <div id="result" class="content-grid full-width hidden" tabindex="-1">
     <div class="wrapper">

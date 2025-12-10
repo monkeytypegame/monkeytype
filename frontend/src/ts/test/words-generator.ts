@@ -38,7 +38,7 @@ export async function punctuateWord(
   previousWord: string,
   currentWord: string,
   index: number,
-  maxindex: number
+  maxindex: number,
 ): Promise<string> {
   let word = currentWord;
 
@@ -345,7 +345,7 @@ async function getFunboxSection(): Promise<string[]> {
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Wordset
+  wordset?: Wordset,
 ): string {
   const funbox = findSingleActiveFunboxWithFunction("getWord");
 
@@ -358,7 +358,7 @@ function getFunboxWord(
 function applyFunboxesToWord(
   word: string,
   wordIndex: number,
-  wordsBound: number
+  wordsBound: number,
 ): string {
   for (const fb of getActiveFunboxesWithFunction("alterText")) {
     word = fb.functions.alterText(word, wordIndex, wordsBound);
@@ -368,7 +368,7 @@ function applyFunboxesToWord(
 
 async function applyBritishEnglishToWord(
   word: string,
-  previousWord: string
+  previousWord: string,
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
@@ -391,7 +391,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
       ? currentWordset.languageProperties.get(langName)
       : undefined;
     const allowLazyMode =
-      (langProps && !langProps.noLazyMode) || Config.mode === "custom";
+      (langProps && !langProps.noLazyMode) === true || Config.mode === "custom";
     if (Config.lazyMode && allowLazyMode && langProps) {
       word = LazyMode.replaceAccents(word, langProps.additionalAccents);
     }
@@ -493,7 +493,7 @@ export function getLimit(): number {
 
 async function getQuoteWordList(
   language: LanguageObject,
-  wordOrder?: FunboxWordOrder
+  wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
   if (TestState.isRepeated) {
     if (currentWordset === null) {
@@ -518,7 +518,7 @@ async function getQuoteWordList(
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength,
-    TribeState.getState() >= 5
+    TribeState.getState() >= 5,
   );
   Loader.hide();
 
@@ -527,25 +527,25 @@ async function getQuoteWordList(
     throw new WordGenError(
       `No ${Config.language
         .replace(/_\d*k$/g, "")
-        .replace(/_/g, " ")} quotes found`
+        .replace(/_/g, " ")} quotes found`,
     );
   }
 
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
-      TestState.selectedQuoteId
+      TestState.selectedQuoteId,
     );
     if (targetQuote === undefined) {
       UpdateConfig.setQuoteLengthAll();
       throw new WordGenError(
-        `Quote ${TestState.selectedQuoteId} does not exist`
+        `Quote ${TestState.selectedQuoteId} does not exist`,
       );
     }
     rq = targetQuote;
   } else if (Config.quoteLength.includes(-3)) {
     const randomQuote = QuotesController.getRandomFavoriteQuote(
-      Config.language
+      Config.language,
     );
     if (randomQuote === null) {
       UpdateConfig.setQuoteLengthAll();
@@ -554,7 +554,7 @@ async function getQuoteWordList(
     rq = randomQuote;
   } else {
     const randomQuote = QuotesController.getRandomQuote(
-      TribeState.getState() >= 5
+      TribeState.getState() >= 5,
     );
     if (randomQuote === null) {
       UpdateConfig.setQuoteLengthAll();
@@ -608,7 +608,7 @@ type GenerateWordsReturn = {
 let previousRandomQuote: QuoteWithTextSplit | null = null;
 
 export async function generateWords(
-  language: LanguageObject
+  language: LanguageObject,
 ): Promise<GenerateWordsReturn> {
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
@@ -647,7 +647,7 @@ export async function generateWords(
 
   const limit = getLimit();
   console.debug(
-    `${customAndUsingPipeDelimiter ? "Section" : "Word"} limit ${limit}`
+    `${customAndUsingPipeDelimiter ? "Section" : "Word"} limit ${limit}`,
   );
 
   if (wordOrder === "reverse") {
@@ -663,7 +663,7 @@ export async function generateWords(
       currentWordset = polyglotResult;
       // set allLigatures if any language in languageProperties has ligatures true
       ret.allLigatures = Array.from(
-        polyglotResult.languageProperties.values()
+        polyglotResult.languageProperties.values(),
       ).some((props) => !!props.ligatures);
     } else {
       currentWordset = result;
@@ -685,7 +685,7 @@ export async function generateWords(
       i,
       limit,
       Arrays.nthElementFromArray(ret.words, -1) ?? "",
-      Arrays.nthElementFromArray(ret.words, -2) ?? ""
+      Arrays.nthElementFromArray(ret.words, -2) ?? "",
     );
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
@@ -742,7 +742,7 @@ export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
   previousWord: string,
-  previousWord2: string | undefined
+  previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
     isRepeated: TestState.isRepeated,
@@ -793,7 +793,7 @@ export async function getNextWord(
         throw new WordGenError("Repeated word is undefined");
       } else {
         console.debug(
-          "Repeated word is undefined but random generation is allowed - getting random word"
+          "Repeated word is undefined but random generation is allowed - getting random word",
         );
       }
     } else {
@@ -849,7 +849,7 @@ export async function getNextWord(
       let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
       let firstAfterSplitLazy = applyLazyModeToWord(
         firstAfterSplit,
-        currentLanguage
+        currentLanguage,
       );
       while (
         regenarationCount < 100 &&
@@ -871,7 +871,7 @@ export async function getNextWord(
         firstAfterSplit = randomWord.split(" ")[0] as string;
         firstAfterSplitLazy = applyLazyModeToWord(
           firstAfterSplit,
-          currentLanguage
+          currentLanguage,
         );
       }
     }
@@ -920,7 +920,6 @@ export async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, currentLanguage);
-  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
   if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
@@ -935,9 +934,12 @@ export async function getNextWord(
       previousWord,
       randomWord,
       wordIndex,
-      wordsBound
+      wordsBound,
     );
   }
+
+  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
+
   if (Config.numbers) {
     if (Random.get() < 0.1) {
       randomWord = GetText.getNumbers(4);

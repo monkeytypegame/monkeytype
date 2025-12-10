@@ -2,6 +2,11 @@ import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { ElementWithUtils, qsr } from "../utils/dom";
+
+const html = qsr("html");
+const body = qsr("body");
 
 type Particle = {
   x: number;
@@ -14,7 +19,7 @@ type Particle = {
 
 type CTX = {
   particles: Particle[];
-  caret?: JQuery;
+  caret?: ElementWithUtils;
   canvas?: HTMLCanvasElement;
   context2d?: CanvasRenderingContext2D;
   rendering: boolean;
@@ -118,7 +123,7 @@ function updateParticle(particle: Particle): void {
 }
 
 export function init(): void {
-  ctx.caret = $("#caret");
+  ctx.caret = qsr("#caret");
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
 }
@@ -146,7 +151,7 @@ function render(): void {
     ctx.context2d.beginPath();
     ctx.context2d.moveTo(
       Math.round(particle.prev.x),
-      Math.round(particle.prev.y)
+      Math.round(particle.prev.y),
     );
     ctx.context2d.lineTo(Math.round(particle.x), Math.round(particle.y));
     ctx.context2d.stroke();
@@ -155,7 +160,7 @@ function render(): void {
   }
   ctx.particles = keep;
 
-  if (ctx.particles.length && !SlowTimer.get()) {
+  if (ctx.particles.length) {
     requestAnimationFrame(render);
   } else {
     ctx.context2d.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -168,16 +173,18 @@ export function reset(immediate = false): void {
   delete ctx.resetTimeOut;
 
   clearTimeout(ctx.resetTimeOut);
-  const body = $(document.body);
-  body.css("transition", "all .25s, transform 0.8s");
-  body.css("transform", `translate(0,0)`);
+  body.setStyle({
+    transition: "all .25s, transform 0.8s",
+    transform: "translate(0,0)",
+  });
   setTimeout(
     () => {
-      body.css("transition", "all .25s, transform .05s");
-      $("html").css("overflow", "inherit");
-      $("html").css("overflow-y", "scroll");
+      body.setStyle({
+        transition: "all .25s, transform .05s",
+      });
+      html.setStyle({ overflow: "inherit", overflowY: "scroll" });
     },
-    immediate ? 0 : 1000
+    immediate ? 0 : 1000,
   );
 }
 
@@ -201,47 +208,46 @@ function randomColor(): string {
 export async function addPower(good = true, extra = false): Promise<void> {
   if (Config.monkeyPowerLevel === "off" || SlowTimer.get()) return;
 
-  if (Config.blindMode) good = true;
+  requestDebouncedAnimationFrame("monkey-power.addPower", async () => {
+    if (Config.blindMode) good = true;
 
-  // Shake
-  if (["3", "4"].includes(Config.monkeyPowerLevel)) {
-    $("html").css("overflow", "hidden");
-    const shake = [
-      Math.round(shakeAmount - Math.random() * shakeAmount),
-      Math.round(shakeAmount - Math.random() * shakeAmount),
+    // Shake
+    if (["3", "4"].includes(Config.monkeyPowerLevel)) {
+      html.setStyle({ overflow: "hidden" });
+      const shake = [
+        Math.round(shakeAmount - Math.random() * shakeAmount),
+        Math.round(shakeAmount - Math.random() * shakeAmount),
+      ];
+      body.setStyle({ transform: `translate(${shake[0]}px, ${shake[1]}px)` });
+      if (isSafeNumber(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
+      ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
+    }
+
+    // Sparks
+    const offset = ctx.caret?.native.getBoundingClientRect();
+    const coords = [
+      offset?.left ?? 0,
+      (offset?.top ?? 0) + (ctx.caret?.native.offsetHeight ?? 0) / 2,
     ];
-    $(document.body).css(
-      "transform",
-      `translate(${shake[0]}px, ${shake[1]}px)`
-    );
-    if (isSafeNumber(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
-    ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
-  }
 
-  // Sparks
-  const offset = ctx.caret?.offset();
-  const coords = [
-    offset?.left ?? 0,
-    (offset?.top ?? 0) + (ctx.caret?.height() ?? 0),
-  ];
+    for (
+      let i = Math.round(
+        (particleCreateCount[0] + Math.random() * particleCreateCount[1]) *
+          (extra ? 2 : 1),
+      );
+      i > 0;
+      i--
+    ) {
+      const color = ["2", "4"].includes(Config.monkeyPowerLevel)
+        ? randomColor()
+        : good
+          ? await ThemeColors.get("caret")
+          : await ThemeColors.get("error");
+      ctx.particles.push(
+        createParticle(...(coords as [x: number, y: number]), color),
+      );
+    }
 
-  for (
-    let i = Math.round(
-      (particleCreateCount[0] + Math.random() * particleCreateCount[1]) *
-        (extra ? 2 : 1)
-    );
-    i > 0;
-    i--
-  ) {
-    const color = ["2", "4"].includes(Config.monkeyPowerLevel)
-      ? randomColor()
-      : good
-      ? await ThemeColors.get("caret")
-      : await ThemeColors.get("error");
-    ctx.particles.push(
-      createParticle(...(coords as [x: number, y: number]), color)
-    );
-  }
-
-  startRender();
+    startRender();
+  });
 }

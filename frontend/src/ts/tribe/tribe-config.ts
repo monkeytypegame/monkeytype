@@ -37,7 +37,7 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
       });
       quoteLengthString = quoteLengthString.substring(
         0,
-        quoteLengthString.length - 1
+        quoteLengthString.length - 1,
       );
     }
     if (quoteLengthString !== "") ret.push(quoteLengthString);
@@ -112,11 +112,11 @@ export function apply(config: TribeTypes.RoomConfig): void {
 export function setLoadingIndicator(bool: boolean): void {
   if (bool) {
     $(
-      ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator"
+      ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator",
     ).removeClass("hidden");
   } else {
     $(".pageTribe .tribePage.lobby .currentConfig .loadingIndicator").addClass(
-      "hidden"
+      "hidden",
     );
   }
 }
@@ -138,7 +138,7 @@ function sync(): void {
     } else if (Config.mode === "words") {
       mode2 = Config.words;
     } else if (Config.mode === "quote") {
-      mode2 = Config.quoteLength === undefined ? -1 : Config.quoteLength;
+      mode2 = Config.quoteLength ?? -1;
     } else if (Config.mode === "custom") {
       mode2 = "custom";
     } else {

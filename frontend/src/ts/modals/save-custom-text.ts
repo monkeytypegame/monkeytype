@@ -2,8 +2,9 @@ import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import * as CustomTextState from "../states/custom-text-name";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { z } from "zod";
+import { qsr } from "../utils/dom";
 
 type IncomingData = {
   text: string[];
@@ -17,8 +18,8 @@ const state: State = {
   textToSave: [],
 };
 
-const validatedInput = validateWithIndicator(
-  $("#saveCustomTextModal .textName")[0] as HTMLInputElement,
+const validatedInput = new ValidatedHtmlInputElement(
+  qsr("#saveCustomTextModal .textName"),
   {
     debounceDelay: 500,
     schema: z
@@ -31,7 +32,7 @@ const validatedInput = validateWithIndicator(
       }),
     isValid: async (value) => {
       const checkbox = $("#saveCustomTextModal .isLongText").prop(
-        "checked"
+        "checked",
       ) as boolean;
       const names = CustomText.getCustomTextNames(checkbox);
       return !names.includes(value) ? true : "Duplicate name";
@@ -43,7 +44,7 @@ const validatedInput = validateWithIndicator(
         $("#saveCustomTextModal button.save").prop("disabled", true);
       }
     },
-  }
+  },
 );
 
 export async function show(options: ShowOptions<IncomingData>): Promise<void> {
@@ -62,7 +63,7 @@ export async function show(options: ShowOptions<IncomingData>): Promise<void> {
 function save(): boolean {
   const name = $("#saveCustomTextModal .textName").val() as string;
   const checkbox = $("#saveCustomTextModal .isLongText").prop(
-    "checked"
+    "checked",
   ) as boolean;
 
   if (!name) {

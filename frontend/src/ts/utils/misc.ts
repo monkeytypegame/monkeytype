@@ -12,7 +12,7 @@ import { animate, AnimationParams } from "animejs";
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
     speed,
-    Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3)))
+    Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3))),
   );
 }
 
@@ -55,7 +55,7 @@ export function convertNumberToHindi(numString: string): string {
 
 export function findGetParameter(
   parameterName: string,
-  getOverride?: string
+  getOverride?: string,
 ): string | null {
   let result = null;
   let tmp = [];
@@ -70,15 +70,16 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName)
+      if (tmp[0] === parameterName) {
         result = decodeURIComponent(tmp[1] as string);
+      }
     });
   return result;
 }
 
 export function checkIfGetParameterExists(
   parameterName: string,
-  getOverride?: string
+  getOverride?: string,
 ): boolean {
   let result = false;
   let tmp = [];
@@ -99,68 +100,27 @@ export function checkIfGetParameterExists(
 }
 
 export function objectToQueryString<T extends string | number | boolean>(
-  obj: Record<string, T | T[]>
+  obj: Record<string, T | T[]>,
 ): string {
   const str = [];
   for (const p in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       // Arrays get encoded as a comma(%2C)-separated list
       str.push(
-        encodeURIComponent(p) + "=" + encodeURIComponent(obj[p] as unknown as T)
+        encodeURIComponent(p) +
+          "=" +
+          encodeURIComponent(obj[p] as unknown as T),
       );
     }
   }
   return str.join("&");
 }
 
-declare global {
-  // type gets a "Duplicate identifier" error
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface Document {
-    mozCancelFullScreen?: () => Promise<void>;
-    msRequestFullscreen?: () => Promise<void>;
-    msExitFullscreen?: () => Promise<void>;
-    webkitExitFullscreen?: () => Promise<void>;
-    mozFullScreenElement?: Element;
-    msFullscreenElement?: Element;
-    webkitFullscreenElement?: Element;
-  }
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface HTMLElement {
-    msRequestFullscreen?: () => Promise<void>;
-    mozRequestFullScreen?: () => Promise<void>;
-    webkitRequestFullscreen?: () => Promise<void>;
-  }
-}
-
 export function toggleFullscreen(): void {
-  const elem = document.documentElement;
-  if (
-    !document.fullscreenElement &&
-    !document.mozFullScreenElement &&
-    !document.webkitFullscreenElement &&
-    !document.msFullscreenElement
-  ) {
-    if (elem.requestFullscreen !== undefined) {
-      void elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      void elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      void elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      // @ts-expect-error some code i found online
-      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    }
+  if (!document.fullscreenElement) {
+    void document.documentElement.requestFullscreen();
   } else {
-    if (document.exitFullscreen !== undefined) {
-      void document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      void document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      void document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      void document.webkitExitFullscreen();
-    }
+    void document.exitFullscreen();
   }
 }
 
@@ -198,7 +158,7 @@ export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
 export function regexIndexOf(
   string: string,
   regex: RegExp,
-  startpos: number
+  startpos: number,
 ): number {
   const indexOf = string.substring(startpos || 0).search(regex);
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
@@ -211,7 +171,7 @@ type LastIndex = {
 // TODO INVESTIGATE IF THIS IS NEEDED
 // eslint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
-  regex: RegExp
+  regex: RegExp,
 ): number {
   const match = this.match(regex);
   return match ? this.lastIndexOf(lastElementFromArray(match) as string) : -1;
@@ -228,7 +188,7 @@ export async function swapElements(
   },
   middleCallback = async function (): Promise<void> {
     return Promise.resolve();
-  }
+  },
 ): Promise<boolean | undefined> {
   if (el1 === null || el2 === null) {
     return;
@@ -283,7 +243,7 @@ export async function swapElements(
 
 export function getMode2<M extends keyof PersonalBests>(
   config: Config,
-  randomQuote: { id: number } | null
+  randomQuote: { id: number } | null,
 ): Mode2<M> {
   const mode = config.mode;
   let retVal: string;
@@ -429,7 +389,7 @@ export function isPopupVisible(popupId: string): boolean {
 
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper"
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper",
   );
   let popupVisible = false;
   for (const popup of popups) {
@@ -476,13 +436,14 @@ export type JQueryEasing =
   | "easeInOutBounce";
 
 export async function promiseAnimate(
-  el: HTMLElement,
-  options: AnimationParams
+  el: HTMLElement | string,
+  options: AnimationParams,
 ): Promise<void> {
   return new Promise((resolve) => {
     animate(el, {
       ...options,
-      onComplete: () => {
+      onComplete: (self, e) => {
+        options.onComplete?.(self, e);
         resolve();
       },
     });
@@ -589,7 +550,7 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
 }
 
 export function typedKeys<T extends object>(
-  obj: T
+  obj: T,
 ): T extends T ? (keyof T)[] : never {
   return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
 }
@@ -659,15 +620,15 @@ export function promiseWithResolvers<T = void>(): {
  */
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  options?: { rejectSkippedCalls?: true }
+  options?: { rejectSkippedCalls?: true },
 ): (...args: TArgs) => Promise<TResult>;
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  options: { rejectSkippedCalls: false }
+  options: { rejectSkippedCalls: false },
 ): (...args: TArgs) => Promise<TResult | null>;
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {}
+  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {},
 ): (...args: TArgs) => Promise<TResult | null> {
   let isLocked = false;
   let next: {
@@ -695,7 +656,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
       if (next) {
         if (rejectSkippedCalls) {
           next.reject(
-            new Error("skipped call: call was superseded by a more recent one")
+            new Error("skipped call: call was superseded by a more recent one"),
           );
         } else {
           next.resolve(null);
@@ -770,7 +731,7 @@ export function formatTypingStatsRatio(stats: {
   }
   return {
     completedPercentage: Math.floor(
-      (stats.completedTests / stats.startedTests) * 100
+      (stats.completedTests / stats.startedTests) * 100,
     ).toString(),
     restartRatio: (
       (stats.startedTests - stats.completedTests) /

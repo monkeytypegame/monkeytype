@@ -37,10 +37,10 @@ describe("Misc Utils", () => {
       ({ pattern, cases, expected }) => {
         cases.forEach((caseValue, index) => {
           expect(Misc.matchesAPattern(caseValue, pattern)).toBe(
-            expected[index]
+            expected[index],
           );
         });
-      }
+      },
     );
   });
 
@@ -90,7 +90,7 @@ describe("Misc Utils", () => {
       "kogascore with wpm:$wpm, acc:$acc, timestamp:$timestamp = $expectedScore",
       ({ wpm, acc, timestamp, expectedScore }) => {
         expect(Misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
-      }
+      },
     );
   });
 
@@ -121,7 +121,7 @@ describe("Misc Utils", () => {
       "identity with $input = $expected",
       ({ input, expected }) => {
         expect(Misc.identity(input)).toBe(expected);
-      }
+      },
     );
   });
 
@@ -193,7 +193,7 @@ describe("Misc Utils", () => {
       "flattenObjectDeep with $obj = $expected",
       ({ obj, expected }) => {
         expect(Misc.flattenObjectDeep(obj)).toEqual(expected);
-      }
+      },
     );
   });
 
@@ -386,7 +386,7 @@ describe("Misc Utils", () => {
         number: 2,
       };
       expect(
-        Misc.replaceObjectIds([fromDatabase, fromDatabase2])
+        Misc.replaceObjectIds([fromDatabase, fromDatabase2]),
       ).toStrictEqual([
         {
           _id: fromDatabase._id.toHexString(),

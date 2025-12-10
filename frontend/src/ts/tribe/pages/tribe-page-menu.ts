@@ -18,7 +18,7 @@ export function enableButtons(): void {
 
 export function showLeaveQueueButton(): void {
   $(".pageTribe .menu .matchmaking .leaveMatchmakingButton").removeClass(
-    "hidden"
+    "hidden",
   );
 }
 
@@ -28,7 +28,7 @@ export function hideLeaveQueueButton(): void {
 
 export function showStartQueueButton(): void {
   $(".pageTribe .menu .matchmaking .startMatchmakingButton").removeClass(
-    "hidden"
+    "hidden",
   );
 }
 
@@ -54,19 +54,19 @@ function refreshQueueButtons(): void {
   });
   if (!atleastone) {
     $(".pageTribe .menu .matchmaking .startMatchmakingButton").addClass(
-      "disabled"
+      "disabled",
     );
     $(".pageTribe .menu .matchmaking .startMatchmakingButton").html(
       `<i class="fas fa-times"></i>
-      Select at least one queue`
+      Select at least one queue`,
     );
   } else {
     $(".pageTribe .menu .matchmaking .startMatchmakingButton").removeClass(
-      "disabled"
+      "disabled",
     );
     $(".pageTribe .menu .matchmaking .startMatchmakingButton").html(
       `<i class="fas fa-search"></i>
-      Search`
+      Search`,
     );
   }
 }
@@ -106,7 +106,7 @@ $(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
   } else if (Config.mode === "words") {
     mode2 = Config.words;
   } else if (Config.mode === "quote") {
-    mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
+    mode2 = Config.quoteLength ?? "-1";
   } else if (Config.mode === "custom") {
     mode2 = "custom";
   } else {

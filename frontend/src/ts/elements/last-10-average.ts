@@ -18,7 +18,7 @@ export async function update(): Promise<void> {
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode
+      Config.lazyMode,
     )
   ).map(Numbers.roundTo2) as [number, number];
 

@@ -77,7 +77,7 @@ export const getUsersCollection = (): Collection<DBUser> =>
 export async function addUser(
   name: string,
   email: string,
-  uid: string
+  uid: string,
 ): Promise<void> {
   const newUserDocument: Partial<DBUser> = {
     name,
@@ -97,7 +97,7 @@ export async function addUser(
   const result = await getUsersCollection().updateOne(
     { uid },
     { $setOnInsert: newUserDocument },
-    { upsert: true }
+    { upsert: true },
   );
 
   if (result.upsertedCount === 0) {
@@ -151,14 +151,14 @@ export async function resetUser(uid: string): Promise<void> {
         lbOptOut: "",
         inbox: "",
       },
-    }
+    },
   );
 }
 
 export async function updateName(
   uid: string,
   name: string,
-  previousName: string
+  previousName: string,
 ): Promise<void> {
   if (name === previousName) {
     throw new MonkeyError(400, "New name is the same as the old name");
@@ -177,14 +177,14 @@ export async function updateName(
       $set: { name, lastNameChange: Date.now() },
       $unset: { needsToChangeName: "" },
       $push: { nameHistory: previousName },
-    }
+    },
   );
 }
 
 export async function flagForNameChange(uid: string): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
-    { $set: { needsToChangeName: true } }
+    { $set: { needsToChangeName: true } },
   );
 }
 
@@ -204,7 +204,7 @@ export async function clearPb(uid: string): Promise<void> {
           time: {},
         },
       },
-    }
+    },
   );
 }
 
@@ -218,25 +218,25 @@ export async function optOutOfLeaderboards(uid: string): Promise<void> {
           time: {},
         },
       },
-    }
+    },
   );
 }
 
 export async function updateQuoteRatings(
   uid: string,
-  quoteRatings: UserQuoteRatings
+  quoteRatings: UserQuoteRatings,
 ): Promise<boolean> {
   await updateUser(
     { uid },
     { $set: { quoteRatings } },
-    { stack: "update quote ratings" }
+    { stack: "update quote ratings" },
   );
   return true;
 }
 
 export async function updateEmail(
   uid: string,
-  email: string
+  email: string,
 ): Promise<boolean> {
   await updateUser({ uid }, { $set: { email } }, { stack: "update email" });
 
@@ -260,7 +260,7 @@ export async function getUser(uid: string, stack: string): Promise<DBUser> {
 export async function getPartialUser<K extends keyof DBUser>(
   uid: string,
   stack: string,
-  fields: K[]
+  fields: K[],
 ): Promise<Pick<DBUser, K>> {
   const projection = new Map(fields.map((it) => [it, 1]));
   const results = await getUsersCollection().findOne({ uid }, { projection });
@@ -272,15 +272,15 @@ export async function getPartialUser<K extends keyof DBUser>(
 export async function findByName(name: string): Promise<DBUser | undefined> {
   const found = await getUsersCollection().findOne(
     { name },
-    { collation: { locale: "en", strength: 1 } }
+    { collation: { locale: "en", strength: 1 } },
   );
 
-  return found !== null ? found : undefined;
+  return found ?? undefined;
 }
 
 export async function isNameAvailable(
   name: string,
-  uid: string
+  uid: string,
 ): Promise<boolean> {
   const user = await findByName(name);
   // if the user found by name is the same as the user we are checking for, then the name is available
@@ -290,7 +290,7 @@ export async function isNameAvailable(
 
 export async function getUserByName(
   name: string,
-  stack: string
+  stack: string,
 ): Promise<DBUser> {
   const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
@@ -298,11 +298,11 @@ export async function getUserByName(
 }
 
 export async function isDiscordIdAvailable(
-  discordId: string
+  discordId: string,
 ): Promise<boolean> {
   const user = await getUsersCollection().findOne(
     { discordId },
-    { projection: { _id: 1 } }
+    { projection: { _id: 1 } },
   );
   return user === null;
 }
@@ -310,13 +310,13 @@ export async function isDiscordIdAvailable(
 export async function addResultFilterPreset(
   uid: string,
   resultFilter: ResultFilters,
-  maxFiltersPerUser: number
+  maxFiltersPerUser: number,
 ): Promise<ObjectId> {
   if (maxFiltersPerUser === 0) {
     throw new MonkeyError(
       409,
       "Maximum number of custom filters reached",
-      "add result filter preset"
+      "add result filter preset",
     );
   }
 
@@ -331,7 +331,7 @@ export async function addResultFilterPreset(
       statusCode: 409,
       message: "Maximum number of custom filters reached",
       stack: "add result filter preset",
-    }
+    },
   );
 
   return _id;
@@ -339,7 +339,7 @@ export async function addResultFilterPreset(
 
 export async function removeResultFilterPreset(
   uid: string,
-  _id: string
+  _id: string,
 ): Promise<void> {
   const presetId = new ObjectId(_id);
 
@@ -350,7 +350,7 @@ export async function removeResultFilterPreset(
       statusCode: 404,
       message: "Custom filter not found",
       stack: "remove result filter preset",
-    }
+    },
   );
 }
 
@@ -374,7 +374,7 @@ export async function addTag(uid: string, name: string): Promise<DBUserTag> {
       statusCode: 400,
       message: "Maximum number of tags reached",
       stack: "add tag",
-    }
+    },
   );
 
   return toPush;
@@ -389,14 +389,14 @@ export async function getTags(uid: string): Promise<DBUserTag[]> {
 export async function editTag(
   uid: string,
   _id: string,
-  name: string
+  name: string,
 ): Promise<void> {
   const tagId = new ObjectId(_id);
 
   await updateUser(
     { uid, "tags._id": tagId },
     { $set: { "tags.$.name": name } },
-    { statusCode: 404, message: "Tag not found", stack: "edit tag" }
+    { statusCode: 404, message: "Tag not found", stack: "edit tag" },
   );
 }
 
@@ -406,7 +406,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   await updateUser(
     { uid, "tags._id": tagId },
     { $pull: { tags: { _id: tagId } } },
-    { statusCode: 404, message: "Tag not found", stack: "remove tag" }
+    { statusCode: 404, message: "Tag not found", stack: "remove tag" },
   );
 }
 
@@ -426,7 +426,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
         },
       },
     },
-    { statusCode: 404, message: "Tag not found", stack: "remove tag pb" }
+    { statusCode: 404, message: "Tag not found", stack: "remove tag pb" },
   );
 }
 
@@ -435,7 +435,7 @@ export async function updateLbMemory(
   mode: Mode,
   mode2: Mode2<Mode>,
   language: string,
-  rank: number
+  rank: number,
 ): Promise<void> {
   const partialUpdate = {};
   partialUpdate[`lbMemory.${mode}.${mode2}.${language}`] = rank;
@@ -443,14 +443,14 @@ export async function updateLbMemory(
   await updateUser(
     { uid },
     { $set: partialUpdate },
-    { stack: "update lb memory" }
+    { stack: "update lb memory" },
   );
 }
 
 export async function checkIfPb(
   uid: string,
   user: Pick<DBUser, "personalBests" | "lbPersonalBests">,
-  result: Result
+  result: Result,
 ): Promise<boolean> {
   const { mode } = result;
 
@@ -459,8 +459,9 @@ export async function checkIfPb(
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
     result.acc < 100
-  )
+  ) {
     return false;
+  }
 
   if (mode === "quote") {
     return false;
@@ -483,13 +484,13 @@ export async function checkIfPb(
 
   await getUsersCollection().updateOne(
     { uid },
-    { $set: { personalBests: pb.personalBests } }
+    { $set: { personalBests: pb.personalBests } },
   );
 
   if (pb.lbPersonalBests) {
     await getUsersCollection().updateOne(
       { uid },
-      { $set: { lbPersonalBests: pb.lbPersonalBests } }
+      { $set: { lbPersonalBests: pb.lbPersonalBests } },
     );
   }
   return true;
@@ -498,7 +499,7 @@ export async function checkIfPb(
 export async function checkIfTagPb(
   uid: string,
   user: Pick<DBUser, "tags">,
-  result: Result
+  result: Result,
 ): Promise<string[]> {
   if (user.tags === undefined || user.tags.length === 0) {
     return [];
@@ -510,8 +511,9 @@ export async function checkIfTagPb(
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
     result.acc < 100
-  )
+  ) {
     return [];
+  }
 
   if (mode === "quote") {
     return [];
@@ -542,7 +544,7 @@ export async function checkIfTagPb(
       ret.push(tag._id.toHexString());
       await getUsersCollection().updateOne(
         { uid, "tags._id": new ObjectId(tag._id) },
-        { $set: { "tags.$.personalBests": tagpb.personalBests } }
+        { $set: { "tags.$.personalBests": tagpb.personalBests } },
       );
     }
   }
@@ -564,13 +566,13 @@ export async function resetPb(uid: string): Promise<void> {
         },
       },
     },
-    { stack: "reset pb" }
+    { stack: "reset pb" },
   );
 }
 
 export async function updateLastHashes(
   uid: string,
-  lastHashes: string[]
+  lastHashes: string[],
 ): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
@@ -578,14 +580,14 @@ export async function updateLastHashes(
       $set: {
         lastReultHashes: lastHashes, //TODO fix typo
       },
-    }
+    },
   );
 }
 
 export async function updateTypingStats(
   uid: string,
   restartCount: number,
-  timeTyping: number
+  timeTyping: number,
 ): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
@@ -595,18 +597,19 @@ export async function updateTypingStats(
         completedTests: 1,
         timeTyping,
       },
-    }
+    },
   );
 }
 
 export async function linkDiscord(
   uid: string,
   discordId: string,
-  discordAvatar?: string
+  discordAvatar?: string,
 ): Promise<void> {
   const updates: Partial<DBUser> = { discordId };
-  if (discordAvatar !== undefined && discordAvatar !== null)
+  if (discordAvatar !== undefined && discordAvatar !== null) {
     updates.discordAvatar = discordAvatar;
+  }
 
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
@@ -615,13 +618,13 @@ export async function unlinkDiscord(uid: string): Promise<void> {
   await updateUser(
     { uid },
     { $unset: { discordId: "", discordAvatar: "" } },
-    { stack: "unlink discord" }
+    { stack: "unlink discord" },
   );
 }
 
 export async function incrementBananas(
   uid: string,
-  wpm: number
+  wpm: number,
 ): Promise<void> {
   //don't throw on missing user
   await getUsersCollection().updateOne(
@@ -655,7 +658,7 @@ export async function incrementBananas(
         ],
       },
     },
-    { $inc: { bananas: 1 } }
+    { $inc: { bananas: 1 } },
   );
 }
 
@@ -666,7 +669,7 @@ export async function incrementXp(uid: string, xp: number): Promise<void> {
 
 export async function incrementTestActivity(
   user: DBUser,
-  timestamp: number
+  timestamp: number,
 ): Promise<void> {
   if (user.testActivity === undefined) {
     //migration script did not run yet
@@ -680,19 +683,19 @@ export async function incrementTestActivity(
   if (user.testActivity[year] === undefined) {
     await getUsersCollection().updateOne(
       { uid: user.uid },
-      { $set: { [`testActivity.${date.getFullYear()}`]: [] } }
+      { $set: { [`testActivity.${date.getFullYear()}`]: [] } },
     );
   }
 
   await getUsersCollection().updateOne(
     { uid: user.uid },
-    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear - 1}`]: 1 } }
+    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear - 1}`]: 1 } },
   );
 }
 
 export async function addTheme(
   uid: string,
-  { name, colors }: Omit<CustomTheme, "_id">
+  { name, colors }: Omit<CustomTheme, "_id">,
 ): Promise<{ _id: ObjectId; name: string }> {
   const _id = new ObjectId();
 
@@ -711,7 +714,7 @@ export async function addTheme(
       statusCode: 409,
       message: "Maximum number of custom themes reached",
       stack: "add theme",
-    }
+    },
   );
 
   return {
@@ -729,14 +732,14 @@ export async function removeTheme(uid: string, id: string): Promise<void> {
       statusCode: 404,
       message: "Custom theme not found",
       stack: "remove theme",
-    }
+    },
   );
 }
 
 export async function editTheme(
   uid: string,
   id: string,
-  { name, colors }: Omit<CustomTheme, "_id">
+  { name, colors }: Omit<CustomTheme, "_id">,
 ): Promise<void> {
   const themeId = new ObjectId(id);
 
@@ -748,7 +751,7 @@ export async function editTheme(
         "customThemes.$.colors": colors,
       },
     },
-    { statusCode: 404, message: "Custom theme not found", stack: "edit theme" }
+    { statusCode: 404, message: "Custom theme not found", stack: "edit theme" },
   );
 }
 
@@ -762,7 +765,7 @@ export async function getThemes(uid: string): Promise<DBCustomTheme[]> {
 export async function getPersonalBests(
   uid: string,
   mode: string,
-  mode2?: string
+  mode2?: string,
 ): Promise<PersonalBest> {
   const user = await getPartialUser(uid, "get personal bests", [
     "personalBests",
@@ -777,7 +780,7 @@ export async function getPersonalBests(
 }
 
 export async function getStats(
-  uid: string
+  uid: string,
 ): Promise<Pick<DBUser, "startedTests" | "completedTests" | "timeTyping">> {
   const user = await getPartialUser(uid, "get stats", [
     "startedTests",
@@ -789,7 +792,7 @@ export async function getStats(
 }
 
 export async function getFavoriteQuotes(
-  uid: string
+  uid: string,
 ): Promise<NonNullable<DBUser["favoriteQuotes"]>> {
   const user = await getPartialUser(uid, "get favorite quotes", [
     "favoriteQuotes",
@@ -802,7 +805,7 @@ export async function addFavoriteQuote(
   uid: string,
   language: string,
   quoteId: string,
-  maxQuotes: number
+  maxQuotes: number,
 ): Promise<void> {
   await updateUser(
     {
@@ -831,26 +834,26 @@ export async function addFavoriteQuote(
       statusCode: 409,
       message: "Maximum number of favorite quotes reached",
       stack: "add favorite quote",
-    }
+    },
   );
 }
 
 export async function removeFavoriteQuote(
   uid: string,
   language: string,
-  quoteId: string
+  quoteId: string,
 ): Promise<void> {
   await updateUser(
     { uid },
     { $pull: { [`favoriteQuotes.${language}`]: quoteId } },
-    { stack: "remove favorite quote" }
+    { stack: "remove favorite quote" },
   );
 }
 
 export async function recordAutoBanEvent(
   uid: string,
   maxCount: number,
-  maxHours: number
+  maxHours: number,
 ): Promise<boolean> {
   const user = await getPartialUser(uid, "record auto ban event", [
     "banned",
@@ -868,7 +871,7 @@ export async function recordAutoBanEvent(
 
   //only keep events within the last maxHours
   const recentAutoBanTimestamps = autoBanTimestamps.filter(
-    (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
+    (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000,
   );
 
   //push new event
@@ -889,7 +892,7 @@ export async function recordAutoBanEvent(
   void addImportantLog(
     "user_auto_banned",
     { autoBanTimestamps, banningUser },
-    uid
+    uid,
   );
 
   if (banningUser) {
@@ -906,17 +909,17 @@ export async function recordAutoBanEvent(
 export async function updateProfile(
   uid: string,
   profileDetailUpdates: Partial<UserProfileDetails>,
-  inventory?: UserInventory
+  inventory?: UserInventory,
 ): Promise<void> {
   let profileUpdates = flattenObjectDeep(
     Object.fromEntries(
       Object.entries(profileDetailUpdates).filter(
         ([_, value]) =>
           value !== undefined &&
-          !(isPlainObject(value) && Object.keys(value).length === 0)
-      )
+          !(isPlainObject(value) && Object.keys(value).length === 0),
+      ),
     ),
-    "profileDetails"
+    "profileDetails",
   );
 
   const updates = {
@@ -931,12 +934,12 @@ export async function updateProfile(
     {
       uid,
     },
-    updates
+    updates,
   );
 }
 
 export async function getInbox(
-  uid: string
+  uid: string,
 ): Promise<NonNullable<DBUser["inbox"]>> {
   const user = await getPartialUser(uid, "get inbox", ["inbox"]);
   return user.inbox ?? [];
@@ -949,7 +952,7 @@ type AddToInboxBulkEntry = {
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"],
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -977,7 +980,7 @@ export async function addToInboxBulk(
 export async function addToInbox(
   uid: string,
   mail: MonkeyMail[],
-  inboxConfig: Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"],
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -997,21 +1000,21 @@ export async function addToInbox(
           $slice: maxMail, // Keeps inbox size to maxMail, discarding the oldest
         },
       },
-    }
+    },
   );
 }
 
 export async function updateInbox(
   uid: string,
   mailToRead: string[],
-  mailToDelete: string[]
+  mailToDelete: string[],
 ): Promise<void> {
   const deleteSet = [...new Set(mailToDelete)];
 
   //we don't need to read mails that are going to be deleted because
   //Rewards will be claimed on unread mails on deletion
   const readSet = [...new Set(mailToRead)].filter(
-    (it) => !deleteSet.includes(it)
+    (it) => !deleteSet.includes(it),
   );
 
   const update = await getUsersCollection().updateOne({ uid }, [
@@ -1026,14 +1029,14 @@ export async function updateInbox(
               xp: number,
               inventory: UserInventory,
               deletedIds: string[],
-              readIds: string[]
+              readIds: string[],
             ): Pick<DBUser, "xp" | "inventory" | "inbox"> {
               const toBeDeleted = inbox.filter((it) =>
-                deletedIds.includes(it.id)
+                deletedIds.includes(it.id),
               );
 
               const toBeRead = inbox.filter(
-                (it) => readIds.includes(it.id) && !it.read
+                (it) => readIds.includes(it.id) && !it.read,
               );
 
               //flatMap rewards
@@ -1053,10 +1056,15 @@ export async function updateInbox(
                 .filter((it) => it.type === "badge")
                 .map((it) => it.item);
 
-              if (inventory === null)
+              // mongo doesnt support ??= i think
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+              if (inventory === null) {
                 inventory = {
                   badges: [],
                 };
+              }
+              // mongo doesnt support ??= i think
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               if (inventory.badges === null) inventory.badges = [];
 
               const uniqueBadgeIds = new Set();
@@ -1100,13 +1108,14 @@ export async function updateInbox(
     { $unset: "tmp" },
   ]);
 
-  if (update.matchedCount !== 1)
+  if (update.matchedCount !== 1) {
     throw new MonkeyError(404, "User not found", "update inbox");
+  }
 }
 
 export async function updateStreak(
   uid: string,
-  timestamp: number
+  timestamp: number,
 ): Promise<number> {
   const user = await getPartialUser(uid, "calculate streak", ["streak"]);
   const streak: UserStreak = {
@@ -1141,7 +1150,7 @@ export async function updateStreak(
 
 export async function setStreakHourOffset(
   uid: string,
-  hourOffset: number
+  hourOffset: number,
 ): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
@@ -1150,7 +1159,7 @@ export async function setStreakHourOffset(
         "streak.hourOffset": hourOffset,
         "streak.lastResultTimestamp": Date.now(),
       },
-    }
+    },
   );
 }
 
@@ -1169,13 +1178,13 @@ export async function clearStreakHourOffset(uid: string): Promise<void> {
       $unset: {
         "streak.hourOffset": "",
       },
-    }
+    },
   );
 }
 
 export async function checkIfUserIsPremium(
   uid: string,
-  userInfoOverride?: Pick<DBUser, "premium">
+  userInfoOverride?: Pick<DBUser, "premium">,
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
@@ -1195,7 +1204,7 @@ export async function checkIfUserIsPremium(
 export async function logIpAddress(
   uid: string,
   ip: string,
-  userInfoOverride?: Pick<DBUser, "ips">
+  userInfoOverride?: Pick<DBUser, "ips">,
 ): Promise<void> {
   const user =
     userInfoOverride ?? (await getPartialUser(uid, "logIpAddress", ["ips"]));
@@ -1221,16 +1230,17 @@ export async function logIpAddress(
 async function updateUser(
   filter: Filter<DBUser>,
   update: UpdateFilter<DBUser>,
-  error: { stack: string; statusCode?: number; message?: string }
+  error: { stack: string; statusCode?: number; message?: string },
 ): Promise<void> {
   const result = await getUsersCollection().updateOne(filter, update);
 
-  if (result.matchedCount !== 1)
+  if (result.matchedCount !== 1) {
     throw new MonkeyError(
       error.statusCode ?? 404,
       error.message ?? "User not found",
-      error.stack
+      error.stack,
     );
+  }
 }
 
 export async function getFriends(uid: string): Promise<DBFriend[]> {
@@ -1346,6 +1356,6 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
           premium: false,
         },
       },
-    ]
+    ],
   );
 }

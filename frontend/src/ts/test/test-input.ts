@@ -1,6 +1,8 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
+import Config from "../config";
+import { getInputElementValue } from "../input/input-element";
 
 const keysToTrack = new Set([
   "NumpadMultiply",
@@ -131,6 +133,10 @@ class Input {
     return ret;
   }
 
+  get(index: number): string | undefined {
+    return this.history[index];
+  }
+
   getHistory(): string[];
   getHistory(i: number): string | undefined;
   getHistory(i?: number): unknown {
@@ -143,6 +149,10 @@ class Input {
 
   getHistoryLast(): string | undefined {
     return lastElementFromArray(this.history);
+  }
+
+  syncWithInputElement(): void {
+    this.current = getInputElementValue().inputValue;
   }
 }
 
@@ -159,12 +169,33 @@ class Corrected {
     this.current = "";
   }
 
+  update(char: string, correct: boolean): void {
+    if (this.current === "") {
+      this.current += input.current;
+    } else {
+      const currCorrectedTestInputLength = this.current.length;
+
+      const charIndex = input.current.length - 1;
+
+      if (charIndex >= currCorrectedTestInputLength) {
+        this.current += char;
+      } else if (!correct) {
+        this.current =
+          this.current.substring(0, charIndex) +
+          char +
+          this.current.substring(charIndex + 1);
+      }
+    }
+  }
+
   getHistory(i: number): string | undefined {
     return this.history[i];
   }
 
   popHistory(): string {
-    return this.history.pop() ?? "";
+    const popped = this.history.pop() ?? "";
+    this.current = popped;
+    return popped;
   }
 
   pushHistory(): void {
@@ -264,11 +295,11 @@ export function forceKeyup(now: number): void {
   //skewing the average and standard deviation
 
   const indexesToRemove = new Set(
-    Object.values(keyDownData).map((data) => data.index)
+    Object.values(keyDownData).map((data) => data.index),
   );
 
   const keypressDurations = keypressTimings.duration.array.filter(
-    (_, index) => !indexesToRemove.has(index)
+    (_, index) => !indexesToRemove.has(index),
   );
   if (keypressDurations.length === 0) {
     // this means the test ended while all keys were still held - probably safe to ignore
@@ -279,7 +310,7 @@ export function forceKeyup(now: number): void {
   const avg = roundTo2(mean(keypressDurations));
 
   const orderedKeys = Object.entries(keyDownData).sort(
-    (a, b) => a[1].timestamp - b[1].timestamp
+    (a, b) => a[1].timestamp - b[1].timestamp,
   );
 
   for (const [key, { index }] of orderedKeys) {
@@ -296,9 +327,42 @@ export function forceKeyup(now: number): void {
   }
 }
 
-let noCodeIndex = 0;
+function getEventCode(event: KeyboardEvent): string {
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    return "Space";
+  }
 
-export function recordKeyupTime(now: number, key: string): void {
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    return "NoCode";
+  }
+
+  if (
+    event.code === "" ||
+    event.code === undefined ||
+    event.key === "Unidentified"
+  ) {
+    return "NoCode";
+  }
+
+  return event.code;
+}
+
+let noCodeIndex = 0;
+export function recordKeyupTime(now: number, event: KeyboardEvent): void {
+  if (event.repeat) {
+    console.log(
+      "Keyup not recorded - repeat",
+      event.key,
+      event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      event.which,
+    );
+    return;
+  }
+
+  let key = getEventCode(event);
+
   if (!keysToTrack.has(key)) return;
 
   if (key === "NoCode") {
@@ -320,20 +384,34 @@ export function recordKeyupTime(now: number, key: string): void {
   updateOverlap(now);
 }
 
-export function recordKeydownTime(now: number, key: string): void {
+export function recordKeydownTime(now: number, event: KeyboardEvent): void {
+  if (event.repeat) {
+    console.log(
+      "Keydown not recorded - repeat",
+      event.key,
+      event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      event.which,
+    );
+    return;
+  }
+
+  let key = getEventCode(event);
+
   if (!keysToTrack.has(key)) {
-    console.debug("Key not tracked", key);
+    console.debug("Keydown not recorded - not tracked", key);
+    return;
+  }
+
+  if (keyDownData[key] !== undefined) {
+    console.debug("Key already down", key);
     return;
   }
 
   if (key === "NoCode") {
     key = "NoCode" + noCodeIndex;
     noCodeIndex++;
-  }
-
-  if (keyDownData[key] !== undefined) {
-    console.debug("Key already down", key);
-    return;
   }
 
   keyDownData[key] = {

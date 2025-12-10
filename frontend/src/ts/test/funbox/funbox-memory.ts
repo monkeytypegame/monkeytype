@@ -18,7 +18,7 @@ let settingsMemory: SettingsMemory<ConfigValue> = {};
 export function save<T extends ConfigValue>(
   settingName: string,
   value: T,
-  setFunction: SetFunction<T>
+  setFunction: SetFunction<T>,
 ): void {
   settingsMemory[settingName] ??= {
     value,

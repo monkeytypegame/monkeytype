@@ -22,7 +22,7 @@ export type Context = {
 async function contextMiddleware(
   req: ExpressRequest,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const configuration = await getCachedConfiguration(true);
 

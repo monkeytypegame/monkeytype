@@ -84,7 +84,7 @@ export const MonkeyServerError = MonkeyClientError.extend({
 export type MonkeyServerErrorType = z.infer<typeof MonkeyServerError>;
 
 export function responseWithNullableData<T extends ZodSchema>(
-  dataSchema: T
+  dataSchema: T,
 ): z.ZodObject<
   z.objectUtil.extendShape<
     typeof MonkeyResponseSchema.shape,
@@ -99,7 +99,7 @@ export function responseWithNullableData<T extends ZodSchema>(
 }
 
 export function responseWithData<T extends ZodSchema>(
-  dataSchema: T
+  dataSchema: T,
 ): z.ZodObject<
   z.objectUtil.extendShape<
     typeof MonkeyResponseSchema.shape,
@@ -116,7 +116,7 @@ export function responseWithData<T extends ZodSchema>(
 export const CommonResponses = {
   400: MonkeyClientError.describe("Generic client error"),
   401: MonkeyClientError.describe(
-    "Authentication required but not provided or invalid"
+    "Authentication required but not provided or invalid",
   ),
   403: MonkeyClientError.describe("Operation not permitted"),
   422: MonkeyValidationErrorSchema.describe("Request validation failed"),
@@ -127,6 +127,6 @@ export const CommonResponses = {
   479: MonkeyClientError.describe("ApeKey rate limit exceeded"),
   500: MonkeyServerError.describe("Generic server error"),
   503: MonkeyServerError.describe(
-    "Endpoint disabled or server is under maintenance"
+    "Endpoint disabled or server is under maintenance",
   ),
 };

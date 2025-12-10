@@ -20,6 +20,7 @@ const isBackend = args.has("--be");
 const isDryRun = args.has("--dry");
 const noSyncCheck = args.has("--no-sync-check");
 const hotfix = args.has("--hotfix");
+const previewFe = args.has("--preview-fe");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
@@ -60,11 +61,11 @@ const runProjectRootCommand = (command, force) => {
 const checkBranchSync = () => {
   console.log("Checking if local branch is master...");
   const currentBranch = runProjectRootCommand(
-    "git branch --show-current"
+    "git branch --show-current",
   ).trim();
   if (currentBranch !== "master") {
     console.error(
-      "Local branch is not master. Please checkout the master branch."
+      "Local branch is not master. Please checkout the master branch.",
     );
     process.exit(1);
   }
@@ -83,12 +84,12 @@ const checkBranchSync = () => {
       // Get the commit hashes of the local and remote master branches
       const localMaster = runProjectRootCommand("git rev-parse master").trim();
       const remoteMaster = runProjectRootCommand(
-        "git rev-parse origin/master"
+        "git rev-parse origin/master",
       ).trim();
 
       if (localMaster !== remoteMaster) {
         console.error(
-          "Local master branch is not in sync with origin. Please pull the latest changes before proceeding."
+          "Local master branch is not in sync with origin. Please pull the latest changes before proceeding.",
         );
         process.exit(1);
       }
@@ -104,7 +105,7 @@ const getCurrentVersion = () => {
   console.log("Getting current version...");
 
   const rootPackageJson = JSON.parse(
-    readFileSync(`${PROJECT_ROOT}/package.json`, "utf-8")
+    readFileSync(`${PROJECT_ROOT}/package.json`, "utf-8"),
   );
 
   return rootPackageJson.version;
@@ -146,7 +147,7 @@ const updatePackage = (newVersion) => {
   fs.writeFileSync(
     packagePath,
     JSON.stringify(packageJson, null, 2) + "\n",
-    "utf8"
+    "utf8",
   );
 
   console.log(`Updated package.json to version ${newVersion}`);
@@ -159,7 +160,7 @@ const checkUncommittedChanges = () => {
     console.log("[Dry Run] Checking uncommitted changes...");
   } else if (status) {
     console.error(
-      "You have uncommitted changes. Please commit or stash them before proceeding."
+      "You have uncommitted changes. Please commit or stash them before proceeding.",
     );
     process.exit(1);
   }
@@ -179,15 +180,15 @@ const buildProject = () => {
 
   if (isFrontend && !isBackend) {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test check-assets build --filter @monkeytype/frontend --force"
+      "NODE_ENV=production SENTRY=1 npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
     );
   } else if (isBackend && !isFrontend) {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force"
+      "NODE_ENV=production SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force",
     );
   } else {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test check-assets build --force"
+      "NODE_ENV=production SENTRY=1 npx turbo lint test check-assets build --force",
     );
   }
 };
@@ -201,7 +202,7 @@ const deployBackend = () => {
 const deployFrontend = () => {
   console.log("Deploying frontend...");
   runProjectRootCommand(
-    "cd frontend && npx firebase deploy -P live --only hosting"
+    "cd frontend && npx firebase deploy -P live --only hosting",
   );
 };
 
@@ -233,7 +234,7 @@ const createGithubRelease = async (version, changelogContent) => {
   console.log("Creating GitHub release...");
   if (isDryRun) {
     console.log(
-      `[Dry Run] Sent release request to GitHub for version ${version}`
+      `[Dry Run] Sent release request to GitHub for version ${version}`,
     );
   } else {
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -252,6 +253,34 @@ const createGithubRelease = async (version, changelogContent) => {
 };
 
 const main = async () => {
+  if (previewFe) {
+    console.log(`Starting frontend preview deployment process...`);
+    installDependencies();
+    runProjectRootCommand(
+      "NODE_ENV=production npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
+    );
+
+    const name = readlineSync.question(
+      "Enter preview channel name (default: preview): ",
+    );
+    const channelName = name.trim() || "preview";
+
+    const expirationTime = readlineSync.question(
+      "Enter expiration time (e.g., 2h, default: 1d): ",
+    );
+    const expires = expirationTime.trim() || "1d";
+
+    console.log(
+      `Deploying frontend preview to channel "${channelName}" with expiration "${expires}"...`,
+    );
+    const result = runProjectRootCommand(
+      `cd frontend && npx firebase hosting:channel:deploy ${channelName} -P live --expires ${expires}`,
+    );
+    console.log(result);
+    console.log("Frontend preview deployed successfully.");
+    process.exit(0);
+  }
+
   console.log(`Starting ${hotfix ? "hotfix" : "release"} process...`);
 
   if (!hotfix) checkBranchSync();

@@ -28,7 +28,7 @@ type UserProfileOrSnapshot = UserProfile | Snapshot;
 
 export async function update(
   where: ProfileViewPaths,
-  profile: UserProfileOrSnapshot
+  profile: UserProfileOrSnapshot,
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
   const profileElement = $(`.page${elementClass} .profile`);
@@ -48,8 +48,9 @@ export async function update(
     profile === undefined ||
     profile.name === undefined ||
     profile.addedAt === undefined
-  )
+  ) {
     return;
+  }
 
   const avatar = details.find(".avatarAndName .avatar");
   avatar.replaceWith(getAvatarElement(profile, { size: 256 }));
@@ -74,7 +75,7 @@ export async function update(
   details
     .find(".userFlags")
     .html(
-      getHtmlByUserFlags({ ...profile, isFriend: DB.isFriend(profile.uid) })
+      getHtmlByUserFlags({ ...profile, isFriend: DB.isFriend(profile.uid) }),
     );
 
   if (profile.lbOptOut === true) {
@@ -83,7 +84,7 @@ export async function update(
         .find(".lbOptOutReminder")
         .removeClass("hidden")
         .text(
-          "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate."
+          "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate.",
         );
     } else {
       profileElement.find(".lbOptOutReminder").addClass("hidden");
@@ -109,7 +110,7 @@ export async function update(
       .text(
         `Current streak: ${profile.streak} ${
           profile.streak === 1 ? "day" : "days"
-        }`
+        }`,
       );
     hoverText = `Longest streak: ${profile.maxStreak} ${
       profile.maxStreak === 1 ? "day" : "days"
@@ -138,13 +139,13 @@ export async function update(
     console.debug("dayInMilis", dayInMilis);
     console.debug(
       "difTarget",
-      new Date(DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis)
+      new Date(DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis),
     );
     console.debug("timeDif", timeDif);
     console.debug(
       "DateTime.getCurrentDayTimestamp()",
       DateTime.getCurrentDayTimestamp(),
-      new Date(DateTime.getCurrentDayTimestamp())
+      new Date(DateTime.getCurrentDayTimestamp()),
     );
     console.debug("profile.streakHourOffset", streakOffset);
 
@@ -153,13 +154,13 @@ export async function update(
       const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
       const isYesterday = DateTime.isYesterday(
         lastResult.timestamp,
-        streakOffset
+        streakOffset,
       );
 
       console.debug(
         "lastResult.timestamp",
         lastResult.timestamp,
-        new Date(lastResult.timestamp)
+        new Date(lastResult.timestamp),
       );
       console.debug("isToday", isToday);
       console.debug("isYesterday", isYesterday);
@@ -193,7 +194,7 @@ export async function update(
     .attr("data-balloon-break", "");
 
   const { completedPercentage, restartRatio } = Misc.formatTypingStatsRatio(
-    profile.typingStats
+    profile.typingStats,
   );
 
   const typingStatsEl = details.find(".typingStats");
@@ -206,7 +207,7 @@ export async function update(
     .attr("data-balloon-pos", "up")
     .attr(
       "aria-label",
-      `${completedPercentage}% (${restartRatio} restarts per completed test)`
+      `${completedPercentage}% (${restartRatio} restarts per completed test)`,
     );
   typingStatsEl
     .find(".timeTyping .value")
@@ -214,8 +215,8 @@ export async function update(
       secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
-        true
-      )
+        true,
+      ),
     );
 
   let bio = false;
@@ -245,10 +246,10 @@ export async function update(
       if (git) {
         socialsEl.append(
           `<a href='https://github.com/${Misc.escapeHTML(
-            git
+            git,
           )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
-            git
-          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-github"></i></a>`
+            git,
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-github"></i></a>`,
         );
       }
 
@@ -256,10 +257,10 @@ export async function update(
       if (twitter) {
         socialsEl.append(
           `<a href='https://x.com/${Misc.escapeHTML(
-            twitter
+            twitter,
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
-            twitter
-          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-twitter"></i></a>`
+            twitter,
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-twitter"></i></a>`,
         );
       }
 
@@ -272,10 +273,10 @@ export async function update(
       if (website) {
         socialsEl.append(
           `<a href='${Misc.escapeHTML(
-            website
+            website,
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
-            websiteName ?? ""
-          )}" data-balloon-pos="up" class="textButton"><i class="fas fa-fw fa-globe"></i></a>`
+            websiteName ?? "",
+          )}" data-balloon-pos="up" class="textButton"><i class="fas fa-fw fa-globe"></i></a>`,
         );
       }
     }
@@ -372,7 +373,7 @@ export async function update(
 export function updateXp(
   where: ProfileViewPaths,
   xp: number,
-  sameUserCheck = false
+  sameUserCheck = false,
 ): void {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
   const profileElement = $(`.page${elementClass} .profile`);
@@ -397,7 +398,7 @@ export function updateXp(
     .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
     .attr(
       "aria-label",
-      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
+      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`,
     );
   details
     .find(".xpBar .bar")

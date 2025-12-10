@@ -31,7 +31,7 @@ import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
-import "./controllers/input-controller";
+import "./input/listeners";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
@@ -44,7 +44,6 @@ import "./test/tts";
 import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
-import "./controllers/profile-search-controller";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
@@ -55,6 +54,7 @@ import "./elements/psa";
 import "./utils/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
+import { qs, qsa, qsr } from "./utils/dom";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -101,6 +101,9 @@ addToGlobal({
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,
+  qs: qs,
+  qsa: qsa,
+  qsr: qsr,
   tribe: Tribe,
   tribeState: TribeState,
   tribeCarets: TribeCarets,

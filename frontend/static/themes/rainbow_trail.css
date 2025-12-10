@@ -264,27 +264,43 @@ button:not(.textButton):not(.text):hover {
 
 @keyframes glowing-button {
   0% {
-    box-shadow: 0 0 7.5px 2.5px #60b6ce, 0 0 12.5px 2.5px #60b6ce;
+    box-shadow:
+      0 0 7.5px 2.5px #60b6ce,
+      0 0 12.5px 2.5px #60b6ce;
   }
   14% {
-    box-shadow: 0 0 7.5px 2.5px #7ce3e1, 0 0 12.5px 2.5px #7ce3e1;
+    box-shadow:
+      0 0 7.5px 2.5px #7ce3e1,
+      0 0 12.5px 2.5px #7ce3e1;
   }
   28% {
-    box-shadow: 0 0 7.5px 2.5px #b2e259, 0 0 12.5px 2.5px #b2e259;
+    box-shadow:
+      0 0 7.5px 2.5px #b2e259,
+      0 0 12.5px 2.5px #b2e259;
   }
   42% {
-    box-shadow: 0 0 7.5px 2.5px #f6ee75, 0 0 12.5px 2.5px #f6ee75;
+    box-shadow:
+      0 0 7.5px 2.5px #f6ee75,
+      0 0 12.5px 2.5px #f6ee75;
   }
   57% {
-    box-shadow: 0 0 7.5px 2.5px #f5b83d, 0 0 12.5px 2.5px #f5b83d;
+    box-shadow:
+      0 0 7.5px 2.5px #f5b83d,
+      0 0 12.5px 2.5px #f5b83d;
   }
   71% {
-    box-shadow: 0 0 7.5px 2.5px #f49a98, 0 0 12.5px 2.5px #f49a98;
+    box-shadow:
+      0 0 7.5px 2.5px #f49a98,
+      0 0 12.5px 2.5px #f49a98;
   }
   85% {
-    box-shadow: 0 0 7.5px 2.5px #ed7abd, 0 0 12.5px 2.5px #ed7abd;
+    box-shadow:
+      0 0 7.5px 2.5px #ed7abd,
+      0 0 12.5px 2.5px #ed7abd;
   }
   100% {
-    box-shadow: 0 0 7.5px 2.5px #dea2fa, 0 0 12.5px 2.5px #dea2fa;
+    box-shadow:
+      0 0 7.5px 2.5px #dea2fa,
+      0 0 12.5px 2.5px #dea2fa;
   }
 }

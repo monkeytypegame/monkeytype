@@ -436,7 +436,7 @@ export async function previewError(val: string): Promise<void> {
 
 let currentCode = "KeyA";
 
-$(document).on("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 
@@ -462,7 +462,7 @@ type GetNoteFrequencyCallback = (octave: number) => number;
 
 function bindToNote(
   noteFrequencies: ValidFrequencies,
-  octaveOffset = 0
+  octaveOffset = 0,
 ): GetNoteFrequencyCallback {
   return (octave: number): number => {
     return noteFrequencies[octave + octaveOffset] ?? 0;
@@ -534,7 +534,7 @@ function initAudioContext(): void {
     Notifications.add(
       createErrorMessage(e, "Error initializing audio context") +
         ". Notes will not play.",
-      -1
+      -1,
     );
   }
 }
@@ -638,9 +638,14 @@ export async function playTimeWarning(): Promise<void> {
   soundToPlay.play();
 }
 
+export async function clearAllSounds(): Promise<void> {
+  const Howl = (await gethowler()).Howler;
+  Howl.stop();
+}
+
 function playNote(
   codeOverride?: string,
-  oscillatorTypeOverride?: SupportedOscillatorTypes
+  oscillatorTypeOverride?: SupportedOscillatorTypes,
 ): void {
   if (audioCtx === undefined) {
     initAudioContext();

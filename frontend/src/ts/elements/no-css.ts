@@ -1,6 +1,7 @@
 import { envConfig } from "virtual:env-config";
+import { qs } from "../utils/dom";
 
-$("#nocss .requestedStylesheets").html(
+qs("#nocss .requestedStylesheets")?.setHtml(
   "Requested stylesheets:<br>" +
     (
       [
@@ -9,21 +10,21 @@ $("#nocss .requestedStylesheets").html(
     )
       .map((l) => l.href)
       .filter((l) => /\/css\/style/gi.test(l))
-      .join("<br>")
+      .join("<br>"),
 );
 
-$("#nocss .requestedJs").html(
+qs("#nocss .requestedJs")?.setHtml(
   "Requested Javascript files:<br>" +
     ([...document.querySelectorAll("script")] as HTMLScriptElement[])
       .map((l) => l.src)
       .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
       .join("<br>") +
     "<br><br>Client version:<br>" +
-    envConfig.clientVersion
+    envConfig.clientVersion,
 );
 
 if (window.navigator.userAgent.toLowerCase().includes("mac")) {
-  $("#nocss .keys").html(`
+  qs("#nocss .keys")?.setHtml(`
     <span
       style="
         padding: 1rem;
@@ -60,7 +61,7 @@ if (window.navigator.userAgent.toLowerCase().includes("mac")) {
     </span>
   `);
 } else {
-  $("#nocss .keys").html(`
+  qs("#nocss .keys")?.setHtml(`
     <span
       style="
         padding: 1rem;

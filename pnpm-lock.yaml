@@ -42,8 +42,8 @@ importers:
         specifier: 1.29.0
         version: 1.29.0
       prettier:
-        specifier: 2.8.8
-        version: 2.8.8
+        specifier: 3.7.1
+        version: 3.7.1
       turbo:
         specifier: 2.5.6
         version: 2.5.6
@@ -73,7 +73,7 @@ importers:
         version: 3.52.1(@types/node@24.9.1)(zod@3.23.8)
       '@ts-rest/express':
         specifier: 3.52.1
-        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.1.0)(zod@3.23.8)
+        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.2.0)(zod@3.23.8)
       '@ts-rest/open-api':
         specifier: 3.52.1
         version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(zod@3.23.8)
@@ -102,11 +102,11 @@ importers:
         specifier: 1.8.1
         version: 1.8.1
       express:
-        specifier: 5.1.0
-        version: 5.1.0
+        specifier: 5.2.0
+        version: 5.2.0
       express-rate-limit:
         specifier: 7.5.1
-        version: 7.5.1(express@5.1.0)
+        version: 7.5.1(express@5.2.0)
       firebase-admin:
         specifier: 12.0.0
         version: 12.0.0(encoding@0.1.13)
@@ -129,8 +129,8 @@ importers:
         specifier: 4.2.0
         version: 4.2.0
       nodemailer:
-        specifier: 7.0.7
-        version: 7.0.7
+        specifier: 7.0.11
+        version: 7.0.11
       object-hash:
         specifier: 3.0.0
         version: 3.0.0
@@ -253,8 +253,8 @@ importers:
         specifier: 4.16.2
         version: 4.16.2
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -418,9 +418,6 @@ importers:
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
-      dotenv:
-        specifier: 16.4.5
-        version: 16.4.5
       eslint:
         specifier: 8.57.1
         version: 8.57.1
@@ -438,7 +435,7 @@ importers:
         version: 20.0.10
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       magic-string:
         specifier: 0.30.17
         version: 0.30.17
@@ -461,8 +458,8 @@ importers:
         specifier: 4.16.2
         version: 4.16.2
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       unplugin-inject-preload:
         specifier: 3.0.0
         version: 3.0.0
@@ -474,7 +471,7 @@ importers:
         version: 1.2.1(rollup@2.79.2)
       vite-plugin-checker:
         specifier: 0.11.0
-        version: 0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.5.4)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
+        version: 0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
       vite-plugin-filter-replace:
         specifier: 0.1.14
         version: 0.1.14
@@ -520,16 +517,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -584,16 +581,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -645,16 +642,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -663,7 +660,7 @@ importers:
     dependencies:
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
     devDependencies:
       '@monkeytype/typescript-config':
         specifier: workspace:*
@@ -675,8 +672,8 @@ importers:
         specifier: 1.29.0
         version: 1.29.0
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
 
   packages/typescript-config: {}
 
@@ -696,16 +693,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -3843,8 +3840,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  baseline-browser-mapping@2.8.29:
-    resolution: {integrity: sha512-sXdt2elaVnhpDNRDz+1BDx1JQoJRuNk7oVlAlbGiFkLikHCAQiccexF/9e91zVi6RCgqspl04aP+6Cnl9zRLrA==}
+  baseline-browser-mapping@2.8.31:
+    resolution: {integrity: sha512-a28v2eWrrRWPpJSzxc+mKwm0ZtVx/G8SepdQZDArnXYU/XS+IF6mp8aB/4E+hH1tyGCoDo3KlUCdlSxGDsRkAw==}
     hasBin: true
 
   basic-auth-connect@1.0.0:
@@ -3898,8 +3895,8 @@ packages:
     resolution: {integrity: sha512-7rAxByjUMqQ3/bHJy7D6OGXvx/MMc4IqBn/X0fcM1QUcAItpZrBEYhWGem+tzXH90c+G01ypMcYJBO9Y30203g==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
 
-  body-parser@2.2.0:
-    resolution: {integrity: sha512-02qvAaxv8tp7fBa/mw1ga98OGm+eCbqzJOKoRt70sLmfEEi+jyBYVTDGfCL/k06/4EMk/z01gCe7HoCH/f2LTg==}
+  body-parser@2.2.1:
+    resolution: {integrity: sha512-nfDwkulwiZYQIGwxdy0RUmowMhKcFVcYXUU7m4QlKYim1rUtg83xm2yjZ40QjDuc291AJjjeSc9b++AWHSgSHw==}
     engines: {node: '>=18'}
 
   boolbase@1.0.0:
@@ -4046,8 +4043,8 @@ packages:
   caniuse-lite@1.0.30001715:
     resolution: {integrity: sha512-7ptkFGMm2OAOgvZpwgA4yjQ5SQbrNVGdRjzH0pBdy1Fasvcr+KAeECmbCAECzTuDuoX0FCY8KzUxjf9+9kfZEw==}
 
-  caniuse-lite@1.0.30001756:
-    resolution: {integrity: sha512-4HnCNKbMLkLdhJz3TToeVWHSnfJvPaq6vu/eRP0Ahub/07n484XHhBF5AJoSGHdVrS8tKFauUQz8Bp9P7LVx7A==}
+  caniuse-lite@1.0.30001757:
+    resolution: {integrity: sha512-r0nnL/I28Zi/yjk1el6ilj27tKcdjLsNqAOZr0yVjWPrSQyHgKI2INaEWw21bAQSv2LXRt1XuCS/GomNpWOxsQ==}
 
   canvas-confetti@1.5.1:
     resolution: {integrity: sha512-Ncz+oZJP6OvY7ti4E1slxVlyAV/3g7H7oQtcCDXgwGgARxPnwYY9PW5Oe+I8uvspYNtuHviAdgA0LfcKFWJfpg==}
@@ -4877,8 +4874,8 @@ packages:
   electron-to-chromium@1.5.144:
     resolution: {integrity: sha512-eJIaMRKeAzxfBSxtjYnoIAw/tdD6VIH6tHBZepZnAbE3Gyqqs5mGN87DvcldPUbVkIljTK8pY0CMcUljP64lfQ==}
 
-  electron-to-chromium@1.5.258:
-    resolution: {integrity: sha512-rHUggNV5jKQ0sSdWwlaRDkFc3/rRJIVnOSe9yR4zrR07m3ZxhP4N27Hlg8VeJGGYgFTxK5NqDmWI4DSH72vIJg==}
+  electron-to-chromium@1.5.262:
+    resolution: {integrity: sha512-NlAsMteRHek05jRUxUR0a5jpjYq9ykk6+kO0yRaMi5moe7u0fVIOeQ3Y30A8dIiWFBNUoQGi1ljb1i5VtS9WQQ==}
 
   electron-to-chromium@1.5.5:
     resolution: {integrity: sha512-QR7/A7ZkMS8tZuoftC/jfqNkZLQO779SSW3YuZHP4eXpj3EffGLFcB/Xu9AAZQzLccTiCV+EmUo3ha4mQ9wnlA==}
@@ -5209,8 +5206,8 @@ packages:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
     engines: {node: '>= 0.10.0'}
 
-  express@5.1.0:
-    resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
+  express@5.2.0:
+    resolution: {integrity: sha512-XdpJDLxfztVY59X0zPI6sibRiGcxhTPXRD3IhJmjKf2jwMvkRGV1j7loB8U+heeamoU3XvihAaGRTR4aXXUN3A==}
     engines: {node: '>= 18'}
 
   extend@3.0.2:
@@ -6859,10 +6856,6 @@ packages:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
 
-  mime-db@1.53.0:
-    resolution: {integrity: sha512-oHlN/w+3MQ3rba9rqFr6V/ypF10LSkdwUysQL7GkXoTgIWeV+tcXGA852TBxH+gsh8UWoyhR1hKcoMJTuWflpg==}
-    engines: {node: '>= 0.6'}
-
   mime-db@1.54.0:
     resolution: {integrity: sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==}
     engines: {node: '>= 0.6'}
@@ -7315,8 +7308,8 @@ packages:
     resolution: {integrity: sha512-1uiY543L+N7Og4yswvlm5NCKgPKDEXd9AUR9Jh3gen6oOeBsesr6LqhXom1er3eRzSUcVRWXzhv8tSNrIfGHKw==}
     engines: {node: '>=18'}
 
-  nodemailer@7.0.7:
-    resolution: {integrity: sha512-jGOaRznodf62TVzdyhKt/f1Q/c3kYynk8629sgJHpRzGZj01ezbgMMWJSAjHADcwTKxco3B68/R+KHJY2T5BaA==}
+  nodemailer@7.0.11:
+    resolution: {integrity: sha512-gnXhNRE0FNhD7wPSCGhdNh46Hs6nm+uTyg+Kq0cZukNQiYdnCsoQjodNP9BQVG9XrcK/v6/MgpAPBUFyzh9pvw==}
     engines: {node: '>=6.0.0'}
 
   nodemon@3.1.4:
@@ -7832,9 +7825,9 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier@2.8.8:
-    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
-    engines: {node: '>=10.13.0'}
+  prettier@3.7.1:
+    resolution: {integrity: sha512-RWKXE4qB3u5Z6yz7omJkjWwmTfLdcbv44jUVHC5NpfXwFGzvpQM798FGv/6WNK879tc+Cn0AAyherCl1KjbyZQ==}
+    engines: {node: '>=14'}
     hasBin: true
 
   pretty-bytes@5.6.0:
@@ -9251,11 +9244,6 @@ packages:
 
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
-
-  typescript@5.5.4:
-    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
@@ -11726,7 +11714,7 @@ snapshots:
   '@hapi/mimos@7.0.1':
     dependencies:
       '@hapi/hoek': 11.0.4
-      mime-db: 1.53.0
+      mime-db: 1.54.0
 
   '@hapi/nigel@5.0.1':
     dependencies:
@@ -11889,7 +11877,7 @@ snapshots:
 
   '@kwsites/file-exists@1.1.1':
     dependencies:
-      debug: 4.3.6(supports-color@5.5.0)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12604,10 +12592,10 @@ snapshots:
       '@types/node': 24.9.1
       zod: 3.23.8
 
-  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.1.0)(zod@3.23.8)':
+  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@24.9.1)(zod@3.23.8))(express@5.2.0)(zod@3.23.8)':
     dependencies:
       '@ts-rest/core': 3.52.1(@types/node@24.9.1)(zod@3.23.8)
-      express: 5.1.0
+      express: 5.2.0
     optionalDependencies:
       zod: 3.23.8
 
@@ -12932,7 +12920,7 @@ snapshots:
 
   '@typescript-eslint/types@8.46.2': {}
 
-  '@typescript-eslint/typescript-estree@7.18.0(typescript@5.5.4)':
+  '@typescript-eslint/typescript-estree@7.18.0(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 7.18.0
       '@typescript-eslint/visitor-keys': 7.18.0
@@ -12941,9 +12929,9 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.5
       semver: 7.7.3
-      ts-api-utils: 1.4.3(typescript@5.5.4)
+      ts-api-utils: 1.4.3(typescript@5.9.3)
     optionalDependencies:
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -13485,7 +13473,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  baseline-browser-mapping@2.8.29: {}
+  baseline-browser-mapping@2.8.31: {}
 
   basic-auth-connect@1.0.0: {}
 
@@ -13566,13 +13554,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  body-parser@2.2.0:
+  body-parser@2.2.1:
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
       debug: 4.4.3
       http-errors: 2.0.0
-      iconv-lite: 0.6.3
+      iconv-lite: 0.7.0
       on-finished: 2.4.1
       qs: 6.14.0
       raw-body: 3.0.1
@@ -13622,9 +13610,9 @@ snapshots:
 
   browserslist@4.28.0:
     dependencies:
-      baseline-browser-mapping: 2.8.29
-      caniuse-lite: 1.0.30001756
-      electron-to-chromium: 1.5.258
+      baseline-browser-mapping: 2.8.31
+      caniuse-lite: 1.0.30001757
+      electron-to-chromium: 1.5.262
       node-releases: 2.0.27
       update-browserslist-db: 1.1.4(browserslist@4.28.0)
 
@@ -13753,7 +13741,7 @@ snapshots:
 
   caniuse-lite@1.0.30001715: {}
 
-  caniuse-lite@1.0.30001756: {}
+  caniuse-lite@1.0.30001757: {}
 
   canvas-confetti@1.5.1: {}
 
@@ -14392,7 +14380,7 @@ snapshots:
       commander: 12.1.0
       filing-cabinet: 5.0.2
       precinct: 12.1.2
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -14436,24 +14424,24 @@ snapshots:
 
   detective-stylus@5.0.0: {}
 
-  detective-typescript@13.0.0(typescript@5.5.4):
+  detective-typescript@13.0.0(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/typescript-estree': 7.18.0(typescript@5.5.4)
+      '@typescript-eslint/typescript-estree': 7.18.0(typescript@5.9.3)
       ast-module-types: 6.0.0
       node-source-walk: 7.0.0
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  detective-vue2@2.0.3(typescript@5.5.4):
+  detective-vue2@2.0.3(typescript@5.9.3):
     dependencies:
       '@vue/compiler-sfc': 3.4.37
       detective-es6: 5.0.0
       detective-sass: 6.0.0
       detective-scss: 5.0.0
       detective-stylus: 5.0.0
-      detective-typescript: 13.0.0(typescript@5.5.4)
-      typescript: 5.5.4
+      detective-typescript: 13.0.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -14602,7 +14590,7 @@ snapshots:
 
   electron-to-chromium@1.5.144: {}
 
-  electron-to-chromium@1.5.258: {}
+  electron-to-chromium@1.5.262: {}
 
   electron-to-chromium@1.5.5: {}
 
@@ -15171,9 +15159,9 @@ snapshots:
   exponential-backoff@3.1.1:
     optional: true
 
-  express-rate-limit@7.5.1(express@5.1.0):
+  express-rate-limit@7.5.1(express@5.2.0):
     dependencies:
-      express: 5.1.0
+      express: 5.2.0
 
   express@4.21.2:
     dependencies:
@@ -15211,15 +15199,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  express@5.1.0:
+  express@5.2.0:
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.2.0
+      body-parser: 2.2.1
       content-disposition: 1.0.0
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
       debug: 4.4.3
+      depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -15372,7 +15361,7 @@ snapshots:
       sass-lookup: 6.0.1
       stylus-lookup: 6.0.0
       tsconfig-paths: 4.2.0
-      typescript: 5.5.4
+      typescript: 5.9.3
 
   fill-range@7.1.1:
     dependencies:
@@ -16168,6 +16157,7 @@ snapshots:
   iconv-lite@0.6.3:
     dependencies:
       safer-buffer: 2.1.2
+    optional: true
 
   iconv-lite@0.7.0:
     dependencies:
@@ -17033,7 +17023,7 @@ snapshots:
 
   lz-ts@1.1.2: {}
 
-  madge@8.0.0(typescript@5.5.4):
+  madge@8.0.0(typescript@5.9.3):
     dependencies:
       chalk: 4.1.2
       commander: 7.2.0
@@ -17048,7 +17038,7 @@ snapshots:
       ts-graphviz: 2.1.2
       walkdir: 0.4.1
     optionalDependencies:
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -17175,8 +17165,6 @@ snapshots:
       picomatch: 2.3.1
 
   mime-db@1.52.0: {}
-
-  mime-db@1.53.0: {}
 
   mime-db@1.54.0: {}
 
@@ -17782,7 +17770,7 @@ snapshots:
     dependencies:
       '@babel/parser': 7.28.5
 
-  nodemailer@7.0.7: {}
+  nodemailer@7.0.11: {}
 
   nodemon@3.1.4:
     dependencies:
@@ -18326,18 +18314,18 @@ snapshots:
       detective-sass: 6.0.0
       detective-scss: 5.0.0
       detective-stylus: 5.0.0
-      detective-typescript: 13.0.0(typescript@5.5.4)
-      detective-vue2: 2.0.3(typescript@5.5.4)
+      detective-typescript: 13.0.0(typescript@5.9.3)
+      detective-vue2: 2.0.3(typescript@5.9.3)
       module-definition: 6.0.0
       node-source-walk: 7.0.0
       postcss: 8.5.6
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
   prelude-ls@1.2.1: {}
 
-  prettier@2.8.8: {}
+  prettier@3.7.1: {}
 
   pretty-bytes@5.6.0: {}
 
@@ -19877,9 +19865,9 @@ snapshots:
 
   ts-algebra@1.2.2: {}
 
-  ts-api-utils@1.4.3(typescript@5.5.4):
+  ts-api-utils@1.4.3(typescript@5.9.3):
     dependencies:
-      typescript: 5.5.4
+      typescript: 5.9.3
 
   ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:
@@ -19935,7 +19923,7 @@ snapshots:
 
   tsscmp@1.0.6: {}
 
-  tsup@8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1):
+  tsup@8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.0)
       cac: 6.7.14
@@ -19955,7 +19943,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.5.6
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - jiti
       - supports-color
@@ -20095,8 +20083,6 @@ snapshots:
   typedarray-to-buffer@3.1.5:
     dependencies:
       is-typedarray: 1.0.0
-
-  typescript@5.5.4: {}
 
   typescript@5.9.3: {}
 
@@ -20306,7 +20292,7 @@ snapshots:
     dependencies:
       vite: 7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
 
-  vite-plugin-checker@0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.5.4)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)):
+  vite-plugin-checker@0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)):
     dependencies:
       '@babel/code-frame': 7.27.1
       chokidar: 4.0.3
@@ -20322,7 +20308,7 @@ snapshots:
       meow: 13.2.0
       optionator: 0.9.4
       oxlint: 1.29.0
-      typescript: 5.5.4
+      typescript: 5.9.3
 
   vite-plugin-filter-replace@0.1.14:
     dependencies:

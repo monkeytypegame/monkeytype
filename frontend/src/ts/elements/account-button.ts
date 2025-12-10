@@ -8,25 +8,34 @@ import * as XpBar from "./xp-bar";
 import { getAvatarElement } from "../utils/discord-avatar";
 import * as AuthEvent from "../observables/auth-event";
 import { getSnapshot } from "../db";
+import { qsr } from "../utils/dom";
+
+const nav = qsr("header nav");
+const accountButtonAndMenuEl = nav.qsr(".accountButtonAndMenu");
+const loginButtonEl = nav.qsr(".textButton.view-login");
 
 export function hide(): void {
-  $("nav .accountButtonAndMenu").addClass("hidden");
-  $("nav .textButton.view-login").addClass("hidden");
+  accountButtonAndMenuEl.addClass("hidden");
+  loginButtonEl.addClass("hidden");
 }
 
 export function loading(state: boolean): void {
-  $("nav .accountButtonAndMenu .spinner").css({ opacity: state ? "1" : "0" });
-  $("nav .accountButtonAndMenu .avatar").css({ opacity: state ? "0" : "1" });
+  accountButtonAndMenuEl
+    .qs(".spinner")
+    ?.setStyle({ opacity: state ? "1" : "0" });
+  accountButtonAndMenuEl
+    .qs(".avatar")
+    ?.setStyle({ opacity: state ? "0" : "1" });
 }
 
 export function updateName(name: string): void {
-  $("header nav .view-account > .text").text(name);
+  accountButtonAndMenuEl.qs(".view-account > .text")?.setText(name);
 }
 
 function updateFlags(flags: SupportsFlags): void {
-  $("nav .textButton.view-account > .text").append(
-    getHtmlByUserFlags(flags, { iconsOnly: true })
-  );
+  accountButtonAndMenuEl
+    .qs(".view-account > .text")
+    ?.appendHtml(getHtmlByUserFlags(flags, { iconsOnly: true }));
 }
 
 export function updateAvatar(avatar?: {
@@ -36,7 +45,7 @@ export function updateAvatar(avatar?: {
   const element = getAvatarElement(avatar ?? {}, {
     userIcon: "fas fa-fw fa-user",
   });
-  $("header nav .view-account .avatar").replaceWith(element);
+  accountButtonAndMenuEl.qs(".avatar")?.replaceWith(element);
 }
 
 export function update(): void {
@@ -53,26 +62,25 @@ export function update(): void {
     XpBar.setXp(xp);
     updateAvatar(snapshot);
 
-    $("nav .accountButtonAndMenu .menu .items .goToProfile").attr(
-      "href",
-      `/profile/${name}`
-    );
+    accountButtonAndMenuEl
+      .qs(".menu .items .goToProfile")
+      ?.setAttribute("href", `/profile/${name}`);
     void Misc.swapElements(
-      document.querySelector("nav .textButton.view-login") as HTMLElement,
-      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
-      250
+      loginButtonEl.native,
+      accountButtonAndMenuEl.native,
+      250,
     );
   } else {
     void Misc.swapElements(
-      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
-      document.querySelector("nav .textButton.view-login") as HTMLElement,
+      accountButtonAndMenuEl.native,
+      loginButtonEl.native,
       250,
       async () => {
         updateName("");
         updateFlags({});
         XpBar.setXp(0);
         updateAvatar();
-      }
+      },
     );
   }
 
@@ -82,26 +90,25 @@ export function update(): void {
 export function updateFriendRequestsIndicator(): void {
   const friends = getSnapshot()?.connections;
 
+  const bubbleElements = accountButtonAndMenuEl.qsa(
+    ".view-account > .notificationBubble, .goToFriends > .notificationBubble",
+  );
   if (friends !== undefined) {
     const pendingFriendRequests = Object.values(friends).filter(
-      (it) => it === "incoming"
+      (it) => it === "incoming",
     ).length;
     if (pendingFriendRequests > 0) {
-      $("nav .view-account > .notificationBubble").removeClass("hidden");
-      $("nav .goToFriends > .notificationBubble")
-        .removeClass("hidden")
-        .text(pendingFriendRequests);
+      bubbleElements.show();
       return;
     }
   }
 
-  $("nav .view-account > .notificationBubble").addClass("hidden");
-  $("nav .goToFriends > .notificationBubble").addClass("hidden");
+  bubbleElements.hide();
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;
 if (coarse) {
-  $("nav .accountButtonAndMenu .textButton.view-account").attr("href", "");
+  accountButtonAndMenuEl.qs(".view-account")?.setAttribute("href", "");
 }
 
 AuthEvent.subscribe((event) => {

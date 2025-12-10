@@ -15,6 +15,7 @@ import {
   WebsiteSchema,
 } from "@monkeytype/schemas/users";
 import { InputIndicator } from "../elements/input-indicator";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -42,17 +43,15 @@ function hide(): void {
   });
 }
 
-const bioInput: JQuery<HTMLTextAreaElement> = $("#editProfileModal .bio");
-const keyboardInput: JQuery<HTMLTextAreaElement> = $(
-  "#editProfileModal .keyboard"
+const bioInput = qsr<HTMLTextAreaElement>("#editProfileModal .bio");
+const keyboardInput = qsr<HTMLTextAreaElement>("#editProfileModal .keyboard");
+const twitterInput = qsr<HTMLInputElement>("#editProfileModal .twitter");
+const githubInput = qsr<HTMLInputElement>("#editProfileModal .github");
+const websiteInput = qsr<HTMLInputElement>("#editProfileModal .website");
+const badgeIdsSelect = qsr("#editProfileModal .badgeSelectionContainer");
+const showActivityOnPublicProfileInput = qsr<HTMLInputElement>(
+  "#editProfileModal .editProfileShowActivityOnPublicProfile",
 );
-const twitterInput = $("#editProfileModal .twitter");
-const githubInput = $("#editProfileModal .github");
-const websiteInput = $("#editProfileModal .website");
-const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
-const showActivityOnPublicProfileInput = document.querySelector(
-  "#editProfileModal .editProfileShowActivityOnPublicProfile"
-) as HTMLInputElement;
 
 const indicators = [
   addValidation(twitterInput, TwitterProfileSchema),
@@ -70,14 +69,14 @@ function hydrateInputs(): void {
     snapshot.details ?? {};
   currentSelectedBadgeId = -1;
 
-  bioInput.val(bio ?? "");
-  keyboardInput.val(keyboard ?? "");
-  twitterInput.val(socialProfiles?.twitter ?? "");
-  githubInput.val(socialProfiles?.github ?? "");
-  websiteInput.val(socialProfiles?.website ?? "");
-  badgeIdsSelect.html("");
-  showActivityOnPublicProfileInput.checked =
-    showActivityOnPublicProfile || false;
+  bioInput.setValue(bio ?? "");
+  keyboardInput.setValue(keyboard ?? "");
+  twitterInput.setValue(socialProfiles?.twitter ?? "");
+  githubInput.setValue(socialProfiles?.github ?? "");
+  websiteInput.setValue(socialProfiles?.website ?? "");
+  badgeIdsSelect.setHtml("");
+  showActivityOnPublicProfileInput.native.checked =
+    showActivityOnPublicProfile ?? false;
 
   badges?.forEach((badge: Badge) => {
     if (badge.selected) {
@@ -88,10 +87,10 @@ function hydrateInputs(): void {
     const badgeWrapper = `<button type="button" class="badgeSelectionItem ${
       badge.selected ? "selected" : ""
     }" selection-id=${badge.id}>${badgeOption}</button>`;
-    badgeIdsSelect.append(badgeWrapper);
+    badgeIdsSelect?.appendHtml(badgeWrapper);
   });
 
-  badgeIdsSelect.prepend(
+  badgeIdsSelect?.prependHtml(
     `<button type="button" class="badgeSelectionItem ${
       currentSelectedBadgeId === -1 ? "selected" : ""
     }" selection-id=${-1}>
@@ -99,14 +98,14 @@ function hydrateInputs(): void {
         <i class="fas fa-frown-open"></i>
         <div class="text">none</div>
       </div>
-    </button>`
+    </button>`,
   );
 
   $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
     const selectionId = $(currentTarget).attr("selection-id") as string;
     currentSelectedBadgeId = parseInt(selectionId, 10);
 
-    badgeIdsSelect.find(".badgeSelectionItem").removeClass("selected");
+    badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
     $(currentTarget).addClass("selected");
   });
 
@@ -119,13 +118,13 @@ function initializeCharacterCounters(): void {
 }
 
 function buildUpdatesFromInputs(): UserProfileDetails {
-  const bio = (bioInput.val() ?? "") as string;
-  const keyboard = (keyboardInput.val() ?? "") as string;
-  const twitter = (twitterInput.val() ?? "") as string;
-  const github = (githubInput.val() ?? "") as string;
-  const website = (websiteInput.val() ?? "") as string;
+  const bio = bioInput.getValue() ?? "";
+  const keyboard = keyboardInput.getValue() ?? "";
+  const twitter = twitterInput.getValue() ?? "";
+  const github = githubInput.getValue() ?? "";
+  const website = websiteInput.getValue() ?? "";
   const showActivityOnPublicProfile =
-    showActivityOnPublicProfileInput.checked ?? false;
+    showActivityOnPublicProfileInput.isChecked() ?? false;
 
   const profileUpdates: UserProfileDetails = {
     bio,
@@ -154,7 +153,7 @@ async function updateProfile(): Promise<void> {
   ) {
     Notifications.add(
       `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
-      -1
+      -1,
     );
     return;
   }
@@ -166,7 +165,7 @@ async function updateProfile(): Promise<void> {
   ) {
     Notifications.add(
       `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
-      -1
+      -1,
     );
     return;
   }
@@ -199,7 +198,10 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
+function addValidation(
+  element: ElementWithUtils<HTMLInputElement>,
+  schema: Zod.Schema,
+): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
       icon: "fa-check",
@@ -226,7 +228,7 @@ function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
     if (!validationResult.success) {
       indicator.show(
         "invalid",
-        validationResult.error.errors.map((err) => err.message).join(", ")
+        validationResult.error.errors.map((err) => err.message).join(", "),
       );
       return;
     }

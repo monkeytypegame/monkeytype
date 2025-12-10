@@ -1,4 +1,4 @@
-name: Prettier Check
+name: Formatting check
 
 env:
   PNPM_VERSION: "9.6.0"
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: group-pretty-check-${{ github.ref }}-${{ github.workflow }}
+  group: group-format-check-${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
@@ -35,8 +35,9 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install prettier
-        run: pnpm add -g prettier@2.8.8
+      - name: Install formatter
+        run: pnpm install -D -w prettier
+
 
       - name: Get changed files
         id: get-changed-files
@@ -53,7 +54,7 @@ jobs:
             );
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
-      - name: Check pretty (changed files)
+      - name: Check formatting (changed files)
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then

@@ -6,6 +6,7 @@ export const LayoutNameSchema = z.enum(
     "qwerty",
     "dvorak",
     "colemak",
+    "colemak_angle",
     "colemak_wide",
     "colemak_dh",
     "colemak_dh_iso",
@@ -232,7 +233,7 @@ export const LayoutNameSchema = z.enum(
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
-  }
+  },
 );
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;

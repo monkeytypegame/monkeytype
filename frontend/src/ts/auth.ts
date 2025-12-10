@@ -30,6 +30,7 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import * as Sentry from "./sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as AuthEvent from "./observables/auth-event";
+import { qs, qsa } from "./utils/dom";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -43,14 +44,14 @@ async function sendVerificationEmail(): Promise<void> {
   }
 
   Loader.show();
-  $(".sendVerificationEmail").prop("disabled", true);
+  qs(".sendVerificationEmail")?.disable();
   const result = await Ape.users.verificationEmail();
-  $(".sendVerificationEmail").prop("disabled", false);
+  qs(".sendVerificationEmail")?.enable();
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
       "Failed to request verification email: " + result.body.message,
-      -1
+      -1,
     );
   } else {
     Loader.hide();
@@ -65,7 +66,7 @@ async function getDataAndInit(): Promise<boolean> {
 
     if (snapshot === false) {
       throw new Error(
-        "Snapshot didn't initialize due to lacking authentication even though user is authenticated"
+        "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
       );
     }
 
@@ -77,7 +78,7 @@ async function getDataAndInit(): Promise<boolean> {
         undefined,
         true,
         undefined,
-        true
+        true,
       );
     }
 
@@ -86,7 +87,7 @@ async function getDataAndInit(): Promise<boolean> {
 
     if (Config === undefined || !areConfigsEqual) {
       console.log(
-        "no local config or local and db configs are different - applying db"
+        "no local config or local and db configs are different - applying db",
       );
       await UpdateConfig.apply(snapshot.config);
       UpdateConfig.saveFullConfigToLocalStorage(true);
@@ -100,7 +101,7 @@ async function getDataAndInit(): Promise<boolean> {
   } catch (error) {
     console.error(error);
     LoginPage.enableInputs();
-    $("header nav .view-account").css("opacity", 1);
+    qs("header nav .view-account")?.setStyle({ opacity: "1" });
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
         Notifications.add(
@@ -108,14 +109,14 @@ async function getDataAndInit(): Promise<boolean> {
           0,
           {
             duration: 0,
-          }
+          },
         );
         Notifications.add(
           "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
           0,
           {
             duration: 0,
-          }
+          },
         );
       }
 
@@ -138,7 +139,7 @@ export async function loadUser(_user: UserType): Promise<void> {
 
 export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
-  user: UserType | null
+  user: UserType | null,
 ): Promise<void> {
   console.debug(`account controller ready`);
 
@@ -215,12 +216,12 @@ export async function signIn(email: string, password: string): Promise<void> {
     return;
   }
 
-  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
-    "checked"
-  ) as boolean;
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
 
   const { error } = await tryCatch(
-    signInWithEmailAndPassword(email, password, rememberMe)
+    signInWithEmailAndPassword(email, password, rememberMe),
   );
 
   if (error !== null) {
@@ -249,9 +250,9 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
-    "checked"
-  ) as boolean;
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
 
   const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
@@ -284,7 +285,7 @@ async function addGithubAuth(): Promise<void> {
 
 async function addAuthProvider(
   providerName: string,
-  provider: AuthProvider
+  provider: AuthProvider,
 ): Promise<void> {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -310,7 +311,7 @@ async function addAuthProvider(
     Loader.hide();
     const message = Misc.createErrorMessage(
       error,
-      `Failed to add ${providerName} authentication`
+      `Failed to add ${providerName} authentication`,
     );
     Notifications.add(message, -1);
   }
@@ -363,7 +364,7 @@ async function signUp(): Promise<void> {
   try {
     const createdAuthUser = await createUserWithEmailAndPassword(
       email,
-      password
+      password,
     );
 
     const signInResponse = await Ape.users.create({
@@ -392,7 +393,7 @@ async function signUp(): Promise<void> {
       if ("code" in e && e.code === "auth/email-already-in-use") {
         message = Misc.createErrorMessage(
           { message: "Email already in use" },
-          "Failed to create account"
+          "Failed to create account",
         );
       }
     }
@@ -406,24 +407,24 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin .login form").on("submit", (e) => {
+qs(".pageLogin .login form")?.on("submit", (e) => {
   e.preventDefault();
   const email =
-    ($(".pageLogin .login input")[0] as HTMLInputElement).value ?? "";
+    qsa<HTMLInputElement>(".pageLogin .login input")?.[0]?.getValue() ?? "";
   const password =
-    ($(".pageLogin .login input")[1] as HTMLInputElement).value ?? "";
+    qsa<HTMLInputElement>(".pageLogin .login input")?.[1]?.getValue() ?? "";
   void signIn(email, password);
 });
 
-$(".pageLogin .login button.signInWithGoogle").on("click", () => {
+qs(".pageLogin .login button.signInWithGoogle")?.on("click", () => {
   void signInWithGoogle();
 });
 
-$(".pageLogin .login button.signInWithGitHub").on("click", () => {
+qs(".pageLogin .login button.signInWithGitHub")?.on("click", () => {
   void signInWithGitHub();
 });
 
-$("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
+qs("nav .accountButtonAndMenu .menu button.signOut")?.on("click", () => {
   if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -433,19 +434,20 @@ $("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
   signOut();
 });
 
-$(".pageLogin .register form").on("submit", (e) => {
+qs(".pageLogin .register form")?.on("submit", (e) => {
   e.preventDefault();
   void signUp();
 });
 
-$(".pageAccountSettings").on("click", "#addGoogleAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
   void addGoogleAuth();
 });
-$(".pageAccountSettings").on("click", "#addGithubAuth", () => {
+
+qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
   void addGithubAuth();
 });
 
-$(".pageAccount").on("click", ".sendVerificationEmail", () => {
+qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,

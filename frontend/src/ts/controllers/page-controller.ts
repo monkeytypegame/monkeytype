@@ -18,6 +18,7 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions } from "../pages/page";
+import { qsa } from "../utils/dom";
 
 type ChangeOptions = {
   force?: boolean;
@@ -89,7 +90,7 @@ async function showSyncLoading({
       await getLoadingPromiseWithBarKeyframes(
         options,
         fillDivider,
-        currentOffset
+        currentOffset,
       );
       void PageLoading.updateBar(100, 125);
       PageLoading.updateText("Done");
@@ -116,7 +117,7 @@ async function getLoadingPromiseWithBarKeyframes(
     { style: "bar" }
   >,
   fillDivider: number,
-  fillOffset: number
+  fillOffset: number,
 ): Promise<void> {
   let loadingPromise = loadingOptions.loadingPromise();
 
@@ -133,7 +134,7 @@ async function getLoadingPromiseWithBarKeyframes(
       }
       await PageLoading.updateBar(
         fillOffset + keyframe.percentage / fillDivider,
-        keyframe.durationMs
+        keyframe.durationMs,
       );
     }
   })();
@@ -160,7 +161,7 @@ async function getLoadingPromiseWithBarKeyframes(
 
 export async function change(
   pageName: PageName,
-  options = {} as ChangeOptions
+  options = {} as ChangeOptions,
 ): Promise<boolean> {
   const defaultOptions = {
     force: false,
@@ -171,7 +172,7 @@ export async function change(
 
   if (PageTransition.get() && !options.force) {
     console.debug(
-      `change page to ${pageName} stopped, page transition is true`
+      `change page to ${pageName} stopped, page transition is true`,
     );
     return false;
   }
@@ -205,7 +206,7 @@ export async function change(
 
   //start
   PageTransition.set(true);
-  $(".page").removeClass("active");
+  qsa(".page")?.removeClass("active");
 
   //previous page
   await previousPage?.beforeHide?.({
@@ -257,7 +258,7 @@ export async function change(
     PageLoading.updateText(
       `Failed to load the ${nextPage.id} page: ${
         error instanceof Error ? error.message : String(error)
-      }`
+      }`,
     );
     PageTransition.set(false);
     return false;

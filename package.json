@@ -34,6 +34,7 @@
     "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && npm run docker",
     "audit-fe": "cd frontend && npm run audit",
+    "preview-fe": "monkeytype-release --preview-fe",
     "release": "monkeytype-release",
     "release-fe": "monkeytype-release --fe",
     "release-be": "monkeytype-release --be",
@@ -44,16 +45,16 @@
     "hotfix-be": "monkeytype-release --hotfix --be",
     "hotfix-dry": "monkeytype-release --hotfix --dry",
     "deploy-dev": "cd frontend && npm run deploy-dev && cd .. && sh ./bin/purgeCfCache.sh",
-    "pretty-check": "prettier --check .",
-    "pretty-check-be": "prettier --check ./backend",
-    "pretty-check-fe": "prettier --check ./frontend/src",
-    "pretty-check-assets": "prettier --check ./frontend/static",
-    "pretty-check-pkg": "prettier --check ./packages",
-    "pretty-fix": "prettier --write .",
-    "pretty-fix-be": "prettier --write ./backend",
-    "pretty-fix-fe": "prettier --write ./frontend/src",
-    "pretty-fix-assets": "prettier --write ./frontend/static",
-    "pretty-fix-pkg": "prettier --write ./packages",
+    "format-check": "prettier --check .",
+    "format-check-be": "prettier --check ./backend",
+    "format-check-fe": "prettier --check ./frontend/src",
+    "format-check-assets": "prettier --check ./frontend/static",
+    "format-check-pkg": "prettier --check ./packages",
+    "format-fix": "prettier --write .",
+    "format-fix-be": "prettier --write ./backend",
+    "format-fix-fe": "prettier --write ./frontend/src",
+    "format-fix-assets": "prettier --write ./frontend/static",
+    "format-fix-pkg": "prettier --write ./packages",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
@@ -62,7 +63,7 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "24.11.0"
+    "node": "24.11.0 || 22.21.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
@@ -76,7 +77,7 @@
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "oxlint": "1.29.0",
-    "prettier": "2.8.8",
+    "prettier": "3.7.1",
     "turbo": "2.5.6",
     "vitest": "4.0.8"
   },
@@ -90,6 +91,6 @@
       "eslint"
     ]
   },
-  "version": "25.46.0",
+  "version": "25.49.0",
   "packageManager": "pnpm@9.6.0"
 }

@@ -51,8 +51,10 @@ body.crtmode nav > .textButton:nth-child(1),
 body.crtmode nav > .textButton:nth-child(2),
 body.crtmode nav > .textButton:nth-child(3),
 body.crtmode nav > .textButton:nth-child(4) {
-  box-shadow: 3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
-    -3px 0 color-mix(in srgb, #c69f68 30%, transparent), 0 0 3px;
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
+    -3px 0 color-mix(in srgb, #c69f68 30%, transparent),
+    0 0 3px;
 }
 
 body.crtmode header.focus nav > .textButton {

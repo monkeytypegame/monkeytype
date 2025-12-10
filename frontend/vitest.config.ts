@@ -20,5 +20,8 @@ export default defineConfig({
     },
   },
 
-  plugins: [languageHashes({ skip: true }), envConfig({ isDevelopment: true })],
+  plugins: [
+    languageHashes({ skip: true }),
+    envConfig({ isDevelopment: true, clientVersion: "TESTING", env: {} }),
+  ],
 });

@@ -122,7 +122,7 @@ export function update(personalBests?: PersonalBests, isProfile = false): void {
 function buildPbHtml(
   pbs: PersonalBests,
   mode: "time" | "words",
-  mode2: StringNumber
+  mode2: StringNumber,
 ): string {
   let retval = "";
   let dateText = "";

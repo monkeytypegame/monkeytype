@@ -48,7 +48,7 @@ describe("Validation", () => {
 
     testCases.forEach((testCase) => {
       expect(Validation.isTestTooShort(testCase.result as any)).toBe(
-        testCase.expected
+        testCase.expected,
       );
     });
   });

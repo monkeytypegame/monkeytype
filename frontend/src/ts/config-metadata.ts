@@ -299,9 +299,9 @@ export const configMetadata: ConfigMetadataObject = {
       if (!checkCompatibility(value)) {
         Notifications.add(
           `${capitalizeFirstLetter(
-            value.join(", ")
+            value.join(", "),
           )} is an invalid combination of funboxes`,
-          0
+          0,
         );
         return true;
       }
@@ -310,7 +310,7 @@ export const configMetadata: ConfigMetadataObject = {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
             `${value}" cannot be enabled with the current config`,
-            0
+            0,
           );
           return true;
         }
@@ -398,6 +398,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "indicate typos",
     changeRequiresRestart: false,
   },
+  compositionDisplay: {
+    icon: "fa-language",
+    displayString: "composition display",
+    changeRequiresRestart: false,
+  },
   hideExtraLetters: {
     icon: "fa-eye-slash",
     displayString: "hide extra letters",
@@ -462,7 +467,7 @@ export const configMetadata: ConfigMetadataObject = {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
           Notifications.add(
             `Pace caret "pb" and "tag pb" are unavailable without an account`,
-            0
+            0,
           );
           return true;
         }
@@ -497,7 +502,7 @@ export const configMetadata: ConfigMetadataObject = {
   // appearance
   timerStyle: {
     icon: "fa-chart-pie",
-    displayString: "timer style",
+    displayString: "live progress style",
     changeRequiresRestart: false,
   },
   liveSpeedStyle: {
@@ -700,21 +705,21 @@ export const configMetadata: ConfigMetadataObject = {
         if (!isAuthenticated()) {
           Notifications.add(
             "Random theme 'custom' is unavailable without an account",
-            0
+            0,
           );
           return true;
         }
         if (!snapshot) {
           Notifications.add(
             "Random theme 'custom' requires a snapshot to be set",
-            0
+            0,
           );
           return true;
         }
         if (snapshot?.customThemes?.length === 0) {
           Notifications.add(
             "Random theme 'custom' requires at least one custom theme to be saved",
-            0
+            0,
           );
           return true;
         }
@@ -774,6 +779,11 @@ export const configMetadata: ConfigMetadataObject = {
   showAverage: {
     icon: "fa-chart-bar",
     displayString: "show average",
+    changeRequiresRestart: false,
+  },
+  showPb: {
+    icon: "fa-crown",
+    displayString: "show personal best",
     changeRequiresRestart: false,
   },
 

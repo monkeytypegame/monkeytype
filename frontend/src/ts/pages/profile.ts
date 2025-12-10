@@ -173,7 +173,7 @@ function reset(): void {
       `);
 
   const testActivityEl = document.querySelector(
-    ".page.pageProfile .testActivity"
+    ".page.pageProfile .testActivity",
   );
   if (testActivityEl !== null) {
     TestActivity.clear(testActivityEl as HTMLElement);
@@ -193,7 +193,7 @@ async function update(options: UpdateOptions): Promise<void> {
     PbTables.update(
       // this cast is fine because pb tables can handle the partial data inside user profiles
       options.data.personalBests as unknown as PersonalBests,
-      true
+      true,
     );
   } else if (options.uidOrName !== undefined && options.uidOrName !== "") {
     const response = await Ape.users.getProfile({
@@ -218,14 +218,14 @@ async function update(options: UpdateOptions): Promise<void> {
       PbTables.update(profile.personalBests as unknown as PersonalBests, true);
 
       const testActivity = document.querySelector(
-        ".page.pageProfile .testActivity"
+        ".page.pageProfile .testActivity",
       ) as HTMLElement;
 
       if (profile.testActivity !== undefined) {
         const calendar = new TestActivityCalendar(
           profile.testActivity.testsByDays,
           new Date(profile.testActivity.lastDay),
-          firstDayOfTheWeek
+          firstDayOfTheWeek,
         );
         TestActivity.init(testActivity, calendar);
         const title = testActivity.querySelector(".top .title") as HTMLElement;

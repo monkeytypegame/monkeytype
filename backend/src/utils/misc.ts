@@ -53,10 +53,10 @@ export function buildAgentLog(req: MonkeyRequest): AgentLog {
 export function padNumbers(
   numbers: number[],
   maxLength: number,
-  fillString: string
+  fillString: string,
 ): string[] {
   return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString)
+    number.toString().padStart(maxLength, fillString),
   );
 }
 
@@ -86,7 +86,7 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 
 export function flattenObjectDeep(
   obj: Record<string, unknown>,
-  prefix = ""
+  prefix = "",
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   const keys = Object.keys(obj);
@@ -153,7 +153,7 @@ export const MONTH_IN_SECONDS = 1 * 30.4167 * DAY_IN_SECONDS;
 export const YEAR_IN_SECONDS = 1 * 12 * MONTH_IN_SECONDS;
 
 export function formatSeconds(
-  seconds: number
+  seconds: number,
 ): `${number} ${TimeUnit}${"s" | ""}` {
   let unit: TimeUnit;
   let secondsInUnit: number;
@@ -221,9 +221,7 @@ export function isDevEnvironment(): boolean {
 export function getFrontendUrl(): string {
   return isDevEnvironment()
     ? "http://localhost:3000"
-    : process.env["FRONTEND_URL"] !== undefined
-    ? process.env["FRONTEND_URL"]
-    : "https://monkeytype.com";
+    : (process.env["FRONTEND_URL"] ?? "https://monkeytype.com");
 }
 
 /**
@@ -233,13 +231,13 @@ export function getFrontendUrl(): string {
  */
 
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T
+  data: T,
 ): T & { _id: string };
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null
+  data: T | null,
 ): (T & { _id: string }) | null;
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null
+  data: T | null,
 ): (T & { _id: string }) | null {
   if (data === null) {
     return null;
@@ -257,7 +255,7 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
  * @returns api objects with `id: string`
  */
 export function replaceObjectIds<T extends { _id: ObjectId }>(
-  data: T[]
+  data: T[],
 ): (T & { _id: string })[] {
   if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
@@ -268,7 +266,7 @@ export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
 
 export function omit<T extends object, K extends keyof T>(
   obj: T,
-  keys: K[]
+  keys: K[],
 ): Omit<T, K> {
   const result = { ...obj };
   for (const key of keys) {

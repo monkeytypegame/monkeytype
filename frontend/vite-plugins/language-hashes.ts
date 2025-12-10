@@ -16,7 +16,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
     load(id) {
       if (id === resolvedVirtualModuleId) {
         if (options?.skip) {
-          console.log("Skipping language hashing in dev environment.");
+          console.log("Skipping language hashing.");
         }
 
         const hashes: Record<string, string> = options?.skip ? {} : getHashes();
@@ -37,7 +37,7 @@ function getHashes(): Record<string, string> {
   const hashes = Object.fromEntries(
     readdirSync("./static/languages").map((file) => {
       return [file.slice(0, -5), calcHash(file)];
-    })
+    }),
   );
 
   const end = performance.now();
@@ -51,7 +51,7 @@ function calcHash(file: string): string {
   const currentLanguage = JSON.stringify(
     JSON.parse(readFileSync("./static/languages/" + file).toString()),
     null,
-    0
+    0,
   );
   const encoder = new TextEncoder();
   const data = encoder.encode(currentLanguage);

@@ -57,8 +57,10 @@ body.crtmode input,
 body.crtmode button,
 body.crtmode textarea,
 body.crtmode #bannerCenter .banner {
-  text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
-    -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
+  text-shadow:
+    3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
+    -3px 0 color-mix(in srgb, currentColor 30%, transparent),
+    0 0 3px;
 }
 
 body.crtmode #testConfig,
@@ -68,37 +70,46 @@ body.crtmode #testModesNotice {
 
 body.crtmode #testConfig .textButton,
 body.crtmode #testModesNotice .textButton {
-  text-shadow: 3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow), 0 0 3px;
+  text-shadow:
+    3px 0 1px var(--crt-sub-color-glow),
+    -3px 0 var(--crt-sub-color-glow),
+    0 0 3px;
 }
 
 body.crtmode #testConfig .textButton:hover,
 body.crtmode #testModesNotice .textButton:hover {
-  text-shadow: 3px 0 1px var(--crt-text-color-glow),
-    -3px 0 var(--crt-text-color-glow), 0 0 3px;
+  text-shadow:
+    3px 0 1px var(--crt-text-color-glow),
+    -3px 0 var(--crt-text-color-glow),
+    0 0 3px;
 }
 
 body.crtmode #testConfig .textButton.active,
 body.crtmode #testModesNotice .textButton.active {
-  text-shadow: 3px 0 1px var(--crt-main-color-glow),
-    -3px 0 var(--crt-main-color-glow), 0 0 3px;
+  text-shadow:
+    3px 0 1px var(--crt-main-color-glow),
+    -3px 0 var(--crt-main-color-glow),
+    0 0 3px;
 }
 
 body.crtmode #testConfig .row,
 body.crtmode #testModesNotice .row {
-  box-shadow: 3px 0 1px var(--crt-sub-alt-color-glow),
+  box-shadow:
+    3px 0 1px var(--crt-sub-alt-color-glow),
     -3px 0 var(--crt-sub-alt-color-glow);
 }
 
 body.crtmode #caret {
-  box-shadow: 3px 0 1px var(--crt-caret-color-glow),
+  box-shadow:
+    3px 0 1px var(--crt-caret-color-glow),
     -3px 0 var(--crt-caret-color-glow);
 }
 
 body.crtmode #paceCaret,
 body.crtmode key,
 body.crtmode #bannerCenter .banner {
-  box-shadow: 3px 0 1px var(--crt-sub-color-glow),
+  box-shadow:
+    3px 0 1px var(--crt-sub-color-glow),
     -3px 0 var(--crt-sub-color-glow);
 }
 
@@ -132,28 +143,38 @@ body.crtmode nav .accountButtonAndMenu .view-account .xpBar .xpBreakdown {
 
 body.crtmode .button,
 body.crtmode .scrollToTopButton {
-  box-shadow: 3px 0 1px var(--crt-sub-alt-color-glow),
-    -3px 0 var(--crt-sub-alt-color-glow), 0 0 3px var(--crt-sub-alt-color-glow);
+  box-shadow:
+    3px 0 1px var(--crt-sub-alt-color-glow),
+    -3px 0 var(--crt-sub-alt-color-glow),
+    0 0 3px var(--crt-sub-alt-color-glow);
 }
 
 body.crtmode .button.active,
 body.crtmode .scrollToTopButton.active {
-  box-shadow: 3px 0 1px var(--crt-main-color-glow),
-    -3px 0 var(--crt-main-color-glow), 0 0 3px;
+  box-shadow:
+    3px 0 1px var(--crt-main-color-glow),
+    -3px 0 var(--crt-main-color-glow),
+    0 0 3px;
 }
 
 body.crtmode .button:hover,
 body.crtmode .scrollToTopButton:hover {
-  box-shadow: 3px 0 1px var(--crt-text-color-glow),
-    -3px 0 var(--crt-text-color-glow), 0 0 3px;
+  box-shadow:
+    3px 0 1px var(--crt-text-color-glow),
+    -3px 0 var(--crt-text-color-glow),
+    0 0 3px;
 }
 
 body.crtmode #keymap .keymapKey {
-  box-shadow: 3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow), 0 0 3px;
+  box-shadow:
+    3px 0 1px var(--crt-sub-color-glow),
+    -3px 0 var(--crt-sub-color-glow),
+    0 0 3px;
 }
 
 body.crtmode #keymap .keymapKey.activeKey {
-  box-shadow: 3px 0 1px var(--crt-main-color-glow),
-    -3px 0 var(--crt-main-color-glow), 0 0 3px;
+  box-shadow:
+    3px 0 1px var(--crt-main-color-glow),
+    -3px 0 var(--crt-main-color-glow),
+    0 0 3px;
 }

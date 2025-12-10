@@ -48,7 +48,7 @@ Chart.register(
   TimeSeriesScale,
   Tooltip,
   chartTrendline,
-  chartAnnotation
+  chartAnnotation,
 );
 
 (
@@ -68,17 +68,18 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown,
-  DatasetIds = never
+  DatasetIds = never,
 > extends Chart<TType, TData, TLabel> {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(
     item: ChartItem,
-    config: ChartConfiguration<TType, TData, TLabel>
+    config: ChartConfiguration<TType, TData, TLabel>,
   ) {
     super(item, config);
   }
@@ -99,7 +100,7 @@ class ChartWithUpdateColors<
   }
 
   getScale(
-    id: DatasetIds extends never ? never : "x" | DatasetIds
+    id: DatasetIds extends never ? never : "x" | DatasetIds,
   ): DatasetIds extends never ? never : CartesianScaleOptions {
     //@ts-expect-error its too difficult to figure out these types, but this works
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
@@ -292,7 +293,7 @@ export const result = new ChartWithUpdateColors<
               }
               void ResultWordHighlight.highlightWordsInRange(
                 firstHighlightWordIndex,
-                lastHighlightWordIndex
+                lastHighlightWordIndex,
               );
             } catch {}
             return "";
@@ -355,7 +356,7 @@ export const accountHistory = new ChartWithUpdateColors<
   | "accAvgHundred"
 >(
   document.querySelector(
-    ".pageAccount #accountHistoryChart"
+    ".pageAccount #accountHistoryChart",
   ) as HTMLCanvasElement,
   {
     type: "line",
@@ -573,7 +574,7 @@ export const accountHistory = new ChartWithUpdateColors<
                   tooltipItem.dataIndex
                 ] as AccChartData;
                 return `error rate: ${Numbers.roundTo2(
-                  resultData.errorRate
+                  resultData.errorRate,
                 )}%\nacc: ${Numbers.roundTo2(100 - resultData.errorRate)}%`;
               }
               const resultData = tooltipItem.dataset.data[
@@ -594,10 +595,7 @@ export const accountHistory = new ChartWithUpdateColors<
                 label += resultData.mode2;
               }
 
-              let diff = resultData.difficulty;
-              if (diff === undefined) {
-                diff = "normal";
-              }
+              let diff = resultData.difficulty ?? "normal";
               label += `\ndifficulty: ${diff}`;
 
               label +=
@@ -609,7 +607,7 @@ export const accountHistory = new ChartWithUpdateColors<
                 "\n\n" +
                 `date: ${format(
                   new Date(resultData.timestamp),
-                  "dd MMM yyyy HH:mm"
+                  "dd MMM yyyy HH:mm",
                 )}`;
 
               return label;
@@ -625,7 +623,7 @@ export const accountHistory = new ChartWithUpdateColors<
         },
       },
     },
-  }
+  },
 );
 
 export const accountActivity = new ChartWithUpdateColors<
@@ -635,7 +633,7 @@ export const accountActivity = new ChartWithUpdateColors<
   "count" | "avgWpm"
 >(
   document.querySelector(
-    ".pageAccount #accountActivityChart"
+    ".pageAccount #accountActivityChart",
   ) as HTMLCanvasElement,
   {
     type: "bar",
@@ -752,24 +750,24 @@ export const accountActivity = new ChartWithUpdateColors<
                 tooltipItem.dataIndex
               ] as ActivityChartDataPoint;
               const typingSpeedUnit = getTypingSpeedUnit(
-                Config.typingSpeedUnit
+                Config.typingSpeedUnit,
               );
               return `Time Typing: ${DateTime.secondsToString(
                 Math.round(resultData.y * 60),
                 true,
-                true
+                true,
               )}\nTests Completed: ${
                 resultData.amount
               }\nRestarts per test: ${Numbers.roundTo2(
-                (resultData.restarts ?? 0) / (resultData.amount ?? 0)
+                (resultData.restarts ?? 0) / (resultData.amount ?? 0),
               )}\nHighest ${Config.typingSpeedUnit.toUpperCase()}: ${Numbers.roundTo2(
-                typingSpeedUnit.fromWpm(resultData.maxWpm ?? 0)
+                typingSpeedUnit.fromWpm(resultData.maxWpm ?? 0),
               )}\nAverage ${Config.typingSpeedUnit.toUpperCase()}: ${Numbers.roundTo2(
-                typingSpeedUnit.fromWpm(resultData.avgWpm ?? 0)
+                typingSpeedUnit.fromWpm(resultData.avgWpm ?? 0),
               )}\nAverage Accuracy: ${Numbers.roundTo2(
-                resultData.avgAcc ?? 0
+                resultData.avgAcc ?? 0,
               )}%\nAverage Consistency: ${Numbers.roundTo2(
-                resultData.avgCon ?? 0
+                resultData.avgCon ?? 0,
               )}%`;
             },
             label: function (): string {
@@ -779,7 +777,7 @@ export const accountActivity = new ChartWithUpdateColors<
         },
       },
     },
-  }
+  },
 );
 
 export const accountHistogram = new ChartWithUpdateColors<
@@ -789,7 +787,7 @@ export const accountHistogram = new ChartWithUpdateColors<
   "count"
 >(
   document.querySelector(
-    ".pageAccount #accountHistogramChart"
+    ".pageAccount #accountHistogramChart",
   ) as HTMLCanvasElement,
   {
     type: "bar",
@@ -882,7 +880,7 @@ export const accountHistogram = new ChartWithUpdateColors<
         },
       },
     },
-  }
+  },
 );
 
 export const globalSpeedHistogram = new ChartWithUpdateColors<
@@ -892,7 +890,7 @@ export const globalSpeedHistogram = new ChartWithUpdateColors<
   "count"
 >(
   document.querySelector(
-    ".pageAbout #publicStatsHistogramChart"
+    ".pageAbout #publicStatsHistogramChart",
   ) as HTMLCanvasElement,
   {
     type: "bar",
@@ -951,7 +949,7 @@ export const globalSpeedHistogram = new ChartWithUpdateColors<
         },
       },
     },
-  }
+  },
 );
 
 export const miniResult = new ChartWithUpdateColors<
@@ -1101,11 +1099,11 @@ export function updateAccountChartButtons(): void {
 
 function updateAccountChartButton(
   isActive: boolean,
-  className: ButtonBelowChart
+  className: ButtonBelowChart,
 ): void {
   isActive
-    ? $(`.pageAccount ${className}`).addClass("active")
-    : $(`.pageAccount ${className}`).removeClass("active");
+    ? qs(`.pageAccount ${className}`)?.addClass("active")
+    : qs(`.pageAccount ${className}`)?.removeClass("active");
 }
 
 function updateResults(updateChart = true): void {
@@ -1138,7 +1136,7 @@ function updateAccuracy(updateChart = true): void {
   } else {
     const minAccRoundedTo10 =
       Math.floor(
-        Math.min(...accountHistory.getDataset("acc").data.map((x) => x.y)) / 5
+        Math.min(...accountHistory.getDataset("acc").data.map((x) => x.y)) / 5,
       ) * 5;
 
     accountHistory.getScale("acc").min = minAccRoundedTo10;
@@ -1186,7 +1184,7 @@ async function updateColors<
     | AccChartData[]
     | ActivityChartDataPoint[]
     | number[],
-  TLabel = string
+  TLabel = string,
 >(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
   const bgcolor = await ThemeColors.get("bg");
   const subcolor = await ThemeColors.get("sub");
@@ -1231,7 +1229,7 @@ async function updateColors<
     burst.backgroundColor = blendTwoHexColors(
       subaltcolor,
       subaltcolor + "00",
-      0.5
+      0.5,
     );
     burst.borderColor = subcolor;
     burst.pointBackgroundColor = subcolor;
@@ -1260,7 +1258,7 @@ async function updateColors<
     burst.backgroundColor = blendTwoHexColors(
       subaltcolor,
       subaltcolor + "00",
-      0.75
+      0.75,
     );
     burst.borderColor = subcolor;
     burst.pointBackgroundColor = subcolor;
@@ -1363,8 +1361,9 @@ async function updateColors<
       ao10accDataset === undefined ||
       ao100wpmDataset === undefined ||
       ao100accDataset === undefined
-    )
+    ) {
       return;
+    }
 
     if (avg10On && avg100On) {
       wpmDataset.pointBackgroundColor = main02;

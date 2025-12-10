@@ -5,12 +5,15 @@ import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { animate } from "animejs";
 
+const monkeyEl = document.querySelector("#monkey") as HTMLElement;
+const monkeyFastEl = document.querySelector("#monkey .fast") as HTMLElement;
+
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "monkey" && TestState.isActive) {
     if (Config.monkey) {
-      $("#monkey").removeClass("hidden");
+      monkeyEl.classList.remove("hidden");
     } else {
-      $("#monkey").addClass("hidden");
+      monkeyEl.classList.add("hidden");
     }
   }
 });
@@ -28,17 +31,17 @@ const middleKeysState = { left: false, right: false, last: "right" };
 // 11 both hands down
 
 const elements = {
-  "00": document.querySelector("#monkey .up"),
-  "01": document.querySelector("#monkey .right"),
-  "10": document.querySelector("#monkey .left"),
-  "11": document.querySelector("#monkey .both"),
+  "00": monkeyEl.querySelector(".up"),
+  "01": monkeyEl.querySelector(".right"),
+  "10": monkeyEl.querySelector(".left"),
+  "11": monkeyEl.querySelector(".both"),
 };
 
 const elementsFast = {
-  "00": document.querySelector("#monkey .fast .up"),
-  "01": document.querySelector("#monkey .fast .right"),
-  "10": document.querySelector("#monkey .fast .left"),
-  "11": document.querySelector("#monkey .fast .both"),
+  "00": monkeyFastEl.querySelector(".up"),
+  "01": monkeyFastEl.querySelector(".right"),
+  "10": monkeyFastEl.querySelector(".left"),
+  "11": monkeyFastEl.querySelector(".both"),
 };
 
 function toBit(b: boolean): "1" | "0" {
@@ -47,7 +50,7 @@ function toBit(b: boolean): "1" | "0" {
 
 function update(): void {
   if (!Config.monkey) return;
-  if (!document.querySelector("#monkey")?.classList.contains("hidden")) {
+  if (!monkeyEl?.classList.contains("hidden")) {
     (Object.keys(elements) as (keyof typeof elements)[]).forEach((key) => {
       elements[key]?.classList.add("hidden");
     });
@@ -65,20 +68,20 @@ function update(): void {
 export function updateFastOpacity(num: number): void {
   if (!Config.monkey) return;
   const opacity = mapRange(num, 130, 180, 0, 1);
-  animate("#monkey .fast", {
+  animate(monkeyFastEl, {
     opacity: opacity,
     duration: 1000,
   });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
-  $("#monkey").css({ animationDuration: animDuration + "s" });
+  monkeyEl.style.animationDuration = animDuration + "s";
 }
 
-export function type(event: JQuery.KeyDownEvent): void {
+export function type(event: JQuery.KeyDownEvent | KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code as KeyConverter.Keycode
+    event.code as KeyConverter.Keycode,
   );
   if (leftSide && rightSide) {
     // if its a middle key handle special case
@@ -112,11 +115,11 @@ export function type(event: JQuery.KeyDownEvent): void {
   update();
 }
 
-export function stop(event: JQuery.KeyUpEvent): void {
+export function stop(event: JQuery.KeyUpEvent | KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code as KeyConverter.Keycode
+    event.code as KeyConverter.Keycode,
   );
   if (leftSide && rightSide) {
     // if middle key handle special case
@@ -141,20 +144,21 @@ export function stop(event: JQuery.KeyUpEvent): void {
 
 export function show(): void {
   if (!Config.monkey) return;
-  $("#monkey").removeClass("hidden");
-  animate("#monkey", {
+  monkeyEl.classList.remove("hidden");
+  animate(monkeyEl, {
     opacity: [0, 1],
     duration: 125,
   });
 }
 
 export function hide(): void {
-  animate("#monkey", {
+  animate(monkeyEl, {
     opacity: [1, 0],
     duration: 125,
     onComplete: () => {
-      $("#monkey").addClass("hidden").css({ animationDuration: "0s" });
-      $("#monkey .fast").css("opacity", 0);
+      monkeyEl.classList.add("hidden");
+      monkeyEl.style.animationDuration = "0s";
+      monkeyFastEl.style.opacity = "0";
     },
   });
 }

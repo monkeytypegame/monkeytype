@@ -19,7 +19,7 @@ async function insertIntoDb(
   event: string,
   message: string | Record<string, unknown>,
   uid = "",
-  important = false
+  important = false,
 ): Promise<void> {
   const dbLog: DbLog = {
     _id: new ObjectId(),
@@ -37,7 +37,7 @@ async function insertIntoDb(
   Logger.info(
     `${event}\t${uid}\t${
       stringified.length > 100 ? stringified.slice(0, 100) + "..." : stringified
-    }`
+    }`,
   );
 
   await getLogsCollection().insertOne(dbLog);
@@ -46,7 +46,7 @@ async function insertIntoDb(
 export async function addLog(
   event: string,
   message: string | Record<string, unknown>,
-  uid = ""
+  uid = "",
 ): Promise<void> {
   await insertIntoDb(event, message, uid);
 }
@@ -54,7 +54,7 @@ export async function addLog(
 export async function addImportantLog(
   event: string,
   message: string | Record<string, unknown>,
-  uid = ""
+  uid = "",
 ): Promise<void> {
   console.log("log", event, message, uid);
   await insertIntoDb(event, message, uid, true);

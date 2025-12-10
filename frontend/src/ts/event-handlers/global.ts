@@ -4,10 +4,76 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import * as Notifications from "../elements/notifications";
+import * as ActivePage from "../states/active-page";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { focusWords } from "../test/test-ui";
+import * as TestLogic from "../test/test-logic";
+import { navigate } from "../controllers/route-controller";
+import { isInputElementFocused } from "../input/input-element";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as TestState from "../test/test-state";
+import * as TribeState from "../tribe/tribe-state";
+import { isAnyChatSuggestionVisible } from "../tribe/tribe-chat";
+import * as Tribe from "../tribe/tribe";
+import tribeSocket from "../tribe/tribe-socket";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
+
+  const pageTestActive: boolean = ActivePage.get() === "test";
+  if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
+    const popupVisible: boolean = Misc.isAnyPopupVisible();
+    // this is nested because isAnyPopupVisible is a bit expensive
+    // and we don't want to call it during the test
+    if (
+      !popupVisible &&
+      !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+      !e.metaKey &&
+      !e.ctrlKey
+    ) {
+      //autofocus
+      focusWords();
+      if (Config.showOutOfFocusWarning) {
+        e.preventDefault();
+      }
+    }
+  }
+
+  //todo: this tribe stuff could be wrong! merge troubles!
+
+  // change page if needed
+  if (TribeState.getState() >= 5) {
+    if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
+    if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
+      await navigate("/tribe");
+      return;
+    }
+  } else {
+    if (ActivePage.get() !== "test") {
+      await navigate("/");
+      return;
+    }
+  }
+
+  // tribe
+  if (TribeState.getState() >= 5) {
+    if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
+    if (isAnyChatSuggestionVisible()) return;
+    if (TribeState.getSelf()?.isLeader) {
+      if (TribeState.getState() === 5 || TribeState.getState() === 22) {
+        Tribe.initRace();
+        return;
+      }
+    } else if (
+      TribeState.getState() === 5 ||
+      TribeState.getState() === 21 ||
+      TribeState.getState() === 22
+    ) {
+      tribeSocket.out.room.readyUpdate();
+      return;
+    }
+  }
 
   if (
     (e.key === "Escape" && Config.quickRestart !== "esc") ||
@@ -25,6 +91,36 @@ document.addEventListener("keydown", async (e) => {
     const popupVisible = Misc.isAnyPopupVisible();
     if (!popupVisible) {
       Commandline.show();
+    }
+  }
+
+  if (!isInputElementFocused()) {
+    const isInteractiveElement =
+      document.activeElement?.tagName === "INPUT" ||
+      document.activeElement?.tagName === "TEXTAREA" ||
+      document.activeElement?.tagName === "SELECT" ||
+      document.activeElement?.tagName === "BUTTON" ||
+      document.activeElement?.classList.contains("button") === true ||
+      document.activeElement?.classList.contains("textButton") === true;
+
+    if (
+      (e.key === "Tab" &&
+        Config.quickRestart === "tab" &&
+        !isInteractiveElement) ||
+      (e.key === "Escape" && Config.quickRestart === "esc") ||
+      (e.key === "Enter" &&
+        Config.quickRestart === "enter" &&
+        !isInteractiveElement)
+    ) {
+      e.preventDefault();
+      if (ActivePage.get() === "test") {
+        if (e.shiftKey) {
+          ManualRestart.set();
+        }
+        TestLogic.restart();
+      } else {
+        void navigate("");
+      }
     }
   }
 });
@@ -58,7 +154,7 @@ window.onunhandledrejection = function (e): void {
         customTitle: "DEV: Unhandled rejection",
         duration: 5,
         important: true,
-      }
+      },
     );
   }
 };

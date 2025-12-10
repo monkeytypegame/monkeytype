@@ -13,6 +13,7 @@ import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
+import { qs, qsa } from "../utils/dom";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -56,7 +57,10 @@ async function updateFavicon(): Promise<void> {
   </g>
 </svg>`;
 
-    $("#favicon").attr("href", "data:image/svg+xml;base64," + btoa(svgPre));
+    qs("#favicon")?.setAttribute(
+      "href",
+      "data:image/svg+xml;base64," + btoa(svgPre),
+    );
   }, 125);
 }
 
@@ -73,25 +77,25 @@ export async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
     function swapCurrentToNext(): void {
       console.debug("Theme controller swapping elements");
-      const current = $("#currentTheme");
-      const next = $("#nextTheme");
-      if (next.length === 0) {
+      const current = qs("#currentTheme");
+      const next = qs("#nextTheme");
+      if (current === null || next === null) {
         console.debug(
-          "Theme controller failed to swap elements, next is missing"
+          "Theme controller failed to swap elements, next or current is missing",
         );
         return;
       }
       current.remove();
-      next.attr("id", "currentTheme");
+      next.setAttribute("id", "currentTheme");
     }
 
     console.debug("Theme controller loading style", name);
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
         Loader.show();
-      }, 100)
+      }, 100),
     );
-    $("#nextTheme").remove();
+    qs("#nextTheme")?.remove();
     const headScript = document.querySelector("#currentTheme");
     const link = document.createElement("link");
     link.type = "text/css";
@@ -103,7 +107,7 @@ export async function loadStyle(name: string): Promise<void> {
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
-      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
+      qsa("#keymap .keymapKey")?.setStyle({});
       resolve();
     };
     link.onerror = (e): void => {
@@ -114,7 +118,7 @@ export async function loadStyle(name: string): Promise<void> {
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
-      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
+      qsa("#keymap .keymapKey")?.setStyle({});
       resolve();
     };
     if (name === "custom") {
@@ -129,7 +133,7 @@ export async function loadStyle(name: string): Promise<void> {
     } else {
       console.debug(
         "Theme controller inserting link after current theme",
-        link
+        link,
       );
       headScript.after(link);
     }
@@ -146,13 +150,13 @@ export async function loadStyle(name: string): Promise<void> {
 async function apply(
   themeName: string,
   customColorsOverride?: string[],
-  isPreview = false
+  isPreview = false,
 ): Promise<void> {
   console.debug(
     "Theme controller applying theme",
     themeName,
     customColorsOverride,
-    isPreview
+    isPreview,
   );
 
   const name = customColorsOverride ? "custom" : themeName;
@@ -168,8 +172,7 @@ async function apply(
 
   ThemeColors.reset();
 
-  $(".keymapKey").attr("style", "");
-  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  qsa("#keymap .keymapKey")?.setStyle({});
   await loadStyle(name);
 
   if (name !== "custom") {
@@ -180,23 +183,22 @@ async function apply(
 
   // if (!isPreview) {
   const colors = await ThemeColors.getAll();
-  $(".keymapKey").attr("style", "");
+  qsa("#keymap .keymapKey")?.setStyle({});
   ChartController.updateAllChartColors();
   void updateFavicon();
-  $("#metaThemeColor").attr("content", colors.bg);
-  // }
+  qs("#metaThemeColor")?.setAttribute("content", colors.bg);
   updateFooterIndicator(isPreview ? themeName : undefined);
 
   if (isColorDark(await ThemeColors.get("bg"))) {
-    $("body").addClass("darkMode");
+    qs("body")?.addClass("darkMode");
   } else {
-    $("body").removeClass("darkMode");
+    qs("body")?.removeClass("darkMode");
   }
 }
 
 function updateFooterIndicator(nameOverride?: string): void {
   const indicator = document.querySelector<HTMLElement>(
-    "footer .right .current-theme"
+    "footer .right .current-theme",
   );
   const text = indicator?.querySelector<HTMLElement>(".text");
   const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
@@ -246,7 +248,7 @@ let previewState: PreviewState = null;
 
 export function preview(
   themeIdentifier: string,
-  customColorsOverride?: string[]
+  customColorsOverride?: string[],
 ): void {
   previewState = { theme: themeIdentifier, colors: customColorsOverride };
   debouncedPreview();
@@ -261,12 +263,12 @@ const debouncedPreview = debounce<() => void>(250, () => {
 
 async function set(
   themeIdentifier: string,
-  isAutoSwitch = false
+  isAutoSwitch = false,
 ): Promise<void> {
   console.debug(
     "Theme controller setting theme",
     themeIdentifier,
-    isAutoSwitch
+    isAutoSwitch,
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
@@ -344,7 +346,7 @@ export async function randomizeTheme(): Promise<void> {
 
   if (Config.randomTheme === "custom") {
     const theme = DB.getSnapshot()?.customThemes?.find(
-      (ct) => ct._id === randomTheme
+      (ct) => ct._id === randomTheme,
     );
     colorsOverride = theme?.colors;
     randomTheme = "custom";
@@ -377,29 +379,21 @@ async function clearRandom(): Promise<void> {
 
 function applyCustomBackgroundSize(): void {
   if (Config.customBackgroundSize === "max") {
-    $(".customBackground img").css({
-      // width: "calc(100%)",
-      // height: "calc(100%)",
+    qs(".customBackground img")?.setStyle({
       objectFit: "",
     });
   } else {
-    $(".customBackground img").css({
+    qs(".customBackground img")?.setStyle({
       objectFit: Config.customBackgroundSize,
     });
   }
 }
 
 export async function applyCustomBackground(): Promise<void> {
-  // $(".customBackground").css({
-  //   backgroundImage: `url(${Config.customBackground})`,
-  //   backgroundAttachment: "fixed",
-  // });
-
   let backgroundUrl = Config.customBackground;
-
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
-  ).val(backgroundUrl);
+  qs<HTMLInputElement>(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
+  )?.setValue(backgroundUrl);
 
   //if there is a localBackgroundFile available, use it.
   const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
@@ -409,17 +403,17 @@ export async function applyCustomBackground(): Promise<void> {
   }
 
   // hide the filter section initially and always
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundFilter']"
-  ).addClass("hidden");
+  qs(
+    ".pageSettings .section[data-config-name='customBackgroundFilter']",
+  )?.addClass("hidden");
 
   if (backgroundUrl === "") {
-    $("#words").removeClass("noErrorBorder");
-    $("#resultWordsHistory").removeClass("noErrorBorder");
-    $(".customBackground img").remove();
+    qs("#words")?.removeClass("noErrorBorder");
+    qs("#resultWordsHistory")?.removeClass("noErrorBorder");
+    qs(".customBackground img")?.remove();
   } else {
-    $("#words").addClass("noErrorBorder");
-    $("#resultWordsHistory").addClass("noErrorBorder");
+    qs("#words")?.addClass("noErrorBorder");
+    qs("#resultWordsHistory")?.addClass("noErrorBorder");
 
     //use setAttribute for possible unsafe customBackground value
     const container = document.querySelector(".customBackground");
@@ -428,13 +422,13 @@ export async function applyCustomBackground(): Promise<void> {
     img.setAttribute("src", backgroundUrl);
     img.setAttribute(
       "onError",
-      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
+      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))",
     );
     img.onload = () => {
       // show the filter section only if the image loads successfully
-      $(
-        ".pageSettings .section[data-config-name='customBackgroundFilter']"
-      ).removeClass("hidden");
+      qs(
+        ".pageSettings .section[data-config-name='customBackgroundFilter']",
+      )?.removeClass("hidden");
     };
 
     container?.replaceChildren(img);
@@ -450,11 +444,11 @@ export async function applyFontFamily(): Promise<void> {
   const localFont = await fileStorage.getFile("LocalFontFamilyFile");
   if (localFont === undefined) {
     //use config font
-    $(".customFont").empty();
+    qs(".customFont")?.empty();
   } else {
     font = "LOCALCUSTOM";
 
-    $(".customFont").html(`
+    qs(".customFont")?.setHtml(`
       @font-face{ 
         font-family: LOCALCUSTOM;
         src: url(${localFont});
@@ -466,7 +460,7 @@ export async function applyFontFamily(): Promise<void> {
 
   document.documentElement.style.setProperty(
     "--font",
-    `"${font}", "Roboto Mono", "Vazirmatn", monospace`
+    `"${font}", "Roboto Mono", "Vazirmatn", monospace`,
   );
 }
 
@@ -575,7 +569,7 @@ window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
     "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
-    { duration: 5 }
+    { duration: 5 },
   );
 });
 

@@ -87,7 +87,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   $(".pageTest .ssWatermark").html(
     ssWatermark
       .map((el) => `<span>${el}</span>`)
-      .join("<span class='pipe'>|</span>")
+      .join("<span class='pipe'>|</span>"),
   );
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
@@ -223,13 +223,13 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       0,
       0,
       canvas.width,
-      canvas.height
+      canvas.height,
     );
     return canvas;
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Error creating screenshot canvas"),
-      -1
+      -1,
     );
     return null;
   } finally {
@@ -261,7 +261,7 @@ export async function copyToClipboard(): Promise<void> {
         Object.defineProperty({}, blob.type, {
           value: blob,
           enumerable: true,
-        })
+        }),
       );
       await navigator.clipboard.write([clipItem]);
       Notifications.add("Copied screenshot to clipboard", 1, { duration: 2 });
@@ -278,7 +278,7 @@ export async function copyToClipboard(): Promise<void> {
         Notifications.add(
           "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
           0,
-          { duration: 10 }
+          { duration: 10 },
         );
       }
 
@@ -286,7 +286,7 @@ export async function copyToClipboard(): Promise<void> {
       Notifications.add(
         "Could not copy screenshot to clipboard. Opening in new tab instead (make sure popups are allowed)",
         0,
-        { duration: 5 }
+        { duration: 5 },
       );
       try {
         // Fallback: Open blob in a new tab

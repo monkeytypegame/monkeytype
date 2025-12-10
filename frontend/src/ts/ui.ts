@@ -11,12 +11,13 @@ import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { applyFontFamily } from "./controllers/theme-controller";
+import { qs } from "./utils/dom";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -48,7 +49,7 @@ function updateKeytips(): void {
       : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  $("footer .keyTips").html(`
+  qs("footer .keyTips")?.setHtml(`
     ${
       Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"
@@ -58,10 +59,12 @@ function updateKeytips(): void {
 }
 
 if (isDevEnvironment()) {
-  $("header #logo .top").text("localhost");
-  $("head title").text($("head title").text() + " (localhost)");
-  $("body").append(
-    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+  qs("header #logo .top")?.setText("localhost");
+  qs("head title")?.setText(
+    (qs("head title")?.native.textContent ?? "") + " (localhost)",
+  );
+  qs("body")?.appendHtml(
+    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
   );
 }
 
@@ -73,7 +76,7 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      isCustomTextLong() ?? false
+      isCustomTextLong() ?? false,
     )
   ) {
     //ignore
@@ -107,7 +110,7 @@ const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   throttledEvent();
   debouncedEvent();
 });
@@ -115,10 +118,11 @@ $(window).on("resize", () => {
 ConfigEvent.subscribe(async (eventKey) => {
   if (eventKey === "quickRestart") updateKeytips();
   if (eventKey === "showKeyTips") {
+    const keyTipsElement = qs("footer .keyTips");
     if (Config.showKeyTips) {
-      $("footer .keyTips").removeClass("hidden");
+      keyTipsElement?.removeClass("hidden");
     } else {
-      $("footer .keyTips").addClass("hidden");
+      keyTipsElement?.addClass("hidden");
     }
   }
   if (eventKey === "fontFamily") {

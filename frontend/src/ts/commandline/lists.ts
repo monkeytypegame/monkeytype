@@ -41,7 +41,7 @@ challengesPromise
   })
   .catch((e: unknown) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update challenges commands")
+      Misc.createErrorMessage(e, "Failed to update challenges commands"),
     );
   });
 
@@ -54,6 +54,7 @@ const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
 const lazyModeCommand = buildCommandForConfigKey("lazyMode");
 const layoutCommand = buildCommandForConfigKey("layout");
 const showAverageCommand = buildCommandForConfigKey("showAverage");
+const showPbCommand = buildCommandForConfigKey("showPb");
 const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 const customThemeCommand = buildCommandForConfigKey("customTheme");
 const adsCommand = buildCommandForConfigKey("ads");
@@ -129,7 +130,7 @@ export const commands: CommandsSubgroup = {
       "britishEnglish",
       ...FunboxCommands,
       "customLayoutfluid",
-      "customPolyglot"
+      "customPolyglot",
     ),
 
     //input
@@ -141,10 +142,11 @@ export const commands: CommandsSubgroup = {
       confidenceModeCommand,
       "quickEnd",
       "indicateTypos",
+      "compositionDisplay",
       "hideExtraLetters",
       lazyModeCommand,
       layoutCommand,
-      "codeUnindentOnBackspace"
+      "codeUnindentOnBackspace",
     ),
 
     //tribe
@@ -156,7 +158,7 @@ export const commands: CommandsSubgroup = {
       "soundVolume",
       "playSoundOnClick",
       "playSoundOnError",
-      "playTimeWarning"
+      "playTimeWarning",
     ),
 
     //caret
@@ -165,7 +167,7 @@ export const commands: CommandsSubgroup = {
       "caretStyle",
       paceCaretCommand,
       "repeatedPace",
-      "paceCaretStyle"
+      "paceCaretStyle",
     ),
 
     //appearence
@@ -194,7 +196,7 @@ export const commands: CommandsSubgroup = {
       "keymapLegendStyle",
       "keymapSize",
       keymapLayoutCommand,
-      "keymapShowTopRow"
+      "keymapShowTopRow",
     ),
 
     //theme
@@ -209,7 +211,7 @@ export const commands: CommandsSubgroup = {
       ...CustomBackgroundCommands,
       "customBackgroundSize",
       ...CustomBackgroundFilterCommands,
-      "randomTheme"
+      "randomTheme",
     ),
 
     {
@@ -228,8 +230,9 @@ export const commands: CommandsSubgroup = {
       "showOutOfFocusWarning",
       "capsLockWarning",
       showAverageCommand,
+      showPbCommand,
       "monkeyPowerLevel",
-      "monkey"
+      "monkey",
     ),
 
     //danger zone
@@ -311,7 +314,7 @@ export const commands: CommandsSubgroup = {
           .catch((e: unknown) => {
             const message = Misc.createErrorMessage(
               e,
-              "Failed to copy to clipboard"
+              "Failed to copy to clipboard",
             );
             Notifications.add(message, -1);
           });
@@ -345,6 +348,29 @@ export const commands: CommandsSubgroup = {
       },
     },
     {
+      id: "fixSkillIssue",
+      display: "Fix skill issue",
+      icon: "fa-wrench",
+      visible: false,
+      exec: async (): Promise<void> => {
+        // window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        (document.querySelector("body") as HTMLElement).innerHTML = `
+          <div class="centerbox" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events: none;width: 100%; max-width: 800px;">
+            <h1 style="font-size:3rem;margin-bottom:1rem;">Fixing skill issue...</h1>
+            <iframe style="width: 100%; aspect-ratio: 4 / 3" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=Kr48u8WHcwvX95G7&amp;controls=0&autoplay=1&mute=0&disablekb=1&fs=0&modestbranding=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+        `;
+        setTimeout(() => {
+          document
+            .querySelector(".centerbox")
+            ?.insertAdjacentHTML(
+              "beforeend",
+              `<p style="margin-top:1rem;font-size:1.5rem;">If your skill issue is not fixed yet, please wait a bit longer...</p>`,
+            );
+        }, 5000);
+      },
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       icon: "fa-users",
@@ -366,6 +392,7 @@ const lists = {
   lazyMode: lazyModeCommand.subgroup,
   paceCaretMode: paceCaretCommand.subgroup,
   showAverage: showAverageCommand.subgroup,
+  showPb: showPbCommand.subgroup,
   minWpm: minSpeedCommand.subgroup,
   minAcc: minAccCommand.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
@@ -390,7 +417,7 @@ export function doesListExist(listName: string): boolean {
 }
 
 export async function getList(
-  listName: ListsObjectKeys
+  listName: ListsObjectKeys,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
@@ -450,7 +477,7 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
 
 function buildSingleListCommands(
   command: Command,
-  parentCommand?: Command
+  parentCommand?: Command,
 ): Command[] {
   const commands: Command[] = [];
   if (command.subgroup) {
@@ -471,7 +498,7 @@ function buildSingleListCommands(
     if (parentCommand) {
       const parentCommandDisplay = parentCommand.display.replace(
         /\s?\.\.\.$/g,
-        ""
+        "",
       );
       const singleListDisplay =
         parentCommandDisplay +
@@ -516,6 +543,6 @@ function buildCommands(
   ...commands: (Command | keyof CommandlineConfigMetadataObject)[]
 ): Command[] {
   return commands.map((it) =>
-    typeof it === "string" ? buildCommandForConfigKey(it) : it
+    typeof it === "string" ? buildCommandForConfigKey(it) : it,
   );
 }

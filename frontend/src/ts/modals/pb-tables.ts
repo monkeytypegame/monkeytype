@@ -75,7 +75,7 @@ function update(mode: Mode): void {
         <td>${pb.lazyMode ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${dateText}</td>
       </tr>
-    `
+    `,
     );
     mode2memory = pb.mode2;
   });

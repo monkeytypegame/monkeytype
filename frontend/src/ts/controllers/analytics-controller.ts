@@ -5,12 +5,13 @@ import {
 } from "firebase/analytics";
 import { getAnalytics } from "../firebase";
 import { createErrorMessage } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 let analytics: AnalyticsType;
 
 export async function log(
   eventName: string,
-  params?: Record<string, string>
+  params?: Record<string, string>,
 ): Promise<void> {
   try {
     logEvent(analytics, eventName, params);
@@ -28,7 +29,7 @@ export function activateAnalytics(): void {
   try {
     analytics = getAnalytics();
     setAnalyticsCollectionEnabled(analytics, true);
-    $("body").append(`
+    qs("body")?.appendHtml(`
     <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=UA-165993088-1"

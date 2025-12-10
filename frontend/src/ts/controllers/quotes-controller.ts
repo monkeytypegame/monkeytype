@@ -41,13 +41,13 @@ class QuotesController {
   async getQuotes(
     language: Language,
     quoteLengths?: number[],
-    reshuffle?: boolean
+    reshuffle?: boolean,
   ): Promise<QuoteCollection> {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage || reshuffle) {
       const { data, error } = await tryCatch(
-        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
+        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`),
       );
       if (error) {
         if (
@@ -212,7 +212,7 @@ class QuotesController {
           return false;
         }
         return (favoriteQuotes[language] ?? []).includes(id.toString());
-      }
+      },
     );
 
     return matchedLanguage !== undefined;
@@ -235,7 +235,7 @@ class QuotesController {
 
       if (response.status === 200) {
         const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
-          `${quote.id}`
+          `${quote.id}`,
         ) as number;
         snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
       } else {
@@ -251,12 +251,8 @@ class QuotesController {
       });
 
       if (response.status === 200) {
-        if (snapshot.favoriteQuotes === undefined) {
-          snapshot.favoriteQuotes = {};
-        }
-        if (!snapshot.favoriteQuotes[quote.language]) {
-          snapshot.favoriteQuotes[quote.language] = [];
-        }
+        snapshot.favoriteQuotes ??= {};
+        snapshot.favoriteQuotes[quote.language] ??= [];
         snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
       } else {
         throw new Error(response.body.message);

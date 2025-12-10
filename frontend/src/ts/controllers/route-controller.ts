@@ -8,22 +8,14 @@ import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
-import { LoadingOptions } from "../pages/page";
 import * as NavigationEvent from "../observables/navigation-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
 
-type NavigateOptions = {
-  force?: boolean;
-  tribeOverride?: boolean;
-  data?: unknown;
-  loadingOptions?: LoadingOptions;
-};
-
 function pathToRegex(path: string): RegExp {
   return new RegExp(
-    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$"
+    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$",
   );
 }
 
@@ -33,7 +25,7 @@ function getParams(match: {
 }): Record<string, string> {
   const values = match.result.slice(1);
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
-    (result) => result[1]
+    (result) => result[1],
   );
 
   const a = keys.map((key, index) => [key, values[index]]);
@@ -44,7 +36,7 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigateOptions
+    navigateOptions: NavigationEvent.NavigateOptions,
   ) => Promise<void>;
 };
 
@@ -220,7 +212,7 @@ export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
-  options = {} as NavigateOptions
+  options = {} as NavigationEvent.NavigateOptions,
 ): Promise<void> {
   if (
     TribeState.getState() > 5 &&
@@ -240,7 +232,7 @@ export async function navigate(
         TestState.testRestarting
       }, resultCalculating: ${
         TestUI.resultCalculating
-      }, pageTransition: ${PageTransition.get()})`
+      }, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }
@@ -272,7 +264,9 @@ export async function navigate(
   await router(options);
 }
 
-async function router(options = {} as NavigateOptions): Promise<void> {
+async function router(
+  options = {} as NavigationEvent.NavigateOptions,
+): Promise<void> {
   const matches = routes.map((r) => {
     return {
       route: r,
@@ -290,7 +284,7 @@ async function router(options = {} as NavigateOptions): Promise<void> {
       {},
       {
         force: true,
-      }
+      },
     );
     return;
   }
@@ -312,8 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Subscribe to navigation events from modules that can't directly import navigate
-// due to circular dependency constraints
 NavigationEvent.subscribe((url, options) => {
   void navigate(url, options);
 });

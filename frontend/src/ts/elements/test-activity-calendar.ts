@@ -41,7 +41,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
     data: (number | null | undefined)[],
     lastDay: Date,
     firstDayOfWeek: Day,
-    fullYear = false
+    fullYear = false,
   ) {
     this.firstDayOfWeek = firstDayOfWeek;
     const local = new UTCDateMini(lastDay);
@@ -69,11 +69,11 @@ export class TestActivityCalendar implements TestActivityCalendar {
 
   protected buildData(
     data: (number | null | undefined)[],
-    lastDay: Date
+    lastDay: Date,
   ): (number | null | undefined)[] {
     //fill calendar with enough values
     const values = new Array(Math.max(0, 386 - data.length)).fill(
-      undefined
+      undefined,
     ) as (number | null | undefined)[];
     values.push(...data);
 
@@ -125,8 +125,9 @@ export class TestActivityCalendar implements TestActivityCalendar {
     const getValue = (v: number | null | undefined): string => {
       if (v === undefined) return "0";
       if (v === null || v === 0) return "0";
-      for (let b = 0; b < 4; b++)
+      for (let b = 0; b < 4; b++) {
         if (v <= (buckets[b] ?? 0)) return (1 + b).toString();
+      }
 
       return "4";
     };
@@ -180,7 +181,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
 
     const trimmed = sorted.slice(
       Math.round(sorted.length * 0.1),
-      sorted.length - Math.round(sorted.length * 0.1)
+      sorted.length - Math.round(sorted.length * 0.1),
     );
     const sum = trimmed.reduce((a, c) => a + c, 0);
     const mid = sum / trimmed.length;
@@ -248,7 +249,7 @@ export class ModifiableTestActivityCalendar
         this.data,
         this.lastDay,
         this.firstDayOfWeek,
-        true
+        true,
       );
     }
   }

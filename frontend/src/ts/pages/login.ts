@@ -7,10 +7,11 @@ import {
   UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
+import { qsr } from "../utils/dom";
 
 let registerForm: {
   name?: string;
@@ -69,19 +70,19 @@ export function getSignupData(): SignupData | false {
   return isFormComplete() ? (registerForm as SignupData) : false;
 }
 
-const nameInputEl = document.querySelector(
-  ".page.pageLogin .register.side input.usernameInput"
-) as HTMLInputElement;
-validateWithIndicator(nameInputEl, {
+const nameInputEl = qsr<HTMLInputElement>(
+  ".page.pageLogin .register.side input.usernameInput",
+);
+new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
-    { check: (data) => data.available || "Name not available" }
+    { check: (data) => data.available || "Name not available" },
   ),
   debounceDelay: 1000,
   callback: (result) => {
     registerForm.name =
-      result.status === "success" ? nameInputEl.value : undefined;
+      result.status === "success" ? nameInputEl?.getValue() : undefined;
     updateSignupButton();
   },
 });
@@ -90,10 +91,8 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
 
-const emailInputEl = validateWithIndicator(
-  document.querySelector(
-    ".page.pageLogin .register.side input.emailInput"
-  ) as HTMLInputElement,
+const emailInputEl = new ValidatedHtmlInputElement(
+  qsr(".page.pageLogin .register.side input.emailInput"),
   {
     schema: UserEmailSchema,
     isValid: async (email: string) => {
@@ -137,13 +136,13 @@ const emailInputEl = validateWithIndicator(
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify email
-        emailVerifyInputEl.dispatchEvent(new Event("input"));
+        emailVerifyInputEl?.dispatch("input");
       }
     },
-  }
+  },
 );
 
-emailInputEl.addEventListener("focus", async () => {
+emailInputEl.on("focus", async () => {
   if (!moduleLoadAttempted) {
     moduleLoadAttempted = true;
     try {
@@ -154,12 +153,12 @@ emailInputEl.addEventListener("focus", async () => {
   }
 });
 
-const emailVerifyInputEl = document.querySelector(
-  ".page.pageLogin .register.side input.verifyEmailInput"
-) as HTMLInputElement;
-validateWithIndicator(emailVerifyInputEl, {
+const emailVerifyInputEl = qsr<HTMLInputElement>(
+  ".page.pageLogin .register.side input.verifyEmailInput",
+);
+new ValidatedHtmlInputElement(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
-    return emailInputEl.value === emailVerify
+    return emailInputEl.getValue() === emailVerify
       ? true
       : "verify email not matching email";
   },
@@ -168,33 +167,31 @@ validateWithIndicator(emailVerifyInputEl, {
     registerForm.email =
       emailInputEl.getValidationResult().status === "success" &&
       result.status === "success"
-        ? emailInputEl.value
+        ? emailInputEl.getValue()
         : undefined;
     updateSignupButton();
   },
 });
 
-const passwordInputEl = validateWithIndicator(
-  document.querySelector(
-    ".page.pageLogin .register.side .passwordInput"
-  ) as HTMLInputElement,
+const passwordInputEl = new ValidatedHtmlInputElement(
+  qsr(".page.pageLogin .register.side .passwordInput"),
   {
     schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify password
-        passwordVerifyInputEl.dispatchEvent(new Event("input"));
+        passwordVerifyInputEl?.dispatch("input");
       }
     },
-  }
+  },
 );
 
-const passwordVerifyInputEl = document.querySelector(
-  ".page.pageLogin .register.side .verifyPasswordInput"
-) as HTMLInputElement;
-validateWithIndicator(passwordVerifyInputEl, {
+const passwordVerifyInputEl = qsr<HTMLInputElement>(
+  ".page.pageLogin .register.side .verifyPasswordInput",
+);
+new ValidatedHtmlInputElement(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {
-    return passwordInputEl.value === passwordVerify
+    return passwordInputEl.getValue() === passwordVerify
       ? true
       : "verify password not matching password";
   },
@@ -203,7 +200,7 @@ validateWithIndicator(passwordVerifyInputEl, {
     registerForm.password =
       passwordInputEl.getValidationResult().status === "success" &&
       result.status === "success"
-        ? passwordInputEl.value
+        ? passwordInputEl.getValue()
         : undefined;
     updateSignupButton();
   },

@@ -4,6 +4,7 @@ import * as Notifications from "../elements/notifications";
 import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Quote } from "@monkeytype/schemas/quotes";
+import { escapeHTML } from "../utils/misc";
 
 let quotes: Quote[] = [];
 
@@ -12,10 +13,10 @@ function updateList(): void {
   quotes.forEach((quote, index) => {
     const quoteEl = $(`
       <div class="quote" data-id="${index}" data-db-id="${quote._id}">
-        <textarea class="text">${quote.text}</textarea>
-        <input type="text" class="source" placeholder="Source" value="${
-          quote.source
-        }">
+        <textarea class="text">${escapeHTML(quote.text)}</textarea>
+        <input type="text" class="source" placeholder="Source" value="${escapeHTML(
+          quote.source,
+        )}">
         <div class="buttons">
           <button disabled class="textButton undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></button>
           <button class="textButton refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></button>
@@ -31,7 +32,7 @@ function updateList(): void {
           }</div>
           <div class="timestamp"><i class="fas fa-fw fa-calendar"></i>${format(
             new Date(quote.timestamp),
-            "dd MMM yyyy HH:mm"
+            "dd MMM yyyy HH:mm",
           )}</div>
         </div>
       </div>
@@ -40,25 +41,25 @@ function updateList(): void {
     quoteEl.find(".source").on("input", () => {
       $(`#quoteApproveModal .quote[data-id=${index}] .undo`).prop(
         "disabled",
-        false
+        false,
       );
       $(`#quoteApproveModal .quote[data-id=${index}] .approve`).addClass(
-        "hidden"
+        "hidden",
       );
       $(`#quoteApproveModal .quote[data-id=${index}] .edit`).removeClass(
-        "hidden"
+        "hidden",
       );
     });
     quoteEl.find(".text").on("input", () => {
       $(`#quoteApproveModal .quote[data-id=${index}] .undo`).prop(
         "disabled",
-        false
+        false,
       );
       $(`#quoteApproveModal .quote[data-id=${index}] .approve`).addClass(
-        "hidden"
+        "hidden",
       );
       $(`#quoteApproveModal .quote[data-id=${index}] .edit`).removeClass(
-        "hidden"
+        "hidden",
       );
       updateQuoteLength(index);
     });
@@ -82,7 +83,7 @@ function updateQuoteLength(index: number): void {
     $(`#quoteApproveModal .quote[data-id=${index}] .text`).val() as string
   )?.length;
   $(`#quoteApproveModal .quote[data-id=${index}] .length`).html(
-    `<i class="fas fa-fw fa-ruler"></i>${len}`
+    `<i class="fas fa-fw fa-ruler"></i>${len}`,
   );
   if (len < 60) {
     $(`#quoteApproveModal .quote[data-id=${index}] .length`).addClass("red");
@@ -131,14 +132,14 @@ function resetButtons(index: number): void {
 
 function undoQuote(index: number): void {
   $(`#quoteApproveModal .quote[data-id=${index}] .text`).val(
-    quotes[index]?.text ?? ""
+    quotes[index]?.text ?? "",
   );
   $(`#quoteApproveModal .quote[data-id=${index}] .source`).val(
-    quotes[index]?.source ?? ""
+    quotes[index]?.source ?? "",
   );
   $(`#quoteApproveModal .quote[data-id=${index}] .undo`).prop("disabled", true);
   $(`#quoteApproveModal .quote[data-id=${index}] .approve`).removeClass(
-    "hidden"
+    "hidden",
   );
   $(`#quoteApproveModal .quote[data-id=${index}] .edit`).addClass("hidden");
   updateQuoteLength(index);
@@ -195,10 +196,10 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
 async function editQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
   const editText = $(
-    `#quoteApproveModal .quote[data-id=${index}] .text`
+    `#quoteApproveModal .quote[data-id=${index}] .text`,
   ).val() as string;
   const editSource = $(
-    `#quoteApproveModal .quote[data-id=${index}] .source`
+    `#quoteApproveModal .quote[data-id=${index}] .source`,
   ).val() as string;
   const quote = $(`#quoteApproveModal .quotes .quote[data-id=${index}]`);
   quote.find("button").prop("disabled", true);
@@ -223,7 +224,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
 
   Notifications.add(
     `Quote edited and approved. ${response.body.message ?? ""}`,
-    1
+    1,
   );
   quotes.splice(index, 1);
   updateList();

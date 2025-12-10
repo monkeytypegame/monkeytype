@@ -24,7 +24,7 @@ const PresetSettingsGroupsSchema = z
         const duplicateElemExits: boolean =
           settingList.filter(
             (settingGroup: ConfigGroupName) =>
-              settingGroup === presetSettingGroup
+              settingGroup === presetSettingGroup,
           ).length > 1;
         if (duplicateElemExits) {
           ctx.addIssue({
@@ -32,7 +32,7 @@ const PresetSettingsGroupsSchema = z
             message: `No duplicates allowed.`,
           });
         }
-      }
+      },
     );
   });
 

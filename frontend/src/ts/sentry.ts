@@ -26,9 +26,10 @@ export async function activateSentry(): Promise<void> {
     environment: envConfig.isDevelopment ? "development" : "production",
     integrations: [
       Sentry.browserTracingIntegration(),
-      // Sentry.replayIntegration({
-      //   unmask: ["#notificationCenter"],
-      //   block: ["#commandLine .modal .suggestions"],
+      // // Sentry.replayIntegration({
+      // //   unmask: ["#notificationCenter"],
+      // //   block: ["#commandLine .modal .suggestions"],
+      // //   // ignore: ["#wordsInput"],
       // }),
       Sentry.thirdPartyErrorFilterIntegration({
         filterKeys: ["monkeytype-frontend"],
@@ -68,7 +69,7 @@ export async function activateSentry(): Promise<void> {
       if (envConfig.isDevelopment) {
         console.debug(
           "Sentry beforeSend, not sending in development mode",
-          event
+          event,
         );
         return null;
       } else {

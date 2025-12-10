@@ -8,7 +8,7 @@ describe("simple-modals", () => {
     });
     it("builds with classes", () => {
       expect(buildTag({ tagname: "input", classes: ["hidden", "bold"] })).toBe(
-        '<input class="hidden bold" />'
+        '<input class="hidden bold" />',
       );
     });
     it("builds with attributes", () => {
@@ -22,13 +22,13 @@ describe("simple-modals", () => {
             checked: true,
             missing: undefined,
           },
-        })
+        }),
       ).toBe('<input checked id="4711" oninput="console.log()" required />');
     });
 
     it("builds with innerHtml", () => {
       expect(
-        buildTag({ tagname: "textarea", innerHTML: "<h1>Hello</h1>" })
+        buildTag({ tagname: "textarea", innerHTML: "<h1>Hello</h1>" }),
       ).toBe("<textarea><h1>Hello</h1></textarea>");
     });
     it("builds with everything", () => {
@@ -43,9 +43,9 @@ describe("simple-modals", () => {
             required: true,
           },
           innerHTML: "<h1>Hello</h1>",
-        })
+        }),
       ).toBe(
-        '<textarea class="hidden bold" id="4711" oninput="console.log()" readonly required><h1>Hello</h1></textarea>'
+        '<textarea class="hidden bold" id="4711" oninput="console.log()" readonly required><h1>Hello</h1></textarea>',
       );
     });
   });

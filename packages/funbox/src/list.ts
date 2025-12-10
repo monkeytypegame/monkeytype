@@ -14,7 +14,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "getWord",
       "punctuateWord",
       "rememberSettings",
-      "handleChar",
+      "getEmulatedChar",
     ],
     name: "58008",
     alias: "numbers",
@@ -107,9 +107,8 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: [
       "getWord",
       "rememberSettings",
-      "handleChar",
+      "getEmulatedChar",
       "isCharCorrect",
-      "preventDefaultEvent",
       "getWordHtml",
     ],
     name: "arrows",
@@ -461,6 +460,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "asl",
     cssModifications: ["words"],
   },
+  rot13: {
+    description: "Vg znl abg or frpher, ohg vg vf sha gb glcr!",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: [],
+    frontendFunctions: ["alterText"],
+    name: "rot13",
+  },
   no_quit: {
     description: "You can't restart the test.",
     canGetPb: true,
@@ -472,7 +479,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
 export function getFunbox(name: FunboxName): FunboxMetadata;
 export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
-  nameOrNames: FunboxName | FunboxName[]
+  nameOrNames: FunboxName | FunboxName[],
 ): FunboxMetadata | FunboxMetadata[] {
   if (nameOrNames === undefined) return [];
   if (Array.isArray(nameOrNames)) {
@@ -481,7 +488,7 @@ export function getFunbox(
     //@ts-expect-error sanity check
     if (out.includes(undefined)) {
       throw new Error(
-        "One of the funboxes is invalid: " + nameOrNames.toString()
+        "One of the funboxes is invalid: " + nameOrNames.toString(),
       );
     }
 

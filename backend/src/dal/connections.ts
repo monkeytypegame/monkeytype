@@ -20,8 +20,9 @@ export async function getConnections(options: {
 }): Promise<DBConnection[]> {
   const { initiatorUid, receiverUid, status } = options;
 
-  if (initiatorUid === undefined && receiverUid === undefined)
+  if (initiatorUid === undefined && receiverUid === undefined) {
     throw new Error("Missing filter");
+  }
 
   let filter: Filter<DBConnection> = { $or: [] };
 
@@ -43,7 +44,7 @@ export async function getConnections(options: {
 export async function create(
   initiator: { uid: string; name: string },
   receiver: { uid: string; name: string },
-  maxPerUser: number
+  maxPerUser: number,
 ): Promise<DBConnection> {
   const count = await getCollection().countDocuments({
     initiatorUid: initiator.uid,
@@ -53,7 +54,7 @@ export async function create(
     throw new MonkeyError(
       409,
       "Maximum number of connections reached",
-      "create connection request"
+      "create connection request",
     );
   }
   const key = getKey(initiator.uid, receiver.uid);
@@ -77,7 +78,7 @@ export async function create(
     if (e.name === "MongoServerError" && e.code === 11000) {
       const existing = await getCollection().findOne(
         { key },
-        { projection: { status: 1 } }
+        { projection: { status: 1 } },
       );
 
       let message = "";
@@ -113,14 +114,14 @@ export async function create(
 export async function updateStatus(
   receiverUid: string,
   id: string,
-  status: ConnectionStatus
+  status: ConnectionStatus,
 ): Promise<void> {
   const updateResult = await getCollection().updateOne(
     {
       _id: new ObjectId(id),
       receiverUid,
     },
-    { $set: { status, lastModified: Date.now() } }
+    { $set: { status, lastModified: Date.now() } },
   );
 
   if (updateResult.matchedCount === 0) {
@@ -201,11 +202,11 @@ export async function getFriendsUids(uid: string): Promise<string[]> {
               status: "accepted",
               $or: [{ initiatorUid: uid }, { receiverUid: uid }],
             },
-            { projection: { initiatorUid: true, receiverUid: true } }
+            { projection: { initiatorUid: true, receiverUid: true } },
           )
           .toArray()
-      ).flatMap((it) => [it.initiatorUid, it.receiverUid])
-    )
+      ).flatMap((it) => [it.initiatorUid, it.receiverUid]),
+    ),
   );
 }
 
@@ -232,7 +233,7 @@ export async function aggregateWithAcceptedConnections<T>(
      */
     includeMetaData?: boolean;
   },
-  pipeline: Document[]
+  pipeline: Document[],
 ): Promise<T[]> {
   const metaData = options.includeMetaData
     ? {

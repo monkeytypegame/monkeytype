@@ -17,7 +17,10 @@
     z-index: 1;
 
     &.withAnimation {
-      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+      transition:
+        left 0.25s ease,
+        right 0.25s ease,
+        opacity 0.125s linear;
     }
 
     &.highlight-hidden {
@@ -239,7 +242,7 @@
       }
       &.tabChar,
       &.nlChar {
-        margin: 0 0.25rem;
+        // margin: 0 0.25rem;
         opacity: 0.2;
         i {
           line-height: 0;
@@ -353,6 +356,10 @@
       & .hints hint {
         display: none;
       }
+
+      &.error {
+        border-bottom: 2px solid transparent;
+      }
     }
     // &.highlight-word {
     //   .word.typed.error,
@@ -385,6 +392,9 @@
     --untyped-letter-color: var(--sub-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    &.blind .word.error {
+      border-bottom: 2px solid transparent;
+    }
   }
 
   &.flipped.colorfulMode {
@@ -551,12 +561,14 @@
   &.error {
     /*   margin-bottom: 1px; */
     border-bottom: 2px solid var(--error-color);
-    text-shadow: 1px 0px 0px var(--bg-color),
+    text-shadow:
+      1px 0px 0px var(--bg-color),
       // 2px 0px 0px var(--bg-color),
       -1px 0px 0px var(--bg-color),
       // -2px 0px 0px var(--bg-color),
       0px 1px 0px var(--bg-color),
-      1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+      1px 1px 0px var(--bg-color),
+      -1px 1px 0px var(--bg-color);
   }
 }
 
@@ -577,7 +589,7 @@
 }
 
 #wordsInput {
-  width: 1ch;
+  width: 0;
   font-size: 1em;
   height: 1em;
   opacity: 0;
@@ -593,6 +605,12 @@
   pointer-events: none;
   border-radius: 0;
   caret-color: transparent;
+  resize: none;
+  overflow: hidden;
+  // if the text wraps, ctrl backspace will not work on firefox >:|
+  // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
+  // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
+  text-wrap-mode: nowrap;
 }
 
 #capsWarning {
@@ -614,6 +632,22 @@
 
   i {
     margin-right: 0.5rem;
+  }
+}
+
+.pageTest > .loading {
+  text-align: center;
+  & > i {
+    font-size: 2rem;
+    color: var(--main-color);
+  }
+  opacity: 0;
+  &:not(.hidden) {
+    animation-name: fadeIn;
+    animation-duration: 0.125s;
+    animation-delay: 0.5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
   }
 }
 
@@ -1068,7 +1102,10 @@
             align-items: center;
             justify-items: center;
 
-            transition: opacity 0.125s, background 0.125s, color 0.125s,
+            transition:
+              opacity 0.125s,
+              background 0.125s,
+              color 0.125s,
               outline 0.125s;
 
             i {
@@ -1204,19 +1241,16 @@
   padding: 1em 2em;
 }
 
-#koInputVisualContainer {
-  position: relative;
-  padding-top: 1rem;
-  width: -moz-min-content;
-  width: min-content;
-  height: 3rem;
-  margin: 0 auto;
-
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: var(--sub-color);
-  cursor: default;
+#compositionDisplay {
+  font-size: 0.5em;
+  display: flex;
+  margin: 1rem auto 0px;
+  padding: 1rem 2rem;
+  height: 1.25em;
+  box-sizing: content-box;
   user-select: none;
+  cursor: default;
+  color: var(--sub-color);
 
   &.blurred {
     opacity: 0.25;
@@ -1331,7 +1365,9 @@
     right: 0;
     padding: var(--verticalPadding) var(--horizontalPadding);
     z-index: 1;
-    transition: opacity 0.25s, right 0.25s;
+    transition:
+      opacity 0.25s,
+      right 0.25s;
     opacity: 0;
   }
 

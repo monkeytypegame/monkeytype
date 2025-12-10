@@ -97,7 +97,7 @@ export function abbreviateNumber(num: number, decimalPoints = 1): string {
  * or null if the array is empty.
  */
 export function findLineByLeastSquares(
-  values_y: number[]
+  values_y: number[],
 ): [[number, number], [number, number]] | null {
   let sum_x = 0;
   let sum_y = 0;
@@ -142,7 +142,7 @@ export function findLineByLeastSquares(
   const returnpoint1 = [1, 1 * m + b] as [number, number];
   const returnpoint2 = [values_length, values_length * m + b] as [
     number,
-    number
+    number,
   ];
   return [returnpoint1, returnpoint2];
 }
@@ -156,7 +156,7 @@ export function findLineByLeastSquares(
  */
 export function parseIntOptional<T extends string | null | undefined>(
   value: T,
-  radix: number = 10
+  radix: number = 10,
 ): T extends string ? number : undefined {
   return (
     value !== null && value !== undefined ? parseInt(value, radix) : undefined

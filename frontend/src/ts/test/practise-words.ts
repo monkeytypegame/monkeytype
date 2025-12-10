@@ -23,7 +23,7 @@ export const before: Before = {
 
 export function init(
   missed: "off" | "words" | "biwords",
-  slow: boolean
+  slow: boolean,
 ): boolean {
   if (Config.mode === "zen") return false;
   let limit;
@@ -96,7 +96,7 @@ export function init(
     });
     sortableSlowWords = sortableSlowWords.slice(
       0,
-      Math.min(limit, Math.round(typedWords.length * 0.2))
+      Math.min(limit, Math.round(typedWords.length * 0.2)),
     );
     if (sortableSlowWords.length === 0) {
       Notifications.add("Test too short to classify slow words.", 0);
@@ -139,10 +139,9 @@ export function init(
     }
   });
 
-  const mode = before.mode === null ? Config.mode : before.mode;
-  const punctuation =
-    before.punctuation === null ? Config.punctuation : before.punctuation;
-  const numbers = before.numbers === null ? Config.numbers : before.numbers;
+  const mode = before.mode ?? Config.mode;
+  const punctuation = before.punctuation ?? Config.punctuation;
+  const numbers = before.numbers ?? Config.numbers;
 
   let customText = null;
   if (Config.mode === "custom") {
@@ -158,7 +157,7 @@ export function init(
     (sortableSlowWords.length +
       sortableMissedWords.length +
       sortableMissedBiwords.length) *
-      5
+      5,
   );
 
   setCustomTextName("practise", undefined);

@@ -76,8 +76,8 @@ export function addApiRoutes(app: Application): void {
       .json(
         new MonkeyResponse(
           `Unknown request URL (${req.method}: ${req.path})`,
-          null
-        )
+          null,
+        ),
       );
   });
 }
@@ -105,7 +105,7 @@ function applyTsRestApiRoutes(app: IRouter): void {
         Logger.error(
           `Unknown validation error for ${req.method} ${
             req.path
-          }: ${JSON.stringify(err)}`
+          }: ${JSON.stringify(err)}`,
         );
         res
           .status(500)
@@ -145,7 +145,7 @@ function applyDevApiRoutes(app: Application): void {
       const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
       if (slowdown > 0) {
         Logger.info(
-          `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`
+          `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`,
         );
         await new Promise((resolve) => setTimeout(resolve, slowdown));
       }
@@ -161,7 +161,7 @@ function applyApiRoutes(app: Application): void {
     (
       req: ExpressRequestWithContext,
       res: Response,
-      next: NextFunction
+      next: NextFunction,
     ): void => {
       if (req.path.startsWith("/configuration")) {
         next();
@@ -178,7 +178,7 @@ function applyApiRoutes(app: Application): void {
       }
 
       next();
-    }
+    },
   );
 
   app.get("/", (_req, res) => {
@@ -186,7 +186,7 @@ function applyApiRoutes(app: Application): void {
       new MonkeyResponse("ok", {
         uptime: Date.now() - APP_START_TIME,
         version,
-      })
+      }),
     );
   });
 

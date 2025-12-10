@@ -10,7 +10,7 @@ export class LocalStorageWithSchema<T> {
   private fallback: T;
   private migrate?: (
     value: Record<string, unknown> | unknown[],
-    zodIssues?: ZodIssue[]
+    zodIssues?: ZodIssue[],
   ) => T;
   private cache?: T;
 
@@ -20,7 +20,7 @@ export class LocalStorageWithSchema<T> {
     fallback: T;
     migrate?: (
       value: Record<string, unknown> | unknown[],
-      zodIssues?: ZodIssue[]
+      zodIssues?: ZodIssue[],
     ) => T;
   }) {
     this.key = options.key;
@@ -53,24 +53,24 @@ export class LocalStorageWithSchema<T> {
           migrated = true;
           if (this.migrate) {
             console.debug(
-              `LS ${this.key} Migrating from old format to new format`
+              `LS ${this.key} Migrating from old format to new format`,
             );
             this.cache = this.migrate(oldData, zodIssues);
             return this.cache;
           } else {
             console.debug(
-              `LS ${this.key} No migration function provided, returning fallback`
+              `LS ${this.key} No migration function provided, returning fallback`,
             );
             this.cache = this.fallback;
             return this.cache;
           }
         },
-      })
+      }),
     );
 
     if (error) {
       console.error(
-        `LS ${this.key} Failed to parse from localStorage: ${error.message}`
+        `LS ${this.key} Failed to parse from localStorage: ${error.message}`,
       );
       window.localStorage.setItem(this.key, JSON.stringify(this.fallback));
       this.cache = this.fallback;

@@ -20,6 +20,7 @@ import { CompletedEvent } from "@monkeytype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
+import { qs } from "../utils/dom";
 
 let challengeLoading = false;
 
@@ -37,7 +38,7 @@ export function clearActive(): void {
 function verifyRequirement(
   result: CompletedEvent,
   requirements: NonNullable<Challenge["requirements"]>,
-  requirementType: keyof NonNullable<Challenge["requirements"]>
+  requirementType: keyof NonNullable<Challenge["requirements"]>,
 ): [boolean, string[]] {
   let requirementsMet = true;
   let failReasons: string[] = [];
@@ -154,19 +155,19 @@ export function verify(result: CompletedEvent): string | null {
     if (TestState.activeChallenge.requirements === undefined) {
       Notifications.add(
         `${TestState.activeChallenge.display} challenge passed!`,
-        1
+        1,
       );
       return TestState.activeChallenge.name;
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
       for (const requirementType of Misc.typedKeys(
-        TestState.activeChallenge.requirements
+        TestState.activeChallenge.requirements,
       )) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
           TestState.activeChallenge.requirements,
-          requirementType
+          requirementType,
         );
         if (!passed) {
           requirementsMet = false;
@@ -180,12 +181,12 @@ export function verify(result: CompletedEvent): string | null {
             1,
             {
               duration: 5,
-            }
+            },
           );
         }
         Notifications.add(
           `${TestState.activeChallenge.display} challenge passed!`,
-          1
+          1,
         );
         return TestState.activeChallenge.name;
       } else {
@@ -193,7 +194,7 @@ export function verify(result: CompletedEvent): string | null {
           `${
             TestState.activeChallenge.display
           } challenge failed: ${failReasons.join(", ")}`,
-          0
+          0,
         );
         return null;
       }
@@ -202,7 +203,7 @@ export function verify(result: CompletedEvent): string | null {
     console.error(e);
     Notifications.add(
       `Something went wrong when verifying challenge: ${(e as Error).message}`,
-      0
+      0,
     );
     return null;
   }
@@ -219,14 +220,14 @@ export async function setup(challengeName: string): Promise<boolean> {
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
-      $("header .config").removeClass("hidden");
-      $(".page.pageTest").removeClass("hidden");
+      qs("header .config")?.removeClass("hidden");
+      qs(".page.pageTest")?.removeClass("hidden");
     }, 250);
     return false;
   }
 
   const challenge = list.find(
-    (c) => c.name.toLowerCase() === challengeName.toLowerCase()
+    (c) => c.name.toLowerCase() === challengeName.toLowerCase(),
   );
   let notitext;
   try {
@@ -234,8 +235,8 @@ export async function setup(challengeName: string): Promise<boolean> {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
       setTimeout(() => {
-        $("header .config").removeClass("hidden");
-        $(".page.pageTest").removeClass("hidden");
+        qs("header .config")?.removeClass("hidden");
+        qs(".page.pageTest")?.removeClass("hidden");
       }, 250);
       return false;
     }
@@ -263,7 +264,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else if (challenge.type === "script") {
       Loader.show();
       const response = await fetch(
-        "/challenges/" + (challenge.parameters[0] as string)
+        "/challenges/" + (challenge.parameters[0] as string),
       );
       Loader.hide();
       if (response.status !== 200) {
@@ -316,8 +317,8 @@ export async function setup(challengeName: string): Promise<boolean> {
     }
     ManualRestart.set();
     notitext = challenge.message;
-    $("header .config").removeClass("hidden");
-    $(".page.pageTest").removeClass("hidden");
+    qs("header .config")?.removeClass("hidden");
+    qs(".page.pageTest")?.removeClass("hidden");
 
     if (notitext === undefined) {
       Notifications.add(`Challenge '${challenge.display}' loaded.`, 0);
@@ -330,7 +331,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load challenge"),
-      -1
+      -1,
     );
     return false;
   }

@@ -9,6 +9,7 @@ import {
   ConfigInputOptions,
   Validation,
 } from "../input-validation";
+import { ElementWithUtils, qs, qsa } from "../../utils/dom";
 
 type Mode = "select" | "button" | "range" | "input";
 
@@ -22,7 +23,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   public mode: Mode;
   public setCallback?: () => void;
   public updateCallback?: () => void;
-  private elements: Element[];
+  private elements: ElementWithUtils[];
   private validation?: T extends string
     ? SimpleValidation<T>
     : SimpleValidation<T> & {
@@ -41,7 +42,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         : SimpleValidation<T> & {
             inputValueConvert: (val: string) => T;
           };
-    }
+    },
   ) {
     this.configName = configName;
     this.mode = mode;
@@ -65,8 +66,8 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
     };
 
     if (this.mode === "select") {
-      const el = document.querySelector(
-        `.pageSettings .section[data-config-name=${this.configName}] select`
+      const el = qs<HTMLSelectElement>(
+        `.pageSettings .section[data-config-name=${this.configName}] select`,
       );
 
       if (el === null) {
@@ -75,22 +76,25 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
       if (el.hasAttribute("multiple")) {
         throw new Error(
-          "multi-select dropdowns not supported. Config: " + this.configName
+          "multi-select dropdowns not supported. Config: " + this.configName,
         );
       }
 
-      el.addEventListener("change", (e) => {
-        const target = $(e.target as HTMLSelectElement);
-        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+      el.on("change", (e) => {
+        if (
+          e.target instanceof HTMLElement &&
+          (e.target?.classList?.contains("disabled") ||
+            e.target?.classList?.contains("no-auto-handle"))
+        ) {
           return;
         }
 
-        this.setValue(target.val() as T);
+        this.setValue(el.getValue() as T);
       });
 
       this.elements = [el];
     } else if (this.mode === "button") {
-      const els = document.querySelectorAll(`
+      const els = qsa<HTMLButtonElement>(`
         .pageSettings .section[data-config-name=${this.configName}] .buttons button, .pageSettings .section[data-config-name=${this.configName}] .inputs button`);
 
       if (els.length === 0) {
@@ -98,10 +102,10 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
       }
 
       for (const button of els) {
-        button.addEventListener("click", (e) => {
+        button.on("click", (e) => {
           if (
-            button.classList.contains("disabled") ||
-            button.classList.contains("no-auto-handle")
+            button.hasClass("disabled") ||
+            button.hasClass("no-auto-handle")
           ) {
             return;
           }
@@ -109,11 +113,11 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
           let value = button.getAttribute("data-config-value");
           if (value === null || value === "") {
             console.error(
-              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
+              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`,
             );
             Notifications.add(
               "Button is missing data property. Please report this.",
-              -1
+              -1,
             );
             return;
           }
@@ -125,7 +129,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
       this.elements = Array.from(els);
     } else if (this.mode === "input") {
-      const input: HTMLInputElement | null = document.querySelector(`
+      const input = qs<HTMLInputElement>(`
         .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
       if (input === null) {
         throw new Error(`Failed to find input element for ${configName}`);
@@ -151,8 +155,8 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
       this.elements = [input];
     } else if (this.mode === "range") {
-      const el = document.querySelector(
-        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`
+      const el = qs<HTMLInputElement>(
+        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`,
       );
 
       if (el === null) {
@@ -163,14 +167,11 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         this.setValue(val);
       });
 
-      el.addEventListener("input", (e) => {
-        if (
-          el.classList.contains("disabled") ||
-          el.classList.contains("no-auto-handle")
-        ) {
+      el.on("input", (e) => {
+        if (el.hasClass("disabled") || el.hasClass("no-auto-handle")) {
           return;
         }
-        const val = parseFloat((el as HTMLInputElement).value) as unknown as T;
+        const val = parseFloat(el.getValue() ?? "") as T;
         this.updateUI(val);
         debounced(val);
       });
@@ -182,7 +183,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
     if (this.elements.length === 0 || this.elements === undefined) {
       throw new Error(
-        `Failed to find elements for ${configName} with mode ${mode}`
+        `Failed to find elements for ${configName} with mode ${mode}`,
       );
     }
 
@@ -227,16 +228,16 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         if (typed === "false") typed = false as T;
 
         if (typed !== newValue) {
-          button.classList.remove("active");
+          button.removeClass("active");
         } else {
-          button.classList.add("active");
+          button.addClass("active");
         }
       }
     } else if (this.mode === "range") {
       const range = this.elements?.[0] as HTMLInputElement | null | undefined;
 
       const rangeValue = document.querySelector(
-        `.pageSettings .section[data-config-name='${this.configName}'] .value`
+        `.pageSettings .section[data-config-name='${this.configName}'] .value`,
       );
 
       if (range === undefined || range === null || rangeValue === null) {

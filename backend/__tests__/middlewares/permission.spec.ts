@@ -65,8 +65,8 @@ describe("permission middleware", () => {
       //THEN
       expect(next).toHaveBeenCalledWith(
         expect.toMatchMonkeyError(
-          new MonkeyError(403, "You don't have permission to do this.")
-        )
+          new MonkeyError(403, "You don't have permission to do this."),
+        ),
       );
     });
     it("should pass without authentication if publicOnDev on dev", async () => {
@@ -77,7 +77,7 @@ describe("permission middleware", () => {
           ...requireAdminPermission,
           authenticationOptions: { isPublicOnDev: true },
         },
-        { uid }
+        { uid },
       );
       //WHEN
       await handler(req, res, next);
@@ -92,7 +92,7 @@ describe("permission middleware", () => {
           ...requireAdminPermission,
           authenticationOptions: { isPublicOnDev: true },
         },
-        { uid }
+        { uid },
       );
       //WHEN
       await handler(req, res, next);
@@ -100,8 +100,8 @@ describe("permission middleware", () => {
       //THEN
       expect(next).toHaveBeenCalledWith(
         expect.toMatchMonkeyError(
-          new MonkeyError(403, "You don't have permission to do this.")
-        )
+          new MonkeyError(403, "You don't have permission to do this."),
+        ),
       );
     });
     it("should fail without admin permissions", async () => {
@@ -114,8 +114,8 @@ describe("permission middleware", () => {
       //THEN
       expect(next).toHaveBeenCalledWith(
         expect.toMatchMonkeyError(
-          new MonkeyError(403, "You don't have permission to do this.")
-        )
+          new MonkeyError(403, "You don't have permission to do this."),
+        ),
       );
       expect(isAdminMock).toHaveBeenCalledWith(uid);
     });
@@ -127,7 +127,7 @@ describe("permission middleware", () => {
         {
           requirePermission: ["canReport", "canManageApeKeys"],
         },
-        { uid }
+        { uid },
       );
 
       //WHEN
@@ -138,7 +138,7 @@ describe("permission middleware", () => {
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "check user permissions",
-        ["canReport", "canManageApeKeys"]
+        ["canReport", "canManageApeKeys"],
       );
     });
     it("should fail if authentication is missing", async () => {
@@ -155,9 +155,9 @@ describe("permission middleware", () => {
         expect.toMatchMonkeyError(
           new MonkeyError(
             403,
-            "Failed to check permissions, authentication required."
-          )
-        )
+            "Failed to check permissions, authentication required.",
+          ),
+        ),
       );
     });
   });
@@ -179,7 +179,7 @@ describe("permission middleware", () => {
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "check user permissions",
-        ["quoteMod"]
+        ["quoteMod"],
       );
     });
     it("should pass for specific language", async () => {
@@ -195,7 +195,7 @@ describe("permission middleware", () => {
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "check user permissions",
-        ["quoteMod"]
+        ["quoteMod"],
       );
     });
     it("should fail for empty string", async () => {
@@ -209,8 +209,8 @@ describe("permission middleware", () => {
       //THEN
       expect(next).toHaveBeenCalledWith(
         expect.toMatchMonkeyError(
-          new MonkeyError(403, "You don't have permission to do this.")
-        )
+          new MonkeyError(403, "You don't have permission to do this."),
+        ),
       );
     });
     it("should fail for missing quoteMod", async () => {
@@ -224,8 +224,8 @@ describe("permission middleware", () => {
       //THEN
       expect(next).toHaveBeenCalledWith(
         expect.toMatchMonkeyError(
-          new MonkeyError(403, "You don't have permission to do this.")
-        )
+          new MonkeyError(403, "You don't have permission to do this."),
+        ),
       );
     });
   });
@@ -245,13 +245,13 @@ describe("permission middleware", () => {
       //THEN
       expect(next).toHaveBeenCalledWith(
         expect.toMatchMonkeyError(
-          new MonkeyError(403, "You don't have permission to do this.")
-        )
+          new MonkeyError(403, "You don't have permission to do this."),
+        ),
       );
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "check user permissions",
-        ["canReport"]
+        ["canReport"],
       );
     });
     it("should pass if user can report", async () => {
@@ -295,14 +295,14 @@ describe("permission middleware", () => {
         expect.toMatchMonkeyError(
           new MonkeyError(
             403,
-            "You have lost access to ape keys, please contact support"
-          )
-        )
+            "You have lost access to ape keys, please contact support",
+          ),
+        ),
       );
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "check user permissions",
-        ["canManageApeKeys"]
+        ["canManageApeKeys"],
       );
     });
     it("should pass if user can report", async () => {
@@ -332,7 +332,7 @@ describe("permission middleware", () => {
 
 function givenRequest(
   metadata: EndpointMetadata,
-  decodedToken?: Partial<DecodedToken>
+  decodedToken?: Partial<DecodedToken>,
 ): TsRestRequest {
   return { tsRestRoute: { metadata }, ctx: { decodedToken } } as any;
 }

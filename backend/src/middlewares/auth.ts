@@ -42,12 +42,12 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
  * @returns
  */
 export function authenticateTsRestRequest<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,
     _res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     const options = {
       ...DEFAULT_OPTIONS,
@@ -60,7 +60,8 @@ export function authenticateTsRestRequest<
     let authType = "None";
 
     const isPublic =
-      options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+      options.isPublic === true ||
+      (options.isPublicOnDev && isDevEnvironment());
 
     const {
       authorization: authHeader,
@@ -74,7 +75,7 @@ export function authenticateTsRestRequest<
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
-          options
+          options,
         );
       } else if (isPublic === true) {
         token = {
@@ -86,7 +87,7 @@ export function authenticateTsRestRequest<
         throw new MonkeyError(
           401,
           "Unauthorized",
-          `endpoint: ${req.baseUrl} no authorization header found`
+          `endpoint: ${req.baseUrl} no authorization header found`,
         );
       }
 
@@ -103,7 +104,7 @@ export function authenticateTsRestRequest<
         authType,
         "failure",
         Math.round(performance.now() - startTime),
-        req
+        req,
       );
 
       next(error);
@@ -113,7 +114,7 @@ export function authenticateTsRestRequest<
       token.type,
       "success",
       Math.round(performance.now() - startTime),
-      req
+      req,
     );
 
     const country = req.headers["cf-ipcountry"] as string;
@@ -132,7 +133,7 @@ export function authenticateTsRestRequest<
 async function authenticateWithAuthHeader(
   authHeader: string,
   configuration: Configuration,
-  options: RequestAuthenticationOptions
+  options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   const [authScheme, token] = authHeader.split(" ");
 
@@ -140,7 +141,7 @@ async function authenticateWithAuthHeader(
     throw new MonkeyError(
       401,
       "Missing authentication token",
-      "authenticateWithAuthHeader"
+      "authenticateWithAuthHeader",
     );
   }
 
@@ -158,18 +159,18 @@ async function authenticateWithAuthHeader(
   throw new MonkeyError(
     401,
     "Unknown authentication scheme",
-    `The authentication scheme "${authScheme}" is not implemented`
+    `The authentication scheme "${authScheme}" is not implemented`,
   );
 }
 
 async function authenticateWithBearerToken(
   token: string,
-  options: RequestAuthenticationOptions
+  options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   try {
     const decodedToken = await verifyIdToken(
       token,
-      (options.requireFreshToken ?? false) || (options.noCache ?? false)
+      (options.requireFreshToken ?? false) || (options.noCache ?? false),
     );
 
     if (options.requireFreshToken) {
@@ -180,7 +181,7 @@ async function authenticateWithBearerToken(
         throw new MonkeyError(
           401,
           "Unauthorized",
-          `This endpoint requires a fresh token`
+          `This endpoint requires a fresh token`,
         );
       }
     }
@@ -198,7 +199,7 @@ async function authenticateWithBearerToken(
       throw new MonkeyError(
         503,
         "Firebase returned an internal error when trying to verify the token.",
-        "authenticateWithBearerToken"
+        "authenticateWithBearerToken",
       );
     }
 
@@ -209,25 +210,25 @@ async function authenticateWithBearerToken(
       throw new MonkeyError(
         401,
         "Token expired - please login again",
-        "authenticateWithBearerToken"
+        "authenticateWithBearerToken",
       );
     } else if (errorCode?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
         "Token revoked - please login again",
-        "authenticateWithBearerToken"
+        "authenticateWithBearerToken",
       );
     } else if (errorCode?.includes("auth/user-not-found")) {
       throw new MonkeyError(
         404,
         "User not found",
-        "authenticateWithBearerToken"
+        "authenticateWithBearerToken",
       );
     } else if (errorCode?.includes("auth/argument-error")) {
       throw new MonkeyError(
         400,
         "Incorrect Bearer token format",
-        "authenticateWithBearerToken"
+        "authenticateWithBearerToken",
       );
     } else {
       throw error;
@@ -238,10 +239,10 @@ async function authenticateWithBearerToken(
 async function authenticateWithApeKey(
   key: string,
   configuration: Configuration,
-  options: RequestAuthenticationOptions
+  options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   const isPublic =
-    options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+    options.isPublic === true || (options.isPublicOnDev && isDevEnvironment());
 
   if (!isPublic) {
     if (!configuration.apeKeys.acceptKeys) {
@@ -318,7 +319,7 @@ async function authenticateWithUid(token: string): Promise<DecodedToken> {
 
 export function authenticateGithubWebhook(
   req: TsRestRequestWithContext,
-  authHeader: string | string[] | undefined
+  authHeader: string | string[] | undefined,
 ): DecodedToken {
   try {
     const webhookSecret = process.env["GITHUB_WEBHOOK_SECRET"];
@@ -358,7 +359,7 @@ export function authenticateGithubWebhook(
     }
     throw new MonkeyError(
       500,
-      "Failed to authenticate Github webhook: " + (error as Error).message
+      "Failed to authenticate Github webhook: " + (error as Error).message,
     );
   }
 }

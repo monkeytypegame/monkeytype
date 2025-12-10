@@ -31,7 +31,7 @@ export function stdDev(array: number[]): number {
     const n = array.length;
     const mean = array.reduce((a, b) => a + b) / n;
     return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n,
     );
   } catch (e) {
     return 0;
@@ -111,7 +111,7 @@ export function mapRange(
   inMax: number,
   outMin: number,
   outMax: number,
-  clamp = true
+  clamp = true,
 ): number {
   if (inMin === inMax) {
     return outMin;
@@ -165,7 +165,7 @@ export function isSafeNumber(value: unknown): value is number {
  * @returns The input number if it is safe, undefined otherwise.
  */
 export function safeNumber(
-  value: number | undefined | null
+  value: number | undefined | null,
 ): number | undefined {
   if (isSafeNumber(value)) {
     return value;
