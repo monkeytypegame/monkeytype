@@ -69,8 +69,9 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName)
+      if (tmp[0] === parameterName) {
         result = decodeURIComponent(tmp[1] as string);
+      }
     });
   return result;
 }

@@ -49,6 +49,7 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
+import * as CompositionDisplay from "../elements/composition-display";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -89,10 +90,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     debouncedZipfCheck();
   }
   if (eventKey === "fontSize") {
-    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
-      "fontSize",
-      (eventValue as number) + "rem",
-    );
+    $(
+      "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+    ).css("fontSize", (eventValue as number) + "rem");
     if (!nosave) {
       OutOfFocus.hide();
       updateWordWrapperClasses();
@@ -110,12 +110,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    if (ActivePage.get() === "test")
+    if (ActivePage.get() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });
+    }
   }
 
   if (
@@ -384,8 +385,9 @@ async function updateHintsPosition(): Promise<void> {
     ActivePage.get() !== "test" ||
     TestState.resultVisible ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
-  )
+  ) {
     return;
+  }
 
   let previousHintsContainer: HTMLElement | undefined;
   let hintIndices: number[][] = [];
@@ -465,9 +467,10 @@ function buildWordHTML(word: string, wordIndex: number): string {
     }
   }
   retval += "</div>";
-  if (newlineafter)
+  if (newlineafter) {
     retval +=
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>";
+  }
   return retval;
 }
 
@@ -853,7 +856,7 @@ export async function updateWordLetters({
               `<letter class="incorrect ${tabChar}${nlChar}">` +
               (Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
-                ? inputChars[i] === " "
+                ? inputChars[i] === " " || inputChars[i] === "\t"
                   ? "_"
                   : inputChars[i]
                 : currentLetter) +
@@ -863,26 +866,30 @@ export async function updateWordLetters({
               Config.indicateTypos === "both"
             ) {
               const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1) {
                 lastBlock.push(i);
-              else hintIndices.push([i]);
+              } else {
+                hintIndices.push([i]);
+              }
             }
           }
         }
 
         for (let i = 0; i < compositionData.length; i++) {
           const compositionChar = compositionData[i];
-          let charToShow = currentWordChars[input.length + i];
+          let charToShow =
+            currentWordChars[input.length + i] ?? compositionChar;
 
-          if (charToShow === undefined) {
-            charToShow = compositionChar;
-          }
-
-          if (Config.indicateTypos === "replace") {
+          if (Config.compositionDisplay === "replace") {
             charToShow = compositionChar === " " ? "_" : compositionChar;
           }
 
-          ret += `<letter class="dead">${charToShow}</letter>`;
+          let correctClass = "";
+          if (compositionChar === currentWordChars[input.length + i]) {
+            correctClass = "correct";
+          }
+
+          ret += `<letter class="dead ${correctClass}">${charToShow}</letter>`;
         }
 
         for (
@@ -926,11 +933,12 @@ export async function updateWordLetters({
         );
       }
 
-      if (newlineafter)
+      if (newlineafter) {
         wordAtIndex.insertAdjacentHTML(
           "afterend",
           "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
         );
+      }
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
@@ -1129,8 +1137,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
     // if current letter has zero width move the tape to previous positive width letter
-    if (letters[inputLength]?.offsetWidth === 0)
+    if (letters[inputLength]?.offsetWidth === 0) {
       currentWordWidth -= lastPositiveLetterWidth;
+    }
   }
 
   /* change to new #words & .afterNewline margins */
@@ -1910,6 +1919,15 @@ export function afterTestStart(): void {
   TimerProgress.update();
 }
 
+export function onTestRestart(): void {
+  if (Config.compositionDisplay === "below") {
+    CompositionDisplay.update(" ");
+    CompositionDisplay.show();
+  } else {
+    CompositionDisplay.hide();
+  }
+}
+
 $(".pageTest #copyWordsListButton").on("click", async () => {
   let words;
   if (Config.mode === "zen") {
@@ -2033,5 +2051,13 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "showOutOfFocusWarning" && value === false) {
     OutOfFocus.hide();
+  }
+  if (key === "compositionDisplay") {
+    if (value === "below") {
+      CompositionDisplay.update(" ");
+      CompositionDisplay.show();
+    } else {
+      CompositionDisplay.hide();
+    }
   }
 });

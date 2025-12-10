@@ -128,9 +128,7 @@ export class SortedTable<T> {
     body.empty();
     body.append(
       this.getData().map((data) => {
-        if (data.element === undefined) {
-          data.element = this.buildRow(data.source);
-        }
+        data.element ??= this.buildRow(data.source);
         return data.element;
       }),
     );

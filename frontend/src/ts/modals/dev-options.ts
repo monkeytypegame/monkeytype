@@ -52,6 +52,8 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     .querySelector(".showRealWordsInput")
     ?.addEventListener("click", () => {
       getInputElement().style.opacity = "1";
+      getInputElement().style.marginTop = "1.5em";
+      getInputElement().style.caretColor = "red";
       void modal.hide();
     });
   modalEl.querySelector(".quickLogin")?.addEventListener("click", () => {

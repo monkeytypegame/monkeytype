@@ -101,11 +101,11 @@ body::before {
   --c-dot--error: var(--colorful-error-color);
 }
 
-#words .word:has(~ .active) letter {
-  animation: toDust 200ms ease-out 0ms 1 forwards !important;
+#words .typed letter {
+  animation: darkNoteToDust 200ms ease-out 0ms 1 forwards !important;
 }
-#words .word:has(~ .active) letter::after {
-  animation: fadeIn 100ms ease-in 100ms 1 forwards;
+#words .typed letter::after {
+  animation: darkNoteFadeIn 100ms ease-in 100ms 1 forwards;
 }
 
 .word letter {
@@ -124,7 +124,7 @@ body::before {
   opacity: 0;
 }
 
-#wordsWrapper .word:has(~ .active) letter::after {
+#wordsWrapper .typed letter::after {
   background: var(--c-dot);
 }
 
@@ -143,18 +143,18 @@ hint {
 }
 
 @media (prefers-reduced-motion) {
-  #words .word:has(~ .active) letter {
+  #words .typed letter {
     animation: none !important;
     transform: scale(0.4);
     color: transparent;
   }
-  #words .word:has(~ .active) letter::after {
+  #words .typed letter::after {
     animation: none !important;
     opacity: 1;
   }
 }
 
-@keyframes fadeIn {
+@keyframes darkNoteFadeIn {
   0% {
     opacity: 0;
   }
@@ -166,7 +166,7 @@ hint {
   }
 }
 
-@keyframes toDust {
+@keyframes darkNoteToDust {
   0% {
     transform: scale(1);
     color: var(--current-color);

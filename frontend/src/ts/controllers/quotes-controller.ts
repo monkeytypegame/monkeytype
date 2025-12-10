@@ -239,12 +239,8 @@ class QuotesController {
       });
 
       if (response.status === 200) {
-        if (snapshot.favoriteQuotes === undefined) {
-          snapshot.favoriteQuotes = {};
-        }
-        if (!snapshot.favoriteQuotes[quote.language]) {
-          snapshot.favoriteQuotes[quote.language] = [];
-        }
+        snapshot.favoriteQuotes ??= {};
+        snapshot.favoriteQuotes[quote.language] ??= [];
         snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
       } else {
         throw new Error(response.body.message);

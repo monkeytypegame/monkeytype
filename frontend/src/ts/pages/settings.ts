@@ -43,6 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
+import { qsr } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -202,6 +203,11 @@ async function initGroups(): Promise<void> {
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
+    "button",
+  );
+  groups["compositionDisplay"] = new SettingsGroup(
+    "compositionDisplay",
+    UpdateConfig.setCompositionDisplay,
     "button",
   );
   groups["hideExtraLetters"] = new SettingsGroup(
@@ -643,9 +649,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='minWpm'] input",
-    ),
+    input: qsr(".pageSettings .section[data-config-name='minWpm'] input"),
     configName: "minWpmCustomSpeed",
     validation: {
       schema: true,
@@ -657,9 +661,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='minAcc'] input",
-    ),
+    input: qsr(".pageSettings .section[data-config-name='minAcc'] input"),
     configName: "minAccCustom",
     validation: {
       schema: true,
@@ -668,9 +670,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='minBurst'] input",
-    ),
+    input: qsr(".pageSettings .section[data-config-name='minBurst'] input"),
     configName: "minBurstCustomSpeed",
     validation: {
       schema: true,
@@ -682,9 +682,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='paceCaret'] input",
-    ),
+    input: qsr(".pageSettings .section[data-config-name='paceCaret'] input"),
     configName: "paceCaretCustomSpeed",
     validation: {
       schema: true,
@@ -693,7 +691,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
+    input: qsr(
       ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
     ),
     configName: "customBackground",

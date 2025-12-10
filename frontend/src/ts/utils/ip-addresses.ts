@@ -118,9 +118,11 @@ export function compressIpv6(ip: string): string {
         index >= longestStartIndex &&
         index <= longestEndIndex &&
         longestStartIndex !== longestEndIndex
-      )
+      ) {
         return ":";
-      else return "0";
+      } else {
+        return "0";
+      }
     }
 
     return word;

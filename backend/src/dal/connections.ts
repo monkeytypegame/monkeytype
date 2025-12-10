@@ -20,8 +20,9 @@ export async function getConnections(options: {
 }): Promise<DBConnection[]> {
   const { initiatorUid, receiverUid, status } = options;
 
-  if (initiatorUid === undefined && receiverUid === undefined)
+  if (initiatorUid === undefined && receiverUid === undefined) {
     throw new Error("Missing filter");
+  }
 
   let filter: Filter<DBConnection> = { $or: [] };
 

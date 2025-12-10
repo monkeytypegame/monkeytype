@@ -125,9 +125,7 @@ export async function submitRating(
     shouldUpdateRating,
   );
 
-  if (!userQuoteRatings[language]) {
-    userQuoteRatings[language] = {};
-  }
+  userQuoteRatings[language] ??= {};
   userQuoteRatings[language][quoteId] = rating;
 
   await updateQuoteRatings(uid, userQuoteRatings);

@@ -139,10 +139,9 @@ export function init(
     }
   });
 
-  const mode = before.mode === null ? Config.mode : before.mode;
-  const punctuation =
-    before.punctuation === null ? Config.punctuation : before.punctuation;
-  const numbers = before.numbers === null ? Config.numbers : before.numbers;
+  const mode = before.mode ?? Config.mode;
+  const punctuation = before.punctuation ?? Config.punctuation;
+  const numbers = before.numbers ?? Config.numbers;
 
   let customText = null;
   if (Config.mode === "custom") {

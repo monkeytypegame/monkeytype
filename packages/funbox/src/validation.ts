@@ -33,9 +33,9 @@ export function checkCompatibility(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ||
-        f.frontendFunctions?.includes("pullSection") ||
-        f.frontendFunctions?.includes("withWords"),
+        f.frontendFunctions?.includes("getWord") === true ||
+        f.frontendFunctions?.includes("pullSection") === true ||
+        f.frontendFunctions?.includes("withWords") === true,
     ).length <= 1;
   const oneWordOrderMax =
     funboxesToCheck.filter(

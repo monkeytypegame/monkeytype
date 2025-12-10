@@ -83,7 +83,6 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
-import * as CompositionDisplay from "../elements/composition-display";
 import {
   getInputElement,
   isInputElementFocused,
@@ -329,13 +328,6 @@ export function restart(options = {} as RestartOptions): void {
       getInputElement().style.left = "0";
       setInputElementValue("");
 
-      if (CompositionDisplay.shouldShow()) {
-        CompositionDisplay.update(" ");
-        CompositionDisplay.show();
-      } else {
-        CompositionDisplay.hide();
-      }
-
       Focus.set(false);
       if (ActivePage.get() === "test") {
         AdController.updateFooterAndVerticalAds(false);
@@ -381,8 +373,9 @@ export function restart(options = {} as RestartOptions): void {
       if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
-      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
+      TestUI.onTestRestart();
 
+      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {
         opacity: [0, 1],
         onBegin: () => {
@@ -407,6 +400,7 @@ export function restart(options = {} as RestartOptions): void {
 
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
+let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
@@ -501,7 +495,7 @@ async function init(): Promise<boolean> {
           important: true,
         },
       );
-      UpdateConfig.setLazyMode(false, true);
+      UpdateConfig.setLazyMode(false, false);
     } else if (rememberLazyMode && anySupportsLazyMode) {
       UpdateConfig.setLazyMode(true, true);
     }
@@ -509,10 +503,12 @@ async function init(): Promise<boolean> {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
       rememberLazyMode = true;
+      showedLazyModeNotification = true;
       Notifications.add("This language does not support lazy mode.", 0, {
         important: true,
       });
-      UpdateConfig.setLazyMode(false, true);
+
+      UpdateConfig.setLazyMode(false, false);
     } else if (rememberLazyMode && !language.noLazyMode) {
       UpdateConfig.setLazyMode(true, true);
     }
@@ -1634,7 +1630,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       ArabicLazyMode.set(eventValue as boolean);
     }
     if (eventValue === false) {
-      rememberLazyMode = false;
+      if (!showedLazyModeNotification) {
+        rememberLazyMode = false;
+      }
+      showedLazyModeNotification = false;
     }
   }
 });
