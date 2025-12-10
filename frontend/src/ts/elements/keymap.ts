@@ -61,7 +61,9 @@ const stenoKeys: LayoutObject = {
   },
 };
 
-function findKeyElements(char: string): ElementsWithUtils {
+function findKeyElements(char: string): ElementsWithUtils | null {
+  if (char === "\n") return null;
+
   if (char === " ") {
     return keymap.qsa(".keySpace");
   }
@@ -87,6 +89,8 @@ function highlightKey(currentKey: string): void {
       }
 
       const $target = findKeyElements(currentKey);
+      if ($target === null || $target.length === 0) return;
+
       $target.addClass("activeKey");
     } catch (e) {
       if (e instanceof Error) {
@@ -100,7 +104,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
   requestDebouncedAnimationFrame(`keymap.flashKey.${key}`, async () => {
     const elements = findKeyElements(key);
-    if (elements.length === 0) return;
+    if (elements === null || elements.length === 0) return;
 
     const themecolors = await ThemeColors.getAll();
 
