@@ -323,6 +323,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+  compositionDisplay: {
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
   hideExtraLetters: {
     subgroup: {
       options: "fromSchema",

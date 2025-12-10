@@ -49,6 +49,7 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
+import * as CompositionDisplay from "../elements/composition-display";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -89,10 +90,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     debouncedZipfCheck();
   }
   if (eventKey === "fontSize") {
-    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
-      "fontSize",
-      (eventValue as number) + "rem",
-    );
+    $(
+      "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+    ).css("fontSize", (eventValue as number) + "rem");
     if (!nosave) {
       OutOfFocus.hide();
       updateWordWrapperClasses();
@@ -880,7 +880,7 @@ export async function updateWordLetters({
           let charToShow =
             currentWordChars[input.length + i] ?? compositionChar;
 
-          if (Config.indicateTypos === "replace") {
+          if (Config.compositionDisplay === "replace") {
             charToShow = compositionChar === " " ? "_" : compositionChar;
           }
 
@@ -1919,6 +1919,15 @@ export function afterTestStart(): void {
   TimerProgress.update();
 }
 
+export function onTestRestart(): void {
+  if (Config.compositionDisplay === "below") {
+    CompositionDisplay.update(" ");
+    CompositionDisplay.show();
+  } else {
+    CompositionDisplay.hide();
+  }
+}
+
 $(".pageTest #copyWordsListButton").on("click", async () => {
   let words;
   if (Config.mode === "zen") {
@@ -2042,5 +2051,13 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "showOutOfFocusWarning" && value === false) {
     OutOfFocus.hide();
+  }
+  if (key === "compositionDisplay") {
+    if (value === "below") {
+      CompositionDisplay.update(" ");
+      CompositionDisplay.show();
+    } else {
+      CompositionDisplay.hide();
+    }
   }
 });

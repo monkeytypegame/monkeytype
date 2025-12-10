@@ -134,6 +134,7 @@ export const commands: CommandsSubgroup = {
       confidenceModeCommand,
       "quickEnd",
       "indicateTypos",
+      "compositionDisplay",
       "hideExtraLetters",
       lazyModeCommand,
       layoutCommand,

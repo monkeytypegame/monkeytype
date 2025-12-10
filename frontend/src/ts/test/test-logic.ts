@@ -83,7 +83,6 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
-import * as CompositionDisplay from "../elements/composition-display";
 import {
   getInputElement,
   isInputElementFocused,
@@ -329,13 +328,6 @@ export function restart(options = {} as RestartOptions): void {
       getInputElement().style.left = "0";
       setInputElementValue("");
 
-      if (CompositionDisplay.shouldShow()) {
-        CompositionDisplay.update(" ");
-        CompositionDisplay.show();
-      } else {
-        CompositionDisplay.hide();
-      }
-
       Focus.set(false);
       if (ActivePage.get() === "test") {
         AdController.updateFooterAndVerticalAds(false);
@@ -381,8 +373,9 @@ export function restart(options = {} as RestartOptions): void {
       if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
-      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
+      TestUI.onTestRestart();
 
+      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {
         opacity: [0, 1],
         onBegin: () => {
