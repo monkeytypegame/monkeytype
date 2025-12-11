@@ -212,8 +212,8 @@ export class Caret {
 
     // in case we have two line jumps in a row
     if (this.readyToResetMarginTop) {
-      $(this.element).css({
-        marginTop: 0,
+      this.element.setStyle({
+        marginTop: "0px",
       });
     }
 
@@ -349,9 +349,9 @@ export class Caret {
         this.readyToResetMarginTop = false;
         const currentTop = parseFloat(this.element.getStyle().top || "0");
 
-        $(this.element).css({
-          marginTop: 0,
-          top: currentTop + currentMarginTop,
+        this.element.setStyle({
+          marginTop: "0px",
+          top: `${currentTop + currentMarginTop}px`,
         });
         currentMarginTop = 0;
       }
@@ -364,9 +364,9 @@ export class Caret {
         this.readyToResetMarginLeft = false;
         const currentLeft = parseFloat(this.element.getStyle().left || "0");
 
-        $(this.element).css({
-          marginLeft: 0,
-          left: currentLeft + currentMarginLeft,
+        this.element.setStyle({
+          marginLeft: "0px",
+          left: `${currentLeft + currentMarginLeft}px`,
         });
         this.cumulativeTapeMarginCorrection += currentMarginLeft;
         currentMarginLeft = 0;
