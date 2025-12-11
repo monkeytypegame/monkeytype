@@ -223,47 +223,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
-  return setConfig("ads", val, nosave);
-}
-
-export function setRepeatQuotes(
-  val: ConfigSchemas.RepeatQuotes,
-  nosave?: boolean,
-): boolean {
-  return setConfig("repeatQuotes", val, nosave);
-}
-
-//flip colors
-export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
-  return setConfig("flipTestColors", flip, nosave);
-}
-
-//extra color
-export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
-  return setConfig("colorfulMode", extra, nosave);
-}
-
-//strict space
-export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
-  return setConfig("strictSpace", val, nosave);
-}
-
-//opposite shift space
-export function setOppositeShiftMode(
-  val: ConfigSchemas.OppositeShiftMode,
-  nosave?: boolean,
-): boolean {
-  return setConfig("oppositeShiftMode", val, nosave);
-}
-
-export function setCaretStyle(
-  caretStyle: ConfigSchemas.CaretStyle,
-  nosave?: boolean,
-): boolean {
-  return setConfig("caretStyle", caretStyle, nosave);
-}
-
 export function setPaceCaretStyle(
   caretStyle: ConfigSchemas.CaretStyle,
   nosave?: boolean,

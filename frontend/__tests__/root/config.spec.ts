@@ -301,25 +301,7 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setAds", () => {
-    expect(Config.setAds("on")).toBe(true);
-    expect(Config.setAds("sellout")).toBe(true);
-  });
-  it("setRepeatQuotes", () => {
-    expect(Config.setRepeatQuotes("off")).toBe(true);
-    expect(Config.setRepeatQuotes("typing")).toBe(true);
-    expect(Config.setRepeatQuotes("invalid" as any)).toBe(false);
-  });
-  it("setOppositeShiftMode", () => {
-    expect(Config.setOppositeShiftMode("on")).toBe(true);
-    expect(Config.setOppositeShiftMode("keymap")).toBe(true);
-    expect(Config.setOppositeShiftMode("invalid" as any)).toBe(false);
-  });
-  it("setCaretStyle", () => {
-    expect(Config.setCaretStyle("banana")).toBe(true);
-    expect(Config.setCaretStyle("block")).toBe(true);
-    expect(Config.setCaretStyle("invalid" as any)).toBe(false);
-  });
+
   it("setPaceCaretStyle", () => {
     expect(Config.setPaceCaretStyle("carrot")).toBe(true);
     expect(Config.setPaceCaretStyle("outline")).toBe(true);
@@ -471,15 +453,6 @@ describe("Config", () => {
     expect(Config.setCustomThemeColors(tenColors)).toBe(true);
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
-  });
-  it("setFlipTestColors", () => {
-    testBoolean(Config.setFlipTestColors);
-  });
-  it("setColorfulMode", () => {
-    testBoolean(Config.setColorfulMode);
-  });
-  it("setStrictSpace", () => {
-    testBoolean(Config.setStrictSpace);
   });
   it("setHideExtraLetters", () => {
     testBoolean(Config.setHideExtraLetters);
