@@ -301,17 +301,6 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-
-  it("setTypingSpeedUnit", () => {
-    expect(Config.setTypingSpeedUnit("wpm")).toBe(true);
-    expect(Config.setTypingSpeedUnit("cpm")).toBe(true);
-    expect(Config.setTypingSpeedUnit("invalid" as any)).toBe(false);
-  });
-  it("setPaceCaret", () => {
-    expect(Config.setPaceCaret("average")).toBe(true);
-    expect(Config.setPaceCaret("last")).toBe(true);
-    expect(Config.setPaceCaret("invalid" as any)).toBe(false);
-  });
   it("setMinWpm", () => {
     expect(Config.setMinWpm("custom")).toBe(true);
     expect(Config.setMinWpm("off")).toBe(true);
@@ -504,12 +493,6 @@ describe("Config", () => {
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
   });
 
-  it("setAlwaysShowDecimalPlaces", () => {
-    testBoolean(Config.setAlwaysShowDecimalPlaces);
-  });
-  it("setShowOutOfFocusWarning", () => {
-    testBoolean(Config.setShowOutOfFocusWarning);
-  });
   it("setAlwaysShowWordsHistory", () => {
     testBoolean(Config.setAlwaysShowWordsHistory);
   });
@@ -564,18 +547,7 @@ describe("Config", () => {
   it("setBurstHeatmap", () => {
     testBoolean(Config.setBurstHeatmap);
   });
-  it("setRepeatedPace", () => {
-    testBoolean(Config.setRepeatedPace);
-  });
 
-  it("setPaceCaretCustomSpeed", () => {
-    expect(Config.setPaceCaretCustomSpeed(0)).toBe(true);
-    expect(Config.setPaceCaretCustomSpeed(1)).toBe(true);
-    expect(Config.setPaceCaretCustomSpeed(11.11)).toBe(true);
-
-    expect(Config.setPaceCaretCustomSpeed("invalid" as any)).toBe(false);
-    expect(Config.setPaceCaretCustomSpeed(-1)).toBe(false);
-  });
   it("setMinWpmCustomSpeed", () => {
     expect(Config.setMinWpmCustomSpeed(0)).toBe(true);
     expect(Config.setMinWpmCustomSpeed(1)).toBe(true);

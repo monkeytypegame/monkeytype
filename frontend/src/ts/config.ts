@@ -223,53 +223,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   return true;
 }
 
-export function setStopOnError(
-  soe: ConfigSchemas.StopOnError,
-  nosave?: boolean,
-): boolean {
-  return setConfig("stopOnError", soe, nosave);
-}
-
-export function setAlwaysShowDecimalPlaces(
-  val: boolean,
-  nosave?: boolean,
-): boolean {
-  return setConfig("alwaysShowDecimalPlaces", val, nosave);
-}
-
-export function setTypingSpeedUnit(
-  val: ConfigSchemas.TypingSpeedUnit,
-  nosave?: boolean,
-): boolean {
-  return setConfig("typingSpeedUnit", val, nosave);
-}
-
-export function setShowOutOfFocusWarning(
-  val: boolean,
-  nosave?: boolean,
-): boolean {
-  return setConfig("showOutOfFocusWarning", val, nosave);
-}
-
-//pace caret
-export function setPaceCaret(
-  val: ConfigSchemas.PaceCaret,
-  nosave?: boolean,
-): boolean {
-  return setConfig("paceCaret", val, nosave);
-}
-
-export function setPaceCaretCustomSpeed(
-  val: ConfigSchemas.PaceCaretCustomSpeed,
-  nosave?: boolean,
-): boolean {
-  return setConfig("paceCaretCustomSpeed", val, nosave);
-}
-
-export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
-  return setConfig("repeatedPace", pace, nosave);
-}
-
 //min wpm
 export function setMinWpm(
   minwpm: ConfigSchemas.MinimumWordsPerMinute,
