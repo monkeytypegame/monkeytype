@@ -317,7 +317,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTimeConfig(120, true);
         UpdateConfig.setLanguage("english_10k", true);
         UpdateConfig.setConfig("punctuation", true, true);
-        UpdateConfig.setStopOnError("word", true);
+        UpdateConfig.setConfig("stopOnError", "word", true);
         UpdateConfig.setLayout("semimak", true);
         UpdateConfig.setKeymapLayout("overrideSync", true);
         UpdateConfig.setKeymapMode("static", true);

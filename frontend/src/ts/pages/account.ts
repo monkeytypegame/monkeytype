@@ -1035,25 +1035,25 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  UpdateConfig.setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  UpdateConfig.setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  UpdateConfig.setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  UpdateConfig.setConfig("accountChart", newValue);
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {

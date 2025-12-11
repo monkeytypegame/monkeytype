@@ -302,19 +302,6 @@ describe("Config", () => {
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
 
-  it("setAccountChart", () => {
-    expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
-    //arrays not having 4 values will get [on, on, on, on] as default
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
-    expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
-      false,
-    );
-  });
-  it("setStopOnError", () => {
-    expect(Config.setStopOnError("off")).toBe(true);
-    expect(Config.setStopOnError("word")).toBe(true);
-    expect(Config.setStopOnError("invalid" as any)).toBe(false);
-  });
   it("setTypingSpeedUnit", () => {
     expect(Config.setTypingSpeedUnit("wpm")).toBe(true);
     expect(Config.setTypingSpeedUnit("cpm")).toBe(true);
@@ -517,16 +504,6 @@ describe("Config", () => {
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
   });
 
-  it("setBlindMode", () => {
-    testBoolean(Config.setBlindMode);
-  });
-  it("setAccountChart", () => {
-    expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
-    expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
-      false,
-    );
-  });
   it("setAlwaysShowDecimalPlaces", () => {
     testBoolean(Config.setAlwaysShowDecimalPlaces);
   });

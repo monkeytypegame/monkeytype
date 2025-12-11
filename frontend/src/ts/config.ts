@@ -223,17 +223,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   return true;
 }
 
-export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
-  return setConfig("blindMode", blind, nosave);
-}
-
-export function setAccountChart(
-  array: ConfigSchemas.AccountChart,
-  nosave?: boolean,
-): boolean {
-  return setConfig("accountChart", array, nosave);
-}
-
 export function setStopOnError(
   soe: ConfigSchemas.StopOnError,
   nosave?: boolean,
