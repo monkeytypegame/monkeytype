@@ -196,7 +196,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return word;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers, UpdateConfig.setNumbers);
+      save("numbers", Config.numbers);
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
       if (event.key === "Enter") {
@@ -568,7 +568,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return w;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers, UpdateConfig.setNumbers);
+      save("numbers", Config.numbers);
     },
   },
   IPv6: {
@@ -587,7 +587,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return w;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers, UpdateConfig.setNumbers);
+      save("numbers", Config.numbers);
     },
   },
   binary: {

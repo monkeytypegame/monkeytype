@@ -161,7 +161,7 @@ export async function activate(
           UpdateConfig.setPunctuation(check.forcedConfigs[0] as boolean);
         }
         if (configKey === "numbers") {
-          UpdateConfig.setNumbers(check.forcedConfigs[0] as boolean);
+          UpdateConfig.setConfig("numbers", check.forcedConfigs[0] as boolean);
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(

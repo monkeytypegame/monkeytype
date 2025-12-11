@@ -538,9 +538,6 @@ describe("Config", () => {
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
   });
-  it("setNumbers", () => {
-    testBoolean(Config.setNumbers);
-  });
   it("setPunctuation", () => {
     testBoolean(Config.setPunctuation);
   });

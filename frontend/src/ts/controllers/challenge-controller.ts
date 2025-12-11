@@ -246,7 +246,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.name === "englishMaster") {
         UpdateConfig.setLanguage("english_10k", true);
-        UpdateConfig.setNumbers(true, true);
+        UpdateConfig.setConfig("numbers", true, true);
         UpdateConfig.setPunctuation(true, true);
       }
     } else if (challenge.type === "customWords") {

@@ -108,7 +108,7 @@ describe("PresetController", () => {
         settingGroups: ["test"],
       });
 
-      UpdateConfig.setNumbers(true);
+      UpdateConfig.setConfig("numbers", true);
       const oldConfig = structuredClone(UpdateConfig.default);
 
       //WHEN

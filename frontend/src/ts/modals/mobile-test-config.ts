@@ -174,7 +174,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 
   modalEl.querySelector(".numbers")?.addEventListener("click", () => {
-    UpdateConfig.setNumbers(!Config.numbers);
+    UpdateConfig.setConfig("numbers", !Config.numbers);
     ManualRestart.set();
     TestLogic.restart();
   });

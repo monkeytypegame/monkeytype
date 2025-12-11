@@ -255,7 +255,7 @@ export function restart(options = {} as RestartOptions): void {
       UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
     }
     if (PractiseWords.before.numbers !== null) {
-      UpdateConfig.setNumbers(PractiseWords.before.numbers);
+      UpdateConfig.setConfig("numbers", PractiseWords.before.numbers);
     }
 
     if (PractiseWords.before.customText) {
@@ -1577,7 +1577,7 @@ $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestState.testRestarting) return;
-  if (UpdateConfig.setNumbers(!Config.numbers)) {
+  if (UpdateConfig.setConfig("numbers", !Config.numbers)) {
     ManualRestart.set();
     restart();
   }

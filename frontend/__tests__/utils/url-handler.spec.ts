@@ -19,13 +19,13 @@ describe("url-handler", () => {
   describe("loadTestSettingsFromUrl", () => {
     const findGetParameterMock = vi.spyOn(Misc, "findGetParameter");
 
+    const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setModeMock = vi.spyOn(UpdateConfig, "setMode");
     const setTimeConfigMock = vi.spyOn(UpdateConfig, "setTimeConfig");
     const setWordCountMock = vi.spyOn(UpdateConfig, "setWordCount");
     const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
     const setPunctuationMock = vi.spyOn(UpdateConfig, "setPunctuation");
-    const setNumbersMock = vi.spyOn(UpdateConfig, "setNumbers");
     const setLanguageMock = vi.spyOn(UpdateConfig, "setLanguage");
     const setDifficultyMock = vi.spyOn(UpdateConfig, "setDifficulty");
     const setFunboxMock = vi.spyOn(UpdateConfig, "setFunbox");
@@ -35,6 +35,7 @@ describe("url-handler", () => {
 
     beforeEach(() => {
       [
+        setConfigMock,
         findGetParameterMock,
         setModeMock,
         setTimeConfigMock,
@@ -42,7 +43,6 @@ describe("url-handler", () => {
         setQuoteLengthMock,
         setSelectedQuoteIdMock,
         setPunctuationMock,
-        setNumbersMock,
         setLanguageMock,
         setDifficultyMock,
         setFunboxMock,
@@ -139,7 +139,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setNumbersMock).toHaveBeenCalledWith(false, true);
+      expect(setConfigMock).toHaveBeenCalledWith("numbers", false, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets language", () => {

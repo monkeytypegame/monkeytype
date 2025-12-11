@@ -241,7 +241,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[4] !== null) {
-    UpdateConfig.setNumbers(de[4], true);
+    UpdateConfig.setConfig("numbers", de[4], true);
     applied["numbers"] = de[4] ? "on" : "off";
   }
 

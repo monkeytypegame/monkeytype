@@ -197,11 +197,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-//numbers
-export function setNumbers(numb: boolean, nosave?: boolean): boolean {
-  return setConfig("numbers", numb, nosave);
-}
-
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return setConfig("punctuation", punc, nosave);
