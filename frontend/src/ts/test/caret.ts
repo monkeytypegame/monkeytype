@@ -4,6 +4,7 @@ import * as TestState from "../test/test-state";
 import { subscribe } from "../observables/config-event";
 import { Caret } from "../utils/caret";
 import * as CompositionState from "../states/composition";
+import { qsr } from "../utils/dom";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -40,10 +41,7 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-export const caret = new Caret(
-  document.getElementById("caret") as HTMLElement,
-  Config.caretStyle,
-);
+export const caret = new Caret(qsr("#caret"), Config.caretStyle);
 
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {

@@ -311,6 +311,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's style object
+   */
+  getStyle(): CSSStyleDeclaration {
+    return this.native.style;
+  }
+
+  /**
    * Check if the element is focused
    */
   isFocused(): boolean {
@@ -463,6 +470,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.replaceWith(element);
     }
     return this;
+  }
+
+  /**
+   * Get the element's width
+   */
+  getOffsetWidth(): number {
+    return this.native.offsetWidth;
+  }
+
+  /**
+   * Get the element's height
+   */
+  getOffsetHeight(): number {
+    return this.native.offsetHeight;
+  }
+
+  /**
+   * Get the element's top offset relative to its offsetParent
+   */
+  getOffsetTop(): number {
+    return this.native.offsetTop;
+  }
+
+  /**
+   * Get the element's left offset relative to its offsetParent
+   */
+  getOffsetLeft(): number {
+    return this.native.offsetLeft;
   }
 }
 

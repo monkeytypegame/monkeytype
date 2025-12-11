@@ -6,6 +6,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../utils/caret";
+import { qsr } from "../utils/dom";
 
 type Settings = {
   wpm: number;
@@ -22,10 +23,7 @@ let startTimestamp = 0;
 
 export let settings: Settings | null = null;
 
-export const caret = new Caret(
-  document.getElementById("paceCaret") as HTMLElement,
-  Config.paceCaretStyle,
-);
+export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
 
 let lastTestWpm = 0;
 
