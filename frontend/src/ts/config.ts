@@ -196,13 +196,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-export function setPlaySoundOnError(
-  val: ConfigSchemas.PlaySoundOnError,
-  nosave?: boolean,
-): boolean {
-  return setConfig("playSoundOnError", val, nosave);
-}
-
 export function setPlaySoundOnClick(
   val: ConfigSchemas.PlaySoundOnClick,
   nosave?: boolean,

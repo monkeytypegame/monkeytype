@@ -301,15 +301,6 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setMode", () => {
-    expect(Config.setConfig("mode", "zen")).toBe(true);
-    expect(Config.setConfig("mode", "invalid" as any)).toBe(false);
-  });
-  it("setPlaySoundOnError", () => {
-    expect(Config.setPlaySoundOnError("off")).toBe(true);
-    expect(Config.setPlaySoundOnError("1")).toBe(true);
-    expect(Config.setPlaySoundOnError("invalid" as any)).toBe(false);
-  });
   it("setPlaySoundOnClick", () => {
     expect(Config.setPlaySoundOnClick("off")).toBe(true);
     expect(Config.setPlaySoundOnClick("15")).toBe(true);

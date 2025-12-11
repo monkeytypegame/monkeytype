@@ -204,7 +204,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     CustomText.setText(customTextSettings.text);
 
     //make sure to set mode before the limit as mode also sets the limit
-    CustomText.setMode("mode", customTextSettings.mode ?? "repeat");
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     if (customTextSettings.limit !== undefined) {
       CustomText.setLimitMode(customTextSettings.limit.mode);
