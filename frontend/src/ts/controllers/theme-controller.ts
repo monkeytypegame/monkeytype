@@ -3,7 +3,7 @@ import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
+import Config, { setConfig, setCustomTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -273,7 +273,7 @@ async function set(
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
-    setAutoSwitchTheme(false);
+    setConfig("autoSwitchTheme", false);
     Notifications.add("Auto switch theme disabled", 0);
   }
 }

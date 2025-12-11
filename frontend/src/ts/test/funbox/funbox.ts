@@ -152,7 +152,7 @@ export async function activate(
           UpdateConfig.setConfig("mode", check.forcedConfigs[0] as Mode);
         }
         if (configKey === "words") {
-          UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
+          UpdateConfig.setConfig("words", check.forcedConfigs[0] as number);
         }
         if (configKey === "time") {
           UpdateConfig.setConfig("time", check.forcedConfigs[0] as number);

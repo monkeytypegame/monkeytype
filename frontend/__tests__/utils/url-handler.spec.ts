@@ -20,8 +20,6 @@ describe("url-handler", () => {
     const findGetParameterMock = vi.spyOn(Misc, "findGetParameter");
 
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
-    const setWordCountMock = vi.spyOn(UpdateConfig, "setWordCount");
-    const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
     const setLanguageMock = vi.spyOn(UpdateConfig, "setLanguage");
     const restartTestMock = vi.spyOn(TestLogic, "restart");
@@ -31,8 +29,6 @@ describe("url-handler", () => {
       [
         setConfigMock,
         findGetParameterMock,
-        setWordCountMock,
-        setQuoteLengthMock,
         setSelectedQuoteIdMock,
         setLanguageMock,
         restartTestMock,
@@ -91,7 +87,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "words", true);
-      expect(setWordCountMock).toHaveBeenCalledWith(50, true);
+      expect(setConfigMock).toHaveBeenCalledWith("words", 50, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets quote length", () => {
@@ -105,7 +101,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "quote", true);
-      expect(setQuoteLengthMock).toHaveBeenCalledWith([-2], false);
+      expect(setConfigMock).toHaveBeenCalledWith("quoteLength", [-2], false);
       expect(setSelectedQuoteIdMock).toHaveBeenCalledWith(512);
       expect(restartTestMock).toHaveBeenCalled();
     });

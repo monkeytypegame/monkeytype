@@ -25,7 +25,6 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
-import { FontName } from "@monkeytype/schemas/fonts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -223,92 +222,8 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   return true;
 }
 
-export function setQuoteLength(
-  len: ConfigSchemas.QuoteLengthConfig,
-  nosave?: boolean,
-): boolean {
-  return setConfig("quoteLength", len, nosave);
-}
-
 export function setQuoteLengthAll(nosave?: boolean): boolean {
   return setConfig("quoteLength", [0, 1, 2, 3], nosave);
-}
-
-export function setWordCount(
-  wordCount: ConfigSchemas.WordCount,
-  nosave?: boolean,
-): boolean {
-  return setConfig("words", wordCount, nosave);
-}
-
-//caret
-export function setSmoothCaret(
-  mode: ConfigSchemas.SmoothCaret,
-  nosave?: boolean,
-): boolean {
-  return setConfig("smoothCaret", mode, nosave);
-}
-
-export function setCodeUnindentOnBackspace(
-  mode: boolean,
-  nosave?: boolean,
-): boolean {
-  return setConfig("codeUnindentOnBackspace", mode, nosave);
-}
-
-export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
-  return setConfig("startGraphsAtZero", mode, nosave);
-}
-
-//linescroll
-export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
-  return setConfig("smoothLineScroll", mode, nosave);
-}
-
-//quick restart
-export function setQuickRestartMode(
-  mode: ConfigSchemas.QuickRestart,
-  nosave?: boolean,
-): boolean {
-  return setConfig("quickRestart", mode, nosave);
-}
-
-//font family
-export function setFontFamily(font: FontName, nosave?: boolean): boolean {
-  return setConfig("fontFamily", font, nosave);
-}
-
-//freedom
-export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
-  return setConfig("freedomMode", freedom, nosave);
-}
-
-export function setConfidenceMode(
-  cm: ConfigSchemas.ConfidenceMode,
-  nosave?: boolean,
-): boolean {
-  return setConfig("confidenceMode", cm, nosave);
-}
-
-export function setIndicateTypos(
-  value: ConfigSchemas.IndicateTypos,
-  nosave?: boolean,
-): boolean {
-  return setConfig("indicateTypos", value, nosave);
-}
-
-export function setCompositionDisplay(
-  value: ConfigSchemas.CompositionDisplay,
-  nosave?: boolean,
-): boolean {
-  return setConfig("compositionDisplay", value, nosave);
-}
-
-export function setAutoSwitchTheme(
-  boolean: boolean,
-  nosave?: boolean,
-): boolean {
-  return setConfig("autoSwitchTheme", boolean, nosave);
 }
 
 export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {

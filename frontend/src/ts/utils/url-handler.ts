@@ -190,9 +190,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     if (mode === "time") {
       UpdateConfig.setConfig("time", parseInt(de[1], 10), true);
     } else if (mode === "words") {
-      UpdateConfig.setWordCount(parseInt(de[1], 10), true);
+      UpdateConfig.setConfig("words", parseInt(de[1], 10), true);
     } else if (mode === "quote") {
-      UpdateConfig.setQuoteLength([-2], false);
+      UpdateConfig.setConfig("quoteLength", [-2], false);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }

@@ -90,7 +90,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         });
       } else if (wrd !== undefined) {
         const wrdNum = parseInt(wrd);
-        UpdateConfig.setWordCount(wrdNum);
+        UpdateConfig.setConfig("words", wrdNum);
         ManualRestart.set();
         TestLogic.restart();
       }
@@ -153,7 +153,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           arr = [len];
         }
 
-        if (UpdateConfig.setQuoteLength(arr, false)) {
+        if (UpdateConfig.setConfig("quoteLength", arr, false)) {
           ManualRestart.set();
           TestLogic.restart();
         }

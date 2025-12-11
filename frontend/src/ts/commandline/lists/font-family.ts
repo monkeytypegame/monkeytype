@@ -29,7 +29,7 @@ if (fromMeta.subgroup) {
           exec: ({ input }): void => {
             if (input === undefined || input === "") return;
             const fontName = input.replaceAll(/ /g, "_");
-            UpdateConfig.setFontFamily(fontName);
+            UpdateConfig.setConfig("fontFamily", fontName);
           },
         },
         {

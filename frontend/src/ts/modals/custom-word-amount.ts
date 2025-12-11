@@ -28,7 +28,7 @@ function apply(): void {
   );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    if (UpdateConfig.setWordCount(val)) {
+    if (UpdateConfig.setConfig("words", val)) {
       ManualRestart.set();
       TestLogic.restart();
       if (val > 2000) {

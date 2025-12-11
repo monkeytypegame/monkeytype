@@ -1521,7 +1521,7 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestState.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
-    if (UpdateConfig.setWordCount(parseInt(wrd))) {
+    if (UpdateConfig.setConfig("words", parseInt(wrd))) {
       ManualRestart.set();
       restart();
     }
@@ -1559,7 +1559,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
         arr = [len];
       }
 
-      if (UpdateConfig.setQuoteLength(arr, false)) {
+      if (UpdateConfig.setConfig("quoteLength", arr, false)) {
         ManualRestart.set();
         restart();
       }

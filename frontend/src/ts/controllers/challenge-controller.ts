@@ -250,7 +250,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setConfig("punctuation", true, true);
       }
     } else if (challenge.type === "customWords") {
-      UpdateConfig.setWordCount(challenge.parameters[0] as number, true);
+      UpdateConfig.setConfig("words", challenge.parameters[0] as number, true);
       UpdateConfig.setConfig("mode", "words", true);
       UpdateConfig.setConfig("difficulty", "normal", true);
     } else if (challenge.type === "customText") {
@@ -298,7 +298,11 @@ export async function setup(challengeName: string): Promise<boolean> {
       );
       UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] === "words") {
-        UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
+        UpdateConfig.setConfig(
+          "words",
+          challenge.parameters[2] as number,
+          true,
+        );
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setConfig("time", challenge.parameters[2] as number, true);
       }

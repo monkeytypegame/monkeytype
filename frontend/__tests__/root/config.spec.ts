@@ -7,7 +7,6 @@ import {
   Config as ConfigType,
   CaretStyleSchema,
 } from "@monkeytype/schemas/configs";
-import { randomBytes } from "crypto";
 import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
@@ -301,29 +300,6 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setSmoothCaret", () => {
-    expect(Config.setSmoothCaret("fast")).toBe(true);
-    expect(Config.setSmoothCaret("medium")).toBe(true);
-    expect(Config.setSmoothCaret("invalid" as any)).toBe(false);
-  });
-  it("setCodeUnindentOnBackspace", () => {
-    testBoolean(Config.setCodeUnindentOnBackspace);
-  });
-  it("setQuickRestartMode", () => {
-    expect(Config.setQuickRestartMode("off")).toBe(true);
-    expect(Config.setQuickRestartMode("tab")).toBe(true);
-    expect(Config.setQuickRestartMode("invalid" as any)).toBe(false);
-  });
-  it("setConfidenceMode", () => {
-    expect(Config.setConfidenceMode("max")).toBe(true);
-    expect(Config.setConfidenceMode("on")).toBe(true);
-    expect(Config.setConfidenceMode("invalid" as any)).toBe(false);
-  });
-  it("setIndicateTypos", () => {
-    expect(Config.setIndicateTypos("below")).toBe(true);
-    expect(Config.setIndicateTypos("off")).toBe(true);
-    expect(Config.setIndicateTypos("invalid" as any)).toBe(false);
-  });
   it("setRandomTheme", () => {
     expect(Config.setRandomTheme("fav")).toBe(true);
     expect(Config.setRandomTheme("off")).toBe(true);
@@ -403,18 +379,7 @@ describe("Config", () => {
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
   });
-  it("setStartGraphsAtZero", () => {
-    testBoolean(Config.setStartGraphsAtZero);
-  });
-  it("setSmoothLineScroll", () => {
-    testBoolean(Config.setSmoothLineScroll);
-  });
-  it("setFreedomMode", () => {
-    testBoolean(Config.setFreedomMode);
-  });
-  it("setAutoSwitchTheme", () => {
-    testBoolean(Config.setAutoSwitchTheme);
-  });
+
   it("setCustomTheme", () => {
     testBoolean(Config.setCustomTheme);
   });
@@ -437,22 +402,13 @@ describe("Config", () => {
     expect(Config.setConfig("time", 11.11)).toBe(false);
   });
   it("setWordCount", () => {
-    expect(Config.setWordCount(0)).toBe(true);
-    expect(Config.setWordCount(1)).toBe(true);
+    expect(Config.setConfig("words", 0)).toBe(true);
+    expect(Config.setConfig("words", 1)).toBe(true);
 
-    expect(Config.setWordCount("invalid" as any)).toBe(false);
-    expect(Config.setWordCount(11.11)).toBe(false);
+    expect(Config.setConfig("words", "invalid" as any)).toBe(false);
+    expect(Config.setConfig("words", 11.11)).toBe(false);
   });
-  it("setFontFamily", () => {
-    expect(Config.setFontFamily("Arial")).toBe(true);
-    expect(Config.setFontFamily("roboto_mono")).toBe(true);
-    expect(Config.setFontFamily("test_font")).toBe(true);
-    expect(Config.setFontFamily(stringOfLength(50))).toBe(true);
 
-    expect(Config.setFontFamily(stringOfLength(51))).toBe(false);
-    expect(Config.setFontFamily("test font")).toBe(false);
-    expect(Config.setFontFamily("test!font")).toBe(false);
-  });
   it("setTheme", () => {
     expect(Config.setTheme("serika")).toBe(true);
     expect(Config.setTheme("serika_dark")).toBe(true);
@@ -531,18 +487,18 @@ describe("Config", () => {
     expect(Config.setCustomBackground("invalid")).toBe(false);
   });
   it("setQuoteLength", () => {
-    expect(Config.setQuoteLength([0])).toBe(true);
-    expect(Config.setQuoteLength([-3])).toBe(true);
-    expect(Config.setQuoteLength([3])).toBe(true);
+    expect(Config.setConfig("quoteLength", [0])).toBe(true);
+    expect(Config.setConfig("quoteLength", [-3])).toBe(true);
+    expect(Config.setConfig("quoteLength", [3])).toBe(true);
 
-    expect(Config.setQuoteLength(-4 as any)).toBe(false);
-    expect(Config.setQuoteLength(4 as any)).toBe(false);
-    expect(Config.setQuoteLength(3 as any)).toBe(false);
-    expect(Config.setQuoteLength(2 as any)).toBe(false);
+    expect(Config.setConfig("quoteLength", -4 as any)).toBe(false);
+    expect(Config.setConfig("quoteLength", 4 as any)).toBe(false);
+    expect(Config.setConfig("quoteLength", 3 as any)).toBe(false);
+    expect(Config.setConfig("quoteLength", 2 as any)).toBe(false);
 
-    expect(Config.setQuoteLength([0, -3, 2])).toBe(true);
+    expect(Config.setConfig("quoteLength", [0, -3, 2])).toBe(true);
 
-    expect(Config.setQuoteLength([-4 as any, 5 as any])).toBe(false);
+    expect(Config.setConfig("quoteLength", [-4 as any, 5 as any])).toBe(false);
   });
   it("setCustomLayoutfluid", () => {
     expect(Config.setCustomLayoutfluid(["qwerty", "qwertz"])).toBe(true);
@@ -714,10 +670,4 @@ function testBoolean(fn: (val: boolean) => boolean): void {
   expect(fn("true" as any)).toBe(false);
   expect(fn("0" as any)).toBe(false);
   expect(fn("invalid" as any)).toBe(false);
-}
-
-function stringOfLength(length: number): string {
-  return randomBytes(Math.ceil(length / 2))
-    .toString("hex")
-    .slice(0, length);
 }
