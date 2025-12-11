@@ -501,14 +501,14 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   memory: {
     applyConfig(): void {
       $("#wordsWrapper").addClass("hidden");
-      UpdateConfig.setShowAllLines(true, true);
+      UpdateConfig.setConfig("showAllLines", true, true);
       if (Config.keymapMode === "next") {
         UpdateConfig.setKeymapMode("react", true);
       }
     },
     rememberSettings(): void {
       save("mode", Config.mode);
-      save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
+      save("showAllLines", Config.showAllLines);
       if (Config.keymapMode === "next") {
         save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
       }

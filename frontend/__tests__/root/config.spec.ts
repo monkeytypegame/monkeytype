@@ -301,11 +301,6 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setSingleListCommandLine", () => {
-    expect(Config.setSingleListCommandLine("on")).toBe(true);
-    expect(Config.setSingleListCommandLine("manual")).toBe(true);
-    expect(Config.setSingleListCommandLine("invalid" as any)).toBe(false);
-  });
   it("setAds", () => {
     expect(Config.setAds("on")).toBe(true);
     expect(Config.setAds("sellout")).toBe(true);
@@ -476,19 +471,6 @@ describe("Config", () => {
     expect(Config.setCustomThemeColors(tenColors)).toBe(true);
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
-  });
-
-  it("setAlwaysShowWordsHistory", () => {
-    testBoolean(Config.setAlwaysShowWordsHistory);
-  });
-  it("setCapsLockWarning", () => {
-    testBoolean(Config.setCapsLockWarning);
-  });
-  it("setShowAllLines", () => {
-    testBoolean(Config.setShowAllLines);
-  });
-  it("setQuickEnd", () => {
-    testBoolean(Config.setQuickEnd);
   });
   it("setFlipTestColors", () => {
     testBoolean(Config.setFlipTestColors);

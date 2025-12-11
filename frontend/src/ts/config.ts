@@ -222,34 +222,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   return true;
 }
-//always show words history
-export function setAlwaysShowWordsHistory(
-  val: boolean,
-  nosave?: boolean,
-): boolean {
-  return setConfig("alwaysShowWordsHistory", val, nosave);
-}
-
-//single list command line
-export function setSingleListCommandLine(
-  option: ConfigSchemas.SingleListCommandLine,
-  nosave?: boolean,
-): boolean {
-  return setConfig("singleListCommandLine", option, nosave);
-}
-
-//caps lock warning
-export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
-  return setConfig("capsLockWarning", val, nosave);
-}
-
-export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
-  return setConfig("showAllLines", sal, nosave);
-}
-
-export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
-  return setConfig("quickEnd", qe, nosave);
-}
 
 export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
   return setConfig("ads", val, nosave);
