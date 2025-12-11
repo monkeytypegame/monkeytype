@@ -591,10 +591,6 @@ describe("Config", () => {
     testBoolean(Config.setRepeatedPace);
   });
 
-  it("setFunbox", () => {
-    expect(Config.setFunbox(["mirror"])).toBe(true);
-    expect(Config.setFunbox(["mirror", "58008"])).toBe(true);
-  });
   it("setPaceCaretCustomSpeed", () => {
     expect(Config.setPaceCaretCustomSpeed(0)).toBe(true);
     expect(Config.setPaceCaretCustomSpeed(1)).toBe(true);

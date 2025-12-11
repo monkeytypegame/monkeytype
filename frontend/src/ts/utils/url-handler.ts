@@ -263,7 +263,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else {
       val = de[7];
     }
-    UpdateConfig.setFunbox(val, true);
+    UpdateConfig.setConfig("funbox", val, true);
     applied["funbox"] = val.join(", ");
   }
 

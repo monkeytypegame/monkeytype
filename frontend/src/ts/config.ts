@@ -196,13 +196,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-export function setFunbox(
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean,
-): boolean {
-  return setConfig("funbox", funbox, nosave);
-}
-
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   if (isConfigChangeBlocked()) return false;
 

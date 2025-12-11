@@ -212,7 +212,7 @@ export function verify(result: CompletedEvent): string | null {
 export async function setup(challengeName: string): Promise<boolean> {
   challengeLoading = true;
 
-  UpdateConfig.setFunbox([]);
+  UpdateConfig.setConfig("funbox", []);
 
   const { data: list, error } = await tryCatch(JSONData.getChallengeList());
   if (error) {
@@ -291,7 +291,11 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setConfig("mode", "time", true);
       UpdateConfig.setConfig("difficulty", "master", true);
     } else if (challenge.type === "funbox") {
-      UpdateConfig.setFunbox(challenge.parameters[0] as FunboxName[], true);
+      UpdateConfig.setConfig(
+        "funbox",
+        challenge.parameters[0] as FunboxName[],
+        true,
+      );
       UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
