@@ -1,6 +1,6 @@
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
-import Config, * as UpdateConfig from "../../config";
+import Config, { setConfig, toggleFunbox } from "../../config";
 import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
@@ -207,7 +207,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   simon_says: {
     applyConfig(): void {
-      UpdateConfig.setConfig("keymapMode", "next", true);
+      setConfig("keymapMode", "next", true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -215,7 +215,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   tts: {
     applyConfig(): void {
-      UpdateConfig.setConfig("keymapMode", "off", true);
+      setConfig("keymapMode", "off", true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -368,8 +368,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (Config.layout === "default") {
         layout = "qwerty";
       }
-      UpdateConfig.setConfig("layout", layout, true);
-      UpdateConfig.setConfig("keymapLayout", "overrideSync", true);
+      setConfig("layout", layout, true);
+      setConfig("keymapLayout", "overrideSync", true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -380,8 +380,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     applyConfig(): void {
       const layout = Config.customLayoutfluid[0] ?? "qwerty";
 
-      UpdateConfig.setConfig("layout", layout as Layout, true);
-      UpdateConfig.setConfig("keymapLayout", layout as KeymapLayout, true);
+      setConfig("layout", layout as Layout, true);
+      setConfig("keymapLayout", layout as KeymapLayout, true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -410,11 +410,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             LayoutfluidFunboxTimer.hide();
           }
           if (mod === wordsPerLayout) {
-            UpdateConfig.setConfig("layout", layouts[index] as Layout);
-            UpdateConfig.setConfig(
-              "keymapLayout",
-              layouts[index] as KeymapLayout,
-            );
+            setConfig("layout", layouts[index] as Layout);
+            setConfig("keymapLayout", layouts[index] as KeymapLayout);
             if (mod > 3) {
               LayoutfluidFunboxTimer.hide();
             }
@@ -488,9 +485,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   memory: {
     applyConfig(): void {
       $("#wordsWrapper").addClass("hidden");
-      UpdateConfig.setConfig("showAllLines", true, true);
+      setConfig("showAllLines", true, true);
       if (Config.keymapMode === "next") {
-        UpdateConfig.setConfig("keymapMode", "react", true);
+        setConfig("keymapMode", "react", true);
       }
     },
     rememberSettings(): void {
@@ -508,7 +505,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
       $("#words").removeClass("hidden");
       if (Config.keymapMode === "next") {
-        UpdateConfig.setConfig("keymapMode", "react");
+        setConfig("keymapMode", "react");
       }
     },
   },
@@ -641,7 +638,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
               duration: 5,
             },
           );
-          UpdateConfig.toggleFunbox("crt");
+          toggleFunbox("crt");
           return;
         }
       }
@@ -677,7 +674,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       );
 
       if (languages.length === 0) {
-        UpdateConfig.toggleFunbox("polyglot");
+        toggleFunbox("polyglot");
         throw new Error(
           `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
@@ -687,8 +684,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
       if (languages.length === 1) {
         const lang = languages[0] as LanguageObject;
-        UpdateConfig.setConfig("language", lang.name, true);
-        UpdateConfig.toggleFunbox("polyglot", true);
+        setConfig("language", lang.name, true);
+        toggleFunbox("polyglot", true);
         Notifications.add(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
@@ -712,7 +709,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       ) {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
-        UpdateConfig.setConfig("language", fallbackLanguage);
+        setConfig("language", fallbackLanguage);
         Notifications.add(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
           0,

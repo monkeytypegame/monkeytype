@@ -1,5 +1,8 @@
 import { Preset } from "@monkeytype/schemas/presets";
-import Config, * as UpdateConfig from "../config";
+import Config, {
+  apply as applyConfig,
+  saveFullConfigToLocalStorage,
+} from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
@@ -16,12 +19,12 @@ export async function apply(_id: string): Promise<void> {
   }
 
   if (isPartialPreset(presetToApply)) {
-    await UpdateConfig.apply({
+    await applyConfig({
       ...structuredClone(Config),
       ...presetToApply.config,
     });
   } else {
-    await UpdateConfig.apply(presetToApply.config);
+    await applyConfig(presetToApply.config);
   }
 
   if (
@@ -40,7 +43,7 @@ export async function apply(_id: string): Promise<void> {
   Notifications.add("Preset applied", 1, {
     duration: 2,
   });
-  UpdateConfig.saveFullConfigToLocalStorage();
+  saveFullConfigToLocalStorage();
 }
 function isPartialPreset(preset: SnapshotPreset): boolean {
   return preset.settingGroups !== undefined && preset.settingGroups !== null;

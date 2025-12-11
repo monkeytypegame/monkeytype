@@ -298,36 +298,6 @@ describe("Config", () => {
     });
   });
 
-  //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-
-  it("setCustomBackgroundSize", () => {
-    expect(Config.setCustomBackgroundSize("contain")).toBe(true);
-    expect(Config.setCustomBackgroundSize("cover")).toBe(true);
-    expect(Config.setCustomBackgroundSize("invalid" as any)).toBe(false);
-  });
-  it("setCustomBackgroundFilter", () => {
-    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3])).toBe(true);
-
-    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(
-      false,
-    );
-    expect(Config.setCustomBackgroundFilter([] as any)).toBe(false);
-    expect(Config.setCustomBackgroundFilter(["invalid"] as any)).toBe(false);
-    expect(Config.setCustomBackgroundFilter([1, 2, 3, 4, 5, 6] as any)).toBe(
-      false,
-    );
-  });
-  it("setMonkeyPowerLevel", () => {
-    expect(Config.setMonkeyPowerLevel("2")).toBe(true);
-    expect(Config.setMonkeyPowerLevel("off")).toBe(true);
-
-    expect(Config.setMonkeyPowerLevel("invalid" as any)).toBe(false);
-  });
-
-  it("setBurstHeatmap", () => {
-    testBoolean(Config.setBurstHeatmap);
-  });
-
   describe("apply", () => {
     it("should fill missing values with defaults", async () => {
       //GIVEN
@@ -475,12 +445,3 @@ describe("Config", () => {
     });
   });
 });
-
-function testBoolean(fn: (val: boolean) => boolean): void {
-  expect(fn(true)).toBe(true);
-  expect(fn(false)).toBe(true);
-
-  expect(fn("true" as any)).toBe(false);
-  expect(fn("0" as any)).toBe(false);
-  expect(fn("invalid" as any)).toBe(false);
-}

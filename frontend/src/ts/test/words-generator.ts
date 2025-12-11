@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig, setQuoteLengthAll, toggleFunbox } from "../config";
 import * as CustomText from "./custom-text";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
@@ -329,7 +329,7 @@ async function getFunboxSection(): Promise<string[]> {
     const section = await funbox.functions.pullSection(Config.language);
 
     if (section === false || section === undefined) {
-      UpdateConfig.toggleFunbox(funbox.name);
+      toggleFunbox(funbox.name);
       throw new Error("Failed to pull section");
     }
 
@@ -523,7 +523,7 @@ async function getQuoteWordList(
   Loader.hide();
 
   if (quotesCollection.length === 0) {
-    UpdateConfig.setConfig("mode", "words");
+    setConfig("mode", "words");
     throw new WordGenError(
       `No ${Config.language
         .replace(/_\d*k$/g, "")
@@ -537,7 +537,7 @@ async function getQuoteWordList(
       TestState.selectedQuoteId,
     );
     if (targetQuote === undefined) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError(
         `Quote ${TestState.selectedQuoteId} does not exist`,
       );
@@ -548,14 +548,14 @@ async function getQuoteWordList(
       Config.language,
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
   } else {
     const randomQuote = QuotesController.getRandomQuote();
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;

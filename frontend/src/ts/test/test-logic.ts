@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig, setQuoteLengthAll, toggleFunbox } from "../config";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
@@ -252,10 +252,10 @@ export function restart(options = {} as RestartOptions): void {
   ) {
     Notifications.add("Reverting to previous settings.", 0);
     if (PractiseWords.before.punctuation !== null) {
-      UpdateConfig.setConfig("punctuation", PractiseWords.before.punctuation);
+      setConfig("punctuation", PractiseWords.before.punctuation);
     }
     if (PractiseWords.before.numbers !== null) {
-      UpdateConfig.setConfig("numbers", PractiseWords.before.numbers);
+      setConfig("numbers", PractiseWords.before.numbers);
     }
 
     if (PractiseWords.before.customText) {
@@ -267,7 +267,7 @@ export function restart(options = {} as RestartOptions): void {
       );
     }
 
-    UpdateConfig.setConfig("mode", PractiseWords.before.mode);
+    setConfig("mode", PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
 
@@ -459,7 +459,7 @@ async function init(): Promise<boolean> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
     }
   }
 
@@ -497,9 +497,9 @@ async function init(): Promise<boolean> {
           important: true,
         },
       );
-      UpdateConfig.setConfig("lazyMode", false, false);
+      setConfig("lazyMode", false, false);
     } else if (rememberLazyMode && anySupportsLazyMode) {
-      UpdateConfig.setConfig("lazyMode", true, true);
+      setConfig("lazyMode", true, true);
     }
   } else {
     // normal mode
@@ -510,9 +510,9 @@ async function init(): Promise<boolean> {
         important: true,
       });
 
-      UpdateConfig.setConfig("lazyMode", false, false);
+      setConfig("lazyMode", false, false);
     } else if (rememberLazyMode && !language.noLazyMode) {
-      UpdateConfig.setConfig("lazyMode", true, true);
+      setConfig("lazyMode", true, true);
     }
   }
 
@@ -699,7 +699,7 @@ export async function addWord(): Promise<void> {
           "Error while getting section. Please try again later",
           -1,
         );
-        UpdateConfig.toggleFunbox(sectionFunbox.name);
+        toggleFunbox(sectionFunbox.name);
         restart();
         return;
       }
@@ -1511,7 +1511,7 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
-  if (UpdateConfig.setConfig("mode", mode)) {
+  if (setConfig("mode", mode)) {
     ManualRestart.set();
     restart();
   }
@@ -1521,7 +1521,7 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestState.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
-    if (UpdateConfig.setConfig("words", parseInt(wrd))) {
+    if (setConfig("words", parseInt(wrd))) {
       ManualRestart.set();
       restart();
     }
@@ -1532,7 +1532,7 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestState.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
-    if (UpdateConfig.setConfig("time", parseInt(mode))) {
+    if (setConfig("time", parseInt(mode))) {
       ManualRestart.set();
       restart();
     }
@@ -1543,7 +1543,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestState.testRestarting) return;
   const lenAttr = $(e.currentTarget).attr("quoteLength");
   if (lenAttr === "all") {
-    if (UpdateConfig.setQuoteLengthAll()) {
+    if (setQuoteLengthAll()) {
       ManualRestart.set();
       restart();
     }
@@ -1559,7 +1559,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
         arr = [len];
       }
 
-      if (UpdateConfig.setConfig("quoteLength", arr, false)) {
+      if (setConfig("quoteLength", arr, false)) {
         ManualRestart.set();
         restart();
       }
@@ -1569,7 +1569,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestState.testRestarting) return;
-  if (UpdateConfig.setConfig("punctuation", !Config.punctuation)) {
+  if (setConfig("punctuation", !Config.punctuation)) {
     ManualRestart.set();
     restart();
   }
@@ -1577,7 +1577,7 @@ $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestState.testRestarting) return;
-  if (UpdateConfig.setConfig("numbers", !Config.numbers)) {
+  if (setConfig("numbers", !Config.numbers)) {
     ManualRestart.set();
     restart();
   }
@@ -1598,7 +1598,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         (eventValue as string)?.startsWith("arabic") &&
         ArabicLazyMode.get()
       ) {
-        UpdateConfig.setConfig("lazyMode", true, true);
+        setConfig("lazyMode", true, true);
       }
       restart();
     }

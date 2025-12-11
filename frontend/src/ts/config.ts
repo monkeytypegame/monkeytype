@@ -225,38 +225,6 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
   return setConfig("quoteLength", [0, 1, 2, 3], nosave);
 }
 
-export function setCustomPolyglot(
-  value: ConfigSchemas.CustomPolyglot,
-  nosave?: boolean,
-): boolean {
-  return setConfig("customPolyglot", value, nosave);
-}
-
-export function setCustomBackgroundSize(
-  value: ConfigSchemas.CustomBackgroundSize,
-  nosave?: boolean,
-): boolean {
-  return setConfig("customBackgroundSize", value, nosave);
-}
-
-export function setCustomBackgroundFilter(
-  array: ConfigSchemas.CustomBackgroundFilter,
-  nosave?: boolean,
-): boolean {
-  return setConfig("customBackgroundFilter", array, nosave);
-}
-
-export function setMonkeyPowerLevel(
-  level: ConfigSchemas.MonkeyPowerLevel,
-  nosave?: boolean,
-): boolean {
-  return setConfig("monkeyPowerLevel", level, nosave);
-}
-
-export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
-  return setConfig("burstHeatmap", value, nosave);
-}
-
 const lastConfigsToApply: Set<keyof Config> = new Set([
   "keymapMode",
   "minWpm",

@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
@@ -212,7 +212,7 @@ export function verify(result: CompletedEvent): string | null {
 export async function setup(challengeName: string): Promise<boolean> {
   challengeLoading = true;
 
-  UpdateConfig.setConfig("funbox", []);
+  setConfig("funbox", []);
 
   const { data: list, error } = await tryCatch(JSONData.getChallengeList());
   if (error) {
@@ -241,26 +241,26 @@ export async function setup(challengeName: string): Promise<boolean> {
       return false;
     }
     if (challenge.type === "customTime") {
-      UpdateConfig.setConfig("time", challenge.parameters[0] as number, true);
-      UpdateConfig.setConfig("mode", "time", true);
-      UpdateConfig.setConfig("difficulty", "normal", true);
+      setConfig("time", challenge.parameters[0] as number, true);
+      setConfig("mode", "time", true);
+      setConfig("difficulty", "normal", true);
       if (challenge.name === "englishMaster") {
-        UpdateConfig.setConfig("language", "english_10k", true);
-        UpdateConfig.setConfig("numbers", true, true);
-        UpdateConfig.setConfig("punctuation", true, true);
+        setConfig("language", "english_10k", true);
+        setConfig("numbers", true, true);
+        setConfig("punctuation", true, true);
       }
     } else if (challenge.type === "customWords") {
-      UpdateConfig.setConfig("words", challenge.parameters[0] as number, true);
-      UpdateConfig.setConfig("mode", "words", true);
-      UpdateConfig.setConfig("difficulty", "normal", true);
+      setConfig("words", challenge.parameters[0] as number, true);
+      setConfig("mode", "words", true);
+      setConfig("difficulty", "normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setMode(challenge.parameters[1] as CustomTextMode);
       CustomText.setLimitValue(challenge.parameters[2] as number);
       CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
       CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
-      UpdateConfig.setConfig("mode", "custom", true);
-      UpdateConfig.setConfig("difficulty", "normal", true);
+      setConfig("mode", "custom", true);
+      setConfig("difficulty", "normal", true);
     } else if (challenge.type === "script") {
       Loader.show();
       const response = await fetch(
@@ -278,53 +278,41 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setMode("repeat");
       CustomText.setLimitMode("word");
       CustomText.setPipeDelimiter(false);
-      UpdateConfig.setConfig("mode", "custom", true);
-      UpdateConfig.setConfig("difficulty", "normal", true);
+      setConfig("mode", "custom", true);
+      setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] !== null) {
-        UpdateConfig.setConfig("theme", challenge.parameters[1] as ThemeName);
+        setConfig("theme", challenge.parameters[1] as ThemeName);
       }
       if (challenge.parameters[2] !== null) {
         void Funbox.activate(challenge.parameters[2] as FunboxName[]);
       }
     } else if (challenge.type === "accuracy") {
-      UpdateConfig.setConfig("time", 0, true);
-      UpdateConfig.setConfig("mode", "time", true);
-      UpdateConfig.setConfig("difficulty", "master", true);
+      setConfig("time", 0, true);
+      setConfig("mode", "time", true);
+      setConfig("difficulty", "master", true);
     } else if (challenge.type === "funbox") {
-      UpdateConfig.setConfig(
-        "funbox",
-        challenge.parameters[0] as FunboxName[],
-        true,
-      );
-      UpdateConfig.setConfig("difficulty", "normal", true);
+      setConfig("funbox", challenge.parameters[0] as FunboxName[], true);
+      setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] === "words") {
-        UpdateConfig.setConfig(
-          "words",
-          challenge.parameters[2] as number,
-          true,
-        );
+        setConfig("words", challenge.parameters[2] as number, true);
       } else if (challenge.parameters[1] === "time") {
-        UpdateConfig.setConfig("time", challenge.parameters[2] as number, true);
+        setConfig("time", challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setConfig("mode", challenge.parameters[1] as Mode, true);
+      setConfig("mode", challenge.parameters[1] as Mode, true);
       if (challenge.parameters[3] !== undefined) {
-        UpdateConfig.setConfig(
-          "difficulty",
-          challenge.parameters[3] as Difficulty,
-          true,
-        );
+        setConfig("difficulty", challenge.parameters[3] as Difficulty, true);
       }
     } else if (challenge.type === "special") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
-        UpdateConfig.setConfig("mode", "time", true);
-        UpdateConfig.setConfig("time", 120, true);
-        UpdateConfig.setConfig("language", "english_10k", true);
-        UpdateConfig.setConfig("punctuation", true, true);
-        UpdateConfig.setConfig("stopOnError", "word", true);
-        UpdateConfig.setConfig("layout", "semimak", true);
-        UpdateConfig.setConfig("keymapLayout", "overrideSync", true);
-        UpdateConfig.setConfig("keymapMode", "static", true);
+        setConfig("mode", "time", true);
+        setConfig("time", 120, true);
+        setConfig("language", "english_10k", true);
+        setConfig("punctuation", true, true);
+        setConfig("stopOnError", "word", true);
+        setConfig("layout", "semimak", true);
+        setConfig("keymapLayout", "overrideSync", true);
+        setConfig("keymapMode", "static", true);
       }
     }
     ManualRestart.set();

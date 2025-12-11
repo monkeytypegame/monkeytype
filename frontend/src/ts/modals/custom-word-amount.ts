@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
@@ -28,7 +28,7 @@ function apply(): void {
   );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    if (UpdateConfig.setConfig("words", val)) {
+    if (setConfig("words", val)) {
       ManualRestart.set();
       TestLogic.restart();
       if (val > 2000) {

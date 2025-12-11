@@ -1,7 +1,7 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
@@ -127,8 +127,8 @@ function layoutfluid(): void {
 
     if (Config.layout !== layout && layout !== undefined) {
       LayoutfluidFunboxTimer.hide();
-      UpdateConfig.setConfig("layout", layout as Layout, true);
-      UpdateConfig.setConfig("keymapLayout", layout as KeymapLayout, true);
+      setConfig("layout", layout as Layout, true);
+      setConfig("keymapLayout", layout as KeymapLayout, true);
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");

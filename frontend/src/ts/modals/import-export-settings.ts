@@ -1,4 +1,4 @@
-import * as UpdateConfig from "../config";
+import { applyFromJson as applyConfigFromJson } from "../config";
 import AnimatedModal from "../utils/animated-modal";
 
 type State = {
@@ -43,7 +43,7 @@ const modal = new AnimatedModal({
         void modal.hide();
         return;
       }
-      await UpdateConfig.applyFromJson(state.value);
+      await applyConfigFromJson(state.value);
       void modal.hide();
     });
   },

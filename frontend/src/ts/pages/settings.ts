@@ -1,5 +1,5 @@
 import SettingsGroup from "../elements/settings/settings-group";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig, loadPromise as configLoadPromise } from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -295,7 +295,7 @@ async function fillSettingsPage(): Promise<void> {
     data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setConfig("themeLight", newVal[0]?.value as ThemeName);
+        setConfig("themeLight", newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -306,7 +306,7 @@ async function fillSettingsPage(): Promise<void> {
     data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setConfig("themeDark", newVal[0]?.value as ThemeName);
+        setConfig("themeDark", newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -394,7 +394,7 @@ async function fillSettingsPage(): Promise<void> {
         if (
           !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
         ) {
-          void UpdateConfig.setConfig("customLayoutfluid", customLayoutfluid);
+          void setConfig("customLayoutfluid", customLayoutfluid);
         }
       },
     },
@@ -411,7 +411,7 @@ async function fillSettingsPage(): Promise<void> {
         const customPolyglot = newVal.map((it) => it.value) as Language[];
         //checking equal without order, because customPolyglot is not ordered
         if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
-          void UpdateConfig.setCustomPolyglot(customPolyglot);
+          void setConfig("customPolyglot", customPolyglot);
         }
       },
     },
@@ -829,7 +829,7 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save",
 ).on("click", () => {
-  const didConfigSave = UpdateConfig.setConfig(
+  const didConfigSave = setConfig(
     "keymapSize",
     parseFloat(
       $(
@@ -847,7 +847,7 @@ $(
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("focusout", () => {
-  const didConfigSave = UpdateConfig.setConfig(
+  const didConfigSave = setConfig(
     "keymapSize",
     parseFloat(
       $(
@@ -866,7 +866,7 @@ $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setConfig(
+    const didConfigSave = setConfig(
       "keymapSize",
       parseFloat(
         $(
@@ -1019,7 +1019,7 @@ export const page = new PageWithUrlParams({
   },
   beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    await UpdateConfig.loadPromise;
+    await configLoadPromise;
     await fillSettingsPage();
     await update();
     // theme UI updates manually to avoid duplication
