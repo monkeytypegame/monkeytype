@@ -1,8 +1,5 @@
 import { Preset } from "@monkeytype/schemas/presets";
-import Config, {
-  apply as applyConfig,
-  saveFullConfigToLocalStorage,
-} from "../config";
+import Config, { applyConfig, saveFullConfigToLocalStorage } from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";

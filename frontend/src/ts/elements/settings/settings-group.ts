@@ -45,9 +45,8 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   ) {
     this.configName = configName;
     this.mode = mode;
-    //TODO type safe?
-    this.configFunction = (param, noSave?) =>
-      setConfig(configName, param as never, noSave);
+    this.configFunction = (param, nosave) =>
+      setConfig(configName, param as ConfigType[K], nosave);
     this.setCallback = options?.setCallback;
     this.updateCallback = options?.updateCallback;
     this.validation = options?.validation;

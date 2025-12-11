@@ -1,9 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import Config, {
-  apply as applyConfig,
-  saveFullConfigToLocalStorage,
-} from "./config";
+import Config, { applyConfig, saveFullConfigToLocalStorage } from "./config";
 import * as Misc from "./utils/misc";
 import * as DB from "./db";
 import * as Loader from "./elements/loader";

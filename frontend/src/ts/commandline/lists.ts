@@ -17,7 +17,10 @@ import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
 
-import Config, { applyFromJson, setConfig } from "../config";
+import Config, {
+  applyFromJson as applyConfigFromJson,
+  setConfig,
+} from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
@@ -246,7 +249,7 @@ export const commands: CommandsSubgroup = {
       input: true,
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
-        await applyFromJson(input);
+        await applyConfigFromJson(input);
       },
     },
     {

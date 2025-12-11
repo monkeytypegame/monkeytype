@@ -304,7 +304,7 @@ describe("Config", () => {
       replaceConfig({
         mode: "words",
       });
-      await Config.apply({
+      await Config.applyConfig({
         numbers: true,
         punctuation: true,
       });
@@ -349,7 +349,7 @@ describe("Config", () => {
       ];
 
       it.each(testCases)("$display", async ({ value, expected }) => {
-        await Config.apply(value);
+        await Config.applyConfig(value);
 
         const config = getConfig();
         const applied = Object.fromEntries(
@@ -386,7 +386,7 @@ describe("Config", () => {
       ];
 
       it.each(testCases)("$display", async ({ value, expected }) => {
-        await Config.apply(value);
+        await Config.applyConfig(value);
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>
@@ -401,7 +401,7 @@ describe("Config", () => {
       replaceConfig({
         numbers: true,
       });
-      await Config.apply({
+      await Config.applyConfig({
         ...Config.getConfigChanges(),
         punctuation: true,
       });
@@ -413,7 +413,7 @@ describe("Config", () => {
       replaceConfig({
         minWpm: "off",
       });
-      await Config.apply({
+      await Config.applyConfig({
         minWpmCustomSpeed: 100,
       });
       const config = getConfig();
@@ -425,7 +425,7 @@ describe("Config", () => {
       replaceConfig({
         minWpm: "off",
       });
-      await Config.apply({
+      await Config.applyConfig({
         minWpm: "custom",
         minWpmCustomSpeed: 100,
       });
@@ -436,7 +436,7 @@ describe("Config", () => {
 
     it("should keep the keymap off when applying keymapLayout", async () => {
       replaceConfig({});
-      await Config.apply({
+      await Config.applyConfig({
         keymapLayout: "qwerty",
       });
       const config = getConfig();

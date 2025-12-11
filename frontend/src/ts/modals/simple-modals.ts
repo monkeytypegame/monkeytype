@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as AccountController from "../auth";
 import * as DB from "../db";
-import { reset as resetConfig, setConfig } from "../config";
+import { resetConfig, setConfig } from "../config";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";

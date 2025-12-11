@@ -1,4 +1,5 @@
-import { ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+
 import { setConfig } from "../../config";
 
 type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
@@ -12,16 +13,14 @@ type SettingsMemory<T> = Record<string, ValueAndSetFunction<T>>;
 
 let settingsMemory: SettingsMemory<ConfigValue> = {};
 
-export function save<T extends ConfigValue>(
-  settingName: ConfigKey,
-  value: T,
-  setFunction?: SetFunction<T>,
+export function save<T extends ConfigKey>(
+  settingName: T,
+  value: Config[T],
 ): void {
-  //TODO remove setFunction parameter after removing all helper functions in config
-  setFunction ??= (param, noSave?) => setConfig(settingName, param, noSave);
   settingsMemory[settingName] ??= {
     value,
-    setFunction: setFunction as SetFunction<ConfigValue>,
+    setFunction: (param, noSave?) =>
+      setConfig(settingName, param as Config[T], noSave),
   };
 }
 

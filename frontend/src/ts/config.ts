@@ -240,7 +240,9 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "funbox",
 ]);
 
-export async function apply(partialConfig: Partial<Config>): Promise<void> {
+export async function applyConfig(
+  partialConfig: Partial<Config>,
+): Promise<void> {
   if (partialConfig === undefined || partialConfig === null) return;
 
   //migrate old values if needed, remove additional keys and merge with default config
@@ -284,8 +286,8 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
   ConfigEvent.dispatch("fullConfigChangeFinished");
 }
 
-export async function reset(): Promise<void> {
-  await apply(getDefaultConfig());
+export async function resetConfig(): Promise<void> {
+  await applyConfig(getDefaultConfig());
   await DB.resetConfig();
   saveFullConfigToLocalStorage(true);
 }
@@ -294,9 +296,9 @@ export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfig = configLS.get();
   if (newConfig === undefined) {
-    await reset();
+    await resetConfig();
   } else {
-    await apply(newConfig);
+    await applyConfig(newConfig);
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -329,7 +331,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       },
     );
-    await apply(parsedConfig);
+    await applyConfig(parsedConfig);
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {
@@ -339,9 +341,10 @@ export async function applyFromJson(json: string): Promise<void> {
   }
 }
 
-const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();
+const { promise: configLoadPromise, resolve: loadDone } =
+  promiseWithResolvers();
 
-export { loadPromise };
+export { configLoadPromise };
 export default config;
 export const __testing = {
   configMetadata,
