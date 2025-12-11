@@ -241,7 +241,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       return false;
     }
     if (challenge.type === "customTime") {
-      UpdateConfig.setTimeConfig(challenge.parameters[0] as number, true);
+      UpdateConfig.setConfig("time", challenge.parameters[0] as number, true);
       UpdateConfig.setConfig("mode", "time", true);
       UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.name === "englishMaster") {
@@ -287,7 +287,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         void Funbox.activate(challenge.parameters[2] as FunboxName[]);
       }
     } else if (challenge.type === "accuracy") {
-      UpdateConfig.setTimeConfig(0, true);
+      UpdateConfig.setConfig("time", 0, true);
       UpdateConfig.setConfig("mode", "time", true);
       UpdateConfig.setConfig("difficulty", "master", true);
     } else if (challenge.type === "funbox") {
@@ -300,7 +300,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
       } else if (challenge.parameters[1] === "time") {
-        UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
+        UpdateConfig.setConfig("time", challenge.parameters[2] as number, true);
       }
       UpdateConfig.setConfig("mode", challenge.parameters[1] as Mode, true);
       if (challenge.parameters[3] !== undefined) {
@@ -314,7 +314,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         UpdateConfig.setConfig("mode", "time", true);
-        UpdateConfig.setTimeConfig(120, true);
+        UpdateConfig.setConfig("time", 120, true);
         UpdateConfig.setLanguage("english_10k", true);
         UpdateConfig.setConfig("punctuation", true, true);
         UpdateConfig.setConfig("stopOnError", "word", true);

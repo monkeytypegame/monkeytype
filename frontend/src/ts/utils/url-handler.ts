@@ -188,7 +188,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const mode = de[0] ?? Config.mode;
   if (de[1] !== null) {
     if (mode === "time") {
-      UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
+      UpdateConfig.setConfig("time", parseInt(de[1], 10), true);
     } else if (mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (mode === "quote") {

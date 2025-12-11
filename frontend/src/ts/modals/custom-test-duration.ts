@@ -90,7 +90,7 @@ function apply(): void {
   const val = parseInput($("#customTestDurationModal input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    UpdateConfig.setTimeConfig(val);
+    UpdateConfig.setConfig("time", val);
     ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {

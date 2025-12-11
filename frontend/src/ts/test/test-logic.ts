@@ -1532,7 +1532,7 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestState.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
-    if (UpdateConfig.setTimeConfig(parseInt(mode))) {
+    if (UpdateConfig.setConfig("time", parseInt(mode))) {
       ManualRestart.set();
       restart();
     }

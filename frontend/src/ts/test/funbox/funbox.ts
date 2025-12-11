@@ -155,7 +155,7 @@ export async function activate(
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
         }
         if (configKey === "time") {
-          UpdateConfig.setTimeConfig(check.forcedConfigs[0] as number);
+          UpdateConfig.setConfig("time", check.forcedConfigs[0] as number);
         }
         if (configKey === "punctuation") {
           UpdateConfig.setConfig(

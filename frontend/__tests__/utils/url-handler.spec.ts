@@ -20,7 +20,6 @@ describe("url-handler", () => {
     const findGetParameterMock = vi.spyOn(Misc, "findGetParameter");
 
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
-    const setTimeConfigMock = vi.spyOn(UpdateConfig, "setTimeConfig");
     const setWordCountMock = vi.spyOn(UpdateConfig, "setWordCount");
     const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
@@ -32,7 +31,6 @@ describe("url-handler", () => {
       [
         setConfigMock,
         findGetParameterMock,
-        setTimeConfigMock,
         setWordCountMock,
         setQuoteLengthMock,
         setSelectedQuoteIdMock,
@@ -65,7 +63,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "time", true);
-      expect(setTimeConfigMock).toHaveBeenCalledWith(60, true);
+      expect(setConfigMock).toHaveBeenCalledWith("time", 60, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets time", () => {
@@ -79,7 +77,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "time", true);
-      expect(setTimeConfigMock).toHaveBeenCalledWith(30, true);
+      expect(setConfigMock).toHaveBeenCalledWith("time", 30, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets word count", () => {

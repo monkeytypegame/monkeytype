@@ -403,9 +403,6 @@ describe("Config", () => {
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
   });
-  it("setKeyTips", () => {
-    testBoolean(Config.setKeyTips);
-  });
   it("setStartGraphsAtZero", () => {
     testBoolean(Config.setStartGraphsAtZero);
   });
@@ -434,10 +431,10 @@ describe("Config", () => {
     testBoolean(Config.setBurstHeatmap);
   });
   it("setTimeConfig", () => {
-    expect(Config.setTimeConfig(0)).toBe(true);
-    expect(Config.setTimeConfig(1)).toBe(true);
+    expect(Config.setConfig("time", 0)).toBe(true);
+    expect(Config.setConfig("time", 1)).toBe(true);
 
-    expect(Config.setTimeConfig(11.11)).toBe(false);
+    expect(Config.setConfig("time", 11.11)).toBe(false);
   });
   it("setWordCount", () => {
     expect(Config.setWordCount(0)).toBe(true);

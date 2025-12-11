@@ -121,7 +121,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         });
       } else if (time !== undefined) {
         const timeNum = parseInt(time);
-        UpdateConfig.setTimeConfig(timeNum);
+        UpdateConfig.setConfig("time", timeNum);
         ManualRestart.set();
         TestLogic.restart();
       }

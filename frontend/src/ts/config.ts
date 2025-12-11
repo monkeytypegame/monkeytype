@@ -223,19 +223,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   return true;
 }
 
-//key tips
-export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
-  return setConfig("showKeyTips", keyTips, nosave);
-}
-
-//mode
-export function setTimeConfig(
-  time: ConfigSchemas.TimeConfig,
-  nosave?: boolean,
-): boolean {
-  return setConfig("time", time, nosave);
-}
-
 export function setQuoteLength(
   len: ConfigSchemas.QuoteLengthConfig,
   nosave?: boolean,
