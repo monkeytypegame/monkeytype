@@ -12,8 +12,9 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
+import { qsr } from "../utils/dom";
 
-const pageElement = $(".page.pageAccountSettings");
+const pageElement = qsr(".page.pageAccountSettings");
 
 const StateSchema = z.object({
   tab: z.enum([
@@ -33,9 +34,9 @@ const state: State = {
 };
 
 function updateAuthenticationSections(): void {
-  pageElement.find(".section.passwordAuthSettings button").addClass("hidden");
-  pageElement.find(".section.googleAuthSettings button").addClass("hidden");
-  pageElement.find(".section.githubAuthSettings button").addClass("hidden");
+  pageElement.qs(".section.passwordAuthSettings button")?.addClass("hidden");
+  pageElement.qs(".section.googleAuthSettings button")?.addClass("hidden");
+  pageElement.qs(".section.githubAuthSettings button")?.addClass("hidden");
 
   const user = getAuthenticatedUser();
   if (user === null) return;
@@ -52,134 +53,128 @@ function updateAuthenticationSections(): void {
 
   if (passwordProvider) {
     pageElement
-      .find(".section.passwordAuthSettings #emailPasswordAuth")
-      .removeClass("hidden");
+      .qs(".section.passwordAuthSettings #emailPasswordAuth")
+      ?.removeClass("hidden");
     pageElement
-      .find(".section.passwordAuthSettings #passPasswordAuth")
-      .removeClass("hidden");
+      .qs(".section.passwordAuthSettings #passPasswordAuth")
+      ?.removeClass("hidden");
     if (googleProvider || githubProvider) {
       pageElement
-        .find(".section.passwordAuthSettings #removePasswordAuth")
-        .removeClass("hidden");
+        .qs(".section.passwordAuthSettings #removePasswordAuth")
+        ?.removeClass("hidden");
     }
   } else {
     pageElement
-      .find(".section.passwordAuthSettings #addPasswordAuth")
-      .removeClass("hidden");
+      .qs(".section.passwordAuthSettings #addPasswordAuth")
+      ?.removeClass("hidden");
   }
 
   if (googleProvider) {
     pageElement
-      .find(".section.googleAuthSettings #removeGoogleAuth")
-      .removeClass("hidden");
+      .qs(".section.googleAuthSettings #removeGoogleAuth")
+      ?.removeClass("hidden");
     if (passwordProvider || githubProvider) {
       pageElement
-        .find(".section.googleAuthSettings #removeGoogleAuth")
-        .removeClass("disabled");
+        .qs(".section.googleAuthSettings #removeGoogleAuth")
+        ?.removeClass("disabled");
     } else {
       pageElement
-        .find(".section.googleAuthSettings #removeGoogleAuth")
-        .addClass("disabled");
+        .qs(".section.googleAuthSettings #removeGoogleAuth")
+        ?.addClass("disabled");
     }
   } else {
     pageElement
-      .find(".section.googleAuthSettings #addGoogleAuth")
-      .removeClass("hidden");
+      .qs(".section.googleAuthSettings #addGoogleAuth")
+      ?.removeClass("hidden");
   }
   if (githubProvider) {
     pageElement
-      .find(".section.githubAuthSettings #removeGithubAuth")
-      .removeClass("hidden");
+      .qs(".section.githubAuthSettings #removeGithubAuth")
+      ?.removeClass("hidden");
     if (passwordProvider || googleProvider) {
       pageElement
-        .find(".section.githubAuthSettings #removeGithubAuth")
-        .removeClass("disabled");
+        .qs(".section.githubAuthSettings #removeGithubAuth")
+        ?.removeClass("disabled");
     } else {
       pageElement
-        .find(".section.githubAuthSettings #removeGithubAuth")
-        .addClass("disabled");
+        .qs(".section.githubAuthSettings #removeGithubAuth")
+        ?.addClass("disabled");
     }
   } else {
     pageElement
-      .find(".section.githubAuthSettings #addGithubAuth")
-      .removeClass("hidden");
+      .qs(".section.githubAuthSettings #addGithubAuth")
+      ?.removeClass("hidden");
   }
 }
 
 function updateIntegrationSections(): void {
   //no code and no discord
   if (!isAuthenticated()) {
-    pageElement.find(".section.discordIntegration").addClass("hidden");
+    pageElement.qs(".section.discordIntegration")?.addClass("hidden");
   } else {
     if (!getSnapshot()) return;
-    pageElement.find(".section.discordIntegration").removeClass("hidden");
+    pageElement.qs(".section.discordIntegration")?.removeClass("hidden");
 
     if (getSnapshot()?.discordId === undefined) {
       //show button
       pageElement
-        .find(".section.discordIntegration .buttons")
-        .removeClass("hidden");
-      pageElement.find(".section.discordIntegration .info").addClass("hidden");
+        .qs(".section.discordIntegration .buttons")
+        ?.removeClass("hidden");
+      pageElement.qs(".section.discordIntegration .info")?.addClass("hidden");
     } else {
       pageElement
-        .find(".section.discordIntegration .buttons")
-        .addClass("hidden");
+        .qs(".section.discordIntegration .buttons")
+        ?.addClass("hidden");
       pageElement
-        .find(".section.discordIntegration .info")
-        .removeClass("hidden");
+        .qs(".section.discordIntegration .info")
+        ?.removeClass("hidden");
     }
   }
 }
 
 function updateTabs(): void {
   void swapElements(
-    pageElement.find(".tab.active")[0] as HTMLElement,
-    pageElement.find(`.tab[data-tab="${state.tab}"]`)[0] as HTMLElement,
+    pageElement.qsa(".tab.active")[0] ?? null,
+    pageElement.qsa(`.tab[data-tab="${state.tab}"]`)[0] ?? null,
     250,
     async () => {
       //
     },
     async () => {
-      pageElement.find(".tab").removeClass("active");
-      pageElement.find(`.tab[data-tab="${state.tab}"]`).addClass("active");
+      pageElement.qs(".tab")?.removeClass("active");
+      pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
     },
   );
-  pageElement.find("button").removeClass("active");
-  pageElement.find(`button[data-tab="${state.tab}"]`).addClass("active");
+  pageElement.qs("button")?.removeClass("active");
+  pageElement.qs(`button[data-tab="${state.tab}"]`)?.addClass("active");
 }
 
 function updateAccountSections(): void {
+  pageElement.qs(".section.optOutOfLeaderboards .optedOut")?.addClass("hidden");
   pageElement
-    .find(".section.optOutOfLeaderboards .optedOut")
-    .addClass("hidden");
+    .qs(".section.optOutOfLeaderboards .buttons")
+    ?.removeClass("hidden");
+  pageElement.qs(".section.setStreakHourOffset .info")?.addClass("hidden");
   pageElement
-    .find(".section.optOutOfLeaderboards .buttons")
-    .removeClass("hidden");
-  pageElement.find(".section.setStreakHourOffset .info").addClass("hidden");
-  pageElement
-    .find(".section.setStreakHourOffset .buttons")
-    .removeClass("hidden");
+    .qs(".section.setStreakHourOffset .buttons")
+    ?.removeClass("hidden");
 
   const snapshot = getSnapshot();
   if (snapshot?.lbOptOut === true) {
     pageElement
-      .find(".section.optOutOfLeaderboards .optedOut")
-      .removeClass("hidden");
+      .qs(".section.optOutOfLeaderboards .optedOut")
+      ?.removeClass("hidden");
     pageElement
-      .find(".section.optOutOfLeaderboards .buttons")
-      .addClass("hidden");
+      .qs(".section.optOutOfLeaderboards .buttons")
+      ?.addClass("hidden");
   }
   if (snapshot?.streakHourOffset !== undefined) {
-    pageElement
-      .find(".section.setStreakHourOffset .info")
-      .removeClass("hidden");
+    pageElement.qs(".section.setStreakHourOffset .info")?.removeClass("hidden");
     const sign = snapshot?.streakHourOffset > 0 ? "+" : "";
     pageElement
-      .find(".section.setStreakHourOffset .info span")
-      .text(sign + snapshot?.streakHourOffset);
-    pageElement
-      .find(".section.setStreakHourOffset .buttons")
-      .addClass("hidden");
+      .qs(".section.setStreakHourOffset .info span")
+      ?.setText(sign + snapshot?.streakHourOffset);
+    pageElement.qs(".section.setStreakHourOffset .buttons")?.addClass("hidden");
   }
 }
 
@@ -229,7 +224,7 @@ AuthEvent.subscribe((event) => {
 export const page = new PageWithUrlParams({
   id: "accountSettings",
   display: "Account Settings",
-  element: pageElement,
+  element: $(".page.pageAccountSettings"),
   path: "/account-settings",
   urlParamsSchema: UrlParameterSchema,
   afterHide: async (): Promise<void> => {
@@ -240,7 +235,7 @@ export const page = new PageWithUrlParams({
       state.tab = options.urlParams.tab;
     }
     Skeleton.append("pageAccountSettings", "main");
-    pageElement.find(`.tab[data-tab="${state.tab}"]`).addClass("active");
+    pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
     updateUI();
   },
 });

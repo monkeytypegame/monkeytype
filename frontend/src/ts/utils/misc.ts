@@ -7,6 +7,7 @@ import { Result } from "@monkeytype/schemas/results";
 import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
+import { ElementWithUtils } from "./dom";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -187,8 +188,8 @@ type LastIndex = {
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
 export async function swapElements(
-  el1: HTMLElement,
-  el2: HTMLElement,
+  el1: ElementWithUtils | null,
+  el2: ElementWithUtils | null,
   totalDuration: number,
   callback = async function (): Promise<void> {
     return Promise.resolve();
@@ -203,38 +204,35 @@ export async function swapElements(
 
   totalDuration = applyReducedMotion(totalDuration);
   if (
-    (el1.classList.contains("hidden") && !el2.classList.contains("hidden")) ||
-    (!el1.classList.contains("hidden") && el2.classList.contains("hidden"))
+    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
+    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
   ) {
     //one of them is hidden and the other is visible
-    if (el1.classList.contains("hidden")) {
+    if (el1.hasClass("hidden")) {
       await middleCallback();
       await callback();
       return false;
     }
 
-    el1.classList.remove("hidden");
-    await promiseAnimate(el1, {
+    el1.removeClass("hidden");
+    await promiseAnimate(el1.native, {
       opacity: [1, 0],
       duration: totalDuration / 2,
     });
-    el1.classList.add("hidden");
+    el1.hide();
     await middleCallback();
-    el2.classList.remove("hidden");
-    await promiseAnimate(el2, {
+    el2.show();
+    await promiseAnimate(el2.native, {
       opacity: [0, 1],
       duration: totalDuration / 2,
     });
     await callback();
-  } else if (
-    el1.classList.contains("hidden") &&
-    el2.classList.contains("hidden")
-  ) {
+  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
     await middleCallback();
 
-    el2.classList.remove("hidden");
-    await promiseAnimate(el2, {
+    el2.show();
+    await promiseAnimate(el2.native, {
       opacity: [0, 1],
       duration: totalDuration / 2,
     });
