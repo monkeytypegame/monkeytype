@@ -196,14 +196,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-//set fav themes
-export function setFavThemes(
-  themes: ConfigSchemas.FavThemes,
-  nosave?: boolean,
-): boolean {
-  return setConfig("favThemes", themes, nosave);
-}
-
 export function setFunbox(
   funbox: ConfigSchemas.Funbox,
   nosave?: boolean,

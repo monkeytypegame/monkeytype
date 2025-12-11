@@ -18,7 +18,10 @@ const commands: Command[] = [
       const { theme, favThemes, customTheme } = Config;
       const themeToUpdate = randomTheme ?? theme;
       if (!customTheme && !favThemes.includes(themeToUpdate as ThemeName)) {
-        UpdateConfig.setFavThemes([...favThemes, themeToUpdate as ThemeName]);
+        UpdateConfig.setConfig("favThemes", [
+          ...favThemes,
+          themeToUpdate as ThemeName,
+        ]);
       }
     },
   },
@@ -37,7 +40,7 @@ const commands: Command[] = [
       const { theme, favThemes, customTheme } = Config;
       const themeToUpdate = (randomTheme as ThemeName) ?? theme;
       if (!customTheme && favThemes.includes(themeToUpdate)) {
-        UpdateConfig.setFavThemes([
+        UpdateConfig.setConfig("favThemes", [
           ...favThemes.filter((t) => t !== themeToUpdate),
         ]);
       }

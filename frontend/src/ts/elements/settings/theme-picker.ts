@@ -272,12 +272,15 @@ export function setCustomInputs(noThemeUpdate = false): void {
 function toggleFavourite(themeName: ThemeName): void {
   if (Config.favThemes.includes(themeName)) {
     // already favourite, remove
-    UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
+    UpdateConfig.setConfig(
+      "favThemes",
+      Config.favThemes.filter((t) => t !== themeName),
+    );
   } else {
     // add to favourites
     const newList: ThemeName[] = Config.favThemes;
     newList.push(themeName);
-    UpdateConfig.setFavThemes(newList);
+    UpdateConfig.setConfig("favThemes", newList);
   }
   UpdateConfig.saveFullConfigToLocalStorage();
 }

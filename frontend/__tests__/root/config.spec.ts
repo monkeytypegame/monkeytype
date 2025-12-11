@@ -590,12 +590,7 @@ describe("Config", () => {
   it("setRepeatedPace", () => {
     testBoolean(Config.setRepeatedPace);
   });
-  it("setFavThemes", () => {
-    expect(Config.setFavThemes([])).toBe(true);
-    expect(Config.setFavThemes(["8008", "80s_after_dark"])).toBe(true);
-    expect(Config.setFavThemes(["test"] as any)).toBe(false);
-    expect(Config.setFavThemes("invalid" as any)).toBe(false);
-  });
+
   it("setFunbox", () => {
     expect(Config.setFunbox(["mirror"])).toBe(true);
     expect(Config.setFunbox(["mirror", "58008"])).toBe(true);
