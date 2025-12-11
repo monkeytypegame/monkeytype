@@ -1,4 +1,7 @@
 #caret {
+  --posmargin: 0px;
+  --jumpmargin: 0px;
+  top: calc(var(--posmargin) + var(--jumpmargin));
   height: 1.2em;
   background: var(--caret-color);
   animation: caretFlashSmooth 1s infinite;

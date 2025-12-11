@@ -41,6 +41,8 @@ export class Caret {
   private marginTopAnimation: JSAnimation | null = null;
   private marginLeftAnimation: JSAnimation | null = null;
 
+  private marginCorrection: number = 0;
+
   constructor(element: ElementWithUtils, style: CaretStyle) {
     this.id = element.native.id;
     this.element = element;
@@ -48,6 +50,10 @@ export class Caret {
     if (this.id === "caret") {
       this.isMainCaret = true;
     }
+  }
+
+  public getElement(): ElementWithUtils {
+    return this.element;
   }
 
   public setStyle(style: CaretStyle): void {
@@ -211,10 +217,15 @@ export class Caret {
     if (this.isMainCaret && options.duration === 0) return;
 
     // in case we have two line jumps in a row
+    // if (this.readyToResetMarginTop) {
+    //   this.element.setStyle({
+    //     marginTop: "0px",
+    //   });
+    // }
+
     if (this.readyToResetMarginTop) {
-      this.element.setStyle({
-        marginTop: "0px",
-      });
+      options.newMarginTop +=
+        parseFloat(this.element.getStyle().marginTop) || 0;
     }
 
     this.readyToResetMarginTop = false;
@@ -233,6 +244,31 @@ export class Caret {
         this.readyToResetMarginTop = true;
       },
     });
+  }
+
+  public newHandleLineJump(
+    options:
+      | {
+          mode: "set";
+          marginTop: number;
+        }
+      | {
+          mode: "clear";
+        },
+  ): void {
+    if (options.mode === "set") {
+      this.element.setStyle({ marginTop: `${options.marginTop}px` });
+    } else if (options.mode === "clear") {
+      const currentTop = parseFloat(this.element.getStyle().top || "0");
+      let currentMarginTop = parseFloat(
+        this.element.getStyle().marginTop || "0",
+      );
+
+      this.element.setStyle({
+        marginTop: "0px",
+        top: `${currentTop + currentMarginTop}px`,
+      });
+    }
   }
 
   public animatePosition(options: {
@@ -266,7 +302,7 @@ export class Caret {
 
     this.posAnimation = this.element.animate({
       ...animation,
-      duration: finalDuration,
+      duration: 1000,
       ease: options.easing ?? "inOut(1.25)",
     });
   }
