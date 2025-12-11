@@ -1152,7 +1152,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
+    UpdateConfig.setConfig("customThemeColors", newColors as CustomThemeColors);
     void ThemePicker.fillCustomButtons();
 
     return {

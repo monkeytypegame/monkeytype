@@ -294,7 +294,7 @@ function saveCustomThemeColors(): void {
       ) as string,
     );
   }
-  UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
+  UpdateConfig.setConfig("customThemeColors", newColors as CustomThemeColors);
   Notifications.add("Custom theme saved", 1);
 }
 
@@ -347,9 +347,9 @@ $(".pageSettings .section.themes .tabs button").on("click", (e) => {
   // setCustomInputs();
   //test
   if ($target.attr("data-tab") === "preset") {
-    UpdateConfig.setCustomTheme(false);
+    UpdateConfig.setConfig("customTheme", false);
   } else {
-    UpdateConfig.setCustomTheme(true);
+    UpdateConfig.setConfig("customTheme", true);
   }
 });
 
@@ -372,7 +372,7 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
     return;
   }
 
-  UpdateConfig.setCustomThemeColors(theme.colors);
+  UpdateConfig.setConfig("customThemeColors", theme.colors);
 });
 
 // Handle click on favorite preset theme button
@@ -393,7 +393,7 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
 $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme") as ThemeName;
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
-    UpdateConfig.setTheme(theme);
+    UpdateConfig.setConfig("theme", theme);
   }
 });
 

@@ -117,7 +117,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const oldCustomTheme = Config.customTheme;
   const oldCustomThemeColors = Config.customThemeColors;
   try {
-    UpdateConfig.setCustomThemeColors(colorArray);
+    UpdateConfig.setConfig("customThemeColors", colorArray);
     Notifications.add("Custom theme applied", 1);
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
@@ -126,12 +126,12 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
       UpdateConfig.setCustomBackgroundFilter(filter);
     }
 
-    if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
+    if (!Config.customTheme) UpdateConfig.setConfig("customTheme", true);
   } catch (e) {
     Notifications.add("Something went wrong. Reverting to previous state.", 0);
     console.error(e);
-    UpdateConfig.setCustomTheme(oldCustomTheme);
-    UpdateConfig.setCustomThemeColors(oldCustomThemeColors);
+    UpdateConfig.setConfig("customTheme", oldCustomTheme);
+    UpdateConfig.setConfig("customThemeColors", oldCustomThemeColors);
   }
 }
 

@@ -497,9 +497,9 @@ async function init(): Promise<boolean> {
           important: true,
         },
       );
-      UpdateConfig.setLazyMode(false, false);
+      UpdateConfig.setConfig("lazyMode", false, false);
     } else if (rememberLazyMode && anySupportsLazyMode) {
-      UpdateConfig.setLazyMode(true, true);
+      UpdateConfig.setConfig("lazyMode", true, true);
     }
   } else {
     // normal mode
@@ -510,9 +510,9 @@ async function init(): Promise<boolean> {
         important: true,
       });
 
-      UpdateConfig.setLazyMode(false, false);
+      UpdateConfig.setConfig("lazyMode", false, false);
     } else if (rememberLazyMode && !language.noLazyMode) {
-      UpdateConfig.setLazyMode(true, true);
+      UpdateConfig.setConfig("lazyMode", true, true);
     }
   }
 
@@ -1598,7 +1598,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         (eventValue as string)?.startsWith("arabic") &&
         ArabicLazyMode.get()
       ) {
-        UpdateConfig.setLazyMode(true, true);
+        UpdateConfig.setConfig("lazyMode", true, true);
       }
       restart();
     }

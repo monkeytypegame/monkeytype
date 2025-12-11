@@ -51,8 +51,8 @@ export function update(): void {
       },
       exec: (): void => {
         // UpdateConfig.setCustomThemeId(theme._id);
-        UpdateConfig.setCustomTheme(true);
-        UpdateConfig.setCustomThemeColors(theme.colors);
+        UpdateConfig.setConfig("customTheme", true);
+        UpdateConfig.setConfig("customThemeColors", theme.colors);
       },
     });
   }

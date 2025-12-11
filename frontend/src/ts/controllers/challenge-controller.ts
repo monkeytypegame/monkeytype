@@ -281,7 +281,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setConfig("mode", "custom", true);
       UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] !== null) {
-        UpdateConfig.setTheme(challenge.parameters[1] as ThemeName);
+        UpdateConfig.setConfig("theme", challenge.parameters[1] as ThemeName);
       }
       if (challenge.parameters[2] !== null) {
         void Funbox.activate(challenge.parameters[2] as FunboxName[]);

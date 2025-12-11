@@ -52,7 +52,7 @@ document
     const e = event as MouseEvent;
     if (e.shiftKey) {
       if (Config.customTheme) {
-        UpdateConfig.setCustomTheme(false);
+        UpdateConfig.setConfig("customTheme", false);
         return;
       }
       if (
@@ -60,10 +60,10 @@ document
         (DB.getSnapshot()?.customThemes?.length ?? 0) < 1
       ) {
         Notifications.add("No custom themes!", 0);
-        UpdateConfig.setCustomTheme(false);
+        UpdateConfig.setConfig("customTheme", false);
         return;
       }
-      UpdateConfig.setCustomTheme(true);
+      UpdateConfig.setConfig("customTheme", true);
     } else {
       const subgroup = Config.customTheme ? "customThemesList" : "themes";
       Commandline.show({

@@ -33,7 +33,7 @@ const createThemeCommand = (theme: Theme): Command => {
       ThemeController.preview(theme.name);
     },
     exec: (): void => {
-      UpdateConfig.setTheme(theme.name);
+      UpdateConfig.setConfig("theme", theme.name);
     },
   };
 };

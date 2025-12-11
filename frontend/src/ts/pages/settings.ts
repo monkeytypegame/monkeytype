@@ -295,7 +295,7 @@ async function fillSettingsPage(): Promise<void> {
     data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
+        UpdateConfig.setConfig("themeLight", newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -306,7 +306,7 @@ async function fillSettingsPage(): Promise<void> {
     data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
+        UpdateConfig.setConfig("themeDark", newVal[0]?.value as ThemeName);
       },
     },
   });

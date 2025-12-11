@@ -226,53 +226,6 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
   return setConfig("quoteLength", [0, 1, 2, 3], nosave);
 }
 
-export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
-  return setConfig("customTheme", boolean, nosave);
-}
-
-export function setTheme(
-  name: ConfigSchemas.ThemeName,
-  nosave?: boolean,
-): boolean {
-  return setConfig("theme", name, nosave);
-}
-
-export function setThemeLight(
-  name: ConfigSchemas.ThemeName,
-  nosave?: boolean,
-): boolean {
-  return setConfig("themeLight", name, nosave);
-}
-
-export function setThemeDark(
-  name: ConfigSchemas.ThemeName,
-  nosave?: boolean,
-): boolean {
-  return setConfig("themeDark", name, nosave);
-}
-
-export function setRandomTheme(
-  val: ConfigSchemas.RandomTheme,
-  nosave?: boolean,
-): boolean {
-  return setConfig("randomTheme", val, nosave);
-}
-
-export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
-  return setConfig("britishEnglish", val, nosave);
-}
-
-export function setLazyMode(val: boolean, nosave?: boolean): boolean {
-  return setConfig("lazyMode", val, nosave);
-}
-
-export function setCustomThemeColors(
-  colors: ConfigSchemas.CustomThemeColors,
-  nosave?: boolean,
-): boolean {
-  return setConfig("customThemeColors", colors, nosave);
-}
-
 export function setLanguage(language: Language, nosave?: boolean): boolean {
   return setConfig("language", language, nosave);
 }

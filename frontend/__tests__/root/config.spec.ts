@@ -300,11 +300,7 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setRandomTheme", () => {
-    expect(Config.setRandomTheme("fav")).toBe(true);
-    expect(Config.setRandomTheme("off")).toBe(true);
-    expect(Config.setRandomTheme("invalid" as any)).toBe(false);
-  });
+
   it("setKeymapMode", () => {
     expect(Config.setKeymapMode("next")).toBe(true);
     expect(Config.setKeymapMode("react")).toBe(true);
@@ -373,21 +369,11 @@ describe("Config", () => {
 
     const tenColors = customThemeColors(10);
     tenColors[0] = "black";
-    expect(Config.setCustomThemeColors(tenColors)).toBe(false);
+    expect(Config.setConfig("customThemeColors", tenColors)).toBe(false);
     tenColors[0] = "#123456";
-    expect(Config.setCustomThemeColors(tenColors)).toBe(true);
+    expect(Config.setConfig("customThemeColors", tenColors)).toBe(true);
     tenColors[0] = "#1234";
-    expect(Config.setCustomThemeColors(tenColors)).toBe(false);
-  });
-
-  it("setCustomTheme", () => {
-    testBoolean(Config.setCustomTheme);
-  });
-  it("setBritishEnglish", () => {
-    testBoolean(Config.setBritishEnglish);
-  });
-  it("setLazyMode", () => {
-    testBoolean(Config.setLazyMode);
+    expect(Config.setConfig("customThemeColors", tenColors)).toBe(false);
   });
   it("setMonkey", () => {
     testBoolean(Config.setMonkey);
@@ -407,25 +393,6 @@ describe("Config", () => {
 
     expect(Config.setConfig("words", "invalid" as any)).toBe(false);
     expect(Config.setConfig("words", 11.11)).toBe(false);
-  });
-
-  it("setTheme", () => {
-    expect(Config.setTheme("serika")).toBe(true);
-    expect(Config.setTheme("serika_dark")).toBe(true);
-
-    expect(Config.setTheme("invalid" as any)).toBe(false);
-  });
-  it("setThemeLight", () => {
-    expect(Config.setThemeLight("serika")).toBe(true);
-    expect(Config.setThemeLight("serika_dark")).toBe(true);
-
-    expect(Config.setThemeLight("invalid" as any)).toBe(false);
-  });
-  it("setThemeDark", () => {
-    expect(Config.setThemeDark("serika")).toBe(true);
-    expect(Config.setThemeDark("serika_dark")).toBe(true);
-
-    expect(Config.setThemeDark("invalid" as any)).toBe(false);
   });
   it("setLanguage", () => {
     expect(Config.setLanguage("english")).toBe(true);
