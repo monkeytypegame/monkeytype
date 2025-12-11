@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as AccountController from "../auth";
 import * as DB from "../db";
-import * as UpdateConfig from "../config";
+import { resetConfig, setConfig } from "../config";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
@@ -783,7 +783,7 @@ list.resetAccount = new SimpleModal({
     }
 
     Notifications.add("Resetting settings...", 0);
-    await UpdateConfig.reset();
+    await resetConfig();
     await FileStorage.deleteFile("LocalBackgroundFile");
 
     Notifications.add("Resetting account...", 0);
@@ -939,7 +939,7 @@ list.resetSettings = new SimpleModal({
   buttonText: "reset",
   onlineOnly: true,
   execFn: async (): Promise<ExecReturn> => {
-    await UpdateConfig.reset();
+    await resetConfig();
     await FileStorage.deleteFile("LocalBackgroundFile");
     return {
       status: 1,
@@ -1152,7 +1152,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
+    setConfig("customThemeColors", newColors as CustomThemeColors);
     void ThemePicker.fillCustomButtons();
 
     return {

@@ -1,5 +1,5 @@
 import * as TestLogic from "../test/test-logic";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig, setQuoteLengthAll } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
@@ -90,7 +90,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         });
       } else if (wrd !== undefined) {
         const wrdNum = parseInt(wrd);
-        UpdateConfig.setWordCount(wrdNum);
+        setConfig("words", wrdNum);
         ManualRestart.set();
         TestLogic.restart();
       }
@@ -103,7 +103,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       const target = e.currentTarget as HTMLElement;
       const mode = target.getAttribute("data-mode");
       if (mode === Config.mode) return;
-      UpdateConfig.setMode(mode as Mode);
+      setConfig("mode", mode as Mode);
       ManualRestart.set();
       TestLogic.restart();
     });
@@ -121,7 +121,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         });
       } else if (time !== undefined) {
         const timeNum = parseInt(time);
-        UpdateConfig.setTimeConfig(timeNum);
+        setConfig("time", timeNum);
         ManualRestart.set();
         TestLogic.restart();
       }
@@ -135,7 +135,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
 
       if (lenAttr === "all") {
-        if (UpdateConfig.setQuoteLengthAll()) {
+        if (setQuoteLengthAll()) {
           ManualRestart.set();
           TestLogic.restart();
         }
@@ -153,7 +153,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           arr = [len];
         }
 
-        if (UpdateConfig.setQuoteLength(arr, false)) {
+        if (setConfig("quoteLength", arr, false)) {
           ManualRestart.set();
           TestLogic.restart();
         }
@@ -168,13 +168,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 
   modalEl.querySelector(".punctuation")?.addEventListener("click", () => {
-    UpdateConfig.setPunctuation(!Config.punctuation);
+    setConfig("punctuation", !Config.punctuation);
     ManualRestart.set();
     TestLogic.restart();
   });
 
   modalEl.querySelector(".numbers")?.addEventListener("click", () => {
-    UpdateConfig.setNumbers(!Config.numbers);
+    setConfig("numbers", !Config.numbers);
     ManualRestart.set();
     TestLogic.restart();
   });

@@ -3,7 +3,10 @@ import * as Misc from "../../utils/misc";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
-import Config, * as UpdateConfig from "../../config";
+import Config, {
+  setConfig,
+  toggleFunbox as configToggleFunbox,
+} from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
@@ -35,7 +38,7 @@ export function setFunbox(funbox: FunboxName[]): boolean {
     }
   }
   FunboxMemory.load();
-  UpdateConfig.setFunbox(funbox, false);
+  setConfig("funbox", funbox, false);
   return true;
 }
 
@@ -53,7 +56,7 @@ export function toggleFunbox(funbox: FunboxName): void {
     return;
   }
   FunboxMemory.load();
-  UpdateConfig.toggleFunbox(funbox, false);
+  configToggleFunbox(funbox, false);
 
   if (!getActiveFunboxNames().includes(funbox)) {
     get(funbox).functions?.clearGlobal?.();
@@ -101,7 +104,7 @@ export async function activate(
       ),
       -1,
     );
-    UpdateConfig.setFunbox([], true);
+    setConfig("funbox", [], true);
     await clear();
     return false;
   }
@@ -120,7 +123,7 @@ export async function activate(
       Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1,
     );
-    UpdateConfig.setFunbox([], true);
+    setConfig("funbox", [], true);
     await clear();
     return false;
   }
@@ -131,7 +134,7 @@ export async function activate(
         "Current language does not support this funbox mode",
         0,
       );
-      UpdateConfig.setFunbox([], true);
+      setConfig("funbox", [], true);
       await clear();
       return;
     }
@@ -149,24 +152,22 @@ export async function activate(
     if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(check.forcedConfigs[0] as Mode);
+          setConfig("mode", check.forcedConfigs[0] as Mode);
         }
         if (configKey === "words") {
-          UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
+          setConfig("words", check.forcedConfigs[0] as number);
         }
         if (configKey === "time") {
-          UpdateConfig.setTimeConfig(check.forcedConfigs[0] as number);
+          setConfig("time", check.forcedConfigs[0] as number);
         }
         if (configKey === "punctuation") {
-          UpdateConfig.setPunctuation(check.forcedConfigs[0] as boolean);
+          setConfig("punctuation", check.forcedConfigs[0] as boolean);
         }
         if (configKey === "numbers") {
-          UpdateConfig.setNumbers(check.forcedConfigs[0] as boolean);
+          setConfig("numbers", check.forcedConfigs[0] as boolean);
         }
         if (configKey === "highlightMode") {
-          UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as HighlightMode,
-          );
+          setConfig("highlightMode", check.forcedConfigs[0] as HighlightMode);
         }
       } else {
         canSetSoFar = false;
@@ -187,7 +188,7 @@ export async function activate(
         -1,
       );
     }
-    UpdateConfig.setFunbox([], true);
+    setConfig("funbox", [], true);
     await clear();
     return;
   }

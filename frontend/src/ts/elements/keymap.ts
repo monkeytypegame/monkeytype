@@ -480,7 +480,7 @@ export async function refresh(): Promise<void> {
       console.log(
         "something went wrong when changing layout, resettings: " + e.message,
       );
-      // UpdateConfig.setKeymapLayout("qwerty", true);
+      // UpdateConfig.setConfig("keymapLayout", "qwerty",true);
     }
   }
 }
