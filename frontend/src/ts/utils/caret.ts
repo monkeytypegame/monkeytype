@@ -215,6 +215,14 @@ export class Caret {
     // making sure to use a separate animation queue so that it doesnt
     // affect the position animations
     if (this.isMainCaret && options.duration === 0) return;
+
+    // in case we have two line jumps in a row
+    if (this.readyToResetMarginTop) {
+      $(this.element).css({
+        marginTop: 0,
+      });
+    }
+
     this.readyToResetMarginTop = false;
 
     if (options.duration === 0) {
