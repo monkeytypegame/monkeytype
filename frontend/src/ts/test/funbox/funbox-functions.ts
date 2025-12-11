@@ -507,7 +507,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     rememberSettings(): void {
-      save("mode", Config.mode, UpdateConfig.setMode);
+      save("mode", Config.mode);
       save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
       if (Config.keymapMode === "next") {
         save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);

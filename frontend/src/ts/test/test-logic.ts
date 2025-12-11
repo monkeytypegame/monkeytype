@@ -267,7 +267,7 @@ export function restart(options = {} as RestartOptions): void {
       );
     }
 
-    UpdateConfig.setMode(PractiseWords.before.mode);
+    UpdateConfig.setConfig("mode", PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
 
@@ -1511,7 +1511,7 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
-  if (UpdateConfig.setMode(mode)) {
+  if (UpdateConfig.setConfig("mode", mode)) {
     ManualRestart.set();
     restart();
   }

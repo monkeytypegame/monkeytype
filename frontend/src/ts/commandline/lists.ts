@@ -87,7 +87,7 @@ export const commands: CommandsSubgroup = {
       display: "Search for quotes",
       icon: "fa-search",
       exec: (): void => {
-        UpdateConfig.setMode("quote");
+        UpdateConfig.setConfig("mode", "quote");
         void QuoteSearchModal.show();
       },
       shouldFocusTestUI: false,

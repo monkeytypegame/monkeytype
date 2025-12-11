@@ -17,7 +17,6 @@ import {
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { Config, FunboxName } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
 import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
@@ -195,10 +194,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   metadata.afterSet?.({ nosave: nosave || false, currentConfig: config });
 
   return true;
-}
-
-export function setMode(mode: Mode, nosave?: boolean): boolean {
-  return setConfig("mode", mode, nosave);
 }
 
 export function setPlaySoundOnError(

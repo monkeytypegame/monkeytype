@@ -388,7 +388,7 @@ function apply(): void {
 
   ChallengeController.clearActive();
   ManualRestart.set();
-  if (Config.mode !== "custom") UpdateConfig.setMode("custom");
+  if (Config.mode !== "custom") UpdateConfig.setConfig("mode", "custom");
   PractiseWords.resetBefore();
   TestLogic.restart();
   hide();

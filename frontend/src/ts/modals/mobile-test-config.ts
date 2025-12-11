@@ -103,7 +103,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       const target = e.currentTarget as HTMLElement;
       const mode = target.getAttribute("data-mode");
       if (mode === Config.mode) return;
-      UpdateConfig.setMode(mode as Mode);
+      UpdateConfig.setConfig("mode", mode as Mode);
       ManualRestart.set();
       TestLogic.restart();
     });

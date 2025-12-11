@@ -181,7 +181,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const applied: Record<string, string> = {};
 
   if (de[0] !== null) {
-    UpdateConfig.setMode(de[0], true);
+    UpdateConfig.setConfig("mode", de[0], true);
     applied["mode"] = de[0];
   }
 
@@ -204,7 +204,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     CustomText.setText(customTextSettings.text);
 
     //make sure to set mode before the limit as mode also sets the limit
-    CustomText.setMode(customTextSettings.mode ?? "repeat");
+    CustomText.setMode("mode", customTextSettings.mode ?? "repeat");
 
     if (customTextSettings.limit !== undefined) {
       CustomText.setLimitMode(customTextSettings.limit.mode);

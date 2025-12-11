@@ -149,7 +149,7 @@ export async function activate(
     if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(check.forcedConfigs[0] as Mode);
+          UpdateConfig.setConfig("mode", check.forcedConfigs[0] as Mode);
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);

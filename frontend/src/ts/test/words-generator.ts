@@ -523,7 +523,7 @@ async function getQuoteWordList(
   Loader.hide();
 
   if (quotesCollection.length === 0) {
-    UpdateConfig.setMode("words");
+    UpdateConfig.setConfig("mode", "words");
     throw new WordGenError(
       `No ${Config.language
         .replace(/_\d*k$/g, "")

@@ -20,7 +20,6 @@ describe("url-handler", () => {
     const findGetParameterMock = vi.spyOn(Misc, "findGetParameter");
 
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
-    const setModeMock = vi.spyOn(UpdateConfig, "setMode");
     const setTimeConfigMock = vi.spyOn(UpdateConfig, "setTimeConfig");
     const setWordCountMock = vi.spyOn(UpdateConfig, "setWordCount");
     const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
@@ -36,7 +35,6 @@ describe("url-handler", () => {
       [
         setConfigMock,
         findGetParameterMock,
-        setModeMock,
         setTimeConfigMock,
         setWordCountMock,
         setQuoteLengthMock,
@@ -59,7 +57,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).not.toHaveBeenCalled();
+      expect(setConfigMock).not.toHaveBeenCalled();
     });
     it("handles mode2 as number", () => {
       //GIVEN
@@ -71,7 +69,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("time", true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", true);
       expect(setTimeConfigMock).toHaveBeenCalledWith(60, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
@@ -85,7 +83,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("time", true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", true);
       expect(setTimeConfigMock).toHaveBeenCalledWith(30, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
@@ -99,7 +97,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("words", true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "words", true);
       expect(setWordCountMock).toHaveBeenCalledWith(50, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
@@ -113,7 +111,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("quote", true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "quote", true);
       expect(setQuoteLengthMock).toHaveBeenCalledWith([-2], false);
       expect(setSelectedQuoteIdMock).toHaveBeenCalledWith(512);
       expect(restartTestMock).toHaveBeenCalled();
