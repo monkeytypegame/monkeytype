@@ -4,7 +4,7 @@ import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
 import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
-import { animate, EasingParam, JSAnimation } from "animejs";
+import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "./dom";
 
 const wordsCache = qsr("#words");
@@ -186,7 +186,7 @@ export class Caret {
       return;
     }
 
-    this.marginLeftAnimation = animate(this.element.native, {
+    this.marginLeftAnimation = this.element.animate({
       marginLeft: newMarginLeft,
       duration: options.duration,
       ease: options.ease,
@@ -226,7 +226,7 @@ export class Caret {
       return;
     }
 
-    this.marginTopAnimation = animate(this.element.native, {
+    this.marginTopAnimation = this.element.animate({
       marginTop: options.newMarginTop,
       duration: options.duration,
       onComplete: () => {
@@ -264,7 +264,7 @@ export class Caret {
       animation["width"] = options.width;
     }
 
-    this.posAnimation = animate(this.element.native, {
+    this.posAnimation = this.element.animate({
       ...animation,
       duration: finalDuration,
       ease: options.easing ?? "inOut(1.25)",

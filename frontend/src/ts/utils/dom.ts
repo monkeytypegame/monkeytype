@@ -1,3 +1,9 @@
+import {
+  animate as animejsAnimate,
+  AnimationParams,
+  JSAnimation,
+} from "animejs";
+
 /**
  * Query Selector
  *
@@ -498,6 +504,15 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   getOffsetLeft(): number {
     return this.native.offsetLeft;
+  }
+
+  /**
+   * Animate the element using Anime.js
+   * @param animationParams The Anime.js animation parameters
+   * @returns The JSAnimation instance created by Anime.js
+   */
+  animate(animationParams: AnimationParams): JSAnimation {
+    return animejsAnimate(this.native, animationParams);
   }
 }
 
