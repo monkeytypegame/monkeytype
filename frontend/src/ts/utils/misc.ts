@@ -204,11 +204,13 @@ export async function swapElements(
 
   totalDuration = applyReducedMotion(totalDuration);
   if (
-    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
-    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
+    (el1.native.classList.contains("hidden") &&
+      !el2.native.classList.contains("hidden")) ||
+    (!el1.native.classList.contains("hidden") &&
+      el2.native.classList.contains("hidden"))
   ) {
     //one of them is hidden and the other is visible
-    if (el1.hasClass("hidden")) {
+    if (el1.native.classList.contains("hidden")) {
       await middleCallback();
       await callback();
       return false;
@@ -227,7 +229,10 @@ export async function swapElements(
       duration: totalDuration / 2,
     });
     await callback();
-  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
+  } else if (
+    el1.native.classList.contains("hidden") &&
+    el2.native.classList.contains("hidden")
+  ) {
     //both are hidden, only fade in the second
     await middleCallback();
 
