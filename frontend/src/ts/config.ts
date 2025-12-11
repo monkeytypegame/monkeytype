@@ -317,7 +317,7 @@ export function getConfigChanges(): Partial<Config> {
   return configChanges;
 }
 
-export async function applyFromJson(json: string): Promise<void> {
+export async function applyConfigFromJson(json: string): Promise<void> {
   try {
     const parsedConfig = parseJsonWithSchema(
       json,

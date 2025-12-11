@@ -17,10 +17,7 @@ import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
 
-import Config, {
-  applyFromJson as applyConfigFromJson,
-  setConfig,
-} from "../config";
+import Config, { applyConfigFromJson, setConfig } from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
