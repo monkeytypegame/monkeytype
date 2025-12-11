@@ -127,8 +127,8 @@ function layoutfluid(): void {
 
     if (Config.layout !== layout && layout !== undefined) {
       LayoutfluidFunboxTimer.hide();
-      UpdateConfig.setLayout(layout as Layout, true);
-      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
+      UpdateConfig.setConfig("layout", layout as Layout, true);
+      UpdateConfig.setConfig("keymapLayout", layout as KeymapLayout, true);
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");

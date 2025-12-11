@@ -368,25 +368,25 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (Config.layout === "default") {
         layout = "qwerty";
       }
-      UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout("overrideSync", true);
+      UpdateConfig.setConfig("layout", layout, true);
+      UpdateConfig.setConfig("keymapLayout", "overrideSync", true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
-      save("layout", Config.layout, UpdateConfig.setLayout);
+      save("layout", Config.layout);
     },
   },
   layoutfluid: {
     applyConfig(): void {
       const layout = Config.customLayoutfluid[0] ?? "qwerty";
 
-      UpdateConfig.setLayout(layout as Layout, true);
-      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
+      UpdateConfig.setConfig("layout", layout as Layout, true);
+      UpdateConfig.setConfig("keymapLayout", layout as KeymapLayout, true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
-      save("layout", Config.layout, UpdateConfig.setLayout);
-      save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
+      save("layout", Config.layout);
+      save("keymapLayout", Config.keymapLayout);
     },
     handleSpace(): void {
       if (Config.mode !== "time") {
@@ -410,8 +410,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             LayoutfluidFunboxTimer.hide();
           }
           if (mod === wordsPerLayout) {
-            UpdateConfig.setLayout(layouts[index] as Layout);
-            UpdateConfig.setKeymapLayout(layouts[index] as KeymapLayout);
+            UpdateConfig.setConfig("layout", layouts[index] as Layout);
+            UpdateConfig.setConfig(
+              "keymapLayout",
+              layouts[index] as KeymapLayout,
+            );
             if (mod > 3) {
               LayoutfluidFunboxTimer.hide();
             }

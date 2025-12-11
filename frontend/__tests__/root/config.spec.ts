@@ -300,37 +300,6 @@ describe("Config", () => {
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
 
-  it("setKeymapLegendStyle", () => {
-    expect(Config.setKeymapLegendStyle("blank")).toBe(true);
-    expect(Config.setKeymapLegendStyle("lowercase")).toBe(true);
-    expect(Config.setKeymapLegendStyle("invalid" as any)).toBe(false);
-  });
-  it("setKeymapStyle", () => {
-    expect(Config.setKeymapStyle("matrix")).toBe(true);
-    expect(Config.setKeymapStyle("split")).toBe(true);
-    expect(Config.setKeymapStyle("invalid" as any)).toBe(false);
-  });
-  it("setKeymapShowTopRow", () => {
-    expect(Config.setKeymapShowTopRow("always")).toBe(true);
-    expect(Config.setKeymapShowTopRow("never")).toBe(true);
-    expect(Config.setKeymapShowTopRow("invalid" as any)).toBe(false);
-  });
-  it("setKeymapSize", () => {
-    expect(Config.setKeymapSize(0.5)).toBe(true);
-    expect(Config.setKeymapSize(2)).toBe(true);
-    expect(Config.setKeymapSize(3.5)).toBe(true);
-    expect(Config.setKeymapSize("invalid" as any)).toBe(false);
-
-    //invalid values being  "auto-fixed"
-    expect(Config.setKeymapSize(0)).toBe(true);
-    expect(getConfig().keymapSize).toBe(0.5);
-    expect(Config.setKeymapSize(4)).toBe(true);
-    expect(getConfig().keymapSize).toBe(3.5);
-    expect(Config.setKeymapSize(1.25)).toBe(true);
-    expect(getConfig().keymapSize).toBe(1.3);
-    expect(Config.setKeymapSize(1.24)).toBe(true);
-    expect(getConfig().keymapSize).toBe(1.2);
-  });
   it("setCustomBackgroundSize", () => {
     expect(Config.setCustomBackgroundSize("contain")).toBe(true);
     expect(Config.setCustomBackgroundSize("cover")).toBe(true);
@@ -357,100 +326,6 @@ describe("Config", () => {
 
   it("setBurstHeatmap", () => {
     testBoolean(Config.setBurstHeatmap);
-  });
-  it("setTimeConfig", () => {
-    expect(Config.setConfig("time", 0)).toBe(true);
-    expect(Config.setConfig("time", 1)).toBe(true);
-
-    expect(Config.setConfig("time", 11.11)).toBe(false);
-  });
-  it("setWordCount", () => {
-    expect(Config.setConfig("words", 0)).toBe(true);
-    expect(Config.setConfig("words", 1)).toBe(true);
-
-    expect(Config.setConfig("words", "invalid" as any)).toBe(false);
-    expect(Config.setConfig("words", 11.11)).toBe(false);
-  });
-  it("setLanguage", () => {
-    expect(Config.setConfig("language", "english")).toBe(true);
-    expect(Config.setConfig("language", "english_1k")).toBe(true);
-
-    expect(Config.setConfig("language", "invalid" as any)).toBe(false);
-  });
-  it("setKeymapLayout", () => {
-    expect(Config.setKeymapLayout("overrideSync")).toBe(true);
-    expect(Config.setKeymapLayout("override_sync" as any)).toBe(false);
-    expect(Config.setKeymapLayout("override sync" as any)).toBe(false);
-    expect(Config.setKeymapLayout("override-sync!" as any)).toBe(false);
-  });
-  it("setLayout", () => {
-    expect(Config.setLayout("semimak")).toBe(true);
-    expect(Config.setLayout("default")).toBe(true);
-    expect(Config.setLayout("semi_mak" as any)).toBe(false);
-    expect(Config.setLayout("overrideSync" as any)).toBe(false);
-  });
-  it("setFontSize", () => {
-    expect(Config.setFontSize(1)).toBe(true);
-
-    expect(Config.setFontSize(0)).toBe(false);
-    expect(Config.setFontSize("5" as any)).toBe(false);
-    expect(Config.setFontSize("invalid" as any)).toBe(false);
-  });
-  it("setMaxLineWidth", () => {
-    expect(Config.setMaxLineWidth(0)).toBe(true);
-    expect(Config.setMaxLineWidth(50)).toBe(true);
-    expect(Config.setMaxLineWidth(50.5)).toBe(true);
-  });
-  it("setCustomBackground", () => {
-    expect(Config.setCustomBackground("http://example.com/test.png")).toBe(
-      true,
-    );
-    expect(Config.setCustomBackground("https://www.example.com/test.gif")).toBe(
-      true,
-    );
-    expect(Config.setCustomBackground("https://example.com/test.jpg")).toBe(
-      true,
-    );
-    expect(Config.setCustomBackground("http://www.example.com/test.jpeg")).toBe(
-      true,
-    );
-
-    //gets converted
-    expect(
-      Config.setCustomBackground("     http://example.com/test.png   "),
-    ).toBe(true);
-
-    expect(Config.setCustomBackground("http://www.example.com/test.tiff")).toBe(
-      false,
-    );
-    expect(
-      Config.setCustomBackground(
-        "http://www.example.com/test?test=foo&bar=baz",
-      ),
-    ).toBe(false);
-    expect(Config.setCustomBackground("invalid")).toBe(false);
-  });
-  it("setQuoteLength", () => {
-    expect(Config.setConfig("quoteLength", [0])).toBe(true);
-    expect(Config.setConfig("quoteLength", [-3])).toBe(true);
-    expect(Config.setConfig("quoteLength", [3])).toBe(true);
-
-    expect(Config.setConfig("quoteLength", -4 as any)).toBe(false);
-    expect(Config.setConfig("quoteLength", 4 as any)).toBe(false);
-    expect(Config.setConfig("quoteLength", 3 as any)).toBe(false);
-    expect(Config.setConfig("quoteLength", 2 as any)).toBe(false);
-
-    expect(Config.setConfig("quoteLength", [0, -3, 2])).toBe(true);
-
-    expect(Config.setConfig("quoteLength", [-4 as any, 5 as any])).toBe(false);
-  });
-  it("setCustomLayoutfluid", () => {
-    expect(Config.setCustomLayoutfluid(["qwerty", "qwertz"])).toBe(true);
-
-    expect(Config.setCustomLayoutfluid(["qwerty"])).toBe(false);
-    expect(Config.setCustomLayoutfluid([])).toBe(false);
-    expect(Config.setCustomLayoutfluid("qwerty#qwertz" as any)).toBe(false);
-    expect(Config.setCustomLayoutfluid("invalid" as any)).toBe(false);
   });
 
   describe("apply", () => {

@@ -394,7 +394,7 @@ async function fillSettingsPage(): Promise<void> {
         if (
           !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
         ) {
-          void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+          void UpdateConfig.setConfig("customLayoutfluid", customLayoutfluid);
         }
       },
     },
@@ -829,7 +829,8 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save",
 ).on("click", () => {
-  const didConfigSave = UpdateConfig.setKeymapSize(
+  const didConfigSave = UpdateConfig.setConfig(
+    "keymapSize",
     parseFloat(
       $(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
@@ -846,7 +847,8 @@ $(
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("focusout", () => {
-  const didConfigSave = UpdateConfig.setKeymapSize(
+  const didConfigSave = UpdateConfig.setConfig(
+    "keymapSize",
     parseFloat(
       $(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
@@ -864,7 +866,8 @@ $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setKeymapSize(
+    const didConfigSave = UpdateConfig.setConfig(
+      "keymapSize",
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",

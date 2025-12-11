@@ -322,8 +322,8 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setConfig("language", "english_10k", true);
         UpdateConfig.setConfig("punctuation", true, true);
         UpdateConfig.setConfig("stopOnError", "word", true);
-        UpdateConfig.setLayout("semimak", true);
-        UpdateConfig.setKeymapLayout("overrideSync", true);
+        UpdateConfig.setConfig("layout", "semimak", true);
+        UpdateConfig.setConfig("keymapLayout", "overrideSync", true);
         UpdateConfig.setConfig("keymapMode", "static", true);
       }
     }

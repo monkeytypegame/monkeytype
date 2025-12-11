@@ -121,7 +121,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     Notifications.add("Custom theme applied", 1);
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
-      UpdateConfig.setCustomBackground(image);
+      UpdateConfig.setConfig("customBackground", image);
       UpdateConfig.setCustomBackgroundSize(size);
       UpdateConfig.setCustomBackgroundFilter(filter);
     }
