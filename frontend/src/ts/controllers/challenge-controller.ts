@@ -245,7 +245,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setConfig("mode", "time", true);
       UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.name === "englishMaster") {
-        UpdateConfig.setLanguage("english_10k", true);
+        UpdateConfig.setConfig("language", "english_10k", true);
         UpdateConfig.setConfig("numbers", true, true);
         UpdateConfig.setConfig("punctuation", true, true);
       }
@@ -319,12 +319,12 @@ export async function setup(challengeName: string): Promise<boolean> {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         UpdateConfig.setConfig("mode", "time", true);
         UpdateConfig.setConfig("time", 120, true);
-        UpdateConfig.setLanguage("english_10k", true);
+        UpdateConfig.setConfig("language", "english_10k", true);
         UpdateConfig.setConfig("punctuation", true, true);
         UpdateConfig.setConfig("stopOnError", "word", true);
         UpdateConfig.setLayout("semimak", true);
         UpdateConfig.setKeymapLayout("overrideSync", true);
-        UpdateConfig.setKeymapMode("static", true);
+        UpdateConfig.setConfig("keymapMode", "static", true);
       }
     }
     ManualRestart.set();

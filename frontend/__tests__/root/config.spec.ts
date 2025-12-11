@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config";
 import * as Misc from "../../src/ts/utils/misc";
 import {
-  CustomThemeColors,
   ConfigKey,
   Config as ConfigType,
   CaretStyleSchema,
@@ -301,11 +300,6 @@ describe("Config", () => {
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
 
-  it("setKeymapMode", () => {
-    expect(Config.setKeymapMode("next")).toBe(true);
-    expect(Config.setKeymapMode("react")).toBe(true);
-    expect(Config.setKeymapMode("invalid" as any)).toBe(false);
-  });
   it("setKeymapLegendStyle", () => {
     expect(Config.setKeymapLegendStyle("blank")).toBe(true);
     expect(Config.setKeymapLegendStyle("lowercase")).toBe(true);
@@ -360,24 +354,7 @@ describe("Config", () => {
 
     expect(Config.setMonkeyPowerLevel("invalid" as any)).toBe(false);
   });
-  it("setCustomThemeColors", () => {
-    expect(Config.setCustomThemeColors(customThemeColors(10))).toBe(true);
 
-    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(false);
-    expect(Config.setCustomThemeColors(customThemeColors(5))).toBe(false);
-    expect(Config.setCustomThemeColors(customThemeColors(11))).toBe(false);
-
-    const tenColors = customThemeColors(10);
-    tenColors[0] = "black";
-    expect(Config.setConfig("customThemeColors", tenColors)).toBe(false);
-    tenColors[0] = "#123456";
-    expect(Config.setConfig("customThemeColors", tenColors)).toBe(true);
-    tenColors[0] = "#1234";
-    expect(Config.setConfig("customThemeColors", tenColors)).toBe(false);
-  });
-  it("setMonkey", () => {
-    testBoolean(Config.setMonkey);
-  });
   it("setBurstHeatmap", () => {
     testBoolean(Config.setBurstHeatmap);
   });
@@ -395,10 +372,10 @@ describe("Config", () => {
     expect(Config.setConfig("words", 11.11)).toBe(false);
   });
   it("setLanguage", () => {
-    expect(Config.setLanguage("english")).toBe(true);
-    expect(Config.setLanguage("english_1k")).toBe(true);
+    expect(Config.setConfig("language", "english")).toBe(true);
+    expect(Config.setConfig("language", "english_1k")).toBe(true);
 
-    expect(Config.setLanguage("invalid" as any)).toBe(false);
+    expect(Config.setConfig("language", "invalid" as any)).toBe(false);
   });
   it("setKeymapLayout", () => {
     expect(Config.setKeymapLayout("overrideSync")).toBe(true);
@@ -623,12 +600,6 @@ describe("Config", () => {
     });
   });
 });
-
-function customThemeColors(n: number): CustomThemeColors {
-  const arr = new Array(n).fill("#000") as CustomThemeColors;
-  arr[0] = "#123456"; // we have a protection against all colors being the same
-  return arr;
-}
 
 function testBoolean(fn: (val: boolean) => boolean): void {
   expect(fn(true)).toBe(true);

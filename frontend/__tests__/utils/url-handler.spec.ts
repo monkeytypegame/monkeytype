@@ -21,7 +21,6 @@ describe("url-handler", () => {
 
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
-    const setLanguageMock = vi.spyOn(UpdateConfig, "setLanguage");
     const restartTestMock = vi.spyOn(TestLogic, "restart");
     const addNotificationMock = vi.spyOn(Notifications, "add");
 
@@ -30,7 +29,6 @@ describe("url-handler", () => {
         setConfigMock,
         findGetParameterMock,
         setSelectedQuoteIdMock,
-        setLanguageMock,
         restartTestMock,
         addNotificationMock,
       ].forEach((it) => it.mockClear());
@@ -135,7 +133,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setLanguageMock).toHaveBeenCalledWith("english", true);
+      expect(setConfigMock).toHaveBeenCalledWith("language", "english", true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets difficulty", () => {

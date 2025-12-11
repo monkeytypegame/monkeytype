@@ -17,7 +17,6 @@ import {
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { Config, FunboxName } from "@monkeytype/schemas/configs";
-import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { getDefaultConfig } from "./constants/default-config";
@@ -224,21 +223,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
 export function setQuoteLengthAll(nosave?: boolean): boolean {
   return setConfig("quoteLength", [0, 1, 2, 3], nosave);
-}
-
-export function setLanguage(language: Language, nosave?: boolean): boolean {
-  return setConfig("language", language, nosave);
-}
-
-export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
-  return setConfig("monkey", monkey, nosave);
-}
-
-export function setKeymapMode(
-  mode: ConfigSchemas.KeymapMode,
-  nosave?: boolean,
-): boolean {
-  return setConfig("keymapMode", mode, nosave);
 }
 
 export function setKeymapLegendStyle(

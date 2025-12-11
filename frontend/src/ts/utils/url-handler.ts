@@ -246,7 +246,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[5] !== null) {
-    UpdateConfig.setLanguage(de[5] as Language, true);
+    UpdateConfig.setConfig("language", de[5] as Language, true);
     applied["language"] = de[5];
   }
 
