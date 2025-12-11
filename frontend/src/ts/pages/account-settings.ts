@@ -189,8 +189,10 @@ export function updateUI(): void {
   page.setUrlParams(state);
 }
 
-$(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
-  state.tab = $(event.target).data("tab") as State["tab"];
+qs(".page.pageAccountSettings")?.on("click", (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.parentElement?.classList.contains("tabs")) return;
+  state.tab = target.getAttribute("data-tab") as State["tab"];
   updateTabs();
   page.setUrlParams(state);
 });
