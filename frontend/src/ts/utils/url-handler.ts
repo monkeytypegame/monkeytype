@@ -251,7 +251,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[6] !== null) {
-    UpdateConfig.setDifficulty(de[6], true);
+    UpdateConfig.setConfig("difficulty", de[6], true);
     applied["difficulty"] = de[6];
   }
 

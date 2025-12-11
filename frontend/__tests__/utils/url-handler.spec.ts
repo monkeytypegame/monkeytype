@@ -25,7 +25,6 @@ describe("url-handler", () => {
     const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
     const setLanguageMock = vi.spyOn(UpdateConfig, "setLanguage");
-    const setDifficultyMock = vi.spyOn(UpdateConfig, "setDifficulty");
     const setFunboxMock = vi.spyOn(UpdateConfig, "setFunbox");
 
     const restartTestMock = vi.spyOn(TestLogic, "restart");
@@ -40,7 +39,6 @@ describe("url-handler", () => {
         setQuoteLengthMock,
         setSelectedQuoteIdMock,
         setLanguageMock,
-        setDifficultyMock,
         setFunboxMock,
         restartTestMock,
         addNotificationMock,
@@ -157,7 +155,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setDifficultyMock).toHaveBeenCalledWith("master", true);
+      expect(setConfigMock).toHaveBeenCalledWith("difficulty", "master", true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets funbox", () => {

@@ -243,7 +243,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     if (challenge.type === "customTime") {
       UpdateConfig.setTimeConfig(challenge.parameters[0] as number, true);
       UpdateConfig.setConfig("mode", "time", true);
-      UpdateConfig.setDifficulty("normal", true);
+      UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.name === "englishMaster") {
         UpdateConfig.setLanguage("english_10k", true);
         UpdateConfig.setConfig("numbers", true, true);
@@ -252,7 +252,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else if (challenge.type === "customWords") {
       UpdateConfig.setWordCount(challenge.parameters[0] as number, true);
       UpdateConfig.setConfig("mode", "words", true);
-      UpdateConfig.setDifficulty("normal", true);
+      UpdateConfig.setConfig("difficulty", "normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setMode(challenge.parameters[1] as CustomTextMode);
@@ -260,7 +260,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
       CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setConfig("mode", "custom", true);
-      UpdateConfig.setDifficulty("normal", true);
+      UpdateConfig.setConfig("difficulty", "normal", true);
     } else if (challenge.type === "script") {
       Loader.show();
       const response = await fetch(
@@ -279,7 +279,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setLimitMode("word");
       CustomText.setPipeDelimiter(false);
       UpdateConfig.setConfig("mode", "custom", true);
-      UpdateConfig.setDifficulty("normal", true);
+      UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] !== null) {
         UpdateConfig.setTheme(challenge.parameters[1] as ThemeName);
       }
@@ -289,10 +289,10 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
       UpdateConfig.setConfig("mode", "time", true);
-      UpdateConfig.setDifficulty("master", true);
+      UpdateConfig.setConfig("difficulty", "master", true);
     } else if (challenge.type === "funbox") {
       UpdateConfig.setFunbox(challenge.parameters[0] as FunboxName[], true);
-      UpdateConfig.setDifficulty("normal", true);
+      UpdateConfig.setConfig("difficulty", "normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
       } else if (challenge.parameters[1] === "time") {
@@ -300,7 +300,11 @@ export async function setup(challengeName: string): Promise<boolean> {
       }
       UpdateConfig.setConfig("mode", challenge.parameters[1] as Mode, true);
       if (challenge.parameters[3] !== undefined) {
-        UpdateConfig.setDifficulty(challenge.parameters[3] as Difficulty, true);
+        UpdateConfig.setConfig(
+          "difficulty",
+          challenge.parameters[3] as Difficulty,
+          true,
+        );
       }
     } else if (challenge.type === "special") {
       if (challenge.name === "semimak") {

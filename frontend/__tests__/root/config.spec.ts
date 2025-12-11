@@ -301,10 +301,7 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setDifficulty", () => {
-    expect(Config.setDifficulty("expert")).toBe(true);
-    expect(Config.setDifficulty("invalid" as any)).toBe(false);
-  });
+
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
     //arrays not having 4 values will get [on, on, on, on] as default

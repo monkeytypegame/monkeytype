@@ -196,14 +196,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-//difficulty
-export function setDifficulty(
-  diff: ConfigSchemas.Difficulty,
-  nosave?: boolean,
-): boolean {
-  return setConfig("difficulty", diff, nosave);
-}
-
 //set fav themes
 export function setFavThemes(
   themes: ConfigSchemas.FavThemes,
