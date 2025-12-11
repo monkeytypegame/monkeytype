@@ -67,12 +67,12 @@ export class Caret {
   }
 
   public show(): void {
-    this.element.removeClass("hidden");
+    this.element.show();
     this.element.setStyle({ display: "" });
   }
 
   public hide(): void {
-    this.element.addClass("hidden");
+    this.element.hide();
   }
 
   public isHidden(): boolean {
