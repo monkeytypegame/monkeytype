@@ -12,7 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -195,9 +195,9 @@ $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
   page.setUrlParams(state);
 });
 
-$(
+qs(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth",
-).on("click", () => {
+)?.on("click", () => {
   Loader.show();
   void Ape.users.getDiscordOAuth().then((response) => {
     if (response.status === 200) {
@@ -211,7 +211,7 @@ $(
   });
 });
 
-$(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
+qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
   StreakHourOffsetModal.show();
 });
 
