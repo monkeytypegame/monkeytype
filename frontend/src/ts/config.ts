@@ -196,27 +196,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-export function setPlaySoundOnClick(
-  val: ConfigSchemas.PlaySoundOnClick,
-  nosave?: boolean,
-): boolean {
-  return setConfig("playSoundOnClick", val, nosave);
-}
-
-export function setSoundVolume(
-  val: ConfigSchemas.SoundVolume,
-  nosave?: boolean,
-): boolean {
-  return setConfig("soundVolume", val, nosave);
-}
-
-export function setPlayTimeWarning(
-  value: ConfigSchemas.PlayTimeWarning,
-  nosave?: boolean,
-): boolean {
-  return setConfig("playTimeWarning", value, nosave);
-}
-
 //difficulty
 export function setDifficulty(
   diff: ConfigSchemas.Difficulty,
