@@ -294,7 +294,7 @@ export function handleConfigInput<T extends ConfigKey>({
     if (Config[configName] === value) {
       return;
     }
-    const didConfigSave = UpdateConfig.genericSet(configName, value, false);
+    const didConfigSave = UpdateConfig.setConfig(configName, value, false);
 
     if (didConfigSave) {
       Notifications.add("Saved", 1, {

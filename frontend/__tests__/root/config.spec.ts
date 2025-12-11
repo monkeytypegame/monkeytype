@@ -74,7 +74,7 @@ describe("Config", () => {
 
     it("should throw if config key in not found in metadata", () => {
       expect(() => {
-        Config.genericSet("nonExistentKey" as ConfigKey, true);
+        Config.setConfig("nonExistentKey" as ConfigKey, true);
       }).toThrowError(
         `Config metadata for key "nonExistentKey" is not defined.`,
       );
@@ -85,7 +85,7 @@ describe("Config", () => {
       replaceConfig({ funbox: ["no_quit"], numbers: false });
 
       //WHEN
-      expect(Config.genericSet("numbers", true, true)).toBe(false);
+      expect(Config.setConfig("numbers", true, true)).toBe(false);
 
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
@@ -103,12 +103,12 @@ describe("Config", () => {
       replaceConfig({ tapeMode: "letter" });
 
       //WHEN / THEN
-      expect(Config.genericSet("showAllLines", true)).toBe(false);
+      expect(Config.setConfig("showAllLines", true)).toBe(false);
     });
 
     it("should use overrideValue", () => {
       //WHEN
-      Config.genericSet("customLayoutfluid", ["3l", "ABNT2", "3l"]);
+      Config.setConfig("customLayoutfluid", ["3l", "ABNT2", "3l"]);
 
       //THEN
       expect(getConfig().customLayoutfluid).toEqual(["3l", "ABNT2"]);
@@ -119,7 +119,7 @@ describe("Config", () => {
       isConfigValueValidMock.mockReturnValue(false);
 
       //WHEN / THEN
-      expect(Config.genericSet("caretStyle", "banana" as any)).toBe(false);
+      expect(Config.setConfig("caretStyle", "banana" as any)).toBe(false);
       expect(isConfigValueValidMock).toHaveBeenCalledWith(
         "caret style",
         "banana",
@@ -132,7 +132,7 @@ describe("Config", () => {
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(false);
 
       //WHEN / THEN
-      expect(Config.genericSet("numbers", true)).toBe(false);
+      expect(Config.setConfig("numbers", true)).toBe(false);
     });
 
     it("sets overrideConfigs", () => {
@@ -144,7 +144,7 @@ describe("Config", () => {
       });
 
       //WHEN
-      Config.genericSet("confidenceMode", "max");
+      Config.setConfig("confidenceMode", "max");
 
       //THEN
       expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
@@ -174,7 +174,7 @@ describe("Config", () => {
       replaceConfig({ numbers: false });
 
       //WHEN
-      Config.genericSet("numbers", true);
+      Config.setConfig("numbers", true);
 
       //THEN
       //wait for debounce
@@ -201,7 +201,7 @@ describe("Config", () => {
       replaceConfig({});
 
       //WHEN
-      Config.genericSet("minWpmCustomSpeed", 120);
+      Config.setConfig("minWpmCustomSpeed", 120);
 
       //THEN
       //wait for debounce
@@ -230,7 +230,7 @@ describe("Config", () => {
       replaceConfig({ numbers: false });
 
       //WHEN
-      Config.genericSet("numbers", true, true);
+      Config.setConfig("numbers", true, true);
 
       //THEN
       //wait for debounce
@@ -250,7 +250,7 @@ describe("Config", () => {
       replaceConfig({ numbers: false });
 
       //WHEN
-      Config.genericSet("numbers", true, true);
+      Config.setConfig("numbers", true, true);
 
       //THEN
 
@@ -264,21 +264,21 @@ describe("Config", () => {
 
     it("triggers resize if property is set", () => {
       ///WHEN
-      Config.genericSet("maxLineWidth", 50, false);
+      Config.setConfig("maxLineWidth", 50, false);
 
       expect(miscTriggerResizeMock).toHaveBeenCalled();
     });
 
     it("does not triggers resize if property is not set", () => {
       ///WHEN
-      Config.genericSet("startGraphsAtZero", true, false);
+      Config.setConfig("startGraphsAtZero", true, false);
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
 
     it("does not triggers resize if property on nosave", () => {
       ///WHEN
-      Config.genericSet("maxLineWidth", 50, true);
+      Config.setConfig("maxLineWidth", 50, true);
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
@@ -289,7 +289,7 @@ describe("Config", () => {
       replaceConfig({ ads: "off" });
 
       //WHEN
-      Config.genericSet("ads", "sellout");
+      Config.setConfig("ads", "sellout");
 
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
