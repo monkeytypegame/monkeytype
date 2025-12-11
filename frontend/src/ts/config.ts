@@ -197,11 +197,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   return true;
 }
 
-//punctuation
-export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
-  return setConfig("punctuation", punc, nosave);
-}
-
 export function setMode(mode: Mode, nosave?: boolean): boolean {
   return setConfig("mode", mode, nosave);
 }

@@ -158,7 +158,10 @@ export async function activate(
           UpdateConfig.setTimeConfig(check.forcedConfigs[0] as number);
         }
         if (configKey === "punctuation") {
-          UpdateConfig.setPunctuation(check.forcedConfigs[0] as boolean);
+          UpdateConfig.setConfig(
+            "punctuation",
+            check.forcedConfigs[0] as boolean,
+          );
         }
         if (configKey === "numbers") {
           UpdateConfig.setConfig("numbers", check.forcedConfigs[0] as boolean);

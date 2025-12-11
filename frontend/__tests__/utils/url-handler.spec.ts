@@ -25,7 +25,6 @@ describe("url-handler", () => {
     const setWordCountMock = vi.spyOn(UpdateConfig, "setWordCount");
     const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
-    const setPunctuationMock = vi.spyOn(UpdateConfig, "setPunctuation");
     const setLanguageMock = vi.spyOn(UpdateConfig, "setLanguage");
     const setDifficultyMock = vi.spyOn(UpdateConfig, "setDifficulty");
     const setFunboxMock = vi.spyOn(UpdateConfig, "setFunbox");
@@ -42,7 +41,6 @@ describe("url-handler", () => {
         setWordCountMock,
         setQuoteLengthMock,
         setSelectedQuoteIdMock,
-        setPunctuationMock,
         setLanguageMock,
         setDifficultyMock,
         setFunboxMock,
@@ -128,7 +126,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setPunctuationMock).toHaveBeenCalledWith(true, true);
+      expect(setConfigMock).toHaveBeenCalledWith("punctuation", true, true);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets numbers", () => {

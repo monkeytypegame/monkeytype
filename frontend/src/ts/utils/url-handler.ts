@@ -236,7 +236,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[3] !== null) {
-    UpdateConfig.setPunctuation(de[3], true);
+    UpdateConfig.setConfig("punctuation", de[3], true);
     applied["punctuation"] = de[3] ? "on" : "off";
   }
 

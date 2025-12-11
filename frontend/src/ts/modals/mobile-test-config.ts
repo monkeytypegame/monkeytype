@@ -168,7 +168,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 
   modalEl.querySelector(".punctuation")?.addEventListener("click", () => {
-    UpdateConfig.setPunctuation(!Config.punctuation);
+    UpdateConfig.setConfig("punctuation", !Config.punctuation);
     ManualRestart.set();
     TestLogic.restart();
   });

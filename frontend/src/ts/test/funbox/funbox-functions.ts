@@ -603,7 +603,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return `0x${word}`;
     },
     rememberSettings(): void {
-      save("punctuation", Config.punctuation, UpdateConfig.setPunctuation);
+      save("punctuation", Config.punctuation);
     },
   },
   zipf: {

@@ -252,7 +252,7 @@ export function restart(options = {} as RestartOptions): void {
   ) {
     Notifications.add("Reverting to previous settings.", 0);
     if (PractiseWords.before.punctuation !== null) {
-      UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
+      UpdateConfig.setConfig("punctuation", PractiseWords.before.punctuation);
     }
     if (PractiseWords.before.numbers !== null) {
       UpdateConfig.setConfig("numbers", PractiseWords.before.numbers);
@@ -1569,7 +1569,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestState.testRestarting) return;
-  if (UpdateConfig.setPunctuation(!Config.punctuation)) {
+  if (UpdateConfig.setConfig("punctuation", !Config.punctuation)) {
     ManualRestart.set();
     restart();
   }

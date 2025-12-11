@@ -247,7 +247,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       if (challenge.name === "englishMaster") {
         UpdateConfig.setLanguage("english_10k", true);
         UpdateConfig.setConfig("numbers", true, true);
-        UpdateConfig.setPunctuation(true, true);
+        UpdateConfig.setConfig("punctuation", true, true);
       }
     } else if (challenge.type === "customWords") {
       UpdateConfig.setWordCount(challenge.parameters[0] as number, true);
@@ -308,7 +308,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setMode("time", true);
         UpdateConfig.setTimeConfig(120, true);
         UpdateConfig.setLanguage("english_10k", true);
-        UpdateConfig.setPunctuation(true, true);
+        UpdateConfig.setConfig("punctuation", true, true);
         UpdateConfig.setStopOnError("word", true);
         UpdateConfig.setLayout("semimak", true);
         UpdateConfig.setKeymapLayout("overrideSync", true);
