@@ -240,6 +240,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-$(() => {
+document.addEventListener("DOMContentLoaded", () => {
   Skeleton.save("pageAccountSettings");
 });
