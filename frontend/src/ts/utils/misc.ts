@@ -214,7 +214,7 @@ export async function swapElements(
       return false;
     }
 
-    el1.removeClass("hidden");
+    el1.show();
     await promiseAnimate(el1.native, {
       opacity: [1, 0],
       duration: totalDuration / 2,
