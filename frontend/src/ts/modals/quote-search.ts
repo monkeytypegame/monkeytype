@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
@@ -363,7 +363,7 @@ function apply(val: number): void {
     );
   }
   if (val !== null && !isNaN(val) && val >= 0) {
-    UpdateConfig.setQuoteLength([-2], false);
+    setConfig("quoteLength", [-2], false);
     TestState.setSelectedQuoteId(val);
     ManualRestart.set();
   } else {

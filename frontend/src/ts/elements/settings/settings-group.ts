@@ -1,6 +1,6 @@
 import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
 
-import Config from "../../config";
+import Config, { setConfig } from "../../config";
 import * as Notifications from "../notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
@@ -32,7 +32,6 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
   constructor(
     configName: K,
-    configFunction: (param: T, nosave?: boolean) => boolean,
     mode: Mode,
     options?: {
       setCallback?: () => void;
@@ -46,7 +45,8 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   ) {
     this.configName = configName;
     this.mode = mode;
-    this.configFunction = configFunction;
+    this.configFunction = (param, nosave) =>
+      setConfig(configName, param as ConfigType[K], nosave);
     this.setCallback = options?.setCallback;
     this.updateCallback = options?.updateCallback;
     this.validation = options?.validation;

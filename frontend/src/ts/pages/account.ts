@@ -2,7 +2,7 @@ import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
 import * as Focus from "../test/focus";
@@ -1035,25 +1035,25 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {

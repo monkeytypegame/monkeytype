@@ -1,6 +1,6 @@
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";
@@ -1964,7 +1964,7 @@ async function copyToClipboard(content: string): Promise<void> {
 }
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
-  UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+  setConfig("burstHeatmap", !Config.burstHeatmap);
   ResultWordHighlight.destroy();
 });
 

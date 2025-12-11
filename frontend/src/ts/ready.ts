@@ -7,13 +7,13 @@ import * as AccountButton from "./elements/account-button";
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
-import { loadPromise } from "./config";
+import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDocumentReady, qs } from "./utils/dom";
 
 onDocumentReady(async () => {
-  await loadPromise;
+  await configLoadPromise;
   await authPromise;
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
