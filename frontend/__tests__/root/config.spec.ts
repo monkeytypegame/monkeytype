@@ -301,57 +301,6 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-
-  it("setPaceCaretStyle", () => {
-    expect(Config.setPaceCaretStyle("carrot")).toBe(true);
-    expect(Config.setPaceCaretStyle("outline")).toBe(true);
-    expect(Config.setPaceCaretStyle("invalid" as any)).toBe(false);
-  });
-  it("setShowAverage", () => {
-    expect(Config.setShowAverage("acc")).toBe(true);
-    expect(Config.setShowAverage("both")).toBe(true);
-    expect(Config.setShowAverage("invalid" as any)).toBe(false);
-  });
-  it("setHighlightMode", () => {
-    expect(Config.setHighlightMode("letter")).toBe(true);
-    expect(Config.setHighlightMode("next_three_words")).toBe(true);
-    expect(Config.setHighlightMode("invalid" as any)).toBe(false);
-  });
-  it("setTapeMode", () => {
-    expect(Config.setTapeMode("letter")).toBe(true);
-    expect(Config.setTapeMode("off")).toBe(true);
-    expect(Config.setTapeMode("invalid" as any)).toBe(false);
-  });
-  it("setTimerStyle", () => {
-    expect(Config.setTimerStyle("bar")).toBe(true);
-    expect(Config.setTimerStyle("mini")).toBe(true);
-    expect(Config.setTimerStyle("invalid" as any)).toBe(false);
-  });
-  it("setLiveSpeedStyle", () => {
-    expect(Config.setLiveSpeedStyle("text")).toBe(true);
-    expect(Config.setLiveSpeedStyle("mini")).toBe(true);
-    expect(Config.setLiveSpeedStyle("invalid" as any)).toBe(false);
-  });
-  it("setLiveAccStyle", () => {
-    expect(Config.setLiveAccStyle("text")).toBe(true);
-    expect(Config.setLiveAccStyle("mini")).toBe(true);
-    expect(Config.setLiveAccStyle("invalid" as any)).toBe(false);
-  });
-  it("setLiveBurstStyle", () => {
-    expect(Config.setLiveBurstStyle("text")).toBe(true);
-    expect(Config.setLiveBurstStyle("mini")).toBe(true);
-    expect(Config.setLiveBurstStyle("invalid" as any)).toBe(false);
-  });
-  it("setTimerColor", () => {
-    expect(Config.setTimerColor("text")).toBe(true);
-    expect(Config.setTimerColor("sub")).toBe(true);
-    expect(Config.setTimerColor("invalid" as any)).toBe(false);
-  });
-  it("setTimerOpacity", () => {
-    expect(Config.setTimerOpacity("1")).toBe(true);
-    expect(Config.setTimerOpacity("0.5")).toBe(true);
-    expect(Config.setTimerOpacity("invalid" as any)).toBe(false);
-  });
   it("setSmoothCaret", () => {
     expect(Config.setSmoothCaret("fast")).toBe(true);
     expect(Config.setSmoothCaret("medium")).toBe(true);
@@ -453,9 +402,6 @@ describe("Config", () => {
     expect(Config.setCustomThemeColors(tenColors)).toBe(true);
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
-  });
-  it("setHideExtraLetters", () => {
-    testBoolean(Config.setHideExtraLetters);
   });
   it("setKeyTips", () => {
     testBoolean(Config.setKeyTips);

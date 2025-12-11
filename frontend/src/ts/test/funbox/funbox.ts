@@ -167,7 +167,8 @@ export async function activate(
           UpdateConfig.setConfig("numbers", check.forcedConfigs[0] as boolean);
         }
         if (configKey === "highlightMode") {
-          UpdateConfig.setHighlightMode(
+          UpdateConfig.setConfig(
+            "highlightMode",
             check.forcedConfigs[0] as HighlightMode,
           );
         }

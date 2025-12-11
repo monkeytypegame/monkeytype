@@ -233,11 +233,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return DDR.chart2Word(wordIndex === 0);
     },
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
       const ekey = event.key;
@@ -464,11 +460,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead_easy: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
@@ -476,11 +468,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
@@ -488,11 +476,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead_hard: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
@@ -527,11 +511,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   nospace: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
   },
   poetry: {
