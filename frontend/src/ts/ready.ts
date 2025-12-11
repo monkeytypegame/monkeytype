@@ -11,6 +11,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDocumentReady, qs } from "./utils/dom";
+import { isSupportedBrowser } from "vite-plugin-supported-browserslist/web";
 
 onDocumentReady(async () => {
   await configLoadPromise;
@@ -47,6 +48,12 @@ onDocumentReady(async () => {
     });
   }
   MonkeyPower.init();
+
+  if (!isSupportedBrowser()) {
+    alert(
+      "Your browser is not supported. Please use a modern browser like Chrome, Firefox, or Safari for the best experience.",
+    );
+  }
 
   // untyped, need to ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call

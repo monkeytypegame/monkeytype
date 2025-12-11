@@ -25,9 +25,7 @@
     "node": "24.11.0 || 22.21.0"
   },
   "browserslist": [
-    "defaults",
-    "not op_mini all",
-    "not dead"
+    "last 2 versions"
   ],
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -79,6 +77,7 @@
     "vite-plugin-inspect": "11.3.3",
     "vite-plugin-minify": "2.1.0",
     "vite-plugin-pwa": "1.1.0",
+    "vite-plugin-supported-browserslist": "1.0.1",
     "vitest": "4.0.8"
   },
   "dependencies": {
