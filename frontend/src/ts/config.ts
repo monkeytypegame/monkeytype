@@ -222,52 +222,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   return true;
 }
-
-//min wpm
-export function setMinWpm(
-  minwpm: ConfigSchemas.MinimumWordsPerMinute,
-  nosave?: boolean,
-): boolean {
-  return setConfig("minWpm", minwpm, nosave);
-}
-
-export function setMinWpmCustomSpeed(
-  val: ConfigSchemas.MinWpmCustomSpeed,
-  nosave?: boolean,
-): boolean {
-  return setConfig("minWpmCustomSpeed", val, nosave);
-}
-
-//min acc
-export function setMinAcc(
-  min: ConfigSchemas.MinimumAccuracy,
-  nosave?: boolean,
-): boolean {
-  return setConfig("minAcc", min, nosave);
-}
-
-export function setMinAccCustom(
-  val: ConfigSchemas.MinimumAccuracyCustom,
-  nosave?: boolean,
-): boolean {
-  return setConfig("minAccCustom", val, nosave);
-}
-
-//min burst
-export function setMinBurst(
-  min: ConfigSchemas.MinimumBurst,
-  nosave?: boolean,
-): boolean {
-  return setConfig("minBurst", min, nosave);
-}
-
-export function setMinBurstCustomSpeed(
-  val: ConfigSchemas.MinimumBurstCustomSpeed,
-  nosave?: boolean,
-): boolean {
-  return setConfig("minBurstCustomSpeed", val, nosave);
-}
-
 //always show words history
 export function setAlwaysShowWordsHistory(
   val: boolean,

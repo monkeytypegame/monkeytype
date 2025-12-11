@@ -11,7 +11,7 @@ const subgroup: CommandsSubgroup = {
       display: "off",
       configValue: "off",
       exec: (): void => {
-        UpdateConfig.setMinBurst("off");
+        UpdateConfig.setConfig("minBurst", "off");
       },
     },
     {
@@ -21,11 +21,11 @@ const subgroup: CommandsSubgroup = {
       input: true,
       exec: ({ input }): void => {
         if (input === undefined || input === "") return;
-        UpdateConfig.setMinBurst("fixed");
+        UpdateConfig.setConfig("minBurst", "fixed");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
           parseInt(input),
         );
-        UpdateConfig.setMinBurstCustomSpeed(newVal);
+        UpdateConfig.setConfig("minBurstCustomSpeed", newVal);
       },
     },
     {
@@ -35,11 +35,11 @@ const subgroup: CommandsSubgroup = {
       input: true,
       exec: ({ input }): void => {
         if (input === undefined || input === "") return;
-        UpdateConfig.setMinBurst("flex");
+        UpdateConfig.setConfig("minBurst", "flex");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
           parseInt(input),
         );
-        UpdateConfig.setMinBurstCustomSpeed(newVal);
+        UpdateConfig.setConfig("minBurstCustomSpeed", newVal);
       },
     },
   ],

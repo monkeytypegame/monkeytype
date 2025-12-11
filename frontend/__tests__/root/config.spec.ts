@@ -301,21 +301,6 @@ describe("Config", () => {
   });
 
   //TODO move the rest to schema/tests or remove after removing the setX functions from Config
-  it("setMinWpm", () => {
-    expect(Config.setMinWpm("custom")).toBe(true);
-    expect(Config.setMinWpm("off")).toBe(true);
-    expect(Config.setMinWpm("invalid" as any)).toBe(false);
-  });
-  it("setMinAcc", () => {
-    expect(Config.setMinAcc("custom")).toBe(true);
-    expect(Config.setMinAcc("off")).toBe(true);
-    expect(Config.setMinAcc("invalid" as any)).toBe(false);
-  });
-  it("setMinBurst", () => {
-    expect(Config.setMinBurst("fixed")).toBe(true);
-    expect(Config.setMinBurst("off")).toBe(true);
-    expect(Config.setMinBurst("invalid" as any)).toBe(false);
-  });
   it("setSingleListCommandLine", () => {
     expect(Config.setSingleListCommandLine("on")).toBe(true);
     expect(Config.setSingleListCommandLine("manual")).toBe(true);
@@ -546,31 +531,6 @@ describe("Config", () => {
   });
   it("setBurstHeatmap", () => {
     testBoolean(Config.setBurstHeatmap);
-  });
-
-  it("setMinWpmCustomSpeed", () => {
-    expect(Config.setMinWpmCustomSpeed(0)).toBe(true);
-    expect(Config.setMinWpmCustomSpeed(1)).toBe(true);
-    expect(Config.setMinWpmCustomSpeed(11.11)).toBe(true);
-
-    expect(Config.setMinWpmCustomSpeed("invalid" as any)).toBe(false);
-    expect(Config.setMinWpmCustomSpeed(-1)).toBe(false);
-  });
-  it("setMinAccCustom", () => {
-    expect(Config.setMinAccCustom(0)).toBe(true);
-    expect(Config.setMinAccCustom(1)).toBe(true);
-    expect(Config.setMinAccCustom(11.11)).toBe(true);
-
-    expect(Config.setMinAccCustom("invalid" as any)).toBe(false);
-    expect(Config.setMinAccCustom(-1)).toBe(false);
-  });
-  it("setMinBurstCustomSpeed", () => {
-    expect(Config.setMinBurstCustomSpeed(0)).toBe(true);
-    expect(Config.setMinBurstCustomSpeed(1)).toBe(true);
-    expect(Config.setMinBurstCustomSpeed(11.11)).toBe(true);
-
-    expect(Config.setMinBurstCustomSpeed("invalid" as any)).toBe(false);
-    expect(Config.setMinBurstCustomSpeed(-1)).toBe(false);
   });
   it("setTimeConfig", () => {
     expect(Config.setTimeConfig(0)).toBe(true);
