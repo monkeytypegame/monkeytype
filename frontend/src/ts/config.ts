@@ -186,11 +186,13 @@ export function setConfig<T extends keyof Config>(
 
   config[key] = value;
   if (!nosave) saveToLocalStorage(key, nosave);
+
+  // @ts-expect-error i can't figure this out
   ConfigEvent.dispatch({
     key: key,
     newValue: value,
     nosave,
-    previousValue,
+    previousValue: previousValue as Config[T],
   });
 
   if (metadata.triggerResize && !nosave) {

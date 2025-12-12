@@ -137,7 +137,7 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
 
   if (key === "showAllLines") {
     updateWordsWrapperHeight(true);
-    if (newValue === false) {
+    if (!newValue) {
       void centerActiveLine();
     }
   }
