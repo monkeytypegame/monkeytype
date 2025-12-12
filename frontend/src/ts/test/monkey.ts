@@ -8,8 +8,8 @@ import { animate } from "animejs";
 const monkeyEl = document.querySelector("#monkey") as HTMLElement;
 const monkeyFastEl = document.querySelector("#monkey .fast") as HTMLElement;
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "monkey" && TestState.isActive) {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "monkey" && TestState.isActive) {
     if (Config.monkey) {
       monkeyEl.classList.remove("hidden");
     } else {

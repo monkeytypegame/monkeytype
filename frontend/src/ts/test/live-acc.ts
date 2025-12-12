@@ -73,6 +73,6 @@ export function hide(): void {
   });
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "liveAccStyle") eventValue === "off" ? hide() : show();
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "liveAccStyle") newValue === "off" ? hide() : show();
 });

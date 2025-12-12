@@ -477,11 +477,11 @@ window
 
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
-  if (eventKey === "fullConfigChange") {
+ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
+  if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
-  if (eventKey === "fullConfigChangeFinished") {
+  if (key === "fullConfigChangeFinished") {
     ignoreConfigEvent = false;
 
     await clearRandom();
@@ -506,26 +506,26 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   // once the full config is loaded, we can apply everything once
   if (ignoreConfigEvent) return;
 
-  if (eventKey === "randomTheme") {
+  if (key === "randomTheme") {
     void changeThemeList();
   }
-  if (eventKey === "customTheme") {
-    (eventValue as boolean) ? await set("custom") : await set(Config.theme);
+  if (key === "customTheme") {
+    (newValue as boolean) ? await set("custom") : await set(Config.theme);
   }
-  if (eventKey === "customThemeColors") {
+  if (key === "customThemeColors") {
     nosave ? preview("custom") : await set("custom");
   }
-  if (eventKey === "theme") {
+  if (key === "theme") {
     await clearRandom();
     await clearPreview(false);
-    await set(eventValue as string);
+    await set(newValue as string);
   }
-  if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
-  if (eventKey === "customBackground") await applyCustomBackground();
+  if (key === "randomTheme" && newValue === "off") await clearRandom();
+  if (key === "customBackground") await applyCustomBackground();
 
-  if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
-  if (eventKey === "autoSwitchTheme") {
-    if (eventValue as boolean) {
+  if (key === "customBackgroundSize") applyCustomBackgroundSize();
+  if (key === "autoSwitchTheme") {
+    if (newValue as boolean) {
       if (prefersColorSchemeDark()) {
         await set(Config.themeDark, true);
       } else {
@@ -536,7 +536,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     }
   }
   if (
-    eventKey === "themeLight" &&
+    key === "themeLight" &&
     Config.autoSwitchTheme &&
     !prefersColorSchemeDark() &&
     !nosave
@@ -544,7 +544,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await set(Config.themeLight, true);
   }
   if (
-    eventKey === "themeDark" &&
+    key === "themeDark" &&
     Config.autoSwitchTheme &&
     window.matchMedia !== undefined &&
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
@@ -559,7 +559,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
       "customThemeColors",
       "randomTheme",
       "favThemes",
-    ].includes(eventKey)
+    ].includes(key)
   ) {
     updateFooterIndicator();
   }

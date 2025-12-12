@@ -43,12 +43,12 @@ export function updatePosition(noAnim = false): void {
 
 export const caret = new Caret(qsr("#caret"), Config.caretStyle);
 
-subscribe((eventKey) => {
-  if (eventKey === "caretStyle") {
+subscribe(({ key }) => {
+  if (key === "caretStyle") {
     caret.setStyle(Config.caretStyle);
     updatePosition(true);
   }
-  if (eventKey === "smoothCaret") {
+  if (key === "smoothCaret") {
     caret.updateBlinkingAnimation();
   }
 });

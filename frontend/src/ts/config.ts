@@ -67,7 +67,10 @@ function saveToLocalStorage(
     saveToDatabase();
   }
   const localToSaveStringified = JSON.stringify(config);
-  ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
+  ConfigEvent.dispatch({
+    key: "saveToLocalStorage",
+    newValue: localToSaveStringified,
+  });
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
@@ -79,7 +82,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
     AccountButton.loading(false);
   }
   const stringified = JSON.stringify(config);
-  ConfigEvent.dispatch("saveToLocalStorage", stringified);
+  ConfigEvent.dispatch({ key: "saveToLocalStorage", newValue: stringified });
 }
 
 function isConfigChangeBlocked(): boolean {
@@ -183,7 +186,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   config[key] = value;
   if (!nosave) saveToLocalStorage(key, nosave);
-  ConfigEvent.dispatch(key, value, nosave, previousValue);
+  ConfigEvent.dispatch({ key, newValue: value, nosave, previousValue });
 
   if (metadata.triggerResize && !nosave) {
     triggerResize();
@@ -216,7 +219,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
-  ConfigEvent.dispatch("funbox", config.funbox);
+  ConfigEvent.dispatch({ key: "funbox", newValue: config.funbox, nosave });
 
   return true;
 }
@@ -248,7 +251,7 @@ export async function applyConfig(
   //migrate old values if needed, remove additional keys and merge with default config
   const fullConfig: Config = migrateConfig(partialConfig);
 
-  ConfigEvent.dispatch("fullConfigChange");
+  ConfigEvent.dispatch({ key: "fullConfigChange" });
 
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullConfig)) {
@@ -276,14 +279,11 @@ export async function applyConfig(
     saveToLocalStorage(key);
   }
 
-  ConfigEvent.dispatch(
-    "configApplied",
-    undefined,
-    undefined,
-    undefined,
-    config,
-  );
-  ConfigEvent.dispatch("fullConfigChangeFinished");
+  ConfigEvent.dispatch({
+    key: "configApplied",
+    fullConfig: config,
+  });
+  ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
 }
 
 export async function resetConfig(): Promise<void> {

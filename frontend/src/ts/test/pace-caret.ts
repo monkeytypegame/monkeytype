@@ -258,9 +258,9 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") void init();
-  if (eventKey === "paceCaretStyle") {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "paceCaret") void init();
+  if (key === "paceCaretStyle") {
     caret.setStyle(Config.paceCaretStyle);
   }
 });

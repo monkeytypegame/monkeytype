@@ -82,34 +82,32 @@ export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   { rejectSkippedCalls: false },
 );
 
-ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (
-    (eventKey === "language" || eventKey === "funbox") &&
+    (key === "language" || key === "funbox") &&
     Config.funbox.includes("zipf")
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize") {
+  if (key === "fontSize") {
     $(
       "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-    ).css("fontSize", (eventValue as number) + "rem");
+    ).css("fontSize", (newValue as number) + "rem");
     if (!nosave) {
       OutOfFocus.hide();
       updateWordWrapperClasses();
     }
   }
   if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
-      eventKey,
-    )
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(key)
   ) {
     void updateHintsPositionDebounced();
   }
 
-  if (eventKey === "theme") void applyBurstHeatmap();
+  if (key === "theme") void applyBurstHeatmap();
 
-  if (eventValue === undefined) return;
-  if (eventKey === "highlightMode") {
+  if (newValue === undefined) return;
+  if (key === "highlightMode") {
     if (ActivePage.get() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
@@ -126,26 +124,26 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       "indicateTypos",
       "tapeMode",
       "hideExtraLetters",
-    ].includes(eventKey)
+    ].includes(key)
   ) {
     updateWordWrapperClasses();
   }
 
-  if (["tapeMode", "tapeMargin"].includes(eventKey)) {
+  if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();
   }
 
-  if (eventKey === "showAllLines") {
+  if (key === "showAllLines") {
     updateWordsWrapperHeight(true);
-    if (eventValue === false) {
+    if (newValue === false) {
       void centerActiveLine();
     }
   }
 
-  if (typeof eventValue !== "boolean") return;
-  if (eventKey === "flipTestColors") flipColors(eventValue);
-  if (eventKey === "colorfulMode") colorful(eventValue);
-  if (eventKey === "burstHeatmap") void applyBurstHeatmap();
+  if (typeof newValue !== "boolean") return;
+  if (key === "flipTestColors") flipColors(newValue);
+  if (key === "colorfulMode") colorful(newValue);
+  if (key === "burstHeatmap") void applyBurstHeatmap();
 });
 
 const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
@@ -2032,9 +2030,9 @@ $("#wordsWrapper").on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe((key, value) => {
+ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
-    if (value === "off") {
+    if (newValue === "off") {
       $(".pageTest #restartTestButton").removeClass("hidden");
     } else {
       $(".pageTest #restartTestButton").addClass("hidden");
@@ -2044,16 +2042,16 @@ ConfigEvent.subscribe((key, value) => {
     updateWordsWidth();
   }
   if (key === "timerOpacity") {
-    updateLiveStatsOpacity(value as TimerOpacity);
+    updateLiveStatsOpacity(newValue as TimerOpacity);
   }
   if (key === "timerColor") {
-    updateLiveStatsColor(value as TimerColor);
+    updateLiveStatsColor(newValue as TimerColor);
   }
-  if (key === "showOutOfFocusWarning" && value === false) {
+  if (key === "showOutOfFocusWarning" && newValue === false) {
     OutOfFocus.hide();
   }
   if (key === "compositionDisplay") {
-    if (value === "below") {
+    if (newValue === "below") {
       CompositionDisplay.update(" ");
       CompositionDisplay.show();
     } else {

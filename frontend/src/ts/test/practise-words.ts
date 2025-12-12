@@ -177,6 +177,6 @@ export function resetBefore(): void {
   before.customText = null;
 }
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "mode") resetBefore();
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "mode") resetBefore();
 });

@@ -736,9 +736,9 @@ function setVolume(val: number): void {
   }
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "playSoundOnClick" && eventValue !== "off") void init();
-  if (eventKey === "soundVolume") {
-    setVolume(parseFloat(eventValue as string));
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "playSoundOnClick" && newValue !== "off") void init();
+  if (key === "soundVolume") {
+    setVolume(parseFloat(newValue as string));
   }
 });
