@@ -101,37 +101,12 @@ export function batchSetConfig(
     return metadata.changeRequiresRestart;
   });
 
-  ConfigEvent.dispatch(
-    "batchConfigApplied",
-    undefined,
+  ConfigEvent.dispatch({
+    key: "batchConfigApplied",
     nosave,
-    undefined,
-    config,
+    fullConfig: config,
     restartRequired,
-  );
-}
-
-export function batchSetConfig(
-  keyValues: Partial<Config>,
-  nosave: boolean = false,
-): void {
-  for (const key of typedKeys(keyValues)) {
-    setConfig(key, keyValues[key] as Config[keyof Config], true, true);
-  }
-
-  const restartRequired = typedKeys(keyValues).some((key) => {
-    const metadata = configMetadata[key];
-    return metadata.changeRequiresRestart;
   });
-
-  ConfigEvent.dispatch(
-    "batchConfigApplied",
-    undefined,
-    nosave,
-    undefined,
-    config,
-    restartRequired,
-  );
 }
 
 export function setConfig<T extends keyof Config>(

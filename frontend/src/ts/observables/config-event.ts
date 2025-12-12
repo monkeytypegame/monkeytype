@@ -9,6 +9,7 @@ export type ConfigEventKey =
 type SubscribeParams = {
   nosave?: boolean;
   fullConfig?: Config;
+  restartRequired?: boolean;
 } & {
   [K in ConfigEventKey]?: K extends keyof Config
     ? { key: K; newValue: Config[K]; previousValue: Config[K] }
