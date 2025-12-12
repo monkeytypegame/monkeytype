@@ -294,9 +294,7 @@ export function handleConfigInput<T extends ConfigKey>({
     if (Config[configName] === value) {
       return;
     }
-    const didConfigSave = setConfig(configName, value, {
-      nosave: false,
-    });
+    const didConfigSave = setConfig(configName, value);
 
     if (didConfigSave) {
       Notifications.add("Saved", 1, {
