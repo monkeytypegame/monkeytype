@@ -15,7 +15,6 @@ import * as TestState from "../test/test-state";
 import * as TribeState from "../tribe/tribe-state";
 import { isAnyChatSuggestionVisible } from "../tribe/tribe-chat";
 import * as Tribe from "../tribe/tribe";
-import tribeSocket from "../tribe/tribe-socket";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
@@ -37,41 +36,6 @@ document.addEventListener("keydown", async (e) => {
       if (Config.showOutOfFocusWarning) {
         e.preventDefault();
       }
-    }
-  }
-
-  //todo: this tribe stuff could be wrong! merge troubles!
-
-  // change page if needed
-  if (TribeState.getState() >= 5) {
-    if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
-    if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
-      await navigate("/tribe");
-      return;
-    }
-  } else {
-    if (ActivePage.get() !== "test") {
-      await navigate("/");
-      return;
-    }
-  }
-
-  // tribe
-  if (TribeState.getState() >= 5) {
-    if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
-    if (isAnyChatSuggestionVisible()) return;
-    if (TribeState.getSelf()?.isLeader) {
-      if (TribeState.getState() === 5 || TribeState.getState() === 22) {
-        Tribe.initRace();
-        return;
-      }
-    } else if (
-      TribeState.getState() === 5 ||
-      TribeState.getState() === 21 ||
-      TribeState.getState() === 22
-    ) {
-      tribeSocket.out.room.readyUpdate();
-      return;
     }
   }
 
@@ -113,6 +77,31 @@ document.addEventListener("keydown", async (e) => {
         !isInteractiveElement)
     ) {
       e.preventDefault();
+
+      if (TribeState.isInARoom()) {
+        if (ActivePage.get() === "tribe") {
+          if (TribeState.isRaceActive()) return;
+          if (isAnyChatSuggestionVisible()) return;
+          if (TribeState.isLeader()) {
+            Tribe.initRace();
+          } else {
+            Tribe.readyUp();
+          }
+        } else if (ActivePage.get() === "test") {
+          if (TribeState.isRaceActive()) return;
+          if (isAnyChatSuggestionVisible()) return;
+          if (TribeState.isLeader()) {
+            Tribe.initRace();
+          } else {
+            Tribe.readyUp();
+          }
+        } else {
+          await navigate("/tribe");
+        }
+
+        return;
+      }
+
       if (ActivePage.get() === "test") {
         if (e.shiftKey) {
           ManualRestart.set();
