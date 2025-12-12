@@ -19,6 +19,25 @@ export function setState(newState: number): void {
   state = newState;
 }
 
+/**
+ * -1  "error";
+ *
+ * 1  "connected";
+ *
+ * 5  "lobby";
+ *
+ * 10  "preparing race";
+ *
+ * 11  "race countdown";
+ *
+ * 12  "race active";
+ *
+ * 20  "at least one finished";
+ *
+ * 21  "everyone finished, waiting for everyone ready or view result timer to be over";
+ *
+ * 22  "everyone ready / timer over";
+ */
 export function getState(): number {
   return state;
 }
