@@ -89,6 +89,7 @@ import {
   isInputElementFocused,
   setInputElementValue,
 } from "../input/input-element";
+import { debounce } from "throttle-debounce";
 
 let failReason = "";
 
@@ -1468,6 +1469,32 @@ export function fail(reason: string): void {
   TestStats.pushIncompleteTest(acc, tt);
 }
 
+const debouncedZipfCheck = debounce(250, async () => {
+  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
+  if (supports === "no") {
+    Notifications.add(
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language),
+      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
+      0,
+      {
+        duration: 7,
+      },
+    );
+  }
+  if (supports === "unknown") {
+    Notifications.add(
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language),
+      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
+      0,
+      {
+        duration: 7,
+      },
+    );
+  }
+});
+
 $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
@@ -1621,6 +1648,12 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
           ) as string,
         );
       }, 0);
+    }
+    if (
+      (key === "language" || key === "funbox") &&
+      Config.funbox.includes("zipf")
+    ) {
+      debouncedZipfCheck();
     }
   }
   if (key === "lazyMode" && !nosave) {

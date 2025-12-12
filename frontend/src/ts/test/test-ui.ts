@@ -8,13 +8,11 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
-import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
@@ -51,102 +49,10 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionDisplay from "../elements/composition-display";
 
-const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
-  if (supports === "no") {
-    Notifications.add(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-      0,
-      {
-        duration: 7,
-      },
-    );
-  }
-  if (supports === "unknown") {
-    Notifications.add(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-      0,
-      {
-        duration: 7,
-      },
-    );
-  }
-});
-
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
   { rejectSkippedCalls: false },
 );
-
-ConfigEvent.subscribe(({ key, newValue, nosave }) => {
-  if (
-    (key === "language" || key === "funbox") &&
-    Config.funbox.includes("zipf")
-  ) {
-    debouncedZipfCheck();
-  }
-  if (key === "fontSize") {
-    $(
-      "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-    ).css("fontSize", newValue + "rem");
-    if (!nosave) {
-      OutOfFocus.hide();
-      updateWordWrapperClasses();
-    }
-  }
-  if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
-      key ?? "",
-    )
-  ) {
-    void updateHintsPositionDebounced();
-  }
-
-  if (key === "theme") void applyBurstHeatmap();
-
-  if (newValue === undefined) return;
-  if (key === "highlightMode") {
-    if (ActivePage.get() === "test") {
-      void updateWordLetters({
-        input: TestInput.input.current,
-        wordIndex: TestState.activeWordIndex,
-        compositionData: CompositionState.getData(),
-      });
-    }
-  }
-
-  if (
-    [
-      "highlightMode",
-      "blindMode",
-      "indicateTypos",
-      "tapeMode",
-      "hideExtraLetters",
-    ].includes(key)
-  ) {
-    updateWordWrapperClasses();
-  }
-
-  if (["tapeMode", "tapeMargin"].includes(key)) {
-    updateLiveStatsMargin();
-  }
-
-  if (key === "showAllLines") {
-    updateWordsWrapperHeight(true);
-    if (!newValue) {
-      void centerActiveLine();
-    }
-  }
-
-  if (typeof newValue !== "boolean") return;
-  if (key === "flipTestColors") flipColors(newValue);
-  if (key === "colorfulMode") colorful(newValue);
-  if (key === "burstHeatmap") void applyBurstHeatmap();
-});
 
 const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
 const wordsWrapperEl = document.querySelector(
@@ -1732,6 +1638,20 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
+function showHideTestRestartButton(showHide: boolean): void {
+  if (showHide) {
+    $(".pageTest #restartTestButton").removeClass("hidden");
+  } else {
+    $(".pageTest #restartTestButton").addClass("hidden");
+  }
+}
+
+function updateFontSize(size: number): void {
+  $(
+    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+  ).css("fontSize", size + "rem");
+}
+
 export function getActiveWordTopAndHeightWithDifferentData(data: string): {
   top: number;
   height: number;
@@ -2032,13 +1952,9 @@ $("#wordsWrapper").on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (key === "quickRestart") {
-    if (newValue === "off") {
-      $(".pageTest #restartTestButton").removeClass("hidden");
-    } else {
-      $(".pageTest #restartTestButton").addClass("hidden");
-    }
+    showHideTestRestartButton(newValue === "off");
   }
   if (key === "maxLineWidth") {
     updateWordsWidth();
@@ -2059,5 +1975,57 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     } else {
       CompositionDisplay.hide();
     }
+  }
+  if (key === "fontSize") {
+    updateFontSize(newValue);
+    if (!nosave) {
+      OutOfFocus.hide();
+      updateWordWrapperClasses();
+    }
+  }
+  if (
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      key ?? "",
+    )
+  ) {
+    void updateHintsPositionDebounced();
+  }
+  if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
+    void applyBurstHeatmap();
+  }
+  if (key === "highlightMode") {
+    if (ActivePage.get() === "test") {
+      void updateWordLetters({
+        input: TestInput.input.current,
+        wordIndex: TestState.activeWordIndex,
+        compositionData: CompositionState.getData(),
+      });
+    }
+  }
+  if (
+    [
+      "highlightMode",
+      "blindMode",
+      "indicateTypos",
+      "tapeMode",
+      "hideExtraLetters",
+    ].includes(key)
+  ) {
+    updateWordWrapperClasses();
+  }
+  if (["tapeMode", "tapeMargin"].includes(key)) {
+    updateLiveStatsMargin();
+  }
+  if (key === "showAllLines") {
+    updateWordsWrapperHeight(true);
+    if (!newValue) {
+      void centerActiveLine();
+    }
+  }
+  if (key === "flipTestColors") {
+    flipColors(newValue);
+  }
+  if (key === "colorfulMode") {
+    colorful(newValue);
   }
 });
