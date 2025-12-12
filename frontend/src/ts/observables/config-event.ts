@@ -2,7 +2,6 @@ import { Config } from "@monkeytype/schemas/configs";
 
 export type ConfigEventKey =
   | keyof Config
-  | "saveToLocalStorage"
   | "setThemes"
   | "configApplied"
   | "fullConfigChange"

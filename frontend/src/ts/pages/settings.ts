@@ -991,7 +991,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     ).attr("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
-  if (configEventDisabled || key === "saveToLocalStorage") return;
+  if (configEventDisabled) return;
   if (ActivePage.get() === "settings" && key !== "theme") {
     void (key === "customBackground"
       ? updateFilterSectionVisibility()

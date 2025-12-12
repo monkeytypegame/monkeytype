@@ -66,11 +66,6 @@ function saveToLocalStorage(
     configToSend[key] = config[key];
     saveToDatabase();
   }
-
-  ConfigEvent.dispatch({
-    key: "saveToLocalStorage",
-    fullConfig: config,
-  });
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
@@ -81,8 +76,6 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
     void DB.saveConfig(config);
     AccountButton.loading(false);
   }
-  //todo: IS THIS EVENT USED?
-  ConfigEvent.dispatch({ key: "saveToLocalStorage", fullConfig: config });
 }
 
 function isConfigChangeBlocked(): boolean {
