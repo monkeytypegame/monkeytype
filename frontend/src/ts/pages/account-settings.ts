@@ -134,8 +134,8 @@ function updateIntegrationSections(): void {
 
 function updateTabs(): void {
   void swapElements(
-    pageElement.qsa(".tab.active")[0] ?? null,
-    pageElement.qsa(`.tab[data-tab="${state.tab}"]`)[0] ?? null,
+    pageElement.qs(".tab.active"),
+    pageElement.qs(`.tab[data-tab="${state.tab}"]`),
     250,
     async () => {
       //
