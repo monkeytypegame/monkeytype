@@ -88,55 +88,55 @@ function isConfigChangeBlocked(): boolean {
   return false;
 }
 
-export function batchSetConfig(
-  keyValues: Partial<Config>,
-  nosave: boolean = false,
-): Partial<Record<keyof Config, boolean>> {
-  let ret: Partial<Record<keyof Config, boolean>> = {};
-  for (const key of typedKeys(keyValues)) {
-    ret[key] = setConfig(key, keyValues[key] as Config[keyof Config], {
-      nosave: true,
-      batched: true,
-    });
-    //@ts-expect-error this is fine
-    configToSend[key] = config[key];
-  }
+// export function batchSetConfig(
+//   keyValues: Partial<Config>,
+//   nosave: boolean = false,
+// ): Partial<Record<keyof Config, boolean>> {
+//   let ret: Partial<Record<keyof Config, boolean>> = {};
+//   for (const key of typedKeys(keyValues)) {
+//     ret[key] = setConfig(key, keyValues[key] as Config[keyof Config], {
+//       nosave: true,
+//       batched: true,
+//     });
+//     //@ts-expect-error this is fine
+//     configToSend[key] = config[key];
+//   }
 
-  const restartRequired = typedKeys(keyValues).some((key) => {
-    const metadata = configMetadata[key];
-    return metadata.changeRequiresRestart;
-  });
+//   const restartRequired = typedKeys(keyValues).some((key) => {
+//     const metadata = configMetadata[key];
+//     return metadata.changeRequiresRestart;
+//   });
 
-  const triggerResizeNeeded = typedKeys(keyValues).some((key) => {
-    const metadata = configMetadata[key];
-    return metadata.triggerResize;
-  });
+//   const triggerResizeNeeded = typedKeys(keyValues).some((key) => {
+//     const metadata = configMetadata[key];
+//     return metadata.triggerResize;
+//   });
 
-  if (triggerResizeNeeded) {
-    triggerResize();
-  }
+//   if (triggerResizeNeeded) {
+//     triggerResize();
+//   }
 
-  if (!nosave) {
-    configLS.set(config);
-    saveToDatabase();
-  }
+//   if (!nosave) {
+//     configLS.set(config);
+//     saveToDatabase();
+//   }
 
-  ConfigEvent.dispatch({
-    key: "batchConfigApplied",
-    nosave,
-    fullConfig: config,
-    restartRequired,
-  });
+//   ConfigEvent.dispatch({
+//     key: "batchConfigApplied",
+//     nosave,
+//     fullConfig: config,
+//     restartRequired,
+//   });
 
-  return ret;
-}
+//   return ret;
+// }
 
 export function setConfig<T extends keyof Config>(
   key: T,
   value: Config[T],
   options?: {
     nosave?: boolean;
-    batched?: boolean;
+    noevent?: boolean;
   },
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
@@ -225,7 +225,8 @@ export function setConfig<T extends keyof Config>(
 
   config[key] = value;
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
-  if (!options?.batched) {
+
+  if (!options?.noevent) {
     // @ts-expect-error i can't figure this out
     ConfigEvent.dispatch({
       key: key,
@@ -233,11 +234,12 @@ export function setConfig<T extends keyof Config>(
       nosave: options?.nosave ?? false,
       previousValue: previousValue as Config[T],
     });
-
-    if (metadata.triggerResize && !options?.nosave) {
-      triggerResize();
-    }
   }
+
+  if (metadata.triggerResize && !options?.nosave) {
+    triggerResize();
+  }
+
   metadata.afterSet?.({
     nosave: options?.nosave ?? false,
     currentConfig: config,
@@ -345,7 +347,7 @@ export async function applyConfig(
 
     const set = setConfig(configKey, configValue, {
       nosave: true,
-      batched: true,
+      noevent: true,
     });
 
     if (!set) {
@@ -356,6 +358,8 @@ export async function applyConfig(
   for (const key of configKeysToReset) {
     saveToLocalStorage(key);
   }
+
+  ConfigEvent.dispatch({ key: "configApplied", fullConfig: config });
 
   ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
 }

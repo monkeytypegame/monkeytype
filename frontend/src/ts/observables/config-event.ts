@@ -4,12 +4,11 @@ export type ConfigEventKey =
   | keyof Config
   | "fullConfigChange"
   | "fullConfigChangeFinished"
-  | "batchConfigApplied";
+  | "configApplied";
 
 type SubscribeParams = {
   nosave?: boolean;
   fullConfig?: Config;
-  restartRequired?: boolean;
 } & {
   [K in ConfigEventKey]?: K extends keyof Config
     ? { key: K; newValue: Config[K]; previousValue: Config[K] }
@@ -25,7 +24,7 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export function dispatch(options: SubscribeParams): void {
-  console.log("displatching config event", options);
+  console.log("dispatching config event", options);
   subscribers.forEach((fn) => {
     try {
       fn(options);

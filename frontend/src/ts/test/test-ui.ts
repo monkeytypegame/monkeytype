@@ -2033,6 +2033,24 @@ $("#wordsWrapper").on("click", () => {
 });
 
 ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "configApplied") {
+    $(
+      "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+    ).css("fontSize", Config.fontSize + "rem");
+    updateWordWrapperClasses();
+    updateLiveStatsOpacity(Config.timerOpacity);
+    updateLiveStatsColor(Config.timerColor);
+    if (!Config.showOutOfFocusWarning) OutOfFocus.hide();
+    if (Config.compositionDisplay === "below") {
+      CompositionDisplay.update(" ");
+      CompositionDisplay.show();
+    } else {
+      CompositionDisplay.hide();
+    }
+    flipColors(Config.flipTestColors);
+    colorful(Config.colorfulMode);
+  }
+
   if (key === "quickRestart") {
     if (newValue === "off") {
       $(".pageTest #restartTestButton").removeClass("hidden");
