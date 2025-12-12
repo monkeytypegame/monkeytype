@@ -130,7 +130,12 @@ export async function init(): Promise<void> {
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
-  if (settings === null || !TestState.isActive || TestState.resultVisible) {
+  const currentSettings = settings;
+  if (
+    currentSettings === null ||
+    !TestState.isActive ||
+    TestState.resultVisible
+  ) {
     return;
   }
 
@@ -146,8 +151,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const duration = absoluteStepEnd - now;
 
     caret.goTo({
-      wordIndex: settings.currentWordIndex,
-      letterIndex: settings.currentLetterIndex,
+      wordIndex: currentSettings.currentWordIndex,
+      letterIndex: currentSettings.currentLetterIndex,
       isLanguageRightToLeft: TestState.isLanguageRightToLeft,
       isDirectionReversed: TestState.isDirectionReversed,
       animate: true,
@@ -157,12 +162,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
       },
     });
 
-    // Normal case - schedule next step
-    settings.timeout = setTimeout(
+    currentSettings.timeout = setTimeout(
       () => {
-        update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-          settings = null;
-        });
+        if (settings !== currentSettings) return;
+        update(expectedStepEnd + (currentSettings?.spc ?? 0) * 1000).catch(
+          () => {
+            settings = null;
+          },
+        );
       },
       Math.max(0, duration),
     );
