@@ -71,11 +71,6 @@ export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
 }
 
-export function reset(): void {
-  currentTestLine = 0;
-  cancelPendingAnimationFramesStartingWith("test-ui");
-}
-
 export function focusWords(force = false): void {
   if (force) {
     blurInputElement();
@@ -433,6 +428,16 @@ function updateWordWrapperClasses(): void {
   $(
     "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
   ).css("fontSize", Config.fontSize + "rem");
+
+  if (TestState.isLanguageRightToLeft) {
+    wordsEl.classList.add("rightToLeftTest");
+    $("#resultWordsHistory .words").addClass("rightToLeftTest");
+    $("#resultReplay .words").addClass("rightToLeftTest");
+  } else {
+    wordsEl.classList.remove("rightToLeftTest");
+    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+    $("#resultReplay .words").removeClass("rightToLeftTest");
+  }
 
   const existing =
     wordsEl?.className
@@ -1209,18 +1214,6 @@ export async function lineJump(
   return;
 }
 
-export function setRightToLeft(isEnabled: boolean): void {
-  if (isEnabled) {
-    wordsEl.classList.add("rightToLeftTest");
-    $("#resultWordsHistory .words").addClass("rightToLeftTest");
-    $("#resultReplay .words").addClass("rightToLeftTest");
-  } else {
-    wordsEl.classList.remove("rightToLeftTest");
-    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
-    $("#resultReplay .words").removeClass("rightToLeftTest");
-  }
-}
-
 export function setLigatures(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
     wordsEl.classList.add("withLigatures");
@@ -1851,8 +1844,7 @@ export function onTestRestart(): void {
   TestConfig.show();
   Focus.set(false);
   focusWords(true);
-  showWords();
-  setRightToLeft(TestState.isLanguageRightToLeft);
+  currentTestLine = 0;
   if (ActivePage.get() === "test") {
     AdController.updateFooterAndVerticalAds(false);
   }
@@ -1863,6 +1855,8 @@ export function onTestRestart(): void {
   } else {
     CompositionDisplay.hide();
   }
+  cancelPendingAnimationFramesStartingWith("test-ui");
+  showWords();
 }
 
 export function afterTestRestart(): void {

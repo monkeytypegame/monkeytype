@@ -15,7 +15,6 @@ import * as PractiseWords from "./practise-words";
 import * as SoundController from "../controllers/sound-controller";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
-import * as Focus from "./focus";
 import * as Funbox from "./funbox/funbox";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -276,20 +275,21 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
+
   LiveSpeed.hide();
   LiveAcc.hide();
   LiveBurst.hide();
+  Monkey.hide();
   TimerProgress.hide();
+  LayoutfluidFunboxTimer.hide();
+
   Replay.pauseReplay();
   TestState.setBailedOut(false);
   Caret.resetPosition();
   PaceCaret.reset();
-  Monkey.hide();
   TestInput.input.setKoreanStatus(false);
-  LayoutfluidFunboxTimer.hide();
   MemoryFunboxTimer.reset();
   QuoteRateModal.clearQuoteStats();
-  TestUI.reset();
   CompositionState.setComposing(false);
   CompositionState.setData("");
   void SoundController.clearAllSounds();
@@ -396,14 +396,6 @@ async function init(): Promise<boolean> {
     TestInitFailed.show();
     TestState.setTestRestarting(false);
     TestState.setTestInitSuccess(false);
-    Focus.set(false);
-    // Notifications.add(
-    //   "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
-    //   -1,
-    //   {
-    //     important: true,
-    //   }
-    // );
     return false;
   }
 
