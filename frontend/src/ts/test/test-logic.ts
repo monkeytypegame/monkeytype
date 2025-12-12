@@ -15,9 +15,6 @@ import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
-import * as Keymap from "../elements/keymap";
-import * as ThemeController from "../controllers/theme-controller";
-import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
@@ -28,22 +25,19 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-import * as MonkeyPower from "../elements/monkey-power";
+
 import * as ActivePage from "../states/active-page";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
-import * as ModesNotice from "../elements/modes-notice";
 import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
-import * as Last10Average from "../elements/last-10-average";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ConnectionState from "../states/connection";
-import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
@@ -271,17 +265,9 @@ export function restart(options = {} as RestartOptions): void {
   Caret.resetPosition();
   PaceCaret.reset();
   TestInput.input.setKoreanStatus(false);
-  MemoryFunboxTimer.reset();
   QuoteRateModal.clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
-
-  if (TestState.resultVisible) {
-    if (Config.randomTheme !== "off") {
-      void ThemeController.randomizeTheme();
-    }
-    void XPBar.skipBreakdown();
-  }
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -295,7 +281,6 @@ export function restart(options = {} as RestartOptions): void {
     //words are being displayed
     el = document.querySelector("#typingTest") as HTMLElement;
   }
-  TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
   animate(el, {
@@ -331,15 +316,8 @@ export function restart(options = {} as RestartOptions): void {
         fb.functions.restart();
       }
 
-      if (Config.showAverage !== "off") {
-        void Last10Average.update().then(() => {
-          void ModesNotice.update();
-        });
-      } else {
-        void ModesNotice.update();
-      }
-
       TestUI.onTestRestart();
+      TestState.setResultVisible(false);
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {
@@ -355,8 +333,6 @@ export function restart(options = {} as RestartOptions): void {
       });
     },
   });
-
-  ResultWordHighlight.destroy();
 }
 
 let lastInitError: Error | null = null;
@@ -380,7 +356,6 @@ async function init(): Promise<boolean> {
     return false;
   }
 
-  MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
@@ -532,8 +507,6 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  const beforeHasNumbers = TestWords.hasNumbers;
-
   let hasNumbers = false;
 
   for (const word of generatedWords) {
@@ -545,10 +518,6 @@ async function init(): Promise<boolean> {
   TestWords.setHasNumbers(hasNumbers);
   TestWords.setHasTab(wordsHaveTab);
   TestWords.setHasNewline(wordsHaveNewline);
-
-  if (beforeHasNumbers !== hasNumbers) {
-    void Keymap.refresh();
-  }
 
   if (
     generatedWords
@@ -729,8 +698,6 @@ export async function retrySavingResult(): Promise<void> {
 
   retrySaving.canRetry = false;
   $("#retrySavingResultButton").addClass("hidden");
-
-  AccountButton.loading(true);
 
   Notifications.add("Retrying to save...");
 
@@ -923,7 +890,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setActive(false);
   Replay.stopReplayRecording();
   TestTimer.clear();
-  void ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
@@ -1234,8 +1200,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   Result.updateRateQuote(TestWords.currentQuote);
 
-  AccountButton.loading(true);
-
   if (!completedEvent.bailedOut) {
     const challenge = ChallengeContoller.verify(completedEvent);
     if (challenge !== null) completedEvent.challenge = challenge;
@@ -1250,6 +1214,8 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<void> {
+  AccountButton.loading(true);
+
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,

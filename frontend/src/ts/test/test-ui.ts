@@ -51,6 +51,12 @@ import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import * as Keymap from "../elements/keymap";
+import * as ThemeController from "../controllers/theme-controller";
+import * as XPBar from "../elements/xp-bar";
+import * as ModesNotice from "../elements/modes-notice";
+import * as Last10Average from "../elements/last-10-average";
+import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1856,6 +1862,26 @@ export function onTestRestart(): void {
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);
+  void Keymap.refresh();
+  ResultWordHighlight.destroy();
+  MonkeyPower.reset();
+  MemoryFunboxTimer.reset();
+
+  if (Config.showAverage !== "off") {
+    void Last10Average.update().then(() => {
+      void ModesNotice.update();
+    });
+  } else {
+    void ModesNotice.update();
+  }
+
+  if (TestState.resultVisible) {
+    if (Config.randomTheme !== "off") {
+      void ThemeController.randomizeTheme();
+    }
+    void XPBar.skipBreakdown();
+  }
+
   currentTestLine = 0;
   if (ActivePage.get() === "test") {
     AdController.updateFooterAndVerticalAds(false);
