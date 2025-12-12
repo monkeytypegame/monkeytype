@@ -66,7 +66,7 @@ async function showSyncLoading({
   const fillOffset = 100 / fillDivider;
 
   //void here to run the loading promise as soon as possible
-  void Misc.promiseAnimate(PageLoading.page.element.native, {
+  void PageLoading.page.element.promiseAnimate({
     opacity: "1",
     duration: totalDuration / 2,
   });
@@ -97,7 +97,7 @@ async function showSyncLoading({
     }
   }
 
-  await Misc.promiseAnimate(PageLoading.page.element.native, {
+  await PageLoading.page.element.promiseAnimate({
     opacity: "0",
     duration: totalDuration / 2,
   });
@@ -207,7 +207,7 @@ export async function change(
   //previous page
   await previousPage?.beforeHide?.();
   previousPage.element.show().setStyle({ opacity: "1" });
-  await Misc.promiseAnimate(previousPage.element.native, {
+  await previousPage.element.promiseAnimate({
     opacity: "0",
     duration: totalDuration / 2,
   });
@@ -282,7 +282,7 @@ export async function change(
   }
 
   nextPage.element.show().setStyle({ opacity: "0" });
-  await Misc.promiseAnimate(nextPage.element.native, {
+  await nextPage.element.promiseAnimate({
     opacity: "1",
     duration: totalDuration / 2,
   });
