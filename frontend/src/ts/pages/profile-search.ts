@@ -20,7 +20,7 @@ function disableButton(): void {
 
 export const page = new Page({
   id: "profileSearch",
-  element: $(".page.pageProfileSearch"),
+  element: qsr(".page.pageProfileSearch"),
   path: "/profile",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfileSearch");

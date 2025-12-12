@@ -1011,7 +1011,7 @@ AuthEvent.subscribe((event) => {
 
 export const page = new PageWithUrlParams({
   id: "settings",
-  element: $(".page.pageSettings"),
+  element: qsr(".page.pageSettings"),
   path: "/settings",
   urlParamsSchema: StateSchema,
   afterHide: async (): Promise<void> => {

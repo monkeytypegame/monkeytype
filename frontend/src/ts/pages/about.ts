@@ -10,6 +10,7 @@ import * as Skeleton from "../utils/skeleton";
 import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { qsr } from "../utils/dom";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -199,7 +200,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
 
 export const page = new Page({
   id: "about",
-  element: $(".page.pageAbout"),
+  element: qsr(".page.pageAbout"),
   path: "/about",
   afterHide: async (): Promise<void> => {
     reset();

@@ -12,6 +12,7 @@ import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 import { addFriend } from "./friends";
+import { qsr } from "../utils/dom";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
@@ -260,7 +261,7 @@ $(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
 
 export const page = new Page<undefined | UserProfile>({
   id: "profile",
-  element: $(".page.pageProfile"),
+  element: qsr(".page.pageProfile"),
   path: "/profile",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfile");
