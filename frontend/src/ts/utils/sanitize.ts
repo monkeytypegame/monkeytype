@@ -1,9 +1,12 @@
 import { z } from "zod";
 
 function removeProblems<T extends object | unknown[]>(
-  obj: T,
+  obj: T | undefined,
   problems: (number | string)[],
 ): T | undefined {
+  //already removed
+  if (obj === undefined) return undefined;
+
   if (Array.isArray(obj)) {
     if (problems.length === obj.length) return undefined;
 
