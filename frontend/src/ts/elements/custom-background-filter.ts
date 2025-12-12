@@ -130,9 +130,7 @@ const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value,
   ) as CustomBackgroundFilter;
-  setConfig("customBackgroundFilter", arr, {
-    nosave: false,
-  });
+  setConfig("customBackgroundFilter", arr);
 });
 
 ConfigEvent.subscribe(({ key, newValue }) => {
