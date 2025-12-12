@@ -47,7 +47,9 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
+import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
+import * as AdController from "../controllers/ad-controller";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -381,6 +383,9 @@ function buildWordHTML(word: string, wordIndex: number): string {
 }
 
 function updateWordWrapperClasses(): void {
+  // outoffocus applies transition, need to remove it
+  OutOfFocus.hide();
+
   if (Config.tapeMode !== "off") {
     wordsEl.classList.add("tape");
     wordsWrapperEl.classList.add("tape");
@@ -413,6 +418,22 @@ function updateWordWrapperClasses(): void {
     wordsWrapperEl.classList.remove("hideExtraLetters");
   }
 
+  if (Config.flipTestColors) {
+    wordsEl.classList.add("flipped");
+  } else {
+    wordsEl.classList.remove("flipped");
+  }
+
+  if (Config.colorfulMode) {
+    wordsEl.classList.add("colorfulMode");
+  } else {
+    wordsEl.classList.remove("colorfulMode");
+  }
+
+  $(
+    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+  ).css("fontSize", Config.fontSize + "rem");
+
   const existing =
     wordsEl?.className
       .split(/\s+/)
@@ -420,18 +441,24 @@ function updateWordWrapperClasses(): void {
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
   }
-
   wordsEl.className = existing.join(" ");
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
+  if (!Config.showAllLines) {
+    void centerActiveLine();
+  }
   updateWordsMargin();
   updateWordsInputPosition();
   void updateHintsPositionDebounced();
   Caret.updatePosition();
+
+  if (document.activeElement !== getInputElement()) {
+    OutOfFocus.show();
+  }
 }
 
-export function showWords(): void {
+function showWords(): void {
   wordsEl.innerHTML = "";
 
   if (Config.mode === "zen") {
@@ -655,22 +682,6 @@ export function addWord(
   //     });
   //   }
   // });
-}
-
-export function flipColors(tf: boolean): void {
-  if (tf) {
-    wordsEl.classList.add("flipped");
-  } else {
-    wordsEl.classList.remove("flipped");
-  }
-}
-
-export function colorful(tc: boolean): void {
-  if (tc) {
-    wordsEl.classList.add("colorfulMode");
-  } else {
-    wordsEl.classList.remove("colorfulMode");
-  }
 }
 
 // because of the requestAnimationFrame, multiple calls to updateWordLetters
@@ -1646,12 +1657,6 @@ function showHideTestRestartButton(showHide: boolean): void {
   }
 }
 
-function updateFontSize(size: number): void {
-  $(
-    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-  ).css("fontSize", size + "rem");
-}
-
 export function getActiveWordTopAndHeightWithDifferentData(data: string): {
   top: number;
   height: number;
@@ -1840,12 +1845,32 @@ export function afterTestStart(): void {
 }
 
 export function onTestRestart(): void {
+  $("#result").addClass("hidden");
+  $("#typingTest").css("opacity", 0).removeClass("hidden");
+  getInputElement().style.left = "0";
+  TestConfig.show();
+  Focus.set(false);
+  focusWords(true);
+  showWords();
+  setRightToLeft(TestState.isLanguageRightToLeft);
+  if (ActivePage.get() === "test") {
+    AdController.updateFooterAndVerticalAds(false);
+  }
+  AdController.destroyResult();
   if (Config.compositionDisplay === "below") {
     CompositionDisplay.update(" ");
     CompositionDisplay.show();
   } else {
     CompositionDisplay.hide();
   }
+}
+
+export function afterTestRestart(): void {
+  TimerProgress.reset();
+  LiveSpeed.reset();
+  LiveAcc.reset();
+  LiveBurst.reset();
+  updatePremid();
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1952,12 +1977,9 @@ $("#wordsWrapper").on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe(({ key, newValue, nosave }) => {
+ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
-  }
-  if (key === "maxLineWidth") {
-    updateWordsWidth();
   }
   if (key === "timerOpacity") {
     updateLiveStatsOpacity(newValue);
@@ -1974,13 +1996,6 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
       CompositionDisplay.show();
     } else {
       CompositionDisplay.hide();
-    }
-  }
-  if (key === "fontSize") {
-    updateFontSize(newValue);
-    if (!nosave) {
-      OutOfFocus.hide();
-      updateWordWrapperClasses();
     }
   }
   if (
@@ -2009,23 +2024,17 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
       "indicateTypos",
       "tapeMode",
       "hideExtraLetters",
+      "flipTestColors",
+      "colorfulMode",
+      "showAllLines",
+      "fontSize",
+      "maxLineWidth",
+      "tapeMargin",
     ].includes(key)
   ) {
     updateWordWrapperClasses();
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();
-  }
-  if (key === "showAllLines") {
-    updateWordsWrapperHeight(true);
-    if (!newValue) {
-      void centerActiveLine();
-    }
-  }
-  if (key === "flipTestColors") {
-    flipColors(newValue);
-  }
-  if (key === "colorfulMode") {
-    colorful(newValue);
   }
 });

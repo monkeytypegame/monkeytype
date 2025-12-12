@@ -51,8 +51,6 @@ import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
@@ -84,11 +82,7 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
-import {
-  getInputElement,
-  isInputElementFocused,
-  setInputElementValue,
-} from "../input/input-element";
+import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 
 let failReason = "";
@@ -326,17 +320,7 @@ export function restart(options = {} as RestartOptions): void {
     opacity: 0,
     duration: animationTime,
     onComplete: async () => {
-      $("#result").addClass("hidden");
-      $("#typingTest").css("opacity", 0).removeClass("hidden");
-      getInputElement().style.left = "0";
       setInputElementValue("");
-
-      Focus.set(false);
-      if (ActivePage.get() === "test") {
-        AdController.updateFooterAndVerticalAds(false);
-      }
-      TestConfig.show();
-      AdController.destroyResult();
 
       await Funbox.rememberSettings();
 
@@ -373,9 +357,6 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
-      if (isInputElementFocused()) OutOfFocus.hide();
-      TestUI.focusWords(true);
-
       TestUI.onTestRestart();
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
@@ -386,11 +367,7 @@ export function restart(options = {} as RestartOptions): void {
         },
         duration: animationTime,
         onComplete: () => {
-          TimerProgress.reset();
-          LiveSpeed.reset();
-          LiveAcc.reset();
-          LiveBurst.reset();
-          TestUI.updatePremid();
+          TestUI.afterTestRestart();
           ManualRestart.reset();
           TestState.setTestRestarting(false);
         },
@@ -632,13 +609,11 @@ async function init(): Promise<boolean> {
   TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  TestUI.setRightToLeft(isLanguageRTL);
   TestState.setIsLanguageRightToLeft(isLanguageRTL);
   TestState.setIsDirectionReversed(
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
     "Test initialized with section indexes",
