@@ -241,26 +241,48 @@ export async function setup(challengeName: string): Promise<boolean> {
       return false;
     }
     if (challenge.type === "customTime") {
-      setConfig("time", challenge.parameters[0] as number, true);
-      setConfig("mode", "time", true);
-      setConfig("difficulty", "normal", true);
+      setConfig("time", challenge.parameters[0] as number, {
+        nosave: true,
+      });
+      setConfig("mode", "time", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
       if (challenge.name === "englishMaster") {
-        setConfig("language", "english_10k", true);
-        setConfig("numbers", true, true);
-        setConfig("punctuation", true, true);
+        setConfig("language", "english_10k", {
+          nosave: true,
+        });
+        setConfig("numbers", true, {
+          nosave: true,
+        });
+        setConfig("punctuation", true, {
+          nosave: true,
+        });
       }
     } else if (challenge.type === "customWords") {
-      setConfig("words", challenge.parameters[0] as number, true);
-      setConfig("mode", "words", true);
-      setConfig("difficulty", "normal", true);
+      setConfig("words", challenge.parameters[0] as number, {
+        nosave: true,
+      });
+      setConfig("mode", "words", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setMode(challenge.parameters[1] as CustomTextMode);
       CustomText.setLimitValue(challenge.parameters[2] as number);
       CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
       CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
-      setConfig("mode", "custom", true);
-      setConfig("difficulty", "normal", true);
+      setConfig("mode", "custom", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
     } else if (challenge.type === "script") {
       Loader.show();
       const response = await fetch(
@@ -278,8 +300,12 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setMode("repeat");
       CustomText.setLimitMode("word");
       CustomText.setPipeDelimiter(false);
-      setConfig("mode", "custom", true);
-      setConfig("difficulty", "normal", true);
+      setConfig("mode", "custom", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
       if (challenge.parameters[1] !== null) {
         setConfig("theme", challenge.parameters[1] as ThemeName);
       }
@@ -287,32 +313,66 @@ export async function setup(challengeName: string): Promise<boolean> {
         void Funbox.activate(challenge.parameters[2] as FunboxName[]);
       }
     } else if (challenge.type === "accuracy") {
-      setConfig("time", 0, true);
-      setConfig("mode", "time", true);
-      setConfig("difficulty", "master", true);
+      setConfig("time", 0, {
+        nosave: true,
+      });
+      setConfig("mode", "time", {
+        nosave: true,
+      });
+      setConfig("difficulty", "master", {
+        nosave: true,
+      });
     } else if (challenge.type === "funbox") {
-      setConfig("funbox", challenge.parameters[0] as FunboxName[], true);
-      setConfig("difficulty", "normal", true);
+      setConfig("funbox", challenge.parameters[0] as FunboxName[], {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
       if (challenge.parameters[1] === "words") {
-        setConfig("words", challenge.parameters[2] as number, true);
+        setConfig("words", challenge.parameters[2] as number, {
+          nosave: true,
+        });
       } else if (challenge.parameters[1] === "time") {
-        setConfig("time", challenge.parameters[2] as number, true);
+        setConfig("time", challenge.parameters[2] as number, {
+          nosave: true,
+        });
       }
-      setConfig("mode", challenge.parameters[1] as Mode, true);
+      setConfig("mode", challenge.parameters[1] as Mode, {
+        nosave: true,
+      });
       if (challenge.parameters[3] !== undefined) {
-        setConfig("difficulty", challenge.parameters[3] as Difficulty, true);
+        setConfig("difficulty", challenge.parameters[3] as Difficulty, {
+          nosave: true,
+        });
       }
     } else if (challenge.type === "special") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
-        setConfig("mode", "time", true);
-        setConfig("time", 120, true);
-        setConfig("language", "english_10k", true);
-        setConfig("punctuation", true, true);
-        setConfig("stopOnError", "word", true);
-        setConfig("layout", "semimak", true);
-        setConfig("keymapLayout", "overrideSync", true);
-        setConfig("keymapMode", "static", true);
+        setConfig("mode", "time", {
+          nosave: true,
+        });
+        setConfig("time", 120, {
+          nosave: true,
+        });
+        setConfig("language", "english_10k", {
+          nosave: true,
+        });
+        setConfig("punctuation", true, {
+          nosave: true,
+        });
+        setConfig("stopOnError", "word", {
+          nosave: true,
+        });
+        setConfig("layout", "semimak", {
+          nosave: true,
+        });
+        setConfig("keymapLayout", "overrideSync", {
+          nosave: true,
+        });
+        setConfig("keymapMode", "static", {
+          nosave: true,
+        });
       }
     }
     ManualRestart.set();

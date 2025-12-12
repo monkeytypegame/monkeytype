@@ -148,7 +148,9 @@ export function init(
     customText = CustomText.getData();
   }
 
-  setConfig("mode", "custom", true);
+  setConfig("mode", "custom", {
+    nosave: true,
+  });
   CustomText.setPipeDelimiter(true);
   CustomText.setText(newCustomText);
   CustomText.setLimitMode("section");

@@ -91,7 +91,9 @@ function isConfigChangeBlocked(): boolean {
 export function setConfig<T extends keyof Config>(
   key: T,
   value: Config[T],
-  nosave: boolean = false,
+  options?: {
+    nosave?: boolean;
+  },
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
@@ -168,7 +170,7 @@ export function setConfig<T extends keyof Config>(
         continue; // no need to set if the value is already the same
       }
 
-      const set = setConfig(targetKey, targetValue, nosave);
+      const set = setConfig(targetKey, targetValue, options);
       if (!set) {
         throw new Error(
           `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`,
@@ -178,22 +180,24 @@ export function setConfig<T extends keyof Config>(
   }
 
   config[key] = value;
-  if (!nosave) saveToLocalStorage(key, nosave);
+  if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   // @ts-expect-error i can't figure this out
   ConfigEvent.dispatch({
     key: key,
     newValue: value,
-    nosave,
+    nosave: options?.nosave,
     previousValue: previousValue as Config[T],
   });
 
-  if (metadata.triggerResize && !nosave) {
+  if (metadata.triggerResize && !options?.nosave) {
     triggerResize();
   }
 
-  metadata.afterSet?.({ nosave: nosave || false, currentConfig: config });
-
+  metadata.afterSet?.({
+    nosave: options?.nosave ?? false,
+    currentConfig: config,
+  });
   return true;
 }
 
@@ -232,7 +236,9 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 }
 
 export function setQuoteLengthAll(nosave?: boolean): boolean {
-  return setConfig("quoteLength", [0, 1, 2, 3], nosave);
+  return setConfig("quoteLength", [0, 1, 2, 3], {
+    nosave,
+  });
 }
 
 const lastConfigsToApply: Set<keyof Config> = new Set([
@@ -275,7 +281,7 @@ export async function applyConfig(
   for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
     const configValue = fullConfig[configKey];
 
-    const set = setConfig(configKey, configValue, true);
+    const set = setConfig(configKey, configValue, { nosave: true });
 
     if (!set) {
       configKeysToReset.push(configKey);

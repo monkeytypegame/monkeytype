@@ -181,18 +181,24 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const applied: Record<string, string> = {};
 
   if (de[0] !== null) {
-    setConfig("mode", de[0], true);
+    setConfig("mode", de[0], {
+      nosave: true,
+    });
     applied["mode"] = de[0];
   }
 
   const mode = de[0] ?? Config.mode;
   if (de[1] !== null) {
     if (mode === "time") {
-      setConfig("time", parseInt(de[1], 10), true);
+      setConfig("time", parseInt(de[1], 10), {
+        nosave: true,
+      });
     } else if (mode === "words") {
-      setConfig("words", parseInt(de[1], 10), true);
+      setConfig("words", parseInt(de[1], 10), {
+        nosave: true,
+      });
     } else if (mode === "quote") {
-      setConfig("quoteLength", [-2], false);
+      setConfig("quoteLength", [-2]);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
@@ -236,22 +242,30 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[3] !== null) {
-    setConfig("punctuation", de[3], true);
+    setConfig("punctuation", de[3], {
+      nosave: true,
+    });
     applied["punctuation"] = de[3] ? "on" : "off";
   }
 
   if (de[4] !== null) {
-    setConfig("numbers", de[4], true);
+    setConfig("numbers", de[4], {
+      nosave: true,
+    });
     applied["numbers"] = de[4] ? "on" : "off";
   }
 
   if (de[5] !== null) {
-    setConfig("language", de[5] as Language, true);
+    setConfig("language", de[5] as Language, {
+      nosave: true,
+    });
     applied["language"] = de[5];
   }
 
   if (de[6] !== null) {
-    setConfig("difficulty", de[6], true);
+    setConfig("difficulty", de[6], {
+      nosave: true,
+    });
     applied["difficulty"] = de[6];
   }
 
@@ -263,7 +277,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else {
       val = de[7];
     }
-    setConfig("funbox", val, true);
+    setConfig("funbox", val, {
+      nosave: true,
+    });
     applied["funbox"] = val.join(", ");
   }
 

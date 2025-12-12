@@ -153,7 +153,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           arr = [len];
         }
 
-        if (setConfig("quoteLength", arr, false)) {
+        if (
+          setConfig("quoteLength", arr, {
+            nosave: true,
+          })
+        ) {
           ManualRestart.set();
           TestLogic.restart();
         }

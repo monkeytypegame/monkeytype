@@ -38,7 +38,9 @@ export function setFunbox(funbox: FunboxName[]): boolean {
     }
   }
   FunboxMemory.load();
-  setConfig("funbox", funbox, false);
+  setConfig("funbox", funbox, {
+    nosave: true,
+  });
   return true;
 }
 
@@ -104,7 +106,9 @@ export async function activate(
       ),
       -1,
     );
-    setConfig("funbox", [], true);
+    setConfig("funbox", [], {
+      nosave: true,
+    });
     await clear();
     return false;
   }
@@ -123,7 +127,9 @@ export async function activate(
       Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1,
     );
-    setConfig("funbox", [], true);
+    setConfig("funbox", [], {
+      nosave: true,
+    });
     await clear();
     return false;
   }
@@ -134,7 +140,9 @@ export async function activate(
         "Current language does not support this funbox mode",
         0,
       );
-      setConfig("funbox", [], true);
+      setConfig("funbox", [], {
+        nosave: true,
+      });
       await clear();
       return;
     }
@@ -188,7 +196,9 @@ export async function activate(
         -1,
       );
     }
-    setConfig("funbox", [], true);
+    setConfig("funbox", [], {
+      nosave: true,
+    });
     await clear();
     return;
   }

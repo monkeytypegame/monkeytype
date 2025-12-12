@@ -352,7 +352,9 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  setConfig("customTheme", false, true);
+  setConfig("customTheme", false, {
+    nosave: true,
+  });
   await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
