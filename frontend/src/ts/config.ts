@@ -91,9 +91,17 @@ function isConfigChangeBlocked(): boolean {
 export function batchSetConfig(
   keyValues: Partial<Config>,
   nosave: boolean = false,
-): void {
+): Partial<Record<keyof Config, boolean>> {
+  let ret: Partial<Record<keyof Config, boolean>> = {};
   for (const key of typedKeys(keyValues)) {
-    setConfig(key, keyValues[key] as Config[keyof Config], true, true);
+    ret[key] = setConfig(
+      key,
+      keyValues[key] as Config[keyof Config],
+      true,
+      true,
+    );
+    //@ts-expect-error this is fine
+    configToSend[key] = config[key];
   }
 
   const restartRequired = typedKeys(keyValues).some((key) => {
@@ -101,12 +109,28 @@ export function batchSetConfig(
     return metadata.changeRequiresRestart;
   });
 
+  const triggerResizeNeeded = typedKeys(keyValues).some((key) => {
+    const metadata = configMetadata[key];
+    return metadata.triggerResize;
+  });
+
+  if (triggerResizeNeeded) {
+    triggerResize();
+  }
+
+  if (!nosave) {
+    configLS.set(config);
+    saveToDatabase();
+  }
+
   ConfigEvent.dispatch({
     key: "batchConfigApplied",
     nosave,
     fullConfig: config,
     restartRequired,
   });
+
+  return ret;
 }
 
 export function setConfig<T extends keyof Config>(
@@ -296,10 +320,28 @@ export async function applyConfig(
     (key) => !lastConfigsToApply.has(key),
   );
 
+  // const keys = [...firstKeys, ...lastConfigsToApply];
+
+  // const batchSetResult = batchSetConfig(
+  //   keys.reduce((obj, key) => {
+  //     //@ts-expect-error this is fine
+  //     obj[key] = fullConfig[key];
+  //     return obj;
+  //   }, {}),
+  //   true,
+  // );
+  // const failedKeys = typedKeys(batchSetResult).filter(
+  //   (key) => batchSetResult[key] === false,
+  // );
+
+  // if (failedKeys.length > 0) {
+  //   configKeysToReset.push(...failedKeys);
+  // }
+
   for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
     const configValue = fullConfig[configKey];
 
-    const set = setConfig(configKey, configValue, true);
+    const set = setConfig(configKey, configValue, true, true);
 
     if (!set) {
       configKeysToReset.push(configKey);

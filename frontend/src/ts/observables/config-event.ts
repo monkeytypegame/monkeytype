@@ -25,6 +25,7 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export function dispatch(options: SubscribeParams): void {
+  console.log("displatching config event", options);
   subscribers.forEach((fn) => {
     try {
       fn(options);
