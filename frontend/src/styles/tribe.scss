@@ -523,6 +523,8 @@
         grid-area: buttons;
         gap: 0.5rem;
         display: grid;
+        grid-auto-flow: unset;
+        justify-content: unset;
       }
       .userlist {
         grid-area: users;
