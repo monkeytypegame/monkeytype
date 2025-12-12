@@ -196,23 +196,24 @@ export function initRace(): void {
 }
 
 async function connect(): Promise<void> {
-  const versionCheck = await TribeSocket.out.system.versionCheck(
-    expectedVersion
-  );
+  const versionCheck =
+    await TribeSocket.out.system.versionCheck(expectedVersion);
 
   if (versionCheck.status !== "ok") {
     TribeSocket.disconnect();
     TribePagePreloader.updateIcon("exclamation-triangle");
     TribePagePreloader.updateText(
       `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${versionCheck.version}`,
-      true
+      true,
     );
     TribePagePreloader.hideReconnectButton();
     TribePagePreloader.updateSubtext("");
     return;
   }
 
-  UpdateConfig.setTimerStyle("mini", true);
+  UpdateConfig.setConfig("timerStyle", "mini", {
+    nosave: true,
+  });
   TribePageMenu.enableButtons();
   updateState(1);
   const autoJoinCode = TribeAutoJoin.getAutoJoin();
@@ -279,7 +280,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
       -1,
       {
         customTitle: "Tribe",
-      }
+      },
     );
   }
   TribeState.setRoom(undefined);
@@ -483,7 +484,7 @@ TribeSocket.in.room.chatMessage((data) => {
       TribeSound.play("chat_mention");
       data.message = data.message.replace(
         nameregex,
-        "<span class='mention'>$&</span>"
+        "<span class='mention'>$&</span>",
       );
     } else {
       TribeSound.play("chat");
@@ -613,7 +614,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
 
       const globalWordProgress = Math.round(
-        localWordProgress * (1 / TestWords.words.length)
+        localWordProgress * (1 / TestWords.words.length),
       );
 
       let outof = TestWords.words.length;
@@ -622,7 +623,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       }
 
       const wordsProgress = Math.floor(
-        (TestState.activeWordIndex / outof) * 100
+        (TestState.activeWordIndex / outof) * 100,
       );
 
       progress = wordsProgress + globalWordProgress;
@@ -660,7 +661,7 @@ TribeSocket.in.room.progressUpdate((data) => {
         "result",
         userId,
         userProgress.wpm,
-        userProgress.acc
+        userProgress.acc,
       );
     }
   }

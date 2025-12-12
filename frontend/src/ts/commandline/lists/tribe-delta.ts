@@ -10,7 +10,7 @@ const subgroup: CommandsSubgroup = {
       display: "off",
       configValue: "off",
       exec: (): void => {
-        UpdateConfig.setTribeDelta("off");
+        UpdateConfig.setConfig("tribeDelta", "off");
       },
     },
     {
@@ -18,7 +18,7 @@ const subgroup: CommandsSubgroup = {
       display: "text",
       configValue: "text",
       exec: (): void => {
-        UpdateConfig.setTribeDelta("text");
+        UpdateConfig.setConfig("tribeDelta", "text");
       },
     },
     {
@@ -26,7 +26,7 @@ const subgroup: CommandsSubgroup = {
       display: "bar",
       configValue: "bar",
       exec: (): void => {
-        UpdateConfig.setTribeDelta("bar");
+        UpdateConfig.setConfig("tribeDelta", "bar");
       },
     },
   ],

@@ -19,7 +19,7 @@ export class TribeCaret {
     private socketId: string,
     private wordIndex: number,
     private letterIndex: number,
-    private name: string
+    private name: string,
   ) {
     // oxlint-disable-next-line no-unnecessary-parameter-property-assignment
     this.socketId = socketId;
@@ -42,7 +42,7 @@ export class TribeCaret {
     element.style.fontSize = Config.fontSize + "rem";
     element.setAttribute("socketId", this.socketId);
     (document.querySelector(".pageTest #typingTest") as HTMLElement).prepend(
-      element
+      element,
     );
 
     //create caretName element, fill the name and insert inside element
@@ -209,9 +209,9 @@ export class TribeCaret {
                     left: newLeft,
                   },
                   SlowTimer.get() ? 0 : animationDuration - 125,
-                  "linear"
+                  "linear",
                 );
-              }
+              },
             );
           } else {
             this.element.stop(true, false).animate(
@@ -219,7 +219,7 @@ export class TribeCaret {
                 left: newLeft,
               },
               SlowTimer.get() ? 0 : animationDuration,
-              "linear"
+              "linear",
             );
           }
         } else {
@@ -228,13 +228,13 @@ export class TribeCaret {
               left: newLeft,
             },
             0,
-            "linear"
+            "linear",
           );
         }
       }
     } catch (e) {
       console.error(
-        `Error updating tribe caret for socket id ${this.socketId}: ${e}`
+        `Error updating tribe caret for socket id ${this.socketId}: ${e}`,
       );
       this.destroy();
     }
@@ -255,7 +255,7 @@ export class TribeCaret {
         {
           top: (<HTMLElement>this.element[0])?.offsetTop - offset,
         },
-        SlowTimer.get() ? 0 : 125
+        SlowTimer.get() ? 0 : 125,
       );
     } else {
       this.element.css({
@@ -280,7 +280,7 @@ export function init(): void {
 }
 
 export function updateAndAnimate(
-  data: Record<string, TribeTypes.UserProgress>
+  data: Record<string, TribeTypes.UserProgress>,
 ): void {
   for (const socketId of Object.keys(data)) {
     const d = data[socketId] as TribeTypes.UserProgress;
@@ -300,7 +300,7 @@ export function destroy(socketId: string): void {
 
 export function changeColor(
   socketId: string,
-  color: ThemeColors.ColorName
+  color: ThemeColors.ColorName,
 ): void {
   if (carets[socketId]) {
     void carets[socketId].changeColor(color);
@@ -325,17 +325,17 @@ LineJumpEvent.subscribe((wordHeight: number) => {
   lineJump(wordHeight, Config.smoothLineScroll);
 });
 
-ConfigEvent.subscribe((key, value, _nosave, previousValue) => {
+ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
   if (key !== "tribeCarets") return;
-  if (previousValue === value) return;
+  if (previousValue === newValue) return;
 
-  if (value === "off") destroyAll();
+  if (newValue === "off") destroyAll();
   if (previousValue === "off") {
     init();
   }
   if (
-    (previousValue === "on" && value === "noNames") ||
-    (value === "on" && previousValue === "noNames")
+    (previousValue === "on" && newValue === "noNames") ||
+    (newValue === "on" && previousValue === "noNames")
   ) {
     for (const socketId of Object.keys(carets)) {
       carets[socketId]?.setNameVisibility(Config.tribeCarets === "on");

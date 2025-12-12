@@ -71,6 +71,6 @@ export function hide(): void {
   });
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "liveBurstStyle") eventValue === "off" ? hide() : show();
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "liveBurstStyle") newValue === "off" ? hide() : show();
 });

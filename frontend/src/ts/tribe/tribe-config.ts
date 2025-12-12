@@ -67,13 +67,22 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
 }
 
 export function apply(config: TribeTypes.RoomConfig): void {
-  UpdateConfig.setMode(config.mode as Mode, true, true);
+  const setOptions = {
+    nosave: true,
+    tribeOverride: true,
+  };
+
+  UpdateConfig.setConfig("mode", config.mode as Mode, setOptions);
   if (config.mode === "time") {
-    UpdateConfig.setTimeConfig(config.mode2 as number, true, true);
+    UpdateConfig.setConfig("time", config.mode2 as number, setOptions);
   } else if (config.mode === "words") {
-    UpdateConfig.setWordCount(config.mode2 as number, true, true);
+    UpdateConfig.setConfig("words", config.mode2 as number, setOptions);
   } else if (config.mode === "quote") {
-    UpdateConfig.setQuoteLength(config.mode2 as QuoteLengthConfig, true, true);
+    UpdateConfig.setConfig(
+      "quoteLength",
+      config.mode2 as QuoteLengthConfig,
+      setOptions,
+    );
   } else if (config.mode === "custom") {
     //todo fix
     // CustomText.setText(config.customText.text, true);
@@ -82,30 +91,48 @@ export function apply(config: TribeTypes.RoomConfig): void {
     // CustomText.setTime(config.customText.time, true);
     // CustomText.setWord(config.customText.word, true);
   }
-  UpdateConfig.setDifficulty(config.difficulty as Difficulty, true, true);
-  UpdateConfig.setLanguage(config.language as Language, true, true);
-  UpdateConfig.setPunctuation(config.punctuation, true, true);
-  UpdateConfig.setNumbers(config.numbers, true, true);
+  UpdateConfig.setConfig("difficulty", config.difficulty as Difficulty, {
+    nosave: true,
+    tribeOverride: true,
+  });
+  UpdateConfig.setConfig("language", config.language as Language, {
+    nosave: true,
+    tribeOverride: true,
+  });
+  UpdateConfig.setConfig("punctuation", config.punctuation, {
+    nosave: true,
+    tribeOverride: true,
+  });
+  UpdateConfig.setConfig("numbers", config.numbers, {
+    nosave: true,
+    tribeOverride: true,
+  });
   Funbox.setFunbox(config.funbox as FunboxName[], true);
-  UpdateConfig.setLazyMode(config.lazyMode, true, true);
-  UpdateConfig.setStopOnError(config.stopOnError as StopOnError, true, true);
+  UpdateConfig.setConfig("lazyMode", config.lazyMode, {
+    nosave: true,
+    tribeOverride: true,
+  });
+  UpdateConfig.setConfig("stopOnError", config.stopOnError as StopOnError, {
+    nosave: true,
+    tribeOverride: true,
+  });
   if (config.minWpm !== "off") {
-    UpdateConfig.setMinWpmCustomSpeed(config.minWpm, true, true);
-    UpdateConfig.setMinWpm("custom", true, true);
+    UpdateConfig.setConfig("minWpmCustomSpeed", config.minWpm, setOptions);
+    UpdateConfig.setConfig("minWpm", "custom", setOptions);
   } else {
-    UpdateConfig.setMinWpm("off", true, true);
+    UpdateConfig.setConfig("minWpm", "off", setOptions);
   }
   if (config.minAcc !== "off") {
-    UpdateConfig.setMinAccCustom(config.minAcc, true, true);
-    UpdateConfig.setMinAcc("custom", true, true);
+    UpdateConfig.setConfig("minAccCustom", config.minAcc, setOptions);
+    UpdateConfig.setConfig("minAcc", "custom", setOptions);
   } else {
-    UpdateConfig.setMinAcc("off", true, true);
+    UpdateConfig.setConfig("minAcc", "off", setOptions);
   }
   if (config.minBurst !== "off") {
-    UpdateConfig.setMinBurstCustomSpeed(config.minBurst, true, true);
-    UpdateConfig.setMinBurst("fixed", true, true);
+    UpdateConfig.setConfig("minBurstCustomSpeed", config.minBurst, setOptions);
+    UpdateConfig.setConfig("minBurst", "fixed", setOptions);
   } else {
-    UpdateConfig.setMinBurst("off", true, true);
+    UpdateConfig.setConfig("minBurst", "off", setOptions);
   }
 }
 

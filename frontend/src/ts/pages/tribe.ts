@@ -2,10 +2,11 @@ import Page from "./page";
 import * as Tribe from "../tribe/tribe";
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeChat from "../tribe/tribe-chat";
+import { qsr } from "../utils/dom";
 
 export const page = new Page({
   id: "tribe",
-  element: $(".page.pageTribe"),
+  element: qsr(".page.pageTribe"),
   path: "/tribe",
   beforeHide: async () => {
     // TODO: Fill it up later

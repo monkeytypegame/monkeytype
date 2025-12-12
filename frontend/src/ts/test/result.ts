@@ -1344,9 +1344,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   }
 });
 
-ConfigEvent.subscribe(async (eventKey) => {
+ConfigEvent.subscribe(async ({ key }) => {
   if (
-    ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
+    ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
     TestState.resultVisible
   ) {
     resultAnnotation = [];

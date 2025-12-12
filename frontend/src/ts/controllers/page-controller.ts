@@ -61,14 +61,14 @@ async function showSyncLoading({
   loadingOptions: LoadingOptions[];
   totalDuration: number;
 }): Promise<void> {
-  PageLoading.page.element.removeClass("hidden").css("opacity", 0);
+  PageLoading.page.element.show().setStyle({ opacity: "0" });
   await PageLoading.page.beforeShow({});
 
   const fillDivider = loadingOptions.length;
   const fillOffset = 100 / fillDivider;
 
   //void here to run the loading promise as soon as possible
-  void Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+  void PageLoading.page.element.promiseAnimate({
     opacity: "1",
     duration: totalDuration / 2,
   });
@@ -99,13 +99,13 @@ async function showSyncLoading({
     }
   }
 
-  await Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+  await PageLoading.page.element.promiseAnimate({
     opacity: "0",
     duration: totalDuration / 2,
   });
 
   await PageLoading.page.afterHide();
-  PageLoading.page.element.addClass("hidden");
+  PageLoading.page.element.hide();
 }
 
 // Global abort controller for keyframe promises
@@ -212,12 +212,12 @@ export async function change(
   await previousPage?.beforeHide?.({
     tribeOverride: options.tribeOverride ?? false,
   });
-  previousPage.element.removeClass("hidden").css("opacity", 1);
-  await Misc.promiseAnimate(previousPage.element[0] as HTMLElement, {
+  previousPage.element.show().setStyle({ opacity: "1" });
+  await previousPage.element.promiseAnimate({
     opacity: "0",
     duration: totalDuration / 2,
   });
-  previousPage.element.addClass("hidden");
+  previousPage.element.hide();
   await previousPage?.afterHide();
 
   // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
@@ -288,8 +288,8 @@ export async function change(
     });
   }
 
-  nextPage.element.removeClass("hidden").css("opacity", 0);
-  await Misc.promiseAnimate(nextPage.element[0] as HTMLElement, {
+  nextPage.element.show().setStyle({ opacity: "0" });
+  await nextPage.element.promiseAnimate({
     opacity: "1",
     duration: totalDuration / 2,
   });

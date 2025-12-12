@@ -1432,12 +1432,12 @@ export function updateAllChartColors(): void {
   void miniResult.updateColors();
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "accountChart" && ActivePage.get() === "account") {
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "accountChart" && ActivePage.get() === "account") {
     updateResults();
     updateAccuracy();
     updateAverage10();
     updateAverage100();
   }
-  if (eventKey === "fontFamily") setDefaultFontFamily(eventValue as string);
+  if (key === "fontFamily") setDefaultFontFamily(newValue);
 });

@@ -299,14 +299,14 @@ window.addEventListener("resize", () => {
   debouncedBreakpoint2Update();
 });
 
-ConfigEvent.subscribe((event, value) => {
-  if (event === "ads") {
-    if (value === "off") {
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "ads") {
+    if (newValue === "off") {
       removeAll();
-    } else if (value === "result") {
+    } else if (newValue === "result") {
       removeSellout();
       removeOn();
-    } else if (value === "on") {
+    } else if (newValue === "on") {
       removeSellout();
     }
   }

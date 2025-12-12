@@ -6,7 +6,7 @@ import {
   ConfigSchema,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as Notifications from "../elements/notifications";
 import { ElementWithUtils } from "../utils/dom";
 
@@ -239,7 +239,7 @@ export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
 };
 
 /**
- * Adds input event listeners to the given input element. On `focusOut` and when pressing `Enter` the current value is stored in the Config using  `genericSet`.
+ * Adds input event listeners to the given input element. On `focusOut` and when pressing `Enter` the current value is stored in the Config using  `setConfig`.
  * Note: Config is not updated if the value has not changed.
  *
  * If validation is set, Adds input validation using `InputIndicator` to the given input element. Config is only updated if the value is valid.
@@ -294,7 +294,7 @@ export function handleConfigInput<T extends ConfigKey>({
     if (Config[configName] === value) {
       return;
     }
-    const didConfigSave = UpdateConfig.genericSet(configName, value, false);
+    const didConfigSave = setConfig(configName, value);
 
     if (didConfigSave) {
       Notifications.add("Saved", 1, {

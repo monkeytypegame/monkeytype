@@ -19,8 +19,6 @@ import {
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { Config, FunboxName } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
-import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { getDefaultConfig } from "./constants/default-config";
@@ -28,7 +26,6 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
-import { FontName } from "@monkeytype/schemas/fonts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -71,8 +68,6 @@ function saveToLocalStorage(
     configToSend[key] = config[key];
     saveToDatabase();
   }
-  const localToSaveStringified = JSON.stringify(config);
-  ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
@@ -83,8 +78,6 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
     void DB.saveConfig(config);
     AccountButton.loading(false);
   }
-  const stringified = JSON.stringify(config);
-  ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
 function isConfigChangeBlocked(): boolean {
@@ -97,11 +90,13 @@ function isConfigChangeBlocked(): boolean {
   return false;
 }
 
-export function genericSet<T extends keyof ConfigSchemas.Config>(
+export function setConfig<T extends keyof Config>(
   key: T,
-  value: ConfigSchemas.Config[T],
-  nosave: boolean = false,
-  tribeOverride: boolean = false,
+  value: Config[T],
+  options?: {
+    nosave?: boolean;
+    tribeOverride?: boolean;
+  },
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
@@ -134,7 +129,10 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
-  if (metadata.tribeBlocked && !TribeState.canChangeConfig(tribeOverride)) {
+  if (
+    metadata.tribeBlocked &&
+    !TribeState.canChangeConfig(options?.tribeOverride ?? false)
+  ) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
         value,
@@ -187,7 +185,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
         continue; // no need to set if the value is already the same
       }
 
-      const set = genericSet(targetKey, targetValue, nosave);
+      const set = setConfig(targetKey, targetValue, options);
       if (!set) {
         throw new Error(
           `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`,
@@ -197,96 +195,26 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   }
 
   config[key] = value;
-  if (!nosave) saveToLocalStorage(key, nosave);
-  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
-  ConfigEvent.dispatch(key, value, nosave, previousValue);
+  if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
+  if (!options?.tribeOverride) TribeConfigSyncEvent.dispatch();
 
-  if (metadata.triggerResize && !nosave) {
+  // @ts-expect-error i can't figure this out
+  ConfigEvent.dispatch({
+    key: key,
+    newValue: value,
+    nosave: options?.nosave ?? false,
+    previousValue: previousValue as Config[T],
+  });
+
+  if (metadata.triggerResize && !options?.nosave) {
     triggerResize();
   }
 
-  metadata.afterSet?.({ nosave: nosave || false, currentConfig: config });
-
+  metadata.afterSet?.({
+    nosave: options?.nosave ?? false,
+    currentConfig: config,
+  });
   return true;
-}
-
-//numbers
-export function setNumbers(
-  numb: boolean,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("numbers", numb, nosave, tribeOverride);
-}
-
-//punctuation
-export function setPunctuation(
-  punc: boolean,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("punctuation", punc, nosave, tribeOverride);
-}
-
-export function setMode(
-  mode: Mode,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("mode", mode, nosave, tribeOverride);
-}
-
-export function setPlaySoundOnError(
-  val: ConfigSchemas.PlaySoundOnError,
-  nosave?: boolean,
-): boolean {
-  return genericSet("playSoundOnError", val, nosave);
-}
-
-export function setPlaySoundOnClick(
-  val: ConfigSchemas.PlaySoundOnClick,
-  nosave?: boolean,
-): boolean {
-  return genericSet("playSoundOnClick", val, nosave);
-}
-
-export function setSoundVolume(
-  val: ConfigSchemas.SoundVolume,
-  nosave?: boolean,
-): boolean {
-  return genericSet("soundVolume", val, nosave);
-}
-
-export function setPlayTimeWarning(
-  value: ConfigSchemas.PlayTimeWarning,
-  nosave?: boolean,
-): boolean {
-  return genericSet("playTimeWarning", value, nosave);
-}
-
-//difficulty
-export function setDifficulty(
-  diff: ConfigSchemas.Difficulty,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("difficulty", diff, nosave, tribeOverride);
-}
-
-//set fav themes
-export function setFavThemes(
-  themes: ConfigSchemas.FavThemes,
-  nosave?: boolean,
-): boolean {
-  return genericSet("favThemes", themes, nosave);
-}
-
-export function setFunbox(
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("funbox", funbox, nosave, tribeOverride);
 }
 
 export function toggleFunbox(
@@ -300,6 +228,8 @@ export function toggleFunbox(
     return false;
   }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
+
+  const previousValue = config.funbox;
 
   let newConfig: FunboxName[] = config.funbox;
 
@@ -317,562 +247,20 @@ export function toggleFunbox(
   config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
-  ConfigEvent.dispatch("funbox", config.funbox);
+  ConfigEvent.dispatch({
+    key: "funbox",
+    newValue: config.funbox,
+    nosave,
+    previousValue,
+  });
 
   return true;
 }
 
-export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
-  return genericSet("blindMode", blind, nosave);
-}
-
-export function setAccountChart(
-  array: ConfigSchemas.AccountChart,
-  nosave?: boolean,
-): boolean {
-  return genericSet("accountChart", array, nosave);
-}
-
-export function setStopOnError(
-  soe: ConfigSchemas.StopOnError,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("stopOnError", soe, nosave, tribeOverride);
-}
-
-export function setAlwaysShowDecimalPlaces(
-  val: boolean,
-  nosave?: boolean,
-): boolean {
-  return genericSet("alwaysShowDecimalPlaces", val, nosave);
-}
-
-export function setTypingSpeedUnit(
-  val: ConfigSchemas.TypingSpeedUnit,
-  nosave?: boolean,
-): boolean {
-  return genericSet("typingSpeedUnit", val, nosave);
-}
-
-export function setShowOutOfFocusWarning(
-  val: boolean,
-  nosave?: boolean,
-): boolean {
-  return genericSet("showOutOfFocusWarning", val, nosave);
-}
-
-//pace caret
-export function setPaceCaret(
-  val: ConfigSchemas.PaceCaret,
-  nosave?: boolean,
-): boolean {
-  return genericSet("paceCaret", val, nosave);
-}
-
-export function setPaceCaretCustomSpeed(
-  val: ConfigSchemas.PaceCaretCustomSpeed,
-  nosave?: boolean,
-): boolean {
-  return genericSet("paceCaretCustomSpeed", val, nosave);
-}
-
-export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
-  return genericSet("repeatedPace", pace, nosave);
-}
-
-//min wpm
-export function setMinWpm(
-  minwpm: ConfigSchemas.MinimumWordsPerMinute,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("minWpm", minwpm, nosave, tribeOverride);
-}
-
-export function setMinWpmCustomSpeed(
-  val: ConfigSchemas.MinWpmCustomSpeed,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("minWpmCustomSpeed", val, nosave, tribeOverride);
-}
-
-//min acc
-export function setMinAcc(
-  min: ConfigSchemas.MinimumAccuracy,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("minAcc", min, nosave, tribeOverride);
-}
-
-export function setMinAccCustom(
-  val: ConfigSchemas.MinimumAccuracyCustom,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("minAccCustom", val, nosave, tribeOverride);
-}
-
-//min burst
-export function setMinBurst(
-  min: ConfigSchemas.MinimumBurst,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("minBurst", min, nosave, tribeOverride);
-}
-
-export function setMinBurstCustomSpeed(
-  val: ConfigSchemas.MinimumBurstCustomSpeed,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("minBurstCustomSpeed", val, nosave, tribeOverride);
-}
-
-//always show words history
-export function setAlwaysShowWordsHistory(
-  val: boolean,
-  nosave?: boolean,
-): boolean {
-  return genericSet("alwaysShowWordsHistory", val, nosave);
-}
-
-//single list command line
-export function setSingleListCommandLine(
-  option: ConfigSchemas.SingleListCommandLine,
-  nosave?: boolean,
-): boolean {
-  return genericSet("singleListCommandLine", option, nosave);
-}
-
-//caps lock warning
-export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
-  return genericSet("capsLockWarning", val, nosave);
-}
-
-export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
-  return genericSet("showAllLines", sal, nosave);
-}
-
-export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
-  return genericSet("quickEnd", qe, nosave);
-}
-
-export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
-  return genericSet("ads", val, nosave);
-}
-
-export function setRepeatQuotes(
-  val: ConfigSchemas.RepeatQuotes,
-  nosave?: boolean,
-): boolean {
-  return genericSet("repeatQuotes", val, nosave);
-}
-
-//flip colors
-export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
-  return genericSet("flipTestColors", flip, nosave);
-}
-
-//extra color
-export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
-  return genericSet("colorfulMode", extra, nosave);
-}
-
-//strict space
-export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
-  return genericSet("strictSpace", val, nosave);
-}
-
-//opposite shift space
-export function setOppositeShiftMode(
-  val: ConfigSchemas.OppositeShiftMode,
-  nosave?: boolean,
-): boolean {
-  return genericSet("oppositeShiftMode", val, nosave);
-}
-
-export function setCaretStyle(
-  caretStyle: ConfigSchemas.CaretStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("caretStyle", caretStyle, nosave);
-}
-
-export function setPaceCaretStyle(
-  caretStyle: ConfigSchemas.CaretStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("paceCaretStyle", caretStyle, nosave);
-}
-
-export function setShowAverage(
-  value: ConfigSchemas.ShowAverage,
-  nosave?: boolean,
-): boolean {
-  return genericSet("showAverage", value, nosave);
-}
-
-export function setHighlightMode(
-  mode: ConfigSchemas.HighlightMode,
-  nosave?: boolean,
-): boolean {
-  return genericSet("highlightMode", mode, nosave);
-}
-
-export function setTapeMode(
-  mode: ConfigSchemas.TapeMode,
-  nosave?: boolean,
-): boolean {
-  return genericSet("tapeMode", mode, nosave);
-}
-
-export function setTapeMargin(
-  value: ConfigSchemas.TapeMargin,
-  nosave?: boolean,
-): boolean {
-  return genericSet("tapeMargin", value, nosave);
-}
-
-export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
-  return genericSet("hideExtraLetters", val, nosave);
-}
-
-export function setTimerStyle(
-  style: ConfigSchemas.TimerStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("timerStyle", style, nosave);
-}
-
-export function setLiveSpeedStyle(
-  style: ConfigSchemas.LiveSpeedAccBurstStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("liveSpeedStyle", style, nosave);
-}
-
-export function setLiveAccStyle(
-  style: ConfigSchemas.LiveSpeedAccBurstStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("liveAccStyle", style, nosave);
-}
-
-export function setLiveBurstStyle(
-  style: ConfigSchemas.LiveSpeedAccBurstStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("liveBurstStyle", style, nosave);
-}
-
-export function setTimerColor(
-  color: ConfigSchemas.TimerColor,
-  nosave?: boolean,
-): boolean {
-  return genericSet("timerColor", color, nosave);
-}
-export function setTimerOpacity(
-  opacity: ConfigSchemas.TimerOpacity,
-  nosave?: boolean,
-): boolean {
-  return genericSet("timerOpacity", opacity, nosave);
-}
-
-//key tips
-export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
-  return genericSet("showKeyTips", keyTips, nosave);
-}
-
-//mode
-export function setTimeConfig(
-  time: ConfigSchemas.TimeConfig,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("time", time, nosave, tribeOverride);
-}
-
-export function setQuoteLength(
-  len: ConfigSchemas.QuoteLengthConfig,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("quoteLength", len, nosave, tribeOverride);
-}
-
-export function setQuoteLengthAll(
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("quoteLength", [0, 1, 2, 3], nosave, tribeOverride);
-}
-
-export function setWordCount(
-  wordCount: ConfigSchemas.WordCount,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("words", wordCount, nosave, tribeOverride);
-}
-
-//caret
-export function setSmoothCaret(
-  mode: ConfigSchemas.SmoothCaret,
-  nosave?: boolean,
-): boolean {
-  return genericSet("smoothCaret", mode, nosave);
-}
-
-export function setCodeUnindentOnBackspace(
-  mode: boolean,
-  nosave?: boolean,
-): boolean {
-  return genericSet("codeUnindentOnBackspace", mode, nosave);
-}
-
-export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
-  return genericSet("startGraphsAtZero", mode, nosave);
-}
-
-//linescroll
-export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
-  return genericSet("smoothLineScroll", mode, nosave);
-}
-
-//quick restart
-export function setQuickRestartMode(
-  mode: ConfigSchemas.QuickRestart,
-  nosave?: boolean,
-): boolean {
-  return genericSet("quickRestart", mode, nosave);
-}
-
-//font family
-export function setFontFamily(font: FontName, nosave?: boolean): boolean {
-  return genericSet("fontFamily", font, nosave);
-}
-
-//freedom
-export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
-  return genericSet("freedomMode", freedom, nosave);
-}
-
-export function setConfidenceMode(
-  cm: ConfigSchemas.ConfidenceMode,
-  nosave?: boolean,
-): boolean {
-  return genericSet("confidenceMode", cm, nosave);
-}
-
-export function setIndicateTypos(
-  value: ConfigSchemas.IndicateTypos,
-  nosave?: boolean,
-): boolean {
-  return genericSet("indicateTypos", value, nosave);
-}
-
-export function setCompositionDisplay(
-  value: ConfigSchemas.CompositionDisplay,
-  nosave?: boolean,
-): boolean {
-  return genericSet("compositionDisplay", value, nosave);
-}
-
-export function setAutoSwitchTheme(
-  boolean: boolean,
-  nosave?: boolean,
-): boolean {
-  return genericSet("autoSwitchTheme", boolean, nosave);
-}
-
-export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
-  return genericSet("customTheme", boolean, nosave);
-}
-
-export function setTheme(
-  name: ConfigSchemas.ThemeName,
-  nosave?: boolean,
-): boolean {
-  return genericSet("theme", name, nosave);
-}
-
-export function setThemeLight(
-  name: ConfigSchemas.ThemeName,
-  nosave?: boolean,
-): boolean {
-  return genericSet("themeLight", name, nosave);
-}
-
-export function setThemeDark(
-  name: ConfigSchemas.ThemeName,
-  nosave?: boolean,
-): boolean {
-  return genericSet("themeDark", name, nosave);
-}
-
-export function setRandomTheme(
-  val: ConfigSchemas.RandomTheme,
-  nosave?: boolean,
-): boolean {
-  return genericSet("randomTheme", val, nosave);
-}
-
-export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
-  return genericSet("britishEnglish", val, nosave);
-}
-
-export function setLazyMode(
-  val: boolean,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("lazyMode", val, nosave, tribeOverride);
-}
-
-export function setCustomThemeColors(
-  colors: ConfigSchemas.CustomThemeColors,
-  nosave?: boolean,
-): boolean {
-  return genericSet("customThemeColors", colors, nosave);
-}
-
-export function setLanguage(
-  language: Language,
-  nosave?: boolean,
-  tribeOverride = false,
-): boolean {
-  return genericSet("language", language, nosave, tribeOverride);
-}
-
-export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
-  return genericSet("monkey", monkey, nosave);
-}
-
-export function setKeymapMode(
-  mode: ConfigSchemas.KeymapMode,
-  nosave?: boolean,
-): boolean {
-  return genericSet("keymapMode", mode, nosave);
-}
-
-export function setKeymapLegendStyle(
-  style: ConfigSchemas.KeymapLegendStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("keymapLegendStyle", style, nosave);
-}
-
-export function setKeymapStyle(
-  style: ConfigSchemas.KeymapStyle,
-  nosave?: boolean,
-): boolean {
-  return genericSet("keymapStyle", style, nosave);
-}
-
-export function setKeymapLayout(
-  layout: ConfigSchemas.KeymapLayout,
-  nosave?: boolean,
-): boolean {
-  return genericSet("keymapLayout", layout, nosave);
-}
-
-export function setKeymapShowTopRow(
-  show: ConfigSchemas.KeymapShowTopRow,
-  nosave?: boolean,
-): boolean {
-  return genericSet("keymapShowTopRow", show, nosave);
-}
-
-export function setKeymapSize(
-  keymapSize: ConfigSchemas.KeymapSize,
-  nosave?: boolean,
-): boolean {
-  return genericSet("keymapSize", keymapSize, nosave);
-}
-
-export function setLayout(
-  layout: ConfigSchemas.Layout,
-  nosave?: boolean,
-): boolean {
-  return genericSet("layout", layout, nosave);
-}
-
-export function setFontSize(
-  fontSize: ConfigSchemas.FontSize,
-  nosave?: boolean,
-): boolean {
-  return genericSet("fontSize", fontSize, nosave);
-}
-
-export function setMaxLineWidth(
-  maxLineWidth: ConfigSchemas.MaxLineWidth,
-  nosave?: boolean,
-): boolean {
-  return genericSet("maxLineWidth", maxLineWidth, nosave);
-}
-
-export function setCustomBackground(
-  value: ConfigSchemas.CustomBackground,
-  nosave?: boolean,
-): boolean {
-  return genericSet("customBackground", value, nosave);
-}
-
-export function setCustomLayoutfluid(
-  value: ConfigSchemas.CustomLayoutFluid,
-  nosave?: boolean,
-): boolean {
-  return genericSet("customLayoutfluid", value, nosave);
-}
-
-export function setCustomPolyglot(
-  value: ConfigSchemas.CustomPolyglot,
-  nosave?: boolean,
-): boolean {
-  return genericSet("customPolyglot", value, nosave);
-}
-
-export function setCustomBackgroundSize(
-  value: ConfigSchemas.CustomBackgroundSize,
-  nosave?: boolean,
-): boolean {
-  return genericSet("customBackgroundSize", value, nosave);
-}
-
-export function setCustomBackgroundFilter(
-  array: ConfigSchemas.CustomBackgroundFilter,
-  nosave?: boolean,
-): boolean {
-  return genericSet("customBackgroundFilter", array, nosave);
-}
-
-export function setMonkeyPowerLevel(
-  level: ConfigSchemas.MonkeyPowerLevel,
-  nosave?: boolean,
-): boolean {
-  return genericSet("monkeyPowerLevel", level, nosave);
-}
-
-export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
-  return genericSet("burstHeatmap", value, nosave);
-}
-
-export function setTribeDelta(
-  value: ConfigSchemas.TribeDelta,
-  nosave?: boolean,
-): boolean {
-  return genericSet("tribeDelta", value, nosave);
-}
-
-export function setTribeCarets(
-  value: ConfigSchemas.TribeCarets,
-  nosave?: boolean,
-): boolean {
-  return genericSet("tribeCarets", value, nosave);
+export function setQuoteLengthAll(nosave?: boolean): boolean {
+  return setConfig("quoteLength", [0, 1, 2, 3], {
+    nosave,
+  });
 }
 
 const lastConfigsToApply: Set<keyof Config> = new Set([
@@ -890,13 +278,15 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "funbox",
 ]);
 
-export async function apply(partialConfig: Partial<Config>): Promise<void> {
+export async function applyConfig(
+  partialConfig: Partial<Config>,
+): Promise<void> {
   if (partialConfig === undefined || partialConfig === null) return;
 
   //migrate old values if needed, remove additional keys and merge with default config
   const fullConfig: Config = migrateConfig(partialConfig);
 
-  ConfigEvent.dispatch("fullConfigChange");
+  ConfigEvent.dispatch({ key: "fullConfigChange" });
 
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullConfig)) {
@@ -913,7 +303,7 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
   for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
     const configValue = fullConfig[configKey];
 
-    const set = genericSet(configKey, configValue, true);
+    const set = setConfig(configKey, configValue, { nosave: true });
 
     if (!set) {
       configKeysToReset.push(configKey);
@@ -924,18 +314,11 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
     saveToLocalStorage(key);
   }
 
-  ConfigEvent.dispatch(
-    "configApplied",
-    undefined,
-    undefined,
-    undefined,
-    config,
-  );
-  ConfigEvent.dispatch("fullConfigChangeFinished");
+  ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
 }
 
-export async function reset(): Promise<void> {
-  await apply(getDefaultConfig());
+export async function resetConfig(): Promise<void> {
+  await applyConfig(getDefaultConfig());
   await DB.resetConfig();
   saveFullConfigToLocalStorage(true);
 }
@@ -944,9 +327,9 @@ export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfig = configLS.get();
   if (newConfig === undefined) {
-    await reset();
+    await resetConfig();
   } else {
-    await apply(newConfig);
+    await applyConfig(newConfig);
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -965,7 +348,7 @@ export function getConfigChanges(): Partial<Config> {
   return configChanges;
 }
 
-export async function applyFromJson(json: string): Promise<void> {
+export async function applyConfigFromJson(json: string): Promise<void> {
   try {
     const parsedConfig = parseJsonWithSchema(
       json,
@@ -979,7 +362,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       },
     );
-    await apply(parsedConfig);
+    await applyConfig(parsedConfig);
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {
@@ -989,9 +372,10 @@ export async function applyFromJson(json: string): Promise<void> {
   }
 }
 
-const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();
+const { promise: configLoadPromise, resolve: loadDone } =
+  promiseWithResolvers();
 
-export { loadPromise };
+export { configLoadPromise };
 export default config;
 export const __testing = {
   configMetadata,

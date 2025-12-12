@@ -10,7 +10,7 @@ const subgroup: CommandsSubgroup = {
       display: "off",
       configValue: "off",
       exec: (): void => {
-        UpdateConfig.setTribeCarets("off");
+        UpdateConfig.setConfig("tribeCarets", "off");
       },
     },
     {
@@ -18,7 +18,7 @@ const subgroup: CommandsSubgroup = {
       display: "no names",
       configValue: "noNames",
       exec: (): void => {
-        UpdateConfig.setTribeCarets("noNames");
+        UpdateConfig.setConfig("tribeCarets", "noNames");
       },
     },
     {
@@ -26,7 +26,7 @@ const subgroup: CommandsSubgroup = {
       display: "on",
       configValue: "on",
       exec: (): void => {
-        UpdateConfig.setTribeCarets("on");
+        UpdateConfig.setConfig("tribeCarets", "on");
       },
     },
   ],

@@ -10,10 +10,11 @@ import * as Keymap from "../elements/keymap";
 import * as TribeState from "../tribe/tribe-state";
 import * as ScrollToTop from "../elements/scroll-to-top";
 import { blurInputElement } from "../input/input-element";
+import { qsr } from "../utils/dom";
 
 export const page = new Page({
   id: "test",
-  element: $(".page.pageTest"),
+  element: qsr(".page.pageTest"),
   path: "/",
   beforeHide: async (): Promise<void> => {
     blurInputElement();

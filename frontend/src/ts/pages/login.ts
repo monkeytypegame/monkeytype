@@ -208,7 +208,7 @@ new ValidatedHtmlInputElement(passwordVerifyInputEl, {
 
 export const page = new Page({
   id: "login",
-  element: $(".page.pageLogin"),
+  element: qsr(".page.pageLogin"),
   path: "/login",
   afterHide: async (): Promise<void> => {
     hidePreloader();

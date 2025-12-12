@@ -1,3 +1,9 @@
+import {
+  animate as animejsAnimate,
+  AnimationParams,
+  JSAnimation,
+} from "animejs";
+
 /**
  * Query Selector
  *
@@ -311,6 +317,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's style object
+   */
+  getStyle(): CSSStyleDeclaration {
+    return this.native.style;
+  }
+
+  /**
    * Check if the element is focused
    */
   isFocused(): boolean {
@@ -463,6 +476,59 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.replaceWith(element);
     }
     return this;
+  }
+
+  /**
+   * Get the element's width
+   */
+  getOffsetWidth(): number {
+    return this.native.offsetWidth;
+  }
+
+  /**
+   * Get the element's height
+   */
+  getOffsetHeight(): number {
+    return this.native.offsetHeight;
+  }
+
+  /**
+   * Get the element's top offset relative to its offsetParent
+   */
+  getOffsetTop(): number {
+    return this.native.offsetTop;
+  }
+
+  /**
+   * Get the element's left offset relative to its offsetParent
+   */
+  getOffsetLeft(): number {
+    return this.native.offsetLeft;
+  }
+
+  /**
+   * Animate the element using Anime.js
+   * @param animationParams The Anime.js animation parameters
+   * @returns The JSAnimation instance created by Anime.js
+   */
+  animate(animationParams: AnimationParams): JSAnimation {
+    return animejsAnimate(this.native, animationParams);
+  }
+
+  /**
+   * Animate the element using Anime.js
+   * @param animationParams The Anime.js animation parameters
+   */
+  async promiseAnimate(animationParams: AnimationParams): Promise<void> {
+    return new Promise((resolve) => {
+      animejsAnimate(this.native, {
+        ...animationParams,
+        onComplete: (self, e) => {
+          animationParams.onComplete?.(self, e);
+          resolve();
+        },
+      });
+    });
   }
 }
 

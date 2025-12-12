@@ -60,14 +60,14 @@ export function update(): void {
         width: mapRange(myspeed, min, center, 100, 0) + "%",
       },
       duration,
-      "linear"
+      "linear",
     );
     aheadbarel.stop(true, false).animate(
       {
         width: mapRange(myspeed, center, max, 0, 100) + "%",
       },
       duration,
-      "linear"
+      "linear",
     );
   } else {
     if (delta > 0) {
@@ -83,9 +83,9 @@ export function update(): void {
               width: mapRange(myspeed, min, center, 100, 0) + "%",
             },
             duration / 2,
-            "linear"
+            "linear",
           );
-        }
+        },
       );
     } else if (delta < 0) {
       behindbarel.stop(true, false).animate(
@@ -100,9 +100,9 @@ export function update(): void {
               width: mapRange(myspeed, center, max, 0, 100) + "%",
             },
             duration / 2,
-            "linear"
+            "linear",
           );
-        }
+        },
       );
     } else if (delta === 0) {
       behindbarel.stop(true, false).animate(
@@ -110,14 +110,14 @@ export function update(): void {
           width: "0%",
         },
         duration,
-        "linear"
+        "linear",
       );
       aheadbarel.stop(true, false).animate(
         {
           width: "0%",
         },
         duration,
-        "linear"
+        "linear",
       );
     }
   }
@@ -181,7 +181,7 @@ export function show(): void {
     {
       opacity: Config.timerOpacity,
     },
-    125
+    125,
   );
 }
 
@@ -193,7 +193,7 @@ export function hide(): void {
     125,
     () => {
       el.addClass("hidden");
-    }
+    },
   );
 }
 
@@ -206,7 +206,7 @@ export function showBar(): void {
     {
       opacity: Config.timerOpacity,
     },
-    125
+    125,
   );
 }
 
@@ -219,17 +219,17 @@ export function hideBar(): void {
     125,
     () => {
       elBar.addClass("hidden");
-    }
+    },
   );
 }
 
-ConfigEvent.subscribe((key, value) => {
+ConfigEvent.subscribe(({ key, newValue }) => {
   if (key !== "tribeDelta") return;
 
-  if (value === "text") {
+  if (newValue === "text") {
     hideBar();
     show();
-  } else if (value === "bar") {
+  } else if (newValue === "bar") {
     hide();
     showBar();
   } else {

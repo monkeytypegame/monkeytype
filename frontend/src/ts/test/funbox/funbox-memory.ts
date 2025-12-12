@@ -1,9 +1,11 @@
-import { ConfigValue } from "@monkeytype/schemas/configs";
+import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+
+import { setConfig } from "../../config";
 
 type SetFunction<T> = (
   param: T,
   nosave?: boolean,
-  tribeOverride?: boolean
+  tribeOverride?: boolean,
 ) => boolean;
 
 type ValueAndSetFunction<T> = {
@@ -15,14 +17,16 @@ type SettingsMemory<T> = Record<string, ValueAndSetFunction<T>>;
 
 let settingsMemory: SettingsMemory<ConfigValue> = {};
 
-export function save<T extends ConfigValue>(
-  settingName: string,
-  value: T,
-  setFunction: SetFunction<T>,
+export function save<T extends ConfigKey>(
+  settingName: T,
+  value: Config[T],
 ): void {
   settingsMemory[settingName] ??= {
     value,
-    setFunction: setFunction as SetFunction<ConfigValue>,
+    setFunction: (param, noSave?) =>
+      setConfig(settingName, param as Config[T], {
+        nosave: noSave ?? false,
+      }),
   };
 }
 

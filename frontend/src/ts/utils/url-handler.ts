@@ -1,5 +1,5 @@
 import * as Misc from "./misc";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as Notifications from "../elements/notifications";
 import { decompressFromURI } from "lz-ts";
 import * as TestState from "../test/test-state";
@@ -118,21 +118,21 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const oldCustomTheme = Config.customTheme;
   const oldCustomThemeColors = Config.customThemeColors;
   try {
-    UpdateConfig.setCustomThemeColors(colorArray);
+    setConfig("customThemeColors", colorArray);
     Notifications.add("Custom theme applied", 1);
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
-      UpdateConfig.setCustomBackground(image);
-      UpdateConfig.setCustomBackgroundSize(size);
-      UpdateConfig.setCustomBackgroundFilter(filter);
+      setConfig("customBackground", image);
+      setConfig("customBackgroundSize", size);
+      setConfig("customBackgroundFilter", filter);
     }
 
-    if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
+    if (!Config.customTheme) setConfig("customTheme", true);
   } catch (e) {
     Notifications.add("Something went wrong. Reverting to previous state.", 0);
     console.error(e);
-    UpdateConfig.setCustomTheme(oldCustomTheme);
-    UpdateConfig.setCustomThemeColors(oldCustomThemeColors);
+    setConfig("customTheme", oldCustomTheme);
+    setConfig("customThemeColors", oldCustomThemeColors);
   }
 }
 
@@ -182,18 +182,24 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const applied: Record<string, string> = {};
 
   if (de[0] !== null) {
-    UpdateConfig.setMode(de[0], true);
+    setConfig("mode", de[0], {
+      nosave: true,
+    });
     applied["mode"] = de[0];
   }
 
   const mode = de[0] ?? Config.mode;
   if (de[1] !== null) {
     if (mode === "time") {
-      UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
+      setConfig("time", parseInt(de[1], 10), {
+        nosave: true,
+      });
     } else if (mode === "words") {
-      UpdateConfig.setWordCount(parseInt(de[1], 10), true);
+      setConfig("words", parseInt(de[1], 10), {
+        nosave: true,
+      });
     } else if (mode === "quote") {
-      UpdateConfig.setQuoteLength([-2], false);
+      setConfig("quoteLength", [-2]);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
@@ -237,22 +243,30 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[3] !== null) {
-    UpdateConfig.setPunctuation(de[3], true);
+    setConfig("punctuation", de[3], {
+      nosave: true,
+    });
     applied["punctuation"] = de[3] ? "on" : "off";
   }
 
   if (de[4] !== null) {
-    UpdateConfig.setNumbers(de[4], true);
+    setConfig("numbers", de[4], {
+      nosave: true,
+    });
     applied["numbers"] = de[4] ? "on" : "off";
   }
 
   if (de[5] !== null) {
-    UpdateConfig.setLanguage(de[5] as Language, true);
+    setConfig("language", de[5] as Language, {
+      nosave: true,
+    });
     applied["language"] = de[5];
   }
 
   if (de[6] !== null) {
-    UpdateConfig.setDifficulty(de[6], true);
+    setConfig("difficulty", de[6], {
+      nosave: true,
+    });
     applied["difficulty"] = de[6];
   }
 
@@ -264,7 +278,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else {
       val = de[7];
     }
-    UpdateConfig.setFunbox(val, true);
+    setConfig("funbox", val, {
+      nosave: true,
+    });
     applied["funbox"] = val.join(", ");
   }
 

@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../../config";
+import Config, { setConfig, saveFullConfigToLocalStorage } from "../../config";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
@@ -272,14 +272,17 @@ export function setCustomInputs(noThemeUpdate = false): void {
 function toggleFavourite(themeName: ThemeName): void {
   if (Config.favThemes.includes(themeName)) {
     // already favourite, remove
-    UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
+    setConfig(
+      "favThemes",
+      Config.favThemes.filter((t) => t !== themeName),
+    );
   } else {
     // add to favourites
     const newList: ThemeName[] = Config.favThemes;
     newList.push(themeName);
-    UpdateConfig.setFavThemes(newList);
+    setConfig("favThemes", newList);
   }
-  UpdateConfig.saveFullConfigToLocalStorage();
+  saveFullConfigToLocalStorage();
 }
 
 function saveCustomThemeColors(): void {
@@ -291,7 +294,7 @@ function saveCustomThemeColors(): void {
       ) as string,
     );
   }
-  UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
+  setConfig("customThemeColors", newColors as CustomThemeColors);
   Notifications.add("Custom theme saved", 1);
 }
 
@@ -344,9 +347,9 @@ $(".pageSettings .section.themes .tabs button").on("click", (e) => {
   // setCustomInputs();
   //test
   if ($target.attr("data-tab") === "preset") {
-    UpdateConfig.setCustomTheme(false);
+    setConfig("customTheme", false);
   } else {
-    UpdateConfig.setCustomTheme(true);
+    setConfig("customTheme", true);
   }
 });
 
@@ -369,7 +372,7 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
     return;
   }
 
-  UpdateConfig.setCustomThemeColors(theme.colors);
+  setConfig("customThemeColors", theme.colors);
 });
 
 // Handle click on favorite preset theme button
@@ -390,7 +393,7 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
 $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme") as ThemeName;
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
-    UpdateConfig.setTheme(theme);
+    setConfig("theme", theme);
   }
 });
 
@@ -490,11 +493,11 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
   void fillCustomButtons();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "theme" && ActivePage.get() === "settings") {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
   }
-  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
+  if (key === "favThemes" && ActivePage.get() === "settings") {
     void fillPresetButtons();
   }
 });

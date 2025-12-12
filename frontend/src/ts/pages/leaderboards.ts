@@ -44,6 +44,7 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
+import { qsr } from "../utils/dom";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -1489,7 +1490,7 @@ $(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons").on(
 
 export const page = new PageWithUrlParams({
   id: "leaderboards",
-  element: $(".page.pageLeaderboards"),
+  element: qsr(".page.pageLeaderboards"),
   path: "/leaderboards",
   urlParamsSchema: UrlParameterSchema,
 
@@ -1520,8 +1521,8 @@ $(async () => {
   Skeleton.save("pageLeaderboards");
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (ActivePage.get() === "leaderboards" && eventKey === "typingSpeedUnit") {
+ConfigEvent.subscribe(({ key }) => {
+  if (ActivePage.get() === "leaderboards" && key === "typingSpeedUnit") {
     updateContent();
     fillUser();
   }
