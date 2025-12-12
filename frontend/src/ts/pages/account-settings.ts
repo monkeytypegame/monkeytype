@@ -12,6 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
+import { qsr } from "../utils/dom";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -229,7 +230,7 @@ AuthEvent.subscribe((event) => {
 export const page = new PageWithUrlParams({
   id: "accountSettings",
   display: "Account Settings",
-  element: pageElement,
+  element: qsr(".page.pageAccountSettings"),
   path: "/account-settings",
   urlParamsSchema: UrlParameterSchema,
   afterHide: async (): Promise<void> => {

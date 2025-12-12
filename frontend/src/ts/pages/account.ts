@@ -35,6 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
+import { qsr } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1195,7 +1196,7 @@ ConfigEvent.subscribe(({ key }) => {
 
 export const page = new Page<undefined>({
   id: "account",
-  element: $(".page.pageAccount"),
+  element: qsr(".page.pageAccount"),
   path: "/account",
   loadingOptions: {
     loadingMode: () => {

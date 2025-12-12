@@ -127,8 +127,12 @@ function layoutfluid(): void {
 
     if (Config.layout !== layout && layout !== undefined) {
       LayoutfluidFunboxTimer.hide();
-      setConfig("layout", layout as Layout, true);
-      setConfig("keymapLayout", layout as KeymapLayout, true);
+      setConfig("layout", layout as Layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", layout as KeymapLayout, {
+        nosave: true,
+      });
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");

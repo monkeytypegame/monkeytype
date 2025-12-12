@@ -207,7 +207,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   simon_says: {
     applyConfig(): void {
-      setConfig("keymapMode", "next", true);
+      setConfig("keymapMode", "next", {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -215,7 +217,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   tts: {
     applyConfig(): void {
-      setConfig("keymapMode", "off", true);
+      setConfig("keymapMode", "off", {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -368,8 +372,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (Config.layout === "default") {
         layout = "qwerty";
       }
-      setConfig("layout", layout, true);
-      setConfig("keymapLayout", "overrideSync", true);
+      setConfig("layout", layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", "overrideSync", {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -380,8 +388,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     applyConfig(): void {
       const layout = Config.customLayoutfluid[0] ?? "qwerty";
 
-      setConfig("layout", layout as Layout, true);
-      setConfig("keymapLayout", layout as KeymapLayout, true);
+      setConfig("layout", layout as Layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", layout as KeymapLayout, {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode);
@@ -485,9 +497,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   memory: {
     applyConfig(): void {
       $("#wordsWrapper").addClass("hidden");
-      setConfig("showAllLines", true, true);
+      setConfig("showAllLines", true, {
+        nosave: true,
+      });
       if (Config.keymapMode === "next") {
-        setConfig("keymapMode", "react", true);
+        setConfig("keymapMode", "react", {
+          nosave: true,
+        });
       }
     },
     rememberSettings(): void {
@@ -684,7 +700,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
       if (languages.length === 1) {
         const lang = languages[0] as LanguageObject;
-        setConfig("language", lang.name, true);
+        setConfig("language", lang.name, {
+          nosave: true,
+        });
         toggleFunbox("polyglot", true);
         Notifications.add(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(

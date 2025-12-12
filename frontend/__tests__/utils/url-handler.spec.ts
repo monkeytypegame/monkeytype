@@ -56,8 +56,12 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", true);
-      expect(setConfigMock).toHaveBeenCalledWith("time", 60, true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("time", 60, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets time", () => {
@@ -70,8 +74,12 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", true);
-      expect(setConfigMock).toHaveBeenCalledWith("time", 30, true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("time", 30, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets word count", () => {
@@ -84,8 +92,12 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("mode", "words", true);
-      expect(setConfigMock).toHaveBeenCalledWith("words", 50, true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "words", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("words", 50, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets quote length", () => {
@@ -98,8 +110,10 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("mode", "quote", true);
-      expect(setConfigMock).toHaveBeenCalledWith("quoteLength", [-2], false);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "quote", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("quoteLength", [-2]);
       expect(setSelectedQuoteIdMock).toHaveBeenCalledWith(512);
       expect(restartTestMock).toHaveBeenCalled();
     });
@@ -111,7 +125,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("punctuation", true, true);
+      expect(setConfigMock).toHaveBeenCalledWith("punctuation", true, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets numbers", () => {
@@ -122,7 +138,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("numbers", false, true);
+      expect(setConfigMock).toHaveBeenCalledWith("numbers", false, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets language", () => {
@@ -133,7 +151,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("language", "english", true);
+      expect(setConfigMock).toHaveBeenCalledWith("language", "english", {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets difficulty", () => {
@@ -144,7 +164,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setConfigMock).toHaveBeenCalledWith("difficulty", "master", true);
+      expect(setConfigMock).toHaveBeenCalledWith("difficulty", "master", {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets funbox", () => {
@@ -160,7 +182,9 @@ describe("url-handler", () => {
       expect(setConfigMock).toHaveBeenCalledWith(
         "funbox",
         ["crt", "choo_choo"],
-        true,
+        {
+          nosave: true,
+        },
       );
       expect(restartTestMock).toHaveBeenCalled();
     });
@@ -177,7 +201,9 @@ describe("url-handler", () => {
       expect(setConfigMock).toHaveBeenCalledWith(
         "funbox",
         ["crt", "choo_choo"],
-        true,
+        {
+          nosave: true,
+        },
       );
       expect(restartTestMock).toHaveBeenCalled();
     });

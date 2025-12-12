@@ -497,9 +497,11 @@ async function init(): Promise<boolean> {
           important: true,
         },
       );
-      setConfig("lazyMode", false, false);
+      setConfig("lazyMode", false);
     } else if (rememberLazyMode && anySupportsLazyMode) {
-      setConfig("lazyMode", true, true);
+      setConfig("lazyMode", true, {
+        nosave: true,
+      });
     }
   } else {
     // normal mode
@@ -510,9 +512,11 @@ async function init(): Promise<boolean> {
         important: true,
       });
 
-      setConfig("lazyMode", false, false);
+      setConfig("lazyMode", false);
     } else if (rememberLazyMode && !language.noLazyMode) {
-      setConfig("lazyMode", true, true);
+      setConfig("lazyMode", true, {
+        nosave: true,
+      });
     }
   }
 
@@ -1559,7 +1563,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
         arr = [len];
       }
 
-      if (setConfig("quoteLength", arr, false)) {
+      if (setConfig("quoteLength", arr)) {
         ManualRestart.set();
         restart();
       }
@@ -1595,7 +1599,9 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if ((newValue as string)?.startsWith("arabic") && ArabicLazyMode.get()) {
-        setConfig("lazyMode", true, true);
+        setConfig("lazyMode", true, {
+          nosave: true,
+        });
       }
       restart();
     }
