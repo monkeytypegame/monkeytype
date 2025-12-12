@@ -53,7 +53,6 @@ import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
@@ -275,14 +274,6 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
-
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
-  Monkey.hide();
-  TimerProgress.hide();
-  LayoutfluidFunboxTimer.hide();
-
   Replay.pauseReplay();
   TestState.setBailedOut(false);
   Caret.resetPosition();

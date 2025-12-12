@@ -50,6 +50,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1843,6 +1844,17 @@ export function onTestRestart(): void {
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
+  LiveSpeed.instantHide();
+  LiveSpeed.reset();
+  LiveBurst.instantHide();
+  LiveBurst.reset();
+  LiveAcc.instantHide();
+  LiveAcc.reset();
+  TimerProgress.instantHide();
+  TimerProgress.reset();
+  Monkey.instantHide();
+  LayoutfluidFunboxTimer.instantHide();
+  updatePremid();
   focusWords(true);
   currentTestLine = 0;
   if (ActivePage.get() === "test") {
@@ -1860,11 +1872,7 @@ export function onTestRestart(): void {
 }
 
 export function afterTestRestart(): void {
-  TimerProgress.reset();
-  LiveSpeed.reset();
-  LiveAcc.reset();
-  LiveBurst.reset();
-  updatePremid();
+  //
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
