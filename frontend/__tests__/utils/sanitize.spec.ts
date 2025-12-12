@@ -151,6 +151,18 @@ describe("sanitize function", () => {
           optional: { name: "Alice", age: 23 },
         },
       },
+      {
+        input: {
+          name: "Alice",
+          //results in two errors on the same path. array with invalid value and not enough items
+          enumArray: ["invalid" as any],
+        },
+        expected: {
+          mandatory: false,
+          partial: { name: "Alice" }, //enumArray is removed
+          optional: false,
+        },
+      },
     ];
 
     it.for(testCases)("object mandatory with $input", ({ input, expected }) => {
