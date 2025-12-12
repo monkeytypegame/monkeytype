@@ -1,20 +1,20 @@
-import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+import { Config } from "@monkeytype/schemas/configs";
 
 export type ConfigEventKey =
-  | ConfigKey
-  | "saveToLocalStorage"
-  | "setThemes"
-  | "configApplied"
+  | keyof Config
   | "fullConfigChange"
   | "fullConfigChangeFinished";
 
-type SubscribeFunction = (
-  key: ConfigEventKey,
-  newValue?: ConfigValue,
-  nosave?: boolean,
-  previousValue?: ConfigValue,
-  fullConfig?: Config,
-) => void;
+type SubscribeParams = {
+  nosave?: boolean;
+  fullConfig?: Config;
+} & {
+  [K in ConfigEventKey]?: K extends keyof Config
+    ? { key: K; newValue: Config[K]; previousValue: Config[K] }
+    : { key: K; newValue?: undefined; previousValue?: undefined };
+}[ConfigEventKey];
+
+type SubscribeFunction = (options: SubscribeParams) => void;
 
 const subscribers: SubscribeFunction[] = [];
 
@@ -22,16 +22,10 @@ export function subscribe(fn: SubscribeFunction): void {
   subscribers.push(fn);
 }
 
-export function dispatch(
-  key: ConfigEventKey,
-  newValue?: ConfigValue,
-  nosave?: boolean,
-  previousValue?: ConfigValue,
-  fullConfig?: Config,
-): void {
+export function dispatch(options: SubscribeParams): void {
   subscribers.forEach((fn) => {
     try {
-      fn(key, newValue, nosave, previousValue, fullConfig);
+      fn(options);
     } catch (e) {
       console.error("Config event subscriber threw an error");
       console.error(e);

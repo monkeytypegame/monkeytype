@@ -1590,31 +1590,21 @@ $("header").on("click", "nav #startTestButton, #logo", () => {
 
 // ===============================
 
-ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (ActivePage.get() === "test") {
-    if (eventKey === "language") {
+    if (key === "language") {
       //automatically enable lazy mode for arabic
-      if (
-        (eventValue as string)?.startsWith("arabic") &&
-        ArabicLazyMode.get()
-      ) {
+      if ((newValue as string)?.startsWith("arabic") && ArabicLazyMode.get()) {
         setConfig("lazyMode", true, true);
       }
       restart();
     }
-    if (eventKey === "difficulty" && !nosave) restart();
-    if (
-      eventKey === "customLayoutfluid" &&
-      Config.funbox.includes("layoutfluid")
-    ) {
+    if (key === "difficulty" && !nosave) restart();
+    if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
       restart();
     }
 
-    if (
-      eventKey === "keymapMode" &&
-      eventValue === "next" &&
-      Config.mode !== "zen"
-    ) {
+    if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
@@ -1627,11 +1617,11 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       }, 0);
     }
   }
-  if (eventKey === "lazyMode" && !nosave) {
+  if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
-      ArabicLazyMode.set(eventValue as boolean);
+      ArabicLazyMode.set(newValue);
     }
-    if (eventValue === false) {
+    if (newValue) {
       if (!showedLazyModeNotification) {
         rememberLazyMode = false;
       }

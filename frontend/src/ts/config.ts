@@ -66,8 +66,6 @@ function saveToLocalStorage(
     configToSend[key] = config[key];
     saveToDatabase();
   }
-  const localToSaveStringified = JSON.stringify(config);
-  ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
@@ -78,8 +76,6 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
     void DB.saveConfig(config);
     AccountButton.loading(false);
   }
-  const stringified = JSON.stringify(config);
-  ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
 function isConfigChangeBlocked(): boolean {
@@ -92,9 +88,9 @@ function isConfigChangeBlocked(): boolean {
   return false;
 }
 
-export function setConfig<T extends keyof ConfigSchemas.Config>(
+export function setConfig<T extends keyof Config>(
   key: T,
-  value: ConfigSchemas.Config[T],
+  value: Config[T],
   nosave: boolean = false,
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
@@ -183,7 +179,14 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   config[key] = value;
   if (!nosave) saveToLocalStorage(key, nosave);
-  ConfigEvent.dispatch(key, value, nosave, previousValue);
+
+  // @ts-expect-error i can't figure this out
+  ConfigEvent.dispatch({
+    key: key,
+    newValue: value,
+    nosave,
+    previousValue: previousValue as Config[T],
+  });
 
   if (metadata.triggerResize && !nosave) {
     triggerResize();
@@ -201,6 +204,8 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     return false;
   }
 
+  const previousValue = config.funbox;
+
   let newConfig: FunboxName[] = config.funbox;
 
   if (newConfig.includes(funbox)) {
@@ -216,7 +221,12 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
-  ConfigEvent.dispatch("funbox", config.funbox);
+  ConfigEvent.dispatch({
+    key: "funbox",
+    newValue: config.funbox,
+    nosave,
+    previousValue,
+  });
 
   return true;
 }
@@ -248,7 +258,7 @@ export async function applyConfig(
   //migrate old values if needed, remove additional keys and merge with default config
   const fullConfig: Config = migrateConfig(partialConfig);
 
-  ConfigEvent.dispatch("fullConfigChange");
+  ConfigEvent.dispatch({ key: "fullConfigChange" });
 
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullConfig)) {
@@ -276,14 +286,7 @@ export async function applyConfig(
     saveToLocalStorage(key);
   }
 
-  ConfigEvent.dispatch(
-    "configApplied",
-    undefined,
-    undefined,
-    undefined,
-    config,
-  );
-  ConfigEvent.dispatch("fullConfigChangeFinished");
+  ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
 }
 
 export async function resetConfig(): Promise<void> {
