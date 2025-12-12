@@ -1520,8 +1520,8 @@ $(async () => {
   Skeleton.save("pageLeaderboards");
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (ActivePage.get() === "leaderboards" && eventKey === "typingSpeedUnit") {
+ConfigEvent.subscribe(({ key }) => {
+  if (ActivePage.get() === "leaderboards" && key === "typingSpeedUnit") {
     updateContent();
     fillUser();
   }

@@ -978,24 +978,24 @@ $(".pageSettings .section .groupTitle button").on("click", (e) => {
     });
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "fullConfigChange") setEventDisabled(true);
-  if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
-  if (eventKey === "themeLight") {
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "fullConfigChange") setEventDisabled(true);
+  if (key === "fullConfigChangeFinished") setEventDisabled(false);
+  if (key === "themeLight") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`,
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${newValue}"]`,
     ).attr("selected", "true");
-  } else if (eventKey === "themeDark") {
+  } else if (key === "themeDark") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`,
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${newValue}"]`,
     ).attr("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
-  if (configEventDisabled || eventKey === "saveToLocalStorage") return;
-  if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    void (eventKey === "customBackground"
+  if (configEventDisabled) return;
+  if (ActivePage.get() === "settings" && key !== "theme") {
+    void (key === "customBackground"
       ? updateFilterSectionVisibility()
-      : update({ eventKey }));
+      : update({ eventKey: key }));
   }
 });
 
