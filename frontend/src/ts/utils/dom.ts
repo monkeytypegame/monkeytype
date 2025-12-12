@@ -514,6 +514,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   animate(animationParams: AnimationParams): JSAnimation {
     return animejsAnimate(this.native, animationParams);
   }
+
+  /**
+   * Animate the element using Anime.js
+   * @param animationParams The Anime.js animation parameters
+   */
+  async promiseAnimate(animationParams: AnimationParams): Promise<void> {
+    return new Promise((resolve) => {
+      animejsAnimate(this.native, {
+        ...animationParams,
+        onComplete: (self, e) => {
+          animationParams.onComplete?.(self, e);
+          resolve();
+        },
+      });
+    });
+  }
 }
 
 /**

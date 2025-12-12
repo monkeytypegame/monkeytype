@@ -35,6 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
+import { qsr } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1187,15 +1188,15 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
   Loader.hide();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
+ConfigEvent.subscribe(({ key }) => {
+  if (ActivePage.get() === "account" && key === "typingSpeedUnit") {
     void update();
   }
 });
 
 export const page = new Page<undefined>({
   id: "account",
-  element: $(".page.pageAccount"),
+  element: qsr(".page.pageAccount"),
   path: "/account",
   loadingOptions: {
     loadingMode: () => {

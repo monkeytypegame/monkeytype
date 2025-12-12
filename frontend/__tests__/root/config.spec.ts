@@ -145,26 +145,26 @@ describe("Config", () => {
       Config.setConfig("confidenceMode", "max");
 
       //THEN
-      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
-        "freedomMode",
-        false,
-        true,
-        true,
-      );
+      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith({
+        key: "freedomMode",
+        newValue: false,
+        nosave: true,
+        previousValue: true,
+      });
 
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "stopOnError",
-        "off",
-        false,
-        "letter",
-      );
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
+        key: "stopOnError",
+        newValue: "off",
+        nosave: false,
+        previousValue: "letter",
+      });
 
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "confidenceMode",
-        "max",
-        false,
-        "off",
-      );
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
+        key: "confidenceMode",
+        newValue: "max",
+        nosave: false,
+        previousValue: "off",
+      });
     });
 
     it("saves to localstorage if nosave=false", async () => {
@@ -186,12 +186,6 @@ describe("Config", () => {
 
       //hide loading
       expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(2, false);
-
-      //send event
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "saveToLocalStorage",
-        expect.stringContaining("numbers"),
-      );
     });
 
     it("saves configOverride values to localstorage if nosave=false", async () => {
@@ -210,16 +204,6 @@ describe("Config", () => {
         minWpmCustomSpeed: 120,
         minWpm: "custom",
       });
-
-      //send event
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "saveToLocalStorage",
-        expect.stringContaining("minWpmCustomSpeed"),
-      );
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "saveToLocalStorage",
-        expect.stringContaining("minWpm"),
-      );
     });
 
     it("does not save to localstorage if nosave=true", async () => {
@@ -236,11 +220,6 @@ describe("Config", () => {
 
       expect(accountButtonLoadingMock).not.toHaveBeenCalled();
       expect(dbSaveConfigMock).not.toHaveBeenCalled();
-
-      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
-        "saveToLocalStorage",
-        expect.any(String),
-      );
     });
 
     it("dispatches event on set", () => {
@@ -252,12 +231,12 @@ describe("Config", () => {
 
       //THEN
 
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "numbers",
-        true,
-        true,
-        false,
-      );
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
+        key: "numbers",
+        newValue: true,
+        nosave: true,
+        previousValue: false,
+      });
     });
 
     it("triggers resize if property is set", () => {

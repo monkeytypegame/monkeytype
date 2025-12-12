@@ -486,11 +486,11 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
   void fillCustomButtons();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "theme" && ActivePage.get() === "settings") {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
   }
-  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
+  if (key === "favThemes" && ActivePage.get() === "settings") {
     void fillPresetButtons();
   }
 });

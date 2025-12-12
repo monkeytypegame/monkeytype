@@ -226,7 +226,7 @@ AuthEvent.subscribe((event) => {
 export const page = new PageWithUrlParams({
   id: "accountSettings",
   display: "Account Settings",
-  element: $(".page.pageAccountSettings"),
+  element: pageElement,
   path: "/account-settings",
   urlParamsSchema: UrlParameterSchema,
   afterHide: async (): Promise<void> => {

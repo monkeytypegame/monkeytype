@@ -337,7 +337,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   }
 }
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe(({ key }) => {
   if (
     [
       "difficulty",
@@ -354,7 +354,7 @@ ConfigEvent.subscribe((eventKey) => {
       "keymapMode",
       "keymapLayout",
       "layout",
-    ].includes(eventKey)
+    ].includes(key)
   ) {
     clearActive();
   }
