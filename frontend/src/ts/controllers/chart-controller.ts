@@ -1439,5 +1439,5 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     updateAverage10();
     updateAverage100();
   }
-  if (key === "fontFamily") setDefaultFontFamily(newValue as string);
+  if (key === "fontFamily") setDefaultFontFamily(newValue);
 });

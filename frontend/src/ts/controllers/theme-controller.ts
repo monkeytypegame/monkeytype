@@ -510,7 +510,7 @@ ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
     void changeThemeList();
   }
   if (key === "customTheme") {
-    (newValue as boolean) ? await set("custom") : await set(Config.theme);
+    newValue ? await set("custom") : await set(Config.theme);
   }
   if (key === "customThemeColors") {
     nosave ? preview("custom") : await set("custom");
@@ -525,7 +525,7 @@ ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
 
   if (key === "customBackgroundSize") applyCustomBackgroundSize();
   if (key === "autoSwitchTheme") {
-    if (newValue as boolean) {
+    if (newValue) {
       if (prefersColorSchemeDark()) {
         await set(Config.themeDark, true);
       } else {

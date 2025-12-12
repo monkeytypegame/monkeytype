@@ -1619,9 +1619,9 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   }
   if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
-      ArabicLazyMode.set(newValue as boolean);
+      ArabicLazyMode.set(newValue);
     }
-    if (newValue === false) {
+    if (newValue) {
       if (!showedLazyModeNotification) {
         rememberLazyMode = false;
       }
