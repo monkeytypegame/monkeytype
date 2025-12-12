@@ -165,9 +165,9 @@ export async function update(expectedStepEnd: number): Promise<void> {
     currentSettings.timeout = setTimeout(
       () => {
         if (settings !== currentSettings) return;
-        update(expectedStepEnd + (currentSettings?.spc ?? 0) * 1000).catch(
+        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
           () => {
-            settings = null;
+            if (settings === currentSettings) settings = null;
           },
         );
       },
