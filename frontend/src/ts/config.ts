@@ -92,10 +92,34 @@ function isConfigChangeBlocked(): boolean {
   return false;
 }
 
+export function batchSetConfig(
+  keyValues: Partial<Config>,
+  nosave: boolean = false,
+): void {
+  for (const key of typedKeys(keyValues)) {
+    setConfig(key, keyValues[key] as Config[keyof Config], true, true);
+  }
+
+  const restartRequired = typedKeys(keyValues).some((key) => {
+    const metadata = configMetadata[key];
+    return metadata.changeRequiresRestart;
+  });
+
+  ConfigEvent.dispatch(
+    "batchConfigApplied",
+    undefined,
+    nosave,
+    undefined,
+    config,
+    restartRequired,
+  );
+}
+
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
   nosave: boolean = false,
+  batched = false,
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
@@ -182,11 +206,14 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   }
 
   config[key] = value;
-  if (!nosave) saveToLocalStorage(key, nosave);
-  ConfigEvent.dispatch(key, value, nosave, previousValue);
 
-  if (metadata.triggerResize && !nosave) {
-    triggerResize();
+  if (!nosave) saveToLocalStorage(key, nosave);
+  if (!batched) {
+    ConfigEvent.dispatch(key, value, nosave, previousValue);
+
+    if (metadata.triggerResize && !nosave) {
+      triggerResize();
+    }
   }
 
   metadata.afterSet?.({ nosave: nosave || false, currentConfig: config });

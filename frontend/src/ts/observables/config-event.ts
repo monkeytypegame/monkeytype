@@ -6,7 +6,8 @@ export type ConfigEventKey =
   | "setThemes"
   | "configApplied"
   | "fullConfigChange"
-  | "fullConfigChangeFinished";
+  | "fullConfigChangeFinished"
+  | "batchConfigApplied";
 
 type SubscribeFunction = (
   key: ConfigEventKey,
@@ -14,6 +15,7 @@ type SubscribeFunction = (
   nosave?: boolean,
   previousValue?: ConfigValue,
   fullConfig?: Config,
+  restartRequired?: boolean,
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -28,10 +30,11 @@ export function dispatch(
   nosave?: boolean,
   previousValue?: ConfigValue,
   fullConfig?: Config,
+  restartRequired?: boolean,
 ): void {
   subscribers.forEach((fn) => {
     try {
-      fn(key, newValue, nosave, previousValue, fullConfig);
+      fn(key, newValue, nosave, previousValue, fullConfig, restartRequired);
     } catch (e) {
       console.error("Config event subscriber threw an error");
       console.error(e);
