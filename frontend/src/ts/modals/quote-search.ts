@@ -363,9 +363,7 @@ function apply(val: number): void {
     );
   }
   if (val !== null && !isNaN(val) && val >= 0) {
-    setConfig("quoteLength", [-2], {
-      nosave: true,
-    });
+    setConfig("quoteLength", [-2]);
     TestState.setSelectedQuoteId(val);
     ManualRestart.set();
   } else {
