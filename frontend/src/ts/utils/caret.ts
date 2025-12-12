@@ -202,51 +202,7 @@ export class Caret {
     });
   }
 
-  public handleLineJump(options: {
-    newMarginTop: number;
-    duration: number;
-  }): void {
-    // smooth line jump works by animating the words top margin.
-    // to sync the carets to the lines, we need to do the same here.
-
-    // using a readyToResetMarginTop flag here to make sure the animation
-    // is fully finished before we reset the marginTop to 0
-
-    // making sure to use a separate animation queue so that it doesnt
-    // affect the position animations
-    if (this.isMainCaret && options.duration === 0) return;
-
-    // in case we have two line jumps in a row
-    // if (this.readyToResetMarginTop) {
-    //   this.element.setStyle({
-    //     marginTop: "0px",
-    //   });
-    // }
-
-    if (this.readyToResetMarginTop) {
-      options.newMarginTop +=
-        parseFloat(this.element.getStyle().marginTop) || 0;
-    }
-
-    this.readyToResetMarginTop = false;
-
-    if (options.duration === 0) {
-      this.marginTopAnimation?.cancel();
-      this.element.setStyle({ marginTop: `${options.newMarginTop}px` });
-      this.readyToResetMarginTop = true;
-      return;
-    }
-
-    this.marginTopAnimation = this.element.animate({
-      marginTop: options.newMarginTop,
-      duration: options.duration,
-      onComplete: () => {
-        this.readyToResetMarginTop = true;
-      },
-    });
-  }
-
-  public newHandleLineJump(
+  public handleLineJump(
     options:
       | {
           mode: "set";
@@ -259,15 +215,7 @@ export class Caret {
     if (options.mode === "set") {
       this.element.setStyle({ marginTop: `${options.marginTop}px` });
     } else if (options.mode === "clear") {
-      const currentTop = parseFloat(this.element.getStyle().top || "0");
-      let currentMarginTop = parseFloat(
-        this.element.getStyle().marginTop || "0",
-      );
-
-      this.element.setStyle({
-        marginTop: "0px",
-        top: `${currentTop + currentMarginTop}px`,
-      });
+      this.readyToResetMarginTop = true;
     }
   }
 
@@ -302,7 +250,7 @@ export class Caret {
 
     this.posAnimation = this.element.animate({
       ...animation,
-      duration: 1000,
+      duration: finalDuration,
       ease: options.easing ?? "inOut(1.25)",
     });
   }

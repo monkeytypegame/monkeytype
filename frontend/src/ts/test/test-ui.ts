@@ -1261,35 +1261,29 @@ export async function lineJump(
 
     const wordHeight = $(activeWordEl).outerHeight(true) as number;
     const newMarginTop = -1 * wordHeight * currentLinesJumping;
-    const duration = 1250;
-
-    const caretLineJumpOptions = {
-      newMarginTop,
-      duration: Config.smoothLineScroll ? duration : 0,
-    };
-    // Caret.caret.handleLineJump(caretLineJumpOptions);
-    // PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+    const duration = 125;
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
       await Misc.promiseAnimate(wordsEl, {
         marginTop: newMarginTop,
         duration,
+        ease: "linear",
         onRender: () => {
-          Caret.caret.newHandleLineJump({
+          Caret.caret.handleLineJump({
             mode: "set",
             marginTop: parseFloat(wordsEl.style.marginTop),
           });
-          PaceCaret.caret.newHandleLineJump({
+          PaceCaret.caret.handleLineJump({
             mode: "set",
             marginTop: parseFloat(wordsEl.style.marginTop),
           });
         },
         onComplete: () => {
-          Caret.caret.newHandleLineJump({
+          Caret.caret.handleLineJump({
             mode: "clear",
           });
-          PaceCaret.caret.newHandleLineJump({
+          PaceCaret.caret.handleLineJump({
             mode: "clear",
           });
         },
