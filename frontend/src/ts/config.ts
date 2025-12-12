@@ -286,10 +286,6 @@ export async function applyConfig(
     saveToLocalStorage(key);
   }
 
-  ConfigEvent.dispatch({
-    key: "configApplied",
-    fullConfig: config,
-  });
   ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
 }
 
