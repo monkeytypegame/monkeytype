@@ -1188,8 +1188,8 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
   Loader.hide();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
+ConfigEvent.subscribe(({ key }) => {
+  if (ActivePage.get() === "account" && key === "typingSpeedUnit") {
     void update();
   }
 });

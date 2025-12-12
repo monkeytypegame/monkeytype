@@ -13,7 +13,7 @@ import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe(({ key }) => {
   const configKeys: ConfigEvent.ConfigEventKey[] = [
     "difficulty",
     "blindMode",
@@ -33,7 +33,7 @@ ConfigEvent.subscribe((eventKey) => {
     "customPolyglot",
     "alwaysShowDecimalPlaces",
   ];
-  if (configKeys.includes(eventKey)) {
+  if (configKeys.includes(key)) {
     void update();
   }
 });

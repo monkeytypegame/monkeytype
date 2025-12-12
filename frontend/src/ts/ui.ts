@@ -115,9 +115,9 @@ window.addEventListener("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe(async (eventKey) => {
-  if (eventKey === "quickRestart") updateKeytips();
-  if (eventKey === "showKeyTips") {
+ConfigEvent.subscribe(async ({ key }) => {
+  if (key === "quickRestart") updateKeytips();
+  if (key === "showKeyTips") {
     const keyTipsElement = qs("footer .keyTips");
     if (Config.showKeyTips) {
       keyTipsElement?.removeClass("hidden");
@@ -125,7 +125,7 @@ ConfigEvent.subscribe(async (eventKey) => {
       keyTipsElement?.addClass("hidden");
     }
   }
-  if (eventKey === "fontFamily") {
+  if (key === "fontFamily") {
     await applyFontFamily();
   }
 });

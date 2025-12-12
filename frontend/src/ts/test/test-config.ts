@@ -320,11 +320,11 @@ export function hideFavoriteQuoteLength(): void {
 
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
-  if (eventKey === "fullConfigChange") {
+ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
+  if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
-  if (eventKey === "fullConfigChangeFinished") {
+  if (key === "fullConfigChangeFinished") {
     ignoreConfigEvent = false;
 
     void instantUpdate();
@@ -335,15 +335,15 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ignoreConfigEvent) return;
 
   if (ActivePage.get() !== "test") return;
-  if (eventKey === "mode") {
-    void update(eventPreviousValue as Mode, eventValue as Mode);
+  if (key === "mode") {
+    void update(previousValue, newValue);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
-      eventKey,
+      key ?? "",
     )
   ) {
-    if (eventValue !== undefined) {
-      updateActiveExtraButtons(eventKey, eventValue);
+    if (newValue !== undefined) {
+      updateActiveExtraButtons(key, newValue);
     }
   }
 });

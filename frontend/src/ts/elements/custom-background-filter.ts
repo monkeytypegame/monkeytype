@@ -133,9 +133,9 @@ const debouncedSave = debounce(2000, async () => {
   setConfig("customBackgroundFilter", arr, false);
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
-    loadConfig(eventValue as CustomBackgroundFilter);
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "customBackgroundFilter") {
+    loadConfig(newValue);
     apply();
   }
 });
