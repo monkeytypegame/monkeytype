@@ -54,6 +54,19 @@ export function getSelf(): TribeTypes.User | undefined {
   return room?.users?.[TribeSocket.getId()];
 }
 
+export function isLeader(): boolean {
+  return getSelf()?.isLeader ?? false;
+}
+
+export function isInARoom(): boolean {
+  return getState() >= 5;
+}
+
+export function isRaceActive(): boolean {
+  const s = getState();
+  return s >= 10 && s <= 20;
+}
+
 export function canChangeConfig(override: boolean): boolean {
   if (getState() <= 1) return true;
   if (getSelf()?.isLeader) {

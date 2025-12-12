@@ -195,6 +195,10 @@ export function initRace(): void {
   }
 }
 
+export function readyUp(): void {
+  TribeSocket.out.room.readyUpdate();
+}
+
 async function connect(): Promise<void> {
   const versionCheck =
     await TribeSocket.out.system.versionCheck(expectedVersion);
