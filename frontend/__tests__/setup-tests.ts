@@ -64,6 +64,7 @@ vi.mock("../src/ts/utils/dom", () => {
       getOffsetTop: vi.fn().mockReturnValue(0),
       getOffsetLeft: vi.fn().mockReturnValue(0),
       animate: vi.fn().mockResolvedValue(null),
+      promiseAnimate: vi.fn().mockResolvedValue(null),
       native: document.createElement("div"),
     };
   };
