@@ -186,7 +186,7 @@ export function setConfig<T extends keyof Config>(
   ConfigEvent.dispatch({
     key: key,
     newValue: value,
-    nosave: options?.nosave,
+    nosave: options?.nosave ?? false,
     previousValue: previousValue as Config[T],
   });
 
