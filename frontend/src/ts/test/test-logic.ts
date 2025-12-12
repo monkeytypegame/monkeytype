@@ -12,7 +12,6 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
-import * as SoundController from "../controllers/sound-controller";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
@@ -21,13 +20,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
-import * as LiveSpeed from "./live-speed";
-import * as LiveAcc from "./live-acc";
-import * as LiveBurst from "./live-burst";
-import * as TimerProgress from "./timer-progress";
-
 import * as TestTimer from "./test-timer";
-import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
@@ -46,7 +39,6 @@ import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
-import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
@@ -283,7 +275,6 @@ export function restart(options = {} as RestartOptions): void {
   QuoteRateModal.clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  void SoundController.clearAllSounds();
 
   if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
@@ -358,7 +349,6 @@ export function restart(options = {} as RestartOptions): void {
         },
         duration: animationTime,
         onComplete: () => {
-          TestUI.afterTestRestart();
           ManualRestart.reset();
           TestState.setTestRestarting(false);
         },
@@ -902,6 +892,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   $(".pageTest .loading").removeClass("hidden");
   await Misc.sleep(0); //allow ui update
 
+  TestUI.onTestFinish();
+
   if (TestState.isRepeated && Config.mode === "quote") {
     TestState.setRepeated(false);
   }
@@ -930,14 +922,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  Caret.hide();
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
-  TimerProgress.hide();
-  OutOfFocus.hide();
   TestTimer.clear();
-  Monkey.hide();
   void ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended

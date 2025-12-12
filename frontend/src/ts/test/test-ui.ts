@@ -1867,12 +1867,19 @@ export function onTestRestart(): void {
   } else {
     CompositionDisplay.hide();
   }
+  void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
 }
 
-export function afterTestRestart(): void {
-  //
+export function onTestFinish(): void {
+  Caret.hide();
+  LiveSpeed.hide();
+  LiveAcc.hide();
+  LiveBurst.hide();
+  TimerProgress.hide();
+  OutOfFocus.hide();
+  Monkey.hide();
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
