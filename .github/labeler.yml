@@ -18,4 +18,12 @@ packages:
   - any: ["packages/**/*"]
 
 local dev:
-  - any: ["**/turbo.json", "**/tsconfig.json", "**/knip.json", "**/.prettierrc", "**/.oxlintrc.json", "**/.eslintrc.cjs"]
+  - any:
+      [
+        "**/turbo.json",
+        "**/tsconfig.json",
+        "**/knip.json",
+        "**/.prettierrc",
+        "**/.oxlintrc.json",
+        "**/.eslintrc.cjs",
+      ]

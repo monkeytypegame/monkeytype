@@ -80,7 +80,6 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - name: Checkout pnpm-lock
         uses: actions/checkout@v4
         with:
@@ -175,7 +174,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -296,7 +294,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |

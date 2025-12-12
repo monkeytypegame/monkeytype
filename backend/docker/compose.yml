@@ -26,7 +26,7 @@ services:
         FROM node:24.11.0
         RUN npm i -g pnpm@9.6.0
         RUN mkdir /pnpm-store && chown -R 1000:1000 /pnpm-store
-    user: "node"    ##this works as long as your local user has uid=1000
+    user: "node" ##this works as long as your local user has uid=1000
     restart: on-failure
     depends_on:
       - redis

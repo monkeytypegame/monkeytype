@@ -1,6 +1,5 @@
 name: Publish Docker image
 
-
 permissions:
   contents: read
 
