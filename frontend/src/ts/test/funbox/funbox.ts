@@ -38,9 +38,7 @@ export function setFunbox(funbox: FunboxName[]): boolean {
     }
   }
   FunboxMemory.load();
-  setConfig("funbox", funbox, {
-    nosave: true,
-  });
+  setConfig("funbox", funbox);
   return true;
 }
 
