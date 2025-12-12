@@ -336,9 +336,11 @@ ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
 
   if (ActivePage.get() !== "test") return;
   if (key === "mode") {
-    void update(previousValue as Mode, newValue as Mode);
+    void update(previousValue, newValue);
   } else if (
-    ["time", "quoteLength", "words", "numbers", "punctuation"].includes(key)
+    ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
+      key ?? "",
+    )
   ) {
     if (newValue !== undefined) {
       updateActiveExtraButtons(key, newValue);

@@ -1,7 +1,7 @@
-import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+import { Config } from "@monkeytype/schemas/configs";
 
 export type ConfigEventKey =
-  | ConfigKey
+  | keyof Config
   | "saveToLocalStorage"
   | "setThemes"
   | "configApplied"
@@ -9,12 +9,13 @@ export type ConfigEventKey =
   | "fullConfigChangeFinished";
 
 type SubscribeParams = {
-  key: ConfigEventKey;
-  newValue?: ConfigValue;
   nosave?: boolean;
-  previousValue?: ConfigValue;
   fullConfig?: Config;
-};
+} & {
+  [K in ConfigEventKey]?: K extends keyof Config
+    ? { key: K; newValue: Config[K]; previousValue: Config[K] }
+    : { key: K; newValue?: undefined; previousValue?: undefined };
+}[ConfigEventKey];
 
 type SubscribeFunction = (options: SubscribeParams) => void;
 

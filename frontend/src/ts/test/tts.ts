@@ -33,10 +33,10 @@ export async function speak(text: string): Promise<void> {
 
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "funbox") {
-    if (newValue === "none") {
-      clear();
-    } else if (newValue === "tts") {
+    if (newValue.includes("tts")) {
       void init();
+    } else {
+      clear();
     }
   }
   if (key === "language" && Config.funbox.includes("tts")) {

@@ -92,14 +92,16 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (key === "fontSize") {
     $(
       "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-    ).css("fontSize", (newValue as number) + "rem");
+    ).css("fontSize", newValue + "rem");
     if (!nosave) {
       OutOfFocus.hide();
       updateWordWrapperClasses();
     }
   }
   if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(key)
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      key ?? "",
+    )
   ) {
     void updateHintsPositionDebounced();
   }
@@ -2042,12 +2044,12 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     updateWordsWidth();
   }
   if (key === "timerOpacity") {
-    updateLiveStatsOpacity(newValue as TimerOpacity);
+    updateLiveStatsOpacity(newValue);
   }
   if (key === "timerColor") {
-    updateLiveStatsColor(newValue as TimerColor);
+    updateLiveStatsColor(newValue);
   }
-  if (key === "showOutOfFocusWarning" && newValue === false) {
+  if (key === "showOutOfFocusWarning" && !newValue) {
     OutOfFocus.hide();
   }
   if (key === "compositionDisplay") {

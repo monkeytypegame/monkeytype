@@ -66,10 +66,10 @@ function saveToLocalStorage(
     configToSend[key] = config[key];
     saveToDatabase();
   }
-  const localToSaveStringified = JSON.stringify(config);
+
   ConfigEvent.dispatch({
     key: "saveToLocalStorage",
-    newValue: localToSaveStringified,
+    fullConfig: config,
   });
 }
 
@@ -81,8 +81,8 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
     void DB.saveConfig(config);
     AccountButton.loading(false);
   }
-  const stringified = JSON.stringify(config);
-  ConfigEvent.dispatch({ key: "saveToLocalStorage", newValue: stringified });
+  //todo: IS THIS EVENT USED?
+  ConfigEvent.dispatch({ key: "saveToLocalStorage", fullConfig: config });
 }
 
 function isConfigChangeBlocked(): boolean {
@@ -95,9 +95,9 @@ function isConfigChangeBlocked(): boolean {
   return false;
 }
 
-export function setConfig<T extends keyof ConfigSchemas.Config>(
+export function setConfig<T extends keyof Config>(
   key: T,
-  value: ConfigSchemas.Config[T],
+  value: Config[T],
   nosave: boolean = false,
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
@@ -186,7 +186,12 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   config[key] = value;
   if (!nosave) saveToLocalStorage(key, nosave);
-  ConfigEvent.dispatch({ key, newValue: value, nosave, previousValue });
+  ConfigEvent.dispatch({
+    key: key,
+    newValue: value,
+    nosave,
+    previousValue,
+  });
 
   if (metadata.triggerResize && !nosave) {
     triggerResize();
@@ -204,6 +209,8 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     return false;
   }
 
+  const previousValue = config.funbox;
+
   let newConfig: FunboxName[] = config.funbox;
 
   if (newConfig.includes(funbox)) {
@@ -219,7 +226,12 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
-  ConfigEvent.dispatch({ key: "funbox", newValue: config.funbox, nosave });
+  ConfigEvent.dispatch({
+    key: "funbox",
+    newValue: config.funbox,
+    nosave,
+    previousValue,
+  });
 
   return true;
 }
