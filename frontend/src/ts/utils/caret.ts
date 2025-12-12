@@ -41,8 +41,6 @@ export class Caret {
   private marginTopAnimation: JSAnimation | null = null;
   private marginLeftAnimation: JSAnimation | null = null;
 
-  private marginCorrection: number = 0;
-
   constructor(element: ElementWithUtils, style: CaretStyle) {
     this.id = element.native.id;
     this.element = element;
