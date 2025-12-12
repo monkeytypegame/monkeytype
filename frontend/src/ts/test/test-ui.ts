@@ -2032,7 +2032,11 @@ $("#wordsWrapper").on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+ConfigEvent.subscribe(({ key, newValue, metadata }) => {
+  if (metadata?.triggerResize) {
+    document.dispatchEvent(new Event("resize"));
+  }
+
   if (key === "configApplied") {
     $(
       "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",

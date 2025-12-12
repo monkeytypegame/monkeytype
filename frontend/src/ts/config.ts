@@ -12,7 +12,6 @@ import {
   createErrorMessage,
   isObject,
   promiseWithResolvers,
-  triggerResize,
   typedKeys,
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
@@ -227,17 +226,13 @@ export function setConfig<T extends keyof Config>(
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   if (!options?.noevent) {
-    // @ts-expect-error i can't figure this out
     ConfigEvent.dispatch({
       key: key,
       newValue: value,
       nosave: options?.nosave ?? false,
-      previousValue: previousValue as Config[T],
-    });
-  }
-
-  if (metadata.triggerResize && !options?.nosave) {
-    triggerResize();
+      previousValue: previousValue,
+      metadata,
+    } as ConfigEvent.ConfigEventOptions);
   }
 
   metadata.afterSet?.({
@@ -276,6 +271,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     newValue: config.funbox,
     nosave,
     previousValue,
+    metadata: configMetadata.funbox,
   });
 
   return true;
