@@ -1828,7 +1828,7 @@ export async function afterTestWordChange(
   }
 }
 
-export function afterTestStart(): void {
+export function onTestStart(): void {
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();

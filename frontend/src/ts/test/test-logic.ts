@@ -123,7 +123,7 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
-  TestUI.afterTestStart();
+  TestUI.onTestStart();
   return true;
 }
 
