@@ -930,8 +930,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   TestUI.setResultCalculating(true);
   const now = performance.now();
-  TestStats.setEnd(now);
   TestTimer.clear();
+  TestStats.setEnd(now);
 
   // fade out the test and show loading
   // because the css animation has a delay,
