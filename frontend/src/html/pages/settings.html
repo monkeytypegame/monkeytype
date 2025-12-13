@@ -9,6 +9,10 @@
         <i class="fas icon fa-keyboard"></i>
         input
       </a>
+      <a class="textButton" href="#group_tribe">
+        <i class="fas icon fa-satellite"></i>
+        tribe
+      </a>
       <a class="textButton" href="#group_sound">
         <i class="fas icon fa-volume-up"></i>
         sound
@@ -650,89 +654,12 @@
     <div id="ad-settings-2-small"></div>
   </div>
 
-  <div id="group_tribe" class="sectionGroupTitle" group="tribe">
-    <i class="fas fa-chevron-down"></i>
-    tribe
-  </div>
-  <div class="settingsGroup tribe">
-    <div class="section tribeDelta">
-      <div class="groupTitle">
-        <i class="fas fa-exchange-alt"></i>
-        <span>tribe delta</span>
-      </div>
-      <div class="text">
-        Display the speed difference to the leader / person in second place
-        (depending on your position in the race).
-      </div>
-      <div class="buttons">
-        <div
-          class="button"
-          tribeDelta="off"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          off
-        </div>
-        <div
-          class="button"
-          tribeDelta="text"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          text
-        </div>
-        <div
-          class="button"
-          tribeDelta="bar"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          bar
-        </div>
-      </div>
-    </div>
-    <div class="section tribeCarets">
-      <div class="groupTitle">
-        <i class="fas fa-i-cursor"></i>
-        <span>tribe carets</span>
-      </div>
-      <div class="text">Display carets for other players during the race.</div>
-      <div class="buttons">
-        <div
-          class="button"
-          tribeCarets="off"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          off
-        </div>
-        <div
-          class="button"
-          tribeCarets="noNames"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          no names
-        </div>
-        <div
-          class="button"
-          tribeCarets="on"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          on
-        </div>
-      </div>
-    </div>
-    <div class="sectionSpacer"></div>
-  </div>
-
-  <button id="group_tribe" class="sectionGroupTitle" group="tribe">
+  <button id="group_tribe" class="text sectionGroupTitle" group="tribe">
     <i class="fas fa-chevron-down"></i>
     tribe
   </button>
-  <div class="settingsGroup tribe">
-    <div class="section tribeDelta">
+  <div class="settingsGroup tribe1">
+    <div class="section" data-config-name="tribeDelta">
       <div class="groupTitle">
         <i class="fas fa-exchange-alt"></i>
         <span>tribe delta</span>
@@ -742,63 +669,33 @@
         (depending on your position in the race).
       </div>
       <div class="buttons">
-        <div
-          class="button"
-          tribeDelta="off"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        <button data-config-value="off" tabindex="0" onclick="this.blur()">
           off
-        </div>
-        <div
-          class="button"
-          tribeDelta="text"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        </button>
+        <button data-config-value="text" tabindex="0" onclick="this.blur()">
           text
-        </div>
-        <div
-          class="button"
-          tribeDelta="bar"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        </button>
+        <button data-config-value="bar" tabindex="0" onclick="this.blur()">
           bar
-        </div>
+        </button>
       </div>
     </div>
-    <div class="section tribeCarets">
+    <div class="section" data-config-name="tribeCarets">
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>tribe carets</span>
       </div>
       <div class="text">Display carets for other players during the race.</div>
       <div class="buttons">
-        <div
-          class="button"
-          tribeCarets="off"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        <button data-config-value="off" tabindex="0" onclick="this.blur()">
           off
-        </div>
-        <div
-          class="button"
-          tribeCarets="noNames"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        </button>
+        <button data-config-value="noNames" tabindex="0" onclick="this.blur()">
           no names
-        </div>
-        <div
-          class="button"
-          tribeCarets="on"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        </button>
+        <button data-config-value="on" tabindex="0" onclick="this.blur()">
           on
-        </div>
+        </button>
       </div>
     </div>
     <div class="sectionSpacer"></div>
