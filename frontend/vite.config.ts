@@ -190,7 +190,7 @@ function getPlugins({
     UnpluginInjectPreload({
       files: [
         {
-          outputMatch: /css\/vendor.*\.css$/,
+          outputMatch: /css\/.*\.css$/,
           attributes: {
             as: "style",
             type: "text/css",
@@ -246,6 +246,10 @@ function getBuildOptions({
           if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
             return `webfonts/[name]-[hash].${extType}`;
           }
+          if (assetInfo.name === "misc.css") {
+            return `${extType}/vendor.[hash][extname]`;
+          }
+
           return `${extType}/[name].[hash][extname]`;
         },
         chunkFileNames: "js/[name].[hash].js",
