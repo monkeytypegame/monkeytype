@@ -22,7 +22,7 @@ import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as ActivePage from "../states/active-page";
 import * as TribeState from "./tribe-state";
-import { escapeRegExp, escapeHTML } from "../utils/misc";
+import { escapeRegExp, escapeHTML, isTribeEnabled } from "../utils/misc";
 import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
@@ -119,6 +119,8 @@ function updateState(newState: number): void {
 }
 
 export async function init(): Promise<void> {
+  if (!isTribeEnabled()) return;
+
   TribePagePreloader.updateIcon("circle-notch", true);
   // TribePagePreloader.updateText("Waiting for login");
   // await AccountController.authPromise;
