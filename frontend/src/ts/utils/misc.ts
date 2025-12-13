@@ -215,14 +215,14 @@ export async function swapElements(
     }
 
     el1.show();
-    await promiseAnimate(el1.native, {
+    await el1.promiseAnimate({
       opacity: [1, 0],
       duration: totalDuration / 2,
     });
     el1.hide();
     await middleCallback();
     el2.show();
-    await promiseAnimate(el2.native, {
+    await el2.promiseAnimate({
       opacity: [0, 1],
       duration: totalDuration / 2,
     });
@@ -232,7 +232,7 @@ export async function swapElements(
     await middleCallback();
 
     el2.show();
-    await promiseAnimate(el2.native, {
+    await el2.promiseAnimate({
       opacity: [0, 1],
       duration: totalDuration / 2,
     });
