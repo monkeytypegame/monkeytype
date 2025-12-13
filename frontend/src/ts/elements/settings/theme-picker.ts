@@ -13,6 +13,7 @@ import * as ActivePage from "../../states/active-page";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
+import { qs } from "../../utils/dom";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -310,22 +311,14 @@ export function updateActiveTab(): void {
 
   if (Config.customTheme) {
     void Misc.swapElements(
-      document.querySelector(
-        '.pageSettings [tabContent="preset"]',
-      ) as HTMLElement,
-      document.querySelector(
-        '.pageSettings [tabContent="custom"]',
-      ) as HTMLElement,
+      qs('.pageSettings [tabContent="preset"]'),
+      qs('.pageSettings [tabContent="custom"]'),
       250,
     );
   } else {
     void Misc.swapElements(
-      document.querySelector(
-        '.pageSettings [tabContent="custom"]',
-      ) as HTMLElement,
-      document.querySelector(
-        '.pageSettings [tabContent="preset"]',
-      ) as HTMLElement,
+      qs('.pageSettings [tabContent="custom"]'),
+      qs('.pageSettings [tabContent="preset"]'),
       250,
     );
   }
