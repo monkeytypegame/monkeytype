@@ -23,6 +23,7 @@ import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
 } from "../../test/funbox/list";
+import * as TribeState from "../../tribe/tribe-state";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
@@ -144,6 +145,15 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
+  if (
+    TribeState.getRoom() !== undefined &&
+    TribeState.getState() >= 10 &&
+    TribeState.getState() < 12
+  ) {
+    event.preventDefault();
+    return;
+  }
+
   const now = performance.now();
   TestInput.recordKeydownTime(now, event);
 
