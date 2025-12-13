@@ -492,6 +492,10 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
+export function isTribeEnabled(): boolean {
+  return envConfig.tribeEnabled;
+}
+
 export function zipfyRandomArrayIndex(dictLength: number): number {
   /**
    * get random index based on probability distribution of Zipf's law,

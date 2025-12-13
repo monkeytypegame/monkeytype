@@ -27,6 +27,7 @@ export function envConfig(options: {
           recaptchaSiteKey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
           quickLoginEmail: options.env["QUICK_LOGIN_EMAIL"],
           quickLoginPassword: options.env["QUICK_LOGIN_PASSWORD"],
+          tribeEnabled: options.env["TRIBE_ENABLED"] === "true",
         };
 
         const prodConfig: EnvConfig = {
@@ -39,6 +40,7 @@ export function envConfig(options: {
           quickLoginEmail: undefined,
           quickLoginPassword: undefined,
           clientVersion: options.clientVersion,
+          tribeEnabled: options.env["TRIBE_ENABLED"] === "true",
         };
 
         const envConfig = options.isDevelopment ? devConfig : prodConfig;
