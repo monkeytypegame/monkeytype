@@ -44,7 +44,7 @@ import "./test/tts";
 import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
-import { isDevEnvironment, isTribeEnabled, addToGlobal } from "./utils/misc";
+import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
@@ -104,20 +104,11 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  ...(isTribeEnabled()
-    ? {
-        tribe: Tribe,
-        tribeState: TribeState,
-        tribeCarets: TribeCarets,
-        createTribeRoom: TribeSocket.default.out.room.create,
-      }
-    : {}),
+  tribe: Tribe,
+  tribeState: TribeState,
+  tribeCarets: TribeCarets,
+  createTribeRoom: TribeSocket.default.out.room.create,
 });
-
-// Hide tribe nav link if tribe is disabled
-if (!isTribeEnabled()) {
-  qsr("header nav .textButton.view-tribe").addClass("hidden");
-}
 
 if (isDevEnvironment()) {
   void import("jquery").then((jq) => {

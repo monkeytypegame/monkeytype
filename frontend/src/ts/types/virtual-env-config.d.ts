@@ -5,7 +5,6 @@ export type EnvConfig = {
   recaptchaSiteKey: string;
   quickLoginEmail: string | undefined;
   quickLoginPassword: string | undefined;
-  tribeEnabled: boolean;
 };
 
 declare module "virtual:env-config" {
