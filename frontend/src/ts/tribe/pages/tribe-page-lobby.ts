@@ -6,6 +6,8 @@ import * as TribeConfig from "../tribe-config";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
 import tribeSocket from "../tribe-socket";
+import { qs } from "../../utils/dom";
+import * as Commandline from "../../commandline/commandline";
 
 export function reset(): void {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
@@ -18,57 +20,57 @@ export function reset(): void {
 
 export function disableConfigButtons(): void {
   $(".pageTribe .tribePage.lobby .currentConfig .groups .group").addClass(
-    "disabled"
+    "disabled",
   );
 }
 
 export function enableConfigButtons(): void {
   $(".pageTribe .tribePage.lobby .currentConfig .groups .group").removeClass(
-    "disabled"
+    "disabled",
   );
 }
 
 export function disableNameVisibilityButtons(): void {
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
+    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton",
   ).addClass("disabled");
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
+    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton",
   ).addClass("disabled");
 }
 
 export function enableNameVisibilityButtons(): void {
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
+    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton",
   ).removeClass("disabled");
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
+    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton",
   ).removeClass("disabled");
 }
 
 export function updateVisibility(): void {
   if (TribeState.getSelf()?.isLeader) {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton",
     ).removeClass("hidden");
   } else {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton",
     ).addClass("hidden");
   }
   if (TribeState.getRoom()?.isPrivate) {
     $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .text").text(
-      "private"
+      "private",
     );
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton",
     ).html(`<i class="fa fa-fw fa-lock"></i>`);
   } else {
     $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .text").text(
-      "public"
+      "public",
     );
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton",
     ).html(`<i class="fa fa-fw fa-lock-open"></i>`);
   }
 }
@@ -76,15 +78,15 @@ export function updateVisibility(): void {
 export function updateRoomName(): void {
   if (TribeState.getSelf()?.isLeader) {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
+      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton",
     ).removeClass("hidden");
   } else {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
+      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton",
     ).addClass("hidden");
   }
   $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .text").text(
-    TribeState.getRoom()?.name ?? ""
+    TribeState.getRoom()?.name ?? "",
   );
 }
 
@@ -223,24 +225,24 @@ export function updateRoomConfig(): void {
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Wpm" data-balloon-pos="up" commands="minWpm">
     <i class="fas fa-bomb"></i>${room.config.minWpm}${
-    room.config.minWpm !== "off" ? "wpm" : ""
-  }
+      room.config.minWpm !== "off" ? "wpm" : ""
+    }
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="minAcc">
     <i class="fas fa-bomb"></i>${room.config.minAcc}${
-    room.config.minAcc !== "off" ? "%" : ""
-  }
+      room.config.minAcc !== "off" ? "%" : ""
+    }
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Burst" data-balloon-pos="up" commands="minBurst">
     <i class="fas fa-bomb"></i>${room.config.minBurst}${
-    room.config.minBurst !== "off" ? "wpm" : ""
-  }
+      room.config.minBurst !== "off" ? "wpm" : ""
+    }
     </div>
     `);
 }
@@ -253,7 +255,7 @@ export function init(): void {
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
   $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text(
-    room.id
+    room.id,
   );
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text(link);
   TribeUserList.update("lobby");
@@ -270,7 +272,7 @@ $(".pageTribe .tribePage.lobby .inviteLink .text")
   .on("mouseenter", function () {
     $(this).css(
       "color",
-      "#" + $(".pageTribe .tribePage.lobby .inviteLink .text").text()
+      "#" + $(".pageTribe .tribePage.lobby .inviteLink .text").text(),
     );
   })
   .on("mouseleave", function () {
@@ -281,7 +283,7 @@ $(".pageTest #result #tribeResultBottom .inviteLink .text")
   .on("mouseenter", function () {
     $(this).css(
       "color",
-      "#" + $(".pageTest #result #tribeResultBottom .inviteLink .text").text()
+      "#" + $(".pageTest #result #tribeResultBottom .inviteLink .text").text(),
     );
   })
   .on("mouseleave", function () {
@@ -289,11 +291,11 @@ $(".pageTest #result #tribeResultBottom .inviteLink .text")
   });
 
 $(
-  ".pageTribe .tribePage.lobby .inviteLink .text, .pageTest #result #tribeResultBottom .inviteLink .text"
+  ".pageTribe .tribePage.lobby .inviteLink .text, .pageTest #result #tribeResultBottom .inviteLink .text",
 ).on("click", async () => {
   try {
     await navigator.clipboard.writeText(
-      $(".pageTribe .tribePage.lobby .inviteLink .text").text()
+      $(".pageTribe .tribePage.lobby .inviteLink .text").text(),
     );
     Notifications.add("Code copied", 1);
   } catch (e) {
@@ -302,11 +304,11 @@ $(
 });
 
 $(
-  ".pageTribe .tribePage.lobby .inviteLink .link, .pageTest #result #tribeResultBottom .inviteLink .link"
+  ".pageTribe .tribePage.lobby .inviteLink .link, .pageTest #result #tribeResultBottom .inviteLink .link",
 ).on("click", async () => {
   try {
     await navigator.clipboard.writeText(
-      $(".pageTribe .tribePage.lobby .inviteLink .link").text()
+      $(".pageTribe .tribePage.lobby .inviteLink .link").text(),
     );
     Notifications.add("Link copied", 1);
   } catch (e) {
@@ -318,7 +320,7 @@ $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton").on(
   "click",
   () => {
     tribeSocket.out.room.toggleVisibility();
-  }
+  },
 );
 
 $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
@@ -327,5 +329,16 @@ $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
     //TODO proper popup
     const name = prompt("Enter new room name") as string;
     tribeSocket.out.room.updateName(name);
-  }
+  },
+);
+
+qs(".pageTribe .tribePage.lobby .currentConfig")?.onChild(
+  "click",
+  ".group",
+  (e) => {
+    const command = (e.target as HTMLElement).getAttribute("commands");
+    if (command === null) return;
+    if (!TribeState.isLeader()) return;
+    Commandline.show({ subgroupOverride: command });
+  },
 );
