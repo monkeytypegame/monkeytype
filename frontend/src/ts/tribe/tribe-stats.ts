@@ -40,7 +40,7 @@ export function setInQueue(newQueNumArray: number[]): void {
 }
 
 export function updateMenuButtons(
-  races: TribeTypes.SystemStats["stats"]["1"]
+  races: TribeTypes.SystemStats["stats"]["1"],
 ): void {
   let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
   races.mm.forEach((num: number, index: number) => {
@@ -62,20 +62,21 @@ let to: NodeJS.Timeout | null = null;
 export async function refresh(): Promise<void> {
   showLoading();
 
-  void tribeSocket.out.system.stats(performance.now()).then((data) => {
-    const ping = Math.round(performance.now() - data.pingStart);
+  const start = performance.now();
+  void tribeSocket.out.system.stats().then((data) => {
+    const ping = Math.round(performance.now() - start);
     hideLoading();
     setInQueue(data.stats[2]);
     updateMenuButtons(data.stats[1]);
     $(".pageTribe .menu .welcome .stats").empty();
     $(".pageTribe .menu .welcome .stats").append(
-      `<div>Online <span class="num">${data.stats[0]}</span></div>`
+      `<div>Online <span class="num">${data.stats[0]}</span></div>`,
     );
     $(".pageTribe .menu .welcome .stats").append(
-      `<div class="small">Version ${data.stats[3]}</div>`
+      `<div class="small">Version ${data.stats[3]}</div>`,
     );
     $(".pageTribe .menu .welcome .stats").append(
-      `<div class="small">Ping ${ping}ms</div>`
+      `<div class="small">Ping ${ping}ms</div>`,
     );
   });
   if (

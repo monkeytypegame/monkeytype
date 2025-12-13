@@ -12,7 +12,7 @@ type VersionCheckResponse = {
 };
 
 async function versionCheck(
-  expectedVersion: string
+  expectedVersion: string,
 ): Promise<VersionCheckResponse> {
   return new Promise((resolve) => {
     Socket.emit(
@@ -20,20 +20,16 @@ async function versionCheck(
       { version: expectedVersion },
       (response: VersionCheckResponse) => {
         resolve(response);
-      }
+      },
     );
   });
 }
 
-async function stats(pingStart: number): Promise<TribeTypes.SystemStats> {
+async function stats(): Promise<TribeTypes.SystemStats> {
   return new Promise((resolve) => {
-    Socket.emit(
-      "system_stats",
-      { pingStart },
-      (response: TribeTypes.SystemStats) => {
-        resolve(response);
-      }
-    );
+    Socket.emit("system_stats", {}, (response: TribeTypes.SystemStats) => {
+      resolve(response);
+    });
   });
 }
 
@@ -56,14 +52,14 @@ function connect(callback: () => void): void {
               "background:red;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
               dat[0],
-              dat[1]
+              dat[1],
             );
           } else {
             console.log(
               "%cTI",
               "background:red;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
-              dat[0]
+              dat[0],
             );
           }
         }
@@ -72,7 +68,7 @@ function connect(callback: () => void): void {
           "%cTI",
           "background:red;padding:0 5px;border-radius:10px",
           type,
-          data
+          data,
         );
       }
     });
@@ -90,14 +86,14 @@ function connect(callback: () => void): void {
               "background:blue;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
               dat[0],
-              dat[1]
+              dat[1],
             );
           } else {
             console.log(
               "%cTO",
               "background:blue;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
-              dat[0]
+              dat[0],
             );
           }
         }
@@ -106,7 +102,7 @@ function connect(callback: () => void): void {
           "%cTO",
           "background:blue;padding:0 5px;border-radius:10px",
           type,
-          data
+          data,
         );
       }
     });
@@ -116,7 +112,7 @@ function connect(callback: () => void): void {
 }
 
 function disconnect(
-  callback: (reason: string, details?: unknown) => void
+  callback: (reason: string, details?: unknown) => void,
 ): void {
   Socket.on("disconnect", callback);
 }
@@ -138,7 +134,7 @@ function reconnectAttempt(callback: (attempt: number) => void): void {
 }
 
 function notification(
-  callback: (data: { message: string; level?: number }) => void
+  callback: (data: { message: string; level?: number }) => void,
 ): void {
   Socket.on("system_notification", callback);
 }
