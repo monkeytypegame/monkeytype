@@ -931,6 +931,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestUI.setResultCalculating(true);
   const now = performance.now();
   TestStats.setEnd(now);
+  TestTimer.clear();
 
   // fade out the test and show loading
   // because the css animation has a delay,
@@ -977,7 +978,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   LiveBurst.hide();
   TimerProgress.hide();
   OutOfFocus.hide();
-  TestTimer.clear();
   Monkey.hide();
   void ModesNotice.update();
 
