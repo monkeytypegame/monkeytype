@@ -155,6 +155,16 @@ async function reset(): Promise<void> {
   TribeButtons.reset();
 }
 
+async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
+  TribeState.setRoom(room);
+  updateState(room.state);
+  TribePageLobby.init();
+  void TribePages.change("lobby");
+  TribeSound.play("join");
+  TribeChat.updateSuggestionData();
+  // history.replaceState(null, "", `/tribe/${e.room.id}`);
+}
+
 export function joinRoom(roomId: string, fromBrowser = false): void {
   if (!/^[a-f0-9]{6}$/i.test(roomId)) {
     Notifications.add("Incorrect room code format", 0);
@@ -163,13 +173,7 @@ export function joinRoom(roomId: string, fromBrowser = false): void {
 
   void TribeSocket.out.room.join(roomId, fromBrowser).then((response) => {
     if (response.room) {
-      TribeState.setRoom(response.room);
-      updateState(response.room.state);
-      TribePageLobby.init();
-      void TribePages.change("lobby");
-      TribeSound.play("join");
-      TribeChat.updateSuggestionData();
-      // history.replaceState(null, "", `/tribe/${roomId}`);
+      void onRoomJoined(response.room);
     } else {
       void TribePages.change("menu");
       history.replaceState("/tribe", "", "/tribe");
@@ -352,13 +356,7 @@ TribeSocket.in.system.notification((data) => {
 });
 
 TribeSocket.in.room.joined((data) => {
-  TribeState.setRoom(data.room);
-  updateState(data.room.state);
-  TribePageLobby.init();
-  void TribePages.change("lobby");
-  TribeSound.play("join");
-  TribeChat.updateSuggestionData();
-  // history.replaceState(null, "", `/tribe/${e.room.id}`);
+  void onRoomJoined(data.room);
 });
 
 TribeSocket.in.room.playerJoined((data) => {
