@@ -846,6 +846,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   TestUI.setResultCalculating(true);
   const now = performance.now();
+  TestTimer.clear();
   TestStats.setEnd(now);
 
   // fade out the test and show loading
@@ -889,7 +890,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  TestTimer.clear();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
