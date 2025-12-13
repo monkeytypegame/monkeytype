@@ -11,7 +11,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 let registerForm: {
   name?: string;
@@ -20,29 +20,29 @@ let registerForm: {
 } = {};
 
 export function enableSignUpButton(): void {
-  $(".page.pageLogin .register.side button").prop("disabled", false);
+  qs(".page.pageLogin .register.side button")?.enable();
 }
 
 export function disableSignUpButton(): void {
-  $(".page.pageLogin .register.side button").prop("disabled", true);
+  qs(".page.pageLogin .register.side button")?.disable();
 }
 
 export function enableInputs(): void {
-  $(".pageLogin input").prop("disabled", false);
-  $(".pageLogin button").prop("disabled", false);
+  qs(".pageLogin input")?.enable();
+  qs(".pageLogin button")?.enable();
 }
 
 export function disableInputs(): void {
-  $(".pageLogin input").prop("disabled", true);
-  $(".pageLogin button").prop("disabled", true);
+  qs(".pageLogin input")?.disable();
+  qs(".pageLogin button")?.disable();
 }
 
 export function showPreloader(): void {
-  $(".pageLogin .preloader").removeClass("hidden");
+  qs(".pageLogin .preloader")?.removeClass("hidden");
 }
 
 export function hidePreloader(): void {
-  $(".pageLogin .preloader").addClass("hidden");
+  qs(".pageLogin .preloader")?.hide();
 }
 
 function isFormComplete(): boolean {
@@ -217,13 +217,13 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
     registerForm = {};
-    $(".pageLogin input").val("");
-    $(".pageLogin .register .indicator").addClass("hidden");
+    qs<HTMLSelectElement>(".pageLogin input")?.setValue("");
+    qs(".pageLogin .register .indicator")?.hide();
     enableInputs();
     disableSignUpButton();
   },
 });
 
-$(() => {
+document.addEventListener("DOMContentLoaded", () => {
   Skeleton.save("pageLogin");
 });
