@@ -44,8 +44,8 @@ onDocumentReady(async () => {
       if (!ServerConfiguration.get()?.connections.enabled) {
         qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
       }
-      if (!ServerConfiguration.get()?.tribe?.enabled) {
-        qs("header nav .textButton.view-tribe")?.addClass("hidden");
+      if (ServerConfiguration.get()?.tribe?.enabled) {
+        qs("header nav .textButton.view-tribe")?.removeClass("hidden");
       }
     });
   }
