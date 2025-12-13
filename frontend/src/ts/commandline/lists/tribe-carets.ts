@@ -1,5 +1,6 @@
 import * as UpdateConfig from "../../config";
 import { Command, CommandsSubgroup } from "../types";
+import { isTribeEnabled } from "../../utils/misc";
 
 const subgroup: CommandsSubgroup = {
   title: "Tribe carets...",
@@ -38,6 +39,7 @@ const commands: Command[] = [
     display: "Tribe carets...",
     icon: "fa-i-cursor",
     subgroup,
+    available: (): boolean => isTribeEnabled(),
   },
 ];
 
