@@ -10,7 +10,7 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
-import { onDocumentReady, qs } from "./utils/dom";
+import { onDocumentReady, qs, qsa } from "./utils/dom";
 
 onDocumentReady(async () => {
   await configLoadPromise;
@@ -46,6 +46,12 @@ onDocumentReady(async () => {
       }
       if (ServerConfiguration.get()?.tribe?.enabled) {
         qs("header nav .textButton.view-tribe")?.removeClass("hidden");
+        for (const el of qsa(".pageSettings [group='tribe']")) {
+          el.removeClass("hidden");
+        }
+        for (const el of qsa(".pageSettings .settingsGroup.tribe")) {
+          el.removeClass("hidden");
+        }
       }
     });
   }
