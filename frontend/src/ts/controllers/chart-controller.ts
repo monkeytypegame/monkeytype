@@ -85,24 +85,24 @@ class ChartWithUpdateColors<
   }
 
   async updateColors(): Promise<void> {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     await updateColors(this);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     return this.data.datasets?.find((x) => x.yAxisID === id);
   }
 
   getScaleIds(): DatasetIds[] {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     return typedKeys(this.options?.scales ?? {}) as DatasetIds[];
   }
 
   getScale(
     id: DatasetIds extends never ? never : "x" | DatasetIds,
   ): DatasetIds extends never ? never : CartesianScaleOptions {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return this.options.scales[id];
   }
@@ -120,7 +120,7 @@ export const result = new ChartWithUpdateColors<
     labels: [],
     datasets: [
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "wpm",
         data: [],
@@ -131,7 +131,7 @@ export const result = new ChartWithUpdateColors<
         pointRadius: 1,
       },
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "raw",
         data: [],
@@ -143,7 +143,7 @@ export const result = new ChartWithUpdateColors<
         pointRadius: 0,
       },
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "errors",
         data: [],
@@ -166,7 +166,7 @@ export const result = new ChartWithUpdateColors<
         },
       },
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "burst",
         data: [],
@@ -1268,7 +1268,7 @@ async function updateColors<
     return;
   }
 
-  //@ts-expect-error its too difficult to figure out these types, but this works
+  //@ts-expect-error it's too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;

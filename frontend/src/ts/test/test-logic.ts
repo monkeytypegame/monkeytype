@@ -930,6 +930,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   TestUI.setResultCalculating(true);
   const now = performance.now();
+  TestTimer.clear();
   TestStats.setEnd(now);
 
   // fade out the test and show loading
@@ -977,7 +978,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   LiveBurst.hide();
   TimerProgress.hide();
   OutOfFocus.hide();
-  TestTimer.clear();
   Monkey.hide();
   void ModesNotice.update();
 
