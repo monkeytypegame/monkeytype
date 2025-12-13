@@ -212,7 +212,9 @@ describe("Config", () => {
       replaceConfig({ numbers: false });
 
       //WHEN
-      Config.setConfig("numbers", true, true);
+      Config.setConfig("numbers", true, {
+        nosave: true,
+      });
 
       //THEN
       //wait for debounce
@@ -227,7 +229,9 @@ describe("Config", () => {
       replaceConfig({ numbers: false });
 
       //WHEN
-      Config.setConfig("numbers", true, true);
+      Config.setConfig("numbers", true, {
+        nosave: true,
+      });
 
       //THEN
 
@@ -241,21 +245,21 @@ describe("Config", () => {
 
     it("triggers resize if property is set", () => {
       ///WHEN
-      Config.setConfig("maxLineWidth", 50, false);
+      Config.setConfig("maxLineWidth", 50);
 
       expect(miscTriggerResizeMock).toHaveBeenCalled();
     });
 
     it("does not triggers resize if property is not set", () => {
       ///WHEN
-      Config.setConfig("startGraphsAtZero", true, false);
+      Config.setConfig("startGraphsAtZero", true);
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
 
     it("does not triggers resize if property on nosave", () => {
       ///WHEN
-      Config.setConfig("maxLineWidth", 50, true);
+      Config.setConfig("maxLineWidth", 50, { nosave: true });
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });

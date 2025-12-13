@@ -46,7 +46,9 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
     this.configName = configName;
     this.mode = mode;
     this.configFunction = (param, nosave) =>
-      setConfig(configName, param as ConfigType[K], nosave);
+      setConfig(configName, param as ConfigType[K], {
+        nosave: nosave ?? false,
+      });
     this.setCallback = options?.setCallback;
     this.updateCallback = options?.updateCallback;
     this.validation = options?.validation;

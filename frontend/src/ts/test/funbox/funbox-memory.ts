@@ -20,7 +20,9 @@ export function save<T extends ConfigKey>(
   settingsMemory[settingName] ??= {
     value,
     setFunction: (param, noSave?) =>
-      setConfig(settingName, param as Config[T], noSave),
+      setConfig(settingName, param as Config[T], {
+        nosave: noSave ?? false,
+      }),
   };
 }
 
