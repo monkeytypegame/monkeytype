@@ -190,7 +190,7 @@ function getPlugins({
     UnpluginInjectPreload({
       files: [
         {
-          outputMatch: /css\/vendor.*\.css$/,
+          outputMatch: /css\/.*\.css$/,
           attributes: {
             as: "style",
             type: "text/css",
