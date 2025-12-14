@@ -1855,9 +1855,7 @@ export function onTestRestart(): void {
   $("#typingTest").css("opacity", 0).removeClass("hidden");
   getInputElement().style.left = "0";
 
-  Focus.set(false);
   if (ActivePage.get() === "test") {
-    AdController.updateFooterAndVerticalAds(false);
     if (TribeState.getState() < 5) {
       Focus.set(false);
     } else {
