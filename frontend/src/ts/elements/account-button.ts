@@ -65,15 +65,11 @@ export function update(): void {
     accountButtonAndMenuEl
       .qs(".menu .items .goToProfile")
       ?.setAttribute("href", `/profile/${name}`);
-    void Misc.swapElements(
-      loginButtonEl.native,
-      accountButtonAndMenuEl.native,
-      250,
-    );
+    void Misc.swapElements(loginButtonEl, accountButtonAndMenuEl, 250);
   } else {
     void Misc.swapElements(
-      accountButtonAndMenuEl.native,
-      loginButtonEl.native,
+      accountButtonAndMenuEl,
+      loginButtonEl,
       250,
       async () => {
         updateName("");

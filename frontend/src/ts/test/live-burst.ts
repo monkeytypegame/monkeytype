@@ -8,8 +8,8 @@ import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-fra
 
 const textEl = document.querySelector(
   "#liveStatsTextBottom .liveBurst",
-) as Element;
-const miniEl = document.querySelector("#liveStatsMini .burst") as Element;
+) as HTMLElement;
+const miniEl = document.querySelector("#liveStatsMini .burst") as HTMLElement;
 
 export function reset(): void {
   requestDebouncedAnimationFrame("live-burst.reset", () => {
@@ -69,6 +69,17 @@ export function hide(): void {
     });
     state = false;
   });
+}
+
+export function instantHide(): void {
+  if (!state) return;
+
+  textEl.classList.add("hidden");
+  textEl.style.opacity = "0";
+  miniEl.classList.add("hidden");
+  miniEl.style.opacity = "0";
+
+  state = false;
 }
 
 ConfigEvent.subscribe(({ key, newValue }) => {
