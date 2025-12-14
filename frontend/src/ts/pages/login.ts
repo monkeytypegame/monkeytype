@@ -38,7 +38,7 @@ export function disableInputs(): void {
 }
 
 export function showPreloader(): void {
-  qs(".pageLogin .preloader")?.removeClass("hidden");
+  qs(".pageLogin .preloader")?.show();
 }
 
 export function hidePreloader(): void {
