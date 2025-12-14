@@ -104,6 +104,7 @@ export const BASE_CONFIGURATION: Configuration = {
     },
   },
   connections: { enabled: false, maxPerUser: 100 },
+  tribe: { enabled: false },
 };
 
 type BaseSchema = {
@@ -613,6 +614,13 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
           type: "number",
           label: "Max Connections per user",
         },
+      },
+    },
+    tribe: {
+      type: "object",
+      label: "Tribe (Multiplayer)",
+      fields: {
+        enabled: { type: "boolean", label: "Enabled" },
       },
     },
   },
