@@ -192,7 +192,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "bulgarian",
     "bulgarian_1k",
     "bulgarian_latin",
-    "bulgarian_latin_1k"
+    "bulgarian_latin_1k",
   ],
   bosnian: ["bosnian", "bosnian_4k"],
   esperanto: [
