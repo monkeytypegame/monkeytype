@@ -27,7 +27,7 @@ async function versionCheck(
 
 async function stats(): Promise<TribeTypes.SystemStats> {
   return new Promise((resolve) => {
-    Socket.emit("system_stats", {}, (response: TribeTypes.SystemStats) => {
+    Socket.emit("system_stats", (response: TribeTypes.SystemStats) => {
       resolve(response);
     });
   });
