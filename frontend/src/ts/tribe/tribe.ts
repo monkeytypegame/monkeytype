@@ -22,7 +22,7 @@ import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as ActivePage from "../states/active-page";
 import * as TribeState from "./tribe-state";
-import { escapeRegExp, escapeHTML } from "../utils/misc";
+import { escapeRegExp, escapeHTML, isDevEnvironment } from "../utils/misc";
 import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
@@ -139,6 +139,10 @@ export async function init(): Promise<void> {
     TribeSocket.updateName(lstribename);
   }
 
+  if (!isDevEnvironment()) {
+    $(".pageTribe .menu .devRoom").remove();
+  }
+
   setTimeout(() => {
     TribeSocket.connect();
   }, 500);
@@ -228,8 +232,13 @@ async function connect(): Promise<void> {
   if (autoJoinCode !== undefined) {
     TribePagePreloader.updateText(`Joining room ${autoJoinCode}`);
     TribePagePreloader.updateSubtext("Please wait...");
+
     setTimeout(() => {
-      joinRoom(autoJoinCode);
+      if (autoJoinCode === "dev" && isDevEnvironment()) {
+        void TribeSocket.out.dev?.room();
+      } else {
+        joinRoom(autoJoinCode);
+      }
     }, 500);
   } else {
     void TribePages.change("menu");

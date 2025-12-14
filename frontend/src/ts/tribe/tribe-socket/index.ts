@@ -1,6 +1,8 @@
+import { isDevEnvironment } from "../../utils/misc";
 import RoomRoutes from "./routes/room";
 import SystemRoutes from "./routes/system";
 import UserRoutes from "./routes/user";
+import DevRoutes from "./routes/dev";
 import Socket from "./socket";
 
 function updateName(newName: string): void {
@@ -31,6 +33,11 @@ export default {
     room: RoomRoutes.out,
     system: SystemRoutes.out,
     user: UserRoutes.out,
+    ...(isDevEnvironment()
+      ? {
+          dev: DevRoutes.out,
+        }
+      : {}),
   },
   updateName,
   connect,

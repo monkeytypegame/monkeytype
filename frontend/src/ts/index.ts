@@ -104,10 +104,15 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  tribe: Tribe,
-  tribeState: TribeState,
-  tribeCarets: TribeCarets,
   createTribeRoom: TribeSocket.default.out.room.create,
+  ...(isDevEnvironment()
+    ? {
+        tribe: Tribe,
+        tribeState: TribeState,
+        tribeCarets: TribeCarets,
+        tribeSocket: TribeSocket.default,
+      }
+    : {}),
 });
 
 if (isDevEnvironment()) {
