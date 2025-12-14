@@ -141,11 +141,11 @@ function updateTabs(): void {
       //
     },
     async () => {
-      pageElement.qs(".tab")?.removeClass("active");
+      pageElement.qsa(".tab")?.removeClass("active");
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
     },
   );
-  pageElement.qs("button")?.removeClass("active");
+  pageElement.qsa("button")?.removeClass("active");
   pageElement.qs(`button[data-tab="${state.tab}"]`)?.addClass("active");
 }
 
