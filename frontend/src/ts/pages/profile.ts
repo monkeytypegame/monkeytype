@@ -237,15 +237,7 @@ async function update(options: UpdateOptions): Promise<void> {
   }
 }
 
-qs(".page.pageProfile")?.on("click", (event: MouseEvent) => {
-  const target = event.target;
-
-  if (target instanceof HTMLElement) {
-    if (!target.matches(".profile .userReportButton")) return;
-  } else {
-    return;
-  }
-
+qs(".page.pageProfile")?.onChild("click", ".profile .userReportButton", () => {
   const uid = qs(".page.pageProfile .profile")?.getAttribute("uid") ?? "";
   const name = qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
   const lbOptOut =
@@ -255,27 +247,23 @@ qs(".page.pageProfile")?.on("click", (event: MouseEvent) => {
   void UserReportModal.show({ uid, name, lbOptOut });
 });
 
-qs(".page.pageProfile")?.on("click", async (event: MouseEvent) => {
-  const target = event.target;
+qs(".page.pageProfile")?.onChild(
+  "click",
+  ".profile .addFriendButton",
+  async (event: MouseEvent) => {
+    const friendName =
+      qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
 
-  if (target instanceof HTMLElement) {
-    if (!target.matches(".profile .addFriendButton")) return;
-  } else {
-    return;
-  }
+    const result = await addFriend(friendName);
 
-  const friendName =
-    qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
-
-  const result = await addFriend(friendName);
-
-  if (result === true) {
-    Notifications.add(`Request sent to ${friendName}`);
-    qs(".profile .details .addFriendButton")?.disable();
-  } else {
-    Notifications.add(result, -1);
-  }
-});
+    if (result === true) {
+      Notifications.add(`Request sent to ${friendName}`);
+      qs(".profile .details .addFriendButton")?.disable();
+    } else {
+      Notifications.add(result, -1);
+    }
+  },
+);
 
 export const page = new Page<undefined | UserProfile>({
   id: "profile",
