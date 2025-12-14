@@ -11,7 +11,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs, qsr, onDocumentReady } from "../utils/dom";
+import { qs, qsr, onDOMReady } from "../utils/dom";
 
 let registerForm: {
   name?: string;
@@ -224,6 +224,6 @@ export const page = new Page({
   },
 });
 
-onDocumentReady(() => {
+onDOMReady(() => {
   Skeleton.save("pageLogin");
 });

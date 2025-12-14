@@ -10,7 +10,7 @@ import * as Skeleton from "../utils/skeleton";
 import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { qs, qsr, onDocumentReady } from "../utils/dom";
+import { qs, qsr, onDOMReady } from "../utils/dom";
 
 function reset(): void {
   qs(".pageAbout .contributors")?.empty();
@@ -212,6 +212,6 @@ export const page = new Page({
   },
 });
 
-onDocumentReady(() => {
+onDOMReady(() => {
   Skeleton.save("pageAbout");
 });
