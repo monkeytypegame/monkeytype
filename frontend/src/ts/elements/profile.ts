@@ -48,8 +48,9 @@ export async function update(
     profile === undefined ||
     profile.name === undefined ||
     profile.addedAt === undefined
-  )
+  ) {
     return;
+  }
 
   const avatar = details.find(".avatarAndName .avatar");
   avatar.replaceWith(getAvatarElement(profile, { size: 256 }));

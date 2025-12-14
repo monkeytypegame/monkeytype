@@ -3,7 +3,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
 import * as CustomGeneratorPopup from "./custom-generator";
@@ -269,7 +269,7 @@ function cleanUpText(): string[] {
 
   if (text === "") return [];
 
-  text = text.normalize().trim();
+  text = text.normalize();
   // text = text.replace(/[\r]/gm, " ");
 
   //replace any characters that look like a space with an actual space
@@ -388,7 +388,9 @@ function apply(): void {
 
   ChallengeController.clearActive();
   ManualRestart.set();
-  if (Config.mode !== "custom") UpdateConfig.setMode("custom");
+  if (Config.mode !== "custom") {
+    setConfig("mode", "custom");
+  }
   PractiseWords.resetBefore();
   TestLogic.restart();
   hide();

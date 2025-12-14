@@ -4,6 +4,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { z } from "zod";
+import { qsr } from "../utils/dom";
 
 type IncomingData = {
   text: string[];
@@ -18,7 +19,7 @@ const state: State = {
 };
 
 const validatedInput = new ValidatedHtmlInputElement(
-  $("#saveCustomTextModal .textName")[0] as HTMLInputElement,
+  qsr("#saveCustomTextModal .textName"),
   {
     debounceDelay: 500,
     schema: z

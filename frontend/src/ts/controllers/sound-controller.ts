@@ -436,7 +436,7 @@ export async function previewError(val: string): Promise<void> {
 
 let currentCode = "KeyA";
 
-$(document).on("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 
@@ -638,6 +638,11 @@ export async function playTimeWarning(): Promise<void> {
   soundToPlay.play();
 }
 
+export async function clearAllSounds(): Promise<void> {
+  const Howl = (await gethowler()).Howler;
+  Howl.stop();
+}
+
 function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes,
@@ -731,9 +736,9 @@ function setVolume(val: number): void {
   }
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "playSoundOnClick" && eventValue !== "off") void init();
-  if (eventKey === "soundVolume") {
-    setVolume(parseFloat(eventValue as string));
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "playSoundOnClick" && newValue !== "off") void init();
+  if (key === "soundVolume") {
+    setVolume(newValue);
   }
 });

@@ -1296,20 +1296,16 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
-      if (dbSnapshot.favoriteQuotes === undefined) {
-        dbSnapshot.favoriteQuotes = {};
-      }
-      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-        dbSnapshot.favoriteQuotes[quoteLang] = [];
-      }
+      dbSnapshot.favoriteQuotes ??= {};
+      dbSnapshot.favoriteQuotes[quoteLang] ??= [];
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
   }
 });
 
-ConfigEvent.subscribe(async (eventKey) => {
+ConfigEvent.subscribe(async ({ key }) => {
   if (
-    ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
+    ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
     TestState.resultVisible
   ) {
     resultAnnotation = [];

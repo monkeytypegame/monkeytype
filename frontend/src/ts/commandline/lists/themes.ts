@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../../config";
+import Config, { setConfig } from "../../config";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
@@ -33,7 +33,7 @@ const createThemeCommand = (theme: Theme): Command => {
       ThemeController.preview(theme.name);
     },
     exec: (): void => {
-      UpdateConfig.setTheme(theme.name);
+      setConfig("theme", theme.name);
     },
   };
 };
@@ -76,8 +76,8 @@ export function update(themes: Theme[]): void {
 }
 
 // subscribe to theme-related config events to update the theme command list
-ConfigEvent.subscribe((eventKey, _eventValue) => {
-  if (eventKey === "favThemes") {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "favThemes") {
     // update themes list when favorites change
     try {
       update(ThemesList);

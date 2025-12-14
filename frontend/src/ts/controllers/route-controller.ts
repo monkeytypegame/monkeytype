@@ -5,19 +5,10 @@ import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
-import { LoadingOptions } from "../pages/page";
 import * as NavigationEvent from "../observables/navigation-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
-
-//this will be used in tribe
-type NavigateOptions = {
-  force?: boolean;
-  empty?: boolean;
-  data?: unknown;
-  loadingOptions?: LoadingOptions;
-};
 
 function pathToRegex(path: string): RegExp {
   return new RegExp(
@@ -42,7 +33,7 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigateOptions,
+    navigateOptions: NavigationEvent.NavigateOptions,
   ) => Promise<void>;
 };
 
@@ -166,7 +157,7 @@ export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
-  options = {} as NavigateOptions,
+  options = {} as NavigationEvent.NavigateOptions,
 ): Promise<void> {
   if (
     !options.force &&
@@ -211,7 +202,9 @@ export async function navigate(
   await router(options);
 }
 
-async function router(options = {} as NavigateOptions): Promise<void> {
+async function router(
+  options = {} as NavigationEvent.NavigateOptions,
+): Promise<void> {
   const matches = routes.map((r) => {
     return {
       route: r,
@@ -251,6 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-NavigationEvent.subscribe((it) => {
-  void navigate(it.url, { data: it.data });
+NavigationEvent.subscribe((url, options) => {
+  void navigate(url, options);
 });

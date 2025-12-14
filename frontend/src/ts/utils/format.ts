@@ -69,14 +69,14 @@ export class Formatting {
     value: number | null | undefined,
     formatOptions: FormatOptions,
   ): string {
-    if (value === undefined || value === null)
+    if (value === undefined || value === null) {
       return formatOptions.fallback ?? "";
+    }
     const suffix = formatOptions.suffix ?? "";
 
     if (
-      formatOptions.showDecimalPlaces !== undefined
-        ? formatOptions.showDecimalPlaces
-        : this.config.alwaysShowDecimalPlaces
+      formatOptions.showDecimalPlaces ??
+      this.config.alwaysShowDecimalPlaces
     ) {
       return Numbers.roundTo2(value).toFixed(2) + suffix;
     }
@@ -89,8 +89,9 @@ export class Formatting {
   ): string {
     const options = { fallback: "-", ...formatOptions };
 
-    if (position === undefined || position === null)
+    if (position === undefined || position === null) {
       return options.fallback ?? "";
+    }
     let numend = "th";
     const t = position % 10;
     const h = position % 100;

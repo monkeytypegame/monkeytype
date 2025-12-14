@@ -13,6 +13,7 @@
   .clearAll.button {
     font-size: 0.75em;
     margin-bottom: 1rem;
+    overflow: hidden;
   }
   &.focus .clearAll {
     visibility: hidden;

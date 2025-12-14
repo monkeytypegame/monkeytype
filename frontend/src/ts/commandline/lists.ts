@@ -17,7 +17,7 @@ import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
 
-import Config, * as UpdateConfig from "../config";
+import Config, { applyConfigFromJson, setConfig } from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
@@ -87,7 +87,7 @@ export const commands: CommandsSubgroup = {
       display: "Search for quotes",
       icon: "fa-search",
       exec: (): void => {
-        UpdateConfig.setMode("quote");
+        setConfig("mode", "quote");
         void QuoteSearchModal.show();
       },
       shouldFocusTestUI: false,
@@ -134,6 +134,7 @@ export const commands: CommandsSubgroup = {
       confidenceModeCommand,
       "quickEnd",
       "indicateTypos",
+      "compositionDisplay",
       "hideExtraLetters",
       lazyModeCommand,
       layoutCommand,
@@ -245,7 +246,7 @@ export const commands: CommandsSubgroup = {
       input: true,
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
-        await UpdateConfig.applyFromJson(input);
+        await applyConfigFromJson(input);
       },
     },
     {

@@ -8,8 +8,8 @@ import { animate } from "animejs";
 const monkeyEl = document.querySelector("#monkey") as HTMLElement;
 const monkeyFastEl = document.querySelector("#monkey .fast") as HTMLElement;
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "monkey" && TestState.isActive) {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "monkey" && TestState.isActive) {
     if (Config.monkey) {
       monkeyEl.classList.remove("hidden");
     } else {
@@ -161,4 +161,11 @@ export function hide(): void {
       monkeyFastEl.style.opacity = "0";
     },
   });
+}
+
+export function instantHide(): void {
+  monkeyEl.classList.add("hidden");
+  monkeyEl.style.opacity = "0";
+  monkeyEl.style.animationDuration = "0s";
+  monkeyFastEl.style.opacity = "0";
 }
