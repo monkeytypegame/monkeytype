@@ -44,7 +44,7 @@ onDocumentReady(async () => {
       if (!ServerConfiguration.get()?.connections.enabled) {
         qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
       }
-      if (ServerConfiguration.get()?.tribe?.enabled) {
+      if (Misc.isTribeEnabled()) {
         qs("header nav .textButton.view-tribe")?.removeClass("hidden");
         for (const el of qsa(".pageSettings [group='tribe']")) {
           el.removeClass("hidden");

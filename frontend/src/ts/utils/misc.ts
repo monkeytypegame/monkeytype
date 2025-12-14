@@ -494,6 +494,7 @@ export function isDevEnvironment(): boolean {
 }
 
 export function isTribeEnabled(): boolean {
+  if (envConfig.forceTribe) return true;
   return ServerConfiguration.get()?.tribe?.enabled ?? false;
 }
 
