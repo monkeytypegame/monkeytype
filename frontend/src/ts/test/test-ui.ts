@@ -1844,7 +1844,7 @@ export function onTestStart(): void {
   TimerProgress.update();
 }
 
-export function onTestRestart(): void {
+export function onTestRestart(source: "testPage" | "resultPage"): void {
   $("#result").addClass("hidden");
   $("#typingTest").css("opacity", 0).removeClass("hidden");
   getInputElement().style.left = "0";
@@ -1875,7 +1875,7 @@ export function onTestRestart(): void {
     void ModesNotice.update();
   }
 
-  if (TestState.resultVisible) {
+  if (source === "resultPage") {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
