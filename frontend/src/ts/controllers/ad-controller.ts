@@ -7,7 +7,7 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
-import { onDocumentReady, qs } from "../utils/dom";
+import { onDOMReady, qs } from "../utils/dom";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
@@ -317,7 +317,7 @@ BannerEvent.subscribe(() => {
   updateVerticalMargin();
 });
 
-onDocumentReady(() => {
+onDOMReady(() => {
   updateBreakpoint(true);
   updateBreakpoint2();
 });

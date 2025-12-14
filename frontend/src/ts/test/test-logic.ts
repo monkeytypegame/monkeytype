@@ -273,14 +273,21 @@ export function restart(options = {} as RestartOptions): void {
     ConnectionState.showOfflineBanner();
   }
 
+  // TestUI.beforeTestRestart();
+
+  let source: "testPage" | "resultPage";
   let el: HTMLElement;
   if (TestState.resultVisible) {
     //results are being displayed
     el = document.querySelector("#result") as HTMLElement;
+    source = "resultPage";
   } else {
     //words are being displayed
     el = document.querySelector("#typingTest") as HTMLElement;
+    source = "testPage";
   }
+
+  TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
   animate(el, {
@@ -316,8 +323,7 @@ export function restart(options = {} as RestartOptions): void {
         fb.functions.restart();
       }
 
-      TestUI.onTestRestart();
-      TestState.setResultVisible(false);
+      TestUI.onTestRestart(source);
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {

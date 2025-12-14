@@ -12,7 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qs, qsr, onDocumentReady } from "../utils/dom";
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -117,11 +117,11 @@ function updateTabs(): void {
       //
     },
     async () => {
-      pageElement.qs(".tab")?.removeClass("active");
+      pageElement.qsa(".tab")?.removeClass("active");
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
     },
   );
-  pageElement.qs("button")?.removeClass("active");
+  pageElement.qsa("button")?.removeClass("active");
   pageElement.qs(`button[data-tab="${state.tab}"]`)?.addClass("active");
 }
 
@@ -210,6 +210,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onDocumentReady(() => {
+onWindowLoad(() => {
   Skeleton.save("pageAccountSettings");
 });
