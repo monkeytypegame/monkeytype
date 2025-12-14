@@ -81,6 +81,7 @@ function getPlugins({
   const plugins: PluginOption[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
+    fontPreview(),
     versionFile({ clientVersion }),
     checker({
       oxlint: {
@@ -97,7 +98,6 @@ function getPlugins({
   const devPlugins: PluginOption[] = [Inspect()];
 
   const prodPlugins: PluginOption[] = [
-    fontPreview(),
     fontawesomeSubset(),
     ViteMinifyPlugin(),
     VitePWA({
