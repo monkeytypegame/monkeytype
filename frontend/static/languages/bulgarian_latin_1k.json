@@ -1,5 +1,9 @@
 {
-  "name": "bulgarian_latin",
+  "name": "bulgarian_latin_1k",
+  "rightToLeft": false,
+  "ligatures": false,
+  "orderedByFrequency": false,
+  "bcp47": "bg",
   "noLazyMode": true,
   "words": [
     "a",
