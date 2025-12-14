@@ -162,3 +162,10 @@ export function hide(): void {
     },
   });
 }
+
+export function instantHide(): void {
+  monkeyEl.classList.add("hidden");
+  monkeyEl.style.opacity = "0";
+  monkeyEl.style.animationDuration = "0s";
+  monkeyFastEl.style.opacity = "0";
+}
