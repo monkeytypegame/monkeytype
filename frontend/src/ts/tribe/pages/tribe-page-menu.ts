@@ -115,6 +115,11 @@ $(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
   tribeSocket.out.room.create(Config.mode, mode2);
 });
 
+$(".pageTribe .menu .devRoom").on("click", (e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
+  tribeSocket.out.dev?.room();
+});
+
 $(".pageTribe .menu .matchmaking .buttons .button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   const queue = $(e.currentTarget).attr("queue") as string;
