@@ -52,14 +52,29 @@ export function qsr<T extends HTMLElement = HTMLElement>(
 }
 
 /**
- * Execute a callback function when the document is fully loaded.
+ * Execute a callback function when the DOM is fully loaded. If you need to wait
+ * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
  * If the document is already loaded, the callback is executed immediately.
  */
-export function onDocumentReady(callback: () => void): void {
+export function onDOMReady(callback: () => void): void {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", callback);
   } else {
     callback();
+  }
+}
+
+/**
+ * Execute a callback function when the window 'load' event fires, which occurs
+ * after the entire page (including all dependent resources such as images,
+ * stylesheets, and scripts) has fully loaded.
+ * If the window is already loaded, the callback is executed immediately.
+ */
+export function onWindowLoad(callback: () => void): void {
+  if (document.readyState === "complete") {
+    callback();
+  } else {
+    window.addEventListener("load", callback);
   }
 }
 

@@ -12,7 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qs, qsr, onDocumentReady } from "../utils/dom";
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -242,10 +242,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onDocumentReady(() => {
-  setTimeout(() => {
-    //band aid fix for now, we need to delay saving the skeleton
-    // to allow the click listeners to be registered first
-    Skeleton.save("pageAccountSettings");
-  }, 0);
+onWindowLoad(() => {
+  Skeleton.save("pageAccountSettings");
 });

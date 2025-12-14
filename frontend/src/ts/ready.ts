@@ -10,9 +10,9 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
-import { onDocumentReady, qs } from "./utils/dom";
+import { onDOMReady, qs } from "./utils/dom";
 
-onDocumentReady(async () => {
+onDOMReady(async () => {
   await configLoadPromise;
   await authPromise;
 
