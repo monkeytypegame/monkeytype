@@ -7,8 +7,8 @@ import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-fra
 
 const textEl = document.querySelector(
   "#liveStatsTextBottom .liveAcc",
-) as Element;
-const miniEl = document.querySelector("#liveStatsMini .acc") as Element;
+) as HTMLElement;
+const miniEl = document.querySelector("#liveStatsMini .acc") as HTMLElement;
 
 export function update(acc: number): void {
   requestDebouncedAnimationFrame("live-acc.update", () => {
@@ -71,6 +71,17 @@ export function hide(): void {
     });
     state = false;
   });
+}
+
+export function instantHide(): void {
+  if (!state) return;
+
+  textEl.classList.add("hidden");
+  textEl.style.opacity = "0";
+  miniEl.classList.add("hidden");
+  miniEl.style.opacity = "0";
+
+  state = false;
 }
 
 ConfigEvent.subscribe(({ key, newValue }) => {
