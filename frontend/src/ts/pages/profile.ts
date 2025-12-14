@@ -250,7 +250,7 @@ qs(".page.pageProfile")?.onChild("click", ".profile .userReportButton", () => {
 qs(".page.pageProfile")?.onChild(
   "click",
   ".profile .addFriendButton",
-  async (event: MouseEvent) => {
+  async () => {
     const friendName =
       qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
 
