@@ -243,5 +243,9 @@ export const page = new PageWithUrlParams({
 });
 
 onDocumentReady(() => {
-  Skeleton.save("pageAccountSettings");
+  setTimeout(() => {
+    //band aid fix for now, we need to delay saving the skeleton
+    // to allow the click listeners to be registered first
+    Skeleton.save("pageAccountSettings");
+  }, 0);
 });
