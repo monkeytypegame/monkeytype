@@ -198,8 +198,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     }
 
     const hourOffset = userData?.streak?.hourOffset;
-    snap.streakHourOffset =
-      hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
+    snap.streakHourOffset = hourOffset ?? undefined;
 
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
@@ -308,24 +307,20 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   if (!isAuthenticated()) return false;
 
   const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
-    if (result.bailedOut === undefined) result.bailedOut = false;
-    if (result.blindMode === undefined) result.blindMode = false;
-    if (result.lazyMode === undefined) result.lazyMode = false;
-    if (result.difficulty === undefined) result.difficulty = "normal";
-    if (result.funbox === undefined) result.funbox = [];
-    if (result.language === undefined || result.language === null) {
-      result.language = "english";
-    }
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.punctuation === undefined) result.punctuation = false;
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.quoteLength === undefined) result.quoteLength = -1;
-    if (result.restartCount === undefined) result.restartCount = 0;
-    if (result.incompleteTestSeconds === undefined) {
-      result.incompleteTestSeconds = 0;
-    }
-    if (result.afkDuration === undefined) result.afkDuration = 0;
-    if (result.tags === undefined) result.tags = [];
+    result.bailedOut ??= false;
+    result.blindMode ??= false;
+    result.lazyMode ??= false;
+    result.difficulty ??= "normal";
+    result.funbox ??= [];
+    result.language ??= "english";
+    result.numbers ??= false;
+    result.punctuation ??= false;
+    result.numbers ??= false;
+    result.quoteLength ??= -1;
+    result.restartCount ??= 0;
+    result.incompleteTestSeconds ??= 0;
+    result.afkDuration ??= 0;
+    result.tags ??= [];
     return result as SnapshotResult<Mode>;
   });
   results?.sort((a, b) => b.timestamp - a.timestamp);
@@ -353,9 +348,7 @@ export async function addCustomTheme(
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
 
-  if (dbSnapshot.customThemes === undefined) {
-    dbSnapshot.customThemes = [];
-  }
+  dbSnapshot.customThemes ??= [];
 
   if (dbSnapshot.customThemes.length >= 20) {
     Notifications.add("Too many custom themes!", 0);
@@ -392,9 +385,7 @@ export async function editCustomTheme(
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  if (dbSnapshot.customThemes === undefined) {
-    dbSnapshot.customThemes = [];
-  }
+  dbSnapshot.customThemes ??= [];
 
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
@@ -906,20 +897,14 @@ export async function updateLbMemory<M extends Mode>(
 
     const snapshot = getSnapshot();
     if (!snapshot) return;
-    if (snapshot.lbMemory === undefined) {
-      snapshot.lbMemory = {
-        time: { "15": { english: 0 }, "60": { english: 0 } },
-      };
-    }
-    if (snapshot.lbMemory[timeMode] === undefined) {
-      snapshot.lbMemory[timeMode] = {
-        "15": { english: 0 },
-        "60": { english: 0 },
-      };
-    }
-    if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
-      snapshot.lbMemory[timeMode][timeMode2] = {};
-    }
+    snapshot.lbMemory ??= {
+      time: { "15": { english: 0 }, "60": { english: 0 } },
+    };
+    snapshot.lbMemory[timeMode] ??= {
+      "15": { english: 0 },
+      "60": { english: 0 },
+    };
+    snapshot.lbMemory[timeMode][timeMode2] ??= {};
     const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
 
     //this is protected above so not sure why it would be undefined
@@ -970,13 +955,11 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
     }
-    if (snapshot.typingStats === undefined) {
-      snapshot.typingStats = {
-        timeTyping: 0,
-        startedTests: 0,
-        completedTests: 0,
-      };
-    }
+    snapshot.typingStats ??= {
+      timeTyping: 0,
+      startedTests: 0,
+      completedTests: 0,
+    };
 
     const time =
       data.result.testDuration +
@@ -1005,9 +988,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   }
 
   if (data.xp !== undefined) {
-    if (snapshot.xp === undefined) {
-      snapshot.xp = 0;
-    }
+    snapshot.xp ??= 0;
     snapshot.xp += data.xp;
   }
 
@@ -1028,9 +1009,7 @@ export function addXp(xp: number): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot.xp === undefined) {
-    snapshot.xp = 0;
-  }
+  snapshot.xp ??= 0;
   snapshot.xp += xp;
   setSnapshot(snapshot, {
     dispatchEvent: false,
@@ -1049,11 +1028,9 @@ export function addBadge(badge: Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot.inventory === undefined) {
-    snapshot.inventory = {
-      badges: [],
-    };
-  }
+  snapshot.inventory ??= {
+    badges: [],
+  };
   snapshot.inventory.badges.push(badge);
   setSnapshot(snapshot);
 }

@@ -1,6 +1,6 @@
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";
@@ -8,13 +8,11 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
-import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
@@ -49,103 +47,21 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
-
-const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
-  if (supports === "no") {
-    Notifications.add(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-      0,
-      {
-        duration: 7,
-      },
-    );
-  }
-  if (supports === "unknown") {
-    Notifications.add(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-      0,
-      {
-        duration: 7,
-      },
-    );
-  }
-});
+import * as TestConfig from "./test-config";
+import * as CompositionDisplay from "../elements/composition-display";
+import * as AdController from "../controllers/ad-controller";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import * as Keymap from "../elements/keymap";
+import * as ThemeController from "../controllers/theme-controller";
+import * as XPBar from "../elements/xp-bar";
+import * as ModesNotice from "../elements/modes-notice";
+import * as Last10Average from "../elements/last-10-average";
+import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
   { rejectSkippedCalls: false },
 );
-
-ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  if (
-    (eventKey === "language" || eventKey === "funbox") &&
-    Config.funbox.includes("zipf")
-  ) {
-    debouncedZipfCheck();
-  }
-  if (eventKey === "fontSize") {
-    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
-      "fontSize",
-      (eventValue as number) + "rem",
-    );
-    if (!nosave) {
-      OutOfFocus.hide();
-      updateWordWrapperClasses();
-    }
-  }
-  if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
-      eventKey,
-    )
-  ) {
-    void updateHintsPositionDebounced();
-  }
-
-  if (eventKey === "theme") void applyBurstHeatmap();
-
-  if (eventValue === undefined) return;
-  if (eventKey === "highlightMode") {
-    if (ActivePage.get() === "test")
-      void updateWordLetters({
-        input: TestInput.input.current,
-        wordIndex: TestState.activeWordIndex,
-        compositionData: CompositionState.getData(),
-      });
-  }
-
-  if (
-    [
-      "highlightMode",
-      "blindMode",
-      "indicateTypos",
-      "tapeMode",
-      "hideExtraLetters",
-    ].includes(eventKey)
-  ) {
-    updateWordWrapperClasses();
-  }
-
-  if (["tapeMode", "tapeMargin"].includes(eventKey)) {
-    updateLiveStatsMargin();
-  }
-
-  if (eventKey === "showAllLines") {
-    updateWordsWrapperHeight(true);
-    if (eventValue === false) {
-      void centerActiveLine();
-    }
-  }
-
-  if (typeof eventValue !== "boolean") return;
-  if (eventKey === "flipTestColors") flipColors(eventValue);
-  if (eventKey === "colorfulMode") colorful(eventValue);
-  if (eventKey === "burstHeatmap") void applyBurstHeatmap();
-});
 
 const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
 const wordsWrapperEl = document.querySelector(
@@ -160,11 +76,6 @@ export let resultCalculating = false;
 
 export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
-}
-
-export function reset(): void {
-  currentTestLine = 0;
-  cancelPendingAnimationFramesStartingWith("test-ui");
 }
 
 export function focusWords(force = false): void {
@@ -384,8 +295,9 @@ async function updateHintsPosition(): Promise<void> {
     ActivePage.get() !== "test" ||
     TestState.resultVisible ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
-  )
+  ) {
     return;
+  }
 
   let previousHintsContainer: HTMLElement | undefined;
   let hintIndices: number[][] = [];
@@ -465,13 +377,17 @@ function buildWordHTML(word: string, wordIndex: number): string {
     }
   }
   retval += "</div>";
-  if (newlineafter)
+  if (newlineafter) {
     retval +=
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>";
+  }
   return retval;
 }
 
 function updateWordWrapperClasses(): void {
+  // outoffocus applies transition, need to remove it
+  OutOfFocus.hide();
+
   if (Config.tapeMode !== "off") {
     wordsEl.classList.add("tape");
     wordsWrapperEl.classList.add("tape");
@@ -504,6 +420,32 @@ function updateWordWrapperClasses(): void {
     wordsWrapperEl.classList.remove("hideExtraLetters");
   }
 
+  if (Config.flipTestColors) {
+    wordsEl.classList.add("flipped");
+  } else {
+    wordsEl.classList.remove("flipped");
+  }
+
+  if (Config.colorfulMode) {
+    wordsEl.classList.add("colorfulMode");
+  } else {
+    wordsEl.classList.remove("colorfulMode");
+  }
+
+  $(
+    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+  ).css("fontSize", Config.fontSize + "rem");
+
+  if (TestState.isLanguageRightToLeft) {
+    wordsEl.classList.add("rightToLeftTest");
+    $("#resultWordsHistory .words").addClass("rightToLeftTest");
+    $("#resultReplay .words").addClass("rightToLeftTest");
+  } else {
+    wordsEl.classList.remove("rightToLeftTest");
+    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+    $("#resultReplay .words").removeClass("rightToLeftTest");
+  }
+
   const existing =
     wordsEl?.className
       .split(/\s+/)
@@ -511,18 +453,24 @@ function updateWordWrapperClasses(): void {
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
   }
-
   wordsEl.className = existing.join(" ");
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
+  if (!Config.showAllLines) {
+    void centerActiveLine();
+  }
   updateWordsMargin();
   updateWordsInputPosition();
   void updateHintsPositionDebounced();
   Caret.updatePosition();
+
+  if (document.activeElement !== getInputElement()) {
+    OutOfFocus.show();
+  }
 }
 
-export function showWords(): void {
+function showWords(): void {
   wordsEl.innerHTML = "";
 
   if (Config.mode === "zen") {
@@ -748,22 +696,6 @@ export function addWord(
   // });
 }
 
-export function flipColors(tf: boolean): void {
-  if (tf) {
-    wordsEl.classList.add("flipped");
-  } else {
-    wordsEl.classList.remove("flipped");
-  }
-}
-
-export function colorful(tc: boolean): void {
-  if (tc) {
-    wordsEl.classList.add("colorfulMode");
-  } else {
-    wordsEl.classList.remove("colorfulMode");
-  }
-}
-
 // because of the requestAnimationFrame, multiple calls to updateWordLetters
 // can be made before the actual update happens. This map keeps track of the
 // latest input for each word and is used in before-insert-text to
@@ -853,7 +785,7 @@ export async function updateWordLetters({
               `<letter class="incorrect ${tabChar}${nlChar}">` +
               (Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
-                ? inputChars[i] === " "
+                ? inputChars[i] === " " || inputChars[i] === "\t"
                   ? "_"
                   : inputChars[i]
                 : currentLetter) +
@@ -863,26 +795,30 @@ export async function updateWordLetters({
               Config.indicateTypos === "both"
             ) {
               const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1) {
                 lastBlock.push(i);
-              else hintIndices.push([i]);
+              } else {
+                hintIndices.push([i]);
+              }
             }
           }
         }
 
         for (let i = 0; i < compositionData.length; i++) {
           const compositionChar = compositionData[i];
-          let charToShow = currentWordChars[input.length + i];
+          let charToShow =
+            currentWordChars[input.length + i] ?? compositionChar;
 
-          if (charToShow === undefined) {
-            charToShow = compositionChar;
-          }
-
-          if (Config.indicateTypos === "replace") {
+          if (Config.compositionDisplay === "replace") {
             charToShow = compositionChar === " " ? "_" : compositionChar;
           }
 
-          ret += `<letter class="dead">${charToShow}</letter>`;
+          let correctClass = "";
+          if (compositionChar === currentWordChars[input.length + i]) {
+            correctClass = "correct";
+          }
+
+          ret += `<letter class="dead ${correctClass}">${charToShow}</letter>`;
         }
 
         for (
@@ -926,11 +862,12 @@ export async function updateWordLetters({
         );
       }
 
-      if (newlineafter)
+      if (newlineafter) {
         wordAtIndex.insertAdjacentHTML(
           "afterend",
           "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
         );
+      }
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
@@ -1129,8 +1066,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
     // if current letter has zero width move the tape to previous positive width letter
-    if (letters[inputLength]?.offsetWidth === 0)
+    if (letters[inputLength]?.offsetWidth === 0) {
       currentWordWidth -= lastPositiveLetterWidth;
+    }
   }
 
   /* change to new #words & .afterNewline margins */
@@ -1281,18 +1219,6 @@ export async function lineJump(
   currentTestLine++;
   updateWordsWrapperHeight();
   return;
-}
-
-export function setRightToLeft(isEnabled: boolean): void {
-  if (isEnabled) {
-    wordsEl.classList.add("rightToLeftTest");
-    $("#resultWordsHistory .words").addClass("rightToLeftTest");
-    $("#resultReplay .words").addClass("rightToLeftTest");
-  } else {
-    wordsEl.classList.remove("rightToLeftTest");
-    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
-    $("#resultReplay .words").removeClass("rightToLeftTest");
-  }
 }
 
 export function setLigatures(isEnabled: boolean): void {
@@ -1723,6 +1649,14 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
+function showHideTestRestartButton(showHide: boolean): void {
+  if (showHide) {
+    $(".pageTest #restartTestButton").removeClass("hidden");
+  } else {
+    $(".pageTest #restartTestButton").addClass("hidden");
+  }
+}
+
 export function getActiveWordTopAndHeightWithDifferentData(data: string): {
   top: number;
   height: number;
@@ -1900,7 +1834,7 @@ export async function afterTestWordChange(
   }
 }
 
-export function afterTestStart(): void {
+export function onTestStart(): void {
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
@@ -1908,6 +1842,70 @@ export function afterTestStart(): void {
   LiveAcc.show();
   LiveBurst.show();
   TimerProgress.update();
+}
+
+export function onTestRestart(): void {
+  $("#result").addClass("hidden");
+  $("#typingTest").css("opacity", 0).removeClass("hidden");
+  getInputElement().style.left = "0";
+  TestConfig.show();
+  Focus.set(false);
+  LiveSpeed.instantHide();
+  LiveSpeed.reset();
+  LiveBurst.instantHide();
+  LiveBurst.reset();
+  LiveAcc.instantHide();
+  LiveAcc.reset();
+  TimerProgress.instantHide();
+  TimerProgress.reset();
+  Monkey.instantHide();
+  LayoutfluidFunboxTimer.instantHide();
+  updatePremid();
+  focusWords(true);
+  void Keymap.refresh();
+  ResultWordHighlight.destroy();
+  MonkeyPower.reset();
+  MemoryFunboxTimer.reset();
+
+  if (Config.showAverage !== "off") {
+    void Last10Average.update().then(() => {
+      void ModesNotice.update();
+    });
+  } else {
+    void ModesNotice.update();
+  }
+
+  if (TestState.resultVisible) {
+    if (Config.randomTheme !== "off") {
+      void ThemeController.randomizeTheme();
+    }
+    void XPBar.skipBreakdown();
+  }
+
+  currentTestLine = 0;
+  if (ActivePage.get() === "test") {
+    AdController.updateFooterAndVerticalAds(false);
+  }
+  AdController.destroyResult();
+  if (Config.compositionDisplay === "below") {
+    CompositionDisplay.update(" ");
+    CompositionDisplay.show();
+  } else {
+    CompositionDisplay.hide();
+  }
+  void SoundController.clearAllSounds();
+  cancelPendingAnimationFramesStartingWith("test-ui");
+  showWords();
+}
+
+export function onTestFinish(): void {
+  Caret.hide();
+  LiveSpeed.hide();
+  LiveAcc.hide();
+  LiveBurst.hide();
+  TimerProgress.hide();
+  OutOfFocus.hide();
+  Monkey.hide();
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1946,7 +1944,7 @@ async function copyToClipboard(content: string): Promise<void> {
 }
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
-  UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+  setConfig("burstHeatmap", !Config.burstHeatmap);
   ResultWordHighlight.destroy();
 });
 
@@ -2014,24 +2012,64 @@ $("#wordsWrapper").on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe((key, value) => {
+ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
-    if (value === "off") {
-      $(".pageTest #restartTestButton").removeClass("hidden");
-    } else {
-      $(".pageTest #restartTestButton").addClass("hidden");
-    }
-  }
-  if (key === "maxLineWidth") {
-    updateWordsWidth();
+    showHideTestRestartButton(newValue === "off");
   }
   if (key === "timerOpacity") {
-    updateLiveStatsOpacity(value as TimerOpacity);
+    updateLiveStatsOpacity(newValue);
   }
   if (key === "timerColor") {
-    updateLiveStatsColor(value as TimerColor);
+    updateLiveStatsColor(newValue);
   }
-  if (key === "showOutOfFocusWarning" && value === false) {
+  if (key === "showOutOfFocusWarning" && !newValue) {
     OutOfFocus.hide();
+  }
+  if (key === "compositionDisplay") {
+    if (newValue === "below") {
+      CompositionDisplay.update(" ");
+      CompositionDisplay.show();
+    } else {
+      CompositionDisplay.hide();
+    }
+  }
+  if (
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      key ?? "",
+    )
+  ) {
+    void updateHintsPositionDebounced();
+  }
+  if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
+    void applyBurstHeatmap();
+  }
+  if (key === "highlightMode") {
+    if (ActivePage.get() === "test") {
+      void updateWordLetters({
+        input: TestInput.input.current,
+        wordIndex: TestState.activeWordIndex,
+        compositionData: CompositionState.getData(),
+      });
+    }
+  }
+  if (
+    [
+      "highlightMode",
+      "blindMode",
+      "indicateTypos",
+      "tapeMode",
+      "hideExtraLetters",
+      "flipTestColors",
+      "colorfulMode",
+      "showAllLines",
+      "fontSize",
+      "maxLineWidth",
+      "tapeMargin",
+    ].includes(key)
+  ) {
+    updateWordWrapperClasses();
+  }
+  if (["tapeMode", "tapeMargin"].includes(key)) {
+    updateLiveStatsMargin();
   }
 });

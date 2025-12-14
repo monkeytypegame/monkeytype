@@ -15,13 +15,14 @@ import { getPreset } from "../controllers/preset-controller";
 import {
   ConfigGroupName,
   ConfigGroupNameSchema,
-  ConfigGroupsLiteral,
   ConfigKey,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
+import { qsr } from "../utils/dom";
+import { configMetadata } from "../config-metadata";
 
 const state = {
   presetType: "full" as PresetType,
@@ -46,22 +47,18 @@ export function show(action: string, id?: string, name?: string): void {
     beforeAnimation: async () => {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
-      if (!presetNameEl) {
-        presetNameEl = new ValidatedHtmlInputElement(
-          document.querySelector(
-            "#editPresetModal .modal input",
-          ) as HTMLInputElement,
-          {
-            schema: PresetNameSchema,
-          },
-        );
-      }
+      presetNameEl ??= new ValidatedHtmlInputElement(
+        qsr("#editPresetModal .modal input"),
+        {
+          schema: PresetNameSchema,
+        },
+      );
       if (action === "add") {
         $("#editPresetModal .modal").attr("data-action", "add");
         $("#editPresetModal .modal .popupTitle").html("Add new preset");
         $("#editPresetModal .modal .submit").html(`add`);
-        presetNameEl?.setValue(null);
-        presetNameEl?.native.parentElement?.classList.remove("hidden");
+        presetNameEl.setValue(null);
+        presetNameEl.getParent()?.removeClass("hidden");
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
           "#editPresetModal .modal label.changePresetToCurrentCheckbox",
@@ -76,7 +73,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
         $("#editPresetModal .modal .submit").html(`save`);
         presetNameEl?.setValue(name);
-        presetNameEl?.native.parentElement?.classList.remove("hidden");
+        presetNameEl?.getParent()?.removeClass("hidden");
 
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
@@ -105,7 +102,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .inputs").addClass("hidden");
         $("#editPresetModal .modal .presetType").addClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").addClass("hidden");
-        presetNameEl?.native.parentElement?.classList.add("hidden");
+        presetNameEl?.getParent()?.addClass("hidden");
       }
       updateUI();
     },
@@ -366,7 +363,7 @@ async function apply(): Promise<void> {
 }
 
 function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {
-  return ConfigGroupsLiteral[configFieldName];
+  return configMetadata[configFieldName].group;
 }
 
 function getPartialConfigChanges(
@@ -384,9 +381,7 @@ function getPartialConfigChanges(
     .forEach((settingName) => {
       const safeSettingName = settingName;
       const newValue =
-        configChanges[safeSettingName] !== undefined
-          ? configChanges[safeSettingName]
-          : defaultConfig[safeSettingName];
+        configChanges[safeSettingName] ?? defaultConfig[safeSettingName];
       // @ts-expect-error cant figure this one out, but it works
       activeConfigChanges[safeSettingName] = newValue;
     });

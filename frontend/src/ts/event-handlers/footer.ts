@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
@@ -52,7 +52,7 @@ document
     const e = event as MouseEvent;
     if (e.shiftKey) {
       if (Config.customTheme) {
-        UpdateConfig.setCustomTheme(false);
+        setConfig("customTheme", false);
         return;
       }
       if (
@@ -60,10 +60,10 @@ document
         (DB.getSnapshot()?.customThemes?.length ?? 0) < 1
       ) {
         Notifications.add("No custom themes!", 0);
-        UpdateConfig.setCustomTheme(false);
+        setConfig("customTheme", false);
         return;
       }
-      UpdateConfig.setCustomTheme(true);
+      setConfig("customTheme", true);
     } else {
       const subgroup = Config.customTheme ? "customThemesList" : "themes";
       Commandline.show({

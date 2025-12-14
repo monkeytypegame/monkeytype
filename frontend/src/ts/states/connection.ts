@@ -15,18 +15,16 @@ let bannerAlreadyClosed = false;
 
 export function showOfflineBanner(): void {
   if (bannerAlreadyClosed) return;
-  if (noInternetBannerId === undefined) {
-    noInternetBannerId = Notifications.addPSA(
-      "No internet connection",
-      0,
-      "exclamation-triangle",
-      false,
-      () => {
-        bannerAlreadyClosed = true;
-        noInternetBannerId = undefined;
-      },
-    );
-  }
+  noInternetBannerId ??= Notifications.addPSA(
+    "No internet connection",
+    0,
+    "exclamation-triangle",
+    false,
+    () => {
+      bannerAlreadyClosed = true;
+      noInternetBannerId = undefined;
+    },
+  );
 }
 
 const throttledHandleState = debounce(5000, () => {

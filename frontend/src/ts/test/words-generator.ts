@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig, setQuoteLengthAll, toggleFunbox } from "../config";
 import * as CustomText from "./custom-text";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
@@ -329,7 +329,7 @@ async function getFunboxSection(): Promise<string[]> {
     const section = await funbox.functions.pullSection(Config.language);
 
     if (section === false || section === undefined) {
-      UpdateConfig.toggleFunbox(funbox.name);
+      toggleFunbox(funbox.name);
       throw new Error("Failed to pull section");
     }
 
@@ -392,7 +392,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
       ? currentWordset.languageProperties.get(langName)
       : undefined;
     const allowLazyMode =
-      (langProps && !langProps.noLazyMode) || Config.mode === "custom";
+      (langProps && !langProps.noLazyMode) === true || Config.mode === "custom";
     if (Config.lazyMode && allowLazyMode && langProps) {
       word = LazyMode.replaceAccents(word, langProps.additionalAccents);
     }
@@ -523,7 +523,7 @@ async function getQuoteWordList(
   Loader.hide();
 
   if (quotesCollection.length === 0) {
-    UpdateConfig.setMode("words");
+    setConfig("mode", "words");
     throw new WordGenError(
       `No ${Config.language
         .replace(/_\d*k$/g, "")
@@ -537,7 +537,7 @@ async function getQuoteWordList(
       TestState.selectedQuoteId,
     );
     if (targetQuote === undefined) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError(
         `Quote ${TestState.selectedQuoteId} does not exist`,
       );
@@ -548,14 +548,14 @@ async function getQuoteWordList(
       Config.language,
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
   } else {
     const randomQuote = QuotesController.getRandomQuote();
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;
@@ -918,7 +918,6 @@ export async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, currentLanguage);
-  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
   if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
@@ -936,6 +935,9 @@ export async function getNextWord(
       wordsBound,
     );
   }
+
+  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
+
   if (Config.numbers) {
     if (random() < 0.1) {
       randomWord = GetText.getNumbers(4);

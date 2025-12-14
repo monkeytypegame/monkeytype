@@ -7,6 +7,7 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
+import { onDocumentReady, qs } from "../utils/dom";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
@@ -61,32 +62,32 @@ function removeAll(): void {
 }
 
 function removeSellout(): void {
-  $("#ad-footer-wrapper").remove();
-  $("#ad-footer-small-wrapper").remove();
-  $("#ad-about-1-wrapper").remove();
-  $("#ad-about-1-small-wrapper").remove();
-  $("#ad-about-2-wrapper").remove();
-  $("#ad-about-2-small-wrapper").remove();
-  $("#ad-settings-1-wrapper").remove();
-  $("#ad-settings-1-small-wrapper").remove();
-  $("#ad-settings-2-wrapper").remove();
-  $("#ad-settings-2-small-wrapper").remove();
-  $("#ad-settings-3-wrapper").remove();
-  $("#ad-settings-3-small-wrapper").remove();
-  $("#ad-account-1-wrapper").remove();
-  $("#ad-account-1-small-wrapper").remove();
-  $("#ad-account-2-wrapper").remove();
-  $("#ad-account-2-small-wrapper").remove();
+  qs("#ad-footer-wrapper")?.remove();
+  qs("#ad-footer-small-wrapper")?.remove();
+  qs("#ad-about-1-wrapper")?.remove();
+  qs("#ad-about-1-small-wrapper")?.remove();
+  qs("#ad-about-2-wrapper")?.remove();
+  qs("#ad-about-2-small-wrapper")?.remove();
+  qs("#ad-settings-1-wrapper")?.remove();
+  qs("#ad-settings-1-small-wrapper")?.remove();
+  qs("#ad-settings-2-wrapper")?.remove();
+  qs("#ad-settings-2-small-wrapper")?.remove();
+  qs("#ad-settings-3-wrapper")?.remove();
+  qs("#ad-settings-3-small-wrapper")?.remove();
+  qs("#ad-account-1-wrapper")?.remove();
+  qs("#ad-account-1-small-wrapper")?.remove();
+  qs("#ad-account-2-wrapper")?.remove();
+  qs("#ad-account-2-small-wrapper")?.remove();
 }
 
 function removeOn(): void {
-  $("#ad-vertical-right-wrapper").remove();
-  $("#ad-vertical-left-wrapper").remove();
+  qs("#ad-vertical-right-wrapper")?.remove();
+  qs("#ad-vertical-left-wrapper")?.remove();
 }
 
 function removeResult(): void {
-  $("#ad-result-wrapper").remove();
-  $("#ad-result-small-wrapper").remove();
+  qs("#ad-result-wrapper")?.remove();
+  qs("#ad-result-small-wrapper")?.remove();
 }
 
 function updateVerticalMargin(): void {
@@ -219,7 +220,7 @@ export async function renderResult(): Promise<void> {
   await checkCookieblocker();
 
   if (adBlock) {
-    $("#ad-result-wrapper .iconAndText .text").html(`
+    qs("#ad-result-wrapper .iconAndText .text")?.setHtml(`
     Using an ad blocker? No worries
     <div class="smalltext">
       We understand ads can be annoying
@@ -233,7 +234,7 @@ export async function renderResult(): Promise<void> {
   }
 
   if (cookieBlocker) {
-    $("#ad-result-wrapper .iconAndText .text").html(`
+    qs("#ad-result-wrapper .iconAndText .text")?.setHtml(`
     Ads not working? Ooops
     <div class="smalltext">
       You may have a cookie popup blocker enabled - ads will not show without your consent
@@ -255,15 +256,15 @@ export async function renderResult(): Promise<void> {
 
 export function updateFooterAndVerticalAds(visible: boolean): void {
   if (visible) {
-    $("#ad-vertical-left-wrapper").removeClass("testPage");
-    $("#ad-vertical-right-wrapper").removeClass("testPage");
-    $("#ad-footer-wrapper").removeClass("testPage");
-    $("#ad-footer-small-wrapper").removeClass("testPage");
+    qs("#ad-vertical-left-wrapper")?.removeClass("testPage");
+    qs("#ad-vertical-right-wrapper")?.removeClass("testPage");
+    qs("#ad-footer-wrapper")?.removeClass("testPage");
+    qs("#ad-footer-small-wrapper")?.removeClass("testPage");
   } else {
-    $("#ad-vertical-left-wrapper").addClass("testPage");
-    $("#ad-vertical-right-wrapper").addClass("testPage");
-    $("#ad-footer-wrapper").addClass("testPage");
-    $("#ad-footer-small-wrapper").addClass("testPage");
+    qs("#ad-vertical-left-wrapper")?.addClass("testPage");
+    qs("#ad-vertical-right-wrapper")?.addClass("testPage");
+    qs("#ad-footer-wrapper")?.addClass("testPage");
+    qs("#ad-footer-small-wrapper")?.addClass("testPage");
   }
 }
 
@@ -293,20 +294,20 @@ const debouncedMarginUpdate = debounce(500, updateVerticalMargin);
 const debouncedBreakpointUpdate = debounce(500, updateBreakpoint);
 const debouncedBreakpoint2Update = debounce(500, updateBreakpoint2);
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   debouncedMarginUpdate();
   debouncedBreakpointUpdate();
   debouncedBreakpoint2Update();
 });
 
-ConfigEvent.subscribe((event, value) => {
-  if (event === "ads") {
-    if (value === "off") {
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "ads") {
+    if (newValue === "off") {
       removeAll();
-    } else if (value === "result") {
+    } else if (newValue === "result") {
       removeSellout();
       removeOn();
-    } else if (value === "on") {
+    } else if (newValue === "on") {
       removeSellout();
     }
   }
@@ -316,7 +317,7 @@ BannerEvent.subscribe(() => {
   updateVerticalMargin();
 });
 
-$(() => {
+onDocumentReady(() => {
   updateBreakpoint(true);
   updateBreakpoint2();
 });
@@ -325,7 +326,7 @@ window.onerror = function (error): void {
   //@ts-expect-error ---
   if (choice === "eg") {
     if (typeof error === "string" && error.startsWith("EG APS")) {
-      $("#ad-result-wrapper .iconAndText").addClass("withLeft");
+      qs("#ad-result-wrapper .iconAndText")?.addClass("withLeft");
     }
   }
 };

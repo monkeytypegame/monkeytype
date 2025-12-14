@@ -30,8 +30,7 @@ import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
-
-const pageElement = $(".page.pageFriends");
+import { qsr } from "../utils/dom";
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
@@ -42,8 +41,9 @@ export function getReceiverUid(
   connection: Pick<Connection, "initiatorUid" | "receiverUid">,
 ): string {
   const me = getAuthenticatedUser();
-  if (me === null)
+  if (me === null) {
     throw new Error("expected to be authenticated in getReceiverUid");
+  }
 
   if (me.uid === connection.initiatorUid) return connection.receiverUid;
   return connection.initiatorUid;
@@ -498,7 +498,7 @@ function update(): void {
 export const page = new Page<undefined>({
   id: "friends",
   display: "Friends",
-  element: pageElement,
+  element: qsr(".page.pageFriends"),
   path: "/friends",
   loadingOptions: {
     loadingMode: () => {

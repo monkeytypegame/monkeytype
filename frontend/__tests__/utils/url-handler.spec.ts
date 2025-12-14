@@ -19,33 +19,16 @@ describe("url-handler", () => {
   describe("loadTestSettingsFromUrl", () => {
     const findGetParameterMock = vi.spyOn(Misc, "findGetParameter");
 
-    const setModeMock = vi.spyOn(UpdateConfig, "setMode");
-    const setTimeConfigMock = vi.spyOn(UpdateConfig, "setTimeConfig");
-    const setWordCountMock = vi.spyOn(UpdateConfig, "setWordCount");
-    const setQuoteLengthMock = vi.spyOn(UpdateConfig, "setQuoteLength");
+    const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
-    const setPunctuationMock = vi.spyOn(UpdateConfig, "setPunctuation");
-    const setNumbersMock = vi.spyOn(UpdateConfig, "setNumbers");
-    const setLanguageMock = vi.spyOn(UpdateConfig, "setLanguage");
-    const setDifficultyMock = vi.spyOn(UpdateConfig, "setDifficulty");
-    const setFunboxMock = vi.spyOn(UpdateConfig, "setFunbox");
-
     const restartTestMock = vi.spyOn(TestLogic, "restart");
     const addNotificationMock = vi.spyOn(Notifications, "add");
 
     beforeEach(() => {
       [
+        setConfigMock,
         findGetParameterMock,
-        setModeMock,
-        setTimeConfigMock,
-        setWordCountMock,
-        setQuoteLengthMock,
         setSelectedQuoteIdMock,
-        setPunctuationMock,
-        setNumbersMock,
-        setLanguageMock,
-        setDifficultyMock,
-        setFunboxMock,
         restartTestMock,
         addNotificationMock,
       ].forEach((it) => it.mockClear());
@@ -61,7 +44,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).not.toHaveBeenCalled();
+      expect(setConfigMock).not.toHaveBeenCalled();
     });
     it("handles mode2 as number", () => {
       //GIVEN
@@ -73,8 +56,12 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("time", true);
-      expect(setTimeConfigMock).toHaveBeenCalledWith(60, true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("time", 60, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets time", () => {
@@ -87,8 +74,12 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("time", true);
-      expect(setTimeConfigMock).toHaveBeenCalledWith(30, true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "time", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("time", 30, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets word count", () => {
@@ -101,8 +92,12 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("words", true);
-      expect(setWordCountMock).toHaveBeenCalledWith(50, true);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "words", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("words", 50, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets quote length", () => {
@@ -115,8 +110,10 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setModeMock).toHaveBeenCalledWith("quote", true);
-      expect(setQuoteLengthMock).toHaveBeenCalledWith([-2], false);
+      expect(setConfigMock).toHaveBeenCalledWith("mode", "quote", {
+        nosave: true,
+      });
+      expect(setConfigMock).toHaveBeenCalledWith("quoteLength", [-2]);
       expect(setSelectedQuoteIdMock).toHaveBeenCalledWith(512);
       expect(restartTestMock).toHaveBeenCalled();
     });
@@ -128,7 +125,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setPunctuationMock).toHaveBeenCalledWith(true, true);
+      expect(setConfigMock).toHaveBeenCalledWith("punctuation", true, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets numbers", () => {
@@ -139,7 +138,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setNumbersMock).toHaveBeenCalledWith(false, true);
+      expect(setConfigMock).toHaveBeenCalledWith("numbers", false, {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets language", () => {
@@ -150,7 +151,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setLanguageMock).toHaveBeenCalledWith("english", true);
+      expect(setConfigMock).toHaveBeenCalledWith("language", "english", {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets difficulty", () => {
@@ -161,7 +164,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setDifficultyMock).toHaveBeenCalledWith("master", true);
+      expect(setConfigMock).toHaveBeenCalledWith("difficulty", "master", {
+        nosave: true,
+      });
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets funbox", () => {
@@ -174,7 +179,13 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setFunboxMock).toHaveBeenCalledWith(["crt", "choo_choo"], true);
+      expect(setConfigMock).toHaveBeenCalledWith(
+        "funbox",
+        ["crt", "choo_choo"],
+        {
+          nosave: true,
+        },
+      );
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("sets funbox legacy", () => {
@@ -187,7 +198,13 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(setFunboxMock).toHaveBeenCalledWith(["crt", "choo_choo"], true);
+      expect(setConfigMock).toHaveBeenCalledWith(
+        "funbox",
+        ["crt", "choo_choo"],
+        {
+          nosave: true,
+        },
+      );
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("adds notification", () => {
