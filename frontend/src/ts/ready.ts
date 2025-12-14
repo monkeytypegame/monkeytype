@@ -52,6 +52,9 @@ onDocumentReady(async () => {
         for (const el of qsa(".pageSettings .settingsGroup.tribe")) {
           el.removeClass("hidden");
         }
+        qs(
+          ".pageSettings .settingsGroup.quickNav button[href='#group_tribe']",
+        )?.removeClass("hidden");
       }
     });
   }
