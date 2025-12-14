@@ -43,4 +43,5 @@ export default {
   connect,
   getId,
   disconnect,
+  ...(isDevEnvironment() ? { socket: Socket } : {}),
 };
