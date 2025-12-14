@@ -3,7 +3,7 @@ import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter } from "./utils/misc";
+import { isDevEnvironment, isTribeEnabled, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";
@@ -209,12 +209,18 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "tribe delta",
     changeRequiresRestart: false,
     group: "tribe",
+    isBlocked: () => {
+      return !isTribeEnabled();
+    },
   },
   tribeCarets: {
     icon: "fa-users",
     displayString: "tribe carets",
     changeRequiresRestart: false,
     group: "tribe",
+    isBlocked: () => {
+      return !isTribeEnabled();
+    },
   },
 
   // behavior
