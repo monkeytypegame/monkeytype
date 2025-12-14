@@ -1,6 +1,7 @@
 import * as Loader from "../elements/loader";
 import * as Random from "../utils/random";
 import { envConfig } from "virtual:env-config";
+import * as ServerConfiguration from "../ape/server-configuration";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
@@ -490,6 +491,11 @@ export function loadCSS(href: string, prepend = false): void {
 
 export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
+}
+
+export function isTribeEnabled(): boolean {
+  if (envConfig.forceTribe) return true;
+  return ServerConfiguration.get()?.tribe?.enabled ?? false;
 }
 
 export function zipfyRandomArrayIndex(dictLength: number): number {

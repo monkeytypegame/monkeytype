@@ -251,8 +251,10 @@ async function initGroups(): Promise<void> {
     "customBackgroundSize",
     "button",
   );
-  groups["tribeDelta"] = new SettingsGroup("tribeDelta", "button");
-  groups["tribeCarets"] = new SettingsGroup("tribeCarets", "button");
+  if (Misc.isTribeEnabled()) {
+    groups["tribeDelta"] = new SettingsGroup("tribeDelta", "button");
+    groups["tribeCarets"] = new SettingsGroup("tribeCarets", "button");
+  }
 }
 
 async function fillSettingsPage(): Promise<void> {

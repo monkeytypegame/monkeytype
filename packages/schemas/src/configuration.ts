@@ -127,5 +127,8 @@ export const ConfigurationSchema = z.object({
     enabled: z.boolean(),
     maxPerUser: z.number().int().nonnegative(),
   }),
+  tribe: z.object({
+    enabled: z.boolean(),
+  }),
 });
 export type Configuration = z.infer<typeof ConfigurationSchema>;
