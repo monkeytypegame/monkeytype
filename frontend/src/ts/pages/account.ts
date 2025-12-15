@@ -2,7 +2,7 @@ import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
 import * as Focus from "../test/focus";
@@ -35,6 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
+import { qsr } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -71,10 +72,7 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
-  let diff = result.difficulty;
-  if (diff === undefined) {
-    diff = "normal";
-  }
+  let diff = result.difficulty ?? "normal";
 
   let icons = `<span aria-label="${result.language?.replace(
     "_",
@@ -300,10 +298,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      let resdiff = result.difficulty;
-      if (resdiff === undefined) {
-        resdiff = "normal";
-      }
+      let resdiff = result.difficulty ?? "normal";
       if (!ResultFilters.getFilter("difficulty", resdiff)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
@@ -1041,25 +1036,25 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
+  setConfig("accountChart", newValue);
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
@@ -1193,15 +1188,15 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
   Loader.hide();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
+ConfigEvent.subscribe(({ key }) => {
+  if (ActivePage.get() === "account" && key === "typingSpeedUnit") {
     void update();
   }
 });
 
 export const page = new Page<undefined>({
   id: "account",
-  element: $(".page.pageAccount"),
+  element: qsr(".page.pageAccount"),
   path: "/account",
   loadingOptions: {
     loadingMode: () => {
@@ -1249,17 +1244,15 @@ export const page = new Page<undefined>({
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020,
     );
 
-    if (historyTable === undefined) {
-      historyTable = new SortedTableWithLimit<SnapshotResult<Mode>>({
-        limit: 10,
-        table: ".pageAccount .content .history table",
-        data: filteredResults,
-        buildRow: (val) => {
-          return buildResultRow(val);
-        },
-        initialSort: { property: "timestamp", descending: true },
-      });
-    }
+    historyTable ??= new SortedTableWithLimit<SnapshotResult<Mode>>({
+      limit: 10,
+      table: ".pageAccount .content .history table",
+      data: filteredResults,
+      buildRow: (val) => {
+        return buildResultRow(val);
+      },
+      initialSort: { property: "timestamp", descending: true },
+    });
 
     await update().then(() => {
       void updateChartColors();

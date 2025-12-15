@@ -61,8 +61,8 @@ document.addEventListener("keydown", (e) => {
       document.activeElement?.tagName === "TEXTAREA" ||
       document.activeElement?.tagName === "SELECT" ||
       document.activeElement?.tagName === "BUTTON" ||
-      document.activeElement?.classList.contains("button") ||
-      document.activeElement?.classList.contains("textButton");
+      document.activeElement?.classList.contains("button") === true ||
+      document.activeElement?.classList.contains("textButton") === true;
 
     if (
       (e.key === "Tab" &&

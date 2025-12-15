@@ -96,6 +96,8 @@
       },
     ],
     "unicorn/prefer-includes": "error",
+    "unicorn/prefer-structured-clone": "error",
+    "eslint/curly": ["error", "multi-line", "consistent"],
 
     // todo: enable
     "no-array-for-each": "off",

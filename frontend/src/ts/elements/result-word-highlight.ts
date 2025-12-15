@@ -418,8 +418,9 @@ function getHighlightElementPositions(
       line === undefined ||
       nextPosition === undefined ||
       container === undefined
-    )
+    ) {
       continue;
+    }
 
     if (!isRTL) {
       position.highlightLeft =
@@ -460,8 +461,9 @@ function getHighlightElementPositions(
       line === undefined ||
       prevHighlightPosition === undefined ||
       container === undefined
-    )
+    ) {
       continue;
+    }
 
     if (!isRTL) {
       position.highlightLeft =

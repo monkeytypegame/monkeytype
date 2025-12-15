@@ -1,4 +1,4 @@
-import Config, { genericSet } from "../config";
+import Config, { setConfig } from "../config";
 import { ConfigMetadata, configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
@@ -186,7 +186,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     visible: isCommandVisible?.(value) ?? undefined,
     available: isCommandAvailable?.(value) ?? undefined,
     exec: (): void => {
-      genericSet(key, val);
+      setConfig(key, val);
       afterExec?.(val);
     },
     hover:
@@ -236,7 +236,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     //@ts-expect-error this is fine
     exec: ({ input }): void => {
       if (input === undefined) return;
-      genericSet(key, input as ConfigSchemas.Config[K]);
+      setConfig(key, input as ConfigSchemas.Config[K]);
       inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
     hover: inputProps?.hover,
