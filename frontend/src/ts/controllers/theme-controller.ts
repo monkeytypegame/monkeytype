@@ -3,7 +3,7 @@ import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
+import Config, { setConfig } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -144,7 +144,7 @@ export async function loadStyle(name: string): Promise<void> {
 //   const customThemes = DB.getSnapshot().customThemes;
 //   const colors = customThemes.find((e) => e._id === themeId)
 //     ?.colors as string[];
-//   UpdateConfig.setCustomThemeColors(colors, nosave);
+//   UpdateConfig.setConfig("customThemeColors", colors,nosave);
 // }
 
 async function apply(
@@ -273,7 +273,7 @@ async function set(
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
-    setAutoSwitchTheme(false);
+    setConfig("autoSwitchTheme", false);
     Notifications.add("Auto switch theme disabled", 0);
   }
 }
@@ -352,7 +352,9 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  setCustomTheme(false, true);
+  setConfig("customTheme", false, {
+    nosave: true,
+  });
   await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
@@ -477,11 +479,11 @@ window
 
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
-  if (eventKey === "fullConfigChange") {
+ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
+  if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
-  if (eventKey === "fullConfigChangeFinished") {
+  if (key === "fullConfigChangeFinished") {
     ignoreConfigEvent = false;
 
     await clearRandom();
@@ -506,26 +508,26 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   // once the full config is loaded, we can apply everything once
   if (ignoreConfigEvent) return;
 
-  if (eventKey === "randomTheme") {
+  if (key === "randomTheme") {
     void changeThemeList();
   }
-  if (eventKey === "customTheme") {
-    (eventValue as boolean) ? await set("custom") : await set(Config.theme);
+  if (key === "customTheme") {
+    newValue ? await set("custom") : await set(Config.theme);
   }
-  if (eventKey === "customThemeColors") {
+  if (key === "customThemeColors") {
     nosave ? preview("custom") : await set("custom");
   }
-  if (eventKey === "theme") {
+  if (key === "theme") {
     await clearRandom();
     await clearPreview(false);
-    await set(eventValue as string);
+    await set(newValue as string);
   }
-  if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
-  if (eventKey === "customBackground") await applyCustomBackground();
+  if (key === "randomTheme" && newValue === "off") await clearRandom();
+  if (key === "customBackground") await applyCustomBackground();
 
-  if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
-  if (eventKey === "autoSwitchTheme") {
-    if (eventValue as boolean) {
+  if (key === "customBackgroundSize") applyCustomBackgroundSize();
+  if (key === "autoSwitchTheme") {
+    if (newValue) {
       if (prefersColorSchemeDark()) {
         await set(Config.themeDark, true);
       } else {
@@ -536,7 +538,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     }
   }
   if (
-    eventKey === "themeLight" &&
+    key === "themeLight" &&
     Config.autoSwitchTheme &&
     !prefersColorSchemeDark() &&
     !nosave
@@ -544,7 +546,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await set(Config.themeLight, true);
   }
   if (
-    eventKey === "themeDark" &&
+    key === "themeDark" &&
     Config.autoSwitchTheme &&
     window.matchMedia !== undefined &&
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
@@ -559,7 +561,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
       "customThemeColors",
       "randomTheme",
       "favThemes",
-    ].includes(eventKey)
+    ].includes(key)
   ) {
     updateFooterIndicator();
   }

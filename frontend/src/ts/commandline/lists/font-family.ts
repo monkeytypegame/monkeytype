@@ -4,7 +4,7 @@ import FileStorage from "../../utils/file-storage";
 import { applyFontFamily } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-font-picker";
 import * as Notifications from "../../elements/notifications";
-import Config, * as UpdateConfig from "../../config";
+import Config, { setConfig } from "../../config";
 
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
@@ -29,7 +29,7 @@ if (fromMeta.subgroup) {
           exec: ({ input }): void => {
             if (input === undefined || input === "") return;
             const fontName = input.replaceAll(/ /g, "_");
-            UpdateConfig.setFontFamily(fontName);
+            setConfig("fontFamily", fontName);
           },
         },
         {

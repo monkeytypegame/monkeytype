@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../../config";
+import Config, { setConfig } from "../../config";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
@@ -17,7 +17,7 @@ const subgroup: CommandsSubgroup = {
         if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[0] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(newFilters);
+        setConfig("customBackgroundFilter", newFilters);
       },
     },
     {
@@ -32,7 +32,7 @@ const subgroup: CommandsSubgroup = {
         if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[1] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(newFilters);
+        setConfig("customBackgroundFilter", newFilters);
       },
     },
     {
@@ -47,7 +47,7 @@ const subgroup: CommandsSubgroup = {
         if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[2] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(newFilters);
+        setConfig("customBackgroundFilter", newFilters);
       },
     },
     {
@@ -62,7 +62,7 @@ const subgroup: CommandsSubgroup = {
         if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[3] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(newFilters);
+        setConfig("customBackgroundFilter", newFilters);
       },
     },
   ],

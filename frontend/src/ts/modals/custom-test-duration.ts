@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
@@ -90,7 +90,7 @@ function apply(): void {
   const val = parseInput($("#customTestDurationModal input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    UpdateConfig.setTimeConfig(val);
+    setConfig("time", val);
     ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {

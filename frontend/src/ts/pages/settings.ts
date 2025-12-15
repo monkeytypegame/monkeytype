@@ -1,5 +1,5 @@
 import SettingsGroup from "../elements/settings/settings-group";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig, configLoadPromise } from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -72,414 +72,183 @@ const StateSchema = z
   .partial();
 
 async function initGroups(): Promise<void> {
-  groups["smoothCaret"] = new SettingsGroup(
-    "smoothCaret",
-    UpdateConfig.setSmoothCaret,
-    "button",
-  );
+  groups["smoothCaret"] = new SettingsGroup("smoothCaret", "button");
   groups["codeUnindentOnBackspace"] = new SettingsGroup(
     "codeUnindentOnBackspace",
-    UpdateConfig.setCodeUnindentOnBackspace,
     "button",
   );
-  groups["difficulty"] = new SettingsGroup(
-    "difficulty",
-    UpdateConfig.setDifficulty,
-    "button",
-  );
-  groups["quickRestart"] = new SettingsGroup(
-    "quickRestart",
-    UpdateConfig.setQuickRestartMode,
-    "button",
-  );
-  groups["showAverage"] = new SettingsGroup(
-    "showAverage",
-    UpdateConfig.setShowAverage,
-    "button",
-  );
-  groups["keymapMode"] = new SettingsGroup(
-    "keymapMode",
-    UpdateConfig.setKeymapMode,
-    "button",
-    {
-      updateCallback: () => {
-        if (Config.keymapMode === "off") {
-          $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
-            "hidden",
-          );
-          $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
-            "hidden",
-          );
-          $(
-            ".pageSettings .section[data-config-name='keymapLegendStyle']",
-          ).addClass("hidden");
-          $(
-            ".pageSettings .section[data-config-name='keymapShowTopRow']",
-          ).addClass("hidden");
-          $(".pageSettings .section[data-config-name='keymapSize']").addClass(
-            "hidden",
-          );
-        } else {
-          $(
-            ".pageSettings .section[data-config-name='keymapStyle']",
-          ).removeClass("hidden");
-          $(
-            ".pageSettings .section[data-config-name='keymapLayout']",
-          ).removeClass("hidden");
-          $(
-            ".pageSettings .section[data-config-name='keymapLegendStyle']",
-          ).removeClass("hidden");
-          $(
-            ".pageSettings .section[data-config-name='keymapShowTopRow']",
-          ).removeClass("hidden");
-          $(
-            ".pageSettings .section[data-config-name='keymapSize']",
-          ).removeClass("hidden");
-        }
-      },
+  groups["difficulty"] = new SettingsGroup("difficulty", "button");
+  groups["quickRestart"] = new SettingsGroup("quickRestart", "button");
+  groups["showAverage"] = new SettingsGroup("showAverage", "button");
+  groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
+    updateCallback: () => {
+      if (Config.keymapMode === "off") {
+        $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
+          "hidden",
+        );
+        $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
+          "hidden",
+        );
+        $(
+          ".pageSettings .section[data-config-name='keymapLegendStyle']",
+        ).addClass("hidden");
+        $(
+          ".pageSettings .section[data-config-name='keymapShowTopRow']",
+        ).addClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
+          "hidden",
+        );
+      } else {
+        $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
+          "hidden",
+        );
+        $(
+          ".pageSettings .section[data-config-name='keymapLayout']",
+        ).removeClass("hidden");
+        $(
+          ".pageSettings .section[data-config-name='keymapLegendStyle']",
+        ).removeClass("hidden");
+        $(
+          ".pageSettings .section[data-config-name='keymapShowTopRow']",
+        ).removeClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
+          "hidden",
+        );
+      }
     },
-  );
-  groups["keymapStyle"] = new SettingsGroup(
-    "keymapStyle",
-    UpdateConfig.setKeymapStyle,
-    "button",
-  );
-  groups["keymapLayout"] = new SettingsGroup(
-    "keymapLayout",
-    UpdateConfig.setKeymapLayout,
-    "select",
-  );
+  });
+  groups["keymapStyle"] = new SettingsGroup("keymapStyle", "button");
+  groups["keymapLayout"] = new SettingsGroup("keymapLayout", "select");
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
-    UpdateConfig.setKeymapLegendStyle,
     "button",
   );
-  groups["keymapShowTopRow"] = new SettingsGroup(
-    "keymapShowTopRow",
-    UpdateConfig.setKeymapShowTopRow,
-    "button",
-  );
-  groups["keymapSize"] = new SettingsGroup(
-    "keymapSize",
-    UpdateConfig.setKeymapSize,
-    "range",
-  );
-  groups["showKeyTips"] = new SettingsGroup(
-    "showKeyTips",
-    UpdateConfig.setKeyTips,
-    "button",
-  );
-  groups["freedomMode"] = new SettingsGroup(
-    "freedomMode",
-    UpdateConfig.setFreedomMode,
-    "button",
-    {
-      setCallback: () => {
-        groups["confidenceMode"]?.updateUI();
-      },
+  groups["keymapShowTopRow"] = new SettingsGroup("keymapShowTopRow", "button");
+  groups["keymapSize"] = new SettingsGroup("keymapSize", "range");
+  groups["showKeyTips"] = new SettingsGroup("showKeyTips", "button");
+  groups["freedomMode"] = new SettingsGroup("freedomMode", "button", {
+    setCallback: () => {
+      groups["confidenceMode"]?.updateUI();
     },
-  );
-  groups["strictSpace"] = new SettingsGroup(
-    "strictSpace",
-    UpdateConfig.setStrictSpace,
-    "button",
-  );
+  });
+  groups["strictSpace"] = new SettingsGroup("strictSpace", "button");
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
-    UpdateConfig.setOppositeShiftMode,
     "button",
   );
-  groups["confidenceMode"] = new SettingsGroup(
-    "confidenceMode",
-    UpdateConfig.setConfidenceMode,
-    "button",
-    {
-      setCallback: () => {
-        groups["freedomMode"]?.updateUI();
-        groups["stopOnError"]?.updateUI();
-      },
+  groups["confidenceMode"] = new SettingsGroup("confidenceMode", "button", {
+    setCallback: () => {
+      groups["freedomMode"]?.updateUI();
+      groups["stopOnError"]?.updateUI();
     },
-  );
-  groups["indicateTypos"] = new SettingsGroup(
-    "indicateTypos",
-    UpdateConfig.setIndicateTypos,
-    "button",
-  );
+  });
+  groups["indicateTypos"] = new SettingsGroup("indicateTypos", "button");
   groups["compositionDisplay"] = new SettingsGroup(
     "compositionDisplay",
-    UpdateConfig.setCompositionDisplay,
     "button",
   );
-  groups["hideExtraLetters"] = new SettingsGroup(
-    "hideExtraLetters",
-    UpdateConfig.setHideExtraLetters,
-    "button",
-  );
-  groups["blindMode"] = new SettingsGroup(
-    "blindMode",
-    UpdateConfig.setBlindMode,
-    "button",
-  );
-  groups["quickEnd"] = new SettingsGroup(
-    "quickEnd",
-    UpdateConfig.setQuickEnd,
-    "button",
-  );
-  groups["repeatQuotes"] = new SettingsGroup(
-    "repeatQuotes",
-    UpdateConfig.setRepeatQuotes,
-    "button",
-  );
-  groups["ads"] = new SettingsGroup("ads", UpdateConfig.setAds, "button");
+  groups["hideExtraLetters"] = new SettingsGroup("hideExtraLetters", "button");
+  groups["blindMode"] = new SettingsGroup("blindMode", "button");
+  groups["quickEnd"] = new SettingsGroup("quickEnd", "button");
+  groups["repeatQuotes"] = new SettingsGroup("repeatQuotes", "button");
+  groups["ads"] = new SettingsGroup("ads", "button");
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
-    UpdateConfig.setAlwaysShowWordsHistory,
     "button",
   );
-  groups["britishEnglish"] = new SettingsGroup(
-    "britishEnglish",
-    UpdateConfig.setBritishEnglish,
-    "button",
-  );
+  groups["britishEnglish"] = new SettingsGroup("britishEnglish", "button");
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
-    UpdateConfig.setSingleListCommandLine,
     "button",
   );
-  groups["capsLockWarning"] = new SettingsGroup(
-    "capsLockWarning",
-    UpdateConfig.setCapsLockWarning,
-    "button",
-  );
-  groups["flipTestColors"] = new SettingsGroup(
-    "flipTestColors",
-    UpdateConfig.setFlipTestColors,
-    "button",
-  );
+  groups["capsLockWarning"] = new SettingsGroup("capsLockWarning", "button");
+  groups["flipTestColors"] = new SettingsGroup("flipTestColors", "button");
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
-    UpdateConfig.setShowOutOfFocusWarning,
     "button",
   );
-  groups["colorfulMode"] = new SettingsGroup(
-    "colorfulMode",
-    UpdateConfig.setColorfulMode,
-    "button",
-  );
+  groups["colorfulMode"] = new SettingsGroup("colorfulMode", "button");
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
-    UpdateConfig.setStartGraphsAtZero,
     "button",
   );
-  groups["autoSwitchTheme"] = new SettingsGroup(
-    "autoSwitchTheme",
-    UpdateConfig.setAutoSwitchTheme,
-    "button",
-  );
-  groups["randomTheme"] = new SettingsGroup(
-    "randomTheme",
-    UpdateConfig.setRandomTheme,
-    "button",
-  );
-  groups["stopOnError"] = new SettingsGroup(
-    "stopOnError",
-    UpdateConfig.setStopOnError,
-    "button",
-    {
-      setCallback: () => {
-        groups["confidenceMode"]?.updateUI();
-      },
+  groups["autoSwitchTheme"] = new SettingsGroup("autoSwitchTheme", "button");
+  groups["randomTheme"] = new SettingsGroup("randomTheme", "button");
+  groups["stopOnError"] = new SettingsGroup("stopOnError", "button", {
+    setCallback: () => {
+      groups["confidenceMode"]?.updateUI();
     },
-  );
-  groups["soundVolume"] = new SettingsGroup(
-    "soundVolume",
-    UpdateConfig.setSoundVolume,
-    "range",
-  );
-  groups["playTimeWarning"] = new SettingsGroup(
-    "playTimeWarning",
-    UpdateConfig.setPlayTimeWarning,
-    "button",
-    {
-      setCallback: () => {
-        if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
-      },
+  });
+  groups["soundVolume"] = new SettingsGroup("soundVolume", "range");
+  groups["playTimeWarning"] = new SettingsGroup("playTimeWarning", "button", {
+    setCallback: () => {
+      if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
     },
-  );
-  groups["playSoundOnError"] = new SettingsGroup(
-    "playSoundOnError",
-    UpdateConfig.setPlaySoundOnError,
-    "button",
-    {
-      setCallback: () => {
-        if (Config.playSoundOnError !== "off") void Sound.playError();
-      },
+  });
+  groups["playSoundOnError"] = new SettingsGroup("playSoundOnError", "button", {
+    setCallback: () => {
+      if (Config.playSoundOnError !== "off") void Sound.playError();
     },
-  );
-  groups["playSoundOnClick"] = new SettingsGroup(
-    "playSoundOnClick",
-    UpdateConfig.setPlaySoundOnClick,
-    "button",
-    {
-      setCallback: () => {
-        if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
-      },
+  });
+  groups["playSoundOnClick"] = new SettingsGroup("playSoundOnClick", "button", {
+    setCallback: () => {
+      if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
     },
-  );
-  groups["showAllLines"] = new SettingsGroup(
-    "showAllLines",
-    UpdateConfig.setShowAllLines,
-    "button",
-  );
-  groups["paceCaret"] = new SettingsGroup(
-    "paceCaret",
-    UpdateConfig.setPaceCaret,
-    "button",
-  );
-  groups["repeatedPace"] = new SettingsGroup(
-    "repeatedPace",
-    UpdateConfig.setRepeatedPace,
-    "button",
-  );
-  groups["minWpm"] = new SettingsGroup(
-    "minWpm",
-    UpdateConfig.setMinWpm,
-    "button",
-  );
-  groups["minAcc"] = new SettingsGroup(
-    "minAcc",
-    UpdateConfig.setMinAcc,
-    "button",
-  );
-  groups["minBurst"] = new SettingsGroup(
-    "minBurst",
-    UpdateConfig.setMinBurst,
-    "button",
-  );
-  groups["smoothLineScroll"] = new SettingsGroup(
-    "smoothLineScroll",
-    UpdateConfig.setSmoothLineScroll,
-    "button",
-  );
-  groups["lazyMode"] = new SettingsGroup(
-    "lazyMode",
-    UpdateConfig.setLazyMode,
-    "button",
-  );
-  groups["layout"] = new SettingsGroup(
-    "layout",
-    UpdateConfig.setLayout,
-    "select",
-  );
-  groups["language"] = new SettingsGroup(
-    "language",
-    UpdateConfig.setLanguage,
-    "select",
-  );
-  groups["fontSize"] = new SettingsGroup(
-    "fontSize",
-    UpdateConfig.setFontSize,
-    "input",
-    { validation: { schema: true, inputValueConvert: Number } },
-  );
-  groups["maxLineWidth"] = new SettingsGroup(
-    "maxLineWidth",
-    UpdateConfig.setMaxLineWidth,
-    "input",
-    { validation: { schema: true, inputValueConvert: Number } },
-  );
-  groups["caretStyle"] = new SettingsGroup(
-    "caretStyle",
-    UpdateConfig.setCaretStyle,
-    "button",
-  );
-  groups["paceCaretStyle"] = new SettingsGroup(
-    "paceCaretStyle",
-    UpdateConfig.setPaceCaretStyle,
-    "button",
-  );
-  groups["timerStyle"] = new SettingsGroup(
-    "timerStyle",
-    UpdateConfig.setTimerStyle,
-    "button",
-  );
-  groups["liveSpeedStyle"] = new SettingsGroup(
-    "liveSpeedStyle",
-    UpdateConfig.setLiveSpeedStyle,
-    "button",
-  );
-  groups["liveAccStyle"] = new SettingsGroup(
-    "liveAccStyle",
-    UpdateConfig.setLiveAccStyle,
-    "button",
-  );
-  groups["liveBurstStyle"] = new SettingsGroup(
-    "liveBurstStyle",
-    UpdateConfig.setLiveBurstStyle,
-    "button",
-  );
-  groups["highlightMode"] = new SettingsGroup(
-    "highlightMode",
-    UpdateConfig.setHighlightMode,
-    "button",
-  );
-  groups["tapeMode"] = new SettingsGroup(
-    "tapeMode",
-    UpdateConfig.setTapeMode,
-    "button",
-  );
-  groups["tapeMargin"] = new SettingsGroup(
-    "tapeMargin",
-    UpdateConfig.setTapeMargin,
-    "input",
-    { validation: { schema: true, inputValueConvert: Number } },
-  );
-  groups["timerOpacity"] = new SettingsGroup(
-    "timerOpacity",
-    UpdateConfig.setTimerOpacity,
-    "button",
-  );
-  groups["timerColor"] = new SettingsGroup(
-    "timerColor",
-    UpdateConfig.setTimerColor,
-    "button",
-  );
-  groups["fontFamily"] = new SettingsGroup(
-    "fontFamily",
-    UpdateConfig.setFontFamily,
-    "button",
-    {
-      updateCallback: () => {
-        const customButton = $(
-          ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']",
-        );
+  });
+  groups["showAllLines"] = new SettingsGroup("showAllLines", "button");
+  groups["paceCaret"] = new SettingsGroup("paceCaret", "button");
+  groups["repeatedPace"] = new SettingsGroup("repeatedPace", "button");
+  groups["minWpm"] = new SettingsGroup("minWpm", "button");
+  groups["minAcc"] = new SettingsGroup("minAcc", "button");
+  groups["minBurst"] = new SettingsGroup("minBurst", "button");
+  groups["smoothLineScroll"] = new SettingsGroup("smoothLineScroll", "button");
+  groups["lazyMode"] = new SettingsGroup("lazyMode", "button");
+  groups["layout"] = new SettingsGroup("layout", "select");
+  groups["language"] = new SettingsGroup("language", "select");
+  groups["fontSize"] = new SettingsGroup("fontSize", "input", {
+    validation: { schema: true, inputValueConvert: Number },
+  });
+  groups["maxLineWidth"] = new SettingsGroup("maxLineWidth", "input", {
+    validation: { schema: true, inputValueConvert: Number },
+  });
+  groups["caretStyle"] = new SettingsGroup("caretStyle", "button");
+  groups["paceCaretStyle"] = new SettingsGroup("paceCaretStyle", "button");
+  groups["timerStyle"] = new SettingsGroup("timerStyle", "button");
+  groups["liveSpeedStyle"] = new SettingsGroup("liveSpeedStyle", "button");
+  groups["liveAccStyle"] = new SettingsGroup("liveAccStyle", "button");
+  groups["liveBurstStyle"] = new SettingsGroup("liveBurstStyle", "button");
+  groups["highlightMode"] = new SettingsGroup("highlightMode", "button");
+  groups["tapeMode"] = new SettingsGroup("tapeMode", "button");
+  groups["tapeMargin"] = new SettingsGroup("tapeMargin", "input", {
+    validation: { schema: true, inputValueConvert: Number },
+  });
+  groups["timerOpacity"] = new SettingsGroup("timerOpacity", "button");
+  groups["timerColor"] = new SettingsGroup("timerColor", "button");
+  groups["fontFamily"] = new SettingsGroup("fontFamily", "button", {
+    updateCallback: () => {
+      const customButton = $(
+        ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']",
+      );
 
-        if (
-          $(
-            ".pageSettings .section[data-config-name='fontFamily'] .buttons .active",
-          ).length === 0
-        ) {
-          customButton.addClass("active");
-          customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
-        } else {
-          customButton.text("Custom");
-        }
-      },
+      if (
+        $(
+          ".pageSettings .section[data-config-name='fontFamily'] .buttons .active",
+        ).length === 0
+      ) {
+        customButton.addClass("active");
+        customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+      } else {
+        customButton.text("Custom");
+      }
     },
-  );
+  });
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
-    UpdateConfig.setAlwaysShowDecimalPlaces,
     "button",
   );
-  groups["typingSpeedUnit"] = new SettingsGroup(
-    "typingSpeedUnit",
-    UpdateConfig.setTypingSpeedUnit,
-    "button",
-  );
+  groups["typingSpeedUnit"] = new SettingsGroup("typingSpeedUnit", "button");
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
-    UpdateConfig.setCustomBackgroundSize,
     "button",
   );
 }
@@ -526,7 +295,7 @@ async function fillSettingsPage(): Promise<void> {
     data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
+        setConfig("themeLight", newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -537,7 +306,7 @@ async function fillSettingsPage(): Promise<void> {
     data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
+        setConfig("themeDark", newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -625,7 +394,7 @@ async function fillSettingsPage(): Promise<void> {
         if (
           !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
         ) {
-          void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+          void setConfig("customLayoutfluid", customLayoutfluid);
         }
       },
     },
@@ -642,7 +411,7 @@ async function fillSettingsPage(): Promise<void> {
         const customPolyglot = newVal.map((it) => it.value) as Language[];
         //checking equal without order, because customPolyglot is not ordered
         if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
-          void UpdateConfig.setCustomPolyglot(customPolyglot);
+          void setConfig("customPolyglot", customPolyglot);
         }
       },
     },
@@ -1060,7 +829,8 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save",
 ).on("click", () => {
-  const didConfigSave = UpdateConfig.setKeymapSize(
+  const didConfigSave = setConfig(
+    "keymapSize",
     parseFloat(
       $(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
@@ -1077,7 +847,8 @@ $(
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("focusout", () => {
-  const didConfigSave = UpdateConfig.setKeymapSize(
+  const didConfigSave = setConfig(
+    "keymapSize",
     parseFloat(
       $(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
@@ -1095,7 +866,8 @@ $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setKeymapSize(
+    const didConfigSave = setConfig(
+      "keymapSize",
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
@@ -1206,24 +978,24 @@ $(".pageSettings .section .groupTitle button").on("click", (e) => {
     });
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "fullConfigChange") setEventDisabled(true);
-  if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
-  if (eventKey === "themeLight") {
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "fullConfigChange") setEventDisabled(true);
+  if (key === "fullConfigChangeFinished") setEventDisabled(false);
+  if (key === "themeLight") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`,
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${newValue}"]`,
     ).attr("selected", "true");
-  } else if (eventKey === "themeDark") {
+  } else if (key === "themeDark") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`,
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${newValue}"]`,
     ).attr("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
-  if (configEventDisabled || eventKey === "saveToLocalStorage") return;
-  if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    void (eventKey === "customBackground"
+  if (configEventDisabled) return;
+  if (ActivePage.get() === "settings" && key !== "theme") {
+    void (key === "customBackground"
       ? updateFilterSectionVisibility()
-      : update({ eventKey }));
+      : update({ eventKey: key }));
   }
 });
 
@@ -1239,7 +1011,7 @@ AuthEvent.subscribe((event) => {
 
 export const page = new PageWithUrlParams({
   id: "settings",
-  element: $(".page.pageSettings"),
+  element: qsr(".page.pageSettings"),
   path: "/settings",
   urlParamsSchema: StateSchema,
   afterHide: async (): Promise<void> => {
@@ -1247,7 +1019,7 @@ export const page = new PageWithUrlParams({
   },
   beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    await UpdateConfig.loadPromise;
+    await configLoadPromise;
     await fillSettingsPage();
     await update();
     // theme UI updates manually to avoid duplication

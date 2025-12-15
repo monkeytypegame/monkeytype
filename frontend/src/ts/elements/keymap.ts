@@ -480,7 +480,7 @@ export async function refresh(): Promise<void> {
       console.log(
         "something went wrong when changing layout, resettings: " + e.message,
       );
-      // UpdateConfig.setKeymapLayout("qwerty", true);
+      // UpdateConfig.setConfig("keymapLayout", "qwerty",true);
     }
   }
 }
@@ -595,7 +595,7 @@ async function updateLegends(): Promise<void> {
 }
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe(({ key }) => {
   const handleMode = (): void => {
     keymap.qsa(".activeKey").removeClass("activeKey");
     keymap.qsa(".keymapKey").setAttribute("style", "");
@@ -634,10 +634,10 @@ ConfigEvent.subscribe((eventKey) => {
     keymap.qsa(".keymapLegendStyle").addClass(style);
   };
 
-  if (eventKey === "fullConfigChange") {
+  if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
-  if (eventKey === "fullConfigChangeFinished") {
+  if (key === "fullConfigChangeFinished") {
     ignoreConfigEvent = false;
     void refresh();
     handleMode();
@@ -647,21 +647,21 @@ ConfigEvent.subscribe((eventKey) => {
   if (ignoreConfigEvent) return;
 
   if (
-    (eventKey === "layout" && Config.keymapLayout === "overrideSync") ||
-    eventKey === "keymapLayout" ||
-    eventKey === "keymapStyle" ||
-    eventKey === "keymapShowTopRow" ||
-    eventKey === "keymapMode"
+    (key === "layout" && Config.keymapLayout === "overrideSync") ||
+    key === "keymapLayout" ||
+    key === "keymapStyle" ||
+    key === "keymapShowTopRow" ||
+    key === "keymapMode"
   ) {
     void refresh();
   }
-  if (eventKey === "keymapMode") {
+  if (key === "keymapMode") {
     handleMode();
   }
-  if (eventKey === "keymapSize") {
+  if (key === "keymapSize") {
     handleSize();
   }
-  if (eventKey === "keymapLegendStyle") {
+  if (key === "keymapLegendStyle") {
     handleLegendStyle();
   }
 });

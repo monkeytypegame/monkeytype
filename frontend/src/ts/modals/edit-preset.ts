@@ -15,7 +15,6 @@ import { getPreset } from "../controllers/preset-controller";
 import {
   ConfigGroupName,
   ConfigGroupNameSchema,
-  ConfigGroupsLiteral,
   ConfigKey,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
@@ -23,6 +22,7 @@ import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { qsr } from "../utils/dom";
+import { configMetadata } from "../config-metadata";
 
 const state = {
   presetType: "full" as PresetType,
@@ -363,7 +363,7 @@ async function apply(): Promise<void> {
 }
 
 function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {
-  return ConfigGroupsLiteral[configFieldName];
+  return configMetadata[configFieldName].group;
 }
 
 function getPartialConfigChanges(

@@ -1,6 +1,6 @@
 import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
@@ -148,7 +148,9 @@ export function init(
     customText = CustomText.getData();
   }
 
-  UpdateConfig.setMode("custom", true);
+  setConfig("mode", "custom", {
+    nosave: true,
+  });
   CustomText.setPipeDelimiter(true);
   CustomText.setText(newCustomText);
   CustomText.setLimitMode("section");
@@ -177,6 +179,6 @@ export function resetBefore(): void {
   before.customText = null;
 }
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "mode") resetBefore();
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "mode") resetBefore();
 });

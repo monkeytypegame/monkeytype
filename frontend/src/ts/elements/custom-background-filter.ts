@@ -1,5 +1,5 @@
 import { CustomBackgroundFilter } from "@monkeytype/schemas/configs";
-import * as UpdateConfig from "../config";
+import { setConfig } from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { debounce } from "throttle-debounce";
 import { qs, qsr } from "../utils/dom";
@@ -130,12 +130,12 @@ const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value,
   ) as CustomBackgroundFilter;
-  UpdateConfig.setCustomBackgroundFilter(arr, false);
+  setConfig("customBackgroundFilter", arr);
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
-    loadConfig(eventValue as CustomBackgroundFilter);
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "customBackgroundFilter") {
+    loadConfig(newValue);
     apply();
   }
 });

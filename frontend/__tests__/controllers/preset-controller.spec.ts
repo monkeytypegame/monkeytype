@@ -16,7 +16,7 @@ describe("PresetController", () => {
       //
     }));
     const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
-    const configApplyMock = vi.spyOn(UpdateConfig, "apply");
+    const configApplyMock = vi.spyOn(UpdateConfig, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
       UpdateConfig,
       "saveFullConfigToLocalStorage",
@@ -108,7 +108,7 @@ describe("PresetController", () => {
         settingGroups: ["test"],
       });
 
-      UpdateConfig.setNumbers(true);
+      UpdateConfig.setConfig("numbers", true);
       const oldConfig = structuredClone(UpdateConfig.default);
 
       //WHEN
