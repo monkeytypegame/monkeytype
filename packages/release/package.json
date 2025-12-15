@@ -2,6 +2,9 @@
   "name": "@monkeytype/release",
   "private": true,
   "type": "module",
+  "bin": {
+    "monkeytype-release": "./src/index.js"
+  },
   "scripts": {
     "dev": "nodemon --watch src --exec \"node ./src/index.js --dry\"",
     "dev-hotfix": "nodemon --watch src --exec \"node ./src/index.js --dry --hotfix\"",
@@ -10,17 +13,14 @@
     "lint-fast": "oxlint .",
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
-  "devDependencies": {
-    "nodemon": "3.1.4",
-    "oxlint": "1.33.0",
-    "oxlint-tsgolint": "0.9.0"
-  },
-  "bin": {
-    "monkeytype-release": "./src/index.js"
-  },
   "dependencies": {
     "@octokit/rest": "21.1.1",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.4",
+    "oxlint": "1.33.0",
+    "oxlint-tsgolint": "0.9.0"
   }
 }

@@ -1,6 +1,13 @@
 {
   "name": "@monkeytype/tsup-config",
   "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "scripts": {
     "dev": "tsup-node --watch",
     "build": "tsup-node",
@@ -8,20 +15,13 @@
     "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint ."
   },
-  "peerDependencies": {
-    "tsup": "8.4.0"
-  },
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
     "oxlint": "1.33.0",
     "oxlint-tsgolint": "0.9.0",
     "typescript": "5.9.3"
   },
-  "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
+  "peerDependencies": {
+    "tsup": "8.4.0"
   }
 }

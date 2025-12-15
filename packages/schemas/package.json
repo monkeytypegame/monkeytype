@@ -1,28 +1,6 @@
 {
   "name": "@monkeytype/schemas",
   "private": true,
-  "scripts": {
-    "dev": "tsup-node --watch",
-    "build": "npm run madge && tsup-node",
-    "test": "vitest run",
-    "madge": " madge --circular --extensions ts ./src",
-    "ts-check": "tsc --noEmit",
-    "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint ."
-  },
-  "peerDependencies": {
-    "zod": "3.23.8"
-  },
-  "devDependencies": {
-    "@monkeytype/tsup-config": "workspace:*",
-    "@monkeytype/typescript-config": "workspace:*",
-    "madge": "8.0.0",
-    "oxlint": "1.33.0",
-    "oxlint-tsgolint": "0.9.0",
-    "tsup": "8.4.0",
-    "typescript": "5.9.3",
-    "vitest": "4.0.8"
-  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -34,5 +12,27 @@
       "import": "./dist/*.mjs",
       "require": "./dist/*.js"
     }
+  },
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "npm run madge && tsup-node",
+    "test": "vitest run",
+    "madge": " madge --circular --extensions ts ./src",
+    "ts-check": "tsc --noEmit",
+    "lint": "oxlint . --type-aware --type-check",
+    "lint-fast": "oxlint ."
+  },
+  "devDependencies": {
+    "@monkeytype/tsup-config": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
+    "madge": "8.0.0",
+    "oxlint": "1.33.0",
+    "oxlint-tsgolint": "0.9.0",
+    "tsup": "8.4.0",
+    "typescript": "5.9.3",
+    "vitest": "4.0.8"
+  },
+  "peerDependencies": {
+    "zod": "3.23.8"
   }
 }

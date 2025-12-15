@@ -1,4 +1,4 @@
-name: Formatting check
+name: Check formatting
 
 env:
   PNPM_VERSION: "9.6.0"
@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [master]
     types: [opened, reopened, synchronize, ready_for_review]
-  
+
 permissions:
   contents: read
 
@@ -36,8 +36,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Install formatter
-        run: pnpm install -D -w prettier
-
+        run: pnpm install -D -w oxfmt
 
       - name: Get changed files
         id: get-changed-files
@@ -58,6 +57,5 @@ jobs:
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
-            pnpm prettier --check $CHANGED_FILES
+            pnpm oxfmt $CHANGED_FILES --check --no-error-on-unmatched-pattern
           fi
-      

@@ -1,5 +1,12 @@
 {
   "name": "@monkeytype/util",
+  "exports": {
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./dist/*.mjs",
+      "require": "./dist/*.js"
+    }
+  },
   "scripts": {
     "dev": "tsup-node --watch",
     "build": "npm run madge && tsup-node",
@@ -19,12 +26,5 @@
     "typescript": "5.9.3",
     "vitest": "4.0.8",
     "zod": "3.23.8"
-  },
-  "exports": {
-    "./*": {
-      "types": "./src/*.ts",
-      "import": "./dist/*.mjs",
-      "require": "./dist/*.js"
-    }
   }
 }

@@ -1,6 +1,13 @@
 {
   "name": "@monkeytype/funbox",
   "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "scripts": {
     "dev": "tsup-node --watch",
     "build": "npm run madge && tsup-node",
@@ -9,6 +16,10 @@
     "ts-check": "tsc --noEmit",
     "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint ."
+  },
+  "dependencies": {
+    "@monkeytype/schemas": "workspace:*",
+    "@monkeytype/util": "workspace:*"
   },
   "devDependencies": {
     "@monkeytype/tsup-config": "workspace:*",
@@ -19,16 +30,5 @@
     "tsup": "8.4.0",
     "typescript": "5.9.3",
     "vitest": "4.0.8"
-  },
-  "dependencies": {
-    "@monkeytype/schemas": "workspace:*",
-    "@monkeytype/util": "workspace:*"
-  },
-  "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
   }
 }
