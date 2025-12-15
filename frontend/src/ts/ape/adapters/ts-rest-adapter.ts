@@ -91,7 +91,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   };
 }
 
-/* oxlint-disable explicit-function-return-type */
+// oxlint-disable-next-line explicit-function-return-type
 export function buildClient<T extends AppRouter>(
   contract: T,
   baseUrl: string,
@@ -107,4 +107,3 @@ export function buildClient<T extends AppRouter>(
     },
   });
 }
-/* eslint-enable explicit-function-return-type */
