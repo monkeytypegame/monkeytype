@@ -1,7 +1,7 @@
 {
   "name": "@monkeytype/frontend",
-  "license": "GPL-3.0",
   "private": true,
+  "license": "GPL-3.0",
   "type": "module",
   "scripts": {
     "eslint": "eslint \"./**/*.ts\"",
@@ -23,14 +23,6 @@
     "tsc": "tsc",
     "docker": "docker compose -f docker/compose.dev.yml up"
   },
-  "engines": {
-    "node": "24.11.0 || 22.21.0"
-  },
-  "browserslist": [
-    "defaults",
-    "not op_mini all",
-    "not dead"
-  ],
   "lint-staged": {
     "*": [
       "oxfmt --no-error-on-unmatched-pattern"
@@ -39,6 +31,41 @@
       "oxlint",
       "eslint"
     ]
+  },
+  "dependencies": {
+    "@date-fns/utc": "1.2.0",
+    "@monkeytype/contracts": "workspace:*",
+    "@monkeytype/funbox": "workspace:*",
+    "@monkeytype/schemas": "workspace:*",
+    "@monkeytype/util": "workspace:*",
+    "@sentry/browser": "9.14.0",
+    "@sentry/vite-plugin": "3.3.1",
+    "@ts-rest/core": "3.52.1",
+    "animejs": "4.2.2",
+    "balloon-css": "1.2.0",
+    "canvas-confetti": "1.5.1",
+    "chart.js": "3.7.1",
+    "chartjs-adapter-date-fns": "3.0.0",
+    "chartjs-plugin-annotation": "2.2.1",
+    "chartjs-plugin-trendline": "1.0.2",
+    "color-blend": "4.0.0",
+    "damerau-levenshtein": "1.0.8",
+    "date-fns": "3.6.0",
+    "disposable-email-domains-js": "^1.0.35",
+    "firebase": "12.0.0",
+    "hangul-js": "0.2.6",
+    "howler": "2.2.3",
+    "idb": "8.0.3",
+    "jquery": "3.7.1",
+    "konami": "1.7.0",
+    "lz-ts": "1.1.2",
+    "modern-screenshot": "4.6.5",
+    "object-hash": "3.0.0",
+    "slim-select": "2.9.2",
+    "stemmer": "2.0.1",
+    "throttle-debounce": "5.0.2",
+    "zod": "3.23.8",
+    "zod-urlsearchparams": "0.0.16"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
@@ -82,39 +109,12 @@
     "vite-plugin-pwa": "1.1.0",
     "vitest": "4.0.8"
   },
-  "dependencies": {
-    "@date-fns/utc": "1.2.0",
-    "@monkeytype/contracts": "workspace:*",
-    "@monkeytype/funbox": "workspace:*",
-    "@monkeytype/schemas": "workspace:*",
-    "@monkeytype/util": "workspace:*",
-    "@sentry/browser": "9.14.0",
-    "@sentry/vite-plugin": "3.3.1",
-    "@ts-rest/core": "3.52.1",
-    "animejs": "4.2.2",
-    "balloon-css": "1.2.0",
-    "canvas-confetti": "1.5.1",
-    "chart.js": "3.7.1",
-    "chartjs-adapter-date-fns": "3.0.0",
-    "chartjs-plugin-annotation": "2.2.1",
-    "chartjs-plugin-trendline": "1.0.2",
-    "color-blend": "4.0.0",
-    "damerau-levenshtein": "1.0.8",
-    "date-fns": "3.6.0",
-    "disposable-email-domains-js": "^1.0.35",
-    "firebase": "12.0.0",
-    "hangul-js": "0.2.6",
-    "howler": "2.2.3",
-    "idb": "8.0.3",
-    "jquery": "3.7.1",
-    "konami": "1.7.0",
-    "lz-ts": "1.1.2",
-    "modern-screenshot": "4.6.5",
-    "object-hash": "3.0.0",
-    "slim-select": "2.9.2",
-    "stemmer": "2.0.1",
-    "throttle-debounce": "5.0.2",
-    "zod": "3.23.8",
-    "zod-urlsearchparams": "0.0.16"
+  "browserslist": [
+    "defaults",
+    "not op_mini all",
+    "not dead"
+  ],
+  "engines": {
+    "node": "24.11.0 || 22.21.0"
   }
 }

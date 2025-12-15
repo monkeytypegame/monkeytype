@@ -1,7 +1,8 @@
 {
   "name": "monkeytype",
-  "license": "GPL-3.0",
+  "version": "25.49.0",
   "private": true,
+  "license": "GPL-3.0",
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -52,8 +53,14 @@
     "check-assets-others": "turbo check-assets --filter @monkeytype/frontend  -- others",
     "knip": "knip"
   },
-  "engines": {
-    "node": "24.11.0 || 22.21.0"
+  "lint-staged": {
+    "*": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ],
+    "*.{ts,js}": [
+      "oxlint",
+      "eslint"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
@@ -66,20 +73,13 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxfmt": "0.17.0",
+    "oxfmt": "0.18.0",
     "oxlint": "1.29.0",
     "turbo": "2.5.6",
     "vitest": "4.0.8"
   },
-  "lint-staged": {
-    "*": [
-      "oxfmt --no-error-on-unmatched-pattern"
-    ],
-    "*.{ts,js}": [
-      "oxlint",
-      "eslint"
-    ]
-  },
-  "version": "25.49.0",
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@9.6.0",
+  "engines": {
+    "node": "24.11.0 || 22.21.0"
+  }
 }

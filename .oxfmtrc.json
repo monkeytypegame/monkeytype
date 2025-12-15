@@ -7,9 +7,10 @@
   "endOfLine": "lf",
   "trailingComma": "all",
   "ignorePatterns": [
-    ".turbo",
     "node_modules",
-    "pnpm-lock.yaml",
+    ".turbo",
+    "dist",
+    "build",
     "logs",
     "coverage",
     "*.md"
