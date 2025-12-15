@@ -3,7 +3,6 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
-import { isDevEnvironment } from "./misc";
 
 // Implementation
 /**
@@ -690,17 +689,8 @@ export class ElementsWithUtils<
   }
 }
 
-function isDev(): boolean {
-  try {
-    return isDevEnvironment();
-  } catch {
-    //in case virtual:env is not available yet
-    return true;
-  }
-}
-
 function checkUniqueSelector(selector: string): void {
-  if (!isDev()) return;
+  if (!import.meta.env.DEV) return;
   const elements = qsa(selector);
   if (elements.length > 1) {
     console.warn(
