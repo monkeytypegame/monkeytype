@@ -234,10 +234,9 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     // snap.tags = userDataTags;
 
     snap.tags =
-      userData.tags?.map((tag) => ({
-        ...tag,
-        display: tag.name.replaceAll("_", " "),
-      })) ?? [];
+      userData.tags?.map((tag) =>
+        Object.assign(tag, { display: tag.name.replaceAll("_", " ") }),
+      ) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -250,12 +249,11 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     });
 
     if (presetsData !== undefined && presetsData !== null) {
-      const presetsWithDisplay = presetsData.map((preset) => {
-        return {
-          ...preset,
+      const presetsWithDisplay: SnapshotPreset[] = presetsData.map((preset) =>
+        Object.assign(preset, {
           display: preset.name.replace(/_/gi, " "),
-        };
-      }) as SnapshotPreset[];
+        }),
+      );
       snap.presets = presetsWithDisplay;
 
       snap.presets = snap.presets?.sort(

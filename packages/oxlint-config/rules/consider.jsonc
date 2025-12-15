@@ -6,5 +6,5 @@
     "no-nested-ternary": "off",
     "no-array-sort": "off",
     "preserve-caught-error": "off",
-  }
+  },
 }

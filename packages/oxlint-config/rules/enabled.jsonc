@@ -78,6 +78,7 @@
     ],
     "unicorn/prefer-includes": "error",
     "unicorn/prefer-structured-clone": "error",
-    "eslint/curly": ["error", "multi-line", "consistent"],
+    "curly": ["error", "multi-line", "consistent"],
+    "no-sequences": "error",
   },
 }

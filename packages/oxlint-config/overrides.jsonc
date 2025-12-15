@@ -44,8 +44,8 @@
         "typescript/return-await": "off",
         "typescript/switch-exhaustiveness-check": "off",
         "typescript/unbound-method": "off",
-        "typescript/use-unknown-in-catch-callback-variable": "off"
-      }
+        "typescript/use-unknown-in-catch-callback-variable": "off",
+      },
     },
     {
       "files": ["__tests__/**"],
@@ -57,7 +57,7 @@
         "node",
         "promise",
         "jest",
-        "vitest"
+        "vitest",
       ],
       "rules": {
         "no-explicit-any": "off", //155
@@ -77,8 +77,10 @@
         "typescript/no-unsafe-return": "off", //2
         "no-empty-object-type": "off", //2
         "typescript/strict-boolean-expressions": "off", //1
-        "typescript/no-unnecessary-type-assertion": "off" //1
-      }
-    }
-  ]
+        "typescript/no-unnecessary-type-assertion": "off", //1
+
+        "prefer-nullish-coalescing": "off",
+      },
+    },
+  ],
 }

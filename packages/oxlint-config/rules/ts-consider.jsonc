@@ -14,8 +14,8 @@
       "off",
       {
         "allowNumber": true,
-        "allowArray": true
-      }
+        "allowArray": true,
+      },
     ],
-  }
+  },
 }

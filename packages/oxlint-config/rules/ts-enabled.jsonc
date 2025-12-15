@@ -50,6 +50,6 @@
     ],
     "typescript/no-deprecated": "error",
     "typescript/prefer-includes": "error",
-    "typescript/prefer-nullish-coalescing": "error"
+    "typescript/prefer-nullish-coalescing": "error",
   },
 }

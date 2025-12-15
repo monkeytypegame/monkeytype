@@ -3,5 +3,8 @@
   "extends": [
     "../packages/oxlint-config/index.jsonc"
     // "@monkeytype/oxlint-config"
-  ]
+  ],
+  "rules": {
+    "asdfasdfasdfasdf": "error"
+  }
 }
