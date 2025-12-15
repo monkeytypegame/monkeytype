@@ -11,6 +11,7 @@ import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { applyFontFamily } from "./controllers/theme-controller";
+import { qs } from "./utils/dom";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -48,7 +49,7 @@ function updateKeytips(): void {
       : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  $("footer .keyTips").html(`
+  qs("footer .keyTips")?.setHtml(`
     ${
       Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"
@@ -58,9 +59,11 @@ function updateKeytips(): void {
 }
 
 if (isDevEnvironment()) {
-  $("header #logo .top").text("localhost");
-  $("head title").text($("head title").text() + " (localhost)");
-  $("body").append(
+  qs("header #logo .top")?.setText("localhost");
+  qs("head title")?.setText(
+    (qs("head title")?.native.textContent ?? "") + " (localhost)",
+  );
+  qs("body")?.appendHtml(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
   );
 }
@@ -107,21 +110,22 @@ const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   throttledEvent();
   debouncedEvent();
 });
 
-ConfigEvent.subscribe(async (eventKey) => {
-  if (eventKey === "quickRestart") updateKeytips();
-  if (eventKey === "showKeyTips") {
+ConfigEvent.subscribe(async ({ key }) => {
+  if (key === "quickRestart") updateKeytips();
+  if (key === "showKeyTips") {
+    const keyTipsElement = qs("footer .keyTips");
     if (Config.showKeyTips) {
-      $("footer .keyTips").removeClass("hidden");
+      keyTipsElement?.removeClass("hidden");
     } else {
-      $("footer .keyTips").addClass("hidden");
+      keyTipsElement?.addClass("hidden");
     }
   }
-  if (eventKey === "fontFamily") {
+  if (key === "fontFamily") {
     await applyFontFamily();
   }
 });

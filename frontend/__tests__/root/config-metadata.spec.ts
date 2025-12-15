@@ -138,7 +138,7 @@ describe("ConfigMeta", () => {
         replaceConfig(given ?? {});
 
         //WHEN
-        Config.genericSet(key, value as any);
+        Config.setConfig(key, value as any);
 
         //THEN
         expect(getConfig()).toMatchObject(expected);
@@ -175,7 +175,7 @@ describe("ConfigMeta", () => {
         replaceConfig(given ?? {});
 
         //WHEN
-        const applied = Config.genericSet(key, value as any);
+        const applied = Config.setConfig(key, value as any);
 
         //THEN
         expect(applied).toEqual(!fail);
@@ -335,7 +335,7 @@ describe("ConfigMeta", () => {
         replaceConfig(given);
 
         //WHEN
-        Config.genericSet(key, value as any);
+        Config.setConfig(key, value as any);
 
         //THEN
         expect(getConfig()).toMatchObject(expected ?? {});

@@ -16,9 +16,11 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
+import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 export const keyDataDelimiter = "\uE000";
+const keymap = qsr("#keymap");
 
 const stenoKeys: LayoutObject = {
   keymapShowTopRow: true,
@@ -59,16 +61,18 @@ const stenoKeys: LayoutObject = {
   },
 };
 
-function findKeyElements(char: string): JQuery {
+function findKeyElements(char: string): ElementsWithUtils | null {
+  if (char === "\n") return null;
+
   if (char === " ") {
-    return $("#keymap .keySpace");
+    return keymap.qsa(".keySpace");
   }
 
   if (char === '"') {
-    return $(`#keymap .keymapKey[data-key*='${char}']`);
+    return keymap.qsa(`.keymapKey[data-key*='${char}']`);
   }
 
-  return $(`#keymap .keymapKey[data-key*="${char}"]`);
+  return keymap.qsa(`.keymapKey[data-key*="${char}"]`);
 }
 
 function highlightKey(currentKey: string): void {
@@ -85,6 +89,8 @@ function highlightKey(currentKey: string): void {
       }
 
       const $target = findKeyElements(currentKey);
+      if ($target === null || $target.length === 0) return;
+
       $target.addClass("activeKey");
     } catch (e) {
       if (e instanceof Error) {
@@ -97,10 +103,8 @@ function highlightKey(currentKey: string): void {
 async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
   requestDebouncedAnimationFrame(`keymap.flashKey.${key}`, async () => {
-    const $target = findKeyElements(key);
-
-    const elements = $target.toArray();
-    if (elements.length === 0) return;
+    const elements = findKeyElements(key);
+    if (elements === null || elements.length === 0) return;
 
     const themecolors = await ThemeColors.getAll();
 
@@ -125,7 +129,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
         };
       }
 
-      animate(elements, {
+      animate(elements.native, {
         color: [startingStyle.color, themecolors.sub],
         backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
         borderColor: [startingStyle.borderColor, themecolors.sub],
@@ -137,11 +141,11 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
 }
 
 export function hide(): void {
-  $("#keymap").addClass("hidden");
+  keymap.addClass("hidden");
 }
 
 export function show(): void {
-  $("#keymap").removeClass("hidden");
+  keymap.removeClass("hidden");
 }
 
 function buildRow(options: {
@@ -459,22 +463,24 @@ export async function refresh(): Promise<void> {
       });
     }
 
-    $("#keymap").html(keymapElement);
+    keymap.setHtml(keymapElement);
 
-    $("#keymap").removeClass("staggered");
-    $("#keymap").removeClass("matrix");
-    $("#keymap").removeClass("split");
-    $("#keymap").removeClass("split_matrix");
-    $("#keymap").removeClass("alice");
-    $("#keymap").removeClass("steno");
-    $("#keymap").removeClass("steno_matrix");
-    $("#keymap").addClass(Config.keymapStyle);
+    keymap.removeClass([
+      "staggered",
+      "matrix",
+      "split",
+      "split_matrix",
+      "alice",
+      "steno",
+      "steno_matrix",
+    ]);
+    keymap.addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
       console.log(
         "something went wrong when changing layout, resettings: " + e.message,
       );
-      // UpdateConfig.setKeymapLayout("qwerty", true);
+      // UpdateConfig.setConfig("keymapLayout", "qwerty",true);
     }
   }
 }
@@ -589,14 +595,14 @@ async function updateLegends(): Promise<void> {
 }
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe(({ key }) => {
   const handleMode = (): void => {
-    $(".activeKey").removeClass("activeKey");
-    $(".keymapKey").attr("style", "");
+    keymap.qsa(".activeKey").removeClass("activeKey");
+    keymap.qsa(".keymapKey").setAttribute("style", "");
     Config.keymapMode === "off" ? hide() : show();
   };
   const handleSize = (): void => {
-    $("#keymap").css("zoom", Config.keymapSize);
+    keymap.setStyle({ zoom: Config.keymapSize.toString() });
   };
   const handleLegendStyle = (): void => {
     let style = Config.keymapLegendStyle;
@@ -604,32 +610,34 @@ ConfigEvent.subscribe((eventKey) => {
     // Remove existing styles
     const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
     keymapLegendStyles.forEach((name) => {
-      $(".keymapLegendStyle").removeClass(name);
+      keymap.qsa(".keymapLegendStyle").removeClass(name);
     });
 
     style = style || "lowercase";
 
     // Mutate the keymap in the DOM, if it exists.
     // 1. Remove everything
-    $(".keymapKey > .letter").css("display", "");
-    $(".keymapKey > .letter").css("text-transform", "");
+    keymap.qsa(".keymapKey > .letter").setStyle({ display: "" });
+    keymap.qsa(".keymapKey > .letter").setStyle({ textTransform: "" });
 
     // 2. Append special styles onto the DOM elements
     if (style === "uppercase") {
-      $(".keymapKey > .letter").css("text-transform", "capitalize");
+      keymap
+        .qsa(".keymapKey > .letter")
+        .setStyle({ textTransform: "capitalize" });
     }
     if (style === "blank") {
-      $(".keymapKey > .letter").css("display", "none");
+      keymap.qsa(".keymapKey > .letter").setStyle({ display: "none" });
     }
 
     // Update and save to cookie for persistence
-    $(".keymapLegendStyle").addClass(style);
+    keymap.qsa(".keymapLegendStyle").addClass(style);
   };
 
-  if (eventKey === "fullConfigChange") {
+  if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
-  if (eventKey === "fullConfigChangeFinished") {
+  if (key === "fullConfigChangeFinished") {
     ignoreConfigEvent = false;
     void refresh();
     handleMode();
@@ -639,21 +647,21 @@ ConfigEvent.subscribe((eventKey) => {
   if (ignoreConfigEvent) return;
 
   if (
-    (eventKey === "layout" && Config.keymapLayout === "overrideSync") ||
-    eventKey === "keymapLayout" ||
-    eventKey === "keymapStyle" ||
-    eventKey === "keymapShowTopRow" ||
-    eventKey === "keymapMode"
+    (key === "layout" && Config.keymapLayout === "overrideSync") ||
+    key === "keymapLayout" ||
+    key === "keymapStyle" ||
+    key === "keymapShowTopRow" ||
+    key === "keymapMode"
   ) {
     void refresh();
   }
-  if (eventKey === "keymapMode") {
+  if (key === "keymapMode") {
     handleMode();
   }
-  if (eventKey === "keymapSize") {
+  if (key === "keymapSize") {
     handleSize();
   }
-  if (eventKey === "keymapLegendStyle") {
+  if (key === "keymapLegendStyle") {
     handleLegendStyle();
   }
 });
@@ -667,7 +675,7 @@ KeymapEvent.subscribe((mode, key, correct) => {
   }
 });
 
-$(document).on("keydown", (e) => {
+document.addEventListener("keydown", (e) => {
   if (
     Config.keymapLegendStyle === "dynamic" &&
     (e.code === "ShiftLeft" ||
@@ -679,7 +687,7 @@ $(document).on("keydown", (e) => {
   }
 });
 
-$(document).on("keyup", (e) => {
+document.addEventListener("keyup", (e) => {
   if (
     Config.keymapLegendStyle === "dynamic" &&
     (e.code === "ShiftLeft" ||

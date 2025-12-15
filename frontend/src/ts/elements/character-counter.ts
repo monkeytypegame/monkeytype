@@ -1,27 +1,40 @@
+import { createElementWithUtils, ElementWithUtils } from "../utils/dom";
+
 export class CharacterCounter {
-  private textareaElement: JQuery<HTMLTextAreaElement>;
-  private parentElement: JQuery;
-  private counterElement: JQuery;
+  private textareaElement: ElementWithUtils<HTMLTextAreaElement>;
+  private parentElement: ElementWithUtils;
+  private counterElement: ElementWithUtils;
   private maxLength: number;
 
-  constructor(textareaElement: JQuery<HTMLTextAreaElement>, maxLength: number) {
+  constructor(
+    textareaElement: ElementWithUtils<HTMLTextAreaElement>,
+    maxLength: number,
+  ) {
     this.textareaElement = textareaElement;
     this.maxLength = maxLength;
 
-    this.textareaElement.attr("maxlength", this.maxLength.toString());
+    this.textareaElement.setAttribute("maxlength", this.maxLength.toString());
 
-    // Wrap the textarea element in a div if not already wrapped
-    if (!this.textareaElement.parent().hasClass("textareaWithCounter")) {
-      $(this.textareaElement).wrap(`<div class="textareaWithCounter"></div>`);
-    }
-    this.parentElement = $(this.textareaElement).parent(".textareaWithCounter");
-
-    // Create the counter element if it doesn't exist
-    if (this.parentElement.find(".char-counter").length === 0) {
-      this.counterElement = $(`<span class="char-counter"></span>`);
-      this.parentElement.append(this.counterElement);
+    const textAreaParent = this.textareaElement.getParent();
+    if (!textAreaParent) {
+      // Wrap the textarea element in a div if not already wrapped
+      const wrapper = this.textareaElement?.wrapWith(
+        `<div class="textareaWithCounter"></div>`,
+      );
+      this.parentElement = wrapper;
     } else {
-      this.counterElement = this.parentElement.find(".char-counter");
+      this.parentElement = textAreaParent;
+    }
+
+    const counterElement = this.parentElement.qs(".char-counter");
+    if (counterElement !== null) {
+      this.counterElement = counterElement;
+    } else {
+      const counterElement = createElementWithUtils("span", {
+        classList: ["char-counter"],
+      });
+      this.parentElement.append(counterElement);
+      this.counterElement = counterElement;
     }
 
     this.updateCounter();
@@ -30,9 +43,9 @@ export class CharacterCounter {
 
   private updateCounter(): void {
     const maxLength = this.maxLength;
-    const currentLength = (this.textareaElement.val() as string).length;
+    const currentLength = (this.textareaElement.getValue() ?? "").length;
     const remaining = maxLength - currentLength;
-    this.counterElement.text(`${currentLength}/${maxLength}`);
+    this.counterElement.setText(`${currentLength}/${maxLength}`);
 
     const remainingPercentage = (remaining / this.maxLength) * 100;
 

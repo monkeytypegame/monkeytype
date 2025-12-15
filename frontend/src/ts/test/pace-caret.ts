@@ -6,6 +6,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../utils/caret";
+import { qsr } from "../utils/dom";
 
 type Settings = {
   wpm: number;
@@ -22,10 +23,7 @@ let startTimestamp = 0;
 
 export let settings: Settings | null = null;
 
-export const caret = new Caret(
-  document.getElementById("paceCaret") as HTMLElement,
-  Config.paceCaretStyle,
-);
+export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
 
 let lastTestWpm = 0;
 
@@ -132,7 +130,12 @@ export async function init(): Promise<void> {
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
-  if (settings === null || !TestState.isActive || TestState.resultVisible) {
+  const currentSettings = settings;
+  if (
+    currentSettings === null ||
+    !TestState.isActive ||
+    TestState.resultVisible
+  ) {
     return;
   }
 
@@ -148,8 +151,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const duration = absoluteStepEnd - now;
 
     caret.goTo({
-      wordIndex: settings.currentWordIndex,
-      letterIndex: settings.currentLetterIndex,
+      wordIndex: currentSettings.currentWordIndex,
+      letterIndex: currentSettings.currentLetterIndex,
       isLanguageRightToLeft: TestState.isLanguageRightToLeft,
       isDirectionReversed: TestState.isDirectionReversed,
       animate: true,
@@ -159,12 +162,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
       },
     });
 
-    // Normal case - schedule next step
-    settings.timeout = setTimeout(
+    currentSettings.timeout = setTimeout(
       () => {
-        update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-          settings = null;
-        });
+        if (settings !== currentSettings) return;
+        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
+          () => {
+            if (settings === currentSettings) settings = null;
+          },
+        );
       },
       Math.max(0, duration),
     );
@@ -260,9 +265,9 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") void init();
-  if (eventKey === "paceCaretStyle") {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "paceCaret") void init();
+  if (key === "paceCaretStyle") {
     caret.setStyle(Config.paceCaretStyle);
   }
 });

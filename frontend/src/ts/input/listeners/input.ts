@@ -9,6 +9,11 @@ import {
 import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
+import * as TestInput from "../../test/test-input";
+import * as TestWords from "../../test/test-words";
+import * as CompositionState from "../../states/composition";
+import { activeWordIndex } from "../../test/test-state";
+import { areAllTestWordsGenerated } from "../../test/test-logic";
 
 const inputEl = getInputElement();
 
@@ -114,6 +119,26 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "insertCompositionText" ||
     inputType === "insertFromComposition"
   ) {
+    const allWordsTyped = activeWordIndex >= TestWords.words.length - 1;
+    const inputPlusComposition =
+      TestInput.input.current + (CompositionState.getData() ?? "");
+    const inputPlusCompositionIsCorrect =
+      TestWords.words.getCurrent() === inputPlusComposition;
+
+    // composition quick end
+    // if the user typed the entire word correctly but is still in composition
+    // dont wait for them to end the composition manually, just end the test
+    // by dispatching a compositionend which will trigger onInsertText
+    if (
+      areAllTestWordsGenerated() &&
+      allWordsTyped &&
+      inputPlusCompositionIsCorrect
+    ) {
+      getInputElement().dispatchEvent(
+        new CompositionEvent("compositionend", { data: event.data ?? "" }),
+      );
+    }
+
     // in case the data is the same as the last one, just ignore it
     if (getLastInsertCompositionTextData() !== event.data) {
       setLastInsertCompositionTextData(event.data ?? "");

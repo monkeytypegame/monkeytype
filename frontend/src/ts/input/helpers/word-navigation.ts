@@ -75,7 +75,7 @@ export async function goToNextWord({
     Loader.hide();
     setAwaitingNextWord(false);
   } else {
-    await TestLogic.addWord();
+    void TestLogic.addWord();
   }
 
   if (

@@ -68,6 +68,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -84,24 +85,24 @@ class ChartWithUpdateColors<
   }
 
   async updateColors(): Promise<void> {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     await updateColors(this);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     return this.data.datasets?.find((x) => x.yAxisID === id);
   }
 
   getScaleIds(): DatasetIds[] {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     return typedKeys(this.options?.scales ?? {}) as DatasetIds[];
   }
 
   getScale(
     id: DatasetIds extends never ? never : "x" | DatasetIds,
   ): DatasetIds extends never ? never : CartesianScaleOptions {
-    //@ts-expect-error its too difficult to figure out these types, but this works
+    //@ts-expect-error it's too difficult to figure out these types, but this works
     // oxlint-disable-next-line no-unsafe-return, no-unsafe-member-access
     return this.options.scales[id];
   }
@@ -119,7 +120,7 @@ export const result = new ChartWithUpdateColors<
     labels: [],
     datasets: [
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "wpm",
         data: [],
@@ -130,7 +131,7 @@ export const result = new ChartWithUpdateColors<
         pointRadius: 1,
       },
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "raw",
         data: [],
@@ -142,7 +143,7 @@ export const result = new ChartWithUpdateColors<
         pointRadius: 0,
       },
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "errors",
         data: [],
@@ -165,7 +166,7 @@ export const result = new ChartWithUpdateColors<
         },
       },
       {
-        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
         label: "burst",
         data: [],
@@ -1101,8 +1102,8 @@ function updateAccountChartButton(
   className: ButtonBelowChart,
 ): void {
   isActive
-    ? $(`.pageAccount ${className}`).addClass("active")
-    : $(`.pageAccount ${className}`).removeClass("active");
+    ? qs(`.pageAccount ${className}`)?.addClass("active")
+    : qs(`.pageAccount ${className}`)?.removeClass("active");
 }
 
 function updateResults(updateChart = true): void {
@@ -1267,7 +1268,7 @@ async function updateColors<
     return;
   }
 
-  //@ts-expect-error its too difficult to figure out these types, but this works
+  //@ts-expect-error it's too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {
     // oxlint-disable-next-line no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;
@@ -1431,12 +1432,12 @@ export function updateAllChartColors(): void {
   void miniResult.updateColors();
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "accountChart" && ActivePage.get() === "account") {
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "accountChart" && ActivePage.get() === "account") {
     updateResults();
     updateAccuracy();
     updateAverage10();
     updateAverage100();
   }
-  if (eventKey === "fontFamily") setDefaultFontFamily(eventValue as string);
+  if (key === "fontFamily") setDefaultFontFamily(newValue);
 });

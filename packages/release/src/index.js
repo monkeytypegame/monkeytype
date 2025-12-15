@@ -20,6 +20,7 @@ const isBackend = args.has("--be");
 const isDryRun = args.has("--dry");
 const noSyncCheck = args.has("--no-sync-check");
 const hotfix = args.has("--hotfix");
+const previewFe = args.has("--preview-fe");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
@@ -252,6 +253,36 @@ const createGithubRelease = async (version, changelogContent) => {
 };
 
 const main = async () => {
+  if (previewFe) {
+    console.log(`Starting frontend preview deployment process...`);
+    installDependencies();
+    runProjectRootCommand(
+      "NODE_ENV=production npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
+    );
+
+    const name = readlineSync.question(
+      "Enter preview channel name (default: preview): ",
+    );
+    // oxlint-disable-next-line prefer-nullish-coalescing
+    const channelName = name.trim() || "preview";
+
+    const expirationTime = readlineSync.question(
+      "Enter expiration time (e.g., 2h, default: 1d): ",
+    );
+    // oxlint-disable-next-line prefer-nullish-coalescing
+    const expires = expirationTime.trim() || "1d";
+
+    console.log(
+      `Deploying frontend preview to channel "${channelName}" with expiration "${expires}"...`,
+    );
+    const result = runProjectRootCommand(
+      `cd frontend && npx firebase hosting:channel:deploy ${channelName} -P live --expires ${expires}`,
+    );
+    console.log(result);
+    console.log("Frontend preview deployed successfully.");
+    process.exit(0);
+  }
+
   console.log(`Starting ${hotfix ? "hotfix" : "release"} process...`);
 
   if (!hotfix) checkBranchSync();

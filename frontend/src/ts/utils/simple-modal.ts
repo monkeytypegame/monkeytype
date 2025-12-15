@@ -11,6 +11,7 @@ import {
   ValidationOptions,
   ValidationResult,
 } from "../elements/input-validation";
+import { qsr } from "./dom";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -318,22 +319,20 @@ export class SimpleModal {
         }
         inputs.append(buildTag({ tagname, classes, attributes }));
       }
-      const element = document.querySelector(
-        "#" + attributes["id"],
-      ) as HTMLInputElement;
+      const element = qsr<HTMLInputElement>("#" + attributes["id"]);
 
-      const originalOnInput = element.oninput;
-      element.oninput = (e) => {
-        if (originalOnInput) originalOnInput.call(element, e);
+      const originalOnInput = element.native.oninput;
+      element.native.oninput = (e) => {
+        if (originalOnInput) originalOnInput.call(element.native, e);
         input.oninput?.(e);
         this.updateSubmitButtonState();
       };
 
       input.currentValue = () => {
-        if (element.type === "checkbox") {
-          return element.checked ? "true" : "false";
+        if (element.native.type === "checkbox") {
+          return element.native.checked ? "true" : "false";
         }
-        return element.value;
+        return element.native.value;
       };
 
       if (input.validation !== undefined) {

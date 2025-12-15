@@ -183,7 +183,7 @@ function getPlugins({
     UnpluginInjectPreload({
       files: [
         {
-          outputMatch: /css\/vendor.*\.css$/,
+          outputMatch: /css\/.*\.css$/,
           attributes: {
             as: "style",
             type: "text/css",
@@ -248,6 +248,11 @@ function getBuildOptions({
           ) {
             return `webfonts/[name]-[hash].${extType}`;
           }
+          // oxlint-disable-next-line no-deprecated
+          if (assetInfo.name === "misc.css") {
+            return `${extType}/vendor.[hash][extname]`;
+          }
+
           return `${extType}/[name].[hash][extname]`;
         },
         chunkFileNames: "js/[name].[hash].js",
@@ -291,7 +296,7 @@ function getCssOptions({
     preprocessorOptions: {
       scss: {
         additionalData(source, fp) {
-          if (fp.endsWith("index.scss")) {
+          if (isDevelopment || fp.endsWith("index.scss")) {
             /** Enable for font awesome v6 */
             /*
                 const fontawesomeClasses = getFontawesomeConfig();

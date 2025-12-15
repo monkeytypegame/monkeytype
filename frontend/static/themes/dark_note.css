@@ -102,10 +102,10 @@ body::before {
 }
 
 #words .typed letter {
-  animation: toDust 200ms ease-out 0ms 1 forwards !important;
+  animation: darkNoteToDust 200ms ease-out 0ms 1 forwards !important;
 }
 #words .typed letter::after {
-  animation: fadeIn 100ms ease-in 100ms 1 forwards;
+  animation: darkNoteFadeIn 100ms ease-in 100ms 1 forwards;
 }
 
 .word letter {
@@ -154,7 +154,7 @@ hint {
   }
 }
 
-@keyframes fadeIn {
+@keyframes darkNoteFadeIn {
   0% {
     opacity: 0;
   }
@@ -166,7 +166,7 @@ hint {
   }
 }
 
-@keyframes toDust {
+@keyframes darkNoteToDust {
   0% {
     transform: scale(1);
     color: var(--current-color);

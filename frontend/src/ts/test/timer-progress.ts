@@ -110,6 +110,16 @@ export function hide(): void {
   });
 }
 
+export function instantHide(): void {
+  barOpacityEl.style.opacity = "0";
+
+  miniEl.classList.add("hidden");
+  miniEl.style.opacity = "0";
+
+  textEl.classList.add("hidden");
+  textEl.style.opacity = "0";
+}
+
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
     return (
@@ -254,6 +264,6 @@ export function updateStyle(): void {
   }, 125);
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "timerStyle") updateStyle();
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "timerStyle") updateStyle();
 });

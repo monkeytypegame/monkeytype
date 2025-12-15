@@ -1,6 +1,7 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { promiseAnimate } from "../utils/misc";
+import { qsr } from "../utils/dom";
 
 const pageEl = $(".page.pageLoading");
 const barEl = pageEl.find(".bar");
@@ -45,7 +46,7 @@ export async function showBar(): Promise<void> {
 
 export const page = new Page({
   id: "loading",
-  element: pageEl,
+  element: qsr(".page.pageLoading"),
   path: "/",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLoading");

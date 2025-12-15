@@ -3,7 +3,7 @@ import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
+import Config, { setConfig } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -13,6 +13,7 @@ import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
+import { qs, qsa } from "../utils/dom";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -56,7 +57,10 @@ async function updateFavicon(): Promise<void> {
   </g>
 </svg>`;
 
-    $("#favicon").attr("href", "data:image/svg+xml;base64," + btoa(svgPre));
+    qs("#favicon")?.setAttribute(
+      "href",
+      "data:image/svg+xml;base64," + btoa(svgPre),
+    );
   }, 125);
 }
 
@@ -73,16 +77,16 @@ export async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
     function swapCurrentToNext(): void {
       console.debug("Theme controller swapping elements");
-      const current = $("#currentTheme");
-      const next = $("#nextTheme");
-      if (next.length === 0) {
+      const current = qs("#currentTheme");
+      const next = qs("#nextTheme");
+      if (current === null || next === null) {
         console.debug(
-          "Theme controller failed to swap elements, next is missing",
+          "Theme controller failed to swap elements, next or current is missing",
         );
         return;
       }
       current.remove();
-      next.attr("id", "currentTheme");
+      next.setAttribute("id", "currentTheme");
     }
 
     console.debug("Theme controller loading style", name);
@@ -91,7 +95,7 @@ export async function loadStyle(name: string): Promise<void> {
         Loader.show();
       }, 100),
     );
-    $("#nextTheme").remove();
+    qs("#nextTheme")?.remove();
     const headScript = document.querySelector("#currentTheme");
     const link = document.createElement("link");
     link.type = "text/css";
@@ -103,7 +107,7 @@ export async function loadStyle(name: string): Promise<void> {
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
-      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
+      qsa("#keymap .keymapKey")?.setStyle({});
       resolve();
     };
     link.onerror = (e): void => {
@@ -114,7 +118,7 @@ export async function loadStyle(name: string): Promise<void> {
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
-      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
+      qsa("#keymap .keymapKey")?.setStyle({});
       resolve();
     };
     if (name === "custom") {
@@ -140,7 +144,7 @@ export async function loadStyle(name: string): Promise<void> {
 //   const customThemes = DB.getSnapshot().customThemes;
 //   const colors = customThemes.find((e) => e._id === themeId)
 //     ?.colors as string[];
-//   UpdateConfig.setCustomThemeColors(colors, nosave);
+//   UpdateConfig.setConfig("customThemeColors", colors,nosave);
 // }
 
 async function apply(
@@ -168,8 +172,7 @@ async function apply(
 
   ThemeColors.reset();
 
-  $(".keymapKey").attr("style", "");
-  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  qsa("#keymap .keymapKey")?.setStyle({});
   await loadStyle(name);
 
   if (name !== "custom") {
@@ -180,17 +183,16 @@ async function apply(
 
   // if (!isPreview) {
   const colors = await ThemeColors.getAll();
-  $(".keymapKey").attr("style", "");
+  qsa("#keymap .keymapKey")?.setStyle({});
   ChartController.updateAllChartColors();
   void updateFavicon();
-  $("#metaThemeColor").attr("content", colors.bg);
-  // }
+  qs("#metaThemeColor")?.setAttribute("content", colors.bg);
   updateFooterIndicator(isPreview ? themeName : undefined);
 
   if (isColorDark(await ThemeColors.get("bg"))) {
-    $("body").addClass("darkMode");
+    qs("body")?.addClass("darkMode");
   } else {
-    $("body").removeClass("darkMode");
+    qs("body")?.removeClass("darkMode");
   }
 }
 
@@ -271,7 +273,7 @@ async function set(
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
-    setAutoSwitchTheme(false);
+    setConfig("autoSwitchTheme", false);
     Notifications.add("Auto switch theme disabled", 0);
   }
 }
@@ -350,7 +352,9 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  setCustomTheme(false, true);
+  setConfig("customTheme", false, {
+    nosave: true,
+  });
   await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
@@ -377,29 +381,21 @@ async function clearRandom(): Promise<void> {
 
 function applyCustomBackgroundSize(): void {
   if (Config.customBackgroundSize === "max") {
-    $(".customBackground img").css({
-      // width: "calc(100%)",
-      // height: "calc(100%)",
+    qs(".customBackground img")?.setStyle({
       objectFit: "",
     });
   } else {
-    $(".customBackground img").css({
+    qs(".customBackground img")?.setStyle({
       objectFit: Config.customBackgroundSize,
     });
   }
 }
 
 export async function applyCustomBackground(): Promise<void> {
-  // $(".customBackground").css({
-  //   backgroundImage: `url(${Config.customBackground})`,
-  //   backgroundAttachment: "fixed",
-  // });
-
   let backgroundUrl = Config.customBackground;
-
-  $(
+  qs<HTMLInputElement>(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
-  ).val(backgroundUrl);
+  )?.setValue(backgroundUrl);
 
   //if there is a localBackgroundFile available, use it.
   const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
@@ -409,17 +405,17 @@ export async function applyCustomBackground(): Promise<void> {
   }
 
   // hide the filter section initially and always
-  $(
+  qs(
     ".pageSettings .section[data-config-name='customBackgroundFilter']",
-  ).addClass("hidden");
+  )?.addClass("hidden");
 
   if (backgroundUrl === "") {
-    $("#words").removeClass("noErrorBorder");
-    $("#resultWordsHistory").removeClass("noErrorBorder");
-    $(".customBackground img").remove();
+    qs("#words")?.removeClass("noErrorBorder");
+    qs("#resultWordsHistory")?.removeClass("noErrorBorder");
+    qs(".customBackground img")?.remove();
   } else {
-    $("#words").addClass("noErrorBorder");
-    $("#resultWordsHistory").addClass("noErrorBorder");
+    qs("#words")?.addClass("noErrorBorder");
+    qs("#resultWordsHistory")?.addClass("noErrorBorder");
 
     //use setAttribute for possible unsafe customBackground value
     const container = document.querySelector(".customBackground");
@@ -432,9 +428,9 @@ export async function applyCustomBackground(): Promise<void> {
     );
     img.onload = () => {
       // show the filter section only if the image loads successfully
-      $(
+      qs(
         ".pageSettings .section[data-config-name='customBackgroundFilter']",
-      ).removeClass("hidden");
+      )?.removeClass("hidden");
     };
 
     container?.replaceChildren(img);
@@ -450,11 +446,11 @@ export async function applyFontFamily(): Promise<void> {
   const localFont = await fileStorage.getFile("LocalFontFamilyFile");
   if (localFont === undefined) {
     //use config font
-    $(".customFont").empty();
+    qs(".customFont")?.empty();
   } else {
     font = "LOCALCUSTOM";
 
-    $(".customFont").html(`
+    qs(".customFont")?.setHtml(`
       @font-face{ 
         font-family: LOCALCUSTOM;
         src: url(${localFont});
@@ -483,11 +479,11 @@ window
 
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
-  if (eventKey === "fullConfigChange") {
+ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
+  if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
-  if (eventKey === "fullConfigChangeFinished") {
+  if (key === "fullConfigChangeFinished") {
     ignoreConfigEvent = false;
 
     await clearRandom();
@@ -512,26 +508,26 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   // once the full config is loaded, we can apply everything once
   if (ignoreConfigEvent) return;
 
-  if (eventKey === "randomTheme") {
+  if (key === "randomTheme") {
     void changeThemeList();
   }
-  if (eventKey === "customTheme") {
-    (eventValue as boolean) ? await set("custom") : await set(Config.theme);
+  if (key === "customTheme") {
+    newValue ? await set("custom") : await set(Config.theme);
   }
-  if (eventKey === "customThemeColors") {
+  if (key === "customThemeColors") {
     nosave ? preview("custom") : await set("custom");
   }
-  if (eventKey === "theme") {
+  if (key === "theme") {
     await clearRandom();
     await clearPreview(false);
-    await set(eventValue as string);
+    await set(newValue as string);
   }
-  if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
-  if (eventKey === "customBackground") await applyCustomBackground();
+  if (key === "randomTheme" && newValue === "off") await clearRandom();
+  if (key === "customBackground") await applyCustomBackground();
 
-  if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
-  if (eventKey === "autoSwitchTheme") {
-    if (eventValue as boolean) {
+  if (key === "customBackgroundSize") applyCustomBackgroundSize();
+  if (key === "autoSwitchTheme") {
+    if (newValue) {
       if (prefersColorSchemeDark()) {
         await set(Config.themeDark, true);
       } else {
@@ -542,7 +538,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     }
   }
   if (
-    eventKey === "themeLight" &&
+    key === "themeLight" &&
     Config.autoSwitchTheme &&
     !prefersColorSchemeDark() &&
     !nosave
@@ -550,7 +546,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await set(Config.themeLight, true);
   }
   if (
-    eventKey === "themeDark" &&
+    key === "themeDark" &&
     Config.autoSwitchTheme &&
     window.matchMedia !== undefined &&
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
@@ -565,7 +561,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
       "customThemeColors",
       "randomTheme",
       "favThemes",
-    ].includes(eventKey)
+    ].includes(key)
   ) {
     updateFooterIndicator();
   }

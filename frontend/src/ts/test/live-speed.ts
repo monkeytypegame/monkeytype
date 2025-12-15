@@ -8,8 +8,10 @@ import { animate } from "animejs";
 
 const textElement = document.querySelector(
   "#liveStatsTextBottom .liveSpeed",
-) as Element;
-const miniElement = document.querySelector("#liveStatsMini .speed") as Element;
+) as HTMLElement;
+const miniElement = document.querySelector(
+  "#liveStatsMini .speed",
+) as HTMLElement;
 
 export function reset(): void {
   requestDebouncedAnimationFrame("live-speed.reset", () => {
@@ -75,6 +77,15 @@ export function hide(): void {
   });
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "liveSpeedStyle") eventValue === "off" ? hide() : show();
+export function instantHide(): void {
+  if (!state) return;
+  miniElement.classList.add("hidden");
+  miniElement.style.opacity = "0";
+  textElement.classList.add("hidden");
+  textElement.style.opacity = "0";
+  state = false;
+}
+
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "liveSpeedStyle") newValue === "off" ? hide() : show();
 });
