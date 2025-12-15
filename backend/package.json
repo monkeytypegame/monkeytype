@@ -1,8 +1,8 @@
 {
   "name": "@monkeytype/backend",
   "version": "1.14.3",
-  "license": "GPL-3.0",
   "private": true,
+  "license": "GPL-3.0",
   "scripts": {
     "eslint": "eslint \"./src/**/*.ts\"",
     "oxlint": "oxlint .",
@@ -19,9 +19,6 @@
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up",
     "gen-docs": "tsx scripts/openapi.ts dist/static/api/openapi.json && redocly build-docs -o dist/static/api/internal.html internal@v2 && redocly bundle -o dist/static/api/public.json public-filter && redocly build-docs -o dist/static/api/public.html public@v2"
-  },
-  "engines": {
-    "node": "24.11.0 || 22.21.0"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -94,5 +91,8 @@
     "tsx": "4.16.2",
     "typescript": "5.9.3",
     "vitest": "4.0.15"
+  },
+  "engines": {
+    "node": "24.11.0 || 22.21.0"
   }
 }
