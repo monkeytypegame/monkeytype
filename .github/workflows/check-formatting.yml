@@ -35,7 +35,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install formatters
+      - name: Install formatter
         run: pnpm install -D -w oxfmt
 
       - name: Get changed files
