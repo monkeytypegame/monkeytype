@@ -2,7 +2,7 @@ import { TsRestRequest as TsRestRequestGeneric } from "@ts-rest/express";
 import { Request as ExpressRequest } from "express";
 import { Context } from "../middlewares/context";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 export type TsRestRequest = TsRestRequestGeneric<any>;
 
 export type ExpressRequestWithContext = {
