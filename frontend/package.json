@@ -26,9 +26,7 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ],
     "*.{ts,js}": [
-      "prettier --write",
-      "oxlint",
-      "eslint"
+      "oxlint --type-aware --type-check"
     ]
   },
   "dependencies": {
