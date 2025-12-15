@@ -697,5 +697,20 @@ function checkUniqueSelector(selector: string): void {
       `Multiple elements found for selector "${selector}". Did you mean to use QSA? If not, try making the query more specific.`,
       { matching: elements },
     );
+    if (document.querySelector("#domUtilsQsWarning") !== null) return;
+
+    const bannerCenter = document.querySelector("#bannerCenter");
+    const warning = document.createElement("div");
+    warning.classList.add("psa", "bad", "content-grid");
+    warning.id = "domUtilsQsWarning";
+    warning.innerHTML = `
+        <div class="container">
+          <div class="icon lefticon"><i class="fas fa-fw fa-exclamation-triangle"></i></div>
+          <div class="text">
+             "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details."
+          </div>
+        </div>
+      </div>`;
+    bannerCenter?.appendChild(warning);
   }
 }
