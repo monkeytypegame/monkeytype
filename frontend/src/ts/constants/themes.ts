@@ -1127,6 +1127,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#ffaca3",
     textColor: "#feffdb",
   },
+  spiderman: {
+    bgColor: "#0d1219",
+    mainColor: "#e23636",
+    subColor: "#0476f2",
+    textColor: "#f0f0f0",
+  },
 };
 
 export const ThemesList: Theme[] = typedKeys(themes)
