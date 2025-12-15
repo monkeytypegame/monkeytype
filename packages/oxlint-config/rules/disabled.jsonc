@@ -11,5 +11,6 @@
     "no-this-alias": "off",
     "no-unassigned-import": "off",
     "no-array-reverse": "off", // disabled for compatibility
+    "no-map-spread": "off",
   },
 }

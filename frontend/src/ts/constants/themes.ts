@@ -1,6 +1,5 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { hexToHSL } from "../utils/colors";
-import { typedKeys } from "../utils/misc";
 
 export type Theme = {
   name: ThemeName;
@@ -1135,9 +1134,15 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   },
 };
 
-export const ThemesList: Theme[] = typedKeys(themes)
+export const ThemesList: Theme[] = Object.keys(themes)
   .sort()
-  .map((name) => Object.assign(themes[name], { name }) as Theme);
+  .map(
+    (it) =>
+      ({
+        ...themes[it as ThemeName],
+        name: it,
+      }) as Theme,
+  );
 
 export const ThemesListSorted = [
   ...ThemesList.sort((a, b) => {

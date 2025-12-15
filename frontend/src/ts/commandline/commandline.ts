@@ -430,7 +430,7 @@ async function showCommands(): Promise<void> {
         }
       }
 
-      return Object.assign(command, { isActive });
+      return { ...command, isActive } as CommandWithIsActive;
     });
 
   if (

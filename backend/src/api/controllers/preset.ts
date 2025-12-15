@@ -16,7 +16,10 @@ export async function getPresets(
   const { uid } = req.ctx.decodedToken;
 
   const data = (await PresetDAL.getPresets(uid))
-    .map((preset) => Object.assign(preset, { uid: undefined }))
+    .map((preset) => ({
+      ...preset,
+      uid: undefined,
+    }))
     .map((it) => replaceObjectId(it));
 
   return new MonkeyResponse("Presets retrieved", data);

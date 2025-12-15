@@ -169,12 +169,13 @@ export class DailyLeaderboard {
             RedisDailyLeaderboardEntrySchema,
           );
 
-          return Object.assign(parsed, {
+          return {
+            ...parsed,
             rank: isFriends
               ? new Number(ranks[index]).valueOf() + 1
               : minRank + index + 1,
             friendsRank: isFriends ? minRank + index + 1 : undefined,
-          });
+          };
         } catch (error) {
           throw new Error(
             `Failed to parse leaderboard entry at index ${index}: ${
