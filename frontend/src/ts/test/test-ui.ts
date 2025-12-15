@@ -960,9 +960,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     .slice(0, activeWordIndex)
     .filter((child) => child.classList.contains("afterNewline")).length;
   // the second `.afterNewline` after active word is visible during line jump
-  let lastVisibleAfterNewline = afterNewLineEls[
-    newLinesBeforeActiveWord + 1
-  ] as HTMLElement | undefined;
+  let lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord + 1] as
+    | HTMLElement
+    | undefined;
   if (lastVisibleAfterNewline) {
     lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
   } else {
