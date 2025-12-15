@@ -4,9 +4,8 @@
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
-    "eslint": "eslint \"./src/**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint",
+    "lint": "oxlint . --type-aware --type-check && oxlint -c .oxlintrc-plugin.json",
+    "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
@@ -59,7 +58,6 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "@redocly/cli": "2.0.5",
@@ -81,10 +79,9 @@
     "@types/uuid": "10.0.0",
     "@vitest/coverage-v8": "4.0.8",
     "concurrently": "8.2.2",
-    "eslint": "8.57.1",
-    "eslint-watch": "8.0.0",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.29.0",
+    "oxlint": "1.33.0",
+    "oxlint-tsgolint": "0.9.0",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
     "testcontainers": "11.4.0",

@@ -59,6 +59,7 @@
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
     "vitest.maximumConfigs": 10,
+    "oxc.typeAware": true,
     "typescript.format.enable": false,
   },
 

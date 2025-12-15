@@ -58,25 +58,27 @@ async function getLog() {
 
 function itemIsAddingQuotes(item) {
   const scopeIsQuote =
-    item.scope?.includes("quote") ||
-    item.scope?.includes("quotes") ||
-    item.message?.includes("quote");
+    item.scope?.includes("quote") === true ||
+    item.scope?.includes("quotes") === true ||
+    item.message?.includes("quote") === true;
 
   const messageAdds =
-    item.message.includes("add") ||
-    item.message.includes("added") ||
-    item.message.includes("adding") ||
-    item.message.includes("adds");
+    item.message.includes("add") === true ||
+    item.message.includes("added") === true ||
+    item.message.includes("adding") === true ||
+    item.message.includes("adds") === true;
 
   return scopeIsQuote && messageAdds;
 }
 
 function itemIsAddressingQuoteReports(item) {
   const scopeIsQuote =
-    item.scope?.includes("quote") || item.scope?.includes("quotes");
+    item.scope?.includes("quote") === true ||
+    item.scope?.includes("quotes") === true;
 
   const messageReport =
-    item.message.includes("report") || item.message.includes("reports");
+    item.message.includes("report") === true ||
+    item.message.includes("reports") === true;
 
   return scopeIsQuote && messageReport;
 }
@@ -272,9 +274,9 @@ function convertStringToLog(logString) {
         type,
         scope,
         message,
-        usernames: usernames || [],
-        prs: prs || [],
-        body: body || "",
+        usernames: usernames ?? [],
+        prs: prs ?? [],
+        body: body ?? "",
       });
     } else {
       // console.log({ hash, shortHash, title, body });

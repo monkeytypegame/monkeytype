@@ -177,7 +177,7 @@ type LastIndex = {
 } & string;
 
 // TODO INVESTIGATE IF THIS IS NEEDED
-// eslint-disable-next-line no-extend-native
+// oxlint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp,
 ): number {
@@ -686,7 +686,7 @@ export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
   Required<Pick<T, K>>;
 
 function isPlatform(searchTerm: string | RegExp): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  // oxlint-disable-next-line no-deprecated
   const platform = navigator.platform;
   if (typeof searchTerm === "string") {
     return platform.includes(searchTerm);

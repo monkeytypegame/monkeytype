@@ -49,7 +49,7 @@ onDOMReady(async () => {
   MonkeyPower.init();
 
   // untyped, need to ignore
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // oxlint-disable-next-line no-unsafe-call
   new Konami("https://keymash.io/");
 
   if (Misc.isDevEnvironment()) {

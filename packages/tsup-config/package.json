@@ -12,14 +12,13 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "ts-check": "tsc --noEmit",
-    "eslint": "eslint \"./src/**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint"
+    "lint": "oxlint . --type-aware --type-check",
+    "lint-fast": "oxlint ."
   },
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
-    "eslint": "8.57.1",
-    "oxlint": "1.29.0",
+    "oxlint": "1.33.0",
+    "oxlint-tsgolint": "0.9.0",
     "typescript": "5.9.3"
   },
   "peerDependencies": {

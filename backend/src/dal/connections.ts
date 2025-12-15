@@ -74,7 +74,7 @@ export async function create(
 
     return created;
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     if (e.name === "MongoServerError" && e.code === 11000) {
       const existing = await getCollection().findOne(
         { key },

@@ -4,9 +4,9 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "eslint": "eslint \"./**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint",
+    "lint": "oxlint . --type-aware --type-check && oxlint . -c .oxlintrc-plugin.json",
+    "lint-fast": "oxlint .",
+    "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
@@ -26,8 +26,7 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ],
     "*.{ts,js}": [
-      "oxlint",
-      "eslint"
+      "oxlint --type-aware --type-check"
     ]
   },
   "dependencies": {
@@ -66,8 +65,8 @@
     "zod-urlsearchparams": "0.0.16"
   },
   "devDependencies": {
+    "@eslint/json": "0.14.0",
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "@types/canvas-confetti": "1.4.3",
@@ -82,7 +81,7 @@
     "@vitest/coverage-v8": "4.0.8",
     "autoprefixer": "10.4.20",
     "concurrently": "8.2.2",
-    "eslint": "8.57.1",
+    "eslint": "9.39.1",
     "eslint-plugin-compat": "6.0.2",
     "firebase-tools": "13.15.1",
     "fontawesome-subset": "4.4.0",
@@ -90,7 +89,8 @@
     "madge": "8.0.0",
     "magic-string": "0.30.17",
     "normalize.css": "8.0.1",
-    "oxlint": "1.29.0",
+    "oxlint": "1.33.0",
+    "oxlint-tsgolint": "0.9.0",
     "postcss": "8.4.31",
     "sass": "1.70.0",
     "subset-font": "2.3.0",

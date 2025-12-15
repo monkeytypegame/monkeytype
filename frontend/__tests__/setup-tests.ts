@@ -66,6 +66,8 @@ vi.mock("../src/ts/utils/dom", () => {
       animate: vi.fn().mockResolvedValue(null),
       promiseAnimate: vi.fn().mockResolvedValue(null),
       native: document.createElement("div"),
+      // @ts-expect-error - mocking private method
+      hasValue: vi.fn().mockReturnValue(false),
     };
   };
 
@@ -77,6 +79,7 @@ vi.mock("../src/ts/utils/dom", () => {
 });
 
 // Mock document.querySelector to return a div
+// oxlint-disable-next-line no-deprecated
 global.document.querySelector = vi
   .fn()
   .mockReturnValue(document.createElement("div"));

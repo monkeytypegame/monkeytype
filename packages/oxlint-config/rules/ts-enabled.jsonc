@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript/strict-boolean-expressions": [
+      "error",
+      { "allowNullableBoolean": true },
+    ],
+    "typescript/only-throw-error": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-confusing-void-expression": [
+      "error",
+      { "ignoreArrowShorthand": true },
+    ],
+    "typescript/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false,
+      },
+    ],
+    "typescript/promise-function-async": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-array-delete": "error",
+    "typescript/no-base-to-string": "error",
+    "typescript/no-duplicate-type-constituents": "error",
+    "typescript/no-for-in-array": "error",
+    "typescript/no-implied-eval": "error",
+    "typescript/no-meaningless-void-operator": "error",
+    "typescript/no-mixed-enums": "error",
+    "typescript/no-unnecessary-boolean-literal-compare": "error",
+    "typescript/no-unsafe-enum-comparison": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-unsafe-unary-minus": "error",
+    "typescript/prefer-reduce-type-parameter": "error",
+    "typescript/prefer-return-this-type": "error",
+    "typescript/related-getter-setter-pairs": "error",
+    //todo: consider "always" or "in-try-catch"
+    "typescript/return-await": ["error", "error-handling-correctness-only"],
+    "typescript/use-unknown-in-catch-callback-variable": "error",
+    "typescript/await-thenable": "error",
+    "typescript/no-unnecessary-type-arguments": "error",
+    "typescript/restrict-plus-operands": [
+      "error",
+      {
+        "allowNumberAndString": true,
+      },
+    ],
+    "typescript/no-deprecated": "error",
+    "typescript/prefer-includes": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+  },
+}
