@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { ModifierKeys } from "../constants/modifier-keys";
 
 const el = document.querySelector("#capsWarning") as HTMLElement;
 
@@ -22,7 +23,14 @@ function hide(): void {
 }
 
 function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
-  if (event?.originalEvent?.key === "CapsLock" && capsState !== null) {
+  const key = event?.originalEvent?.key;
+
+  // Ignore modifier keys (except CapsLock itself) to prevent false toggles
+  if (key !== undefined && key !== "CapsLock" && ModifierKeys.includes(key)) {
+    return;
+  }
+
+  if (key === "CapsLock" && capsState !== null) {
     capsState = !capsState;
   } else {
     const modState = event?.originalEvent?.getModifierState?.("CapsLock");

@@ -22,7 +22,17 @@ export async function getCharFromEvent(
     const isNotPunctuation = !isPunctuationPattern.test(
       keyVariants.slice(altGrIndex, altGrIndex + 2).join(""),
     );
-    if (capsState && isNotPunctuation) {
+    // Get Caps Lock state directly from the event to ensure accuracy
+    // For jQuery events, access via originalEvent; for native events, use directly
+    const nativeEvent: KeyboardEvent | undefined =
+      "originalEvent" in event
+        ? (event.originalEvent as KeyboardEvent)
+        : event instanceof KeyboardEvent
+          ? event
+          : undefined;
+    const eventCapsState =
+      nativeEvent?.getModifierState?.("CapsLock") ?? capsState;
+    if (eventCapsState && isNotPunctuation) {
       isCapitalized = !event.shiftKey;
     }
 
