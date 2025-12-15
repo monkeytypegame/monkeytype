@@ -34,7 +34,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Install formatters
-        run: pnpm install -D -w prettier oxfmt
+        run: pnpm install -D -w oxfmt
 
       - name: Get changed files
         id: get-changed-files
