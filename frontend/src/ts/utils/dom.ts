@@ -5,6 +5,7 @@ import {
 } from "animejs";
 import { isDevEnvironment } from "./misc";
 
+// Implementation
 /**
  * Query Selector
  *
@@ -14,14 +15,7 @@ import { isDevEnvironment } from "./misc";
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string,
 ): ElementWithUtils<T> | null {
-  if (isDev()) {
-    const els: ElementsWithUtils<T> = qsa(selector);
-    if (els.length === 0) return null;
-    if (els.length !== 1) {
-      console.warn(`QS: Multiple elements found for selector "${selector}"`);
-    }
-    return els[0] ?? null;
-  }
+  checkUniqueSelector(selector);
   const el = document.querySelector<T>(selector);
   return el ? new ElementWithUtils(el) : null;
 }
@@ -53,24 +47,12 @@ export function qsa<T extends HTMLElement = HTMLElement>(
 export function qsr<T extends HTMLElement = HTMLElement>(
   selector: string,
 ): ElementWithUtils<T> {
-  let el: ElementWithUtils<T> | null = null;
-
-  if (isDev()) {
-    const els: ElementsWithUtils<T> = qsa(selector);
-    if (els.length > 1) {
-      console.warn(`QSR: Multiple elements found for selector "${selector}"`);
-    }
-    el = els[0] ?? null;
-  } else {
-    const selected = document.querySelector<T>(selector);
-    if (selected !== null) {
-      el = new ElementWithUtils(selected);
-    }
-  }
+  checkUniqueSelector(selector);
+  const el = document.querySelector<T>(selector);
   if (el === null) {
     throw new Error(`Required element not found: ${selector}`);
   }
-  return el;
+  return new ElementWithUtils(el);
 }
 
 /**
@@ -371,15 +353,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Query the element for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
-    if (isDev()) {
-      const els: ElementsWithUtils<U> = this.qsa(selector);
-      if (els.length === 0) return null;
-      if (els.length !== 1) {
-        console.warn(`QS: Multiple elements found for selector "${selector}"`);
-      }
-      return els[0] ?? null;
-    }
-
+    checkUniqueSelector(selector);
     const found = this.native.querySelector<U>(selector);
     return found ? new ElementWithUtils(found) : null;
   }
@@ -403,23 +377,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @throws Error if the element is not found.
    */
   qsr<U extends HTMLElement>(selector: string): ElementWithUtils<U> {
-    let el: ElementWithUtils<U> | null = null;
-    if (isDev()) {
-      const els: ElementsWithUtils<U> = qsa(selector);
-      if (els.length > 1) {
-        console.warn(`QSR: Multiple elements found for selector "${selector}"`);
-      }
-      el = els[0] ?? null;
-    } else {
-      const selected = document.querySelector<U>(selector);
-      if (selected !== null) {
-        el = new ElementWithUtils(selected);
-      }
-    }
-    if (el === null) {
+    checkUniqueSelector(selector);
+    const found = this.native.querySelector<U>(selector);
+    if (found === null) {
       throw new Error(`Required element not found: ${selector}`);
     }
-    return el;
+    return new ElementWithUtils(found);
   }
 
   /**
@@ -732,6 +695,17 @@ function isDev(): boolean {
     return isDevEnvironment();
   } catch {
     //in case virtual:env is not available yet
-    return false;
+    return true;
+  }
+}
+
+function checkUniqueSelector(selector: string): void {
+  if (!isDev()) return;
+  const elements = qsa(selector);
+  if (elements.length > 1) {
+    console.warn(
+      `Multiple elements found for selector "${selector}". Did you mean to use QSA?`,
+      { matching: elements },
+    );
   }
 }
