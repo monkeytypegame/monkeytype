@@ -302,7 +302,12 @@ export class Caret {
         (Config.blindMode && options.letterIndex >= wordText.length)
       ) {
         side = "afterLetter";
-        options.letterIndex = wordText?.length - 1;
+
+        if (Config.blindMode) {
+          options.letterIndex = wordText?.length - 1;
+        } else {
+          options.letterIndex = letters.length - 1;
+        }
       }
       if (options.letterIndex < 0) {
         options.letterIndex = 0;
