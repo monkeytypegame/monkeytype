@@ -352,7 +352,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Query the element for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
-    checkUniqueSelector(selector);
+    checkUniqueSelector(selector, this);
     const found = this.native.querySelector<U>(selector);
     return found ? new ElementWithUtils(found) : null;
   }
@@ -376,7 +376,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @throws Error if the element is not found.
    */
   qsr<U extends HTMLElement>(selector: string): ElementWithUtils<U> {
-    checkUniqueSelector(selector);
+    checkUniqueSelector(selector, this);
     const found = this.native.querySelector<U>(selector);
     if (found === null) {
       throw new Error(`Required element not found: ${selector}`);
@@ -697,9 +697,12 @@ export class ElementsWithUtils<
   }
 }
 
-function checkUniqueSelector(selector: string): void {
+function checkUniqueSelector(
+  selector: string,
+  parent?: ElementWithUtils,
+): void {
   if (!import.meta.env.DEV) return;
-  const elements = qsa(selector);
+  const elements = parent ? parent.qsa(selector) : qsa(selector);
   if (elements.length > 1) {
     console.warn(
       `Multiple elements found for selector "${selector}". Did you mean to use QSA? If not, try making the query more specific.`,
