@@ -461,7 +461,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Set value of input or textarea to a string.
    */
-  setValue(this: ElementWithUtils<ElementWithValue>, value: string): this {
+  setValue(value: string): this {
     if (this.hasValue()) {
       this.native.value = value;
     }
@@ -607,6 +607,18 @@ export class ElementsWithUtils<
     for (const item of this) {
       item.setHtml(htmlString);
     }
+    return this;
+  }
+
+  /**
+   * Set value of all inputs or textareas in the array to a string.
+   */
+
+  setValue(value: string): this {
+    for (const item of this) {
+      item.setValue(value);
+    }
+
     return this;
   }
 
