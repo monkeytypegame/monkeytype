@@ -39,7 +39,7 @@ export function showError(): void {
 export async function showBar(): Promise<void> {
   barEl?.show();
   errorEl?.hide();
-  spinnerEl?.show();
+  spinnerEl?.hide();
   textEl?.hide();
 }
 
