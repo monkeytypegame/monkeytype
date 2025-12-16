@@ -465,7 +465,7 @@ function updateWordWrapperClasses(): void {
   void updateHintsPositionDebounced();
   Caret.updatePosition();
 
-  if (document.activeElement !== getInputElement()) {
+  if (!isInputElementFocused()) {
     OutOfFocus.show();
   }
 }
@@ -1998,7 +1998,7 @@ $("#wordsInput").on("focus", (e) => {
 });
 
 $("#wordsInput").on("focusout", () => {
-  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
+  if (!isInputElementFocused()) {
     OutOfFocus.show();
   }
   Caret.hide();

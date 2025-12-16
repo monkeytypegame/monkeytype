@@ -82,16 +82,9 @@ function getPlugins({
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
     checker({
-      typescript: {
-        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
+      oxlint: {
+        lintCommand: "oxlint . --type-aware --type-check",
       },
-      oxlint: isDevelopment,
-      eslint: isDevelopment
-        ? {
-            lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
-            watchPath: path.resolve(__dirname, "./src/"),
-          }
-        : false,
       overlay: {
         initialIsOpen: false,
       },
@@ -238,14 +231,24 @@ function getBuildOptions({
         404: path.resolve(__dirname, "src/404.html"),
       },
       output: {
-        assetFileNames: (assetInfo: { name: string }) => {
-          let extType = assetInfo.name.split(".").at(1) as string;
+        assetFileNames: (assetInfo) => {
+          let extType = (assetInfo.names[0] as string).split(".").at(1);
+
+          if (extType === undefined) {
+            throw new Error(
+              `Could not determine asset type for asset: ${assetInfo.names[0]}`,
+            );
+          }
+
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = "images";
           }
-          if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+          if (
+            /\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.names[0] as string)
+          ) {
             return `webfonts/[name]-[hash].${extType}`;
           }
+          // oxlint-disable-next-line no-deprecated
           if (assetInfo.name === "misc.css") {
             return `${extType}/vendor.[hash][extname]`;
           }

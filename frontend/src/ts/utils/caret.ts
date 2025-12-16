@@ -297,13 +297,16 @@ export class Caret {
       // we also clamp the letterIndex to be within the range of actual letters
       // anything beyond just goes to the edge of the word
       let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-      if (
-        options.letterIndex >= letters.length ||
-        (Config.blindMode && options.letterIndex >= wordText.length)
-      ) {
+      if (options.letterIndex >= letters.length) {
         side = "afterLetter";
-        options.letterIndex = letters.length - 1;
+
+        if (Config.blindMode) {
+          options.letterIndex = wordText?.length - 1;
+        } else {
+          options.letterIndex = letters.length - 1;
+        }
       }
+
       if (options.letterIndex < 0) {
         options.letterIndex = 0;
       }

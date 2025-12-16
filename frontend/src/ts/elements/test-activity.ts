@@ -104,9 +104,9 @@ export function initYearSelector(
   }
 
   const yearSelect = getYearSelector(element);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  // oxlint-disable-next-line no-unsafe-argument
   yearSelect.setData(years);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // oxlint-disable-next-line no-unsafe-call
   years.length > 1 ? yearSelect.enable() : yearSelect.disable();
 }
 
@@ -134,14 +134,14 @@ function getYearSelector(element: HTMLElement): SlimSelect {
     },
     events: {
       afterChange: async (newVal): Promise<void> => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        // oxlint-disable-next-line no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
         const activity = await getTestActivityCalendar(selected);
         update(element, activity);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        // oxlint-disable-next-line no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          // oxlint-disable-next-line no-unsafe-call
           yearSelector?.enable();
         }
       },
