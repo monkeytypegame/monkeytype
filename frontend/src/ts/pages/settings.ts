@@ -43,7 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -196,11 +196,61 @@ async function initGroups(): Promise<void> {
     },
   });
   groups["showAllLines"] = new SettingsGroup("showAllLines", "button");
-  groups["paceCaret"] = new SettingsGroup("paceCaret", "button");
+  groups["paceCaret"] = new SettingsGroup("paceCaret", "button", {
+    updateCallback: () => {
+      if (Config.paceCaret === "off") {
+        qs(
+          ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
+        )?.hide();
+      } else {
+        qs(
+          ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
+        )?.show();
+      }
+    },
+  });
+
   groups["repeatedPace"] = new SettingsGroup("repeatedPace", "button");
-  groups["minWpm"] = new SettingsGroup("minWpm", "button");
-  groups["minAcc"] = new SettingsGroup("minAcc", "button");
-  groups["minBurst"] = new SettingsGroup("minBurst", "button");
+  groups["minWpm"] = new SettingsGroup("minWpm", "button", {
+    updateCallback: () => {
+      if (Config.minWpm === "off") {
+        qs(
+          ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
+        )?.hide();
+      } else {
+        qs(
+          ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
+        )?.show();
+      }
+    },
+  });
+  groups["minAcc"] = new SettingsGroup("minAcc", "button", {
+    updateCallback: () => {
+      if (Config.minAcc === "off") {
+        qs(
+          ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
+        )?.hide();
+      } else {
+        qs(
+          ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
+        )?.show();
+      }
+    },
+  });
+
+  groups["minBurst"] = new SettingsGroup("minBurst", "button", {
+    updateCallback: () => {
+      if (Config.minBurst === "off") {
+        qs(
+          ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
+        )?.hide();
+      } else {
+        qs(
+          ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
+        )?.show();
+      }
+    },
+  });
   groups["smoothLineScroll"] = new SettingsGroup("smoothLineScroll", "button");
   groups["lazyMode"] = new SettingsGroup("lazyMode", "button");
   groups["layout"] = new SettingsGroup("layout", "select");
@@ -633,13 +683,13 @@ export async function update(
     value: string | number,
   ): void => {
     if (options.eventKey === undefined || options.eventKey === key) {
-      const element = document.querySelector(query) as HTMLInputElement;
+      const element = qs<HTMLInputElement>(query);
       if (element === null) {
         throw new Error("Unknown input element " + query);
       }
 
-      element.value = new String(value).toString();
-      element.dispatchEvent(new Event("input"));
+      element.setValue(new String(value).toString());
+      element.dispatch("input");
     }
   };
 
