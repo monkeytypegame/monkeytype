@@ -64,7 +64,7 @@ function removeCommandlineBackground(): void {
 
 function addCommandlineBackground(): void {
   qs("#commandLine")?.removeClass("noBackground");
-  if (Config.showOutOfFocusWarning && !isInputElementFocused()) {
+  if (!isInputElementFocused()) {
     OutOfFocus.show();
   }
 }
