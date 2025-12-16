@@ -12,7 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qs, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -165,7 +165,7 @@ qs(".page.pageAccountSettings")?.onChild("click", ".tabs button", (event) => {
   page.setUrlParams(state);
 });
 
-qs(
+qsa(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth",
 )?.on("click", () => {
   Loader.show();
