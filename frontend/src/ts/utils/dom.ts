@@ -455,11 +455,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return new ElementWithUtils(wrapperElement as T);
   }
 
+  private hasValue(): this is ElementWithUtils<ElementWithValue> {
+    return (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement ||
+      this.native instanceof HTMLSelectElement
+    );
+  }
+
   /**
    * Set value of input or textarea to a string.
    */
   setValue(this: ElementWithUtils<ElementWithValue>, value: string): this {
-    if (this.native instanceof HTMLInputElement) {
+    if (this.hasValue()) {
       this.native.value = value;
     }
     return this as unknown as this;
@@ -470,10 +478,10 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @returns The value of the element, or undefined if the element is not an input or textarea.
    */
   getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
-    if (!(this.native instanceof HTMLInputElement)) {
-      return undefined;
+    if (this.hasValue()) {
+      return this.native.value;
     }
-    return this.native.value;
+    return undefined;
   }
 
   /**
