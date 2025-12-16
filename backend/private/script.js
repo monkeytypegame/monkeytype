@@ -29,7 +29,7 @@ const buildNumberInput = (schema, parentState, key) => {
   input.type = "number";
   input.value = parentState[key];
 
-  const min = schema.min || 0;
+  const min = schema.min ?? 0;
   input.min = min;
 
   input.addEventListener("change", () => {
@@ -44,7 +44,7 @@ const buildBooleanInput = (parentState, key) => {
   const input = document.createElement("input");
   input.classList.add("base-input");
   input.type = "checkbox";
-  input.checked = parentState[key] || false;
+  input.checked = parentState[key] ?? false;
 
   input.addEventListener("change", () => {
     parentState[key] = input.checked;
@@ -57,7 +57,7 @@ const buildStringInput = (parentState, key) => {
   const input = document.createElement("input");
   input.classList.add("base-input");
   input.type = "text";
-  input.value = parentState[key] || "";
+  input.value = parentState[key] ?? "";
 
   input.addEventListener("change", () => {
     parentState[key] = input.value;
@@ -157,9 +157,7 @@ const render = (state, schema) => {
     if (type === "object") {
       const entries = Object.entries(fields);
       entries.forEach(([key, value]) => {
-        if (!state[key]) {
-          state[key] = defaultValueForType(value.type);
-        }
+        state[key] ??= defaultValueForType(value.type);
 
         const childElement = build(
           value,

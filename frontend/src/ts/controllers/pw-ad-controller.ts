@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* oxlint-disable no-unsafe-member-access */
+/* oxlint-disable no-unsafe-call */
 // oxlint-disable ban-ts-comment
 //@ts-nocheck too many errors from 3rd party ad code
 
@@ -146,21 +146,21 @@ export function init(): void {
   headOfDocument.appendChild(rampScript);
 
   window._pwGA4PageviewId = "".concat(Date.now());
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/prefer-nullish-coalescing
+  // oxlint-disable-next-line strict-boolean-expressions, no-unsafe-assignment, typescript/prefer-nullish-coalescing
   window.dataLayer = window.dataLayer || [];
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line no-unsafe-assignment
   window.gtag =
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/prefer-nullish-coalescing
+    // oxlint-disable-next-line strict-boolean-expressions, typescript/prefer-nullish-coalescing
     window.gtag ||
     function (): void {
-      // eslint-disable-next-line prefer-rest-params
+      // oxlint-disable-next-line prefer-rest-params
       dataLayer.push(arguments);
     };
   gtag("js", new Date());
   gtag("config", "G-KETCPNHRJF", { send_page_view: false });
   gtag("event", "ramp_js", {
     send_to: "G-KETCPNHRJF",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    // oxlint-disable-next-line no-unsafe-assignment
     pageview_id: window._pwGA4PageviewId,
   });
 }
