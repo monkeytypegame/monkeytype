@@ -1,3 +1,4 @@
+import { qs } from "../utils/dom";
 import { swapElements } from "../utils/misc";
 import * as TribeStats from "./tribe-stats";
 
@@ -5,7 +6,7 @@ let active = "preloader";
 let transition = false;
 
 export async function change(
-  page: string
+  page: string,
   // These were commented because no value was passed to them in the entire use of this function
   // middleCallback = (() => { /* noop */ }),
   // finishCallback = () => { }
@@ -14,18 +15,15 @@ export async function change(
     if (page === active) return;
     if (transition) return;
     transition = true;
-    const activePage = $(".page.pageTribe .tribePage.active");
-    const activePageEl = activePage[0] as HTMLElement;
-    const newPageEl = document.querySelector(
-      `.page.pageTribe .tribePage.${page}`
-    ) as HTMLElement;
+    const activePage = qs(".page.pageTribe .tribePage.active");
+    const newPageEl = qs(`.page.pageTribe .tribePage.${page}`);
     void swapElements(
-      activePageEl,
+      activePage,
       newPageEl,
       250,
       async () => {
         active = page;
-        activePage.removeClass("active");
+        activePage?.removeClass("active");
         $(`.page.pageTribe .tribePage.${page}`).addClass("active");
         transition = false;
         // await finishCallback();
@@ -36,7 +34,7 @@ export async function change(
       },
       async () => {
         // middleCallback();
-      }
+      },
     );
   });
 }
