@@ -18,7 +18,7 @@
   - [ ] Add theme to `packages/schemas/src/themes.ts`
   - [ ] Add theme to `frontend/src/ts/constants/themes.ts`
   - [ ] Add theme css file to `frontend/static/themes`
-  - [ ] Add some screenshot of the theme, especially with different test settings (colorful, flip colors) to your pull request  
+  - [ ] Add some screenshots of the theme, especially with different test settings (colorful, flip colors) to your pull request  
 - [ ] Adding a layout?
   - [ ] Make sure to follow the [layouts documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/LAYOUTS.md)
   - [ ] Add layout to `packages/schemas/src/layouts.ts`
