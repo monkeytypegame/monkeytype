@@ -80,7 +80,6 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - name: Checkout pnpm-lock
         uses: actions/checkout@v4
         with:
@@ -161,7 +160,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-be
+        run: npm run lint-fast-be && npm run lint-be
 
       - name: Build
         run: npm run build-be
@@ -175,7 +174,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -214,7 +212,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-fe
+        run: npm run lint-fast-fe && npm run lint-fe
 
       - name: Build
         run: npm run build-fe
@@ -296,7 +294,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -330,7 +327,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-pkg
+        run: npm run lint-fast-pkg && npm run lint-pkg
 
       - name: Build
         run: npm run build-pkg

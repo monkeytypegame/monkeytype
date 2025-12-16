@@ -83,7 +83,11 @@ describe("Config", () => {
       replaceConfig({ funbox: ["no_quit"], numbers: false });
 
       //WHEN
-      expect(Config.setConfig("numbers", true, true)).toBe(false);
+      expect(
+        Config.setConfig("numbers", true, {
+          nosave: true,
+        }),
+      ).toBe(false);
 
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(

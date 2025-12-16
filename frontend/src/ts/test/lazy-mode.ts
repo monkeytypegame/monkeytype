@@ -47,7 +47,7 @@ const accents: Accents = [
 
 const accentsMap = new Map<string, string>(
   // ignoring for now but this might need a different approach
-  // eslint-disable-next-line @typescript-eslint/no-misused-spread
+  // oxlint-disable-next-line no-misused-spread
   accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]])),
 );
 
@@ -60,7 +60,7 @@ function findAccent(
   const additionalAccentsMap = new Map<string, string>(
     additionalAccents?.flatMap((rule) =>
       // ignoring for now but this might need a different approach
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
+      // oxlint-disable-next-line no-misused-spread
       [...rule[0]].map((accent) => [accent, rule[1]]),
     ) ?? [],
   );
@@ -88,7 +88,7 @@ export function replaceAccents(
   if (!word) return word;
   const uppercased = word.toUpperCase();
   // ignoring for now but this might need a different approach
-  // eslint-disable-next-line @typescript-eslint/no-misused-spread
+  // oxlint-disable-next-line no-misused-spread
   const cases = [...word].map((it, i) => it === uppercased[i]);
   const newWordArray: string[] = [];
 

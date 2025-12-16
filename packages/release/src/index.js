@@ -1,5 +1,5 @@
 // idk why its failing to resolve
-// eslint-disable-next-line import/no-unresolved
+// oxlint-disable-next-line import/no-unresolved
 import { Octokit } from "@octokit/rest";
 import { execSync } from "child_process";
 import dotenv from "dotenv";
@@ -263,11 +263,13 @@ const main = async () => {
     const name = readlineSync.question(
       "Enter preview channel name (default: preview): ",
     );
+    // oxlint-disable-next-line prefer-nullish-coalescing
     const channelName = name.trim() || "preview";
 
     const expirationTime = readlineSync.question(
       "Enter expiration time (e.g., 2h, default: 1d): ",
     );
+    // oxlint-disable-next-line prefer-nullish-coalescing
     const expires = expirationTime.trim() || "1d";
 
     console.log(

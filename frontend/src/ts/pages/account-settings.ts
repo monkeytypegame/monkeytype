@@ -34,9 +34,9 @@ const state: State = {
 };
 
 function updateAuthenticationSections(): void {
-  pageElement.qs(".section.passwordAuthSettings button")?.addClass("hidden");
-  pageElement.qs(".section.googleAuthSettings button")?.addClass("hidden");
-  pageElement.qs(".section.githubAuthSettings button")?.addClass("hidden");
+  pageElement.qsa(".section.passwordAuthSettings button")?.addClass("hidden");
+  pageElement.qsa(".section.googleAuthSettings button")?.addClass("hidden");
+  pageElement.qsa(".section.githubAuthSettings button")?.addClass("hidden");
 
   const user = getAuthenticatedUser();
   if (user === null) return;
@@ -52,82 +52,58 @@ function updateAuthenticationSections(): void {
   );
 
   if (passwordProvider) {
-    pageElement
-      .qs(".section.passwordAuthSettings #emailPasswordAuth")
-      ?.removeClass("hidden");
-    pageElement
-      .qs(".section.passwordAuthSettings #passPasswordAuth")
-      ?.removeClass("hidden");
+    pageElement.qs(".section.passwordAuthSettings #emailPasswordAuth")?.show();
+    pageElement.qs(".section.passwordAuthSettings #passPasswordAuth")?.show();
     if (googleProvider || githubProvider) {
       pageElement
         .qs(".section.passwordAuthSettings #removePasswordAuth")
-        ?.removeClass("hidden");
+        ?.show();
     }
   } else {
-    pageElement
-      .qs(".section.passwordAuthSettings #addPasswordAuth")
-      ?.removeClass("hidden");
+    pageElement.qs(".section.passwordAuthSettings #addPasswordAuth")?.show();
   }
 
   if (googleProvider) {
-    pageElement
-      .qs(".section.googleAuthSettings #removeGoogleAuth")
-      ?.removeClass("hidden");
+    pageElement.qs(".section.googleAuthSettings #removeGoogleAuth")?.show();
     if (passwordProvider || githubProvider) {
-      pageElement
-        .qs(".section.googleAuthSettings #removeGoogleAuth")
-        ?.removeClass("disabled");
+      pageElement.qs(".section.googleAuthSettings #removeGoogleAuth")?.enable();
     } else {
       pageElement
         .qs(".section.googleAuthSettings #removeGoogleAuth")
-        ?.addClass("disabled");
+        ?.disable();
     }
   } else {
-    pageElement
-      .qs(".section.googleAuthSettings #addGoogleAuth")
-      ?.removeClass("hidden");
+    pageElement.qs(".section.googleAuthSettings #addGoogleAuth")?.show();
   }
   if (githubProvider) {
-    pageElement
-      .qs(".section.githubAuthSettings #removeGithubAuth")
-      ?.removeClass("hidden");
+    pageElement.qs(".section.githubAuthSettings #removeGithubAuth")?.show();
     if (passwordProvider || googleProvider) {
-      pageElement
-        .qs(".section.githubAuthSettings #removeGithubAuth")
-        ?.removeClass("disabled");
+      pageElement.qs(".section.githubAuthSettings #removeGithubAuth")?.enable();
     } else {
       pageElement
         .qs(".section.githubAuthSettings #removeGithubAuth")
-        ?.addClass("disabled");
+        ?.disable();
     }
   } else {
-    pageElement
-      .qs(".section.githubAuthSettings #addGithubAuth")
-      ?.removeClass("hidden");
+    pageElement.qs(".section.githubAuthSettings #addGithubAuth")?.show();
   }
 }
 
 function updateIntegrationSections(): void {
   //no code and no discord
   if (!isAuthenticated()) {
-    pageElement.qs(".section.discordIntegration")?.addClass("hidden");
+    pageElement.qs(".section.discordIntegration")?.hide();
   } else {
     if (!getSnapshot()) return;
-    pageElement.qs(".section.discordIntegration")?.removeClass("hidden");
+    pageElement.qs(".section.discordIntegration")?.show();
 
     if (getSnapshot()?.discordId === undefined) {
       //show button
-      pageElement
-        .qs(".section.discordIntegration .buttons")
-        ?.removeClass("hidden");
-      pageElement.qs(".section.discordIntegration .info")?.addClass("hidden");
+      pageElement.qs(".section.discordIntegration .buttons")?.show();
+      pageElement.qs(".section.discordIntegration .info")?.hide();
     } else {
-      pageElement
-        .qs(".section.discordIntegration .buttons")
-        ?.addClass("hidden");
-      pageElement
-        .qs(".section.discordIntegration .info")
-        ?.removeClass("hidden");
+      pageElement.qs(".section.discordIntegration .buttons")?.hide();
+      pageElement.qs(".section.discordIntegration .info")?.show();
     }
   }
 }
@@ -150,31 +126,23 @@ function updateTabs(): void {
 }
 
 function updateAccountSections(): void {
-  pageElement.qs(".section.optOutOfLeaderboards .optedOut")?.addClass("hidden");
-  pageElement
-    .qs(".section.optOutOfLeaderboards .buttons")
-    ?.removeClass("hidden");
-  pageElement.qs(".section.setStreakHourOffset .info")?.addClass("hidden");
-  pageElement
-    .qs(".section.setStreakHourOffset .buttons")
-    ?.removeClass("hidden");
+  pageElement.qs(".section.optOutOfLeaderboards .optedOut")?.hide();
+  pageElement.qs(".section.optOutOfLeaderboards .buttons")?.show();
+  pageElement.qs(".section.setStreakHourOffset .info")?.hide();
+  pageElement.qs(".section.setStreakHourOffset .buttons")?.show();
 
   const snapshot = getSnapshot();
   if (snapshot?.lbOptOut === true) {
-    pageElement
-      .qs(".section.optOutOfLeaderboards .optedOut")
-      ?.removeClass("hidden");
-    pageElement
-      .qs(".section.optOutOfLeaderboards .buttons")
-      ?.addClass("hidden");
+    pageElement.qs(".section.optOutOfLeaderboards .optedOut")?.show();
+    pageElement.qs(".section.optOutOfLeaderboards .buttons")?.hide();
   }
   if (snapshot?.streakHourOffset !== undefined) {
-    pageElement.qs(".section.setStreakHourOffset .info")?.removeClass("hidden");
+    pageElement.qs(".section.setStreakHourOffset .info")?.show();
     const sign = snapshot?.streakHourOffset > 0 ? "+" : "";
     pageElement
       .qs(".section.setStreakHourOffset .info span")
       ?.setText(sign + snapshot?.streakHourOffset);
-    pageElement.qs(".section.setStreakHourOffset .buttons")?.addClass("hidden");
+    pageElement.qs(".section.setStreakHourOffset .buttons")?.hide();
   }
 }
 
