@@ -287,14 +287,21 @@ export function restart(options = {} as RestartOptions): void {
     ConnectionState.showOfflineBanner();
   }
 
+  // TestUI.beforeTestRestart();
+
+  let source: "testPage" | "resultPage";
   let el: HTMLElement;
   if (TestState.resultVisible) {
     //results are being displayed
     el = document.querySelector("#result") as HTMLElement;
+    source = "resultPage";
   } else {
     //words are being displayed
     el = document.querySelector("#typingTest") as HTMLElement;
+    source = "testPage";
   }
+
+  TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
   animate(el, {
@@ -330,8 +337,7 @@ export function restart(options = {} as RestartOptions): void {
         fb.functions.restart();
       }
 
-      TestUI.onTestRestart();
-      TestState.setResultVisible(false);
+      TestUI.onTestRestart(source);
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {
@@ -560,7 +566,7 @@ async function init(): Promise<boolean> {
     void KeymapEvent.highlight(
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+        // oxlint-disable-next-line no-misused-spread
         [...TestWords.words.getCurrent()],
         0,
       ) as string,
@@ -1144,7 +1150,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     ) {
       // They bailed out
 
-      const historyLength = TestInput.input.getHistory()?.length;
+      const history = TestInput.input.getHistory();
+      let historyLength = history?.length;
+      const wordIndex = historyLength - 1;
+
+      const lastWordInputLength = history[wordIndex]?.length ?? 0;
+
+      if (lastWordInputLength < TestWords.words.get(wordIndex).length) {
+        historyLength--;
+      }
+
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
@@ -1727,7 +1742,7 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
+            // oxlint-disable-next-line no-misused-spread
             [...TestWords.words.getCurrent()],
             0,
           ) as string,

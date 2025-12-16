@@ -190,8 +190,8 @@ export function formatSeconds(
 
 export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t: T[];
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
+  // oxlint-disable-next-line no-unused-expressions no-sequences
+  if (b.length > a.length) ((t = b), (b = a), (a = t)); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
     return b.includes(e);
   });
@@ -206,7 +206,7 @@ export function escapeHTML(str: string): string {
 
 export function stringToNumberOrDefault(
   string: string,
-  defaultValue: number
+  defaultValue: number,
 ): number {
   if (string === undefined) return defaultValue;
   const value = parseInt(string, 10);
@@ -270,7 +270,7 @@ export function omit<T extends object, K extends keyof T>(
 ): Omit<T, K> {
   const result = { ...obj };
   for (const key of keys) {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    // oxlint-disable-next-line no-dynamic-delete
     delete result[key];
   }
   return result;

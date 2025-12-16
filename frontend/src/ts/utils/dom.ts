@@ -4,6 +4,7 @@ import {
   JSAnimation,
 } from "animejs";
 
+// Implementation
 /**
  * Query Selector
  *
@@ -13,6 +14,7 @@ import {
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string,
 ): ElementWithUtils<T> | null {
+  checkUniqueSelector(selector);
   const el = document.querySelector<T>(selector);
   return el ? new ElementWithUtils(el) : null;
 }
@@ -44,6 +46,7 @@ export function qsa<T extends HTMLElement = HTMLElement>(
 export function qsr<T extends HTMLElement = HTMLElement>(
   selector: string,
 ): ElementWithUtils<T> {
+  checkUniqueSelector(selector);
   const el = document.querySelector<T>(selector);
   if (el === null) {
     throw new Error(`Required element not found: ${selector}`);
@@ -52,14 +55,29 @@ export function qsr<T extends HTMLElement = HTMLElement>(
 }
 
 /**
- * Execute a callback function when the document is fully loaded.
+ * Execute a callback function when the DOM is fully loaded. If you need to wait
+ * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
  * If the document is already loaded, the callback is executed immediately.
  */
-export function onDocumentReady(callback: () => void): void {
+export function onDOMReady(callback: () => void): void {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", callback);
   } else {
     callback();
+  }
+}
+
+/**
+ * Execute a callback function when the window 'load' event fires, which occurs
+ * after the entire page (including all dependent resources such as images,
+ * stylesheets, and scripts) has fully loaded.
+ * If the window is already loaded, the callback is executed immediately.
+ */
+export function onWindowLoad(callback: () => void): void {
+  if (document.readyState === "complete") {
+    callback();
+  } else {
+    window.addEventListener("load", callback);
   }
 }
 
@@ -334,6 +352,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Query the element for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
+    checkUniqueSelector(selector, this);
     const found = this.native.querySelector<U>(selector);
     return found ? new ElementWithUtils(found) : null;
   }
@@ -357,6 +376,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @throws Error if the element is not found.
    */
   qsr<U extends HTMLElement>(selector: string): ElementWithUtils<U> {
+    checkUniqueSelector(selector, this);
     const found = this.native.querySelector<U>(selector);
     if (found === null) {
       throw new Error(`Required element not found: ${selector}`);
@@ -435,11 +455,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return new ElementWithUtils(wrapperElement as T);
   }
 
+  private hasValue(): this is ElementWithUtils<ElementWithValue> {
+    return (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement ||
+      this.native instanceof HTMLSelectElement
+    );
+  }
+
   /**
    * Set value of input or textarea to a string.
    */
   setValue(this: ElementWithUtils<ElementWithValue>, value: string): this {
-    if (this.native instanceof HTMLInputElement) {
+    if (this.hasValue()) {
       this.native.value = value;
     }
     return this as unknown as this;
@@ -450,10 +478,10 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @returns The value of the element, or undefined if the element is not an input or textarea.
    */
   getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
-    if (!(this.native instanceof HTMLInputElement)) {
-      return undefined;
+    if (this.hasValue()) {
+      return this.native.value;
     }
-    return this.native.value;
+    return undefined;
   }
 
   /**
@@ -666,5 +694,35 @@ export class ElementsWithUtils<
       item.setAttribute(key, value);
     }
     return this;
+  }
+}
+
+function checkUniqueSelector(
+  selector: string,
+  parent?: ElementWithUtils,
+): void {
+  if (!import.meta.env.DEV) return;
+  const elements = parent ? parent.qsa(selector) : qsa(selector);
+  if (elements.length > 1) {
+    console.warn(
+      `Multiple elements found for selector "${selector}". Did you mean to use QSA? If not, try making the query more specific.`,
+      elements.native,
+    );
+    console.trace("Stack trace for qs/qsr call:");
+    if (document.querySelector("#domUtilsQsWarning") !== null) return;
+
+    const bannerCenter = document.querySelector("#bannerCenter");
+    const warning = document.createElement("div");
+    warning.classList.add("psa", "bad", "content-grid");
+    warning.id = "domUtilsQsWarning";
+    warning.innerHTML = `
+        <div class="container">
+          <div class="icon lefticon"><i class="fas fa-fw fa-exclamation-triangle"></i></div>
+          <div class="text">
+             "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details."
+          </div>
+        </div>
+      </div>`;
+    bannerCenter?.appendChild(warning);
   }
 }

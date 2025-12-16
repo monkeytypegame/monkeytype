@@ -1,12 +1,12 @@
 {
   "name": "@monkeytype/frontend",
-  "license": "GPL-3.0",
   "private": true,
+  "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "eslint": "eslint \"./**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint",
+    "lint": "oxlint . --type-aware --type-check && oxlint . -c .oxlintrc-plugin.json",
+    "lint-fast": "oxlint .",
+    "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
@@ -22,66 +22,13 @@
     "tsc": "tsc",
     "docker": "docker compose -f docker/compose.dev.yml up"
   },
-  "engines": {
-    "node": "24.11.0 || 22.21.0"
-  },
-  "browserslist": [
-    "defaults",
-    "not op_mini all",
-    "not dead"
-  ],
   "lint-staged": {
-    "*.{json,scss,css,html}": [
-      "prettier --write"
+    "*": [
+      "oxfmt --no-error-on-unmatched-pattern"
     ],
     "*.{ts,js}": [
-      "prettier --write",
-      "oxlint",
-      "eslint"
+      "oxlint --type-aware --type-check"
     ]
-  },
-  "devDependencies": {
-    "@fortawesome/fontawesome-free": "5.15.4",
-    "@monkeytype/eslint-config": "workspace:*",
-    "@monkeytype/oxlint-config": "workspace:*",
-    "@monkeytype/typescript-config": "workspace:*",
-    "@types/canvas-confetti": "1.4.3",
-    "@types/chartjs-plugin-trendline": "1.0.1",
-    "@types/damerau-levenshtein": "1.0.0",
-    "@types/howler": "2.2.7",
-    "@types/jquery": "3.5.14",
-    "@types/node": "24.9.1",
-    "@types/object-hash": "3.0.6",
-    "@types/seedrandom": "3.0.2",
-    "@types/subset-font": "1.4.3",
-    "@types/throttle-debounce": "5.0.2",
-    "@vitest/coverage-v8": "4.0.8",
-    "autoprefixer": "10.4.20",
-    "concurrently": "8.2.2",
-    "eslint": "8.57.1",
-    "eslint-plugin-compat": "6.0.2",
-    "firebase-tools": "13.15.1",
-    "fontawesome-subset": "4.4.0",
-    "happy-dom": "20.0.10",
-    "madge": "8.0.0",
-    "magic-string": "0.30.17",
-    "normalize.css": "8.0.1",
-    "oxlint": "1.29.0",
-    "postcss": "8.4.31",
-    "sass": "1.70.0",
-    "subset-font": "2.3.0",
-    "tsx": "4.16.2",
-    "typescript": "5.9.3",
-    "unplugin-inject-preload": "3.0.0",
-    "vite": "7.1.12",
-    "vite-bundle-visualizer": "1.2.1",
-    "vite-plugin-checker": "0.11.0",
-    "vite-plugin-filter-replace": "0.1.14",
-    "vite-plugin-html-inject": "1.1.2",
-    "vite-plugin-inspect": "11.3.3",
-    "vite-plugin-minify": "2.1.0",
-    "vite-plugin-pwa": "1.1.0",
-    "vitest": "4.0.8"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -112,12 +59,64 @@
     "lz-ts": "1.1.2",
     "modern-screenshot": "4.6.5",
     "object-hash": "3.0.0",
-    "slim-select": "2.9.2",
     "seedrandom": "3.0.5",
+    "slim-select": "2.9.2",
     "socket.io-client": "4.7.1",
     "stemmer": "2.0.1",
     "throttle-debounce": "5.0.2",
     "zod": "3.23.8",
     "zod-urlsearchparams": "0.0.16"
+  },
+  "devDependencies": {
+    "@eslint/json": "0.14.0",
+    "@fortawesome/fontawesome-free": "5.15.4",
+    "@monkeytype/oxlint-config": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
+    "@types/canvas-confetti": "1.4.3",
+    "@types/chartjs-plugin-trendline": "1.0.1",
+    "@types/damerau-levenshtein": "1.0.0",
+    "@types/howler": "2.2.7",
+    "@types/jquery": "3.5.14",
+    "@types/node": "24.9.1",
+    "@types/object-hash": "3.0.6",
+    "@types/seedrandom": "3.0.2",
+    "@types/subset-font": "1.4.3",
+    "@types/throttle-debounce": "5.0.2",
+    "@vitest/coverage-v8": "4.0.8",
+    "autoprefixer": "10.4.20",
+    "concurrently": "8.2.2",
+    "eslint": "9.39.1",
+    "eslint-plugin-compat": "6.0.2",
+    "firebase-tools": "13.15.1",
+    "fontawesome-subset": "4.4.0",
+    "happy-dom": "20.0.10",
+    "madge": "8.0.0",
+    "magic-string": "0.30.17",
+    "normalize.css": "8.0.1",
+    "oxlint": "1.33.0",
+    "oxlint-tsgolint": "0.9.0",
+    "postcss": "8.4.31",
+    "sass": "1.70.0",
+    "subset-font": "2.3.0",
+    "tsx": "4.16.2",
+    "typescript": "5.9.3",
+    "unplugin-inject-preload": "3.0.0",
+    "vite": "7.1.12",
+    "vite-bundle-visualizer": "1.2.1",
+    "vite-plugin-checker": "0.11.0",
+    "vite-plugin-filter-replace": "0.1.14",
+    "vite-plugin-html-inject": "1.1.2",
+    "vite-plugin-inspect": "11.3.3",
+    "vite-plugin-minify": "2.1.0",
+    "vite-plugin-pwa": "1.1.0",
+    "vitest": "4.0.8"
+  },
+  "browserslist": [
+    "defaults",
+    "not op_mini all",
+    "not dead"
+  ],
+  "engines": {
+    "node": "24.11.0 || 22.21.0"
   }
 }

@@ -196,11 +196,13 @@ function addAuth(
 function getRequiredPermissions(
   metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
-  if (metadata === undefined || metadata.requirePermission === undefined)
+  if (metadata === undefined || metadata.requirePermission === undefined) {
     return undefined;
+  }
 
-  if (Array.isArray(metadata.requirePermission))
+  if (Array.isArray(metadata.requirePermission)) {
     return metadata.requirePermission;
+  }
   return [metadata.requirePermission];
 }
 
@@ -219,14 +221,15 @@ function addRateLimit(
   metadata: EndpointMetadata | undefined,
 ): void {
   if (metadata === undefined || metadata.rateLimit === undefined) return;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line no-unsafe-assignment
   const okResponse = operation.responses["200"];
   if (okResponse === undefined) return;
 
   operation.description += getRateLimitDescription(metadata.rateLimit);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line no-unsafe-assignment no-unsafe-member-access
   okResponse["headers"] = {
+    // oxlint-disable-next-line no-unsafe-member-access
     ...okResponse["headers"],
     "x-ratelimit-limit": {
       schema: { type: "integer" },
@@ -277,8 +280,9 @@ function addRequiredConfiguration(
   operation: OperationObject,
   metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.requireConfiguration === undefined)
+  if (metadata === undefined || metadata.requireConfiguration === undefined) {
     return;
+  }
 
   //@ts-expect-error somehow path doesnt exist
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;

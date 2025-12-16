@@ -247,7 +247,7 @@ async function updateUser(uid: string): Promise<void> {
         lbPersonalBests[mode.mode][mode.mode2] = {};
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // oxlint-disable-next-line no-unsafe-member-access
       lbPersonalBests[mode.mode][mode.mode2][mode.language] = entry;
     }
 

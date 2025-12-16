@@ -123,7 +123,7 @@ export function setLimitValue(val: number, tribeOverride = false): void {
 
 export function setLimitMode(
   val: CustomTextLimitMode,
-  tribeOverride = false
+  tribeOverride = false,
 ): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
 
@@ -211,7 +211,7 @@ export function setCustomText(
 export function deleteCustomText(name: string, long: boolean): void {
   const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  // oxlint-disable-next-line no-dynamic-delete
   delete customText[name];
 
   if (long) {

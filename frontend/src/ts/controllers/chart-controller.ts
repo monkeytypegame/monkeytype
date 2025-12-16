@@ -76,7 +76,7 @@ class ChartWithUpdateColors<
   TLabel = unknown,
   DatasetIds = never,
 > extends Chart<TType, TData, TLabel> {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  // oxlint-disable-next-line no-useless-constructor
   constructor(
     item: ChartItem,
     config: ChartConfiguration<TType, TData, TLabel>,
@@ -103,7 +103,7 @@ class ChartWithUpdateColors<
     id: DatasetIds extends never ? never : "x" | DatasetIds,
   ): DatasetIds extends never ? never : CartesianScaleOptions {
     //@ts-expect-error it's too difficult to figure out these types, but this works
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-return, no-unsafe-member-access
     return this.options.scales[id];
   }
 }
@@ -1270,7 +1270,7 @@ async function updateColors<
 
   //@ts-expect-error it's too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;
     const color = isPb ? textcolor : maincolor;
     return color;
