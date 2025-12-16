@@ -705,6 +705,7 @@ function checkUniqueSelector(selector: string): void {
       `Multiple elements found for selector "${selector}". Did you mean to use QSA? If not, try making the query more specific.`,
       { matching: elements },
     );
+    console.trace("Stack trace for qs/qsr call:");
     if (document.querySelector("#domUtilsQsWarning") !== null) return;
 
     const bannerCenter = document.querySelector("#bannerCenter");
