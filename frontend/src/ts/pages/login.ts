@@ -11,7 +11,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs, qsr, onDOMReady } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 let registerForm: {
   name?: string;
@@ -28,13 +28,13 @@ export function disableSignUpButton(): void {
 }
 
 export function enableInputs(): void {
-  qs(".pageLogin input")?.enable();
-  qs(".pageLogin button")?.enable();
+  qsa(".pageLogin input")?.enable();
+  qsa(".pageLogin button")?.enable();
 }
 
 export function disableInputs(): void {
-  qs(".pageLogin input")?.disable();
-  qs(".pageLogin button")?.disable();
+  qsa(".pageLogin input")?.disable();
+  qsa(".pageLogin button")?.disable();
 }
 
 export function showPreloader(): void {
