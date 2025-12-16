@@ -217,7 +217,7 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
     registerForm = {};
-    qs<HTMLSelectElement>(".pageLogin input")?.setValue("");
+    qsa(".pageLogin input")?.setValue("");
     qs(".pageLogin .register .indicator")?.hide();
     enableInputs();
     disableSignUpButton();
