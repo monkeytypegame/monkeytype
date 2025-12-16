@@ -299,11 +299,12 @@ export class Caret {
       let side: "beforeLetter" | "afterLetter" = "beforeLetter";
       if (options.letterIndex >= letters.length) {
         side = "afterLetter";
-        options.letterIndex = letters.length - 1;
-      }
 
-      if (Config.blindMode && options.letterIndex >= wordText?.length) {
-        options.letterIndex = wordText?.length - 1;
+        if (Config.blindMode) {
+          options.letterIndex = wordText?.length - 1;
+        } else {
+          options.letterIndex = letters.length - 1;
+        }
       }
 
       if (options.letterIndex < 0) {
