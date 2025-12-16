@@ -706,7 +706,7 @@ function checkUniqueSelector(
   if (elements.length > 1) {
     console.warn(
       `Multiple elements found for selector "${selector}". Did you mean to use QSA? If not, try making the query more specific.`,
-      { matching: elements },
+      elements.native,
     );
     console.trace("Stack trace for qs/qsr call:");
     if (document.querySelector("#domUtilsQsWarning") !== null) return;
