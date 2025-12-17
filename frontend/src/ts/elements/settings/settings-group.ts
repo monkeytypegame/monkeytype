@@ -9,7 +9,7 @@ import {
   ConfigInputOptions,
   Validation,
 } from "../input-validation";
-import { ElementWithUtils, ElementsWithUtils, qs, qsa } from "../../utils/dom";
+import { ElementWithUtils, qs, qsa } from "../../utils/dom";
 
 type Mode = "select" | "button" | "range" | "input";
 
@@ -25,7 +25,6 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   public updateCallback?: () => void;
   private hideInputsWhenDisabled?: boolean;
   private elements: ElementWithUtils[];
-  private inputs: ElementsWithUtils;
   private validation?: T extends string
     ? SimpleValidation<T>
     : SimpleValidation<T> & {
@@ -56,9 +55,6 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
     this.setCallback = options?.setCallback;
     this.updateCallback = options?.updateCallback;
     this.validation = options?.validation;
-    this.inputs = qsa(
-      `.pageSettings .section[data-config-name=${this.configName}] input`,
-    );
 
     const convertValue = (value: string): T => {
       let typed = value as T;
@@ -258,10 +254,14 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
     }
 
     if (this.hideInputsWhenDisabled) {
+      const inputs = qsa(
+        `.pageSettings .section[data-config-name=${this.configName}] input`,
+      );
+
       if (Config[this.configName] === "off") {
-        this.inputs.hide();
+        inputs.hide();
       } else {
-        this.inputs.show();
+        inputs.show();
       }
     }
 
