@@ -188,7 +188,12 @@ export const LanguageGroups: Record<string, Language[]> = {
   swahili: ["swahili_1k"],
   maori: ["maori_1k"],
   catalan: ["catalan", "catalan_1k"],
-  bulgarian: ["bulgarian", "bulgarian_latin"],
+  bulgarian: [
+    "bulgarian",
+    "bulgarian_1k",
+    "bulgarian_latin",
+    "bulgarian_latin_1k",
+  ],
   bosnian: ["bosnian", "bosnian_4k"],
   esperanto: [
     "esperanto",
