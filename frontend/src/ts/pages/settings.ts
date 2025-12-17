@@ -80,43 +80,7 @@ async function initGroups(): Promise<void> {
   groups["difficulty"] = new SettingsGroup("difficulty", "button");
   groups["quickRestart"] = new SettingsGroup("quickRestart", "button");
   groups["showAverage"] = new SettingsGroup("showAverage", "button");
-  groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
-    updateCallback: () => {
-      if (Config.keymapMode === "off") {
-        $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
-          "hidden",
-        );
-        $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
-          "hidden",
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLegendStyle']",
-        ).addClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapShowTopRow']",
-        ).addClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
-          "hidden",
-        );
-      } else {
-        $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
-          "hidden",
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLayout']",
-        ).removeClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapLegendStyle']",
-        ).removeClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapShowTopRow']",
-        ).removeClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
-          "hidden",
-        );
-      }
-    },
-  });
+  groups["keymapMode"] = new SettingsGroup("keymapMode", "button");
   groups["keymapStyle"] = new SettingsGroup("keymapStyle", "button");
   groups["keymapLayout"] = new SettingsGroup("keymapLayout", "select");
   groups["keymapLegendStyle"] = new SettingsGroup(
@@ -126,7 +90,7 @@ async function initGroups(): Promise<void> {
   groups["keymapShowTopRow"] = new SettingsGroup("keymapShowTopRow", "button");
   groups["keymapSize"] = new SettingsGroup("keymapSize", "range");
   groups["showKeyTips"] = new SettingsGroup("showKeyTips", "button");
-  groups["freedomMode"] = new SettingsGroup("freedomMode", "button", {
+  groups["freedomMode"] = new SettingsGroup("freedomMode", "button", false, {
     setCallback: () => {
       groups["confidenceMode"]?.updateUI();
     },
@@ -136,12 +100,17 @@ async function initGroups(): Promise<void> {
     "oppositeShiftMode",
     "button",
   );
-  groups["confidenceMode"] = new SettingsGroup("confidenceMode", "button", {
-    setCallback: () => {
-      groups["freedomMode"]?.updateUI();
-      groups["stopOnError"]?.updateUI();
+  groups["confidenceMode"] = new SettingsGroup(
+    "confidenceMode",
+    "button",
+    false,
+    {
+      setCallback: () => {
+        groups["freedomMode"]?.updateUI();
+        groups["stopOnError"]?.updateUI();
+      },
     },
-  });
+  );
   groups["indicateTypos"] = new SettingsGroup("indicateTypos", "button");
   groups["compositionDisplay"] = new SettingsGroup(
     "compositionDisplay",
@@ -174,91 +143,58 @@ async function initGroups(): Promise<void> {
   );
   groups["autoSwitchTheme"] = new SettingsGroup("autoSwitchTheme", "button");
   groups["randomTheme"] = new SettingsGroup("randomTheme", "button");
-  groups["stopOnError"] = new SettingsGroup("stopOnError", "button", {
+  groups["stopOnError"] = new SettingsGroup("stopOnError", "button", false, {
     setCallback: () => {
       groups["confidenceMode"]?.updateUI();
     },
   });
   groups["soundVolume"] = new SettingsGroup("soundVolume", "range");
-  groups["playTimeWarning"] = new SettingsGroup("playTimeWarning", "button", {
-    setCallback: () => {
-      if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
+  groups["playTimeWarning"] = new SettingsGroup(
+    "playTimeWarning",
+    "button",
+    false,
+    {
+      setCallback: () => {
+        if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
+      },
     },
-  });
-  groups["playSoundOnError"] = new SettingsGroup("playSoundOnError", "button", {
-    setCallback: () => {
-      if (Config.playSoundOnError !== "off") void Sound.playError();
+  );
+  groups["playSoundOnError"] = new SettingsGroup(
+    "playSoundOnError",
+    "button",
+    false,
+    {
+      setCallback: () => {
+        if (Config.playSoundOnError !== "off") void Sound.playError();
+      },
     },
-  });
-  groups["playSoundOnClick"] = new SettingsGroup("playSoundOnClick", "button", {
-    setCallback: () => {
-      if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
+  );
+  groups["playSoundOnClick"] = new SettingsGroup(
+    "playSoundOnClick",
+    "button",
+    false,
+    {
+      setCallback: () => {
+        if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
+      },
     },
-  });
+  );
   groups["showAllLines"] = new SettingsGroup("showAllLines", "button");
-  groups["paceCaret"] = new SettingsGroup("paceCaret", "button", {
-    updateCallback: () => {
-      if (Config.paceCaret === "off") {
-        qs(
-          ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
-        )?.hide();
-      } else {
-        qs(
-          ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
-        )?.show();
-      }
-    },
-  });
+  groups["paceCaret"] = new SettingsGroup("paceCaret", "button", true);
 
   groups["repeatedPace"] = new SettingsGroup("repeatedPace", "button");
-  groups["minWpm"] = new SettingsGroup("minWpm", "button", {
-    updateCallback: () => {
-      if (Config.minWpm === "off") {
-        qs(
-          ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
-        )?.hide();
-      } else {
-        qs(
-          ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
-        )?.show();
-      }
-    },
-  });
-  groups["minAcc"] = new SettingsGroup("minAcc", "button", {
-    updateCallback: () => {
-      if (Config.minAcc === "off") {
-        qs(
-          ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
-        )?.hide();
-      } else {
-        qs(
-          ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
-        )?.show();
-      }
-    },
-  });
+  groups["minWpm"] = new SettingsGroup("minWpm", "button", true);
+  groups["minAcc"] = new SettingsGroup("minAcc", "button", true);
 
-  groups["minBurst"] = new SettingsGroup("minBurst", "button", {
-    updateCallback: () => {
-      if (Config.minBurst === "off") {
-        qs(
-          ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
-        )?.hide();
-      } else {
-        qs(
-          ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
-        )?.show();
-      }
-    },
-  });
+  groups["minBurst"] = new SettingsGroup("minBurst", "button", true);
   groups["smoothLineScroll"] = new SettingsGroup("smoothLineScroll", "button");
   groups["lazyMode"] = new SettingsGroup("lazyMode", "button");
   groups["layout"] = new SettingsGroup("layout", "select");
   groups["language"] = new SettingsGroup("language", "select");
-  groups["fontSize"] = new SettingsGroup("fontSize", "input", {
+  groups["fontSize"] = new SettingsGroup("fontSize", "input", false, {
     validation: { schema: true, inputValueConvert: Number },
   });
-  groups["maxLineWidth"] = new SettingsGroup("maxLineWidth", "input", {
+  groups["maxLineWidth"] = new SettingsGroup("maxLineWidth", "input", false, {
     validation: { schema: true, inputValueConvert: Number },
   });
   groups["caretStyle"] = new SettingsGroup("caretStyle", "button");
@@ -269,12 +205,12 @@ async function initGroups(): Promise<void> {
   groups["liveBurstStyle"] = new SettingsGroup("liveBurstStyle", "button");
   groups["highlightMode"] = new SettingsGroup("highlightMode", "button");
   groups["tapeMode"] = new SettingsGroup("tapeMode", "button");
-  groups["tapeMargin"] = new SettingsGroup("tapeMargin", "input", {
+  groups["tapeMargin"] = new SettingsGroup("tapeMargin", "input", false, {
     validation: { schema: true, inputValueConvert: Number },
   });
   groups["timerOpacity"] = new SettingsGroup("timerOpacity", "button");
   groups["timerColor"] = new SettingsGroup("timerColor", "button");
-  groups["fontFamily"] = new SettingsGroup("fontFamily", "button", {
+  groups["fontFamily"] = new SettingsGroup("fontFamily", "button", false, {
     updateCallback: () => {
       const customButton = $(
         ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']",

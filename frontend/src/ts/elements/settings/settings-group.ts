@@ -9,7 +9,7 @@ import {
   ConfigInputOptions,
   Validation,
 } from "../input-validation";
-import { ElementWithUtils, qs, qsa } from "../../utils/dom";
+import { ElementWithUtils, ElementsWithUtils, qs, qsa } from "../../utils/dom";
 
 type Mode = "select" | "button" | "range" | "input";
 
@@ -23,7 +23,9 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   public mode: Mode;
   public setCallback?: () => void;
   public updateCallback?: () => void;
+  private hideInputsWhenDisabled?: boolean;
   private elements: ElementWithUtils[];
+  private inputs: ElementsWithUtils;
   private validation?: T extends string
     ? SimpleValidation<T>
     : SimpleValidation<T> & {
@@ -33,6 +35,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   constructor(
     configName: K,
     mode: Mode,
+    hideInputsWhenDisabled?: boolean,
     options?: {
       setCallback?: () => void;
       updateCallback?: () => void;
@@ -45,6 +48,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
   ) {
     this.configName = configName;
     this.mode = mode;
+    this.hideInputsWhenDisabled = hideInputsWhenDisabled;
     this.configFunction = (param, nosave) =>
       setConfig(configName, param as ConfigType[K], {
         nosave: nosave ?? false,
@@ -52,6 +56,9 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
     this.setCallback = options?.setCallback;
     this.updateCallback = options?.updateCallback;
     this.validation = options?.validation;
+    this.inputs = qsa(
+      `.pageSettings .section[data-config-name=${this.configName}] input`,
+    );
 
     const convertValue = (value: string): T => {
       let typed = value as T;
@@ -249,6 +256,15 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
       range.value = newValue as unknown as string;
       rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
+
+    if (this.hideInputsWhenDisabled) {
+      if (Config[this.configName] === "off") {
+        this.inputs.hide();
+      } else {
+        this.inputs.show();
+      }
+    }
+
     if (this.updateCallback) this.updateCallback();
   }
 }
