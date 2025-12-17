@@ -180,6 +180,7 @@ function checkIfTimeIsUp(): void {
   if (maxTime !== undefined && maxTime !== 0 && Time.get() >= maxTime) {
     //times up
     if (timer !== null) clearTimeout(timer);
+    TimerProgress.instantHide();
     Caret.hide();
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
