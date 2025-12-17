@@ -26,6 +26,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ?.addEventListener("click", () => {
       Notifications.add("This is a test", 1, {
         duration: 0,
+        details: JSON.stringify({ test: true, error: "Example error message" }),
       });
       Notifications.add("This is a test", 0, {
         duration: 0,

@@ -32,6 +32,7 @@ class Notification {
   customTitle?: string;
   customIcon?: string;
   closeCallback: () => void;
+  details?: object | string;
   constructor(
     type: NotificationType,
     message: string,
@@ -44,6 +45,7 @@ class Notification {
       //
     },
     allowHTML?: boolean,
+    details?: object | string,
   ) {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
@@ -66,6 +68,7 @@ class Notification {
     this.customIcon = customIcon;
     this.id = id++;
     this.closeCallback = closeCallback;
+    this.details = details;
   }
   //level
   //0 - notice
@@ -107,9 +110,13 @@ class Notification {
         visibleStickyNotifications++;
         updateClearAllButton();
       }
+      const detailsIcon =
+        this.details !== undefined
+          ? ' <i class="fas fa-fw fa-clipboard"></i>'
+          : "";
       notificationCenterHistory.prependHtml(`
         <div class="notif ${cls}" id=${this.id} style="opacity: 0;">
-            <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
+            <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}${detailsIcon}</div>
         </div>
       `);
       const notif = notificationCenter.qs(`.notif[id='${this.id}']`);
@@ -124,6 +131,26 @@ class Notification {
         delay: duration / 2,
       });
       notif?.on("click", () => {
+        if (this.details !== undefined) {
+          navigator.clipboard
+            .writeText(
+              JSON.stringify({
+                title,
+                message: this.message,
+                details: this.details,
+              }),
+            )
+            .then(() => {
+              add("Notification copied to clipboard", 1);
+            })
+            .catch((e: unknown) => {
+              const message = Misc.createErrorMessage(
+                e,
+                "Failed to copy to clipboard",
+              );
+              add(message, -1);
+            });
+        }
         this.hide();
         this.closeCallback();
         if (this.duration === 0) {
@@ -270,6 +297,7 @@ export type AddNotificationOptions = {
   customIcon?: string;
   closeCallback?: () => void;
   allowHTML?: boolean;
+  details?: object | string;
 };
 
 export function add(
@@ -289,6 +317,7 @@ export function add(
     options.customIcon,
     options.closeCallback,
     options.allowHTML,
+    options.details,
   ).show();
 }
 
