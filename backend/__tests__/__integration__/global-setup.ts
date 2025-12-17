@@ -31,7 +31,14 @@ export async function setup(): Promise<void> {
   process.env["REDIS_URI"] = redisUrl;
 }
 
-export async function teardown(): Promise<void> {
+async function stopContainers(): Promise<void> {
   await startedMongoContainer?.stop();
   await startedRedisContainer?.stop();
 }
+
+export async function teardown(): Promise<void> {
+  await stopContainers();
+}
+
+process.on("SIGTERM", stopContainers);
+process.on("SIGINT", stopContainers);
