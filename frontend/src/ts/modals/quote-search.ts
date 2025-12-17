@@ -193,15 +193,39 @@ async function updateResults(searchText: string): Promise<void> {
 
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
-  const quoteSearchService = getSearchService<Quote>(
-    Config.language,
-    quotes,
-    (quote: Quote) => {
-      return `${quote.text} ${quote.id} ${quote.source}`;
-    },
-  );
-  const { results: matches, matchedQueryTerms } =
-    quoteSearchService.query(searchText);
+  let matches: Quote[] = [];
+  let matchedQueryTerms: string[] = [];
+
+  const quotationsRegex = /"(.*?)"/g;
+  const exactSearch = Array.from(searchText.matchAll(quotationsRegex));
+
+  if (exactSearch[0] && exactSearch[0][1] !== undefined) {
+    let exactSearchQueryTerms: Set<string> = new Set<string>();
+    const stringToMatch = exactSearch[0][1];
+    const regexToMatch = new RegExp(stringToMatch, "i");
+
+    for (const quote of quotes) {
+      const textAndSource = quote.text + quote.source;
+      const match = textAndSource.match(regexToMatch);
+      if (match) {
+        exactSearchQueryTerms.add(match[0]);
+        matches.push(quote);
+      }
+    }
+
+    matchedQueryTerms = Array.from(exactSearchQueryTerms);
+  } else {
+    const quoteSearchService = getSearchService<Quote>(
+      Config.language,
+      quotes,
+      (quote: Quote) => {
+        return `${quote.text} ${quote.id} ${quote.source}`;
+      },
+    );
+
+    ({ results: matches, matchedQueryTerms } =
+      quoteSearchService.query(searchText));
+  }
 
   const quotesToShow = applyQuoteLengthFilter(
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
@@ -338,14 +362,6 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
           },
         ],
       });
-    },
-    afterAnimation: async () => {
-      const quoteSearchInputValue = $(
-        "#quoteSearchModal input",
-      ).val() as string;
-      currentPageNumber = 1;
-
-      void updateResults(quoteSearchInputValue);
     },
   });
 }
