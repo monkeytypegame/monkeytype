@@ -10,7 +10,7 @@ type GetPublicRoomsResponse = {
 
 async function getPublicRooms(
   _page: number,
-  search: string
+  search: string,
 ): Promise<GetPublicRoomsResponse> {
   return new Promise((resolve) => {
     Socket.emit(
@@ -21,7 +21,7 @@ async function getPublicRooms(
       },
       (e: GetPublicRoomsResponse) => {
         resolve(e);
-      }
+      },
     );
   });
 }
@@ -33,7 +33,7 @@ type JoinRoomResponse = {
 
 async function join(
   roomId: string,
-  fromBrowser: boolean
+  fromBrowser: boolean,
 ): Promise<JoinRoomResponse> {
   return new Promise((resolve) => {
     Socket.emit(
@@ -41,7 +41,7 @@ async function join(
       { roomId, fromBrowser },
       (res: JoinRoomResponse) => {
         resolve(res);
-      }
+      },
     );
   });
 }
@@ -101,7 +101,7 @@ function result(result: TribeTypes.Result): void {
 function create(
   mode: Mode,
   mode2: string | number | QuoteLength[],
-  type?: string
+  type?: string,
 ): void {
   Socket.emit("room_create", { mode, mode2, type });
 }
@@ -131,7 +131,7 @@ function joined(callback: (data: { room: TribeTypes.Room }) => void): void {
 }
 
 function playerJoined(
-  callback: (data: { user: TribeTypes.User }) => void
+  callback: (data: { user: TribeTypes.User }) => void,
 ): void {
   Socket.on("room_player_joined", callback);
 }
@@ -145,7 +145,7 @@ function left(callback: () => void): void {
 }
 
 function visibilityChanged(
-  callback: (data: { isPrivate: boolean }) => void
+  callback: (data: { isPrivate: boolean }) => void,
 ): void {
   Socket.on("room_visibility_changed", callback);
 }
@@ -159,7 +159,7 @@ function userIsReady(callback: (data: { userId: string }) => void): void {
 }
 
 function userAfkUpdate(
-  callback: (data: { userId: string; isAfk: boolean }) => void
+  callback: (data: { userId: string; isAfk: boolean }) => void,
 ): void {
   Socket.on("room_user_afk_update", callback);
 }
@@ -169,7 +169,7 @@ function leaderChanged(callback: (data: { userId: string }) => void): void {
 }
 
 function chattingChanged(
-  callback: (data: { userId: string; isChatting: boolean }) => void
+  callback: (data: { userId: string; isChatting: boolean }) => void,
 ): void {
   Socket.on("room_chatting_changed", callback);
 }
@@ -179,13 +179,13 @@ function chatMessage(
     message: string;
     from?: TribeTypes.User;
     isSystem: boolean;
-  }) => void
+  }) => void,
 ): void {
   Socket.on("room_chat_message", callback);
 }
 
 function configChanged(
-  callback: (data: { config: TribeTypes.RoomConfig }) => void
+  callback: (data: { config: TribeTypes.RoomConfig }) => void,
 ): void {
   Socket.on("room_config_changed", callback);
 }
@@ -203,7 +203,7 @@ function countdown(callback: (data: { time: number }) => void): void {
 }
 
 function usersUpdate(
-  callback: (data: Record<string, TribeTypes.User>) => void
+  callback: (data: Record<string, TribeTypes.User>) => void,
 ): void {
   Socket.on("room_users_update", callback);
 }
@@ -219,7 +219,7 @@ function progressUpdate(
     roomMaxWpm: number;
     roomMinRaw: number;
     roomMinWpm: number;
-  }) => void
+  }) => void,
 ): void {
   Socket.on("room_progress_update", callback);
 }
@@ -229,13 +229,13 @@ function userResult(
     userId: string;
     result: TribeTypes.Result | undefined;
     everybodyCompleted: boolean;
-  }) => void
+  }) => void,
 ): void {
   Socket.on("room_user_result", callback);
 }
 
 function finishTimerCountdown(
-  callback: (data: { time: number }) => void
+  callback: (data: { time: number }) => void,
 ): void {
   Socket.on("room_finishTimer_countdown", callback);
 }
@@ -269,7 +269,7 @@ function finalPositions(
   callback: (data: {
     positions: FinalPositions;
     miniCrowns: TribeTypes.MiniCrowns;
-  }) => void
+  }) => void,
 ): void {
   Socket.on("room_final_positions", callback);
 }

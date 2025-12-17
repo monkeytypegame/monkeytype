@@ -328,7 +328,7 @@ $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
   () => {
     //TODO proper popup
     const name = prompt("Enter new room name") as string;
-    tribeSocket.out.room.updateName(name);
+    tribeSocket.out.user.setName(name);
   },
 );
 

@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import Socket from "../socket";
 import * as TribeTypes from "../../types";
+import { nativeLog } from "../../../utils/logger";
 
 type VersionCheckResponse = {
   status: string;
@@ -47,7 +48,7 @@ function connect(callback: () => void): void {
         if (matches) {
           const dat = JSON.parse(matches[0]);
           if (dat[1]) {
-            console.log(
+            nativeLog(
               "%cTI",
               "background:red;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
@@ -55,7 +56,7 @@ function connect(callback: () => void): void {
               dat[1],
             );
           } else {
-            console.log(
+            nativeLog(
               "%cTI",
               "background:red;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
@@ -64,7 +65,7 @@ function connect(callback: () => void): void {
           }
         }
       } else {
-        console.log(
+        nativeLog(
           "%cTI",
           "background:red;padding:0 5px;border-radius:10px",
           type,
@@ -81,7 +82,7 @@ function connect(callback: () => void): void {
         if (matches) {
           const dat = JSON.parse(matches[0]);
           if (dat[1]) {
-            console.log(
+            nativeLog(
               "%cTO",
               "background:blue;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
@@ -89,7 +90,7 @@ function connect(callback: () => void): void {
               dat[1],
             );
           } else {
-            console.log(
+            nativeLog(
               "%cTO",
               "background:blue;padding:0 5px;border-radius:10px",
               matches2[0] ?? "?",
@@ -98,7 +99,7 @@ function connect(callback: () => void): void {
           }
         }
       } else {
-        console.log(
+        nativeLog(
           "%cTO",
           "background:blue;padding:0 5px;border-radius:10px",
           type,

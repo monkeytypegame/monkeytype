@@ -2,7 +2,7 @@ import { z } from "zod";
 import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { isDevEnvironment } from "./misc";
 
-const nativeLog = console.log;
+export const nativeLog = console.log;
 const nativeWarn = console.warn;
 const nativeError = console.error;
 
