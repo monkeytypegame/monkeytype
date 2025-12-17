@@ -33,8 +33,9 @@ function getSearchService<T>(
   language: string,
   data: T[],
   textExtractor: TextExtractor<T>,
+  usingExactSearch: boolean,
 ): SearchService<T> {
-  if (language in searchServiceCache) {
+  if (language in searchServiceCache && !usingExactSearch) {
     return searchServiceCache[language] as unknown as SearchService<T>;
   }
 
@@ -193,16 +194,19 @@ async function updateResults(searchText: string): Promise<void> {
 
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
-  let matches: Quote[] = [];
+  let matches: Quote[] = quotes;
   let matchedQueryTerms: string[] = [];
 
   const quotationsRegex = /"(.*?)"/g;
   const exactSearch = Array.from(searchText.matchAll(quotationsRegex));
+  let usingExactSearch = false;
 
   if (exactSearch[0] && exactSearch[0][1] !== undefined) {
+    usingExactSearch = true;
+    matches = [];
     let exactSearchQueryTerms: Set<string> = new Set<string>();
-    const stringToMatch = exactSearch[0][1];
-    const regexToMatch = new RegExp(stringToMatch, "i");
+    const stringToMatch: string = exactSearch[0][1];
+    const regexToMatch: RegExp = new RegExp(stringToMatch, "i");
 
     for (const quote of quotes) {
       const textAndSource = quote.text + quote.source;
@@ -214,18 +218,19 @@ async function updateResults(searchText: string): Promise<void> {
     }
 
     matchedQueryTerms = Array.from(exactSearchQueryTerms);
-  } else {
-    const quoteSearchService = getSearchService<Quote>(
-      Config.language,
-      quotes,
-      (quote: Quote) => {
-        return `${quote.text} ${quote.id} ${quote.source}`;
-      },
-    );
-
-    ({ results: matches, matchedQueryTerms } =
-      quoteSearchService.query(searchText));
   }
+
+  const quoteSearchService = getSearchService<Quote>(
+    Config.language,
+    matches,
+    (quote: Quote) => {
+      return `${quote.text} ${quote.id} ${quote.source}`;
+    },
+    usingExactSearch,
+  );
+
+  ({ results: matches, matchedQueryTerms } =
+    quoteSearchService.query(searchText));
 
   const quotesToShow = applyQuoteLengthFilter(
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
