@@ -189,6 +189,35 @@ function buildQuoteSearchResult(
   `;
 }
 
+function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
+  const matches: Quote[] = [];
+  const exactSearchQueryTerms: Set<string> = new Set<string>();
+
+  for (const quote of quotes) {
+    const textAndSource = quote.text + quote.source;
+    const currentMatches = [];
+    let noMatch = false;
+
+    for (const regex of captured) {
+      const match = textAndSource.match(regex);
+
+      if (!match) {
+        noMatch = true;
+        break;
+      }
+
+      currentMatches.push(match[0]);
+    }
+
+    if (!noMatch) {
+      currentMatches.forEach((match) => exactSearchQueryTerms.add(match));
+      matches.push(quote);
+    }
+  }
+
+  return [matches, Array.from(exactSearchQueryTerms)];
+}
+
 async function updateResults(searchText: string): Promise<void> {
   if (!modal.isOpen()) return;
 
@@ -198,26 +227,17 @@ async function updateResults(searchText: string): Promise<void> {
   let matchedQueryTerms: string[] = [];
 
   const quotationsRegex = /"(.*?)"/g;
-  const exactSearch = Array.from(searchText.matchAll(quotationsRegex));
+  const exactSearchQueries = Array.from(searchText.matchAll(quotationsRegex));
   let usingExactSearch = false;
 
-  if (exactSearch[0] && exactSearch[0][1] !== undefined) {
+  if (exactSearchQueries[0]) {
     usingExactSearch = true;
-    matches = [];
-    let exactSearchQueryTerms: Set<string> = new Set<string>();
-    const stringToMatch: string = exactSearch[0][1];
-    const regexToMatch: RegExp = new RegExp(stringToMatch, "i");
 
-    for (const quote of quotes) {
-      const textAndSource = quote.text + quote.source;
-      const match = textAndSource.match(regexToMatch);
-      if (match) {
-        exactSearchQueryTerms.add(match[0]);
-        matches.push(quote);
-      }
-    }
+    const searchQueriesRaw = exactSearchQueries.map(
+      (query) => new RegExp(query[1] ?? "", "i"),
+    );
 
-    matchedQueryTerms = Array.from(exactSearchQueryTerms);
+    [matches, matchedQueryTerms] = exactSearch(quotes, searchQueriesRaw);
   }
 
   const quoteSearchService = getSearchService<Quote>(
