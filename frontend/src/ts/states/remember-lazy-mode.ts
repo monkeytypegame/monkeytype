@@ -28,5 +28,3 @@ export function getArabicPref(): boolean {
 export function setArabicPref(value: boolean): void {
   arabicLazyModeLS.set(value);
 }
-
-
