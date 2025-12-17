@@ -41,7 +41,7 @@ import * as TribeAutoJoin from "./tribe-auto-join";
 const defaultName = "Guest";
 let name = "Guest";
 
-export const expectedVersion = "25.12.0";
+export const expectedVersion = isDevEnvironment() ? "dev" : "25.12.0";
 
 export function getStateString(state: number): string {
   if (state === -1) return "error";
