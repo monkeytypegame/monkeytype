@@ -422,33 +422,37 @@ async function init(): Promise<boolean> {
 
     if (Config.lazyMode && !anySupportsLazyMode) {
       rememberLazyMode = true;
-      Notifications.add(
-        "None of the selected polyglot languages support lazy mode.",
-        0,
-        {
-          important: true,
-        },
-      );
+      if (!showedLazyModeNotification) {
+        Notifications.add(
+          "None of the selected polyglot languages support lazy mode.",
+          0,
+          {
+            important: true,
+          },
+        );
+        showedLazyModeNotification = true;
+      }
       setConfig("lazyMode", false);
     } else if (rememberLazyMode && anySupportsLazyMode) {
-      setConfig("lazyMode", true, {
-        nosave: true,
-      });
+      setConfig("lazyMode", true);
+      rememberLazyMode = false;
+      showedLazyModeNotification = false;
     }
   } else {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
       rememberLazyMode = true;
-      showedLazyModeNotification = true;
-      Notifications.add("This language does not support lazy mode.", 0, {
-        important: true,
-      });
-
+      if (!showedLazyModeNotification) {
+        Notifications.add("This language does not support lazy mode.", 0, {
+          important: true,
+        });
+        showedLazyModeNotification = true;
+      }
       setConfig("lazyMode", false);
-    } else if (rememberLazyMode && !language.noLazyMode) {
-      setConfig("lazyMode", true, {
-        nosave: true,
-      });
+    } else if (rememberLazyMode && allowLazyMode) {
+      setConfig("lazyMode", true);
+      rememberLazyMode = false;
+      showedLazyModeNotification = false;
     }
   }
 
@@ -1583,15 +1587,6 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
       ArabicLazyMode.set(newValue);
-    }
-    if (newValue) {
-      if (!showedLazyModeNotification) {
-        rememberLazyMode = false;
-      }
-      showedLazyModeNotification = false;
-    } else {
-      rememberLazyMode = false;
-      showedLazyModeNotification = false;
     }
   }
 });
