@@ -5,6 +5,7 @@ import * as NotificationEvent from "../observables/notification-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { animate } from "animejs";
 import { qsr } from "../utils/dom";
+import { CommonResponsesType } from "@monkeytype/contracts/util/api";
 
 const notificationCenter = qsr("#notificationCenter");
 const notificationCenterHistory = notificationCenter.qsr(".history");
@@ -110,13 +111,10 @@ class Notification {
         visibleStickyNotifications++;
         updateClearAllButton();
       }
-      const detailsIcon =
-        this.details !== undefined
-          ? ' <i class="fas fa-fw fa-clipboard"></i>'
-          : "";
+
       notificationCenterHistory.prependHtml(`
         <div class="notif ${cls}" id=${this.id} style="opacity: 0;">
-            <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}${detailsIcon}</div>
+            <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
         </div>
       `);
       const notif = notificationCenter.qs(`.notif[id='${this.id}']`);
@@ -365,6 +363,41 @@ export function addPSA(
   );
   psa.show();
   return psa.id;
+}
+
+export function addRemoteError(
+  message: string,
+  level = 0,
+  response: CommonResponsesType,
+  options: AddNotificationOptions = {},
+): void {
+  NotificationEvent.dispatch(message, level, options.customTitle);
+
+  const details: {
+    status: number;
+    validationErrors?: string[];
+    additionalDetail?: string | object;
+  } = {
+    status: response.status,
+    additionalDetail: options.details,
+  };
+
+  if (response.status === 422) {
+    details.validationErrors = response.body.validationErrors;
+  }
+
+  new Notification(
+    "notification",
+    message + ": " + response.body.message,
+    level,
+    options.important,
+    options.duration,
+    options.customTitle,
+    options.customIcon,
+    options.closeCallback,
+    options.allowHTML,
+    details,
+  ).show();
 }
 
 export function clearAllNotifications(): void {

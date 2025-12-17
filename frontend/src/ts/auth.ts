@@ -49,9 +49,10 @@ async function sendVerificationEmail(): Promise<void> {
   qs(".sendVerificationEmail")?.enable();
   if (result.status !== 200) {
     Loader.hide();
-    Notifications.add(
-      "Failed to request verification email: " + result.body.message,
+    Notifications.addRemoteError(
+      "Failed to request verification email",
       -1,
+      result,
     );
   } else {
     Loader.hide();

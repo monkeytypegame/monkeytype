@@ -299,7 +299,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    Notifications.add("Error getting results: " + response.body.message, -1);
+    Notifications.addRemoteError("Error getting results", -1, response);
     return false;
   }
 
@@ -357,10 +357,7 @@ export async function addCustomTheme(
 
   const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    Notifications.add(
-      "Error adding custom theme: " + response.body.message,
-      -1,
-    );
+    Notifications.addRemoteError("Error adding custom theme", -1, response);
     return false;
   }
 
@@ -400,10 +397,7 @@ export async function editCustomTheme(
     body: { themeId, theme: newTheme },
   });
   if (response.status !== 200) {
-    Notifications.add(
-      "Error editing custom theme: " + response.body.message,
-      -1,
-    );
+    Notifications.addRemoteError("Error editing custom theme", -1, response);
     return false;
   }
 
@@ -427,10 +421,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
 
   const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    Notifications.add(
-      "Error deleting custom theme: " + response.body.message,
-      -1,
-    );
+    Notifications.addRemoteError("Error deleting custom theme", -1, response);
     return false;
   }
 
@@ -925,12 +916,7 @@ export async function saveConfig(config: Partial<Config>): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.save({ body: invalidConfig });
     if (response.status !== 200) {
-      Notifications.add("Failed to save config: " + response.body.message, -1, {
-        details:
-          "validationErrors" in response.body
-            ? { validationErrors: response.body.validationErrors }
-            : undefined,
-      });
+      Notifications.addRemoteError("Failed to save config", -1, response);
     }
   }
 }
@@ -939,7 +925,7 @@ export async function resetConfig(): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.delete();
     if (response.status !== 200) {
-      Notifications.add("Failed to reset config: " + response.body.message, -1);
+      Notifications.addRemoteError("Failed to reset config", -1, response);
     }
   }
 }
@@ -1062,9 +1048,10 @@ export async function getTestActivityCalendar(
     Loader.show();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
-      Notifications.add(
-        "Error getting test activities: " + response.body.message,
+      Notifications.addRemoteError(
+        "Error getting test activities",
         -1,
+        response,
       );
       Loader.hide();
       return undefined;
