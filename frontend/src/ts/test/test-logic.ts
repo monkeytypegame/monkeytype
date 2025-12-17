@@ -1589,6 +1589,9 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
         rememberLazyMode = false;
       }
       showedLazyModeNotification = false;
+    } else {
+      rememberLazyMode = false;
+      showedLazyModeNotification = false;
     }
   }
 });
