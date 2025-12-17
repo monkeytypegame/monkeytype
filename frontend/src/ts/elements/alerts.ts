@@ -29,7 +29,11 @@ let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
 
 type State = {
-  notifications: { message: string; level: number; customTitle?: string }[];
+  notifications: {
+    message: string;
+    level: number;
+    options: NotificationEvent.NotificationOptions;
+  }[];
   psas: { message: string; level: number }[];
 };
 
@@ -289,7 +293,7 @@ function fillNotifications(): void {
   } else {
     notificationHistoryListEl.empty();
     for (const n of state.notifications) {
-      const { message, level, customTitle } = n;
+      const { message, level, options } = n;
       let title = "Notice";
       let levelClass = "sub";
       if (level === -1) {
@@ -300,8 +304,8 @@ function fillNotifications(): void {
         title = "Success";
       }
 
-      if (customTitle !== undefined) {
-        title = customTitle;
+      if (options.customTitle !== undefined) {
+        title = options.customTitle;
       }
 
       notificationHistoryListEl.prependHtml(`
@@ -400,11 +404,11 @@ qs("header nav .showAlerts")?.on("click", () => {
   void show();
 });
 
-NotificationEvent.subscribe((message, level, customTitle) => {
+NotificationEvent.subscribe((message, level, options) => {
   state.notifications.push({
     message,
     level,
-    customTitle,
+    options,
   });
   if (state.notifications.length > 25) {
     state.notifications.shift();

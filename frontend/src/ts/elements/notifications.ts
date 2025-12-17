@@ -129,26 +129,6 @@ class Notification {
         delay: duration / 2,
       });
       notif?.on("click", () => {
-        if (this.details !== undefined) {
-          navigator.clipboard
-            .writeText(
-              JSON.stringify({
-                title,
-                message: this.message,
-                details: this.details,
-              }),
-            )
-            .then(() => {
-              add("Notification copied to clipboard", 1);
-            })
-            .catch((e: unknown) => {
-              const message = Misc.createErrorMessage(
-                e,
-                "Failed to copy to clipboard",
-              );
-              add(message, -1);
-            });
-        }
         this.hide();
         this.closeCallback();
         if (this.duration === 0) {
@@ -303,7 +283,10 @@ export function add(
   level = 0,
   options: AddNotificationOptions = {},
 ): void {
-  NotificationEvent.dispatch(message, level, options.customTitle);
+  NotificationEvent.dispatch(message, level, {
+    customTitle: options.customTitle,
+    details: options.details,
+  });
 
   new Notification(
     "notification",
@@ -371,7 +354,10 @@ export function addRemoteError(
   response: CommonResponsesType,
   options: AddNotificationOptions = {},
 ): void {
-  NotificationEvent.dispatch(message, level, options.customTitle);
+  NotificationEvent.dispatch(message, level, {
+    customTitle: options.customTitle,
+    details: options.details,
+  });
 
   const details: {
     status: number;
