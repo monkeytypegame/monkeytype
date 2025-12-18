@@ -34,8 +34,12 @@ function getSearchService<T>(
   data: T[],
   textExtractor: TextExtractor<T>,
   usingExactSearch: boolean,
+  searchText: string,
 ): SearchService<T> {
-  if (language in searchServiceCache && !usingExactSearch) {
+  if (
+    language in searchServiceCache &&
+    (!usingExactSearch || searchText === "")
+  ) {
     return searchServiceCache[language] as unknown as SearchService<T>;
   }
 
@@ -223,7 +227,7 @@ async function updateResults(searchText: string): Promise<void> {
 
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
-  let matches: Quote[] = quotes;
+  let matches: Quote[] = [];
   let matchedQueryTerms: string[] = [];
   let exactSearchMatches: Quote[] = quotes;
   let exactSearchMatchedQueryTerms: string[] = [];
@@ -254,6 +258,7 @@ async function updateResults(searchText: string): Promise<void> {
       return `${quote.text} ${quote.id} ${quote.source}`;
     },
     usingExactSearch,
+    searchText,
   );
 
   ({ results: matches, matchedQueryTerms } =
