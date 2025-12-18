@@ -195,6 +195,14 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if element is visible
+   */
+
+  isVisible(): boolean {
+    return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
+  }
+
+  /**
    * Add a class to the element
    */
   addClass(className: string | string[]): this {
@@ -477,7 +485,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Get value of input or textarea
    * @returns The value of the element, or undefined if the element is not an input or textarea.
    */
-  getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
+  getValue(): string | undefined {
     if (this.hasValue()) {
       return this.native.value;
     }
