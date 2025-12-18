@@ -344,7 +344,7 @@ async function apply(): Promise<void> {
     const response = await Ape.presets.delete({ params: { presetId } });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to remove preset: ", -1, { response });
+      Notifications.add("Failed to remove preset", -1, { response });
     } else {
       Notifications.add("Preset removed", 1);
       snapshotPresets.forEach((preset: SnapshotPreset, index: number) => {
