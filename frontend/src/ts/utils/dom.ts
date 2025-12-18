@@ -105,13 +105,6 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
-type scrollIntoViewOptions = {
-  behavior?: "smooth" | "instant" | "auto";
-  block?: "start" | "center" | "end" | "nearest";
-  container?: "all" | "nearest";
-  inline?: "start" | "center" | "end" | "nearest";
-};
-
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * The native dom element
@@ -209,7 +202,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
   }
 
-  scrollIntoView(options: scrollIntoViewOptions): this {
+  scrollIntoView(options: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
 
     return this;
