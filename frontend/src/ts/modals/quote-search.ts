@@ -225,9 +225,13 @@ async function updateResults(searchText: string): Promise<void> {
 
   let matches: Quote[] = quotes;
   let matchedQueryTerms: string[] = [];
+  let exactSearchMatches: Quote[] = quotes;
+  let exactSearchMatchedQueryTerms: string[] = [];
 
   const quotationsRegex = /"(.*?)"/g;
   const exactSearchQueries = Array.from(searchText.matchAll(quotationsRegex));
+  const removedSearchText = searchText.replaceAll(quotationsRegex, "");
+
   let usingExactSearch = false;
 
   if (exactSearchQueries[0]) {
@@ -237,12 +241,15 @@ async function updateResults(searchText: string): Promise<void> {
       (query) => new RegExp(query[1] ?? "", "i"),
     );
 
-    [matches, matchedQueryTerms] = exactSearch(quotes, searchQueriesRaw);
+    [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
+      quotes,
+      searchQueriesRaw,
+    );
   }
 
   const quoteSearchService = getSearchService<Quote>(
     Config.language,
-    matches,
+    exactSearchMatches,
     (quote: Quote) => {
       return `${quote.text} ${quote.id} ${quote.source}`;
     },
@@ -250,7 +257,13 @@ async function updateResults(searchText: string): Promise<void> {
   );
 
   ({ results: matches, matchedQueryTerms } =
-    quoteSearchService.query(searchText));
+    quoteSearchService.query(removedSearchText));
+
+  exactSearchMatches.forEach((match) => {
+    if (!matches.includes(match)) matches.push(match);
+  });
+
+  matchedQueryTerms = [...exactSearchMatchedQueryTerms, ...matchedQueryTerms];
 
   const quotesToShow = applyQuoteLengthFilter(
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
