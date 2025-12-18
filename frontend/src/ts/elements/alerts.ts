@@ -6,7 +6,12 @@ import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { escapeHTML } from "../utils/misc";
+import {
+  applyReducedMotion,
+  createErrorMessage,
+  escapeHTML,
+  promiseAnimate,
+} from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
 import { MonkeyMail } from "@monkeytype/schemas/users";
@@ -34,7 +39,7 @@ type State = {
     title: string;
     message: string;
     level: number;
-    options: NotificationEvent.NotificationOptions;
+    details?: string | object;
   }[];
   psas: { message: string; level: number }[];
 };
@@ -314,8 +319,8 @@ function fillNotifications(): void {
       </div>
       <div class="buttons">
         ${
-          n.options.details !== undefined
-            ? `<button class="textButton" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fas fa-share"></i></button>`
+          n.details !== undefined
+            ? `<button class="textButton copyNotification" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fa fa-clipboard"></i></button>`
             : ``
         }
       </div>
@@ -404,20 +409,67 @@ function updateClaimDeleteAllButton(): void {
   }
 }
 
-function copyNotificationToClipboard(id: string): void {
+async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
+  const id = (target as HTMLElement | null)
+    ?.closest(".item")
+    ?.getAttribute("data-id")
+    ?.toString();
+
+  if (id === undefined) {
+    throw new Error("Notification ID is undefined");
+  }
   const notification = state.notifications.find((it) => it.id === id);
   if (notification === undefined) return;
-  void navigator.clipboard.writeText(
-    JSON.stringify(
-      {
-        title: notification.title,
-        message: notification.message,
-        details: notification.options.details,
-      },
-      null,
-      4,
-    ),
-  );
+
+  const icon = target.querySelector("i") as HTMLElement;
+  console.log(icon);
+
+  try {
+    await navigator.clipboard.writeText(
+      JSON.stringify(
+        {
+          title: notification.title,
+          message: notification.message,
+          details: notification.details,
+        },
+        null,
+        4,
+      ),
+    );
+
+    const duration = applyReducedMotion(500) / 6;
+
+    await promiseAnimate(icon, {
+      scale: [1, 0.8],
+      opacity: [1, 0],
+      duration,
+    });
+    icon.classList.remove("fa-clipboard");
+    icon.classList.add("fa-check", "highlight");
+    await promiseAnimate(icon, {
+      scale: [0.8, 1],
+      opacity: [0, 1],
+      duration,
+    });
+
+    await promiseAnimate(icon, {
+      scale: [1, 0.8],
+      opacity: [1, 0],
+      delay: duration * 2,
+      duration,
+    });
+    icon.classList.remove("fa-check", "highlight");
+    icon.classList.add("fa-clipboard");
+
+    await promiseAnimate(icon, {
+      scale: [0.8, 1],
+      opacity: [0, 1],
+      duration,
+    });
+  } catch (e: unknown) {
+    const msg = createErrorMessage(e, "Could not copy to clipboard");
+    Notifications.add(msg, -1);
+  }
 }
 
 qs("header nav .showAlerts")?.on("click", () => {
@@ -440,7 +492,7 @@ NotificationEvent.subscribe((message, level, options) => {
     title,
     message,
     level,
-    options,
+    details: options.details,
   });
   if (state.notifications.length > 25) {
     state.notifications.shift();
@@ -533,18 +585,9 @@ const modal = new AnimatedModal({
       });
 
     alertsPopupEl
-      .qsr(".notificationHistory .list")
-      .onChild("click", ".item .buttons .textButton", (e) => {
-        const id = (e.target as HTMLElement | null)
-          ?.closest(".item")
-          ?.getAttribute("data-id")
-          ?.toString();
-
-        if (id === undefined) {
-          throw new Error("Notification ID is undefined");
-        }
-
-        copyNotificationToClipboard(id);
+      .qs(".notificationHistory .list")
+      ?.onChild("click", ".item .buttons .copyNotification", (e) => {
+        void copyNotificationToClipboard(e.target as HTMLElement);
       });
   },
 });

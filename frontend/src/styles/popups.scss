@@ -1871,6 +1871,9 @@ body.darkMode {
       .body {
         opacity: 1;
       }
+      .highlight {
+        color: var(--main-color) !important;
+      }
     }
     .accountAlerts {
       .title {
