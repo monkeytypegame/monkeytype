@@ -320,7 +320,7 @@ function fillNotifications(): void {
       <div class="buttons">
         ${
           n.details !== undefined
-            ? `<button class="copyNotification textButton" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fas fa-fw fa-clipboard"></i></button>`
+            ? `<button class="copyNotification textButton" aria-label="Copy details to clipboard" data-balloon-pos="left"><i class="fas fa-fw fa-clipboard"></i></button>`
             : ``
         }
       </div>
@@ -436,7 +436,7 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
       ),
     );
 
-    const duration = applyReducedMotion(500) / 6;
+    const duration = applyReducedMotion(100);
 
     await promiseAnimate(icon, {
       scale: [1, 0.8],
@@ -454,7 +454,7 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
     await promiseAnimate(icon, {
       scale: [1, 0.8],
       opacity: [1, 0],
-      delay: duration * 2,
+      delay: 3000,
       duration,
     });
     icon.classList.remove("fa-check", "highlight");

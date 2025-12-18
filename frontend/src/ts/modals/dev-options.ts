@@ -26,13 +26,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ?.addEventListener("click", () => {
       Notifications.add("This is a test", 1, {
         duration: 0,
-        details: { test: true, error: "Example error message" },
       });
       Notifications.add("This is a test", 0, {
         duration: 0,
       });
       Notifications.add("This is a test", -1, {
         duration: 0,
+        details: { test: true, error: "Example error message" },
       });
       void modal.hide();
     });
