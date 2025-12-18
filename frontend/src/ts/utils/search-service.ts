@@ -2,7 +2,7 @@ import { stemmer } from "stemmer";
 import levenshtein from "damerau-levenshtein";
 
 export type SearchService<T> = {
-  query: (query: string) => SearchResult<T>;
+  query: (query: string, ids: number[]) => SearchResult<T>;
 };
 
 type SearchServiceOptions = {
@@ -110,7 +110,7 @@ export const buildSearchService = <T>(
 
   const tokenSet = Object.keys(reverseIndex);
 
-  const query = (searchQuery: string): SearchResult<T> => {
+  const query = (searchQuery: string, ids: number[]): SearchResult<T> => {
     const searchResult: SearchResult<T> = {
       results: [],
       matchedQueryTerms: [],
@@ -169,7 +169,15 @@ export const buildSearchService = <T>(
       .sort((match1, match2) => {
         return match2[1] - match1[1];
       })
-      .map((match) => documents[match[0]]) as T[];
+      .flatMap((match) => {
+        const quote = documents[match[0]] as InternalDocument;
+
+        if (quote !== undefined && quote !== null && ids.includes(quote.id)) {
+          return documents[match[0]];
+        }
+
+        return [];
+      }) as T[];
 
     searchResult.results = orderedResults;
     searchResult.matchedQueryTerms = [...matchedTokens];

@@ -38,13 +38,8 @@ function getSearchService<T>(
   language: string,
   data: T[],
   textExtractor: TextExtractor<T>,
-  usingExactSearch: boolean,
-  searchText: string,
 ): SearchService<T> {
-  if (
-    language in searchServiceCache &&
-    (!usingExactSearch || searchText === '""')
-  ) {
+  if (language in searchServiceCache) {
     return searchServiceCache[language] as unknown as SearchService<T>;
   }
 
@@ -236,18 +231,14 @@ async function updateResults(searchText: string): Promise<void> {
 
   let matches: Quote[] = [];
   let matchedQueryTerms: string[] = [];
-  let exactSearchMatches: Quote[] = quotes;
+  let exactSearchMatches: Quote[] = [];
   let exactSearchMatchedQueryTerms: string[] = [];
 
   const quotationsRegex = /"(.*?)"/g;
   const exactSearchQueries = Array.from(searchText.matchAll(quotationsRegex));
   const removedSearchText = searchText.replaceAll(quotationsRegex, "");
 
-  let usingExactSearch = false;
-
   if (exactSearchQueries[0]) {
-    usingExactSearch = true;
-
     const searchQueriesRaw = exactSearchQueries.map(
       (query) => new RegExp(query[1] ?? "", "i"),
     );
@@ -260,16 +251,18 @@ async function updateResults(searchText: string): Promise<void> {
 
   const quoteSearchService = getSearchService<Quote>(
     Config.language,
-    exactSearchMatches,
+    quotes,
     (quote: Quote) => {
       return `${quote.text} ${quote.id} ${quote.source}`;
     },
-    usingExactSearch,
-    searchText,
   );
 
-  ({ results: matches, matchedQueryTerms } =
-    quoteSearchService.query(removedSearchText));
+  const ids = exactSearchMatches.map((match) => match.id);
+
+  ({ results: matches, matchedQueryTerms } = quoteSearchService.query(
+    removedSearchText,
+    ids,
+  ));
 
   exactSearchMatches.forEach((match) => {
     if (!matches.includes(match)) matches.push(match);
