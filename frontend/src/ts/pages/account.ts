@@ -35,7 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
-import { qsr } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -62,9 +62,9 @@ function loadMoreLines(lineIndex?: number): void {
 
   visibleTableLines = newVisibleLines;
   if (visibleTableLines >= filteredResults.length) {
-    $(".pageAccount .loadMoreButton").addClass("hidden");
+    qs(".pageAccount .loadMoreButton")?.hide();
   } else {
-    $(".pageAccount .loadMoreButton").removeClass("hidden");
+    qs(".pageAccount .loadMoreButton")?.show();
   }
 
   historyTable.setLimit(newVisibleLines);
@@ -284,7 +284,7 @@ async function fillContent(): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
 
   filteredResults = [];
-  $(".pageAccount .history table tbody").empty();
+  qs(".pageAccount .history table tbody")?.empty();
 
   DB.getSnapshot()?.results?.forEach((result) => {
     // totalSeconds += tt;
@@ -673,7 +673,7 @@ async function fillContent(): Promise<void> {
 
   historyTable.setData(filteredResults);
 
-  $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+  qs(".pageAccount .group.history table thead tr td:nth-child(2)")?.setText(
     Config.typingSpeedUnit,
   );
 
@@ -854,91 +854,95 @@ async function fillContent(): Promise<void> {
   }
 
   if (chartData === undefined || chartData.length === 0) {
-    $(".pageAccount .group.noDataError").removeClass("hidden");
-    $(".pageAccount .group.chart").addClass("hidden");
-    $(".pageAccount .group.dailyActivityChart").addClass("hidden");
-    $(".pageAccount .group.histogramChart").addClass("hidden");
-    $(".pageAccount .group.aboveHistory").addClass("hidden");
-    $(".pageAccount .group.history").addClass("hidden");
-    $(".pageAccount .triplegroup.stats").addClass("hidden");
-    $(".pageAccount .group.estimatedWordsTyped").addClass("hidden");
+    qs(".pageAccount .group.noDataError")?.show();
+    qs(".pageAccount .group.chart")?.hide();
+    qs(".pageAccount .group.dailyActivityChart")?.hide();
+    qs(".pageAccount .group.histogramChart")?.hide();
+    qs(".pageAccount .group.aboveHistory")?.hide();
+    qs(".pageAccount .group.history")?.hide();
+    qs(".pageAccount .triplegroup.stats")?.hide();
+    qs(".pageAccount .group.estimatedWordsTyped")?.hide();
   } else {
-    $(".pageAccount .group.noDataError").addClass("hidden");
-    $(".pageAccount .group.chart").removeClass("hidden");
-    $(".pageAccount .group.dailyActivityChart").removeClass("hidden");
-    $(".pageAccount .group.histogramChart").removeClass("hidden");
-    $(".pageAccount .group.aboveHistory").removeClass("hidden");
-    $(".pageAccount .group.history").removeClass("hidden");
-    $(".pageAccount .triplegroup.stats").removeClass("hidden");
-    $(".pageAccount .group.estimatedWordsTyped").removeClass("hidden");
+    qs(".pageAccount .group.noDataError")?.hide();
+    qs(".pageAccount .group.chart")?.show();
+    qs(".pageAccount .group.dailyActivityChart")?.show();
+    qs(".pageAccount .group.histogramChart")?.show();
+    qs(".pageAccount .group.aboveHistory")?.show();
+    qs(".pageAccount .group.history")?.show();
+    qs(".pageAccount .triplegroup.stats")?.show();
+    qs(".pageAccount .group.estimatedWordsTyped")?.show();
   }
 
-  $(".pageAccount .timeTotalFiltered .val").text(
+  qs(".pageAccount .timeTotalFiltered .val")?.setText(
     DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true),
   );
 
   const speedUnit = Config.typingSpeedUnit;
 
-  $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
-  $(".pageAccount .highestWpm .val").text(Format.typingSpeed(topWpm));
+  qs(".pageAccount .highestWpm .title")?.setText(`highest ${speedUnit}`);
+  qs(".pageAccount .highestWpm .val")?.setText(Format.typingSpeed(topWpm));
 
-  $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
-  $(".pageAccount .averageWpm .val").text(
+  qs(".pageAccount .averageWpm .title")?.setText(`average ${speedUnit}`);
+  qs(".pageAccount .averageWpm .val")?.setText(
     Format.typingSpeed(totalWpm / testCount),
   );
 
-  $(".pageAccount .averageWpm10 .title").text(
+  qs(".pageAccount .averageWpm10 .title")?.setText(
     `average ${speedUnit} (last 10 tests)`,
   );
-  $(".pageAccount .averageWpm10 .val").text(
+  qs(".pageAccount .averageWpm10 .val")?.setText(
     Format.typingSpeed(wpmLast10total / last10),
   );
 
-  $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
-  $(".pageAccount .highestRaw .val").text(Format.typingSpeed(rawWpm.max));
+  qs(".pageAccount .highestRaw .title")?.setText(`highest raw ${speedUnit}`);
+  qs(".pageAccount .highestRaw .val")?.setText(Format.typingSpeed(rawWpm.max));
 
-  $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
-  $(".pageAccount .averageRaw .val").text(
+  qs(".pageAccount .averageRaw .title")?.setText(`average raw ${speedUnit}`);
+  qs(".pageAccount .averageRaw .val")?.setText(
     Format.typingSpeed(rawWpm.total / rawWpm.count),
   );
 
-  $(".pageAccount .averageRaw10 .title").text(
+  qs(".pageAccount .averageRaw10 .title")?.setText(
     `average raw ${speedUnit} (last 10 tests)`,
   );
-  $(".pageAccount .averageRaw10 .val").text(
+  qs(".pageAccount .averageRaw10 .val")?.setText(
     Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count),
   );
 
-  $(".pageAccount .highestWpm .mode").html(topMode);
-  $(".pageAccount .testsTaken .val").text(testCount);
+  qs(".pageAccount .highestWpm .mode")?.setHtml(topMode);
+  qs(".pageAccount .testsTaken .val")?.setText(testCount.toString());
 
-  $(".pageAccount .highestAcc .val").text(Format.accuracy(topAcc));
-  $(".pageAccount .avgAcc .val").text(Format.accuracy(totalAcc / testCount));
-  $(".pageAccount .avgAcc10 .val").text(Format.accuracy(totalAcc10 / last10));
+  qs(".pageAccount .highestAcc .val")?.setText(Format.accuracy(topAcc));
+  qs(".pageAccount .avgAcc .val")?.setText(
+    Format.accuracy(totalAcc / testCount),
+  );
+  qs(".pageAccount .avgAcc10 .val")?.setText(
+    Format.accuracy(totalAcc10 / last10),
+  );
 
   if (totalCons === 0 || totalCons === undefined) {
-    $(".pageAccount .avgCons .val").text("-");
-    $(".pageAccount .avgCons10 .val").text("-");
+    qs(".pageAccount .avgCons .val")?.setText("-");
+    qs(".pageAccount .avgCons10 .val")?.setText("-");
   } else {
-    $(".pageAccount .highestCons .val").text(Format.percentage(topCons));
+    qs(".pageAccount .highestCons .val")?.setText(Format.percentage(topCons));
 
-    $(".pageAccount .avgCons .val").text(
+    qs(".pageAccount .avgCons .val")?.setText(
       Format.percentage(totalCons / consCount),
     );
 
-    $(".pageAccount .avgCons10 .val").text(
+    qs(".pageAccount .avgCons10 .val")?.setText(
       Format.percentage(totalCons10 / Math.min(last10, consCount)),
     );
   }
 
-  $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-  $(".pageAccount .testsCompleted .val").text(
+  qs(".pageAccount .testsStarted .val")?.setText(`${testCount + testRestarts}`);
+  qs(".pageAccount .testsCompleted .val")?.setText(
     `${testCount}(${Math.floor(
       (testCount / (testCount + testRestarts)) * 100,
     )}%)`,
   );
 
-  $(".pageAccount .testsCompleted .avgres").text(`
+  qs(".pageAccount .testsCompleted .avgres")?.setText(`
     ${(testRestarts / testCount).toFixed(1)} restarts per completed test
   `);
 
@@ -949,13 +953,15 @@ async function fillContent(): Promise<void> {
     const wpmChange = trend[1][1] - trend[0][1];
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
     const plus = wpmChangePerHour > 0 ? "+" : "";
-    $(".pageAccount .group.chart .below .text").text(
+    qs(".pageAccount .group.chart .below .text")?.setText(
       `Speed change per hour spent typing: ${
         plus + Format.typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })
       } ${Config.typingSpeedUnit}`,
     );
   }
-  $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
+  qs(".pageAccount .estimatedWordsTyped .val")?.setText(
+    totalEstimatedWords.toString(),
+  );
 
   if (chartData.length || accChartData.length) {
     ChartController.updateAccountChartButtons();
@@ -967,7 +973,7 @@ async function fillContent(): Promise<void> {
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   Focus.set(false);
-  $(".page.pageAccount").css("height", "unset"); //weird safari fix
+  qs(".page.pageAccount")?.setStyle({ height: "unset" }); //weird safari fix
   setTimeout(() => {
     Profile.updateNameFontSize("account");
   }, 0);
@@ -1012,56 +1018,56 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
     }
   }
 
-  const el = $(
+  const el = qs(
     `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`,
   );
 
-  el.attr("data-tags", JSON.stringify(tagIds));
+  el?.setAttribute("data-tags", JSON.stringify(tagIds));
 
   if (tagIds.length > 0) {
-    el.attr("aria-label", tagNames.join(", "));
-    el.addClass("active");
+    el?.setAttribute("aria-label", tagNames.join(", "));
+    el?.addClass("active");
     if (tagIds.length > 1) {
-      el.html(`<i class="fas fa-fw fa-tags"></i>`);
+      el?.setHtml(`<i class="fas fa-fw fa-tags"></i>`);
     } else {
-      el.html(`<i class="fas fa-fw fa-tag"></i>`);
+      el?.setHtml(`<i class="fas fa-fw fa-tag"></i>`);
     }
   } else {
-    el.attr("aria-label", "no tags");
-    el.removeClass("active");
-    el.html(`<i class="fas fa-fw fa-tag"></i>`);
+    el?.setAttribute("aria-label", "no tags");
+    el?.removeClass("active");
+    el?.setHtml(`<i class="fas fa-fw fa-tag"></i>`);
   }
 }
 
-$(".pageAccount button.toggleResultsOnChart").on("click", () => {
+qs(".pageAccount button.toggleResultsOnChart")?.on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
   setConfig("accountChart", newValue);
 });
 
-$(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
+qs(".pageAccount button.toggleAccuracyOnChart")?.on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
   setConfig("accountChart", newValue);
 });
 
-$(".pageAccount button.toggleAverage10OnChart").on("click", () => {
+qs(".pageAccount button.toggleAverage10OnChart")?.on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
   setConfig("accountChart", newValue);
 });
 
-$(".pageAccount button.toggleAverage100OnChart").on("click", () => {
+qs(".pageAccount button.toggleAverage100OnChart")?.on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
   setConfig("accountChart", newValue);
 });
 
-$(".pageAccount .loadMoreButton").on("click", () => {
+qs(".pageAccount .loadMoreButton")?.on("click", () => {
   loadMoreLines();
 });
 
-$(".pageAccount #accountHistoryChart").on("click", () => {
+qs(".pageAccount #accountHistoryChart")?.on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (window === undefined) return;
@@ -1070,14 +1076,14 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   if (resultId === undefined) {
     throw new Error("Cannot find result for index " + index);
   }
-  const element = $(`.resultRow[data-id="${resultId}"`);
-  $(".resultRow").removeClass("active");
+  const element = qs(`.resultRow[data-id="${resultId}"`);
+  qs(".resultRow")?.removeClass("active");
 
-  element[0]?.scrollIntoView({
+  element?.scrollIntoView({
     block: "center",
   });
 
-  element.addClass("active");
+  element?.addClass("active");
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
@@ -1138,7 +1144,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
   MiniResultChartModal.show(chartData);
 });
 
-$(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
+qsa(".pageAccount .group.topFilters, .pageAccount .filterButtons")?.onChild(
   "click",
   "button",
   () => {
@@ -1148,20 +1154,23 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   },
 );
 
-$(".pageAccount .group.presetFilterButtons").on(
+qs(".pageAccount .group.presetFilterButtons")?.onChild(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
   async (e) => {
-    await ResultFilters.setFilterPreset($(e.target).data("id") as string);
+    const target = e.target as HTMLElement;
+    await ResultFilters.setFilterPreset(
+      target.getAttribute("data-id") as string,
+    );
     void update();
   },
 );
 
-$(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
+qs(".pageAccount .content .group.aboveHistory .exportCSV")?.on("click", () => {
   void Misc.downloadResultsCSV(filteredResults);
 });
 
-$(".pageAccount .profile").on("click", ".details .copyLink", () => {
+qs(".pageAccount .profile")?.onChild("click", ".details .copyLink", () => {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   const { name } = snapshot;
@@ -1177,7 +1186,7 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
   );
 });
 
-$(".pageAccount button.loadMoreResults").on("click", async () => {
+qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length ?? 0;
 
   Loader.show();
@@ -1256,9 +1265,9 @@ export const page = new Page<undefined>({
 
     await update().then(() => {
       void updateChartColors();
-      $(".pageAccount .content .accountVerificatinNotice").remove();
+      qs(".pageAccount .content .accountVerificatinNotice")?.remove();
       if (getAuthenticatedUser()?.emailVerified === false) {
-        $(".pageAccount .content").prepend(
+        qs(".pageAccount .content")?.prependHtml(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`,
         );
       }
@@ -1267,6 +1276,6 @@ export const page = new Page<undefined>({
   },
 });
 
-$(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccount");
 });

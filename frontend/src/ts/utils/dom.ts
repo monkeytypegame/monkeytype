@@ -105,6 +105,13 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
+type scrollIntoViewOptions = {
+  behavior?: "smooth" | "instant" | "auto";
+  block?: "start" | "center" | "end" | "nearest";
+  container?: "all" | "nearest";
+  inline?: "start" | "center" | "end" | "nearest";
+};
+
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * The native dom element
@@ -200,6 +207,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
 
   isVisible(): boolean {
     return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
+  }
+
+  scrollIntoView(options: scrollIntoViewOptions): this {
+    this.native.scrollIntoView(options);
+
+    return this;
   }
 
   /**
@@ -703,6 +716,34 @@ export class ElementsWithUtils<
     for (const item of this) {
       item.on(event, handler);
     }
+    return this;
+  }
+
+  /**
+   * Attach an event listener to child elements matching the query in the array.
+   * Useful for dynamically added elements.
+   */
+  onChild<K extends keyof HTMLElementEventMap>(
+    event: K,
+    query: string,
+    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
+  ): this;
+  onChild(
+    event: string,
+    query: string,
+    handler: EventListenerOrEventListenerObject,
+  ): this;
+  onChild(
+    event: keyof HTMLElementEventMap | string,
+    query: string,
+    handler:
+      | EventListenerOrEventListenerObject
+      | ((this: HTMLElement, ev: Event) => void),
+  ): this {
+    for (const item of this) {
+      item.onChild(event, query, handler);
+    }
+
     return this;
   }
 
