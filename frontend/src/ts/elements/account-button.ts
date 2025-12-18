@@ -43,7 +43,7 @@ export function updateAvatar(avatar?: {
   discordAvatar?: string;
 }): void {
   const element = getAvatarElement(avatar ?? {}, {
-    userIcon: "fas fa-fw fa-user",
+    userIcon: "fas fa-user",
   });
   accountButtonAndMenuEl.qs(".avatar")?.replaceWith(element);
 }
