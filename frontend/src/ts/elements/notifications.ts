@@ -33,7 +33,6 @@ class Notification {
   customTitle?: string;
   customIcon?: string;
   closeCallback: () => void;
-  details?: object | string;
   constructor(
     type: NotificationType,
     message: string,
@@ -46,7 +45,6 @@ class Notification {
       //
     },
     allowHTML?: boolean,
-    details?: object | string,
   ) {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
@@ -69,7 +67,6 @@ class Notification {
     this.customIcon = customIcon;
     this.id = id++;
     this.closeCallback = closeCallback;
-    this.details = details;
   }
   //level
   //0 - notice
@@ -276,6 +273,7 @@ export type AddNotificationOptions = {
   closeCallback?: () => void;
   allowHTML?: boolean;
   details?: object | string;
+  response?: CommonResponsesType;
 };
 
 export function add(
@@ -283,9 +281,23 @@ export function add(
   level = 0,
   options: AddNotificationOptions = {},
 ): void {
+  let details = options.details;
+
+  if (options.response !== undefined) {
+    details = {
+      status: options.response.status,
+      additionalDetails: options.details,
+      validationErrors:
+        options.response.status === 422
+          ? options.response.body.validationErrors
+          : undefined,
+    };
+    message = message + ": " + options.response.body.message;
+  }
+
   NotificationEvent.dispatch(message, level, {
     customTitle: options.customTitle,
-    details: options.details,
+    details,
   });
 
   new Notification(
@@ -298,7 +310,6 @@ export function add(
     options.customIcon,
     options.closeCallback,
     options.allowHTML,
-    options.details,
   ).show();
 }
 
@@ -346,44 +357,6 @@ export function addPSA(
   );
   psa.show();
   return psa.id;
-}
-
-export function addRemoteError(
-  message: string,
-  level = 0,
-  response: CommonResponsesType,
-  options: AddNotificationOptions = {},
-): void {
-  const details: {
-    status: number;
-    validationErrors?: string[];
-    additionalDetail?: string | object;
-  } = {
-    status: response.status,
-    additionalDetail: options.details,
-  };
-
-  if (response.status === 422) {
-    details.validationErrors = response.body.validationErrors;
-  }
-
-  NotificationEvent.dispatch(message, level, {
-    customTitle: options.customTitle,
-    details,
-  });
-
-  new Notification(
-    "notification",
-    message + ": " + response.body.message,
-    level,
-    options.important,
-    options.duration,
-    options.customTitle,
-    options.customIcon,
-    options.closeCallback,
-    options.allowHTML,
-    details,
-  ).show();
 }
 
 export function clearAllNotifications(): void {
