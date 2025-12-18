@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* oxlint-disable no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
 // import * as Numbers from "@monkeytype/util/numbers";
 import * as ConfigEvent from "../observables/config-event";
@@ -177,7 +177,7 @@ export async function checkCookieblocker(): Promise<void> {
         return;
       }
       //@ts-expect-error 3rd party ad code
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      // oxlint-disable-next-line no-unsafe-call
       window.__tcfapi("getTCData", 2, (tcData, success) => {
         if (success as boolean) {
           if (tcData.eventStatus === "cmpuishown") {
@@ -271,13 +271,13 @@ export function updateFooterAndVerticalAds(visible: boolean): void {
 export function showConsentPopup(): void {
   if (choice === "eg") {
     //@ts-expect-error 3rd party ad code, doesnt have types
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-call
     window.__tcfapi("displayConsentUi", 2, function () {
       //
     });
   } else {
     //@ts-expect-error 3rd party ad code, doesnt have types
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-call
     ramp.showCmpModal();
   }
 }
