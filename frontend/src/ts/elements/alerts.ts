@@ -6,7 +6,12 @@ import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { escapeHTML } from "../utils/misc";
+import {
+  applyReducedMotion,
+  createErrorMessage,
+  escapeHTML,
+  promiseAnimate,
+} from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
 import { MonkeyMail } from "@monkeytype/schemas/users";
@@ -29,10 +34,17 @@ let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
 
 type State = {
-  notifications: { message: string; level: number; customTitle?: string }[];
+  notifications: {
+    id: string;
+    title: string;
+    message: string;
+    level: number;
+    details?: string | object;
+  }[];
   psas: { message: string; level: number }[];
 };
 
+let notificationId = 0;
 const state: State = {
   notifications: [],
   psas: [],
@@ -289,27 +301,28 @@ function fillNotifications(): void {
   } else {
     notificationHistoryListEl.empty();
     for (const n of state.notifications) {
-      const { message, level, customTitle } = n;
-      let title = "Notice";
+      const { message, level, title } = n;
+
       let levelClass = "sub";
       if (level === -1) {
         levelClass = "error";
-        title = "Error";
       } else if (level === 1) {
         levelClass = "main";
-        title = "Success";
-      }
-
-      if (customTitle !== undefined) {
-        title = customTitle;
       }
 
       notificationHistoryListEl.prependHtml(`
-      <div class="item">
+      <div class="item" data-id="${n.id}">
       <div class="indicator ${levelClass}"></div>
       <div class="title">${title}</div>
       <div class="body">
         ${escapeHTML(message)}
+      </div>
+      <div class="buttons">
+        ${
+          n.details !== undefined
+            ? `<button class="copyNotification textButton" aria-label="Copy details to clipboard" data-balloon-pos="left"><i class="fas fa-fw fa-clipboard"></i></button>`
+            : ``
+        }
       </div>
     </div>
     `);
@@ -396,15 +409,89 @@ function updateClaimDeleteAllButton(): void {
   }
 }
 
+async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
+  const id = (target as HTMLElement | null)
+    ?.closest(".item")
+    ?.getAttribute("data-id")
+    ?.toString();
+
+  if (id === undefined) {
+    throw new Error("Notification ID is undefined");
+  }
+  const notification = state.notifications.find((it) => it.id === id);
+  if (notification === undefined) return;
+
+  const icon = target.querySelector("i") as HTMLElement;
+
+  try {
+    await navigator.clipboard.writeText(
+      JSON.stringify(
+        {
+          title: notification.title,
+          message: notification.message,
+          details: notification.details,
+        },
+        null,
+        4,
+      ),
+    );
+
+    const duration = applyReducedMotion(100);
+
+    await promiseAnimate(icon, {
+      scale: [1, 0.8],
+      opacity: [1, 0],
+      duration,
+    });
+    icon.classList.remove("fa-clipboard");
+    icon.classList.add("fa-check", "highlight");
+    await promiseAnimate(icon, {
+      scale: [0.8, 1],
+      opacity: [0, 1],
+      duration,
+    });
+
+    await promiseAnimate(icon, {
+      scale: [1, 0.8],
+      opacity: [1, 0],
+      delay: 3000,
+      duration,
+    });
+    icon.classList.remove("fa-check", "highlight");
+    icon.classList.add("fa-clipboard");
+
+    await promiseAnimate(icon, {
+      scale: [0.8, 1],
+      opacity: [0, 1],
+      duration,
+    });
+  } catch (e: unknown) {
+    const msg = createErrorMessage(e, "Could not copy to clipboard");
+    Notifications.add(msg, -1);
+  }
+}
+
 qs("header nav .showAlerts")?.on("click", () => {
   void show();
 });
 
-NotificationEvent.subscribe((message, level, customTitle) => {
+NotificationEvent.subscribe((message, level, options) => {
+  let title = "Notice";
+  if (level === -1) {
+    title = "Error";
+  } else if (level === 1) {
+    title = "Success";
+  }
+  if (options.customTitle !== undefined) {
+    title = options.customTitle;
+  }
+
   state.notifications.push({
+    id: (notificationId++).toString(),
+    title,
     message,
     level,
-    customTitle,
+    details: options.details,
   });
   if (state.notifications.length > 25) {
     state.notifications.shift();
@@ -494,6 +581,12 @@ const modal = new AnimatedModal({
         }
 
         markReadAlert(id);
+      });
+
+    alertsPopupEl
+      .qs(".notificationHistory .list")
+      ?.onChild("click", ".item .buttons .copyNotification", (e) => {
+        void copyNotificationToClipboard(e.target as HTMLElement);
       });
   },
 });
