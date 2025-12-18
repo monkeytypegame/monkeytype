@@ -841,7 +841,7 @@ qs(
   const didConfigSave = setConfig(
     "keymapSize",
     parseFloat(
-      qs(
+      qs<HTMLInputElement>(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
       )?.getValue() as string,
     ),
@@ -859,7 +859,7 @@ qs(
   const didConfigSave = setConfig(
     "keymapSize",
     parseFloat(
-      qs(
+      qs<HTMLInputElement>(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
       )?.getValue() as string,
     ),
@@ -878,7 +878,7 @@ qs(
     const didConfigSave = setConfig(
       "keymapSize",
       parseFloat(
-        qs(
+        qs<HTMLInputElement>(
           ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
         )?.getValue() as string,
       ),

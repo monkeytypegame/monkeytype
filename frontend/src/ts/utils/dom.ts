@@ -487,7 +487,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Set value of input or textarea to a string.
    */
-  setValue(value: string): this {
+  setValue(this: ElementWithUtils<ElementWithValue>, value: string): this {
     if (this.hasValue()) {
       this.native.value = value;
     }
@@ -498,7 +498,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Get value of input or textarea
    * @returns The value of the element, or undefined if the element is not an input or textarea.
    */
-  getValue(): string | undefined {
+  getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
     if (this.hasValue()) {
       return this.native.value;
     }
@@ -662,12 +662,12 @@ export class ElementsWithUtils<
    * Set value of all inputs or textareas in the array to a string.
    */
 
-  setValue(value: string): this {
+  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
     for (const item of this) {
       item.setValue(value);
     }
 
-    return this;
+    return this as unknown as this;
   }
 
   /**
