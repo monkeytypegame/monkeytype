@@ -1107,7 +1107,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     target.removeClass("loading");
 
     if (response.status !== 200) {
-      Notifications.add("Error fetching result: " + response.body.message, -1);
+      Notifications.add("Error fetching result", -1, { response });
       return;
     }
 
