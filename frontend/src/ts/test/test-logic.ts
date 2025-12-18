@@ -1285,9 +1285,7 @@ async function saveResult(
       response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    Notifications.add("Failed to save result: " + response.body.message, -1, {
-      response,
-    });
+    Notifications.add("Failed to save result", -1, { response });
     return;
   }
 
