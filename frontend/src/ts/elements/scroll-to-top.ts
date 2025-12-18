@@ -1,27 +1,30 @@
 import * as ActivePage from "../states/active-page";
 import { prefersReducedMotion } from "../utils/misc";
+import { qsr } from "../utils/dom";
 
 let visible = false;
 
+const button = qsr(".scrollToTopButton");
+
 export function hide(): void {
-  $(".scrollToTopButton").addClass("invisible");
+  button.addClass("invisible");
   visible = false;
 }
 
 function show(): void {
-  $(".scrollToTopButton").removeClass("invisible");
+  button.removeClass("invisible");
   visible = true;
 }
 
-$(document).on("click", ".scrollToTopButton", () => {
-  $(".scrollToTopButton").addClass("invisible");
+button.on("click", () => {
+  button.addClass("invisible");
   window.scrollTo({
     top: 0,
     behavior: prefersReducedMotion() ? "instant" : "smooth",
   });
 });
 
-$(window).on("scroll", () => {
+window.addEventListener("scroll", () => {
   const page = ActivePage.get();
   if (page === "test") return;
 

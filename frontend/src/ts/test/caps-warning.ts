@@ -1,7 +1,8 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { qsr } from "../utils/dom";
 
-const el = document.querySelector("#capsWarning") as HTMLElement;
+const el = qsr("#capsWarning");
 
 export let capsState = false;
 
@@ -9,23 +10,23 @@ let visible = false;
 
 function show(): void {
   if (!visible) {
-    el?.classList.remove("hidden");
+    el.removeClass("hidden");
     visible = true;
   }
 }
 
 function hide(): void {
   if (visible) {
-    el?.classList.add("hidden");
+    el.addClass("hidden");
     visible = false;
   }
 }
 
-function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
-  if (event?.originalEvent?.key === "CapsLock" && capsState !== null) {
+function update(event: KeyboardEvent): void {
+  if (event.key === "CapsLock" && capsState !== null) {
     capsState = !capsState;
   } else {
-    const modState = event?.originalEvent?.getModifierState?.("CapsLock");
+    const modState = event.getModifierState?.("CapsLock");
     if (modState !== undefined) {
       capsState = modState;
     }
@@ -40,8 +41,8 @@ function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
   } catch {}
 }
 
-$(document).on("keyup", update);
+document.addEventListener("keyup", update);
 
-$(document).on("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   if (Misc.isMac()) update(event);
 });

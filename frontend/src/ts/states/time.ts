@@ -4,8 +4,8 @@ export function get(): number {
   return time;
 }
 
-export function set(active: number): void {
-  time = active;
+export function set(number: number): void {
+  time = number;
 }
 
 export function increment(): void {
