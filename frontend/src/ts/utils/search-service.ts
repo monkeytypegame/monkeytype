@@ -172,7 +172,10 @@ export const buildSearchService = <T>(
       .flatMap((match) => {
         const quote = documents[match[0]] as InternalDocument;
 
-        if (quote !== undefined && quote !== null && ids.includes(quote.id)) {
+        if (
+          ids.length === 0 ||
+          (quote !== undefined && quote !== null && ids.includes(quote.id))
+        ) {
           return documents[match[0]];
         }
 
