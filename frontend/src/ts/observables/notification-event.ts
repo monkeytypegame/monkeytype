@@ -1,7 +1,12 @@
-type SubscribeFunction = (
+export type NotificationOptions = {
+  customTitle?: string;
+  details?: object | string;
+};
+
+export type SubscribeFunction = (
   message: string,
   level: number,
-  customTitle?: string,
+  options: NotificationOptions,
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -13,11 +18,11 @@ export function subscribe(fn: SubscribeFunction): void {
 export function dispatch(
   message: string,
   level: number,
-  customTitle?: string,
+  options: NotificationOptions,
 ): void {
   subscribers.forEach((fn) => {
     try {
-      fn(message, level, customTitle);
+      fn(message, level, options);
     } catch (e) {
       console.error("Notification event subscriber threw an error");
       console.error(e);

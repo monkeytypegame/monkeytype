@@ -751,14 +751,29 @@ function toggleSettingsGroup(groupName: string): void {
   //The highlight is repeated/broken when toggling the group
   handleHighlightSection(undefined);
 
-  const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
-  groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
-  if (groupEl.hasClass("slideup")) {
-    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.addClass(
+  const groupEl = qs(`.pageSettings .settingsGroup.${groupName}`);
+  if (!groupEl?.hasClass("slideup")) {
+    groupEl?.animate({
+      height: 0,
+      duration: 250,
+      onComplete: () => {
+        groupEl?.hide();
+      },
+    });
+    groupEl?.addClass("slideup");
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
       "rotateIcon",
     );
   } else {
-    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.removeClass(
+    groupEl?.show();
+    groupEl?.setStyle({ height: "" });
+    const height = groupEl.getOffsetHeight();
+    groupEl?.animate({
+      height: [0, height],
+      duration: 250,
+    });
+    groupEl?.removeClass("slideup");
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon",
     );
   }

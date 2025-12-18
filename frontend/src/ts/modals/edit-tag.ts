@@ -37,6 +37,7 @@ const actionModals: Record<Action, SimpleModal> = {
           message:
             "Failed to add tag: " +
             response.body.message.replace(tagName, propTagName),
+          notificationOptions: { response },
         };
       }
 
@@ -83,7 +84,8 @@ const actionModals: Record<Action, SimpleModal> = {
       if (response.status !== 200) {
         return {
           status: -1,
-          message: "Failed to edit tag: " + response.body.message,
+          message: "Failed to edit tag",
+          notificationOptions: { response },
         };
       }
 
@@ -113,7 +115,8 @@ const actionModals: Record<Action, SimpleModal> = {
       if (response.status !== 200) {
         return {
           status: -1,
-          message: "Failed to remove tag: " + response.body.message,
+          message: "Failed to remove tag",
+          notificationOptions: { response },
         };
       }
 
@@ -143,7 +146,8 @@ const actionModals: Record<Action, SimpleModal> = {
       if (response.status !== 200) {
         return {
           status: -1,
-          message: "Failed to clear tag pb: " + response.body.message,
+          message: "Failed to clear tag pb",
+          notificationOptions: { response },
         };
       }
 

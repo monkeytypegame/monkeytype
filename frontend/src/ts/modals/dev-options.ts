@@ -32,6 +32,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       });
       Notifications.add("This is a test", -1, {
         duration: 0,
+        details: { test: true, error: "Example error message" },
       });
       void modal.hide();
     });

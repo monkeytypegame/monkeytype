@@ -1117,13 +1117,12 @@ qs(".pageAccount")?.onChild(
       target?.setHtml('<i class="fas fa-fw fa-chart-line"></i>');
       target?.removeClass("loading");
 
-      if (response.status !== 200) {
-        Notifications.add(
-          "Error fetching result: " + response.body.message,
-          -1,
-        );
-        return;
-      }
+    if (response.status !== 200) {
+      Notifications.add("Error fetching result", -1, { response });
+      return;
+    }
+
+    chartData = response.body.data.chartData as ChartData;
 
       chartData = response.body.data.chartData as ChartData;
 

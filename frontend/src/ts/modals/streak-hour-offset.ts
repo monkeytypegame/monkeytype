@@ -88,10 +88,7 @@ async function apply(): Promise<void> {
   });
   Loader.hide();
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to set streak hour offset: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Failed to set streak hour offset", -1, { response });
   } else {
     Notifications.add("Streak hour offset set", 1);
     const snap = getSnapshot() as Snapshot;

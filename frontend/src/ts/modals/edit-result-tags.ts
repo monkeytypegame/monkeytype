@@ -121,10 +121,7 @@ async function save(): Promise<void> {
   state.tags = state.tags.filter((el) => el !== undefined);
 
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to update result tags: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Failed to update result tags", -1, { response });
     return;
   }
 
