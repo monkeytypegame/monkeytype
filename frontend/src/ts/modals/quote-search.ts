@@ -264,6 +264,10 @@ async function updateResults(searchText: string): Promise<void> {
     ids,
   ));
 
+  exactSearchMatches.forEach((match) => {
+    if (!matches.includes(match)) matches.push(match);
+  });
+
   matchedQueryTerms = [...exactSearchMatchedQueryTerms, ...matchedQueryTerms];
 
   const quotesToShow = applyQuoteLengthFilter(
