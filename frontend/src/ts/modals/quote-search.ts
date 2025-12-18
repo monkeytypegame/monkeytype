@@ -28,6 +28,11 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 const pageSize = 100;
 let currentPageNumber = 1;
 let usingCustomLength = true;
+let quotes: Quote[];
+
+async function updateQuotes(): Promise<void> {
+  ({ quotes } = await QuotesController.getQuotes(Config.language));
+}
 
 function getSearchService<T>(
   language: string,
@@ -225,7 +230,9 @@ function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
 async function updateResults(searchText: string): Promise<void> {
   if (!modal.isOpen()) return;
 
-  const { quotes } = await QuotesController.getQuotes(Config.language);
+  if (quotes === undefined) {
+    ({ quotes } = await QuotesController.getQuotes(Config.language));
+  }
 
   let matches: Quote[] = [];
   let matchedQueryTerms: string[] = [];
@@ -405,6 +412,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
           },
         ],
       });
+    },
+    afterAnimation: async () => {
+      void updateQuotes();
     },
   });
 }
