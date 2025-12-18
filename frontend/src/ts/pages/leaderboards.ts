@@ -390,14 +390,14 @@ async function requestData(update = false): Promise<void> {
 
 function updateJumpButtons(): void {
   const el = qs(".page.pageLeaderboards .titleAndButtons .jumpButtons");
-  el?.qs("button")?.removeClass("active");
+  el?.qsa("button")?.removeClass("active");
 
   const totalPages = Math.ceil(state.count / state.pageSize);
 
   if (totalPages <= 1) {
-    el?.qs("button")?.disable();
+    el?.qsa("button")?.disable();
   } else {
-    el?.qs("button")?.enable();
+    el?.qsa("button")?.enable();
   }
 
   if (state.page === 0) {
@@ -845,7 +845,7 @@ function fillUser(): void {
 
 function updateContent(): void {
   qs(".page.pageLeaderboards .loading")?.hide();
-  qs(".page.pageLeaderboards .updating")?.addClass("invisible");
+  qsa(".page.pageLeaderboards .updating")?.addClass("invisible");
   qs(".page.pageLeaderboards .error")?.hide();
 
   if (state.error !== undefined) {
@@ -862,7 +862,7 @@ function updateContent(): void {
   } else if (state.loading) {
     disableButtons();
     qs(".page.pageLeaderboards .bigUser")?.hide();
-    qs(".page.pageLeaderboards .titleAndButtons")?.hide();
+    qsa(".page.pageLeaderboards .titleAndButtons")?.hide();
     qs(".page.pageLeaderboards .loading")?.show();
     qs(".page.pageLeaderboards table")?.hide();
     return;
@@ -909,7 +909,7 @@ function updateSideButtons(): void {
 
 function updateTypeButtons(): void {
   const el = qs(".page.pageLeaderboards .buttonGroup.typeButtons");
-  el?.qs("button")?.removeClass("active");
+  el?.qsa("button")?.removeClass("active");
   el?.qs(`button[data-type=${state.type}]`)?.addClass("active");
 }
 
@@ -951,7 +951,7 @@ function updateModeButtons(): void {
   qs(".page.pageLeaderboards .buttonGroup.modeButtons")?.show();
 
   const el = qs(".page.pageLeaderboards .buttonGroup.modeButtons");
-  el?.qs("button")?.removeClass("active");
+  el?.qsa("button")?.removeClass("active");
   el?.qs(
     `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`,
   )?.addClass("active");
@@ -980,7 +980,7 @@ function updateLanguageButtons(): void {
   qs(".page.pageLeaderboards .buttonGroup.languageButtons")?.show();
 
   const el = qs(".page.pageLeaderboards .buttonGroup.languageButtons");
-  el?.qs("button")?.removeClass("active");
+  el?.qsa("button")?.removeClass("active");
   el?.qs(`button[data-language=${state.language}]`)?.addClass("active");
 
   //hide all languages
@@ -1197,11 +1197,11 @@ async function appendModeAndLanguageButtons(): Promise<void> {
 }
 
 function disableButtons(): void {
-  qs(".page.pageLeaderboards button")?.disable();
+  qsa(".page.pageLeaderboards button")?.disable();
 }
 
 function enableButtons(): void {
-  qs(".page.pageLeaderboards button")?.enable();
+  qsa(".page.pageLeaderboards button")?.enable();
 }
 
 export function goToPage(pageId: number): void {
