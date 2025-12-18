@@ -43,7 +43,7 @@ function getSearchService<T>(
 ): SearchService<T> {
   if (
     language in searchServiceCache &&
-    (!usingExactSearch || searchText === "")
+    (!usingExactSearch || searchText === '""')
   ) {
     return searchServiceCache[language] as unknown as SearchService<T>;
   }
