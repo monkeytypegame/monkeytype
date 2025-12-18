@@ -78,7 +78,7 @@
     "@types/object-hash": "3.0.6",
     "@types/subset-font": "1.4.3",
     "@types/throttle-debounce": "5.0.2",
-    "@vitest/coverage-v8": "4.0.8",
+    "@vitest/coverage-v8": "4.0.15",
     "autoprefixer": "10.4.20",
     "concurrently": "8.2.2",
     "eslint": "9.39.1",
@@ -105,7 +105,7 @@
     "vite-plugin-inspect": "11.3.3",
     "vite-plugin-minify": "2.1.0",
     "vite-plugin-pwa": "1.1.0",
-    "vitest": "4.0.8"
+    "vitest": "4.0.15"
   },
   "browserslist": [
     "defaults",

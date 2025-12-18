@@ -28,6 +28,11 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 const pageSize = 100;
 let currentPageNumber = 1;
 let usingCustomLength = true;
+let quotes: Quote[];
+
+async function updateQuotes(): Promise<void> {
+  ({ quotes } = await QuotesController.getQuotes(Config.language));
+}
 
 function getSearchService<T>(
   language: string,
@@ -188,10 +193,61 @@ function buildQuoteSearchResult(
   `;
 }
 
+function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
+  const matches: Quote[] = [];
+  const exactSearchQueryTerms: Set<string> = new Set<string>();
+
+  for (const quote of quotes) {
+    const textAndSource = quote.text + quote.source;
+    const currentMatches = [];
+    let noMatch = false;
+
+    for (const regex of captured) {
+      const match = textAndSource.match(regex);
+
+      if (!match) {
+        noMatch = true;
+        break;
+      }
+
+      currentMatches.push(match[0]);
+    }
+
+    if (!noMatch) {
+      currentMatches.forEach((match) => exactSearchQueryTerms.add(match));
+      matches.push(quote);
+    }
+  }
+
+  return [matches, Array.from(exactSearchQueryTerms)];
+}
+
 async function updateResults(searchText: string): Promise<void> {
   if (!modal.isOpen()) return;
 
-  const { quotes } = await QuotesController.getQuotes(Config.language);
+  if (quotes === undefined) {
+    ({ quotes } = await QuotesController.getQuotes(Config.language));
+  }
+
+  let matches: Quote[] = [];
+  let matchedQueryTerms: string[] = [];
+  let exactSearchMatches: Quote[] = [];
+  let exactSearchMatchedQueryTerms: string[] = [];
+
+  const quotationsRegex = /"(.*?)"/g;
+  const exactSearchQueries = Array.from(searchText.matchAll(quotationsRegex));
+  const removedSearchText = searchText.replaceAll(quotationsRegex, "");
+
+  if (exactSearchQueries[0]) {
+    const searchQueriesRaw = exactSearchQueries.map(
+      (query) => new RegExp(query[1] ?? "", "i"),
+    );
+
+    [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
+      quotes,
+      searchQueriesRaw,
+    );
+  }
 
   const quoteSearchService = getSearchService<Quote>(
     Config.language,
@@ -200,8 +256,21 @@ async function updateResults(searchText: string): Promise<void> {
       return `${quote.text} ${quote.id} ${quote.source}`;
     },
   );
-  const { results: matches, matchedQueryTerms } =
-    quoteSearchService.query(searchText);
+
+  if (exactSearchMatches.length > 0 || removedSearchText === searchText) {
+    const ids = exactSearchMatches.map((match) => match.id);
+
+    ({ results: matches, matchedQueryTerms } = quoteSearchService.query(
+      removedSearchText,
+      ids,
+    ));
+
+    exactSearchMatches.forEach((match) => {
+      if (!matches.includes(match)) matches.push(match);
+    });
+
+    matchedQueryTerms = [...exactSearchMatchedQueryTerms, ...matchedQueryTerms];
+  }
 
   const quotesToShow = applyQuoteLengthFilter(
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
@@ -340,12 +409,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       });
     },
     afterAnimation: async () => {
-      const quoteSearchInputValue = $(
-        "#quoteSearchModal input",
-      ).val() as string;
-      currentPageNumber = 1;
-
-      void updateResults(quoteSearchInputValue);
+      void updateQuotes();
     },
   });
 }
