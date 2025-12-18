@@ -561,7 +561,7 @@ function fillTable(): void {
     table?.getParent()?.removeClass("friendsOnly");
   }
 
-  qs(".page.pageLeaderboards table thead")?.hide();
+  qsa(".page.pageLeaderboards table thead")?.hide();
   if (state.type === "allTime" || state.type === "daily") {
     qs(".page.pageLeaderboards table thead.allTimeAndDaily")?.show();
   } else if (state.type === "weekly") {
@@ -871,9 +871,9 @@ function updateContent(): void {
   }
 
   if (isAuthenticated()) {
-    qs(".page.pageLeaderboards .needAuth")?.show();
+    qsa(".page.pageLeaderboards .needAuth")?.show();
   } else {
-    qs(".page.pageLeaderboards .needAuth")?.hide();
+    qsa(".page.pageLeaderboards .needAuth")?.hide();
   }
 
   if (state.data === null) {
@@ -881,7 +881,7 @@ function updateContent(): void {
     return;
   }
 
-  qs(".page.pageLeaderboards .titleAndButtons")?.show();
+  qsa(".page.pageLeaderboards .titleAndButtons")?.show();
   updateJumpButtons();
   updateTimerVisibility();
   fillTable();
@@ -953,7 +953,7 @@ function updateModeButtons(): void {
   const el = qs(".page.pageLeaderboards .buttonGroup.modeButtons");
   el?.qsa("button")?.removeClass("active");
   el?.qs(
-    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`,
+    `button[data-mode="${state.mode}"][data-mode2="${state.mode2}"]`,
   )?.addClass("active");
 
   //hide all mode buttons
