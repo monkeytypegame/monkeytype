@@ -13,18 +13,31 @@ export function fontawesomeSubset(): Plugin {
   return {
     name: "vite-plugin-fontawesome-subset",
     apply: "build",
-    async buildStart() {
+    async generateBundle() {
       const start = performance.now();
       console.log("\nCreating fontawesome subset...");
 
-      const fontawesomeClasses = getFontawesomeConfig();
-      await createFontawesomeSubset(
-        fontawesomeClasses,
-        "src/webfonts-generated",
-        {
+      const tempDir = fs.mkdtempSync("fontawesome-preview-");
+      try {
+        const fontawesomeClasses = getFontawesomeConfig();
+        await createFontawesomeSubset(fontawesomeClasses, tempDir, {
           targetFormats: ["woff2"],
-        },
-      );
+        });
+
+        const entries = fs.readdirSync(tempDir, { withFileTypes: true });
+
+        for (const entry of entries) {
+          if (!entry.isFile()) continue;
+
+          this.emitFile({
+            type: "asset",
+            fileName: "webfonts/" + entry.name,
+            source: fs.readFileSync(path.join(tempDir, entry.name), "utf8"),
+          });
+        }
+      } finally {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
 
       const end = performance.now();
       console.log(
