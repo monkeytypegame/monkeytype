@@ -911,10 +911,8 @@ export async function updateLbMemory<M extends Mode>(
 }
 
 export async function saveConfig(config: Partial<Config>): Promise<void> {
-  //TODO remove
-  const invalidConfig = { ...config, invalid: true };
   if (isAuthenticated()) {
-    const response = await Ape.configs.save({ body: invalidConfig });
+    const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
       Notifications.add("Failed to save config", -1, { response });
     }
