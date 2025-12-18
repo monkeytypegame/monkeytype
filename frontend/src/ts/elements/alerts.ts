@@ -30,6 +30,8 @@ let mailToDelete: string[] = [];
 
 type State = {
   notifications: {
+    id: string;
+    title: string;
     message: string;
     level: number;
     options: NotificationEvent.NotificationOptions;
@@ -37,6 +39,7 @@ type State = {
   psas: { message: string; level: number }[];
 };
 
+let notificationId = 0;
 const state: State = {
   notifications: [],
   psas: [],
@@ -293,27 +296,28 @@ function fillNotifications(): void {
   } else {
     notificationHistoryListEl.empty();
     for (const n of state.notifications) {
-      const { message, level, options } = n;
-      let title = "Notice";
+      const { message, level, title } = n;
+
       let levelClass = "sub";
       if (level === -1) {
         levelClass = "error";
-        title = "Error";
       } else if (level === 1) {
         levelClass = "main";
-        title = "Success";
-      }
-
-      if (options.customTitle !== undefined) {
-        title = options.customTitle;
       }
 
       notificationHistoryListEl.prependHtml(`
-      <div class="item">
+      <div class="item" data-id="${n.id}">
       <div class="indicator ${levelClass}"></div>
       <div class="title">${title}</div>
       <div class="body">
         ${escapeHTML(message)}
+      </div>
+      <div class="buttons">
+        ${
+          n.options.details !== undefined
+            ? `<button class="textButton" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fas fa-share"></i></button>`
+            : ``
+        }
       </div>
     </div>
     `);
@@ -400,12 +404,40 @@ function updateClaimDeleteAllButton(): void {
   }
 }
 
+function copyNotificationToClipboard(id: string): void {
+  const notification = state.notifications.find((it) => it.id === id);
+  if (notification === undefined) return;
+  void navigator.clipboard.writeText(
+    JSON.stringify(
+      {
+        title: notification.title,
+        message: notification.message,
+        details: notification.options.details,
+      },
+      null,
+      4,
+    ),
+  );
+}
+
 qs("header nav .showAlerts")?.on("click", () => {
   void show();
 });
 
 NotificationEvent.subscribe((message, level, options) => {
+  let title = "Notice";
+  if (level === -1) {
+    title = "Error";
+  } else if (level === 1) {
+    title = "Success";
+  }
+  if (options.customTitle !== undefined) {
+    title = options.customTitle;
+  }
+
   state.notifications.push({
+    id: (notificationId++).toString(),
+    title,
     message,
     level,
     options,
@@ -498,6 +530,21 @@ const modal = new AnimatedModal({
         }
 
         markReadAlert(id);
+      });
+
+    alertsPopupEl
+      .qsr(".notificationHistory .list")
+      .onChild("click", ".item .buttons .textButton", (e) => {
+        const id = (e.target as HTMLElement | null)
+          ?.closest(".item")
+          ?.getAttribute("data-id")
+          ?.toString();
+
+        if (id === undefined) {
+          throw new Error("Notification ID is undefined");
+        }
+
+        copyNotificationToClipboard(id);
       });
   },
 });

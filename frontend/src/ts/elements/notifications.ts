@@ -354,11 +354,6 @@ export function addRemoteError(
   response: CommonResponsesType,
   options: AddNotificationOptions = {},
 ): void {
-  NotificationEvent.dispatch(message, level, {
-    customTitle: options.customTitle,
-    details: options.details,
-  });
-
   const details: {
     status: number;
     validationErrors?: string[];
@@ -371,6 +366,11 @@ export function addRemoteError(
   if (response.status === 422) {
     details.validationErrors = response.body.validationErrors;
   }
+
+  NotificationEvent.dispatch(message, level, {
+    customTitle: options.customTitle,
+    details,
+  });
 
   new Notification(
     "notification",

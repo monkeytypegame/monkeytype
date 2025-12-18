@@ -1863,8 +1863,7 @@ body.darkMode {
       }
     }
     .notificationHistory .list .item {
-      grid-template-areas: "indicator title" "indicator body";
-      grid-template-columns: 0.25rem calc(100% - 0.25rem);
+      grid-template-areas: "indicator title buttons" "indicator body buttons";
       .title {
         font-size: 0.75rem;
         color: var(--sub-color);
