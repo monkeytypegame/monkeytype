@@ -320,7 +320,7 @@ function fillNotifications(): void {
       <div class="buttons">
         ${
           n.details !== undefined
-            ? `<button class="copyNotification textButton" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fas fa-clipboard"></i></button>`
+            ? `<button class="copyNotification textButton" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fas fa-fw fa-clipboard"></i></button>`
             : ``
         }
       </div>
@@ -422,7 +422,6 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
   if (notification === undefined) return;
 
   const icon = target.querySelector("i") as HTMLElement;
-  console.log(icon);
 
   try {
     await navigator.clipboard.writeText(
