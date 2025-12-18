@@ -257,18 +257,20 @@ async function updateResults(searchText: string): Promise<void> {
     },
   );
 
-  const ids = exactSearchMatches.map((match) => match.id);
+  if (exactSearchMatches.length > 0 || removedSearchText === searchText) {
+    const ids = exactSearchMatches.map((match) => match.id);
 
-  ({ results: matches, matchedQueryTerms } = quoteSearchService.query(
-    removedSearchText,
-    ids,
-  ));
+    ({ results: matches, matchedQueryTerms } = quoteSearchService.query(
+      removedSearchText,
+      ids,
+    ));
 
-  exactSearchMatches.forEach((match) => {
-    if (!matches.includes(match)) matches.push(match);
-  });
+    exactSearchMatches.forEach((match) => {
+      if (!matches.includes(match)) matches.push(match);
+    });
 
-  matchedQueryTerms = [...exactSearchMatchedQueryTerms, ...matchedQueryTerms];
+    matchedQueryTerms = [...exactSearchMatchedQueryTerms, ...matchedQueryTerms];
+  }
 
   const quotesToShow = applyQuoteLengthFilter(
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
