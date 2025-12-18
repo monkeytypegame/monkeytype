@@ -320,7 +320,7 @@ function fillNotifications(): void {
       <div class="buttons">
         ${
           n.details !== undefined
-            ? `<button class="textButton copyNotification" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fa fa-clipboard"></i></button>`
+            ? `<button class="copyNotification textButton" aria-label="Copy to clipboard" data-balloon-pos="left"><i class="fas fa-clipboard"></i></button>`
             : ``
         }
       </div>
