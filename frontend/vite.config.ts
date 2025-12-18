@@ -82,6 +82,7 @@ function getPlugins({
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
     fontPreview(),
+    fontawesomeSubset(),
     versionFile({ clientVersion }),
     checker({
       oxlint: {
@@ -98,7 +99,6 @@ function getPlugins({
   const devPlugins: PluginOption[] = [Inspect()];
 
   const prodPlugins: PluginOption[] = [
-    fontawesomeSubset(),
     ViteMinifyPlugin(),
     VitePWA({
       // injectRegister: "networkfirst",

@@ -124,8 +124,9 @@ updateContributors.mjs
 copyAnticheatToDev.sh
 
 
-# ignore generated fonts
+# ignore generated fonts (not needed anymore, can be removed later)
 frontend/src/webfonts-generated
+frontend/static/webfonts-preview
 
 .turbo
 frontend/.env.sentry-build-plugin

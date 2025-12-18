@@ -416,8 +416,8 @@ importers:
         specifier: 13.15.1
         version: 13.15.1(encoding@0.1.13)
       fontawesome-subset:
-        specifier: 4.4.0
-        version: 4.4.0(@fortawesome/fontawesome-free@5.15.4)
+        specifier: 4.6.0
+        version: 4.6.0(@fortawesome/fontawesome-free@5.15.4)
       happy-dom:
         specifier: 20.0.10
         version: 20.0.10
@@ -5226,8 +5226,8 @@ packages:
       debug:
         optional: true
 
-  fontawesome-subset@4.4.0:
-    resolution: {integrity: sha512-kcK1ELa/Gq4R2+gKxzeFbLl0uzSJBeWsjtZPLLf5mCJEfTY9gt/lAOgW7opGaG1ZaFMa88Qu1ghuRsLUkmobYg==}
+  fontawesome-subset@4.6.0:
+    resolution: {integrity: sha512-StfmCPwQUUt9wsIJDK404QDz/FkidvpNB5mZy2X36DRPorgXj9VslUwdlijxrHqPIXoA0baC0ucvdOCEQeIHEQ==}
     peerDependencies:
       '@fortawesome/fontawesome-free': '>=5.12.0'
       '@fortawesome/fontawesome-pro': '>=5.12.0'
@@ -14874,12 +14874,12 @@ snapshots:
     optionalDependencies:
       debug: 4.3.6(supports-color@5.5.0)
 
-  fontawesome-subset@4.4.0(@fortawesome/fontawesome-free@5.15.4):
+  fontawesome-subset@4.6.0(@fortawesome/fontawesome-free@5.15.4):
     dependencies:
       lodash: 4.17.21
       mkdirp: 2.1.6
       subset-font: 2.3.0
-      yaml: 2.5.0
+      yaml: 2.8.1
     optionalDependencies:
       '@fortawesome/fontawesome-free': 5.15.4
 
