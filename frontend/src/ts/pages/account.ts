@@ -35,7 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
-import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady, ElementWithUtils } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1086,63 +1086,72 @@ qs(".pageAccount #accountHistoryChart")?.on("click", () => {
   element?.addClass("active");
 });
 
-$(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
-  const target = $(event.currentTarget);
-  const resultId: string = target.parents("tr").data("id") as string;
-  if (target.hasClass("loading")) return;
-  if (target.hasClass("disabled")) return;
+qs(".pageAccount")?.onChild(
+  "click",
+  ".miniResultChartButton",
+  async (event) => {
+    const target = new ElementWithUtils(event.currentTarget as HTMLElement);
+    const resultId: string = target
+      .getParents("tr")
+      ?.getAttribute("id") as string;
+    if (target.hasClass("loading")) return;
+    if (target.hasClass("disabled")) return;
 
-  const result = filteredResults.find((it) => it._id === resultId);
-  if (result === undefined) return;
+    const result = filteredResults.find((it) => it._id === resultId);
+    if (result === undefined) return;
 
-  let chartData = result.chartData as ChartData;
+    let chartData = result.chartData as ChartData;
 
-  if (chartData === undefined) {
-    //need to load full result
-    target.addClass("loading");
-    target.attr("aria-label", null);
-    target.html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
-    Loader.show();
+    if (chartData === undefined) {
+      //need to load full result
+      target?.addClass("loading");
+      target?.removeAttribute("aria-label");
+      target?.setHtml('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+      Loader.show();
 
-    const response = await Ape.results.getById({
-      params: { resultId: result._id },
-    });
-    Loader.hide();
+      const response = await Ape.results.getById({
+        params: { resultId: result._id },
+      });
+      Loader.hide();
 
-    target.html('<i class="fas fa-fw fa-chart-line"></i>');
-    target.removeClass("loading");
+      target?.setHtml('<i class="fas fa-fw fa-chart-line"></i>');
+      target?.removeClass("loading");
 
-    if (response.status !== 200) {
-      Notifications.add("Error fetching result: " + response.body.message, -1);
-      return;
-    }
+      if (response.status !== 200) {
+        Notifications.add(
+          "Error fetching result: " + response.body.message,
+          -1,
+        );
+        return;
+      }
 
-    chartData = response.body.data.chartData as ChartData;
+      chartData = response.body.data.chartData as ChartData;
 
-    //update local cache
-    result.chartData = chartData;
-    const dbResult = DB.getSnapshot()?.results?.find(
-      (it) => it._id === result._id,
-    );
-    if (dbResult !== undefined) {
-      dbResult["chartData"] = result.chartData;
-    }
-
-    if (response.body.data.chartData === "toolong") {
-      target.attr(
-        "aria-label",
-        "Graph history is not available for long tests",
+      //update local cache
+      result.chartData = chartData;
+      const dbResult = DB.getSnapshot()?.results?.find(
+        (it) => it._id === result._id,
       );
-      target.attr("data-baloon-pos", "up");
-      target.addClass("disabled");
+      if (dbResult !== undefined) {
+        dbResult["chartData"] = result.chartData;
+      }
 
-      Notifications.add("Graph history is not available for long tests", 0);
-      return;
+      if (response.body.data.chartData === "toolong") {
+        target?.setAttribute(
+          "aria-label",
+          "Graph history is not available for long tests",
+        );
+        target?.setAttribute("data-baloon-pos", "up");
+        target.addClass("disabled");
+
+        Notifications.add("Graph history is not available for long tests", 0);
+        return;
+      }
     }
-  }
-  target.attr("aria-label", "View graph");
-  MiniResultChartModal.show(chartData);
-});
+    target?.setAttribute("aria-label", "View graph");
+    MiniResultChartModal.show(chartData);
+  },
+);
 
 qsa(".pageAccount .group.topFilters, .pageAccount .filterButtons")?.onChild(
   "click",

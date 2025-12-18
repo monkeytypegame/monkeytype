@@ -516,6 +516,28 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the first parent element matching a selector
+   */
+  getParents(selector: string): ElementWithUtils | null {
+    let parent = this.getParent();
+    while (parent) {
+      if (parent.matches(selector)) {
+        return parent;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Check if element matches a selector
+   */
+
+  matches(selector: string): boolean {
+    return this.native.matches(selector);
+  }
+
+  /**
    * Replace this element with another element
    */
   replaceWith(element: HTMLElement | ElementWithUtils): this {
