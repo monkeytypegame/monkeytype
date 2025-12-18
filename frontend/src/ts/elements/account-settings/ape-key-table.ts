@@ -261,7 +261,7 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   });
   Loader.hide();
   if (response.status !== 200) {
-    Notifications.add("Failed to update key: " + response.body.message, -1);
+    Notifications.add("Failed to update key", -1, { response });
     return;
   }
   key.enabled = !key.enabled;

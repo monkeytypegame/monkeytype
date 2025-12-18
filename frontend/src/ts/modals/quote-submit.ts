@@ -44,7 +44,7 @@ async function submitQuote(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote: " + response.body.message, -1);
+    Notifications.add("Failed to submit quote", -1, { response });
     return;
   }
 
