@@ -288,7 +288,8 @@ list.updateEmail = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update email: " + response.body.message,
+        message: "Failed to update email",
+        notificationOptions: { response },
       };
     }
 
@@ -499,13 +500,14 @@ list.updateName = new SimpleModal({
       };
     }
 
-    const updateNameResponse = await Ape.users.updateName({
+    const response = await Ape.users.updateName({
       body: { name: newName },
     });
-    if (updateNameResponse.status !== 200) {
+    if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update name: " + updateNameResponse.body.message,
+        message: "Failed to update name",
+        notificationOptions: { response },
       };
     }
 
@@ -598,7 +600,8 @@ list.updatePassword = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update password: " + response.body.message,
+        message: "Failed to update password",
+        notificationOptions: { response },
       };
     }
 
@@ -699,8 +702,8 @@ list.addPasswordAuth = new SimpleModal({
       return {
         status: -1,
         message:
-          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-          response.body.message,
+          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error",
+        notificationOptions: { response },
       };
     }
 
@@ -735,12 +738,13 @@ list.deleteAccount = new SimpleModal({
     }
 
     Notifications.add("Deleting all data...", 0);
-    const usersResponse = await Ape.users.delete();
+    const response = await Ape.users.delete();
 
-    if (usersResponse.status !== 200) {
+    if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete user data: " + usersResponse.body.message,
+        message: "Failed to delete user data",
+        notificationOptions: { response },
       };
     }
 
@@ -791,7 +795,8 @@ list.resetAccount = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to reset account: " + response.body.message,
+        message: "Failed to reset account",
+        notificationOptions: { response },
       };
     }
 
@@ -837,7 +842,8 @@ list.optOutOfLeaderboards = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to opt out: " + response.body.message,
+        message: "Failed to opt out",
+        notificationOptions: { response },
       };
     }
 
@@ -898,7 +904,8 @@ list.resetPersonalBests = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to reset personal bests: " + response.body.message,
+        message: "Failed to reset personal bests",
+        notificationOptions: { response },
       };
     }
 
@@ -974,7 +981,8 @@ list.revokeAllTokens = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to revoke tokens: " + response.body.message,
+        message: "Failed to revoke tokens",
+        notificationOptions: { response },
       };
     }
 
@@ -1015,7 +1023,8 @@ list.unlinkDiscord = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to unlink Discord: " + response.body.message,
+        message: "Failed to unlink Discord",
+        notificationOptions: { response },
       };
     }
 

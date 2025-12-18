@@ -27,7 +27,8 @@ const editApeKey = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update key: " + response.body.message,
+        message: "Failed to update key",
+        notificationOptions: { response },
       };
     }
     return {
@@ -53,7 +54,8 @@ const deleteApeKeyModal = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete key: " + response.body.message,
+        message: "Failed to delete key",
+        notificationOptions: { response },
       };
     }
 
@@ -128,7 +130,8 @@ const generateApeKey = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to generate key: " + response.body.message,
+        message: "Failed to generate key",
+        notificationOptions: { response },
       };
     }
 
@@ -174,7 +177,7 @@ async function getData(): Promise<boolean> {
       void update();
       return false;
     }
-    Notifications.add("Error getting ape keys: " + response.body.message, -1);
+    Notifications.add("Error getting ape keys", -1, { response });
     return false;
   }
 
