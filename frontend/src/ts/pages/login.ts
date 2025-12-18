@@ -218,7 +218,7 @@ export const page = new Page({
     Skeleton.append("pageLogin", "main");
     registerForm = {};
     qsa(".pageLogin input")?.setValue("");
-    qs(".pageLogin .register .indicator")?.hide();
+    qsa(".pageLogin .register .indicator")?.hide();
     enableInputs();
     disableSignUpButton();
   },
