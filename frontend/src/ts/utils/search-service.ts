@@ -155,7 +155,13 @@ export const buildSearchService = <T>(
 
             const scoreForToken = score * idf * termFrequency;
 
-            results.set(document.id, currentScore + scoreForToken);
+            const quote = documents[document.id] as InternalDocument;
+            if (
+              ids.length === 0 ||
+              (quote !== null && quote !== undefined && ids.includes(quote.id))
+            ) {
+              results.set(document.id, currentScore + scoreForToken);
+            }
           });
 
           normalizedTokenToOriginal[token]?.forEach((originalToken) => {
@@ -169,18 +175,7 @@ export const buildSearchService = <T>(
       .sort((match1, match2) => {
         return match2[1] - match1[1];
       })
-      .flatMap((match) => {
-        const quote = documents[match[0]] as InternalDocument;
-
-        if (
-          ids.length === 0 ||
-          (quote !== undefined && quote !== null && ids.includes(quote.id))
-        ) {
-          return documents[match[0]];
-        }
-
-        return [];
-      }) as T[];
+      .map((match) => documents[match[0]]) as T[];
 
     searchResult.results = orderedResults;
     searchResult.matchedQueryTerms = [...matchedTokens];
