@@ -280,6 +280,10 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
 
 export async function applyConfig(
   partialConfig: Partial<Config>,
+  options?: {
+    nosave?: boolean;
+    tribeOverride?: boolean;
+  },
 ): Promise<void> {
   if (partialConfig === undefined || partialConfig === null) return;
 
@@ -303,7 +307,10 @@ export async function applyConfig(
   for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
     const configValue = fullConfig[configKey];
 
-    const set = setConfig(configKey, configValue, { nosave: true });
+    const set = setConfig(configKey, configValue, {
+      nosave: options?.nosave ?? true,
+      tribeOverride: options?.tribeOverride ?? false,
+    });
 
     if (!set) {
       configKeysToReset.push(configKey);

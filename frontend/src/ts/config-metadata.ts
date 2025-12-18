@@ -50,7 +50,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**
    * Is blocked in tribe lobbies? Meaning it can only be changed if tribeOverride is true
    */
-  tribeBlocked?: boolean;
+  tribeBlocked?: true;
 
   /**
    * Optional function that checks if the config value is blocked from being set.
@@ -99,11 +99,12 @@ export type ConfigMetadataObject = {
 //todo:
 // maybe have generic set somehow handle test restarting
 
-export const configMetadata: ConfigMetadataObject = {
+export const configMetadata = {
   // test
   punctuation: {
     icon: "fa-at",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     group: "test",
     overrideValue: ({ value, currentConfig }) => {
       if (currentConfig.mode === "quote") {
@@ -115,6 +116,7 @@ export const configMetadata: ConfigMetadataObject = {
   numbers: {
     icon: "fa-hashtag",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     group: "test",
     overrideValue: ({ value, currentConfig }) => {
       if (currentConfig.mode === "quote") {
@@ -158,7 +160,6 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
     group: "test",
     tribeBlocked: true,
-
     overrideConfig: ({ value }) => {
       if (value === "custom" || value === "quote" || value === "zen") {
         return {
@@ -357,6 +358,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-tint",
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     group: "behavior",
     overrideValue: ({ value }) => {
       return Array.from(new Set(value));
@@ -365,7 +367,8 @@ export const configMetadata: ConfigMetadataObject = {
   customPolyglot: {
     icon: "fa-language",
     displayString: "custom polyglot",
-    changeRequiresRestart: false,
+    changeRequiresRestart: true,
+    tribeBlocked: true,
     group: "behavior",
     overrideValue: ({ value }) => {
       return Array.from(new Set(value));
@@ -391,6 +394,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-minus",
     displayString: "strict space",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     group: "input",
   },
   oppositeShiftMode: {
@@ -418,6 +422,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-backspace",
     displayString: "confidence mode",
     changeRequiresRestart: false,
+    tribeBlocked: true,
     group: "input",
     overrideConfig: ({ value }) => {
       if (value !== "off") {
@@ -940,4 +945,4 @@ export const configMetadata: ConfigMetadataObject = {
       }
     },
   },
-};
+} as const satisfies ConfigMetadataObject;

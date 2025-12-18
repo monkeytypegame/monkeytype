@@ -1,6 +1,4 @@
-import { Mode } from "@monkeytype/schemas/shared";
 import Socket from "../socket";
-import { QuoteLength } from "@monkeytype/schemas/configs";
 import * as TribeTypes from "../../types";
 
 type GetPublicRoomsResponse = {
@@ -98,12 +96,8 @@ function result(result: TribeTypes.Result): void {
   Socket.emit("room_result", { result });
 }
 
-function create(
-  mode: Mode,
-  mode2: string | number | QuoteLength[],
-  type?: string,
-): void {
-  Socket.emit("room_create", { mode, mode2, type });
+function create(config: TribeTypes.RoomConfig, type?: string): void {
+  Socket.emit("room_create", { config, type });
 }
 
 function toggleVisibility(): void {

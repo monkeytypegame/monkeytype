@@ -1,6 +1,6 @@
 import * as Notifications from "../../elements/notifications";
-import Config from "../../config";
 import tribeSocket from "../tribe-socket";
+import { getTribeConfig } from "../tribe-config";
 
 export const queues = [false, false, false, false];
 
@@ -100,19 +100,7 @@ export function joinRoomByCode(_code: string): void {
 $(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   disableButtons();
-  let mode2;
-  if (Config.mode === "time") {
-    mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    mode2 = Config.words;
-  } else if (Config.mode === "quote") {
-    mode2 = Config.quoteLength ?? "-1";
-  } else if (Config.mode === "custom") {
-    mode2 = "custom";
-  } else {
-    mode2 = "zen";
-  }
-  tribeSocket.out.room.create(Config.mode, mode2);
+  tribeSocket.out.room.create(getTribeConfig());
 });
 
 $(".pageTribe .menu .devRoom").on("click", (e) => {

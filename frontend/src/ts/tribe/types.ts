@@ -1,4 +1,7 @@
 import { ChartData } from "@monkeytype/schemas/results";
+import { CustomTextSettings } from "../test/custom-text";
+import { configMetadata } from "../config-metadata";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
 
 export type SystemStats = {
   pingStart: number;
@@ -9,7 +12,7 @@ export type SystemStats = {
       custom: [number, number];
     },
     queueLengths: [number, number, number, number],
-    version: string
+    version: string,
   ];
 };
 
@@ -67,28 +70,16 @@ export type Room = {
   seed: number;
 };
 
-export type RoomConfig = {
-  mode: string;
-  mode2: string | number | number[];
-  difficulty: string;
-  language: string;
-  punctuation: boolean;
-  numbers: boolean;
-  funbox: string[];
-  lazyMode: boolean;
-  stopOnError: string;
-  minWpm: number | "off";
-  minAcc: number | "off";
-  minBurst: number | "off";
-  //todo fix
-  // customText: {
-  //   text: string[];
-  //   isWordRandom: boolean;
-  //   isTimeRandom: boolean;
-  //   time: number;
-  //   word: number;
-  // };
-  isInfiniteTest: boolean;
+type TribeBlockedKeys = {
+  [K in keyof typeof configMetadata]: "tribeBlocked" extends keyof (typeof configMetadata)[K]
+    ? (typeof configMetadata)[K]["tribeBlocked"] extends true
+      ? K
+      : never
+    : never;
+}[keyof typeof configMetadata];
+
+export type RoomConfig = Pick<ConfigSchemas.Config, TribeBlockedKeys> & {
+  customText: CustomTextSettings;
 };
 
 export type UserProgressOut = {

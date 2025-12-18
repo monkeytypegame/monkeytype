@@ -1,5 +1,5 @@
 import Config, * as UpdateConfig from "../config";
-import * as Funbox from "../test/funbox/funbox";
+// import * as Funbox from "../test/funbox/funbox";
 // import * as Notifications from "./notifications";
 // import * as CustomText from "../test/custom-text";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
@@ -7,24 +7,35 @@ import * as TribeButtons from "./tribe-buttons";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
-import { Difficulty, Mode } from "@monkeytype/schemas/shared";
-import {
-  FunboxName,
-  QuoteLengthConfig,
-  StopOnError,
-} from "@monkeytype/schemas/configs";
-import { Language } from "@monkeytype/schemas/languages";
+// import { Difficulty, Mode } from "@monkeytype/schemas/shared";
+// import {
+//   FunboxName,
+//   QuoteLengthConfig,
+//   StopOnError,
+// } from "@monkeytype/schemas/configs";
+// import { Language } from "@monkeytype/schemas/languages";
+import { debounce } from "throttle-debounce";
+import { configMetadata } from "../config-metadata";
+import * as CustomText from "../test/custom-text";
+import { typedKeys } from "../utils/misc";
 
-export function getArray(config: TribeTypes.RoomConfig): string[] {
+export function getConfigString(config: TribeTypes.RoomConfig): string {
   const ret: string[] = [];
 
-  if (config["mode"] === "quote") {
-    const mode2 = config["mode2"] as number[];
+  ret.push(config.mode);
+
+  if (config.mode === "time") {
+    ret.push(`${config.time}`);
+  } else if (config.mode === "words") {
+    ret.push(`${config.words}`);
+  } else if (config.mode === "custom") {
+    ret.push("custom");
+  } else if (config.mode === "quote") {
     let quoteLengthString = "";
-    if (mode2.length === 4) {
-      quoteLengthString = "";
+    if (config.quoteLength.length === 4) {
+      quoteLengthString = "any";
     } else {
-      mode2.forEach((ql: number) => {
+      config.quoteLength.forEach((ql: number) => {
         if (ql === 0) {
           quoteLengthString += "short,";
         } else if (ql === 1) {
@@ -40,100 +51,67 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
         quoteLengthString.length - 1,
       );
     }
-    if (quoteLengthString !== "") ret.push(quoteLengthString);
-    ret.push("quote");
+    ret.push(`${quoteLengthString}`);
   } else {
-    ret.push(config["mode"]);
-    ret.push(config["mode2"] as unknown as string);
+    ret.push("zen");
   }
 
-  if (config["difficulty"] !== "normal") ret.push(config["difficulty"]);
-  // if(config['language'] !== "english")
-  ret.push(config["language"]);
-  if (config["punctuation"]) ret.push("punctuation");
-  if (config["numbers"]) ret.push("numbers");
-  if (config["funbox"].length > 0) ret.push(config["funbox"].join(","));
-  if (config["lazyMode"]) ret.push("lazy mode");
-  if (config["stopOnError"] !== "off") {
-    ret.push("stop on " + config["stopOnError"] === "word" ? "word" : "letter");
+  if (config.difficulty !== "normal") ret.push(config.difficulty);
+
+  ret.push(config.language);
+
+  if (config.punctuation) ret.push("punctuation");
+  if (config.numbers) ret.push("numbers");
+  if (config.funbox.length > 0) ret.push(config.funbox.join(","));
+  if (config.lazyMode) ret.push("lazy mode");
+  if (config.stopOnError !== "off") {
+    ret.push("stop on " + (config.stopOnError === "word" ? "word" : "letter"));
   }
-  if (config["minWpm"] !== "off") ret.push(`min ${config["minWpm"]}wpm`);
-  if (config["minAcc"] !== "off") ret.push(`min ${config["minAcc"]}% acc`);
-  if (config["minBurst"] !== "off") {
-    ret.push(`min ${config["minBurst"]}wpm burst`);
+  if (config.minWpm !== "off") ret.push(`min ${config.minWpmCustomSpeed}wpm`);
+  if (config.minAcc !== "off") ret.push(`min ${config.minAccCustom}% acc`);
+  if (config.minBurst !== "off") {
+    ret.push(`min ${config.minBurstCustomSpeed}wpm burst`);
   }
 
-  return ret;
+  return ret.join(" ");
 }
 
-export function apply(config: TribeTypes.RoomConfig): void {
-  const setOptions = {
-    nosave: true,
-    tribeOverride: true,
-  };
+export function isConfigInfinite(config: TribeTypes.RoomConfig): boolean {
+  const timeModeInfinite = config.mode === "time" && config.time === 0;
+  const wordsModeInfinite = config.mode === "words" && config.words === 0;
+  const customModeInfinite =
+    config.mode === "custom" &&
+    ((config.customText.limit.mode === "time" &&
+      config.customText.limit.value === 0) ||
+      (config.customText.limit.mode === "word" &&
+        config.customText.limit.value === 0) ||
+      (config.customText.limit.mode === "section" &&
+        config.customText.limit.value === 0));
 
-  UpdateConfig.setConfig("mode", config.mode as Mode, setOptions);
-  if (config.mode === "time") {
-    UpdateConfig.setConfig("time", config.mode2 as number, setOptions);
-  } else if (config.mode === "words") {
-    UpdateConfig.setConfig("words", config.mode2 as number, setOptions);
-  } else if (config.mode === "quote") {
-    UpdateConfig.setConfig(
-      "quoteLength",
-      config.mode2 as QuoteLengthConfig,
-      setOptions,
-    );
-  } else if (config.mode === "custom") {
-    //todo fix
-    // CustomText.setText(config.customText.text, true);
-    // CustomText.setIsWordRandom(config.customText.isWordRandom, true);
-    // CustomText.setIsTimeRandom(config.customText.isTimeRandom, true);
-    // CustomText.setTime(config.customText.time, true);
-    // CustomText.setWord(config.customText.word, true);
+  return timeModeInfinite || wordsModeInfinite || customModeInfinite;
+}
+
+export async function apply(config: TribeTypes.RoomConfig): Promise<void> {
+  CustomText.setText(config.customText.text, true);
+
+  const configToApply: Partial<typeof Config> = {};
+  for (const key of typedKeys(Config)) {
+    // @ts-expect-error this is ok
+    if (config[key] !== undefined) {
+      // @ts-expect-error this is ok
+      // oxlint-disable-next-line no-unsafe-assignment
+      configToApply[key] = config[key];
+    } else {
+      // @ts-expect-error this is ok
+      // oxlint-disable-next-line no-unsafe-assignment
+      configToApply[key] = Config[key];
+    }
   }
-  UpdateConfig.setConfig("difficulty", config.difficulty as Difficulty, {
+
+  await UpdateConfig.applyConfig(configToApply, {
     nosave: true,
     tribeOverride: true,
   });
-  UpdateConfig.setConfig("language", config.language as Language, {
-    nosave: true,
-    tribeOverride: true,
-  });
-  UpdateConfig.setConfig("punctuation", config.punctuation, {
-    nosave: true,
-    tribeOverride: true,
-  });
-  UpdateConfig.setConfig("numbers", config.numbers, {
-    nosave: true,
-    tribeOverride: true,
-  });
-  Funbox.setFunbox(config.funbox as FunboxName[], true);
-  UpdateConfig.setConfig("lazyMode", config.lazyMode, {
-    nosave: true,
-    tribeOverride: true,
-  });
-  UpdateConfig.setConfig("stopOnError", config.stopOnError as StopOnError, {
-    nosave: true,
-    tribeOverride: true,
-  });
-  if (config.minWpm !== "off") {
-    UpdateConfig.setConfig("minWpmCustomSpeed", config.minWpm, setOptions);
-    UpdateConfig.setConfig("minWpm", "custom", setOptions);
-  } else {
-    UpdateConfig.setConfig("minWpm", "off", setOptions);
-  }
-  if (config.minAcc !== "off") {
-    UpdateConfig.setConfig("minAccCustom", config.minAcc, setOptions);
-    UpdateConfig.setConfig("minAcc", "custom", setOptions);
-  } else {
-    UpdateConfig.setConfig("minAcc", "off", setOptions);
-  }
-  if (config.minBurst !== "off") {
-    UpdateConfig.setConfig("minBurstCustomSpeed", config.minBurst, setOptions);
-    UpdateConfig.setConfig("minBurst", "fixed", setOptions);
-  } else {
-    UpdateConfig.setConfig("minBurst", "off", setOptions);
-  }
 }
 
 export function setLoadingIndicator(bool: boolean): void {
@@ -148,58 +126,30 @@ export function setLoadingIndicator(bool: boolean): void {
   }
 }
 
-let syncConfigTimeout: NodeJS.Timeout | null = null;
-
 function sync(): void {
   if (TribeState.getState() <= 1) return;
   if (!TribeState.getSelf()?.isLeader) return;
   setLoadingIndicator(true);
   TribeButtons.disableStartButton();
-  if (syncConfigTimeout !== null) return;
+  debouncedSync();
+}
 
-  syncConfigTimeout = setTimeout(() => {
-    // setLoadingIndicator(false);
-    let mode2;
-    if (Config.mode === "time") {
-      mode2 = Config.time;
-    } else if (Config.mode === "words") {
-      mode2 = Config.words;
-    } else if (Config.mode === "quote") {
-      mode2 = Config.quoteLength ?? -1;
-    } else if (Config.mode === "custom") {
-      mode2 = "custom";
-    } else {
-      mode2 = "zen";
+const debouncedSync = debounce(1000, () => {
+  tribeSocket.out.room.updateConfig(getTribeConfig());
+});
+
+export function getTribeConfig(): TribeTypes.RoomConfig {
+  const test: Partial<TribeTypes.RoomConfig> = {};
+  Object.entries(configMetadata).map(([key, meta]) => {
+    const typedKey = key as keyof TribeTypes.RoomConfig;
+    if ("tribeBlocked" in meta && meta.tribeBlocked) {
+      // @ts-expect-error customText skipped above
+      test[typedKey] = Config[typedKey] as keyof typeof test;
     }
+  });
 
-    tribeSocket.out.room.updateConfig({
-      mode: Config.mode,
-      mode2: mode2,
-      difficulty: Config.difficulty,
-      language: Config.language,
-      punctuation: Config.punctuation,
-      numbers: Config.numbers,
-      funbox: Config.funbox,
-      lazyMode: Config.lazyMode,
-      stopOnError: Config.stopOnError,
-      minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
-      minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
-      minBurst:
-        Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
-      //todo fix
-      // customText: {
-      // text: CustomText.text,
-      // isWordRandom: CustomText.isWordRandom,
-      // isTimeRandom: CustomText.isTimeRandom,
-      // word: CustomText.word,
-      // time: CustomText.time,
-      // },
-      isInfiniteTest:
-        (Config.mode === "time" || Config.mode === "words") && mode2 === "0",
-    });
-    clearTimeout(syncConfigTimeout as NodeJS.Timeout);
-    syncConfigTimeout = null;
-  }, 500);
+  test.customText = CustomText.getData();
+  return test as TribeTypes.RoomConfig;
 }
 
 TribeConfigSyncEvent.subscribe(() => {

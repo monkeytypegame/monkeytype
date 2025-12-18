@@ -31,7 +31,7 @@ function updateList(list: TribeType.Room[]): void {
       </div>
       <div class="config">
         <div class="title">config</div>
-        <div class="value">${TribeConfig.getArray(room.config).join(" ")}</div>
+        <div class="value">${TribeConfig.getConfigString(room.config)}</div>
       </div>
       <div class="chevron">
         <i class="fas fa-chevron-right"></i>
@@ -74,7 +74,7 @@ function hide(): void {
         100,
         () => {
           $("#tribeBrowsePublicRoomsPopupWrapper").addClass("hidden");
-        }
+        },
       );
   }
 }

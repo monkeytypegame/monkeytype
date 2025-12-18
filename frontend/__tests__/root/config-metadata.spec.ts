@@ -50,7 +50,9 @@ describe("ConfigMeta", () => {
 
   it("should have triggerResize defined", () => {
     const configsWithTriggeResize = Object.entries(configMetadata)
-      .filter(([_key, value]) => value.triggerResize === true)
+      .filter(
+        ([_key, value]) => "triggerResize" in value && value.triggerResize,
+      )
       .map(([key]) => key)
       .sort();
 

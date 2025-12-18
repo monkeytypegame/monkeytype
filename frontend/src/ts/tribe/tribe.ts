@@ -169,7 +169,7 @@ async function reset(): Promise<void> {
 async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
   TribeState.setRoom(room);
   updateState(room.state);
-  TribePageLobby.init();
+  await TribePageLobby.init();
   void TribePages.change("lobby");
   TribeSound.play("join");
   TribeChat.updateSuggestionData();
@@ -513,7 +513,7 @@ TribeSocket.in.room.chatMessage((data) => {
 });
 
 // socket.on("room_config_changed", (e) => {
-TribeSocket.in.room.configChanged((data) => {
+TribeSocket.in.room.configChanged(async (data) => {
   const room = TribeState.getRoom();
   if (!room) return;
   room.config = data.config;
@@ -522,7 +522,7 @@ TribeSocket.in.room.configChanged((data) => {
   //     user.isReady = false;
   //   }
   // }
-  TribeConfig.apply(data.config);
+  await TribeConfig.apply(data.config);
   TribePageLobby.updateRoomConfig();
   TribeButtons.update();
   TribeConfig.setLoadingIndicator(false);
@@ -647,7 +647,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       progress = wordsProgress + globalWordProgress;
     }
 
-    if (room.config.isInfiniteTest) {
+    if (TribeConfig.isConfigInfinite(room.config)) {
       progress = 0;
     }
 
@@ -713,7 +713,7 @@ TribeSocket.in.room.userResult((data) => {
     if (color !== undefined) TribeCarets.changeColor(data.userId, color);
     TribeBars.fadeUser("test", data.userId, color);
     TribeBars.fadeUser("tribe", data.userId, color);
-    if (!room.config.isInfiniteTest) {
+    if (!TribeConfig.isConfigInfinite(room.config)) {
       TribeResults.fadeUser("result", data.userId);
     }
     if (resolve?.afk) {

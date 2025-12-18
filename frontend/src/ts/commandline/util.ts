@@ -31,7 +31,7 @@ export function buildCommandForConfigKey<
   // oxlint-disable-next-line no-unnecessary-type-parameters
   K extends keyof CommandlineConfigMetadataObject,
 >(key: K): Command {
-  const configMeta = configMetadata[key];
+  const configMeta = configMetadata[key] as ConfigMetadata<K>;
   const commandMeta = commandlineConfigMetadata[key];
   const schema = ConfigSchemas.ConfigSchema.shape[key];
 

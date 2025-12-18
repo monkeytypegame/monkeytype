@@ -5,6 +5,7 @@ import tribeSocket from "./tribe-socket";
 import { FinalPositions } from "./tribe-socket/routes/room";
 import { getOrdinalNumberString } from "@monkeytype/util/numbers";
 import * as TribeTypes from "./types";
+import { isConfigInfinite } from "./tribe-config";
 
 const initialised: Record<string, boolean | object> = {};
 
@@ -95,13 +96,13 @@ export function init(page: string): void {
 export function updateBar(
   page: string,
   userId: string,
-  percentOverride?: number
+  percentOverride?: number,
 ): void {
   const room = TribeState.getRoom();
   if (!room) return;
   if (page === "result") {
     const el = $(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`
+      `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`,
     );
     const user = room.users[userId];
     if (!user) return;
@@ -117,7 +118,7 @@ export function updateBar(
         width: percent,
       },
       SlowTimer.get() ? 0 : 1000,
-      "linear"
+      "linear",
     );
   }
 }
@@ -126,7 +127,7 @@ export function updateWpmAndAcc(
   page: string,
   userId: string,
   wpm: number,
-  acc: number
+  acc: number,
 ): void {
   const room = TribeState.getRoom();
   if (!room) return;
@@ -142,13 +143,13 @@ export function updateWpmAndAcc(
 export function updatePositions(
   page: string,
   positions: FinalPositions,
-  reorder = false
+  reorder = false,
 ): void {
   if (page === "result") {
     for (const [position, users] of Object.entries(positions)) {
       for (const user of users) {
         const userEl = $(
-          `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`
+          `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`,
         );
         const string = getOrdinalNumberString(parseInt(position));
         userEl.find(".pos").text(string);
@@ -189,14 +190,14 @@ export function updatePositions(
 
 export function updateMiniCrowns(
   page: string,
-  miniCrowns: TribeTypes.MiniCrowns
+  miniCrowns: TribeTypes.MiniCrowns,
 ): void {
   if (page === "result") {
     for (const crown of Object.keys(miniCrowns)) {
       const userIds = miniCrowns[crown as keyof typeof miniCrowns];
       for (const userId of userIds) {
         const userEl = $(
-          `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+          `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
         );
         userEl.find(`.${crown}`).append(`
         <div class="miniCrown">
@@ -211,11 +212,11 @@ export function updateMiniCrowns(
 export function showCrown(
   page: string,
   userId: string,
-  isGlowing: boolean
+  isGlowing: boolean,
 ): void {
   if (page === "result") {
     const userEl = $(
-      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
     );
     userEl.find(`.crown .icon`).removeClass("invisible");
     if (isGlowing) {
@@ -231,7 +232,7 @@ function updateUser(page: string, userId: string): void {
   if (!room) return;
   if (page === "result") {
     const userEl = $(
-      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
     );
     const user = room.users[userId];
     if (!user) {
@@ -255,21 +256,24 @@ function updateUser(page: string, userId: string): void {
       userEl.find(`.char .text`).text(
         `
         ${userResult.charStats[0]}/${userResult.charStats[1]}/${userResult.charStats[2]}/${userResult.charStats[3]}
-        `
+        `,
       );
+
+      const configInfinite = isConfigInfinite(room.config);
+
       let otherText = "-";
       const resolve = userResult.resolve;
       if (resolve.afk) {
         otherText = "afk";
       } else if (resolve.repeated) {
         otherText = "repeated";
-      } else if (resolve.failed && !room.config.isInfiniteTest) {
+      } else if (resolve.failed && !configInfinite) {
         otherText = `failed(${resolve.failedReason})`;
       } else if (resolve.saved === false) {
         otherText = `save failed(${resolve.saveFailedMessage})`;
       } else if (resolve.valid === false) {
         otherText = `invalid`;
-      } else if (room.config.isInfiniteTest) {
+      } else if (configInfinite) {
         otherText = `${Math.round(userResult.testDuration)}s`;
       } else if (resolve.saved && resolve.isPb) {
         otherText = "new pb";
@@ -295,7 +299,7 @@ export function update(page: string, userId?: string): void {
 export function fadeUser(page: string, userId: string): void {
   if (page === "result") {
     const userEl = $(
-      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
     );
     userEl.addClass("faded");
   }
@@ -311,7 +315,7 @@ export function updateTimerText(text: string): void {
 export function updateTimer(value: string): void {
   if (!timerVisible) showTimer();
   $(".pageTest #result #tribeResults .top").text(
-    timerText + ": " + value + "s"
+    timerText + ": " + value + "s",
   );
 }
 

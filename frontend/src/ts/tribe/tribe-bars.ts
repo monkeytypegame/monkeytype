@@ -3,6 +3,7 @@ import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
 import * as ThemeColors from "../elements/theme-colors";
+import { isConfigInfinite } from "./tribe-config";
 
 export function init(page: string): void {
   let el: JQuery | undefined;
@@ -113,22 +114,22 @@ export function update(page: string, userId: string): void {
   }
 
   el.find(`.player[id=${userId}] .wpm`).text(
-    Math.round(user?.progress?.wpm ?? 0)
+    Math.round(user?.progress?.wpm ?? 0),
   );
   el.find(`.player[id=${userId}] .acc`).text(
-    Math.floor(user.progress?.acc ?? 0) + "%"
+    Math.floor(user.progress?.acc ?? 0) + "%",
   );
   el.find(`.player[id=${userId}] .bar`)
     .stop(true, false)
     .animate(
       {
         width:
-          Config.mode === "time" || room.config.isInfiniteTest
+          Config.mode === "time" || isConfigInfinite(room.config)
             ? user.progress?.wpmProgress + "%"
             : user.progress?.progress + "%",
       },
-      SlowTimer.get() ? 0 : TribeState.getRoom()?.updateRate ?? 500,
-      "linear"
+      SlowTimer.get() ? 0 : (TribeState.getRoom()?.updateRate ?? 500),
+      "linear",
     );
 }
 
@@ -155,14 +156,14 @@ export function completeBar(page: string, userId: string): void {
         width: "100%",
       },
       SlowTimer.get() ? 0 : 500,
-      "linear"
+      "linear",
     );
 }
 
 export function fadeUser(
   page: string | undefined,
   userId: string,
-  changeColor?: ThemeColors.ColorName
+  changeColor?: ThemeColors.ColorName,
 ): void {
   if (page === undefined) {
     fadeUser("test", userId, changeColor);
