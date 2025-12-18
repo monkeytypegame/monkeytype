@@ -1092,7 +1092,7 @@ qs(".pageAccount")?.onChild(
   async (event) => {
     const target = new ElementWithUtils(event.currentTarget as HTMLElement);
     const resultId: string = target
-      .getParents("tr")
+      .getFirstMatchingParent("tr")
       ?.getAttribute("id") as string;
     if (target.hasClass("loading")) return;
     if (target.hasClass("disabled")) return;
@@ -1117,12 +1117,12 @@ qs(".pageAccount")?.onChild(
       target?.setHtml('<i class="fas fa-fw fa-chart-line"></i>');
       target?.removeClass("loading");
 
-    if (response.status !== 200) {
-      Notifications.add("Error fetching result", -1, { response });
-      return;
-    }
+      if (response.status !== 200) {
+        Notifications.add("Error fetching result", -1, { response });
+        return;
+      }
 
-    chartData = response.body.data.chartData as ChartData;
+      chartData = response.body.data.chartData as ChartData;
 
       chartData = response.body.data.chartData as ChartData;
 

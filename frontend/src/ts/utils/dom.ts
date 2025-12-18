@@ -511,7 +511,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Get the first parent element matching a selector
    */
-  getParents(selector: string): ElementWithUtils | null {
+  getFirstMatchingParent(selector: string): ElementWithUtils | null {
     let parent = this.getParent();
     while (parent) {
       if (parent.matches(selector)) {
