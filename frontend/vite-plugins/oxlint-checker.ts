@@ -1,5 +1,6 @@
-import { Plugin, ViteDevServer } from "vite";
+import { Plugin, ViteDevServer, normalizePath } from "vite";
 import { spawn, execSync, ChildProcess } from "child_process";
+import { fileURLToPath } from "url";
 
 export type OxlintCheckerOptions = {
   /** Debounce delay in milliseconds before running lint after file changes. @default 125 */
@@ -249,8 +250,9 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       }
 
       // Inject import to the overlay module (actual .ts file processed by Vite)
-      const overlayPath = new URL("./oxlint-overlay.ts", import.meta.url)
-        .pathname;
+      const overlayPath = normalizePath(
+        fileURLToPath(new URL("./oxlint-overlay.ts", import.meta.url)),
+      );
       return [
         {
           tag: "script",

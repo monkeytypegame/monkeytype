@@ -59,7 +59,7 @@ function updateOverlay(data: {
 
   // Show running icon if linting is running and there were issues before
   if (data.running) {
-    if (data.hadIssues || data.typeAware) {
+    if (data.hadIssues) {
       const message = data.typeAware ? "checking type aware..." : "checking...";
       overlayEl.innerHTML = `
         <span style="font-size: 18px;">⏳</span>
