@@ -517,6 +517,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       if (parent.matches(selector)) {
         return parent;
       }
+
+      parent = parent.getParent();
     }
 
     return null;
