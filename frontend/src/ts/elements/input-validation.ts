@@ -8,7 +8,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import Config, { setConfig } from "../config";
 import * as Notifications from "../elements/notifications";
-import { ElementWithUtils } from "../utils/dom";
+import { DomUtilsEvent, ElementWithUtils } from "../utils/dom";
 
 export type ValidationResult = {
   status: "checking" | "success" | "failed" | "warning";
@@ -60,7 +60,7 @@ export function createInputEventHandler<T>(
   callback: (result: ValidationResult) => void,
   validation: Validation<T>,
   inputValueConvert?: (val: string) => T,
-): (e: Event) => Promise<void> {
+): (e: DomUtilsEvent) => Promise<void> {
   let callIsValid =
     validation.isValid !== undefined
       ? debounceIfNeeded(
