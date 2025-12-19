@@ -48,7 +48,7 @@ export function show(action: string, id?: string, name?: string): void {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
       presetNameEl ??= new ValidatedHtmlInputElement(
-        qsr("#editPresetModal .modal input"),
+        qsr("#editPresetModal .modal input[type=text]"),
         {
           schema: PresetNameSchema,
         },
