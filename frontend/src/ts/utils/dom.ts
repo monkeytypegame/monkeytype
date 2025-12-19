@@ -105,7 +105,15 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
-export type DomUtilsEvent<T extends Event = Event> = Omit<T, "currentTarget">;
+export type DomUtilsEvent<T extends Event = Event> = Omit<
+  T,
+  "currentTarget"
+> & {
+  /**
+   * emulates the `currentTarget` attribute from jQuery
+   */
+  matchedTarget: EventTarget | null;
+};
 
 type DomUtilsEventListenerOrEventListenerObject =
   | { (evt: DomUtilsEvent): void }
@@ -244,19 +252,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: DomUtilsEvent<HTMLElementEventMap[K]>) => void,
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
   ): this;
-  on(event: string, handler: DomUtilsEventListenerOrEventListenerObject): this;
+  on(event: string, handler: EventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
     handler:
-      | DomUtilsEventListenerOrEventListenerObject
-      | ((this: T, ev: DomUtilsEvent) => void),
+      | EventListenerOrEventListenerObject
+      | ((this: T, ev: Event) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(
       event,
-      handler as DomUtilsEventListenerOrEventListenerObject,
+      handler as EventListenerOrEventListenerObject,
     );
     return this;
   }
@@ -288,12 +296,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
+      const matchedTarget = target.closest(query);
+      /*console.log("### onChild", {
+        matchedTarget,
+        target: e.target,
+        currentTarget: e.currentTarget,
+      });
+      */
+
       if (target !== null && target.matches(query)) {
         if (typeof handler === "function") {
-          handler.call(target, e);
+          handler.call(target, Object.assign(e, { matchedTarget }));
         } else {
-          handler.handleEvent(e);
+          handler.handleEvent(Object.assign(e, { matchedTarget }));
         }
+      } else {
+        console.log("###onChild ignore click, target not matching", {
+          target,
+          query,
+        });
       }
     });
     return this;
@@ -680,21 +701,20 @@ export class ElementsWithUtils<
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: DomUtilsEvent<HTMLElementEventMap[K]>) => void,
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
   ): this;
-  on(event: string, handler: DomUtilsEventListenerOrEventListenerObject): this;
+  on(event: string, handler: EventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
     handler:
-      | DomUtilsEventListenerOrEventListenerObject
-      | ((this: T, ev: DomUtilsEvent) => void),
+      | EventListenerOrEventListenerObject
+      | ((this: T, ev: Event) => void),
   ): this {
     for (const item of this) {
       item.on(event, handler);
     }
     return this;
   }
-
   /**
    * Set attribute value on all elements in the array
    */

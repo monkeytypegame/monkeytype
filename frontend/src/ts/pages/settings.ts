@@ -346,7 +346,7 @@ async function fillSettingsPage(): Promise<void> {
       }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
         /_/g,
         " ",
-      )}</button>`;
+      )}<i>test</i></button>`;
     }
   }
   funboxEl.innerHTML = funboxElHTML;
@@ -792,9 +792,30 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
   "button",
   (e) => {
+    /*
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
+    */
+    console.log("### jq", {
+      // oxlint-disable-next-line no-unsafe-assignment
+      target: e.target,
+      // oxlint-disable-next-line no-unsafe-assignment
+      currentTarget: e.currentTarget,
+    });
+  },
+);
+
+qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
+  "click",
+  "button",
+  (e) => {
+    console.log("### qs", {
+      target: e.target,
+      matchedTarget: e.matchedTarget,
+      //@ts-expect-error disabled
+      currentTarget: e["currentTarget"] as unknown,
+    });
   },
 );
 
