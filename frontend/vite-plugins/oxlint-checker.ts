@@ -97,6 +97,22 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
     }
   };
 
+  /**
+   * Runs an oxlint process with the given arguments and captures its combined output.
+   *
+   * This function is responsible for managing the lifecycle of the current lint process:
+   * - It spawns a new child process via `npx oxlint . ...args`.
+   * - It assigns the spawned process to the shared {@link currentProcess} variable so that
+   *   other parts of the plugin can cancel or track the active lint run.
+   * - On process termination (either "error" or "close"), it clears {@link currentProcess}
+   *   if it still refers to this child, avoiding interference with any newer process that
+   *   may have started in the meantime.
+   *
+   * @param args Additional command-line arguments to pass to `oxlint`.
+   * @returns A promise that resolves with the process exit code (or {@code null} if
+   *          the process exited due to a signal) and the full stdout/stderr output
+   *          produced by the lint run.
+   */
   const runLintProcess = async (
     args: string[],
   ): Promise<{ code: number | null; output: string }> => {
