@@ -280,7 +280,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
           if (execError.stdout !== undefined) console.log(execError.stdout);
           if (execError.stderr !== undefined) console.error(execError.stderr);
         }
-        console.error("\n\x1b[31mBuild failed due to linting errors\x1b[0m\n");
+        console.error("\n\x1b[31mBuild aborted due to linting errors\x1b[0m\n");
         process.exit(1);
       }
     },
