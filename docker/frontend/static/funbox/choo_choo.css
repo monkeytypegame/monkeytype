@@ -1,0 +1,23 @@
+@keyframes choochoo {
+  0% {
+    transform: rotateZ(0deg);
+  }
+
+  50% {
+    transform: rotateZ(180deg);
+  }
+
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
+#words {
+  --correct-letter-animation: choochoo 2s infinite linear;
+  --untyped-letter-animation: choochoo 2s infinite linear;
+}
+
+#words letter,
+#words.withLigatures .word letter {
+  display: inline-block;
+}

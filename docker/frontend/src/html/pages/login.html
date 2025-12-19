@@ -1,0 +1,100 @@
+<div class="page pageLogin hidden" id="pageLogin">
+  <div class="preloader hidden">
+    <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+  </div>
+  <div class="disabledNotification hidden">
+    <p>Login/Signup is disabled or the server is down/under maintenance.</p>
+  </div>
+  <div class="register side">
+    <div class="title">
+      <i class="fas fa-user-plus"></i>
+      register
+    </div>
+    <form action="" autocomplete="nope">
+      <input
+        type="text"
+        class="usernameInput"
+        placeholder="username"
+        autocomplete="new-username"
+      />
+      <input
+        type="email"
+        class="emailInput"
+        placeholder="email"
+        autocomplete="new-email"
+      />
+      <input
+        type="email"
+        class="verifyEmailInput"
+        placeholder="verify email"
+        autocomplete="verify-email"
+      />
+      <input
+        type="password"
+        class="passwordInput"
+        placeholder="password"
+        autocomplete="new-password"
+        name="new-password"
+      />
+      <input
+        type="password"
+        class="verifyPasswordInput"
+        placeholder="verify password"
+        autocomplete="verify-password"
+        name="verify-password"
+      />
+      <button type="submit" disabled>
+        <i class="fas fa-user-plus"></i>
+        sign up
+      </button>
+    </form>
+  </div>
+  <div class="login side">
+    <div class="title">
+      <i class="fas fa-sign-in-alt"></i>
+      login
+    </div>
+    <div class="providers">
+      <button class="signInWithGoogle">
+        <i class="fab fa-google"></i>
+        <!-- google sign In -->
+        <!-- google -->
+      </button>
+      <button class="signInWithGitHub">
+        <i class="fab fa-github"></i>
+        <!-- github sign In -->
+        <!-- github -->
+      </button>
+    </div>
+    <form action="">
+      <div class="orWithLine">
+        <div class="line"></div>
+        <div class="text">or</div>
+        <div class="line"></div>
+      </div>
+      <input
+        name="current-email"
+        type="email"
+        placeholder="email"
+        autocomplete="current-email"
+      />
+      <input
+        name="current-password"
+        type="password"
+        placeholder="password"
+        autocomplete="current-password"
+      />
+      <div>
+        <label id="rememberMe" class="checkbox">
+          <input type="checkbox" checked />
+          <div>remember me</div>
+        </label>
+      </div>
+      <button type="submit" class="signIn">
+        <i class="fas fa-sign-in-alt"></i>
+        sign in
+      </button>
+    </form>
+    <button class="text" id="forgotPasswordButton">forgot password?</button>
+  </div>
+</div>

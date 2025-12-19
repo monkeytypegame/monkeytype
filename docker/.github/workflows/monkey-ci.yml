@@ -1,0 +1,355 @@
+name: Monkey CI
+
+env:
+  PNPM_VERSION: "9.6.0"
+  NODE_VERSION: "24.11.0"
+  RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, reopened, synchronize, ready_for_review]
+  push:
+    branches: [master]
+
+concurrency:
+  group: group-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  pre-ci:
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    name: pre-ci
+    runs-on: ubuntu-latest
+    outputs:
+      should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
+      should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
+      should-build-pkg: ${{ steps.export-changes.outputs.should-build-pkg }}
+      assets-json: ${{ steps.export-changes.outputs.assets-json }}
+
+    steps:
+      - name: Full checkout
+        uses: actions/checkout@v4
+        # paths filter doesn't need checkout on pr
+        if: github.event_name != 'pull_request'
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            json:
+              - 'frontend/static/**/*'
+            be-src:
+              - 'backend/**/*.{ts,js,json,lua,css,html}'
+              - 'backend/package.json'
+            fe-src:
+              - 'frontend/**/*.{ts,scss,html}'
+              - 'frontend/package.json'
+            pkg-src:
+              - 'packages/**/*'
+            anti-cheat:
+              - 'backend/**/anticheat/**'
+            workflows:
+              - '.github/workflows/**/*'
+
+      - name: Check Anti-cheat
+        if: steps.filter.outputs.anti-cheat == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+        run: exit 1
+
+      - name: Check Workflow Changes
+        if: steps.filter.outputs.workflows == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+        run: exit 1
+
+      - name: Export changes
+        id: export-changes
+        run: |
+          echo "should-build-pkg=${{ steps.filter.outputs.pkg-src }}" >> $GITHUB_OUTPUT
+          echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
+          echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
+          echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
+
+  prime-cache:
+    name: prime-cache
+    runs-on: ubuntu-latest
+    needs: [pre-ci]
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    steps:
+      - name: Checkout pnpm-lock
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            pnpm-lock.yaml
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: cache-pnpm
+        uses: actions/cache@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          lookup-only: true
+
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Full checkout
+        uses: actions/checkout@v4
+
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: pnpm install
+
+  ci-be:
+    name: ci-be
+    needs: [pre-ci, prime-cache]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            backend
+            packages
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: cache-pnpm
+        uses: actions/cache@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check lint
+        run: npm run lint-fast-be && npm run lint-be
+
+      - name: Build
+        run: npm run build-be
+
+      - name: Test
+        run: npm run test-be
+
+  ci-fe:
+    name: ci-fe
+    needs: [pre-ci, prime-cache]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            frontend
+            packages
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Create stub firebase config
+        working-directory: ./frontend/src/ts/constants
+        run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: cache-pnpm
+        uses: actions/cache@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check lint
+        run: npm run lint-fast-fe && npm run lint-fe
+
+      - name: Build
+        run: npm run build-fe
+
+      - name: Test
+        run: npm run test-fe
+
+  ci-assets:
+    name: ci-assets
+    needs: [pre-ci, prime-cache]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            frontend
+            packages
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            languages:
+              - 'frontend/static/languages/**'
+            quotes:
+              - 'frontend/static/quotes/**'
+            others:
+              - 'frontend/static/layouts/**'
+              - 'frontend/static/themes/**'
+              - 'frontend/static/webfonts/**'
+              - 'frontend/static/challenges/**'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: cache-pnpm
+        uses: actions/cache@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint JSON
+        run: npm run lint-json-assets
+
+      - name: Validate language assets
+        if: steps.filter.outputs.languages == 'true'
+        run: npm run check-assets-languages
+
+      - name: Validate quote assets
+        if: steps.filter.outputs.quotes == 'true'
+        run: npm run check-assets-quotes
+
+      - name: Validate other assets
+        if: steps.filter.outputs.others == 'true'
+        run: npm run check-assets-others
+
+  ci-pkg:
+    name: ci-pkg
+    needs: [pre-ci, prime-cache]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: cache-pnpm
+        uses: actions/cache@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check lint
+        run: npm run lint-fast-pkg && npm run lint-pkg
+
+      - name: Build
+        run: npm run build-pkg
+
+      - name: Test
+        run: npm run test-pkg
+
+  on-failure:
+    permissions: write-all
+    name: on-failure
+    runs-on: ubuntu-latest
+    needs: [ci-be, ci-fe, ci-assets, ci-pkg]
+    if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
+    steps:
+      - name: Save the PR number in an artifact
+        shell: bash
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: echo $PR_NUM > pr_num.txt
+
+      - name: Upload the PR number
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr_num
+          path: ./pr_num.txt

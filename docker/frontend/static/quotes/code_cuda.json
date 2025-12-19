@@ -1,0 +1,77 @@
+{
+  "language": "code_cuda",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "// 32 bit Murmur3 hash\n__device__ uint32_t hash(uint32_t k)\n{\n\tk ^= k >> 16;\n\tk *= 0x85ebca6b;\n\tk ^= k >> 13;\n\tk *= 0xc2b2ae35;\n\tk ^= k >> 16;\n\treturn k & (kHashTableCapacity-1);}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 179,
+      "id": 1
+    },
+    {
+      "text": "// Create a hash table. For linear probing, this is just an array of KeyValues\nKeyValue* create_hashtable() \n{\n\t// Allocate memory\n\tKeyValue* hashtable;\n\tcudaMalloc(&hashtable, sizeof(KeyValue) * kHashTableCapacity);\n\n\t// Initialize hash table to empty\n\tstatic_assert(kEmpty == 0xffffffff, \"memset expected kEmpty=0xffffffff\");\n\tcudaMemset(hashtable, 0xff, sizeof(KeyValue) * kHashTableCapacity);\n\n\treturn hashtable;\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 418,
+      "id": 2
+    },
+    {
+      "text": "// Insert the key/values in kvs into the hashtable\n__global__ void gpu_hashtable_insert(KeyValue* hashtable, const KeyValue* kvs, unsigned int numkvs)\n{\n\tunsigned int threadid = blockIdx.x*blockDim.x + threadIdx.x;\n\tif (threadid < numkvs)\n\t{\n\t\tuint32_t key = kvs[threadid].key;\n\t\tuint32_t value = kvs[threadid].value;\n\t\tuint32_t slot = hash(key);\n\n\t\twhile (true)\n\t\t{\n\t\t\tuint32_t prev = atomicCAS(&hashtable[slot].key, kEmpty, key);\n\t\t\tif (prev == kEmpty || prev == key)\n\t\t\t{\n\t\t\t\thashtable[slot].value = value;\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tslot = (slot + 1) & (kHashTableCapacity-1);\n\t\t}\n\t}\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 583,
+      "id": 3
+    },
+    {
+      "text": "void insert_hashtable(KeyValue* pHashTable, const KeyValue* kvs, uint32_t num_kvs)\n{\n\t// Copy the keyvalues to the GPU\n\tKeyValue* device_kvs;\n\tcudaMalloc(&device_kvs, sizeof(KeyValue) * num_kvs);\n\tcudaMemcpy(device_kvs, kvs, sizeof(KeyValue) * num_kvs, cudaMemcpyHostToDevice);\n\n\t// Have CUDA calculate the thread block size\n\tint mingridsize;\n\tint threadblocksize;\n\tcudaOccupancyMaxPotentialBlockSize(&mingridsize, &threadblocksize, gpu_hashtable_insert, 0, 0);\n\n\t// Create events for GPU timing\n\tcudaEvent_t start, stop;\n\tcudaEventCreate(&start);\n\tcudaEventCreate(&stop);\n\n\tcudaEventRecord(start);\n\n\t// Insert all the keys into the hash table\n\tint gridsize = ((uint32_t)num_kvs + threadblocksize - 1) / threadblocksize;\n\tgpu_hashtable_insert<<<gridsize, threadblocksize>>>(pHashTable, device_kvs, (uint32_t)num_kvs);\n\n\tcudaEventRecord(stop);\n\n\tcudaEventSynchronize(stop);\n\n\tfloat milliseconds = 0;\n\tcudaEventElapsedTime(&milliseconds, start, stop);\n\tfloat seconds = milliseconds / 1000.0f;\n\tprintf(\"\tGPU inserted %d items in %f ms (%f million keys/second)\n\", \n\t\tnum_kvs, milliseconds, num_kvs / (double)seconds / 1000000.0f);\n\n\tcudaFree(device_kvs);\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 1152,
+      "id": 4
+    },
+    {
+      "text": "// Lookup keys in the hashtable, and return the values\n__global__ void gpu_hashtable_lookup(KeyValue* hashtable, KeyValue* kvs, unsigned int numkvs)\n{\n\tunsigned int threadid = blockIdx.x * blockDim.x + threadIdx.x;\n\tif (threadid < numkvs)\n\t{\n\t\tuint32_t key = kvs[threadid].key;\n\t\tuint32_t slot = hash(key);\n\n\t\twhile (true)\n\t\t{\n\t\t\tif (hashtable[slot].key == key)\n\t\t\t{\n\t\t\t\tkvs[threadid].value = hashtable[slot].value;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tif (hashtable[slot].key == kEmpty)\n\t\t\t{\n\t\t\t\tkvs[threadid].value = kEmpty;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tslot = (slot + 1) & (kHashTableCapacity - 1);\n\t\t}\n\t}\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 584,
+      "id": 5
+    },
+    {
+      "text": "void lookup_hashtable(KeyValue* pHashTable, KeyValue* kvs, uint32_t num_kvs)\n{\n\t// Copy the keyvalues to the GPU\n\tKeyValue* device_kvs;\n\tcudaMalloc(&device_kvs, sizeof(KeyValue) * num_kvs);\n\tcudaMemcpy(device_kvs, kvs, sizeof(KeyValue) * num_kvs, cudaMemcpyHostToDevice);\n\n\t// Have CUDA calculate the thread block size\n\tint mingridsize;\n\tint threadblocksize;\n\tcudaOccupancyMaxPotentialBlockSize(&mingridsize, &threadblocksize, gpu_hashtable_insert, 0, 0);\n\n\t// Create events for GPU timing\n\tcudaEvent_t start, stop;\n\tcudaEventCreate(&start);\n\tcudaEventCreate(&stop);\n\n\tcudaEventRecord(start);\n\n\t// Insert all the keys into the hash table\n\tint gridsize = ((uint32_t)num_kvs + threadblocksize - 1) / threadblocksize;\n\tgpu_hashtable_lookup << <gridsize, threadblocksize >> > (pHashTable, device_kvs, (uint32_t)num_kvs);\n\n\tcudaEventRecord(stop);\n\n\tcudaEventSynchronize(stop);\n\n\tfloat milliseconds = 0;\n\tcudaEventElapsedTime(&milliseconds, start, stop);\n\tfloat seconds = milliseconds / 1000.0f;\n\tprintf(\"\tGPU lookup %d items in %f ms (%f million keys/second)\n\",\n\t\tnum_kvs, milliseconds, num_kvs / (double)seconds / 1000000.0f);\n\n\tcudaFree(device_kvs);\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 1148,
+      "id": 6
+    },
+    {
+      "text": "// Delete each key in kvs from the hash table, if the key exists\n// A deleted key is left in the hash table, but its value is set to kEmpty\n// Deleted keys are not reused; once a key is assigned a slot, it never moves\n__global__ void gpu_hashtable_delete(KeyValue* hashtable, const KeyValue* kvs, unsigned int numkvs)\n{\n\tunsigned int threadid = blockIdx.x * blockDim.x + threadIdx.x;\n\tif (threadid < numkvs)\n\t{\n\t\tuint32_t key = kvs[threadid].key;\n\t\tuint32_t slot = hash(key);\n\n\t\twhile (true)\n\t\t{\n\t\t\tif (hashtable[slot].key == key)\n\t\t\t{\n\t\t\t\thashtable[slot].value = kEmpty;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tif (hashtable[slot].key == kEmpty)\n\t\t\t{\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tslot = (slot + 1) & (kHashTableCapacity - 1);\n\t\t}\n\t}\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 706,
+      "id": 7
+    },
+    {
+      "text": "void delete_hashtable(KeyValue* pHashTable, const KeyValue* kvs, uint32_t num_kvs)\n{\n\t// Copy the keyvalues to the GPU\n\tKeyValue* device_kvs;\n\tcudaMalloc(&device_kvs, sizeof(KeyValue) * num_kvs);\n\tcudaMemcpy(device_kvs, kvs, sizeof(KeyValue) * num_kvs, cudaMemcpyHostToDevice);\n\n\t// Have CUDA calculate the thread block size\n\tint mingridsize;\n\tint threadblocksize;\n\tcudaOccupancyMaxPotentialBlockSize(&mingridsize, &threadblocksize, gpu_hashtable_insert, 0, 0);\n\n\t// Create events for GPU timing\n\tcudaEvent_t start, stop;\n\tcudaEventCreate(&start);\n\tcudaEventCreate(&stop);\n\n\tcudaEventRecord(start);\n\n\t// Insert all the keys into the hash table\n\tint gridsize = ((uint32_t)num_kvs + threadblocksize - 1) / threadblocksize;\n\tgpu_hashtable_delete<< <gridsize, threadblocksize >> > (pHashTable, device_kvs, (uint32_t)num_kvs);\n\n\tcudaEventRecord(stop);\n\n\tcudaEventSynchronize(stop);\n\n\tfloat milliseconds = 0;\n\tcudaEventElapsedTime(&milliseconds, start, stop);\n\tfloat seconds = milliseconds / 1000.0f;\n\tprintf(\"\tGPU delete %d items in %f ms (%f million keys/second)\n\",\n\t\tnum_kvs, milliseconds, num_kvs / (double)seconds / 1000000.0f);\n\n\tcudaFree(device_kvs);\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 1153,
+      "id": 8
+    },
+    {
+      "text": "// Iterate over every item in the hashtable; return non-empty key/values\n__global__ void gpu_iterate_hashtable(KeyValue* pHashTable, KeyValue* kvs, uint32_t* kvs_size)\n{\n\tunsigned int threadid = blockIdx.x * blockDim.x + threadIdx.x;\n\tif (threadid < kHashTableCapacity) \n\t{\n\t\tif (pHashTable[threadid].key != kEmpty) \n\t\t{\n\t\t\tuint32_t value = pHashTable[threadid].value;\n\t\t\tif (value != kEmpty)\n\t\t\t{\n\t\t\t\tuint32_t size = atomicAdd(kvs_size, 1);\n\t\t\t\tkvs[size] = pHashTable[threadid];\n\t\t\t}\n\t\t}\n\t}\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 493,
+      "id": 9
+    },
+    {
+      "text": "std::vector<KeyValue> iterate_hashtable(KeyValue* pHashTable)\n{\n\tuint32_t* device_num_kvs;\n\tcudaMalloc(&device_num_kvs, sizeof(uint32_t));\n\tcudaMemset(device_num_kvs, 0, sizeof(uint32_t));\n\n\tKeyValue* device_kvs;\n\tcudaMalloc(&device_kvs, sizeof(KeyValue) * kNumKeyValues);\n\n\tint mingridsize;\n\tint threadblocksize;\n\tcudaOccupancyMaxPotentialBlockSize(&mingridsize, &threadblocksize, gpu_iterate_hashtable, 0, 0);\n\n\tint gridsize = (kHashTableCapacity + threadblocksize - 1) / threadblocksize;\n\tgpu_iterate_hashtable<<<gridsize, threadblocksize>>>(pHashTable, device_kvs, device_num_kvs);\n\n\tuint32_t num_kvs;\n\tcudaMemcpy(&num_kvs, device_num_kvs, sizeof(uint32_t), cudaMemcpyDeviceToHost);\n\n\tstd::vector<KeyValue> kvs;\n\tkvs.resize(num_kvs);\n\n\tcudaMemcpy(kvs.data(), device_kvs, sizeof(KeyValue) * num_kvs, cudaMemcpyDeviceToHost);\n\n\tcudaFree(device_kvs);\n\tcudaFree(device_num_kvs);\n\n\treturn kvs;\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 894,
+      "id": 10
+    },
+    {
+      "text": "// Free the memory of the hashtable\nvoid destroy_hashtable(KeyValue* pHashTable)\n{\n\tcudaFree(pHashTable);\n}",
+      "source": "SimpleGPUHashTable - linearprobing.cu",
+      "length": 107,
+      "id": 11
+    }
+  ]
+}

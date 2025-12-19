@@ -1,0 +1,467 @@
+{
+  "language": "code_python",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "class Person:\n\tdef __init__(self, name, age):\n\t\tself.name = name\n\t\tself.age = age",
+      "source": "w3schools - Python Classes/Objects",
+      "id": 1,
+      "length": 81
+    },
+    {
+      "text": "def my_function(food):\n\tfor x in food:\n\t\tprint(x)\n\nfruits = [\"apple\", \"banana\", \"cherry\"]\nmy_function(fruits)",
+      "source": "w3schools - Python functions",
+      "id": 2,
+      "length": 109
+    },
+    {
+      "text": "f = open(\"demofile.txt\", \"r\")\nprint(f.readline())\nf.close()",
+      "source": "w3schools - Python Read File",
+      "id": 3,
+      "length": 59
+    },
+    {
+      "text": "def solveSudoku(sudoku, i=0, j=0):\n\ti, j = findNextCellToFill(sudoku)\n\tif i == -1:\n\t\treturn True\n\tfor e in range(1, 10):\n\t\tif isValid(sudoku, i, j, e):\n\t\t\tsudoku[i][j] = e\n\t\t\tif solveSudoku(sudoku, i, j):\n\t\t\t\treturn True\n\t\t\tsudoku[i][j] = 0\n\treturn False",
+      "source": "GitHub - hastagAB/Awesome-Python-Scripts - sudoku solver by ayedaemon",
+      "id": 4,
+      "length": 254
+    },
+    {
+      "text": "soup = BeautifulSoup(html, features='lxml')\nprint(soup.h1)\nprint(line_break, soup.p)\n\nall_href = soup.find_all('a')\nall_href = [l['href'] for l in all_href]\nprint(line_break, all_href)",
+      "source": "GitHub - MorvanZhou/easy-scraping-tutorial",
+      "id": 6,
+      "length": 184
+    },
+    {
+      "text": "def bubbleSort(arr):\n\tn = len(arr)\n\tfor i in range(n-1):\n\t\tfor j in range(0, n-i-1):\n\t\t\tif arr[j] > arr[j + 1]:\n\t\t\t\tarr[j], arr[j + 1] = arr[j + 1], arr[j]",
+      "source": "geeksforgeeks - Bubble Sort",
+      "id": 7,
+      "length": 155
+    },
+    {
+      "text": "def search(arr, n, x):\n\tfor i in range(0, n):\n\t\tif (arr[i] == x):\n\t\t\treturn i\n\treturn -1",
+      "source": "geeksforgeeks - Linear Search",
+      "id": 8,
+      "length": 88
+    },
+    {
+      "text": "def fibonacci(n):\n\tif n < 0:\n\t\tprint(\"Incorrect input\")\n\telif n == 0:\n\t\treturn 0\n\telif n == 1 or n == 2:\n\t\treturn 1\n\telse:\n\t\treturn fibonacci(n - 1) + fibonacci(n - 2)",
+      "source": "geeksforgeeks - Fibonacci",
+      "id": 9,
+      "length": 167
+    },
+    {
+      "text": "def factorial(n):\n\treturn 1 if (n == 1 or n == 0) else n * factorial(n - 1)",
+      "source": "geeksforgeeks - Factorial",
+      "id": 10,
+      "length": 75
+    },
+    {
+      "text": "class Node:\n\tdef __init__(self, next=None, prev=None, data=None):\n\t\tself.next = next\n\t\tself.prev = prev\n\t\tself.data = data",
+      "source": "geeksforgeeks - Doubly Linked List",
+      "id": 11,
+      "length": 122
+    },
+    {
+      "text": "def push(self, new_data):\n\tnew_node = Node(data=new_data)\n\tnew_node.next = self.head\n\tnew_node.prev = None\n\tif self.head is not None:\n\t\tself.head.prev = new_node\n\tself.head = new_node",
+      "source": "geeksforgeeks - Doubly Linked List",
+      "id": 12,
+      "length": 183
+    },
+    {
+      "text": "def append(self, new_data):\n\tnew_node = Node(new_data)\n\tif self.head is None:\n\t\tself.head = new_node\n\t\treturn\n\tlast = self.head\n\twhile last.next:\n\t\tlast = last.next\n\tlast.next = new_node\n\tnew_node.prev = last\n\treturn",
+      "source": "geeksforgeeks - Doubly Linked List",
+      "id": 13,
+      "length": 216
+    },
+    {
+      "text": "def __str__(self):\n\tcur = self.head.next\n\tout = \"\"\n\twhile cur:\n\t\tout += str(cur.value) + \"->\"\n\t\tcur = cur.next\n\treturn out[:-3]",
+      "source": "geeksforgeeks - Stack",
+      "id": 14,
+      "length": 127
+    },
+    {
+      "text": "def peek(self):\n\tif self.isEmpty():\n\t\traise Exception(\"Peeking from an empty stack\")\n\treturn self.head.next.value",
+      "source": "geeksforgeeks - Stack",
+      "id": 15,
+      "length": 113
+    },
+    {
+      "text": "def push(self, value):\n\tnode = Node(value)\n\tnode.next = self.head.next\n\tself.head.next = node\n\tself.size += 1",
+      "source": "geeksforgeeks - Stack",
+      "id": 16,
+      "length": 109
+    },
+    {
+      "text": "def pop(self):\n\tif self.isEmpty():\n\t\traise Exception(\"Popping from an empty stack\")\n\tremove = self.head.next\n\tself.head.next = self.head.next.next\n\tself.size -= 1\n\treturn remove.value",
+      "source": "geeksforgeeks - Stack",
+      "id": 17,
+      "length": 183
+    },
+    {
+      "text": "if __name__ == \"__main__\":\n\tstack = Stack()\n\tfor i in range(1, 11):\n\t\tstack.push(i)\n\tprint(f\"Stack: {stack}\")\n\n\tfor _ in range(1, 6):\n\t\tremove = stack.pop()\n\t\tprint(f\"Pop: {remove}\")\n\tprint(f\"Stack: {stack}\")",
+      "source": "geeksforgeeks - Stack",
+      "id": 18,
+      "length": 208
+    },
+    {
+      "text": "def printList(arr):\n\tfor i in range(len(arr)):\n\t\tprint(arr[i], end=\" \")\n\tprint()",
+      "source": "geeksforgeeks - Merge Sort",
+      "id": 19,
+      "length": 80
+    },
+    {
+      "text": "def inorder(temp):\n\tif (not temp):\n\t\treturn\n\tinorder(temp.left)\n\tprint(temp.data, end=\" \")\n\tinorder(temp.right)",
+      "source": "geeksforgeeks - Binary Search Tree",
+      "id": 20,
+      "length": 111
+    },
+    {
+      "text": "s = \"*-A/BC-/AKL\"\nstack = []\noperators = set(['+', '-', '*', '/', '^'])\ns = s[::-1]\nfor i in s:\n\tif i in operators:\n\t\ta = stack.pop()\n\t\tb = stack.pop()\n\t\ttemp = a + b + i\n\t\tstack.append(temp)\n\telse:\n\t\tstack.append(i)\nprint(*stack)",
+      "source": "geeksforgeeks - Prefix Postfix Conversion",
+      "id": 21,
+      "length": 230
+    },
+    {
+      "text": "def printList(self):\n\ttemp = self.head\n\twhile (temp):\n\t\tprint(temp.data)\n\t\ttemp = temp.next",
+      "source": "geeksforgeeks - Linked List",
+      "id": 22,
+      "length": 91
+    },
+    {
+      "text": "def insertAfter(self, prev_node, new_data):\n\tif prev_node is None:\n\t\tprint(\"The given previous node must inLinkedList.\")\n\t\treturn\n\tnew_node = Node(new_data)\n\tnew_node.next = prev_node.next\n\tprev_node.next = new_node",
+      "source": "geeksforgeeks - Linked List",
+      "id": 23,
+      "length": 215
+    },
+    {
+      "text": "def append(self, new_data):\n\tnew_node = Node(new_data)\n\tif self.head is None:\n\t\tself.head = new_node\n\t\treturn\n\tlast = self.head\n\twhile (last.next):\n\t\tlast = last.next\n\tlast.next = new_node",
+      "source": "geeksforgeeks - Linked List",
+      "id": 24,
+      "length": 188
+    },
+    {
+      "text": "def getNthNode(self, head, position, llist):\n\tcount = 0\n\tif (head):\n\t\tif count == position:\n\t\t\tprint(head.data)\n\t\telse:\n\t\t\tllist.getNthNode(head.next, position - 1, llist)\n\telse:\n\t\tprint(\"Index Doesn't exist\")",
+      "source": "geeksforgeeks - Linked List",
+      "id": 25,
+      "length": 209
+    },
+    {
+      "text": "def addToEmpty(self, data):\n\tif (self.last != None):\n\t\treturn self.last\n\ttemp = Node(data)\n\tself.last = temp\n\tself.last.next = self.last\n\treturn self.last",
+      "source": "geeksforgeeks - Circular Singly Linked List",
+      "id": 26,
+      "length": 154
+    },
+    {
+      "text": "def addBegin(self, data):\n\tif (self.last == None):\n\t\treturn self.addToEmpty(data)\n\ttemp = Node(data)\n\ttemp.next = self.last.next\n\tself.last.next = temp\n\treturn self.last",
+      "source": "geeksforgeeks - Circular Singly Linked List",
+      "id": 27,
+      "length": 169
+    },
+    {
+      "text": "def addEnd(self, data):\n\tif (self.last == None):\n\t\treturn self.addToEmpty(data)\n\ttemp = Node(data)\n\ttemp.next = self.last.next\n\tself.last.next = temp\n\tself.last = temp\n\treturn self.last",
+      "source": "geeksforgeeks - Circular Singly Linked List",
+      "id": 28,
+      "length": 185
+    },
+    {
+      "text": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"square\", type=int, help=\"display a square of a given number\")\nparser.add_argument(\n\t\"-v\", \"--verbosity\", action=\"count\", default=0, help=\"increase output verbosity\"\n)\nargs = parser.parse_args()\nanswer = args.square**2\nif args.verbosity >= 2:\n\tprint(f\"the square of {args.square} equals {answer}\")\nelif args.verbosity >= 1:\n\tprint(f\"{args.square}^2 == {answer}\")\nelse:\n\tprint(answer)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 29,
+      "length": 456
+    },
+    {
+      "text": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"x\", type=int, help=\"the base\")\nparser.add_argument(\"y\", type=int, help=\"the exponent\")\nparser.add_argument(\"-v\", \"--verbosity\", action=\"count\", default=0)\nargs = parser.parse_args()\nanswer = args.x**args.y\nif args.verbosity >= 2:\n\tprint(f\"{args.x} to the power {args.y} equals {answer}\")\nelif args.verbosity >= 1:\n\tprint(f\"{args.x}^{args.y} == {answer}\")\nelse:\n\tprint(answer)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 30,
+      "length": 449
+    },
+    {
+      "text": "def accumulate(iterable, func=operator.add, *, initial=None):\n\t\"Return running totals\"\n\t# accumulate([1,2,3,4,5]) --> 1 3 6 10 15\n\t# accumulate([1,2,3,4,5], initial=100) --> 100 101 103 106 110 115\n\t# accumulate([1,2,3,4,5], operator.mul) --> 1 2 6 24 120\n\tit = iter(iterable)\n\ttotal = initial\n\tif initial is None:\n\t\ttry:\n\t\t\ttotal = next(it)\n\t\texcept StopIteration:\n\t\t\treturn\n\tyield total\n\tfor element in it:\n\t\ttotal = func(total, element)\n\t\tyield total\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 31,
+      "length": 454
+    },
+    {
+      "text": "def chain(*iterables):\n\t# chain('ABC', 'DEF') --> A B C D E F\n\tfor it in iterables:\n\t\tfor element in it:\n\t\t\tyield element\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 32,
+      "length": 122
+    },
+    {
+      "text": "import logging\n\nlogging.basicConfig(level=logging.INFO)\n\n\nclass LoggedAgeAccess:\n\tdef __get__(self, obj, objtype=None):\n\t\tvalue = obj._age\n\t\tlogging.info(\"Accessing %r giving %r\", \"age\", value)\n\t\treturn value\n\n\tdef __set__(self, obj, value):\n\t\tlogging.info(\"Updating %r to %r\", \"age\", value)\n\t\tobj._age = value\n\n\nclass Person:\n\tage = LoggedAgeAccess()  # Descriptor instance\n\n\tdef __init__(self, name, age):\n\t\tself.name = name  # Regular instance attribute\n\t\tself.age = age  # Calls __set__()\n\n\tdef birthday(self):\n\t\tself.age += 1  # Calls both __get__() and __set__()\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 33,
+      "length": 569
+    },
+    {
+      "text": "import logging\n\nlogging.basicConfig(level=logging.INFO)\n\n\nclass LoggedAccess:\n\tdef __set_name__(self, owner, name):\n\t\tself.public_name = name\n\t\tself.private_name = \"_\" + name\n\n\tdef __get__(self, obj, objtype=None):\n\t\tvalue = getattr(obj, self.private_name)\n\t\tlogging.info(\"Accessing %r giving %r\", self.public_name, value)\n\t\treturn value\n\n\tdef __set__(self, obj, value):\n\t\tlogging.info(\"Updating %r to %r\", self.public_name, value)\n\t\tsetattr(obj, self.private_name, value)\n\n\nclass Person:\n\tname = LoggedAccess()  # First descriptor instance\n\tage = LoggedAccess()  # Second descriptor instance\n\n\tdef __init__(self, name, age):\n\t\tself.name = name  # Calls the first descriptor\n\t\tself.age = age  # Calls the second descriptor\n\n\tdef birthday(self):\n\t\tself.age += 1\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 34,
+      "length": 761
+    },
+    {
+      "text": "from abc import ABC, abstractmethod\n\n\nclass Validator(ABC):\n\tdef __set_name__(self, owner, name):\n\t\tself.private_name = \"_\" + name\n\n\tdef __get__(self, obj, objtype=None):\n\t\treturn getattr(obj, self.private_name)\n\n\tdef __set__(self, obj, value):\n\t\tself.validate(value)\n\t\tsetattr(obj, self.private_name, value)\n\n\t@abstractmethod\n\tdef validate(self, value):\n\t\tpass\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 35,
+      "length": 362
+    },
+    {
+      "text": "class OneOf(Validator):\n\tdef __init__(self, *options):\n\t\tself.options = set(options)\n\n\tdef validate(self, value):\n\t\tif value not in self.options:\n\t\t\traise ValueError(f\"Expected {value!r} to be one of {self.options!r}\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 36,
+      "length": 219
+    },
+    {
+      "text": "class Number(Validator):\n\tdef __init__(self, minvalue=None, maxvalue=None):\n\t\tself.minvalue = minvalue\n\t\tself.maxvalue = maxvalue\n\n\tdef validate(self, value):\n\t\tif not isinstance(value, (int, float)):\n\t\t\traise TypeError(f\"Expected {value!r} to be an int or float\")\n\t\tif self.minvalue is not None and value < self.minvalue:\n\t\t\traise ValueError(f\"Expected {value!r} to be at least {self.minvalue!r}\")\n\t\tif self.maxvalue is not None and value > self.maxvalue:\n\t\t\traise ValueError(f\"Expected {value!r} to be no more than {self.maxvalue!r}\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 37,
+      "length": 537
+    },
+    {
+      "text": "class String(Validator):\n\tdef __init__(self, minsize=None, maxsize=None, predicate=None):\n\t\tself.minsize = minsize\n\t\tself.maxsize = maxsize\n\t\tself.predicate = predicate\n\n\tdef validate(self, value):\n\t\tif not isinstance(value, str):\n\t\t\traise TypeError(f\"Expected {value!r} to be an str\")\n\t\tif self.minsize is not None and len(value) < self.minsize:\n\t\t\traise ValueError(\n\t\t\t\tf\"Expected {value!r} to be no smaller than {self.minsize!r}\"\n\t\t\t)\n\t\tif self.maxsize is not None and len(value) > self.maxsize:\n\t\t\traise ValueError(\n\t\t\t\tf\"Expected {value!r} to be no bigger than {self.maxsize!r}\"\n\t\t\t)\n\t\tif self.predicate is not None and not self.predicate(value):\n\t\t\traise ValueError(f\"Expected {self.predicate} to be true for {value!r}\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 38,
+      "length": 727
+    },
+    {
+      "text": "class Component:\n\n\tname = String(minsize=3, maxsize=10, predicate=str.isupper)\n\tkind = OneOf(\"wood\", \"metal\", \"plastic\")\n\tquantity = Number(minvalue=0)\n\n\tdef __init__(self, name, kind, quantity):\n\t\tself.name = name\n\t\tself.kind = kind\n\t\tself.quantity = quantity\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 39,
+      "length": 261
+    },
+    {
+      "text": "def find_name_in_mro(cls, name, default):\n\t\"Emulate _PyType_Lookup() in Objects/typeobject.c\"\n\tfor base in cls.__mro__:\n\t\tif name in vars(base):\n\t\t\treturn vars(base)[name]\n\treturn default\n\n\ndef object_getattribute(obj, name):\n\t\"Emulate PyObject_GenericGetAttr() in Objects/object.c\"\n\tnull = object()\n\tobjtype = type(obj)\n\tcls_var = find_name_in_mro(objtype, name, null)\n\tdescr_get = getattr(type(cls_var), \"__get__\", null)\n\tif descr_get is not null:\n\t\tif hasattr(type(cls_var), \"__set__\") or hasattr(type(cls_var), \"__delete__\"):\n\t\t\treturn descr_get(cls_var, obj, objtype)  # data descriptor\n\tif hasattr(obj, \"__dict__\") and name in vars(obj):\n\t\treturn vars(obj)[name]  # instance variable\n\tif descr_get is not null:\n\t\treturn descr_get(cls_var, obj, objtype)  # non-data descriptor\n\tif cls_var is not null:\n\t\treturn cls_var  # class variable\n\traise AttributeError(name)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 40,
+      "length": 870
+    },
+    {
+      "text": "class Field:\n\tdef __set_name__(self, owner, name):\n\t\tself.fetch = f\"SELECT {name} FROM {owner.table} WHERE {owner.key}=?;\"\n\t\tself.store = f\"UPDATE {owner.table} SET {name}=? WHERE {owner.key}=?;\"\n\n\tdef __get__(self, obj, objtype=None):\n\t\treturn conn.execute(self.fetch, [obj.key]).fetchone()[0]\n\n\tdef __set__(self, obj, value):\n\t\tconn.execute(self.store, [value, obj.key])\n\t\tconn.commit()\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 41,
+      "length": 389
+    },
+    {
+      "text": "class Movie:\n\ttable = \"Movies\"  # Table name\n\tkey = \"title\"  # Primary key\n\tdirector = Field()\n\tyear = Field()\n\n\tdef __init__(self, key):\n\t\tself.key = key\n\n\nclass Song:\n\ttable = \"Music\"\n\tkey = \"title\"\n\tartist = Field()\n\tyear = Field()\n\tgenre = Field()\n\n\tdef __init__(self, key):\n\t\tself.key = key\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 42,
+      "length": 296
+    },
+    {
+      "text": "class Property:\n\t\"Emulate PyProperty_Type() in Objects/descrobject.c\"\n\n\tdef __init__(self, fget=None, fset=None, fdel=None, doc=None):\n\t\tself.fget = fget\n\t\tself.fset = fset\n\t\tself.fdel = fdel\n\t\tif doc is None and fget is not None:\n\t\t\tdoc = fget.__doc__\n\t\tself.__doc__ = doc\n\t\tself._name = \"\"\n\n\tdef __set_name__(self, owner, name):\n\t\tself._name = name\n\n\tdef __get__(self, obj, objtype=None):\n\t\tif obj is None:\n\t\t\treturn self\n\t\tif self.fget is None:\n\t\t\traise AttributeError(f\"property '{self._name}' has no getter\")\n\t\treturn self.fget(obj)\n\n\tdef __set__(self, obj, value):\n\t\tif self.fset is None:\n\t\t\traise AttributeError(f\"property '{self._name}' has no setter\")\n\t\tself.fset(obj, value)\n\n\tdef __delete__(self, obj):\n\t\tif self.fdel is None:\n\t\t\traise AttributeError(f\"property '{self._name}' has no deleter\")\n\t\tself.fdel(obj)\n\n\tdef getter(self, fget):\n\t\tprop = type(self)(fget, self.fset, self.fdel, self.__doc__)\n\t\tprop._name = self._name\n\t\treturn prop\n\n\tdef setter(self, fset):\n\t\tprop = type(self)(self.fget, fset, self.fdel, self.__doc__)\n\t\tprop._name = self._name\n\t\treturn prop\n\n\tdef deleter(self, fdel):\n\t\tprop = type(self)(self.fget, self.fset, fdel, self.__doc__)\n\t\tprop._name = self._name\n\t\treturn prop\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 43,
+      "length": 1207
+    },
+    {
+      "text": "class MethodType:\n\t\"Emulate PyMethod_Type in Objects/classobject.c\"\n\n\tdef __init__(self, func, obj):\n\t\tself.__func__ = func\n\t\tself.__self__ = obj\n\n\tdef __call__(self, *args, **kwargs):\n\t\tfunc = self.__func__\n\t\tobj = self.__self__\n\t\treturn func(obj, *args, **kwargs)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 44,
+      "length": 266
+    },
+    {
+      "text": "class StaticMethod:\n\t\"Emulate PyStaticMethod_Type() in Objects/funcobject.c\"\n\n\tdef __init__(self, f):\n\t\tself.f = f\n\n\tdef __get__(self, obj, objtype=None):\n\t\treturn self.f\n\n\tdef __call__(self, *args, **kwds):\n\t\treturn self.f(*args, **kwds)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 45,
+      "length": 239
+    },
+    {
+      "text": "class Immutable:\n\t__slots__ = (\"_dept\", \"_name\")  # Replace the instance dictionary\n\n\tdef __init__(self, dept, name):\n\t\tself._dept = dept  # Store to private attribute\n\t\tself._name = name  # Store to private attribute\n\n\t@property  # Read-only descriptor\n\tdef dept(self):\n\t\treturn self._dept\n\n\t@property\n\tdef name(self):  # Read-only descriptor\n\t\treturn self._name\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 46,
+      "length": 364
+    },
+    {
+      "text": "null = object()\n\n\nclass Member:\n\tdef __init__(self, name, clsname, offset):\n\t\t\"Emulate PyMemberDef in Include/structmember.h\"\n\t\t# Also see descr_new() in Objects/descrobject.c\n\t\tself.name = name\n\t\tself.clsname = clsname\n\t\tself.offset = offset\n\n\tdef __get__(self, obj, objtype=None):\n\t\t\"Emulate member_get() in Objects/descrobject.c\"\n\t\t# Also see PyMember_GetOne() in Python/structmember.c\n\t\tif obj is None:\n\t\t\treturn self\n\t\tvalue = obj._slotvalues[self.offset]\n\t\tif value is null:\n\t\t\traise AttributeError(self.name)\n\t\treturn value\n\n\tdef __set__(self, obj, value):\n\t\t\"Emulate member_set() in Objects/descrobject.c\"\n\t\tobj._slotvalues[self.offset] = value\n\n\tdef __delete__(self, obj):\n\t\t\"Emulate member_delete() in Objects/descrobject.c\"\n\t\tvalue = obj._slotvalues[self.offset]\n\t\tif value is null:\n\t\t\traise AttributeError(self.name)\n\t\tobj._slotvalues[self.offset] = null\n\n\tdef __repr__(self):\n\t\t\"Emulate member_repr() in Objects/descrobject.c\"\n\t\treturn f\"<Member {self.name!r} of {self.clsname!r}>\"\\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 47,
+      "length": 996
+    },
+    {
+      "text": "class Type(type):\n\t\"Simulate how the type metaclass adds member objects for slots\"\n\n\tdef __new__(mcls, clsname, bases, mapping, **kwargs):\n\t\t\"Emulate type_new() in Objects/typeobject.c\"\n\t\t# type_new() calls PyTypeReady() which calls add_methods()\n\t\tslot_names = mapping.get(\"slot_names\", [])\n\t\tfor offset, name in enumerate(slot_names):\n\t\t\tmapping[name] = Member(name, clsname, offset)\n\t\treturn type.__new__(mcls, clsname, bases, mapping, **kwargs)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 48,
+      "length": 449
+    },
+    {
+      "text": "class Object:\n\t\"Simulate how object.__new__() allocates memory for __slots__\"\n\n\tdef __new__(cls, *args, **kwargs):\n\t\t\"Emulate object_new() in Objects/typeobject.c\"\n\t\tinst = super().__new__(cls)\n\t\tif hasattr(cls, \"slot_names\"):\n\t\t\tempty_slots = [null] * len(cls.slot_names)\n\t\t\tobject.__setattr__(inst, \"_slotvalues\", empty_slots)\n\t\treturn inst\n\n\tdef __setattr__(self, name, value):\n\t\t\"Emulate _PyObject_GenericSetAttrWithDict() Objects/object.c\"\n\t\tcls = type(self)\n\t\tif hasattr(cls, \"slot_names\") and name not in cls.slot_names:\n\t\t\traise AttributeError(f\"{cls.__name__!r} object has no attribute {name!r}\")\n\t\tsuper().__setattr__(name, value)\n\n\tdef __delattr__(self, name):\n\t\t\"Emulate _PyObject_GenericSetAttrWithDict() Objects/object.c\"\n\t\tcls = type(self)\n\t\tif hasattr(cls, \"slot_names\") and name not in cls.slot_names:\n\t\t\traise AttributeError(f\"{cls.__name__!r} object has no attribute {name!r}\")\n\t\tsuper().__delattr__(name)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 49,
+      "length": 925
+    },
+    {
+      "text": "import logging\n\n# create logger\nlogger = logging.getLogger(\"simple_example\")\nlogger.setLevel(logging.DEBUG)\n\n# create console handler and set level to debug\nch = logging.StreamHandler()\nch.setLevel(logging.DEBUG)\n\n# create formatter\nformatter = logging.Formatter(\"%(asctime)s - %(name)s - %(levelname)s - %(message)s\")\n\n# add formatter to ch\nch.setFormatter(formatter)\n\n# add ch to logger\nlogger.addHandler(ch)\n\n# 'application' code\nlogger.debug(\"debug message\")\nlogger.info(\"info message\")\nlogger.warning(\"warn message\")\nlogger.error(\"error message\")\nlogger.critical(\"critical message\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 50,
+      "length": 588
+    },
+    {
+      "text": "import logging\n\nimport auxiliary_module\n\n# create logger with 'spam_application'\nlogger = logging.getLogger(\"spam_application\")\nlogger.setLevel(logging.DEBUG)\n# create file handler which logs even debug messages\nfh = logging.FileHandler(\"spam.log\")\nfh.setLevel(logging.DEBUG)\n# create console handler with a higher log level\nch = logging.StreamHandler()\nch.setLevel(logging.ERROR)\n# create formatter and add it to the handlers\nformatter = logging.Formatter(\"%(asctime)s - %(name)s - %(levelname)s - %(message)s\")\nfh.setFormatter(formatter)\nch.setFormatter(formatter)\n# add the handlers to the logger\nlogger.addHandler(fh)\nlogger.addHandler(ch)\n\nlogger.info(\"creating an instance of auxiliary_module.Auxiliary\")\na = auxiliary_module.Auxiliary()\nlogger.info(\"created an instance of auxiliary_module.Auxiliary\")\nlogger.info(\"calling auxiliary_module.Auxiliary.do_something\")\na.do_something()\nlogger.info(\"finished auxiliary_module.Auxiliary.do_something\")\nlogger.info(\"calling auxiliary_module.some_function()\")\nauxiliary_module.some_function()\nlogger.info(\"done with auxiliary_module.some_function()\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 51,
+      "length": 1100
+    },
+    {
+      "text": "import logging\n\n# create logger\nmodule_logger = logging.getLogger(\"spam_application.auxiliary\")\n\n\nclass Auxiliary:\n\tdef __init__(self):\n\t\tself.logger = logging.getLogger(\"spam_application.auxiliary.Auxiliary\")\n\t\tself.logger.info(\"creating an instance of Auxiliary\")\n\n\tdef do_something(self):\n\t\tself.logger.info(\"doing something\")\n\t\ta = 1 + 1\n\t\tself.logger.info(\"done doing something\")\n\n\ndef some_function():\n\tmodule_logger.info('received a call to \"some_function\"')\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 52,
+      "length": 466
+    },
+    {
+      "text": "import logging\nimport threading\nimport time\n\n\ndef worker(arg):\n\twhile not arg[\"stop\"]:\n\t\tlogging.debug(\"Hi from myfunc\")\n\t\ttime.sleep(0.5)\n\n\ndef main():\n\tlogging.basicConfig(\n\t\tlevel=logging.DEBUG,\n\t\tformat=\"%(relativeCreated)6d %(threadName)s %(message)s\",\n\t)\n\tinfo = {\"stop\": False}\n\tthread = threading.Thread(target=worker, args=(info,))\n\tthread.start()\n\twhile True:\n\t\ttry:\n\t\t\tlogging.debug(\"Hello from main\")\n\t\t\ttime.sleep(0.75)\n\t\texcept KeyboardInterrupt:\n\t\t\tinfo[\"stop\"] = True\n\t\t\tbreak\n\tthread.join()\n\n\nif __name__ == \"__main__\":\n\tmain()\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 53,
+      "length": 545
+    },
+    {
+      "text": "import logging\n\nlogger = logging.getLogger(\"simple_example\")\nlogger.setLevel(logging.DEBUG)\n# create file handler which logs even debug messages\nfh = logging.FileHandler(\"spam.log\")\nfh.setLevel(logging.DEBUG)\n# create console handler with a higher log level\nch = logging.StreamHandler()\nch.setLevel(logging.ERROR)\n# create formatter and add it to the handlers\nformatter = logging.Formatter(\"%(asctime)s - %(name)s - %(levelname)s - %(message)s\")\nch.setFormatter(formatter)\nfh.setFormatter(formatter)\n# add the handlers to logger\nlogger.addHandler(ch)\nlogger.addHandler(fh)\n\n# 'application' code\nlogger.debug(\"debug message\")\nlogger.info(\"info message\")\nlogger.warning(\"warn message\")\nlogger.error(\"error message\")\nlogger.critical(\"critical message\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 54,
+      "length": 750
+    },
+    {
+      "text": "import logging\n\n# set up logging to file - see previous section for more details\nlogging.basicConfig(\n\tlevel=logging.DEBUG,\n\tformat=\"%(asctime)s %(name)-12s %(levelname)-8s %(message)s\",\n\tdatefmt=\"%m-%d %H:%M\",\n\tfilename=\"/tmp/myapp.log\",\n\tfilemode=\"w\",\n)\n# define a Handler which writes INFO messages or higher to the sys.stderr\nconsole = logging.StreamHandler()\nconsole.setLevel(logging.INFO)\n# set a format which is simpler for console use\nformatter = logging.Formatter(\"%(name)-12s: %(levelname)-8s %(message)s\")\n# tell the handler to use this format\nconsole.setFormatter(formatter)\n# add the handler to the root logger\nlogging.getLogger(\"\").addHandler(console)\n\n# Now, we can log to the root logger, or any other logger. First the root...\nlogging.info(\"Jackdaws love my big sphinx of quartz.\")\n\n# Now, define a couple of other loggers which might represent areas in your\n# application:\n\nlogger1 = logging.getLogger(\"myapp.area1\")\nlogger2 = logging.getLogger(\"myapp.area2\")\n\nlogger1.debug(\"Quick zephyrs blow, vexing daft Jim.\")\nlogger1.info(\"How quickly daft jumping zebras vex.\")\nlogger2.warning(\"Jail zesty vixen who grabbed pay from quack.\")\nlogger2.error(\"The five boxing wizards jump quickly.\")\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 55,
+      "length": 1205
+    },
+    {
+      "text": "import logging\n\n\nclass Message:\n\tdef __init__(self, fmt, args):\n\t\tself.fmt = fmt\n\t\tself.args = args\n\n\tdef __str__(self):\n\t\treturn self.fmt.format(*self.args)\n\n\nclass StyleAdapter(logging.LoggerAdapter):\n\tdef __init__(self, logger, extra=None):\n\t\tsuper().__init__(logger, extra or {})\n\n\tdef log(self, level, msg, /, *args, **kwargs):\n\t\tif self.isEnabledFor(level):\n\t\t\tmsg, kwargs = self.process(msg, kwargs)\n\t\t\tself.logger._log(level, Message(msg, args), (), **kwargs)\n\n\nlogger = StyleAdapter(logging.getLogger(__name__))\n\n\ndef main():\n\tlogger.debug(\"Hello, {}\", \"world!\")\n\n\nif __name__ == \"__main__\":\n\tlogging.basicConfig(level=logging.DEBUG)\n\tmain()\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 56,
+      "length": 651
+    },
+    {
+      "text": "class ZeroMQSocketListener(QueueListener):\n\tdef __init__(self, uri, /, *handlers, **kwargs):\n\t\tself.ctx = kwargs.get(\"ctx\") or zmq.Context()\n\t\tsocket = zmq.Socket(self.ctx, zmq.SUB)\n\t\tsocket.setsockopt_string(zmq.SUBSCRIBE, \"\")  # subscribe to everything\n\t\tsocket.connect(uri)\n\t\tsuper().__init__(socket, *handlers, **kwargs)\n\n\tdef dequeue(self):\n\t\tmsg = self.queue.recv_json()\n\t\treturn logging.makeLogRecord(msg)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 57,
+      "length": 413
+    },
+    {
+      "text": "def combinations(iterable, r):\n\tpool = tuple(iterable)\n\tn = len(pool)\n\tfor indices in permutations(range(n), r):\n\t\tif sorted(indices) == list(indices):\n\t\t\tyield tuple(pool[i] for i in indices)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 58,
+      "length": 193
+    },
+    {
+      "text": "def combinations_with_replacement(iterable, r):\n\t# combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC\n\tpool = tuple(iterable)\n\tn = len(pool)\n\tif not n and r:\n\t\treturn\n\tindices = [0] * r\n\tyield tuple(pool[i] for i in indices)\n\twhile True:\n\t\tfor i in reversed(range(r)):\n\t\t\tif indices[i] != n - 1:\n\t\t\t\tbreak\n\t\telse:\n\t\t\treturn\n\t\tindices[i:] = [indices[i] + 1] * (r - i)\n\t\tyield tuple(pool[i] for i in indices)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 59,
+      "length": 418
+    },
+    {
+      "text": "def combinations_with_replacement(iterable, r):\n\tpool = tuple(iterable)\n\tn = len(pool)\n\tfor indices in product(range(n), repeat=r):\n\t\tif sorted(indices) == list(indices):\n\t\t\tyield tuple(pool[i] for i in indices)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 60,
+      "length": 212
+    },
+    {
+      "text": "def cycle(iterable):\n\t# cycle('ABCD') --> A B C D A B C D A B C D ...\n\tsaved = []\n\tfor element in iterable:\n\t\tyield element\n\t\tsaved.append(element)\n\twhile saved:\n\t\tfor element in saved:\n\t\t\tyield element\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 61,
+      "length": 203
+    },
+    {
+      "text": "def dropwhile(predicate, iterable):\n\t# dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1\n\titerable = iter(iterable)\n\tfor x in iterable:\n\t\tif not predicate(x):\n\t\t\tyield x\n\t\t\tbreak\n\tfor x in iterable:\n\t\tyield x\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 62,
+      "length": 207
+    },
+    {
+      "text": "def filterfalse(predicate, iterable):\n\t# filterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8\n\tif predicate is None:\n\t\tpredicate = bool\n\tfor x in iterable:\n\t\tif not predicate(x):\n\t\t\tyield x\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 63,
+      "length": 189
+    },
+    {
+      "text": "class groupby:\n\t# [k for k, g in groupby('AAAABBBCCDAABBB')] --> A B C D A B\n\t# [list(g) for k, g in groupby('AAAABBBCCD')] --> AAAA BBB CC D\n\n\tdef __init__(self, iterable, key=None):\n\t\tif key is None:\n\t\t\tkey = lambda x: x\n\t\tself.keyfunc = key\n\t\tself.it = iter(iterable)\n\t\tself.tgtkey = self.currkey = self.currvalue = object()\n\n\tdef __iter__(self):\n\t\treturn self\n\n\tdef __next__(self):\n\t\tself.id = object()\n\t\twhile self.currkey == self.tgtkey:\n\t\t\tself.currvalue = next(self.it)  # Exit on StopIteration\n\t\t\tself.currkey = self.keyfunc(self.currvalue)\n\t\tself.tgtkey = self.currkey\n\t\treturn (self.currkey, self._grouper(self.tgtkey, self.id))\n\n\tdef _grouper(self, tgtkey, id):\n\t\twhile self.id is id and self.currkey == tgtkey:\n\t\t\tyield self.currvalue\n\t\t\ttry:\n\t\t\t\tself.currvalue = next(self.it)\n\t\t\texcept StopIteration:\n\t\t\t\treturn\n\t\t\tself.currkey = self.keyfunc(self.currvalue)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 64,
+      "length": 874
+    },
+    {
+      "text": "def islice(iterable, *args):\n\t# islice('ABCDEFG', 2) --> A B\n\t# islice('ABCDEFG', 2, 4) --> C D\n\t# islice('ABCDEFG', 2, None) --> C D E F G\n\t# islice('ABCDEFG', 0, None, 2) --> A C E G\n\ts = slice(*args)\n\tstart, stop, step = s.start or 0, s.stop or sys.maxsize, s.step or 1\n\tit = iter(range(start, stop, step))\n\ttry:\n\t\tnexti = next(it)\n\texcept StopIteration:\n\t\t# Consume *iterable* up to the *start* position.\n\t\tfor i, element in zip(range(start), iterable):\n\t\t\tpass\n\t\treturn\n\ttry:\n\t\tfor i, element in enumerate(iterable):\n\t\t\tif i == nexti:\n\t\t\t\tyield element\n\t\t\t\tnexti = next(it)\n\texcept StopIteration:\n\t\t# Consume to *stop*.\n\t\tfor i, element in zip(range(i + 1, stop), iterable):\n\t\t\tpass\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 65,
+      "length": 688
+    },
+    {
+      "text": "def permutations(iterable, r=None):\n\t# permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC\n\t# permutations(range(3)) --> 012 021 102 120 201 210\n\tpool = tuple(iterable)\n\tn = len(pool)\n\tr = n if r is None else r\n\tif r > n:\n\t\treturn\n\tindices = list(range(n))\n\tcycles = list(range(n, n - r, -1))\n\tyield tuple(pool[i] for i in indices[:r])\n\twhile n:\n\t\tfor i in reversed(range(r)):\n\t\t\tcycles[i] -= 1\n\t\t\tif cycles[i] == 0:\n\t\t\t\tindices[i:] = indices[i + 1 :] + indices[i : i + 1]\n\t\t\t\tcycles[i] = n - i\n\t\t\telse:\n\t\t\t\tj = cycles[i]\n\t\t\t\tindices[i], indices[-j] = indices[-j], indices[i]\n\t\t\t\tyield tuple(pool[i] for i in indices[:r])\n\t\t\t\tbreak\n\t\telse:\n\t\t\treturn\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 66,
+      "length": 662
+    },
+    {
+      "text": "def combinations(iterable, r):\n\t# combinations('ABCD', 2) --> AB AC AD BC BD CD\n\t# combinations(range(4), 3) --> 012 013 023 123\n\tpool = tuple(iterable)\n\tn = len(pool)\n\tif r > n:\n\t\treturn\n\tindices = list(range(r))\n\tyield tuple(pool[i] for i in indices)\n\twhile True:\n\t\tfor i in reversed(range(r)):\n\t\t\tif indices[i] != i + n - r:\n\t\t\t\tbreak\n\t\telse:\n\t\t\treturn\n\t\tindices[i] += 1\n\t\tfor j in range(i + 1, r):\n\t\t\tindices[j] = indices[j - 1] + 1\n\t\tyield tuple(pool[i] for i in indices)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 67,
+      "length": 477
+    },
+    {
+      "text": "def product(*args, repeat=1):\n\t# product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy\n\t# product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111\n\tpools = [tuple(pool) for pool in args] * repeat\n\tresult = [[]]\n\tfor pool in pools:\n\t\tresult = [x + [y] for x in result for y in pool]\n\tfor prod in result:\n\t\tyield tuple(prod)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 68,
+      "length": 326
+    },
+    {
+      "text": "def repeat(object, times=None):\n\t# repeat(10, 3) --> 10 10 10\n\tif times is None:\n\t\twhile True:\n\t\t\tyield object\n\telse:\n\t\tfor i in range(times):\n\t\t\tyield object\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 69,
+      "length": 159
+    },
+    {
+      "text": "def takewhile(predicate, iterable):\n\t# takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4\n\tfor x in iterable:\n\t\tif predicate(x):\n\t\t\tyield x\n\t\telse:\n\t\t\tbreak\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 70,
+      "length": 152
+    },
+    {
+      "text": "def tee(iterable, n=2):\n\tit = iter(iterable)\n\tdeques = [collections.deque() for i in range(n)]\n\n\tdef gen(mydeque):\n\t\twhile True:\n\t\t\tif not mydeque:  # when the local deque is empty\n\t\t\t\ttry:\n\t\t\t\t\tnewval = next(it)  # fetch a new value and\n\t\t\t\texcept StopIteration:\n\t\t\t\t\treturn\n\t\t\t\tfor d in deques:  # load it to all the deques\n\t\t\t\t\td.append(newval)\n\t\t\tyield mydeque.popleft()\n\n\treturn tuple(gen(d) for d in deques)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 71,
+      "length": 414
+    },
+    {
+      "text": "def zip_longest(*args, fillvalue=None):\n\t# zip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-\n\titerators = [iter(it) for it in args]\n\tnum_active = len(iterators)\n\tif not num_active:\n\t\treturn\n\twhile True:\n\t\tvalues = []\n\t\tfor i, it in enumerate(iterators):\n\t\t\ttry:\n\t\t\t\tvalue = next(it)\n\t\t\texcept StopIteration:\n\t\t\t\tnum_active -= 1\n\t\t\t\tif not num_active:\n\t\t\t\t\treturn\n\t\t\t\titerators[i] = repeat(fillvalue)\n\t\t\t\tvalue = fillvalue\n\t\t\tvalues.append(value)\n\t\tyield tuple(values)\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 72,
+      "length": 475
+    },
+    {
+      "text": "import urllib.parse\nimport urllib.request\n\nurl = \"http://www.someserver.com/cgi-bin/register.cgi\"\nuser_agent = \"Mozilla/5.0 (Windows NT 6.1; Win64; x64)\"\nvalues = {\"name\": \"Michael Foord\", \"location\": \"Northampton\", \"language\": \"Python\"}\nheaders = {\"User-Agent\": user_agent}\n\ndata = urllib.parse.urlencode(values)\ndata = data.encode(\"ascii\")\nreq = urllib.request.Request(url, data, headers)\nwith urllib.request.urlopen(req) as response:\n\tthe_page = response.read()\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 73,
+      "length": 465
+    },
+    {
+      "text": "from urllib.request import Request, urlopen\nfrom urllib.error import URLError, HTTPError\n\nreq = Request(someurl)\ntry:\n\tresponse = urlopen(req)\nexcept HTTPError as e:\n\tprint(\"The server couldn't fulfill the request.\")\n\tprint(\"Error code: \", e.code)\nexcept URLError as e:\n\tprint(\"We failed to reach a server.\")\n\tprint(\"Reason: \", e.reason)\nelse:\n\tpass  # everything is fine\n",
+      "source": "Python 3.11.0 documentation - Python HOWTOs",
+      "id": 74,
+      "length": 372
+    },
+    {
+      "text": "class Graph():\n\n\tdef __init__(self, vertices):\n\t\tself.V = vertices\n\t\tself.graph = [[0 for column in range(vertices)]\n\t\t\t\tfor row in range(vertices)]\n\n\tdef printSolution(self, dist):\n\t\tprint('Vertex \t Distance from Source')\n\t\tfor node in range(self.V):\n\t\t\tprint(node, '\t\t', dist[node])\n\n\tdef minDistance(self, dist, sptSet):\n\t\tmin = 1e7\n\n\t\tfor v in range(self.V):\n\t\t\tif dist[v] < min and sptSet[v] == False:\n\t\t\t\tmin = dist[v]\n\t\t\t\tmin_index = v\n\n\t\treturn min_index\n\n\tdef dijkstra(self, src):\n\n\t\tdist = [1e7] * self.V\n\t\tdist[src] = 0\n\t\tsptSet = [False] * self.V\n\n\t\tfor cout in range(self.V):\n\n\t\t\tu = self.minDistance(dist, sptSet)\n\n\t\t\tsptSet[u] = True\n\n\t\t\tfor v in range(self.V):\n\t\t\t\tif (self.graph[u][v] > 0 and\n\t\t\t\t\tsptSet[v] == False and\n\t\t\t\t\tdist[v] > dist[u] + self.graph[u][v]):\n\t\t\t\t\tdist[v] = dist[u] + self.graph[u][v]\n\n\t\tself.printSolution(dist)",
+      "source": "https://www.geeksforgeeks.org/python-program-for-dijkstras-shortest-path-algorithm-greedy-algo-7/",
+      "id": 75,
+      "length": 851
+    },
+    {
+      "text": "def redirect(link:str, text=\"\"):\n\treturn render_template(\"redirect.html\", link=link, text=text)",
+      "source": "eChat source code line 35-36",
+      "id": 76,
+      "length": 95
+    },
+    {
+      "text": "def isEnglish(s):\n\ttry:\n\t\ts.encode(encoding='utf-8').decode('ascii')\n\texcept UnicodeDecodeError:\n\t\treturn False\n\telse:\n\t\treturn True",
+      "source": "eChat source code line 96-102",
+      "id": 77,
+      "length": 132
+    }
+  ]
+}

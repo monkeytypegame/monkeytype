@@ -1,0 +1,13 @@
+:root {
+  /*Personal preference: 'flip test colors'= on*/
+  --bg-color: #292521;
+  --main-color: #509452;
+  --caret-color: #1298ba;
+  --sub-color: #f5ae2d;
+  --sub-alt-color: #1d1b18;
+  --text-color: #e6c7a8;
+  --error-color: #7e2a33;
+  --error-extra-color: #ff645a;
+  --colorful-error-color: #7e2a33;
+  --colorful-error-extra-color: #ff645a;
+}

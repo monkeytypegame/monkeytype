@@ -1,0 +1,17 @@
+:root {
+  --bg-color: #000000;
+  --main-color: #c58aff;
+  --caret-color: #c58aff;
+  --sub-color: #972fff;
+  --sub-alt-color: #1e001e;
+  --text-color: #ebd7ff;
+  --error-color: #da3333;
+  --error-extra-color: #791717;
+  --colorful-error-color: #da3333;
+  --colorful-error-extra-color: #791717;
+}
+
+#liveWpm,
+#liveStatsTextTop {
+  color: #c58aff;
+}

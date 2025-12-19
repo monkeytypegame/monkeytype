@@ -1,0 +1,33 @@
+:root {
+  --bg-color: #fff2d5; /*Background*/
+  --main-color: #d19d01; /*Color after typing, monkeytype logo, WPM Number acc number etc*/
+  --caret-color: #3a87fe; /*Cursor Color*/
+  --sub-color: #0061fe; /*WPM text color of scrollbar and general color, before typed color*/
+  --sub-alt-color: #eddebc;
+  --text-color: #332800; /*Color of text after hovering over it*/
+  --error-color: #76bb40;
+  --error-extra-color: #4e7a27;
+  --colorful-error-color: #76bb40;
+  --colorful-error-extra-color: #4e7a27;
+}
+
+nav > .textButton:nth-child(1) {
+  color: #76bb40;
+}
+
+nav > .textButton:nth-child(2) {
+  color: #76bb40;
+}
+
+nav > .textButton:nth-child(3) {
+  color: #76bb40;
+}
+
+nav > .textButton:nth-child(4) {
+  color: #76bb40;
+}
+
+nav > .textButton:nth-child(5),
+nav > .textButton:nth-child(6) {
+  color: #76bb40;
+}

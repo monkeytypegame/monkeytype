@@ -1,0 +1,4 @@
+#words:not(.read_ahead_disabled) .word.active:nth-of-type(n + 2) {
+  --untyped-letter-color: transparent;
+  --untyped-letter-animation: none;
+}

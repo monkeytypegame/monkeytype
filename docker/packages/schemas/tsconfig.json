@@ -1,0 +1,10 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "ES6"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

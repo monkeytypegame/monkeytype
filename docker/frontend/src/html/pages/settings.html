@@ -1,0 +1,1970 @@
+<div class="page pageSettings hidden full-width content-grid" id="pageSettings">
+  <div class="settingsGroup quickNav">
+    <div class="links">
+      <a class="textButton" href="#group_behavior">
+        <i class="fas fa-tools"></i>
+        behavior
+      </a>
+      <a class="textButton" href="#group_input">
+        <i class="fas icon fa-keyboard"></i>
+        input
+      </a>
+      <a class="textButton" href="#group_sound">
+        <i class="fas icon fa-volume-up"></i>
+        sound
+      </a>
+      <a class="textButton" href="#group_caret">
+        <i class="fas icon fa-i-cursor"></i>
+        caret
+      </a>
+      <a class="textButton" href="#group_appearance">
+        <i class="fas icon fa-eye"></i>
+        appearance
+      </a>
+      <a class="textButton" href="#group_theme">
+        <i class="fas icon fa-palette"></i>
+        theme
+      </a>
+      <a class="textButton" href="#group_hideElements">
+        <i class="fas icon fa-eye-slash"></i>
+        hide elements
+      </a>
+      <a class="textButton" href="#group_dangerZone">
+        <i class="fas icon fa-exclamation-triangle"></i>
+        danger zone
+      </a>
+    </div>
+  </div>
+
+  <div class="tip">
+    tip: You can also change all these settings quickly using the command line (
+    <key>ctrl/cmd</key>
+    +
+    <key>shift</key>
+    +
+    <key>p</key>
+    or
+    <key>esc</key>
+    )
+  </div>
+
+  <div id="ad-settings-1-wrapper" class="ad full-width advertisement ad-h">
+    <div class="icon"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-1"></div>
+  </div>
+  <div id="ad-settings-1-small-wrapper" class="ad advertisement ad-h-s">
+    <div class="icon small"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-1-small"></div>
+  </div>
+
+  <div class="accountSettingsNotice">
+    <i class="fas icon fa-user"></i>
+    <p>
+      Account settings have moved. You can now access them by hovering over the
+      account button in the top right corner, then clicking "Account settings".
+    </p>
+    <button class="dismissAndGo">go to account settings</button>
+  </div>
+
+  <button id="group_behavior" class="text sectionGroupTitle" group="behavior">
+    <i class="fas fa-chevron-down"></i>
+    <span>behavior</span>
+  </button>
+  <div class="settingsGroup behavior">
+    <div class="section tags needsAccount" data-section-id="tags">
+      <div class="groupTitle">
+        <i class="fas fa-tag"></i>
+        <span>tags</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        With tags, you can compare how fast you're typing in different
+        situations. You can see your active tags above the test words. They will
+        remain active until you deactivate them, or refresh the page.
+      </div>
+      <div class="tagsListAndButton">
+        <div class="tagsList"></div>
+        <button class="addTagButton fullWidth">add tag</button>
+      </div>
+    </div>
+    <div class="section presets needsAccount" data-section-id="presets">
+      <div class="groupTitle">
+        <i class="fas fa-sliders-h"></i>
+        <span>presets</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Create settings presets that can be applied with one click. Remember to
+        edit your preset if you make any changes - they don't save on their own.
+      </div>
+      <div class="presetsListAndButton">
+        <div class="presetsList"></div>
+        <button class="addPresetButton fullWidth">add preset</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="difficulty">
+      <div class="groupTitle">
+        <i class="fas fa-star"></i>
+        <span>test difficulty</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Normal is the classic typing test experience. Expert fails the test if
+        you submit (press space) an incorrect word. Master fails if you press a
+        single incorrect key (meaning you have to achieve 100% accuracy).
+      </div>
+      <div class="buttons">
+        <button data-config-value="normal">normal</button>
+        <button data-config-value="expert">expert</button>
+        <button data-config-value="master">master</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="quickRestart">
+      <div class="groupTitle">
+        <i class="fas fa-redo-alt"></i>
+        <span>quick restart</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Press
+        <key>tab</key>
+        ,
+        <key>esc</key>
+        or
+        <key>enter</key>
+        to quickly restart the test, or to quickly jump to the test page. These
+        options disable tab navigation on most parts of the website. Using the
+        "esc" option will move opening the commandline to the
+        <key>tab</key>
+        key.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="tab">tab</button>
+        <button data-config-value="esc">esc</button>
+        <button data-config-value="enter">enter</button>
+      </div>
+    </div>
+
+    <div class="section" data-config-name="repeatQuotes">
+      <div class="groupTitle">
+        <i class="fas fa-sync-alt"></i>
+        <span>repeat quotes</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        This setting changes the restarting behavior when typing in quote mode.
+        Changing it to 'typing' will repeat the quote if you restart while
+        typing.
+      </div>
+      <!-- , and 'always' will always repeat the quote (you will need to press <key>shift + tab</key> to move on to the next quote). -->
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="typing">typing</button>
+        <!-- <div class="button" repeatQuotes="always" tabindex="0" onclick="this.blur();">
+          always
+        </div> -->
+      </div>
+    </div>
+
+    <div class="section" data-config-name="blindMode">
+      <div class="groupTitle">
+        <i class="fas fa-eye-slash"></i>
+        <span>blind mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        No errors or incorrect words are highlighted. Helps you to focus on raw
+        speed. If enabled, quick end is recommended.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">
+          ⠀
+          <!-- On is missing on purpose. -->
+        </button>
+      </div>
+    </div>
+    <div class="section" data-config-name="alwaysShowWordsHistory">
+      <div class="groupTitle">
+        <i class="fas fa-align-left"></i>
+        <span>always show words history</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        This option will automatically show the words history at the end of the
+        test. Can cause slight lag with a lot of words.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="singleListCommandLine">
+      <div class="groupTitle">
+        <i class="fas fa-list"></i>
+        <span>single list command line</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When enabled, it will show the command line with all commands in a
+        single list instead of submenu arrangements. Selecting 'manual' will
+        expose all commands only after typing
+        <key>></key>
+        .
+      </div>
+      <div class="buttons">
+        <button data-config-value="manual">manual</button>
+        <button data-config-value="on">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="minWpm">
+      <div class="groupTitle">
+        <i class="fas fa-bomb"></i>
+        <span>min speed</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Automatically fails a test if your speed falls below a threshold.
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="min speed"
+            class="input customMinWpmSpeed"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+        </div>
+        <div class="buttons">
+          <button data-config-value="off">off</button>
+          <button data-config-value="custom">custom</button>
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="minAcc">
+      <div class="groupTitle">
+        <i class="fas fa-bomb"></i>
+        <span>min accuracy</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Automatically fails a test if your accuracy falls below a threshold.
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="min accuracy"
+            class="input customMinAcc"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+        </div>
+        <div class="buttons">
+          <button data-config-value="off">off</button>
+          <button data-config-value="custom">custom</button>
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="minBurst">
+      <div class="groupTitle">
+        <i class="fas fa-bomb"></i>
+        <span>min burst</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Automatically fails a test if your raw for a single word falls below
+        this threshold. Selecting 'flex' allows for this threshold to
+        automatically decrease for longer words.
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="min burst"
+            class="input customMinBurst"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+        </div>
+        <div class="buttons">
+          <button data-config-value="off">off</button>
+          <button data-config-value="fixed">fixed</button>
+          <button data-config-value="flex">flex</button>
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="britishEnglish">
+      <div class="groupTitle">
+        <i class="fas fa-language"></i>
+        <span>british english</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When enabled, the website will use the British spelling instead of
+        American. Note that this might not replace all words correctly. If you
+        find any issues, please let us know.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="language">
+      <div class="groupTitle">
+        <i class="fas fa-language"></i>
+        <span>language</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change in which language you want to type.</div>
+      <div class="inputs">
+        <select></select>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="funbox">
+      <div class="groupTitle">
+        <i class="fas fa-gamepad"></i>
+        <span>funbox</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        These are special modes that change the website in some special way (by
+        altering the word generation, behavior of the website or the looks).
+        Give each one of them a try!
+      </div>
+      <div class="buttons"></div>
+    </div>
+    <div class="sectionSpacer"></div>
+    <div class="section" data-config-name="customLayoutfluid">
+      <div class="groupTitle">
+        <i class="fas fa-tint"></i>
+        <span>custom layoutfluid</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Select which layouts you want the layoutfluid funbox to cycle through.
+      </div>
+      <div class="inputs">
+        <select multiple></select>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+    <div class="section" data-config-name="customPolyglot">
+      <div class="groupTitle">
+        <i class="fas fa-language"></i>
+        <span>polyglot languages</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Select which languages you want the polyglot funbox to use.
+      </div>
+      <div class="inputs">
+        <select multiple></select>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+  <button id="group_input" class="text sectionGroupTitle" group="input">
+    <i class="fas fa-chevron-down"></i>
+    input
+  </button>
+  <div class="settingsGroup input">
+    <div class="section" data-config-name="freedomMode">
+      <div class="groupTitle">
+        <i class="fas fa-feather-alt"></i>
+        <span>freedom mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Allows you to delete any word, even if it was typed correctly.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="strictSpace">
+      <div class="groupTitle">
+        <i class="fas fa-minus"></i>
+        <span>strict space</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Pressing space at the beginning of a word will insert a space character
+        when this mode is enabled.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="oppositeShiftMode">
+      <div class="groupTitle">
+        <i class="fas fa-exchange-alt"></i>
+        <span>opposite shift mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        This mode will force you to use opposite
+        <key>shift</key>
+        keys for shifting. Using an incorrect one will count as an error. This
+        feature ignores keys in locations
+        <key>B</key>
+        ,
+        <key>Y</key>
+        , and
+        <key>^</key>
+        because many people use the other hand for those keys. If you're using
+        external software to emulate your layout (including QMK), you should use
+        the "keymap" mode - the standard "on" will not work. This will enforce
+        opposite shift based on the "keymap layout" setting.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="on">on</button>
+        <button data-config-value="keymap">keymap</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="stopOnError">
+      <div class="groupTitle">
+        <i class="fas fa-hand-paper"></i>
+        <span>stop on error</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Letter mode will stop input when pressing any incorrect letters. Word
+        mode will not allow you to continue to the next word until you correct
+        all mistakes.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="word">word</button>
+        <button data-config-value="letter">letter</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="confidenceMode">
+      <div class="groupTitle">
+        <i class="fas fa-backspace"></i>
+        <span>confidence mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When enabled, you will not be able to go back to previous words to fix
+        mistakes. When turned up to the max, you won't be able to backspace at
+        all.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+
+        <button data-config-value="on">on</button>
+        <button data-config-value="max">max</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="quickEnd">
+      <div class="groupTitle">
+        <i class="fas fa-step-forward"></i>
+        <span>quick end</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        This only applies to the words mode - when enabled, the test will end as
+        soon as the last word has been typed, even if it's incorrect. When
+        disabled, you need to manually confirm the last incorrect entry with a
+        space.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="indicateTypos">
+      <div class="groupTitle">
+        <i class="fas fa-exclamation"></i>
+        <span>indicate typos</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Shows typos that you've made. "Below" shows what you typed below the
+        letters, "replace" will replace the letters with the ones you typed and
+        "both" will do the same as replace and below, but it will show the
+        correct letters below your mistakes.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="below">below</button>
+        <button data-config-value="replace">replace</button>
+        <button data-config-value="both">both</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="hideExtraLetters">
+      <div class="groupTitle">
+        <i class="fas fa-eye-slash"></i>
+        <span>hide extra letters</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Hides extra letters. This will completely avoid words jumping lines (due
+        to changing width), but might feel a bit confusing when you press a key
+        and nothing happens.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="compositionDisplay">
+      <div class="groupTitle">
+        <i class="fas fa-language"></i>
+        <span>composition display</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change how composition is displayed. "off" will just underline the
+        letter if composition is active. "below" will show the composed
+        character below the test. "replace" will replace the letter in the test
+        with the composed character.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="below">below</button>
+        <button data-config-value="replace">replace</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="lazyMode">
+      <div class="groupTitle">
+        <i class="fas fa-couch"></i>
+        <span>lazy mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Replaces accents / diacritics / special characters with their normal
+        letter equivalents.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="layout">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>layout emulator</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        With this setting you can emulate other layouts. This setting is best
+        kept off, as it can break things like dead keys and alt layers.
+      </div>
+      <div class="inputs">
+        <select></select>
+      </div>
+    </div>
+    <div class="section" data-config-name="codeUnindentOnBackspace">
+      <div class="groupTitle">
+        <i class="fas fa-code"></i>
+        <span>code unindent on backspace</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Automatically go back to the previous line when deleting line leading
+        tab characters. Only works in code languages.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="ad-settings-2-wrapper" class="ad full-width advertisement ad-h">
+    <div class="icon"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-2"></div>
+  </div>
+  <div id="ad-settings-2-small-wrapper" class="ad advertisement ad-h-s">
+    <div class="icon small"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-2-small"></div>
+  </div>
+
+  <button id="group_sound" class="text sectionGroupTitle" group="sound">
+    <i class="fas fa-chevron-down"></i>
+    sound
+  </button>
+  <div class="settingsGroup sound">
+    <div class="section" data-config-name="soundVolume">
+      <div class="groupTitle">
+        <i class="fas fa-volume-down"></i>
+        <span>sound volume</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change the volume of the sound effects.</div>
+      <div class="inputs">
+        <div class="rangeGroup">
+          <div class="value">100</div>
+          <input type="range" min="0" max="1" step="0.1" />
+        </div>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="playSoundOnClick">
+      <div class="groupTitle">
+        <i class="fas fa-volume-up"></i>
+        <span>play sound on click</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Plays a short sound when you press a key.</div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="1">click</button>
+        <button data-config-value="2">beep</button>
+        <button data-config-value="3">pop</button>
+        <button data-config-value="4">nk creams</button>
+        <button data-config-value="5">typewriter</button>
+        <button data-config-value="6">osu</button>
+        <button data-config-value="7">hitmarker</button>
+        <button data-config-value="8">sine</button>
+        <button data-config-value="9">sawtooth</button>
+        <button data-config-value="10">square</button>
+        <button data-config-value="11">triangle</button>
+        <button data-config-value="12">pentatonic</button>
+        <button data-config-value="13">wholetone</button>
+        <button data-config-value="14">fist fight</button>
+        <button data-config-value="15">rubber keys</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="playSoundOnError">
+      <div class="groupTitle">
+        <i class="fas fa-volume-mute"></i>
+        <span>play sound on error</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Plays a short sound if you press an incorrect key or press space too
+        early.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="1">damage</button>
+        <button data-config-value="2">triangle</button>
+        <button data-config-value="3">square</button>
+        <button data-config-value="4">missed punch</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="playTimeWarning">
+      <div class="groupTitle">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>play time warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Play a short warning sound if you are close to the end of a timed test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="1">1 second</button>
+        <button data-config-value="3">3 seconds</button>
+        <button data-config-value="5">5 seconds</button>
+        <button data-config-value="10">10 seconds</button>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <button id="group_caret" class="text sectionGroupTitle" group="caret">
+    <i class="fas fa-chevron-down"></i>
+    caret
+  </button>
+  <div class="settingsGroup caret">
+    <div class="section" data-config-name="smoothCaret">
+      <div class="groupTitle">
+        <i class="fas fa-i-cursor"></i>
+        <span>smooth caret</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        The caret will move smoothly between letters and words.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="slow">slow</button>
+        <button data-config-value="medium">medium</button>
+        <button data-config-value="fast">fast</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="caretStyle">
+      <div class="groupTitle">
+        <i class="fas fa-i-cursor"></i>
+        <span>caret style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change the style of the caret during the test.</div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="default">|</button>
+        <button data-config-value="block">▮</button>
+        <button data-config-value="outline">▯</button>
+        <button data-config-value="underline">_</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="paceCaret">
+      <div class="groupTitle">
+        <i class="fas fa-i-cursor"></i>
+        <span>pace caret</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Displays a second caret that moves at constant speed. The 'average'
+        option averages the speed of last 10 results. The 'tag pb' option takes
+        the highest PB of any active tag. The 'daily' option takes the highest
+        speed of the last 24 hours.
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="wpm"
+            class="input customPaceCaretSpeed"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+        </div>
+        <div class="buttons">
+          <button data-config-value="off">off</button>
+          <button data-config-value="average">avg</button>
+          <button data-config-value="pb">pb</button>
+          <button data-config-value="tagPb">tag pb</button>
+          <button data-config-value="last">last</button>
+          <button data-config-value="daily">daily</button>
+          <button data-config-value="custom">custom</button>
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="repeatedPace">
+      <div class="groupTitle">
+        <i class="fas fa-i-cursor"></i>
+        <span>repeated pace</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When repeating a test, a pace caret will automatically be enabled for
+        one test with the speed of your previous test. It does not override the
+        pace caret if it's already enabled.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="paceCaretStyle">
+      <div class="groupTitle">
+        <i class="fas fa-i-cursor"></i>
+        <span>pace caret style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the style of the pace caret during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="default">|</button>
+        <button data-config-value="block">▮</button>
+        <button data-config-value="outline">▯</button>
+        <button data-config-value="underline">_</button>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <button
+    id="group_appearance"
+    class="text sectionGroupTitle"
+    group="appearance"
+  >
+    <i class="fas fa-chevron-down"></i>
+    appearance
+  </button>
+  <div class="settingsGroup appearance">
+    <div class="section" data-config-name="timerStyle">
+      <div class="groupTitle">
+        <i class="fas fa-chart-pie"></i>
+        <span>live progress style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the style of the timer/word count during a test. "Flash" styles
+        will briefly show the timer in timed modes every 15 seconds.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="bar">bar</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+        <button data-config-value="flash_text">flash text</button>
+        <button data-config-value="flash_mini">flash mini</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="liveSpeedStyle">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>live speed style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the style of the live speed displayed during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="liveAccStyle">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>live accuracy style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the style of the live accuracy displayed during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="liveBurstStyle">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>live burst style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the style of the live burst speed displayed during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="timerColor">
+      <div class="groupTitle">
+        <i class="fas fa-chart-pie"></i>
+        <span>live stats color</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the color of the progress, live speed, accuracy and burst text.
+      </div>
+      <div class="buttons">
+        <button data-config-value="black">black</button>
+        <button data-config-value="sub">sub</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="main">main</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="timerOpacity">
+      <div class="groupTitle">
+        <i class="fas fa-chart-pie"></i>
+        <span>live stats opacity</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the opacity of the progress, live speed, burst and accuracy text.
+      </div>
+      <div class="buttons">
+        <button data-config-value="0.25">0.25</button>
+        <button data-config-value="0.5">0.5</button>
+        <button data-config-value="0.75">0.75</button>
+        <button data-config-value="1">1</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="highlightMode">
+      <div class="groupTitle">
+        <i class="fas fa-highlighter"></i>
+        <span>highlight mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change what is highlighted during the test.</div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="letter">letter</button>
+        <button data-config-value="word">word</button>
+        <button data-config-value="next_word">next word</button>
+        <button data-config-value="next_two_words">next two words</button>
+        <button data-config-value="next_three_words">next three words</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="tapeMode">
+      <div class="groupTitle">
+        <i class="fas fa-tape"></i>
+        <span>tape mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Only shows one line which scrolls horizontally. Setting this to 'word'
+        will make it scroll after every word and 'letter' will scroll after
+        every keypress. Works best with smooth line scroll enabled and a
+        monospace font.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="letter">letter</button>
+        <button data-config-value="word">word</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="tapeMargin">
+      <div class="groupTitle">
+        <i class="fas fa-tape"></i>
+        <span>tape margin</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When in tape mode, set the carets position from the left edge of the
+        typing test as a percentage (for example, 50% centers it).
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="tape margin"
+            class="input"
+            min="10"
+            max="90"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="smoothLineScroll">
+      <div class="groupTitle">
+        <i class="fas fa-align-left"></i>
+        <span>smooth line scroll</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When enabled, the line transition will be animated.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="showAllLines">
+      <div class="groupTitle">
+        <i class="fas fa-align-left"></i>
+        <span>show all lines</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When enabled, the website will show all lines for word, custom and quote
+        mode tests - otherwise the lines will be limited to 3, and will
+        automatically scroll. Using this could cause the timer text and live
+        speed to not be visible.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="alwaysShowDecimalPlaces">
+      <div class="groupTitle">
+        <div class="textIcon">00</div>
+        <span>always show decimal places</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Always shows decimal places for values on the result page, without the
+        need to hover over the stats.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="typingSpeedUnit">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>typing speed unit</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Display typing speed in the specified unit.</div>
+      <div class="buttons">
+        <button data-config-value="wpm">wpm</button>
+        <button data-config-value="cpm">cpm</button>
+        <button data-config-value="wps">wps</button>
+        <button data-config-value="cps">cps</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="startGraphsAtZero">
+      <div class="groupTitle">
+        <i class="fas fa-chart-line"></i>
+        <span>start graphs at zero</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Force graph axis to always start at zero, no matter what the data is.
+        Turning this off may exaggerate the value changes.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="maxLineWidth">
+      <div class="groupTitle">
+        <i class="fas fa-text-width"></i>
+        <span>max line width</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the maximum width of the typing test, measured in characters.
+        Setting this to 0 will align the words to the edges of the content area.
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="max line width"
+            class="input"
+            min="0"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="fontSize">
+      <div class="groupTitle">
+        <i class="fas fa-font"></i>
+        <span>font size</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change the font size of the test words.</div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="font size"
+            class="input"
+            tabindex="0"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="fontFamily">
+      <div class="groupTitle">
+        <i class="fas fa-font"></i>
+        <span>font family</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change the font family used by the website. Using a local font will
+        override your choice.
+        <br />
+        Note: Local fonts are not sent to the server and will not persist across
+        devices.
+      </div>
+      <div class="topRight">
+        <div class="usingLocalFont">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local font
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customFontUpload"
+            class="button"
+            aria-label="Select custom font"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local font
+          </label>
+
+          <input
+            type="file"
+            id="customFontUpload"
+            accept="font/woff,font/woff2,font/ttf,font/otf"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="buttons"></div>
+    </div>
+    <div class="section" data-config-name="keymapMode">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>keymap</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Displays your current layout while taking a test. React shows what you
+        pressed and Next shows what you need to press next.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="static">static</button>
+        <button data-config-value="react">react</button>
+        <button data-config-value="next">next</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="keymapLayout">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>keymap layout</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Controls which layout is displayed on the keymap.</div>
+      <div class="inputs">
+        <select></select>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="keymapStyle">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>keymap style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <!-- <div class="text">Displays the keymap in a different style.</div> -->
+      <div class="buttons">
+        <button data-config-value="staggered">staggered</button>
+        <button data-config-value="alice">alice</button>
+        <button data-config-value="matrix">matrix</button>
+        <button data-config-value="split">split</button>
+        <button data-config-value="split_matrix">split matrix</button>
+        <button data-config-value="steno">steno</button>
+        <button data-config-value="steno_matrix">steno matrix</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="keymapLegendStyle">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>keymap legend style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="buttons">
+        <button data-config-value="lowercase">lowercase</button>
+        <button data-config-value="uppercase">uppercase</button>
+        <button data-config-value="blank">blank</button>
+        <button data-config-value="dynamic">dynamic</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="keymapShowTopRow">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>keymap show top row</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="buttons">
+        <button data-config-value="always">always</button>
+        <button data-config-value="layout">layout dependent</button>
+        <button data-config-value="never">never</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="keymapSize">
+      <div class="groupTitle">
+        <i class="fas fa-keyboard"></i>
+        <span>keymap size</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change the size of the keymap.</div>
+      <div class="inputs">
+        <div class="rangeGroup">
+          <div class="value">1.0</div>
+          <input type="range" min="0.5" max="3.5" step="0.1" />
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="ad-settings-3-wrapper" class="ad full-width advertisement ad-h">
+    <div class="icon"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-3"></div>
+  </div>
+  <div id="ad-settings-3-small-wrapper" class="ad advertisement ad-h-s">
+    <div class="icon small"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-3-small"></div>
+  </div>
+
+  <button id="group_theme" class="text sectionGroupTitle" group="theme">
+    <i class="fas fa-chevron-down"></i>
+    theme
+  </button>
+  <div class="settingsGroup theme">
+    <div class="section" data-config-name="flipTestColors">
+      <div class="groupTitle">
+        <i class="fas fa-adjust"></i>
+        <span>flip test colors</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        By default, typed text is brighter than the future text. When enabled,
+        the colors will be flipped and the future text will be brighter than the
+        already typed text.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="colorfulMode">
+      <div class="groupTitle">
+        <i class="fas fa-fill-drip"></i>
+        <span>colorful mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        When enabled, the test words will use the main color, instead of the
+        text color, making the website more colorful.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="customBackgroundSize">
+      <div class="groupTitle">
+        <i class="fas fa-image"></i>
+        <span>custom background</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Set an image url or local image to be a custom background image. Local
+        image always take priority over the image url. Cover fits the image to
+        cover the screen. Contain fits the image to be fully visible. Max fits
+        the image corner to corner.
+        <br />
+        <br />
+        Note: The local image is stored in your browser's local storage and will
+        not be uploaded to the server. This means that if you clear your
+        browser's local storage or use a different browser, the local image will
+        be lost.
+      </div>
+      <div class="inputs">
+        <div class="usingLocalImage">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local image
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customBackgroundUpload"
+            class="button"
+            aria-label="Select custom background image"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local image
+          </label>
+
+          <input
+            type="file"
+            id="customBackgroundUpload"
+            accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+        <div class="inputAndButton">
+          <input
+            type="text"
+            placeholder="image url"
+            class="input"
+            tabindex="0"
+            onClick="this.select();"
+          />
+        </div>
+        <div class="buttons">
+          <button data-config-value="cover">cover</button>
+          <button data-config-value="contain">contain</button>
+          <button data-config-value="max">max</button>
+        </div>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="customBackgroundFilter">
+      <div class="groupTitle">
+        <i class="fas fa-sliders-h"></i>
+        <span>custom background filter</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Apply various effects to the custom background.</div>
+      <div class="groups">
+        <div class="group blur">
+          <div class="title">blur</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="5" value="0" step="0.1" />
+        </div>
+        <div class="group brightness">
+          <div class="title">brightness</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="2" value="1" step="0.1" />
+        </div>
+        <div class="group saturate">
+          <div class="title">saturate</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="2" value="1" step="0.1" />
+        </div>
+        <div class="group opacity">
+          <div class="title">opacity</div>
+          <div class="value"></div>
+          <input type="range" min="0.1" max="1" value="1" step="0.1" />
+        </div>
+      </div>
+    </div>
+    <div class="section" data-config-name="autoSwitchTheme">
+      <div class="groupTitle">
+        <i class="fas fa-palette"></i>
+        <span>auto switch theme</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Enabling this will automatically switch the theme between light and dark
+        depending on the system theme.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="autoSwitchThemeInputs">
+      <div>light</div>
+      <div><select class="light"></select></div>
+      <div>dark</div>
+      <div><select class="dark"></select></div>
+    </div>
+    <div class="section fullWidth" data-config-name="randomTheme">
+      <div class="groupTitle">
+        <i class="fas fa-random"></i>
+        <span>randomize theme</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        After completing a test, the theme will be set to a random one. The
+        random themes are not saved to your config. If set to 'favorite' only
+        favorite themes will be randomized. If set to 'light' or 'dark', only
+        presets with light or dark background colors will be randomized,
+        respectively. If set to 'auto' dark or light themes are used, depending
+        on your system theme. If set to 'custom', custom themes will be
+        randomized.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="on">on</button>
+        <button data-config-value="fav">favorite</button>
+        <button data-config-value="light">light</button>
+        <button data-config-value="dark">dark</button>
+        <button data-config-value="auto">auto</button>
+        <button data-config-value="custom">custom</button>
+      </div>
+    </div>
+    <div class="section themes fullWidth" data-section-id="theme">
+      <div class="groupTitle">
+        <i class="fas fa-palette"></i>
+        <span>theme</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="tabs">
+        <button data-tab="preset">preset</button>
+        <button data-tab="custom">custom</button>
+      </div>
+      <!-- <div class='tabs'>
+        <button tab="preset" class="tab">preset</button>
+        <button tab="custom" class="tab">custom</button>
+      </div> -->
+
+      <div class="tabContainer">
+        <div tabContent="custom" class="tabContent customTheme hidden">
+          <!-- Used to convert colors to hex  -->
+          <div class="colorConverter"></div>
+          <div class="allCustomThemes buttons"></div>
+          <div class="customThemeInputs">
+            <div class="customThemeInput">
+              <label class="colorText">background</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--bg-color-txt"
+                />
+                <label
+                  for="--bg-color"
+                  class="button"
+                  style="
+                    color: var(--text-color);
+                    background: var(--sub-alt-color);
+                  "
+                >
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--bg-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">sub alt</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--sub-alt-color-txt"
+                />
+                <label
+                  for="--sub-alt-color"
+                  class="button"
+                  style="
+                    color: var(--text-color);
+                    background: var(--sub-alt-color);
+                  "
+                >
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--sub-alt-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">main</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--main-color-txt"
+                />
+                <label for="--main-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--main-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">sub</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--sub-color-txt"
+                />
+                <label for="--sub-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--sub-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">caret</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--caret-color-txt"
+                />
+                <label for="--caret-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--caret-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">text</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--text-color-txt"
+                />
+                <label for="--text-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--text-color"
+                />
+              </div>
+            </div>
+
+            <!-- <span class="spacer"></span> -->
+
+            <div class="customThemeInput">
+              <label class="colorText">error</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--error-color-txt"
+                />
+                <label for="--error-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--error-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">extra error</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--error-extra-color-txt"
+                />
+                <label for="--error-extra-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--error-extra-color"
+                />
+              </div>
+            </div>
+
+            <span class="colorfulHeader">colorful mode</span>
+            <div class="customThemeInput">
+              <label class="colorText">error</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--colorful-error-color-txt"
+                />
+                <label for="--colorful-error-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--colorful-error-color"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">extra error</label>
+              <div class="colorPicker inputAndButton">
+                <input
+                  type="text"
+                  value="#000000"
+                  class="input"
+                  id="--colorful-error-extra-color-txt"
+                />
+                <label for="--colorful-error-extra-color" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="--colorful-error-extra-color"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="customThemeButtons">
+            <button id="loadCustomColorsFromPreset">load from preset</button>
+            <button id="shareCustomThemeButton">share</button>
+            <button id="saveCustomThemeButton">save as new</button>
+          </div>
+        </div>
+        <div tabContent="preset" class="tabContent">
+          <div class="favThemes buttons"></div>
+          <div class="allThemes buttons"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <button
+    id="group_hideElements"
+    class="text sectionGroupTitle"
+    group="hideElements"
+  >
+    <i class="fas fa-chevron-down"></i>
+    hide elements
+  </button>
+  <div class="settingsGroup hideElements">
+    <div class="section" data-config-name="showKeyTips">
+      <div class="groupTitle">
+        <i class="fas fa-question"></i>
+        <span>key tips</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Shows the keybind tips at the bottom of the page.</div>
+      <div class="buttons">
+        <button data-config-value="false">hide</button>
+        <button data-config-value="true">show</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="showOutOfFocusWarning">
+      <div class="groupTitle">
+        <i class="fas fa-exclamation"></i>
+        <span>out of focus warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Shows an out of focus reminder after 1 second of being 'out of focus'
+        (not being able to type).
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">hide</button>
+        <button data-config-value="true">show</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="capsLockWarning">
+      <div class="groupTitle">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>caps lock warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Displays a warning when caps lock is on.</div>
+      <div class="buttons">
+        <button data-config-value="false">hide</button>
+        <button data-config-value="true">show</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="showAverage">
+      <div class="groupTitle">
+        <i class="fas fa-chart-bar"></i>
+        <span>average</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Displays your average speed and/or accuracy over the last 10 tests.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="speed">speed</button>
+        <button data-config-value="acc">acc</button>
+        <button data-config-value="both">both</button>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <button
+    id="group_dangerZone"
+    class="text sectionGroupTitle"
+    group="dangerZone"
+  >
+    <i class="fas fa-chevron-down"></i>
+    danger zone
+  </button>
+  <div class="settingsGroup dangerZone">
+    <div
+      class="section importexportSettings"
+      data-section-id="importexportSettings"
+    >
+      <div class="groupTitle">
+        <i class="fas fa-sliders-h"></i>
+        <span>import/export settings</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Import or export the settings as JSON.</div>
+      <div class="buttons">
+        <button id="importSettingsButton">import</button>
+        <button id="exportSettingsButton">export</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="ads">
+      <div class="groupTitle">
+        <i class="fas fa-ad"></i>
+        <span>ads</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        You can disable or enable ads at any time. "Result" will show one ad on
+        the result page, "on" will add floating vertical banners, and "sellout"
+        will add multiple ads on every page.
+        <br />
+        <br />
+        (changes will take effect after a refresh).
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="result">result</button>
+        <button data-config-value="on">on</button>
+        <button data-config-value="sellout">sellout</button>
+      </div>
+    </div>
+    <div
+      class="section updateCookiePreferences"
+      data-section-id="updateCookiePreferences"
+    >
+      <div class="groupTitle">
+        <i class="fas fa-cookie-bite"></i>
+        <span>update cookie preferences</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        If you changed your mind about which cookies you consent to, you can
+        change your preferences here.
+      </div>
+      <div class="buttons">
+        <button>open</button>
+      </div>
+    </div>
+    <div class="section fpsLimit">
+      <div class="groupTitle">
+        <i class="fas fa-video"></i>
+        <span>animation fps limit</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Limit the maximum fps for animations. Setting this to "native" will run
+        the animations as fast as possible (at your monitor's refresh rate).
+        Setting this above your monitor's refresh rate will have no effect.
+      </div>
+      <!-- <div class="inputs">
+        <div class="rangeGroup">
+          <div class="value">---</div>
+          <input type="range" min="30" max="1000" step="10" />
+        </div>
+      </div> -->
+      <div class="inputs">
+        <button data-fpsLimit="native">native</button>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+        <input type="number" placeholder="custom limit" min="30" max="1000" />
+      </div>
+    </div>
+    <div class="section resetSettings" data-section-id="resetSettings">
+      <div class="groupTitle">
+        <i class="fas fa-redo-alt"></i>
+        <span>reset settings</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Resets settings to the default (but doesn't touch your tags and
+        presets).
+        <br />
+        <span class="red">You can't undo this action!</span>
+      </div>
+      <div class="buttons">
+        <button class="danger" id="resetSettingsButton">reset settings</button>
+      </div>
+    </div>
+    <div class="accountSettingsNotice">
+      <i class="fas icon fa-user"></i>
+      <p>
+        Account settings have moved. You can now access them by hovering over
+        the account button in the top right corner, then clicking "Account
+        settings".
+      </p>
+      <button class="dismissAndGo">go to account settings</button>
+    </div>
+  </div>
+</div>

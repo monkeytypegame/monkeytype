@@ -1,0 +1,16 @@
+:root {
+  --bg-color: #dae0f5;
+  --main-color: #506477;
+  --caret-color: #df4576;
+  --sub-color: #92a4be;
+  --sub-alt-color: #c1c7df;
+  --text-color: #678198;
+  --error-color: #df4576;
+  --error-extra-color: #d996ac;
+  --colorful-error-color: #df4576;
+  --colorful-error-extra-color: #d996ac;
+}
+
+header #logo .bottom {
+  color: #df4576;
+}

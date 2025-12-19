@@ -1,0 +1,88 @@
+:root {
+  --bg-color: #00021b;
+  --main-color: #e51376;
+  --caret-color: #e51376;
+  --sub-color: #3c4c79;
+  --sub-alt-color: #18214c;
+  --text-color: #fff;
+  --error-color: #02d3b0;
+  --error-extra-color: #3f887c;
+  --colorful-error-color: #02d3b0;
+  --colorful-error-extra-color: #3f887c;
+}
+
+@keyframes trance {
+  0% {
+    color: #e51376;
+  }
+  50% {
+    color: #0e77ee;
+  }
+  100% {
+    color: #e51376;
+  }
+}
+
+@keyframes trance-bg {
+  0% {
+    background: #e51376;
+  }
+  50% {
+    background: #0e77ee;
+  }
+  100% {
+    background: #e51376;
+  }
+}
+
+.button.discord::after,
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: trance-bg 5s linear infinite;
+}
+
+header.focus .button.discord::after,
+header .button.discord.dotHidden::after {
+  animation-name: none !important;
+}
+
+#logo .bottom,
+header .config .group .buttons .textButton.active,
+#result .stats .group .bottom,
+nav .textButton:hover,
+nav button.text:hover,
+header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
+a:not(.button):hover {
+  animation: trance 5s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: trance 5s linear infinite;
+}
+
+#words.flipped {
+  --untyped-letter-color: var(--sub-color);
+  --correct-letter-animation: none;
+  --untyped-letter-animation: trance 5s linear infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: trance 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: trance 5s linear infinite;
+}

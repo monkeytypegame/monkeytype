@@ -1,0 +1,11 @@
+#words {
+  direction: rtl;
+}
+
+#words.rightToLeftTest {
+  direction: ltr;
+}
+
+#words.withLigatures .word {
+  unicode-bidi: bidi-override;
+}

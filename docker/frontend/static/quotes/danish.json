@@ -1,0 +1,191 @@
+{
+  "language": "danish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Skær skorpen af rugbrødet. Skær krummen i grove terninger, kom dem i en gryde og hæld vand på til det dækker. Lad det udbløde til dagen efter. Bring langsomt rugbrød og vand i kog og lad det simre under omrøring til det er jævnt. Tilsæt citronskal, øl og sukker og kog øllebrøden op. Smag den til, fjern citronskal og server med fløde eller meget let pisket flødeskum.",
+      "source": "Kristine Marie Jensen, Frøken Jensens Kogebog",
+      "length": 368,
+      "id": 1
+    },
+    {
+      "text": "Grønsager forhøjer og fuldender måltidet. Med deres forskellige smage, konsistens og mange farver tilfører de maden kompleksitet, skærper sanser og appetit og synliggør årstidernes skiften. Og så får vi oven i købet et væld af vigtige næringsstoffer og noget som tænder og mave kan arbejde med i tilgift. Brug så vidt muligt årstidens danske grønsager. De er friskest og har den bedste smag, fordi de er modne og færdigudviklede når de høstes. Det er importerede grønsager meget sjældent, fordi de skal kunne tåle lang transport og ugers ophold i kølehuse.",
+      "source": "Kristine Marie Jensen, Frøken Jensens Kogebog",
+      "length": 556,
+      "id": 2
+    },
+    {
+      "text": "Vi ser nu nærmere på klassen af plane grafer, der har inspireret en stor del af grafteoriens udvikling. Mange af de allerede omtalte begreber kommer her i spil. En plan graf er en graf G, der der har en repræsentation, hvor knuderne er punkter i planen, og kanterne er kurver i planen, således at kanter kun mødes i deres endepunkter.",
+      "source": "Jørgen Brandt, Grafteori",
+      "length": 334,
+      "id": 3
+    },
+    {
+      "text": "Pøbelens trøsteord er bitre i et kongeligt øre. Lad apotekere og bagere, og tjenere i de mægtiges huse, dømmes efter, hvad de har gjort, ja, endogså efter, hvad de har villet gøre. De mægtige selv vil dømmes, og må dømmes, efter, hvad de er. Det er blevet mig fortalt, at fangne løver i deres bure lider langt mere af skam end af sorg.",
+      "source": "Karen Blixen, Syv Fantastiske Fortællinger",
+      "length": 335,
+      "id": 4
+    },
+    {
+      "text": "Jeg dufter dolmerkål, stegte bornholmerål, alverdens mad serveret på sølvfad, men min lomme er flad. Jeg fryser min fod for jeg har slidt min skosål. Mit andet ben og min sko har jeg solgt for en slik til et godt formål.",
+      "source": "Malk de Koijn, Kosmisk Kaos",
+      "length": 220,
+      "id": 5
+    },
+    {
+      "text": "I løbet af de sidste årtier har partierne øget deres fokus på kommunikation, hvilket har ført til en generel professionalisering af partierne. De store partier laver i dag vælgeranalyser, hyrer analyseinstitutter til at lave interne undersøgelser for dem, laver fokusgrupper og sender deres politikere på mediekurser, hvor de blandt andet lærer at tale uden om, når journalister stiller dem ubehagelige spørgsmål. Der bliver ført valgkamp året rundt, og reklamer for partier og politikere fylder det offentlige rum på linje med reklamer fra andre private virksomheder, der vil sælge noget. Partierne har gennemarbejdede og gennemtænkte visuelle identiteter, og regulære kommunikationsafdelinger, der sørger for at partiet fremstår appellerende til vælgerne. Eller udtrykt på en anden måde: sørger for at virksomhedens brand står stærkt blandt forbrugerne.",
+      "source": "Søren Mau, Hæv Stemmen!",
+      "length": 855,
+      "id": 6
+    },
+    {
+      "text": "Der er to ting, der har betydet noget for min udvikling. Den ene er, at jeg tidligt opdagede, at jeg var god til at tegne. Eller i hvert fald meget hurtigere end de andre. Og det betyder vildt meget for ens identitet, at man er god til et eller andet. Så da jeg opdagede det, var det meget naturligt at blive ved. Den anden ting er, at der ikke var meget at lave i Strib i 1980'erne. Og hvad skal man lige lave, når man keder sig? Jeg tegnede.",
+      "source": "Philip Ytournel, Hvad føler du lige nu?",
+      "length": 443,
+      "id": 7
+    },
+    {
+      "text": "I Danmark diskuterer vi stort set aldrig, hvad stemmeafgivningens politiske betydning egentlig er. Vi bryster os altid af at have meget høje stemmeprocenter, og vi anser det for at være et tegn på en sund, demokratisk kultur - vi danskere er engagerede, politisk interesserede borgere, der anser det at stemme til folketingsvalg for at være en demokratisk pligt. Selvom der er masser af politikerlede i Danmark, og selvom undersøgelser viser, at danskerne har en meget lille tillid til politikerne, så stemmer vi alligevel. Det er blevet en så indgroet vane i os, at vi slet ikke stiller spørgsmålstegn ved det mere.",
+      "source": "Søren Mau, Hæv Stemmen!",
+      "length": 616,
+      "id": 8
+    },
+    {
+      "text": "Hvordan skulle Thurstons geometriseringsformodning bevises? Thurston selv lagde op til ret direkte teknikker ved at klippe og klistre 3-dimensionelle rum, men det viste sig, at der altid var visse situationer, der var svære at analysere på denne måde. Desuden er disse teknikker i bund og grund topologiske, og de harmonerer dårligt med at identificere bestemte geometriske strukturer på rummene.",
+      "source": "Andrew Swann, Et milleniumproblem er løst",
+      "length": 396,
+      "id": 9
+    },
+    {
+      "text": "Mexico ligger i Spanien, i Spanien, hvor man hader Italien. Benelux ligger i Tyskland, i Tyskland, hvor man graver efter nyt land. Texaco ligger i udbrud, de udskud, gir min konto et hovedbrud. Vesterbro ligger så vandret, så mundret, at man ørler så lodret ned.",
+      "source": "Nephew, Mexico Ligger I Spanien",
+      "length": 262,
+      "id": 10
+    },
+    {
+      "text": "Jeg bruger små stykker kul til at tegne motivet på totempælen. Nederst skal der være et fundament på et par meter, som jeg senere har tænkt mig at grave ned i jorden. Fra jorden skal der så være en sokkel på en halv meter og  derefter et cirka to meter højt æg, i virkeligheden et rytmeæg, men det vil man ikke kunne se med det blotte øje, medmindre man kendte min far, og det var der, sådan som jeg tidligere har været inde på, ingen der gjorde. Altså vil man ikke kunne se det. En tilfældig forbipasserende vil tro, at dette er et helt almindeligt æg, og det kan jeg godt leve med. På toppen af dette rytmeæg skal min far sidde med benene trukket op under hagen og armene ud til siderne, og på min fars hoved skal jeg selv sidde.",
+      "source": "Erlend Loe, Doppler",
+      "length": 731,
+      "id": 11
+    },
+    {
+      "text": "Det var tidligt forår. Og det var frydefuldt at cykle i skoven igen efter en lang vinter. Jeg cykler naturligvis hele året. På arbejde og hjem igen. Jeg er cyklist. Måske er jeg først og fremmest cyklist. Der findes ikke det føre, der kan standse mig. Om vinteren bruger jeg pigdæk. Jeg har cykelhjelm. Cykelhandsker. Specielt egnede bukser og jakker. Cykelcomputer. Lygter. Jeg cykler fire tusinde kilometer om året. Og det generer mig ikke det mindste at brække vinduesviskerne af de biler, der ikke arter sig.",
+      "source": "Erlend Loe, Doppler",
+      "length": 512,
+      "id": 12
+    },
+    {
+      "text": "Jamen det starter mega godt! Jeg bliver spurgt om jeg vil udgive en bog - en rigtig bog! Og det vil jeg gerne. Så mig og forlaget beslutter at lave en KÆMPE bog med ALLE mine tegninger i. Et ambitiøst værk. Men så, da vi sidder og kigger tegningerne igennem, så kan vi godt se at nogle af dem ikke er så gode alligevel... Og der var - en hel del faktisk - der var rigtig dårlige. Og så får vi den idé at at jeg skal tegne ALLE mennesker i hele verden i stedet for! Men jeg ku ikke rigtig få dem til at ligne, så det dropper vi også... Så vi ender med at køre den hjem på rutinen med en \"Greatest Hits\" bog og få den udgivet inden 'Bogforum' og i god tid inden julesalget, så det hele kan betale sig. Og økonomien? Det viser sig at næsten alle tegningerne har været bragt i Politiken, og de vil have deres del af et muligt overskud, så jeg kommer ikke til at tjene en skid.",
+      "source": "Philitp Ytournel, Hvad føler du lige nu?",
+      "length": 872,
+      "id": 13
+    },
+    {
+      "text": "Neutralitet vil sige at holde med de sejrende parter.",
+      "source": "Piet Hein",
+      "length": 53,
+      "id": 14
+    },
+    {
+      "text": "Det bedste man kan have er en ren og god samvittighed. Og det næstbedste man kan have er en god advokat.",
+      "source": "Storm P.",
+      "length": 104,
+      "id": 15
+    },
+    {
+      "text": "Penge er dødsens farlige. Et hårdere stof end noget andet jeg har kendt. Langt mere vanedannende end morfin. Der forgifter dine tanker. De får dig til at glemme at elske. De får dig til at glemme at danse.",
+      "source": "Dan Turèll og Halfdan E, Pas på pengene!",
+      "length": 205,
+      "id": 16
+    },
+    {
+      "text": "Det er således i Verdens øjne farligt at vove, og hvorfor? Fordi man så kan tabe. Men det ikke at vove, det er klogt. Og dog, ved ikke at vove kan man just så forfærdelig let tabe, hvad man dog, hvor meget man end tabte ved at vove, vanskeligt tabte, og i ethvert tilfælde aldrig således, så let, så ganske som var det ingenting - sig selv. Thi har jeg vovet forkert, nu vel, så hjælper livet mig med straffen. Men har jeg slet ikke vovet, hvo hjælper mig så?",
+      "source": "Søren Kierkegaard, Sygdommen til Døden",
+      "length": 459,
+      "id": 17
+    },
+    {
+      "text": "Hvorfor' du bedrøvet, lille dreng? Si'r, det' hårdt, men jeg tror ikk', du har prøvet, lille dreng.",
+      "source": "Benal, Nu Her",
+      "length": 99,
+      "id": 18
+    },
+    {
+      "text": "Af alle latterlige ting forekommer det mig at være det allerlatterligste at have travlt.",
+      "source": "Søren Kierkegaard, Enten - Eller",
+      "length": 88,
+      "id": 19
+    },
+    {
+      "text": "Det er ganske sandt, hvad filosofien siger, at Livet må forstås baglænds. Men derover glemmer man den anden Sætning, at det må leves forlæns. Hvilken Sætning, jo mer den gennemtænkes, netop ender med, at livet i timeligheden aldrig ret bliver forståeligt, netop fordi jeg intet Øjeblik kan få fuldelig to til at indtage stillingen: Baglænds.",
+      "source": "Peter Thielst om Søren Kierkegaard, Gyldendal 1994. Citat fra Journalen JJ:167 (1843), SKS bd. 18, s. 194 / SKS-E.",
+      "length": 341,
+      "id": 20
+    },
+    {
+      "text": "At man, når det i Sandhed skal lykkes En at føre et Menneske hen til et bestemt Sted, først og fremmest må passe på at finde ham der, hvor han er, og begynde der. Dette er Hemmeligheden i al Hjælpekunst. Enhver, der ikke kan det, han er selv i en Indbildning, når han mener at kunne hjælpe en Anden. For i Sandhed at kunne hjælpe en Anden, må jeg forstå mere end han - men dog vel først og fremmest forstå det, han forstår. Når jeg ikke gjør det, så hjælper min Mere-Forstån ham slet ikke. Vil jeg alligevel gjøre min Mere-Forstån gjældende, så er det, fordi jeg er forfængelig eller stolt, så jeg i Grunden istedetfor at gavne ham egentligen vil beundres af ham. Men al sand Hjælpen begynder med en Ydmygelse; Hjælperen må først ydmyge sig under Den, han vil hjælpe, og herved forstå, at det at hjælpe er ikke det at herske, men det at tjene, at det at hjælpe ikke er at være den Herskesygeste men den Tålmodigste, at det at hjælpe er Villighed til indtil videre at finde sig i at have Uret, og i ikke at forstå hvad den Anden forstår.",
+      "source": "Søren Kierkegaard",
+      "length": 1036,
+      "id": 21
+    },
+    {
+      "text": "\"Det var ikke særlig klogt sagt, Plys.\" sagde Grislingen. \"Det var klogt, da det var inde i mit hoved, men så skete der noget på vejen ud.\"",
+      "source": "Peter Plys",
+      "length": 139,
+      "id": 22
+    },
+    {
+      "text": "Det er en syg høne der har lagt det æg der!",
+      "source": "Blinkende lygter",
+      "length": 43,
+      "id": 23
+    },
+    {
+      "text": "Blishønen er en almindelig ynglefugl i søer og moser i Danmark. Den er let genkendelig med sin runde, sorte krop og sit hvide næb og store hvide pandeblis, der har givet den navn.",
+      "source": "DOFbasen, Blishøne",
+      "length": 179,
+      "id": 24
+    },
+    {
+      "text": "Med 1.500.000-2.000.000 par er bogfinken en af de mest almindelige ynglefugle i Danmark. Hannen har rødbrun krop, blågråt hoved og hvide vingebånd, mens hunnen er mere olivengrå i farverne. Den ligner gråspurvehunnen, men mangler dennes kraftige rygstriber. Bogfinkens sang, \"Det det det det ka jeg si' li så tit det ska vær'\", kan høres allerede i det tidlige forår.",
+      "source": "DOFbasen, Bogfinke",
+      "length": 367,
+      "id": 25
+    },
+    {
+      "text": "Så gik kejseren i processionen under den dejlige tronhimmel og alle mennesker på gaden og i vinduerne sagde: \"Gud hvor kejserens nye klæder er mageløse! hvilket dejligt slæb han har på kjolen! hvor den sidder velsignet!\" Ingen ville lade sig mærke med, at han intet så, for så havde han jo ikke duet i sit embede, eller været meget dum. Ingen af kejserens klæder havde gjort sådan lykke. \"Men han har jo ikke noget på,\" sagde et lille barn.",
+      "source": "H.C. Andersen, Kejserens nye klæder",
+      "length": 440,
+      "id": 26
+    },
+    {
+      "text": "Prøv at se, det ser da helt mærkeligt ud i skallen også. Du kunne sagtens have pustet det æg der, Torkild. Selvfølgelig ku' du det mand, det er en syg høne der har lagt det æg der!",
+      "source": "Flashing Lights",
+      "length": 180,
+      "id": 27
+    },
+    {
+      "text": "Pølser har altid fascineret mig. Man kan jo nærmest sige at der er noget mytologisk ved at dræbe et dyr og så håne det ved at stikke det op i dets eget tarm bag efter!",
+      "source": "De Grønne Slagtere",
+      "length": 167,
+      "id": 28
+    },
+    {
+      "text": "Den konstante indkøbsliste i jakkelommen. Med sine faste krav om kød, kartofler, kaffe og kiks. Den lille hurtige på den lokale. Når vi alle sammen mødes med indkøbsposer og tørrer sved af panderne - Jeg holder af hverdagen.",
+      "source": "Hyldest til hverdagen by Dan Turèll",
+      "length": 224,
+      "id": 30
+    },
+    {
+      "text": "At lære er at ville befri sin ensomhed, at stå ved åndens kilde og ydmygt knæle ned, at spejle sig i tider, der sov på kildens bund, mens nye bølger glider som tegn mod hånd og mund.",
+      "source": "At lære er at ville - Halfdan Rasmussen",
+      "length": 182,
+      "id": 31
+    }
+  ]
+}

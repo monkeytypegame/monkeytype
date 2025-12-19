@@ -1,0 +1,491 @@
+{
+  "language": "code_arduino",
+  "groups": [
+    [0, 400],
+    [401, 800],
+    [801, 1400],
+    [1401, 12000]
+  ],
+  "quotes": [
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tint sensorValue = analogRead(A0);\n\tSerial.println(sensorValue);\n\tdelay(1);\n}",
+      "source": "Arduino examples - AnalogReadSerial",
+      "length": 129,
+      "id": 1
+    },
+    {
+      "text": "void setup() {\n\tpinMode(LED_BUILTIN, OUTPUT);\n}\nvoid loop() {\n\tdigitalWrite(LED_BUILTIN, HIGH);\n\tdelay(1000);\n\tdigitalWrite(LED_BUILTIN, LOW);\n\tdelay(1000);\n}",
+      "source": "Arduino examples - Blink",
+      "length": 158,
+      "id": 2
+    },
+    {
+      "text": "int pushButton = 2;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(pushButton, INPUT);\n}\nvoid loop() {\n\tint buttonState = digitalRead(pushButton);\n\tSerial.println(buttonState);\n}",
+      "source": "Arduino examples - DigitalReadSerial",
+      "length": 176,
+      "id": 3
+    },
+    {
+      "text": "int led = 9;\nint brightness = 0;\nint fadeAmount = 5;\nvoid setup() {\n\tpinMode(led, OUTPUT);\n}\nvoid loop() {\n\tanalogWrite(led, brightness);\n\tbrightness = brightness + fadeAmount;\n\tif (brightness <= 0 || brightness >= 255) {\n\t\tfadeAmount = -fadeAmount;\n\t}\n\tdelay(30);\n}",
+      "source": "Arduino examples - Fade",
+      "length": 266,
+      "id": 4
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tint sensorValue = analogRead(A0);\n\tfloat voltage = sensorValue * (5.0 / 1023.0);\n\tSerial.println(voltage);\n}",
+      "source": "Arduino examples - ReadAnalogVoltage",
+      "length": 161,
+      "id": 5
+    },
+    {
+      "text": "const int ledPin = LED_BUILTIN;\nint ledState = LOW;\nunsigned long previousMillis = 0;\nconst long interval = 1000;\nvoid setup() {\n\tpinMode(ledPin, OUTPUT);\n}\nvoid loop() {\n\tunsigned long currentMillis = millis();\n\tif (currentMillis - previousMillis >= interval) {\n\t\tpreviousMillis = currentMillis;\n\t\tif (ledState == LOW) {\n\t\t\tledState = HIGH;\n\t\t} else {\n\t\t\tledState = LOW;\n\t\t}\n\t\tdigitalWrite(ledPin, ledState);\n\t}\n}",
+      "source": "Arduino examples - BlinkWithoutDelay",
+      "length": 414,
+      "id": 6
+    },
+    {
+      "text": "const int buttonPin = 2;\nconst int ledPin = 13;\nint buttonState = 0;\nvoid setup() {\n\tpinMode(ledPin, OUTPUT);\n\tpinMode(buttonPin, INPUT);\n}\nvoid loop() {\n\tbuttonState = digitalRead(buttonPin);\n\tif (buttonState == HIGH) {\n\t\tdigitalWrite(ledPin, HIGH);\n\t} else {\n\t\tdigitalWrite(ledPin, LOW);\n\t}\n}",
+      "source": "Arduino examples - Button",
+      "length": 294,
+      "id": 7
+    },
+    {
+      "text": "const int buttonPin = 2;\nconst int ledPin = 13;\nint ledState = HIGH;\nint buttonState;\nint lastButtonState = LOW;\nunsigned long lastDebounceTime = 0;\nunsigned long debounceDelay = 50;\nvoid setup() {\n\tpinMode(buttonPin, INPUT);\n\tpinMode(ledPin, OUTPUT);\n\tdigitalWrite(ledPin, ledState);\n}\nvoid loop() {\n\tint reading = digitalRead(buttonPin);\n\tif (reading != lastButtonState) {\n\t\tlastDebounceTime = millis();\n\t}\n\tif ((millis() - lastDebounceTime) > debounceDelay) {\n\t\tif (reading != buttonState) {\n\t\t\tbuttonState = reading;\n\t\t\tif (buttonState == HIGH) {\n\t\t\t\tledState = !ledState;\n\t\t\t}\n\t\t}\n\t}\n\tdigitalWrite(ledPin, ledState);\n\tlastButtonState = reading;\n}",
+      "source": "Arduino examples - Debounce",
+      "length": 651,
+      "id": 8
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\tpinMode(2, INPUT_PULLUP);\n\tpinMode(13, OUTPUT);\n}\nvoid loop() {\n\tint sensorVal = digitalRead(2);\n\tSerial.println(sensorVal);\n\tif (sensorVal == HIGH) {\n\t\tdigitalWrite(13, LOW);\n\t} else {\n\t\tdigitalWrite(13, HIGH);\n\t}\n}",
+      "source": "Arduino examples - DigitalInputPullup",
+      "length": 253,
+      "id": 9
+    },
+    {
+      "text": "const int buttonPin = 2;\nconst int ledPin = 13;\nint buttonPushCounter = 0;\nint buttonState = 0;\nint lastButtonState = 0;\nvoid setup() {\n\tpinMode(buttonPin, INPUT);\n\tpinMode(ledPin, OUTPUT);\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tbuttonState = digitalRead(buttonPin);\n\tif (buttonState != lastButtonState) {\n\t\tif (buttonState == HIGH) {\n\t\t\tbuttonPushCounter++;\n\t\t\tSerial.println(\"on\");\n\t\t\tSerial.print(\"number of button pushes: \");\n\t\t\tSerial.println(buttonPushCounter);\n\t\t} else {\n\t\t\tSerial.println(\"off\");\n\t\t}\n\t\tdelay(50);\n\t}\n\tlastButtonState = buttonState;\n\tif (buttonPushCounter % 4 == 0) {\n\t\tdigitalWrite(ledPin, HIGH);\n\t} else {\n\t\tdigitalWrite(ledPin, LOW);\n\t}\n}",
+      "source": "Arduino examples - StateChangeDetection",
+      "length": 664,
+      "id": 10
+    },
+    {
+      "text": "#include \"pitches.h\"\nconst int threshold = 10;\nint notes[] = {\n\tNOTE_A4, NOTE_B4, NOTE_C3\n};\nvoid setup() {\n}\nvoid loop() {\n\tfor (int thisSensor = 0; thisSensor < 3; thisSensor++) {\n\t\tint sensorReading = analogRead(thisSensor);\n\t\tif (sensorReading > threshold) {\n\t\t\ttone(8, notes[thisSensor], 20);\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - toneKeyboard",
+      "length": 306,
+      "id": 11
+    },
+    {
+      "text": "#include \"pitches.h\"\nint melody[] = {\n\tNOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4\n};\nint noteDurations[] = {\n\t4, 8, 8, 4, 4, 4, 4, 4\n};\nvoid setup() {\n\tfor (int thisNote = 0; thisNote < 8; thisNote++) {\n\t\tint noteDuration = 1000 / noteDurations[thisNote];\n\t\ttone(8, melody[thisNote], noteDuration);\n\t\tint pauseBetweenNotes = noteDuration * 1.30;\n\t\tdelay(pauseBetweenNotes);\n\t\tnoTone(8);\n\t}\n}\nvoid loop() {\n}",
+      "source": "Arduino examples - toneMelody",
+      "length": 429,
+      "id": 12
+    },
+    {
+      "text": "void setup() {\n}\nvoid loop() {\n\tnoTone(8);\n\ttone(6, 440, 200);\n\tdelay(200);\n\tnoTone(6);\n\ttone(7, 494, 500);\n\tdelay(500);\n\tnoTone(7);\n\ttone(8, 523, 300);\n\tdelay(300);\n}",
+      "source": "Arduino examples - toneMultiple",
+      "length": 167,
+      "id": 13
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tint sensorReading = analogRead(A0);\n\tSerial.println(sensorReading);\n\tint thisPitch = map(sensorReading, 400, 1000, 120, 1500);\n\ttone(9, thisPitch, 10);\n\tdelay(1);\n}",
+      "source": "Arduino examples - tonePitchFollower",
+      "length": 217,
+      "id": 14
+    },
+    {
+      "text": "const int analogInPin = A0;\nconst int analogOutPin = 9;\nint sensorValue = 0;\nint outputValue = 0;\nvoid setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tsensorValue = analogRead(analogInPin);\n\toutputValue = map(sensorValue, 0, 1023, 0, 255);\n\tanalogWrite(analogOutPin, outputValue);\n\tSerial.print(\"sensor = \");\n\tSerial.print(sensorValue);\n\tSerial.print(\"\t output = \");\n\tSerial.println(outputValue);\n\tdelay(2);\n}",
+      "source": "Arduino examples - AnalogInOutSerial",
+      "length": 409,
+      "id": 15
+    },
+    {
+      "text": "int sensorPin = A0;\nint ledPin = 13;\nint sensorValue = 0;\nvoid setup() {\n\tpinMode(ledPin, OUTPUT);\n}\nvoid loop() {\n\tsensorValue = analogRead(sensorPin);\n\tdigitalWrite(ledPin, HIGH);\n\tdelay(sensorValue);\n\tdigitalWrite(ledPin, LOW);\n\tdelay(sensorValue);\n}",
+      "source": "Arduino examples - AnalogInput",
+      "length": 253,
+      "id": 16
+    },
+    {
+      "text": "const int lowestPin = 2;\nconst int highestPin = 13;\nvoid setup() {\n\tfor (int thisPin = lowestPin; thisPin <= highestPin; thisPin++) {\n\t\tpinMode(thisPin, OUTPUT);\n\t}\n}\nvoid loop() {\n\tfor (int thisPin = lowestPin; thisPin <= highestPin; thisPin++) {\n\t\tfor (int brightness = 0; brightness < 255; brightness++) {\n\t\t\tanalogWrite(thisPin, brightness);\n\t\t\tdelay(2);\n\t\t}\n\t\tfor (int brightness = 255; brightness >= 0; brightness--) {\n\t\t\tanalogWrite(thisPin, brightness);\n\t\t\tdelay(2);\n\t\t}\n\t\tdelay(100);\n\t}\n}",
+      "source": "Arduino examples - AnalogWriteMega",
+      "length": 497,
+      "id": 17
+    },
+    {
+      "text": "const int sensorPin = A0;\nconst int ledPin = 9;\nint sensorValue = 0;\nint sensorMin = 1023;\nint sensorMax = 0;\nvoid setup() {\n\tpinMode(13, OUTPUT);\n\tdigitalWrite(13, HIGH);\n\twhile (millis() < 5000) {\n\t\tsensorValue = analogRead(sensorPin);\n\t\tif (sensorValue > sensorMax) {\n\t\t\tsensorMax = sensorValue;\n\t\t}\n\t\tif (sensorValue < sensorMin) {\n\t\t\tsensorMin = sensorValue;\n\t\t}\n\t}\n\tdigitalWrite(13, LOW);\n}\nvoid loop() {\n\tsensorValue = analogRead(sensorPin);\n\tsensorValue = constrain(sensorValue, sensorMin, sensorMax);\n\tsensorValue = map(sensorValue, sensorMin, sensorMax, 0, 255);\n\tanalogWrite(ledPin, sensorValue);\n}",
+      "source": "Arduino examples - Calibration",
+      "length": 609,
+      "id": 18
+    },
+    {
+      "text": "int ledPin = 9;\nvoid setup() {\n}\nvoid loop() {\n\tfor (int fadeValue = 0 ; fadeValue <= 255; fadeValue += 5) {\n\t\tanalogWrite(ledPin, fadeValue);\n\t\tdelay(30);\n\t}\n\tfor (int fadeValue = 255 ; fadeValue >= 0; fadeValue -= 5) {\n\t\tanalogWrite(ledPin, fadeValue);\n\t\tdelay(30);\n\t}\n}",
+      "source": "Arduino examples - Fading",
+      "length": 272,
+      "id": 19
+    },
+    {
+      "text": "const int numReadings = 10;\nint readings[numReadings];\nint readIndex = 0;\nint total = 0;\nint average = 0;\nint inputPin = A0;\nvoid setup() {\n\tSerial.begin(9600);\n\tfor (int thisReading = 0; thisReading < numReadings; thisReading++) {\n\t\treadings[thisReading] = 0;\n\t}\n}\nvoid loop() {\n\ttotal = total - readings[readIndex];\n\treadings[readIndex] = analogRead(inputPin);\n\ttotal = total + readings[readIndex];\n\treadIndex = readIndex + 1;\n\tif (readIndex >= numReadings) {\n\t\treadIndex = 0;\n\t}\n\taverage = total / numReadings;\n\tSerial.println(average);\n}",
+      "source": "Arduino examples - Smoothing",
+      "length": 541,
+      "id": 20
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"ASCII Table ~ Character Map\");\n}\nint thisByte = 33;\nvoid loop() {\n\tSerial.write(thisByte);\n\tSerial.print(\", dec: \");\n\tSerial.print(thisByte);\n\tSerial.print(\", hex: \");\n\tSerial.print(thisByte, HEX);\n\tSerial.print(\", oct: \");\n\tSerial.print(thisByte, OCT);\n\tSerial.print(\", bin: \");\n\tSerial.println(thisByte, BIN);\n\tif (thisByte == 126) {\n\t\twhile (true) {\n\t\t\tcontinue;\n\t\t}\n\t}\n\tthisByte++;\n}",
+      "source": "Arduino examples - ASCIITable",
+      "length": 466,
+      "id": 21
+    },
+    {
+      "text": "const int ledPin = 9;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(ledPin, OUTPUT);\n}\nvoid loop() {\n\tbyte brightness;\n\tif (Serial.available()) {\n\t\tbrightness = Serial.read();\n\t\tanalogWrite(ledPin, brightness);\n\t}\n}",
+      "source": "Arduino examples - Dimmer",
+      "length": 214,
+      "id": 22
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tSerial.println(analogRead(A0));\n\tdelay(2);\n}",
+      "source": "Arduino examples - Graph",
+      "length": 97,
+      "id": 23
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(31250);\n}\nvoid loop() {\n\tfor (int note = 0x1E; note < 0x5A; note ++) {\n\t\tnoteOn(0x90, note, 0x45);\n\t\tdelay(100);\n\t\tnoteOn(0x90, note, 0x00);\n\t\tdelay(100);\n\t}\n}\nvoid noteOn(int cmd, int pitch, int velocity) {\n\tSerial.write(cmd);\n\tSerial.write(pitch);\n\tSerial.write(velocity);\n}",
+      "source": "Arduino examples - Midi",
+      "length": 305,
+      "id": 24
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\tSerial1.begin(9600);\n}\nvoid loop() {\n\tif (Serial1.available()) {\n\t\tint inByte = Serial1.read();\n\t\tSerial.write(inByte);\n\t}\n\tif (Serial.available()) {\n\t\tint inByte = Serial.read();\n\t\tSerial1.write(inByte);\n\t}\n}",
+      "source": "Arduino examples - MultiSerial",
+      "length": 246,
+      "id": 25
+    },
+    {
+      "text": "const int ledPin = 13;\nint incomingByte;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(ledPin, OUTPUT);\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tincomingByte = Serial.read();\n\t\tif (incomingByte == 'H') {\n\t\t\tdigitalWrite(ledPin, HIGH);\n\t\t}\n\t\tif (incomingByte == 'L') {\n\t\t\tdigitalWrite(ledPin, LOW);\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - PhysicalPixel",
+      "length": 313,
+      "id": 26
+    },
+    {
+      "text": "const int redPin = 3;\nconst int greenPin = 5;\nconst int bluePin = 6;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(redPin, OUTPUT);\n\tpinMode(greenPin, OUTPUT);\n\tpinMode(bluePin, OUTPUT);\n}\nvoid loop() {\n\twhile (Serial.available() > 0) {\n\t\tint red = Serial.parseInt();\n\t\tint green = Serial.parseInt();\n\t\tint blue = Serial.parseInt();\n\t\tif (Serial.read() == '\n') {\n\t\t\tred = 255 - constrain(red, 0, 255);\n\t\t\tgreen = 255 - constrain(green, 0, 255);\n\t\t\tblue = 255 - constrain(blue, 0, 255);\n\t\t\tanalogWrite(redPin, red);\n\t\t\tanalogWrite(greenPin, green);\n\t\t\tanalogWrite(bluePin, blue);\n\t\t\tSerial.print(red, HEX);\n\t\t\tSerial.print(green, HEX);\n\t\t\tSerial.println(blue, HEX);\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - ReadASCIIString",
+      "length": 672,
+      "id": 27
+    },
+    {
+      "text": "int firstSensor = 0;\nint secondSensor = 0;\nint thirdSensor = 0;\nint inByte = 0;\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tpinMode(2, INPUT);\n\testablishContact();\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tinByte = Serial.read();\n\t\tfirstSensor = analogRead(A0) / 4;\n\t\tdelay(10);\n\t\tsecondSensor = analogRead(1) / 4;\n\t\tthirdSensor = map(digitalRead(2), 0, 1, 0, 255);\n\t\tSerial.write(firstSensor);\n\t\tSerial.write(secondSensor);\n\t\tSerial.write(thirdSensor);\n\t}\n}\nvoid establishContact() {\n\twhile (Serial.available() <= 0) {\n\t\tSerial.print('A');\n\t\tdelay(300);\n\t}\n}",
+      "source": "Arduino examples - SerialCallResponse",
+      "length": 585,
+      "id": 28
+    },
+    {
+      "text": "int firstSensor = 0;\nint secondSensor = 0;\nint thirdSensor = 0;\nint inByte = 0;\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tpinMode(2, INPUT);\n\testablishContact();\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tinByte = Serial.read();\n\t\tfirstSensor = analogRead(A0);\n\t\tsecondSensor = analogRead(A1);\n\t\tthirdSensor = map(digitalRead(2), 0, 1, 0, 255);\n\t\tSerial.print(firstSensor);\n\t\tSerial.print(\",\");\n\t\tSerial.print(secondSensor);\n\t\tSerial.print(\",\");\n\t\tSerial.println(thirdSensor);\n\t}\n}\nvoid establishContact() {\n\twhile (Serial.available() <= 0) {\n\t\tSerial.println(\"0,0,0\");\n\t\tdelay(300);\n\t}\n}",
+      "source": "Arduino examples - SerialCallResponseASCII",
+      "length": 615,
+      "id": 29
+    },
+    {
+      "text": "String inputString = \"\";\nbool stringComplete = false;\nvoid setup() {\n\tSerial.begin(9600);\n\tinputString.reserve(200);\n}\nvoid loop() {\n\tif (stringComplete) {\n\t\tSerial.println(inputString);\n\t\tinputString = \"\";\n\t\tstringComplete = false;\n\t}\n}\nvoid serialEvent() {\n\twhile (Serial.available()) {\n\t\tchar inChar = (char)Serial.read();\n\t\tinputString += inChar;\n\t\tif (inChar == '\n') {\n\t\t\tstringComplete = true;\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - SerialEvent",
+      "length": 408,
+      "id": 30
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\tSerial1.begin(9600);\n}\nvoid loop() {\n\tif (Serial.available()) {\n\t\tSerial1.write(Serial.read());\n\t}\n\tif (Serial1.available()) {\n\t\tSerial.write(Serial1.read());\n\t}\n}",
+      "source": "Arduino examples - SerialPassthrough",
+      "length": 200,
+      "id": 31
+    },
+    {
+      "text": "const int redPin = A0;\nconst int greenPin = A1;\nconst int bluePin = A2;\nvoid setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tSerial.print(analogRead(redPin));\n\tSerial.print(\",\");\n\tSerial.print(analogRead(greenPin));\n\tSerial.print(\",\");\n\tSerial.println(analogRead(bluePin));\n}",
+      "source": "Arduino examples - VirtualColorMixer",
+      "length": 275,
+      "id": 32
+    },
+    {
+      "text": "int timer = 100;\nint ledPins[] = {\n\t2, 7, 4, 6, 5, 3\n};\nint pinCount = 6;\nvoid setup() {\n\tfor (int thisPin = 0; thisPin < pinCount; thisPin++) {\n\t\tpinMode(ledPins[thisPin], OUTPUT);\n\t}\n}\nvoid loop() {\n\tfor (int thisPin = 0; thisPin < pinCount; thisPin++) {\n\t\tdigitalWrite(ledPins[thisPin], HIGH);\n\t\tdelay(timer);\n\t\tdigitalWrite(ledPins[thisPin], LOW);\n\t}\n\tfor (int thisPin = pinCount - 1; thisPin >= 0; thisPin--) {\n\t\tdigitalWrite(ledPins[thisPin], HIGH);\n\t\tdelay(timer);\n\t\tdigitalWrite(ledPins[thisPin], LOW);\n\t}\n}",
+      "source": "Arduino examples - Arrays",
+      "length": 515,
+      "id": 33
+    },
+    {
+      "text": "int timer = 100;\nvoid setup() {\n\tfor (int thisPin = 2; thisPin < 8; thisPin++) {\n\t\tpinMode(thisPin, OUTPUT);\n\t}\n}\nvoid loop() {\n\tfor (int thisPin = 2; thisPin < 8; thisPin++) {\n\t\tdigitalWrite(thisPin, HIGH);\n\t\tdelay(timer);\n\t\tdigitalWrite(thisPin, LOW);\n\t}\n\tfor (int thisPin = 7; thisPin >= 2; thisPin--) {\n\t\tdigitalWrite(thisPin, HIGH);\n\t\tdelay(timer);\n\t\tdigitalWrite(thisPin, LOW);\n\t}\n}",
+      "source": "Arduino examples - ForLoopIteration",
+      "length": 388,
+      "id": 34
+    },
+    {
+      "text": "const int analogPin = A0;\nconst int ledPin = 13;\nconst int threshold = 400;\nvoid setup() {\n\tpinMode(ledPin, OUTPUT);\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tint analogValue = analogRead(analogPin);\n\tif (analogValue > threshold) {\n\t\tdigitalWrite(ledPin, HIGH);\n\t} else {\n\t\tdigitalWrite(ledPin, LOW);\n\t}\n\tSerial.println(analogValue);\n\tdelay(1);\n}",
+      "source": "Arduino examples - IfStatementConditional",
+      "length": 342,
+      "id": 35
+    },
+    {
+      "text": "const int sensorPin = A0;\nconst int ledPin = 9;\nconst int indicatorLedPin = 13;\nconst int buttonPin = 2;\nint sensorMin = 1023;\nint sensorMax = 0;\nint sensorValue = 0;\nvoid setup() {\n\tpinMode(indicatorLedPin, OUTPUT);\n\tpinMode(ledPin, OUTPUT);\n\tpinMode(buttonPin, INPUT);\n}\nvoid loop() {\n\twhile (digitalRead(buttonPin) == HIGH) {\n\t\tcalibrate();\n\t}\n\tdigitalWrite(indicatorLedPin, LOW);\n\tsensorValue = analogRead(sensorPin);\n\tsensorValue = map(sensorValue, sensorMin, sensorMax, 0, 255);\n\tsensorValue = constrain(sensorValue, 0, 255);\n\tanalogWrite(ledPin, sensorValue);\n}\nvoid calibrate() {\n\tdigitalWrite(indicatorLedPin, HIGH);\n\tsensorValue = analogRead(sensorPin);\n\tif (sensorValue > sensorMax) {\n\t\tsensorMax = sensorValue;\n\t}\n\tif (sensorValue < sensorMin) {\n\t\tsensorMin = sensorValue;\n\t}\n}",
+      "source": "Arduino examples - WhileStatementConditional",
+      "length": 789,
+      "id": 36
+    },
+    {
+      "text": "const int sensorMin = 0;\nconst int sensorMax = 600;\nvoid setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tint sensorReading = analogRead(A0);\n\tint range = map(sensorReading, sensorMin, sensorMax, 0, 3);\n\tswitch (range) {\n\t\tcase 0:\n\t\t\tSerial.println(\"dark\");\n\t\t\tbreak;\n\t\tcase 1:\n\t\t\tSerial.println(\"dim\");\n\t\t\tbreak;\n\t\tcase 2:\n\t\t\tSerial.println(\"medium\");\n\t\t\tbreak;\n\t\tcase 3:\n\t\t\tSerial.println(\"bright\");\n\t\t\tbreak;\n\t}\n\tdelay(1);\n}",
+      "source": "Arduino examples - switchCase",
+      "length": 426,
+      "id": 37
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\tfor (int thisPin = 2; thisPin < 7; thisPin++) {\n\t\tpinMode(thisPin, OUTPUT);\n\t}\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tint inByte = Serial.read();\n\t\tswitch (inByte) {\n\t\t\tcase 'a':\n\t\t\t\tdigitalWrite(2, HIGH);\n\t\t\t\tbreak;\n\t\t\tcase 'b':\n\t\t\t\tdigitalWrite(3, HIGH);\n\t\t\t\tbreak;\n\t\t\tcase 'c':\n\t\t\t\tdigitalWrite(4, HIGH);\n\t\t\t\tbreak;\n\t\t\tcase 'd':\n\t\t\t\tdigitalWrite(5, HIGH);\n\t\t\t\tbreak;\n\t\t\tcase 'e':\n\t\t\t\tdigitalWrite(6, HIGH);\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\tfor (int thisPin = 2; thisPin < 7; thisPin++) {\n\t\t\t\t\tdigitalWrite(thisPin, LOW);\n\t\t\t\t}\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - switchCase2",
+      "length": 579,
+      "id": 38
+    },
+    {
+      "text": "const int ledPin = 13;\nconst int knockSensor = A0;\nconst int threshold = 100;\nint sensorReading = 0;\nint ledState = LOW;\nvoid setup() {\n\tpinMode(ledPin, OUTPUT);\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tsensorReading = analogRead(knockSensor);\n\tif (sensorReading >= threshold) {\n\t\tledState = !ledState;\n\t\tdigitalWrite(ledPin, ledState);\n\t\tSerial.println(\"Knock!\");\n\t}\n\tdelay(100);\n}",
+      "source": "Arduino examples - Knock",
+      "length": 379,
+      "id": 39
+    },
+    {
+      "text": "const int xPin = 2;\nconst int yPin = 3;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(xPin, INPUT);\n\tpinMode(yPin, INPUT);\n}\nvoid loop() {\n\tint pulseX, pulseY;\n\tint accelerationX, accelerationY;\n\tpulseX = pulseIn(xPin, HIGH);\n\tpulseY = pulseIn(yPin, HIGH);\n\taccelerationX = ((pulseX / 10) - 500) * 8;\n\taccelerationY = ((pulseY / 10) - 500) * 8;\n\tSerial.print(accelerationX);\n\tSerial.print(\"\t\");\n\tSerial.print(accelerationY);\n\tSerial.println();\n\tdelay(100);\n}",
+      "source": "Arduino examples - Memsic2125",
+      "length": 457,
+      "id": 40
+    },
+    {
+      "text": "const int pingPin = 7;\nvoid setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tlong duration, inches, cm;\n\tpinMode(pingPin, OUTPUT);\n\tdigitalWrite(pingPin, LOW);\n\tdelayMicroseconds(2);\n\tdigitalWrite(pingPin, HIGH);\n\tdelayMicroseconds(5);\n\tdigitalWrite(pingPin, LOW);\n\tpinMode(pingPin, INPUT);\n\tduration = pulseIn(pingPin, HIGH);\n\tinches = microsecondsToInches(duration);\n\tcm = microsecondsToCentimeters(duration);\n\tSerial.print(inches);\n\tSerial.print(\"in, \");\n\tSerial.print(cm);\n\tSerial.print(\"cm\");\n\tSerial.println();\n\tdelay(100);\n}\nlong microsecondsToInches(long microseconds) {\n\treturn microseconds / 74 / 2;\n}\nlong microsecondsToCentimeters(long microseconds) {\n\treturn microseconds / 29 / 2;\n}",
+      "source": "Arduino examples - Ping",
+      "length": 695,
+      "id": 41
+    },
+    {
+      "text": "const int row[8] = {\n\t2, 7, 19, 5, 13, 18, 12, 16\n};\nconst int col[8] = {\n\t6, 11, 10, 3, 17, 4, 8, 9\n};\nint pixels[8][8];\nint x = 5;\nint y = 5;\nvoid setup() {\n\tfor (int thisPin = 0; thisPin < 8; thisPin++) {\n\t\tpinMode(col[thisPin], OUTPUT);\n\t\tpinMode(row[thisPin], OUTPUT);\n\t\tdigitalWrite(col[thisPin], HIGH);\n\t}\n\tfor (int x = 0; x < 8; x++) {\n\t\tfor (int y = 0; y < 8; y++) {\n\t\t\tpixels[x][y] = HIGH;\n\t\t}\n\t}\n}\nvoid loop() {\n\treadSensors();\n\trefreshScreen();\n}\nvoid readSensors() {\n\tpixels[x][y] = HIGH;\n\tx = 7 - map(analogRead(A0), 0, 1023, 0, 7);\n\ty = map(analogRead(A1), 0, 1023, 0, 7);\n\tpixels[x][y] = LOW;\n}\nvoid refreshScreen() {\n\tfor (int thisRow = 0; thisRow < 8; thisRow++) {\n\t\tdigitalWrite(row[thisRow], HIGH);\n\t\tfor (int thisCol = 0; thisCol < 8; thisCol++) {\n\t\t\tint thisPixel = pixels[thisRow][thisCol];\n\t\t\tdigitalWrite(col[thisCol], thisPixel);\n\t\t\tif (thisPixel == LOW) {\n\t\t\t\tdigitalWrite(col[thisCol], HIGH);\n\t\t\t}\n\t\t}\n\t\tdigitalWrite(row[thisRow], LOW);\n\t}\n}",
+      "source": "Arduino examples - RowColumnScanning",
+      "length": 969,
+      "id": 42
+    },
+    {
+      "text": "const int analogPin = A0;\nconst int ledCount = 10;\nint ledPins[] = {\n\t2, 3, 4, 5, 6, 7, 8, 9, 10, 11\n};\nvoid setup() {\n\tfor (int thisLed = 0; thisLed < ledCount; thisLed++) {\n\t\tpinMode(ledPins[thisLed], OUTPUT);\n\t}\n}\nvoid loop() {\n\tint sensorReading = analogRead(analogPin);\n\tint ledLevel = map(sensorReading, 0, 1023, 0, ledCount);\n\tfor (int thisLed = 0; thisLed < ledCount; thisLed++) {\n\t\tif (thisLed < ledLevel) {\n\t\t\tdigitalWrite(ledPins[thisLed], HIGH);\n\t\t}\n\t\telse {\n\t\t\tdigitalWrite(ledPins[thisLed], LOW);\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - barGraph",
+      "length": 519,
+      "id": 43
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"send any byte and I'll tell you everything I can about it\");\n\tSerial.println();\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tint thisChar = Serial.read();\n\t\tSerial.print(\"You sent me: \\\\'\");\n\t\tSerial.write(thisChar);\n\t\tSerial.print(\"\\\\' ASCII Value: \");\n\t\tSerial.println(thisChar);\n\t\tif (isAlphaNumeric(thisChar)) {\n\t\t\tSerial.println(\"it's alphanumeric\");\n\t\t}\n\t\tif (isAlpha(thisChar)) {\n\t\t\tSerial.println(\"it's alphabetic\");\n\t\t}\n\t\tif (isAscii(thisChar)) {\n\t\t\tSerial.println(\"it's ASCII\");\n\t\t}\n\t\tif (isWhitespace(thisChar)) {\n\t\t\tSerial.println(\"it's whitespace\");\n\t\t}\n\t\tif (isControl(thisChar)) {\n\t\t\tSerial.println(\"it's a control character\");\n\t\t}\n\t\tif (isDigit(thisChar)) {\n\t\t\tSerial.println(\"it's a numeric digit\");\n\t\t}\n\t\tif (isGraph(thisChar)) {\n\t\t\tSerial.println(\"it's a printable character that's not whitespace\");\n\t\t}\n\t\tif (isLowerCase(thisChar)) {\n\t\t\tSerial.println(\"it's lower case\");\n\t\t}\n\t\tif (isPrintable(thisChar)) {\n\t\t\tSerial.println(\"it's printable\");\n\t\t}\n\t\tif (isPunct(thisChar)) {\n\t\t\tSerial.println(\"it's punctuation\");\n\t\t}\n\t\tif (isSpace(thisChar)) {\n\t\t\tSerial.println(\"it's a space character\");\n\t\t}\n\t\tif (isUpperCase(thisChar)) {\n\t\t\tSerial.println(\"it's upper case\");\n\t\t}\n\t\tif (isHexadecimalDigit(thisChar)) {\n\t\t\tSerial.println(\"it's a valid hexadecimaldigit (i.e. 0 - 9, a - F, or A - F)\");\n\t\t}\n\t\tSerial.println();\n\t\tSerial.println(\"Give me another byte:\");\n\t\tSerial.println();\n\t}\n}",
+      "source": "Arduino examples - CharacterAnalysis",
+      "length": 1481,
+      "id": 44
+    },
+    {
+      "text": "String stringOne, stringTwo, stringThree;\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tstringOne = String(\"You added \");\n\tstringTwo = String(\"this string\");\n\tstringThree = String();\n\tSerial.println(\"\n\nAdding Strings together (concatenation):\");\n\tSerial.println();\n}\nvoid loop() {\n\tstringThree = stringOne + 123;\n\tSerial.println(stringThree);\n\tstringThree = stringOne + 123456789;\n\tSerial.println(stringThree);\n\tstringThree = stringOne + 'A';\n\tSerial.println(stringThree);\n\tstringThree = stringOne + \"abc\";\n\tSerial.println(stringThree);\n\tstringThree = stringOne + stringTwo;\n\tSerial.println(stringThree);\n\tint sensorValue = analogRead(A0);\n\tstringOne = \"Sensor value: \";\n\tstringThree = stringOne + sensorValue;\n\tSerial.println(stringThree);\n\tstringOne = \"millis() value: \";\n\tstringThree = stringOne + millis();\n\tSerial.println(stringThree);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringAdditionOperator",
+      "length": 874,
+      "id": 45
+    },
+    {
+      "text": "String stringOne, stringTwo;\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tstringOne = String(\"Sensor \");\n\tstringTwo = String(\"value\");\n\tSerial.println(\"\n\nAppending to a String:\");\n\tSerial.println();\n}\nvoid loop() {\n\tSerial.println(stringOne);\n\tstringOne += stringTwo;\n\tSerial.println(stringOne);\n\tstringOne += \" for input \";\n\tSerial.println(stringOne);\n\tstringOne += 'A';\n\tSerial.println(stringOne);\n\tstringOne += 0;\n\tSerial.println(stringOne);\n\tstringOne += \": \";\n\tSerial.println(stringOne);\n\tstringOne += analogRead(A0);\n\tSerial.println(stringOne);\n\tSerial.println(\"\n\nchanging the Strings' values\");\n\tstringOne = \"A long integer: \";\n\tstringTwo = \"The millis(): \";\n\tstringOne += 123456789;\n\tSerial.println(stringOne);\n\tstringTwo.concat(millis());\n\tSerial.println(stringTwo);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringAppendOperator",
+      "length": 810,
+      "id": 46
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString case changes:\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"<html><head><body>\";\n\tSerial.println(stringOne);\n\tstringOne.toUpperCase();\n\tSerial.println(stringOne);\n\tString stringTwo = \"</BODY></HTML>\";\n\tSerial.println(stringTwo);\n\tstringTwo.toLowerCase();\n\tSerial.println(stringTwo);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringCaseChanges",
+      "length": 400,
+      "id": 47
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString charAt() and setCharAt():\");\n}\nvoid loop() {\n\tString reportString = \"SensorReading: 456\";\n\tSerial.println(reportString);\n\tchar mostSignificantDigit = reportString.charAt(15);\n\tString message = \"Most significant digit of the sensor reading is: \";\n\tSerial.println(message + mostSignificantDigit);\n\tSerial.println();\n\treportString.setCharAt(13, '=');\n\tSerial.println(reportString);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringCharacters",
+      "length": 483,
+      "id": 48
+    },
+    {
+      "text": "String stringOne, stringTwo;\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tstringOne = String(\"this\");\n\tstringTwo = String(\"that\");\n\tSerial.println(\"\n\nComparing Strings:\");\n\tSerial.println();\n}\nvoid loop() {\n\tif (stringOne == \"this\") {\n\t\tSerial.println(\"StringOne == \\\\\"this\\\\\"\");\n\t}\n\tif (stringOne != stringTwo) {\n\t\tSerial.println(stringOne + \" =! \" + stringTwo);\n\t}\n\tstringOne = \"This\";\n\tstringTwo = \"this\";\n\tif (stringOne != stringTwo) {\n\t\tSerial.println(stringOne + \" =! \" + stringTwo);\n\t}\n\tif (stringOne.equals(stringTwo)) {\n\t\tSerial.println(stringOne + \" equals \" + stringTwo);\n\t} else {\n\t\tSerial.println(stringOne + \" does not equal \" + stringTwo);\n\t}\n\tif (stringOne.equalsIgnoreCase(stringTwo)) {\n\t\tSerial.println(stringOne + \" equals (ignoring case) \" + stringTwo);\n\t} else {\n\t\tSerial.println(stringOne + \" does not equal (ignoring case) \" + stringTwo);\n\t}\n\tstringOne = \"1\";\n\tint numberOne = 1;\n\tif (stringOne.toInt() == numberOne) {\n\t\tSerial.println(stringOne + \" = \" + numberOne);\n\t}\n\tstringOne = \"2\";\n\tstringTwo = \"1\";\n\tif (stringOne >= stringTwo) {\n\t\tSerial.println(stringOne + \" >= \" + stringTwo);\n\t}\n\tstringOne = String(\"Brown\");\n\tif (stringOne < \"Charles\") {\n\t\tSerial.println(stringOne + \" < Charles\");\n\t}\n\tif (stringOne > \"Adams\") {\n\t\tSerial.println(stringOne + \" > Adams\");\n\t}\n\tif (stringOne <= \"Browne\") {\n\t\tSerial.println(stringOne + \" <= Browne\");\n\t}\n\tif (stringOne >= \"Brow\") {\n\t\tSerial.println(stringOne + \" >= Brow\");\n\t}\n\tstringOne = \"Cucumber\";\n\tstringTwo = \"Cucuracha\";\n\tif (stringOne.compareTo(stringTwo) < 0) {\n\t\tSerial.println(stringOne + \" comes before \" + stringTwo);\n\t} else {\n\t\tSerial.println(stringOne + \" comes after \" + stringTwo);\n\t}\n\tdelay(10000);\n\twhile (true) {\n\t\tstringOne = \"Sensor: \";\n\t\tstringTwo = \"Sensor: \";\n\t\tstringOne += analogRead(A0);\n\t\tstringTwo += analogRead(A5);\n\t\tif (stringOne.compareTo(stringTwo) < 0) {\n\t\t\tSerial.println(stringOne + \" comes before \" + stringTwo);\n\t\t} else {\n\t\t\tSerial.println(stringOne + \" comes after \" + stringTwo);\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - StringComparisonOperators",
+      "length": 2017,
+      "id": 49
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString Constructors:\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"Hello String\";\n\tSerial.println(stringOne);\n\tstringOne = String('a');\n\tSerial.println(stringOne);\n\tString stringTwo = String(\"This is a string\");\n\tSerial.println(stringTwo);\n\tstringOne = String(stringTwo + \" with more\");\n\tSerial.println(stringOne);\n\tstringOne = String(13);\n\tSerial.println(stringOne);\n\tstringOne = String(analogRead(A0), DEC);\n\tSerial.println(stringOne);\n\tstringOne = String(45, HEX);\n\tSerial.println(stringOne);\n\tstringOne = String(255, BIN);\n\tSerial.println(stringOne);\n\tstringOne = String(millis(), DEC);\n\tSerial.println(stringOne);\n\tstringOne = String(5.698, 3);\n\tSerial.println(stringOne);\n\tstringOne = String(5.698, 2);\n\tSerial.println(stringOne);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringConstructors",
+      "length": 847,
+      "id": 50
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString indexOf() and lastIndexOf() functions:\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"<HTML><HEAD><BODY>\";\n\tint firstClosingBracket = stringOne.indexOf('>');\n\tSerial.println(\"The index of > in the string \" + stringOne + \" is \" + firstClosingBracket);\n\tstringOne = \"<HTML><HEAD><BODY>\";\n\tint secondOpeningBracket = firstClosingBracket + 1;\n\tint secondClosingBracket = stringOne.indexOf('>', secondOpeningBracket);\n\tSerial.println(\"The index of the second > in the string \" + stringOne + \" is \" + secondClosingBracket);\n\tstringOne = \"<HTML><HEAD><BODY>\";\n\tint bodyTag = stringOne.indexOf(\"<BODY>\");\n\tSerial.println(\"The index of the body tag in the string \" + stringOne + \" is \" + bodyTag);\n\tstringOne = \"<UL><LI>item<LI>item<LI>item</UL>\";\n\tint firstListItem = stringOne.indexOf(\"<LI>\");\n\tint secondListItem = stringOne.indexOf(\"<LI>\", firstListItem + 1);\n\tSerial.println(\"The index of the second list tag in the string \" + stringOne + \" is \" + secondListItem);\n\tint lastOpeningBracket = stringOne.lastIndexOf('<');\n\tSerial.println(\"The index of the last < in the string \" + stringOne + \" is \" + lastOpeningBracket);\n\tint lastListItem = stringOne.lastIndexOf(\"<LI>\");\n\tSerial.println(\"The index of the last list tag in the string \" + stringOne + \" is \" + lastListItem);\n\tstringOne = \"<p>Lorem ipsum dolor sit amet</p><p>Ipsem</p><p>Quod</p>\";\n\tint lastParagraph = stringOne.lastIndexOf(\"<p\");\n\tint secondLastGraf = stringOne.lastIndexOf(\"<p\", lastParagraph - 1);\n\tSerial.println(\"The index of the second to last paragraph tag \" + stringOne + \" is \" + secondLastGraf);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringIndexOf",
+      "length": 1683,
+      "id": 51
+    },
+    {
+      "text": "String txtMsg = \"\";\nunsigned int lastStringLength = txtMsg.length();\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString length():\");\n\tSerial.println();\n}\nvoid loop() {\n\twhile (Serial.available() > 0) {\n\t\tchar inChar = Serial.read();\n\t\ttxtMsg += inChar;\n\t}\n\tif (txtMsg.length() != lastStringLength) {\n\t\tSerial.println(txtMsg);\n\t\tSerial.println(txtMsg.length());\n\t\tif (txtMsg.length() < 140) {\n\t\t\tSerial.println(\"That's a perfectly acceptable text message\");\n\t\t} else {\n\t\t\tSerial.println(\"That's too long for a text message.\");\n\t\t}\n\t\tlastStringLength = txtMsg.length();\n\t}\n}",
+      "source": "Arduino examples - StringLength",
+      "length": 609,
+      "id": 52
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString length() and trim():\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"Hello!\t\t\t\";\n\tSerial.print(stringOne);\n\tSerial.print(\"<--- end of string. Length: \");\n\tSerial.println(stringOne.length());\n\tstringOne.trim();\n\tSerial.print(stringOne);\n\tSerial.print(\"<--- end of trimmed string. Length: \");\n\tSerial.println(stringOne.length());\n\twhile (true);\n}",
+      "source": "Arduino examples - StringLengthTrim",
+      "length": 443,
+      "id": 53
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString replace:\n\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"<html><head><body>\";\n\tSerial.println(stringOne);\n\tString stringTwo = stringOne;\n\tstringTwo.replace(\"<\", \"</\");\n\tSerial.println(\"Original string: \" + stringOne);\n\tSerial.println(\"Modified string: \" + stringTwo);\n\tString normalString = \"bookkeeper\";\n\tSerial.println(\"normal: \" + normalString);\n\tString leetString = normalString;\n\tleetString.replace('o', '0');\n\tleetString.replace('e', '3');\n\tSerial.println(\"l33tspeak: \" + leetString);\n\twhile (true);\n}",
+      "source": "Arduino examples - StringReplace",
+      "length": 607,
+      "id": 54
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString startsWith() and endsWith():\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"HTTP/1.1 200 OK\";\n\tSerial.println(stringOne);\n\tif (stringOne.startsWith(\"HTTP/1.1\")) {\n\t\tSerial.println(\"Server's using http version 1.1\");\n\t}\n\tstringOne = \"HTTP/1.1 200 OK\";\n\tif (stringOne.startsWith(\"200 OK\", 9)) {\n\t\tSerial.println(\"Got an OK from the server\");\n\t}\n\tString sensorReading = \"sensor = \";\n\tsensorReading += analogRead(A0);\n\tSerial.print(sensorReading);\n\tif (sensorReading.endsWith(\"0\")) {\n\t\tSerial.println(\". This reading is divisible by ten\");\n\t} else {\n\t\tSerial.println(\". This reading is not divisible by ten\");\n\t}\n\twhile (true);\n}",
+      "source": "Arduino examples - StringStartsWithEndsWith",
+      "length": 725,
+      "id": 55
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString substring():\");\n\tSerial.println();\n}\nvoid loop() {\n\tString stringOne = \"Content-Type: text/html\";\n\tSerial.println(stringOne);\n\tif (stringOne.substring(19) == \"html\") {\n\t\tSerial.println(\"It's an html file\");\n\t}\n\tif (stringOne.substring(14, 18) == \"text\") {\n\t\tSerial.println(\"It's a text-based file\");\n\t}\n\twhile (true);\n}",
+      "source": "Arduino examples - StringSubstring",
+      "length": 407,
+      "id": 56
+    },
+    {
+      "text": "String inString = \"\";\nvoid setup() {\n\tSerial.begin(9600);\n\twhile (!Serial) {\n\t\t;\n\t}\n\tSerial.println(\"\n\nString toInt():\");\n\tSerial.println();\n}\nvoid loop() {\n\twhile (Serial.available() > 0) {\n\t\tint inChar = Serial.read();\n\t\tif (isDigit(inChar)) {\n\t\t\tinString += (char)inChar;\n\t\t}\n\t\tif (inChar == '\n') {\n\t\t\tSerial.print(\"Value:\");\n\t\t\tSerial.println(inString.toInt());\n\t\t\tSerial.print(\"String: \");\n\t\t\tSerial.println(inString);\n\t\t\tinString = \"\";\n\t\t}\n\t}\n}",
+      "source": "Arduino examples - StringToInt",
+      "length": 450,
+      "id": 57
+    },
+    {
+      "text": "#define OSX 0\n#define WINDOWS 1\n#define UBUNTU 2\n#include \"Keyboard.h\"\nint platform = OSX;\nvoid setup() {\n\tpinMode(2, INPUT_PULLUP);\n\tKeyboard.begin();\n}\nvoid loop() {\n\twhile (digitalRead(2) == HIGH) {\n\t\tdelay(500);\n\t}\n\tdelay(1000);\n\tswitch (platform) {\n\t\tcase OSX:\n\t\t\tKeyboard.press(KEY_LEFT_GUI);\n\t\t\tKeyboard.press(KEY_LEFT_SHIFT);\n\t\t\tKeyboard.press('Q');\n\t\t\tdelay(100);\n\t\t\tKeyboard.releaseAll();\n\t\t\tKeyboard.write(KEY_RETURN);\n\t\t\tbreak;\n\t\tcase WINDOWS:\n\t\t\tKeyboard.press(KEY_LEFT_CTRL);\n\t\t\tKeyboard.press(KEY_LEFT_ALT);\n\t\t\tKeyboard.press(KEY_DELETE);\n\t\t\tdelay(100);\n\t\t\tKeyboard.releaseAll();\n\t\t\tdelay(2000);\n\t\t\tKeyboard.press(KEY_LEFT_ALT);\n\t\t\tKeyboard.press('l');\n\t\t\tKeyboard.releaseAll();\n\t\t\tbreak;\n\t\tcase UBUNTU:\n\t\t\tKeyboard.press(KEY_LEFT_CTRL);\n\t\t\tKeyboard.press(KEY_LEFT_ALT);\n\t\t\tKeyboard.press(KEY_DELETE);\n\t\t\tdelay(1000);\n\t\t\tKeyboard.releaseAll();\n\t\t\tKeyboard.write(KEY_RETURN);\n\t\t\tbreak;\n\t}\n\twhile (true);\n}",
+      "source": "Arduino examples - KeyboardLogout",
+      "length": 919,
+      "id": 58
+    },
+    {
+      "text": "#include \"Keyboard.h\"\nconst int buttonPin = 4;\nint previousButtonState = HIGH;\nint counter = 0;\nvoid setup() {\n\tpinMode(buttonPin, INPUT);\n\tKeyboard.begin();\n}\nvoid loop() {\n\tint buttonState = digitalRead(buttonPin);\n\tif ((buttonState != previousButtonState)\n\t\t\t&& (buttonState == HIGH)) {\n\t\tcounter++;\n\t\tKeyboard.print(\"You pressed the button \");\n\t\tKeyboard.print(counter);\n\t\tKeyboard.println(\" times.\");\n\t}\n\tpreviousButtonState = buttonState;\n}",
+      "source": "Arduino examples - KeyboardMessage",
+      "length": 446,
+      "id": 59
+    },
+    {
+      "text": "#include \"Keyboard.h\"\nchar ctrlKey = KEY_LEFT_GUI;\nvoid setup() {\n\tpinMode(2, INPUT_PULLUP);\n\tKeyboard.begin();\n}\nvoid loop() {\n\twhile (digitalRead(2) == HIGH) {\n\t\tdelay(500);\n\t}\n\tdelay(1000);\n\tKeyboard.press(ctrlKey);\n\tKeyboard.press('n');\n\tdelay(100);\n\tKeyboard.releaseAll();\n\tdelay(1000);\n\tKeyboard.press(ctrlKey);\n\tKeyboard.press('a');\n\tdelay(500);\n\tKeyboard.releaseAll();\n\tKeyboard.write(KEY_BACKSPACE);\n\tdelay(500);\n\tKeyboard.println(\"void setup() {\");\n\tKeyboard.println(\"pinMode(13, OUTPUT);\");\n\tKeyboard.println(\"}\");\n\tKeyboard.println();\n\tKeyboard.println(\"void loop() {\");\n\tKeyboard.println(\"digitalWrite(13, HIGH);\");\n\tKeyboard.print(\"delay(3000);\");\n\tfor (int keystrokes = 0; keystrokes < 6; keystrokes++) {\n\t\tdelay(500);\n\t\tKeyboard.write(KEY_BACKSPACE);\n\t}\n\tKeyboard.println(\"1000);\");\n\tKeyboard.println(\"digitalWrite(13, LOW);\");\n\tKeyboard.println(\"delay(1000);\");\n\tKeyboard.println(\"}\");\n\tKeyboard.press(ctrlKey);\n\tKeyboard.press('t');\n\tdelay(100);\n\tKeyboard.releaseAll();\n\tdelay(3000);\n\tKeyboard.press(ctrlKey);\n\tKeyboard.press('u');\n\tdelay(100);\n\tKeyboard.releaseAll();\n\twhile (true);\n}",
+      "source": "Arduino examples - KeyboardReprogram",
+      "length": 1103,
+      "id": 60
+    },
+    {
+      "text": "#include \"Keyboard.h\"\nvoid setup() {\n\tSerial.begin(9600);\n\tKeyboard.begin();\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tchar inChar = Serial.read();\n\t\tKeyboard.write(inChar + 1);\n\t}\n}",
+      "source": "Arduino examples - KeyboardSerial",
+      "length": 189,
+      "id": 61
+    },
+    {
+      "text": "#include \"Keyboard.h\"\n#include \"Mouse.h\"\nconst int upButton = 2;\nconst int downButton = 3;\nconst int leftButton = 4;\nconst int rightButton = 5;\nconst int mouseButton = 6;\nvoid setup() {\n\tpinMode(upButton, INPUT);\n\tpinMode(downButton, INPUT);\n\tpinMode(leftButton, INPUT);\n\tpinMode(rightButton, INPUT);\n\tpinMode(mouseButton, INPUT);\n\tSerial.begin(9600);\n\tMouse.begin();\n\tKeyboard.begin();\n}\nvoid loop() {\n\tif (Serial.available() > 0) {\n\t\tchar inChar = Serial.read();\n\t\tswitch (inChar) {\n\t\t\tcase 'u':\n\t\t\t\tMouse.move(0, -40);\n\t\t\t\tbreak;\n\t\t\tcase 'd':\n\t\t\t\tMouse.move(0, 40);\n\t\t\t\tbreak;\n\t\t\tcase 'l':\n\t\t\t\tMouse.move(-40, 0);\n\t\t\t\tbreak;\n\t\t\tcase 'r':\n\t\t\t\tMouse.move(40, 0);\n\t\t\t\tbreak;\n\t\t\tcase 'm':\n\t\t\t\tMouse.click(MOUSE_LEFT);\n\t\t\t\tbreak;\n\t\t}\n\t}\n\tif (digitalRead(upButton) == HIGH) {\n\t\tKeyboard.write('u');\n\t}\n\tif (digitalRead(downButton) == HIGH) {\n\t\tKeyboard.write('d');\n\t}\n\tif (digitalRead(leftButton) == HIGH) {\n\t\tKeyboard.write('l');\n\t}\n\tif (digitalRead(rightButton) == HIGH) {\n\t\tKeyboard.write('r');\n\t}\n\tif (digitalRead(mouseButton) == HIGH) {\n\t\tKeyboard.write('m');\n\t}\n}",
+      "source": "Arduino examples - KeyboardAndMouseControl",
+      "length": 1066,
+      "id": 62
+    },
+    {
+      "text": "#include \"Mouse.h\"\nconst int upButton = 2;\nconst int downButton = 3;\nconst int leftButton = 4;\nconst int rightButton = 5;\nconst int mouseButton = 6;\nint range = 5;\nint responseDelay = 10;\nvoid setup() {\n\tpinMode(upButton, INPUT);\n\tpinMode(downButton, INPUT);\n\tpinMode(leftButton, INPUT);\n\tpinMode(rightButton, INPUT);\n\tpinMode(mouseButton, INPUT);\n\tMouse.begin();\n}\nvoid loop() {\n\tint upState = digitalRead(upButton);\n\tint downState = digitalRead(downButton);\n\tint rightState = digitalRead(rightButton);\n\tint leftState = digitalRead(leftButton);\n\tint clickState = digitalRead(mouseButton);\n\tint xDistance = (leftState - rightState) * range;\n\tint yDistance = (upState - downState) * range;\n\tif ((xDistance != 0) || (yDistance != 0)) {\n\t\tMouse.move(xDistance, yDistance, 0);\n\t}\n\tif (clickState == HIGH) {\n\t\tif (!Mouse.isPressed(MOUSE_LEFT)) {\n\t\t\tMouse.press(MOUSE_LEFT);\n\t\t}\n\t}\n\telse {\n\t\tif (Mouse.isPressed(MOUSE_LEFT)) {\n\t\t\tMouse.release(MOUSE_LEFT);\n\t\t}\n\t}\n\tdelay(responseDelay);\n}",
+      "source": "Arduino examples - ButtonMouseControl",
+      "length": 982,
+      "id": 63
+    },
+    {
+      "text": "#include \"Mouse.h\"\nconst int switchPin = 2;\nconst int mouseButton = 3;\nconst int xAxis = A0;\nconst int yAxis = A1;\nconst int ledPin = 5;\nint range = 12;\nint responseDelay = 5;\nint threshold = range / 4;\nint center = range / 2;\nbool mouseIsActive = false;\nint lastSwitchState = LOW;\nvoid setup() {\n\tpinMode(switchPin, INPUT);\n\tpinMode(ledPin, OUTPUT);\n\tMouse.begin();\n}\nvoid loop() {\n\tint switchState = digitalRead(switchPin);\n\tif (switchState != lastSwitchState) {\n\t\tif (switchState == HIGH) {\n\t\t\tmouseIsActive = !mouseIsActive;\n\t\t\tdigitalWrite(ledPin, mouseIsActive);\n\t\t}\n\t}\n\tlastSwitchState = switchState;\n\tint xReading = readAxis(A0);\n\tint yReading = readAxis(A1);\n\tif (mouseIsActive) {\n\t\tMouse.move(xReading, yReading, 0);\n\t}\n\tif (digitalRead(mouseButton) == HIGH) {\n\t\tif (!Mouse.isPressed(MOUSE_LEFT)) {\n\t\t\tMouse.press(MOUSE_LEFT);\n\t\t}\n\t}\n\telse {\n\t\tif (Mouse.isPressed(MOUSE_LEFT)) {\n\t\t\tMouse.release(MOUSE_LEFT);\n\t\t}\n\t}\n\tdelay(responseDelay);\n}\nint readAxis(int thisAxis) {\n\tint reading = analogRead(thisAxis);\n\treading = map(reading, 0, 1023, 0, range);\n\tint distance = reading - center;\n\tif (abs(distance) < threshold) {\n\t\tdistance = 0;\n\t}\n\treturn distance;\n}",
+      "source": "Arduino examples - JoystickMouseControl",
+      "length": 1167,
+      "id": 64
+    },
+    {
+      "text": "int switchstate = 0;\nvoid setup() {\n\tpinMode(3, OUTPUT);\n\tpinMode(4, OUTPUT);\n\tpinMode(5, OUTPUT);\n\tpinMode(2, INPUT);\n}\nvoid loop() {\n\tswitchstate = digitalRead(2);\n\tif (switchstate == LOW) {\n\t\tdigitalWrite(3, HIGH);\n\t\tdigitalWrite(4, LOW);\n\t\tdigitalWrite(5, LOW);\n\t}\n\telse {\n\t\tdigitalWrite(3, LOW);\n\t\tdigitalWrite(4, LOW);\n\t\tdigitalWrite(5, HIGH);\n\t\tdelay(250);\n\t\tdigitalWrite(4, HIGH);\n\t\tdigitalWrite(5, LOW);\n\t\tdelay(250);\n\t}\n}",
+      "source": "Arduino examples - p02_SpaceshipInterface",
+      "length": 431,
+      "id": 65
+    },
+    {
+      "text": "const int sensorPin = A0;\nconst float baselineTemp = 20.0;\nvoid setup() {\n\tSerial.begin(9600);\n\tfor (int pinNumber = 2; pinNumber < 5; pinNumber++) {\n\t\tpinMode(pinNumber, OUTPUT);\n\t\tdigitalWrite(pinNumber, LOW);\n\t}\n}\nvoid loop() {\n\tint sensorVal = analogRead(sensorPin);\n\tSerial.print(\"sensor Value: \");\n\tSerial.print(sensorVal);\n\tfloat voltage = (sensorVal / 1024.0) * 5.0;\n\tSerial.print(\", Volts: \");\n\tSerial.print(voltage);\n\tSerial.print(\", degrees C: \");\n\tfloat temperature = (voltage - .5) * 100;\n\tSerial.println(temperature);\n\tif (temperature < baselineTemp + 2) {\n\t\tdigitalWrite(2, LOW);\n\t\tdigitalWrite(3, LOW);\n\t\tdigitalWrite(4, LOW);\n\t}\n\telse if (temperature >= baselineTemp + 2 && temperature < baselineTemp + 4) {\n\t\tdigitalWrite(2, HIGH);\n\t\tdigitalWrite(3, LOW);\n\t\tdigitalWrite(4, LOW);\n\t}\n\telse if (temperature >= baselineTemp + 4 && temperature < baselineTemp + 6) {\n\t\tdigitalWrite(2, HIGH);\n\t\tdigitalWrite(3, HIGH);\n\t\tdigitalWrite(4, LOW);\n\t}\n\telse if (temperature >= baselineTemp + 6) {\n\t\tdigitalWrite(2, HIGH);\n\t\tdigitalWrite(3, HIGH);\n\t\tdigitalWrite(4, HIGH);\n\t}\n\tdelay(1);\n}",
+      "source": "Arduino examples - p03_LoveOMeter",
+      "length": 1092,
+      "id": 66
+    },
+    {
+      "text": "const int greenLEDPin = 9;\nconst int redLEDPin = 10;\nconst int blueLEDPin = 11;\nconst int redSensorPin = A0;\nconst int greenSensorPin = A1;\nconst int blueSensorPin = A2;\nint redValue = 0;\nint greenValue = 0;\nint blueValue = 0;\nint redSensorValue = 0;\nint greenSensorValue = 0;\nint blueSensorValue = 0;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(greenLEDPin, OUTPUT);\n\tpinMode(redLEDPin, OUTPUT);\n\tpinMode(blueLEDPin, OUTPUT);\n}\nvoid loop() {\n\tredSensorValue = analogRead(redSensorPin);\n\tdelay(5);\n\tgreenSensorValue = analogRead(greenSensorPin);\n\tdelay(5);\n\tblueSensorValue = analogRead(blueSensorPin);\n\tSerial.print(\"raw sensor Values \t red: \");\n\tSerial.print(redSensorValue);\n\tSerial.print(\"\t green: \");\n\tSerial.print(greenSensorValue);\n\tSerial.print(\"\t Blue: \");\n\tSerial.println(blueSensorValue);\n\tredValue = redSensorValue / 4;\n\tgreenValue = greenSensorValue / 4;\n\tblueValue = blueSensorValue / 4;\n\tSerial.print(\"Mapped sensor Values \t red: \");\n\tSerial.print(redValue);\n\tSerial.print(\"\t green: \");\n\tSerial.print(greenValue);\n\tSerial.print(\"\t Blue: \");\n\tSerial.println(blueValue);\n\tanalogWrite(redLEDPin, redValue);\n\tanalogWrite(greenLEDPin, greenValue);\n\tanalogWrite(blueLEDPin, blueValue);\n}",
+      "source": "Arduino examples - p04_ColorMixingLamp",
+      "length": 1197,
+      "id": 67
+    },
+    {
+      "text": "#include <Servo.h>\nServo myServo;\nint const potPin = A0;\nint potVal;\nint angle;\nvoid setup() {\n\tmyServo.attach(9);\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tpotVal = analogRead(potPin);\n\tSerial.print(\"potVal: \");\n\tSerial.print(potVal);\n\tangle = map(potVal, 0, 1023, 0, 179);\n\tSerial.print(\", angle: \");\n\tSerial.println(angle);\n\tmyServo.write(angle);\n\tdelay(15);\n}",
+      "source": "Arduino examples - p05_ServoMoodIndicator",
+      "length": 359,
+      "id": 68
+    },
+    {
+      "text": "int sensorValue;\nint sensorLow = 1023;\nint sensorHigh = 0;\nconst int ledPin = 13;\nvoid setup() {\n\tpinMode(ledPin, OUTPUT);\n\tdigitalWrite(ledPin, HIGH);\n\twhile (millis() < 5000) {\n\t\tsensorValue = analogRead(A0);\n\t\tif (sensorValue > sensorHigh) {\n\t\t\tsensorHigh = sensorValue;\n\t\t}\n\t\tif (sensorValue < sensorLow) {\n\t\t\tsensorLow = sensorValue;\n\t\t}\n\t}\n\tdigitalWrite(ledPin, LOW);\n}\nvoid loop() {\n\tsensorValue = analogRead(A0);\n\tint pitch = map(sensorValue, sensorLow, sensorHigh, 50, 4000);\n\ttone(8, pitch, 20);\n\tdelay(10);\n}",
+      "source": "Arduino examples - p06_LightTheremin",
+      "length": 519,
+      "id": 69
+    },
+    {
+      "text": "int notes[] = {262, 294, 330, 349};\nvoid setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tint keyVal = analogRead(A0);\n\tSerial.println(keyVal);\n\tif (keyVal == 1023) {\n\t\ttone(8, notes[0]);\n\t} else if (keyVal >= 990 && keyVal <= 1010) {\n\t\ttone(8, notes[1]);\n\t} else if (keyVal >= 505 && keyVal <= 515) {\n\t\ttone(8, notes[2]);\n\t} else if (keyVal >= 5 && keyVal <= 10) {\n\t\ttone(8, notes[3]);\n\t} else {\n\t\tnoTone(8);\n\t}\n}",
+      "source": "Arduino examples - p07_Keyboard",
+      "length": 413,
+      "id": 70
+    },
+    {
+      "text": "const int switchPin = 8;\nunsigned long previousTime = 0;\nint switchState = 0;\nint prevSwitchState = 0;\nint led = 2;\nlong interval = 600000;\nvoid setup() {\n\tfor (int x = 2; x < 8; x++) {\n\t\tpinMode(x, OUTPUT);\n\t}\n\tpinMode(switchPin, INPUT);\n}\nvoid loop() {\n\tunsigned long currentTime = millis();\n\tif (currentTime - previousTime > interval) {\n\t\tpreviousTime = currentTime;\n\t\tdigitalWrite(led, HIGH);\n\t\tled++;\n\t\tif (led == 7) {\n\t\t}\n\t}\n\tswitchState = digitalRead(switchPin);\n\tif (switchState != prevSwitchState) {\n\t\tfor (int x = 2; x < 8; x++) {\n\t\t\tdigitalWrite(x, LOW);\n\t\t}\n\t\tled = 2;\n\t\tpreviousTime = currentTime;\n\t}\n\tprevSwitchState = switchState;\n}",
+      "source": "Arduino examples - p08_DigitalHourglass",
+      "length": 647,
+      "id": 71
+    },
+    {
+      "text": "const int switchPin = 2;\nconst int motorPin = 9;\nint switchState = 0;\nvoid setup() {\n\tpinMode(motorPin, OUTPUT);\n\tpinMode(switchPin, INPUT);\n}\nvoid loop() {\n\tswitchState = digitalRead(switchPin);\n\tif (switchState == HIGH) {\n\t\tdigitalWrite(motorPin, HIGH);\n\t} else {\n\t\tdigitalWrite(motorPin, LOW);\n\t}\n}",
+      "source": "Arduino examples - p09_MotorizedPinwheel",
+      "length": 301,
+      "id": 72
+    },
+    {
+      "text": "const int controlPin1 = 2;\nconst int controlPin2 = 3;\nconst int enablePin = 9;\nconst int directionSwitchPin = 4;\nconst int onOffSwitchStateSwitchPin = 5;\nconst int potPin = A0;\nint onOffSwitchState = 0;\nint previousOnOffSwitchState = 0;\nint directionSwitchState = 0;\nint previousDirectionSwitchState = 0;\nint motorEnabled = 0;\nint motorSpeed = 0;\nint motorDirection = 1;\nvoid setup() {\n\tpinMode(directionSwitchPin, INPUT);\n\tpinMode(onOffSwitchStateSwitchPin, INPUT);\n\tpinMode(controlPin1, OUTPUT);\n\tpinMode(controlPin2, OUTPUT);\n\tpinMode(enablePin, OUTPUT);\n\tdigitalWrite(enablePin, LOW);\n}\nvoid loop() {\n\tonOffSwitchState = digitalRead(onOffSwitchStateSwitchPin);\n\tdelay(1);\n\tdirectionSwitchState = digitalRead(directionSwitchPin);\n\tmotorSpeed = analogRead(potPin) / 4;\n\tif (onOffSwitchState != previousOnOffSwitchState) {\n\t\tif (onOffSwitchState == HIGH) {\n\t\t\tmotorEnabled = !motorEnabled;\n\t\t}\n\t}\n\tif (directionSwitchState != previousDirectionSwitchState) {\n\t\tif (directionSwitchState == HIGH) {\n\t\t\tmotorDirection = !motorDirection;\n\t\t}\n\t}\n\tif (motorDirection == 1) {\n\t\tdigitalWrite(controlPin1, HIGH);\n\t\tdigitalWrite(controlPin2, LOW);\n\t} else {\n\t\tdigitalWrite(controlPin1, LOW);\n\t\tdigitalWrite(controlPin2, HIGH);\n\t}\n\tif (motorEnabled == 1) {\n\t\tanalogWrite(enablePin, motorSpeed);\n\t} else {\n\t\tanalogWrite(enablePin, 0);\n\t}\n\tpreviousDirectionSwitchState = directionSwitchState;\n\tpreviousOnOffSwitchState = onOffSwitchState;\n}",
+      "source": "Arduino examples - p10_Zoetrope",
+      "length": 1427,
+      "id": 73
+    },
+    {
+      "text": "#include <LiquidCrystal.h>\nLiquidCrystal lcd(12, 11, 5, 4, 3, 2);\nconst int switchPin = 6;\nint switchState = 0;\nint prevSwitchState = 0;\nint reply;\nvoid setup() {\n\tlcd.begin(16, 2);\n\tpinMode(switchPin, INPUT);\n\tlcd.print(\"Ask the\");\n\tlcd.setCursor(0, 1);\n\tlcd.print(\"Crystal Ball!\");\n}\nvoid loop() {\n\tswitchState = digitalRead(switchPin);\n\tif (switchState != prevSwitchState) {\n\t\tif (switchState == LOW) {\n\t\t\treply = random(8);\n\t\t\tlcd.clear();\n\t\t\tlcd.setCursor(0, 0);\n\t\t\tlcd.print(\"the ball says:\");\n\t\t\tlcd.setCursor(0, 1);\n\t\t\tswitch (reply) {\n\t\t\t\tcase 0:\n\t\t\t\t\tlcd.print(\"Yes\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 1:\n\t\t\t\t\tlcd.print(\"Most likely\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 2:\n\t\t\t\t\tlcd.print(\"Certainly\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 3:\n\t\t\t\t\tlcd.print(\"Outlook good\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 4:\n\t\t\t\t\tlcd.print(\"Unsure\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 5:\n\t\t\t\t\tlcd.print(\"Ask again\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 6:\n\t\t\t\t\tlcd.print(\"Doubtful\");\n\t\t\t\t\tbreak;\n\t\t\t\tcase 7:\n\t\t\t\t\tlcd.print(\"No\");\n\t\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t}\n\tprevSwitchState = switchState;\n}",
+      "source": "Arduino examples - p11_CrystalBall",
+      "length": 1001,
+      "id": 74
+    },
+    {
+      "text": "#include <Servo.h>\nServo myServo;\nconst int piezo = A0;\nconst int switchPin = 2;\nconst int yellowLed = 3;\nconst int greenLed = 4;\nconst int redLed = 5;\nint knockVal;\nint switchVal;\nconst int quietKnock = 10;\nconst int loudKnock = 100;\nbool locked = false;\nint numberOfKnocks = 0;\nvoid setup() {\n\tmyServo.attach(9);\n\tpinMode(yellowLed, OUTPUT);\n\tpinMode(redLed, OUTPUT);\n\tpinMode(greenLed, OUTPUT);\n\tpinMode(switchPin, INPUT);\n\tSerial.begin(9600);\n\tdigitalWrite(greenLed, HIGH);\n\tmyServo.write(0);\n\tSerial.println(\"the box is unlocked!\");\n}\nvoid loop() {\n\tif (locked == false) {\n\t\tswitchVal = digitalRead(switchPin);\n\t\tif (switchVal == HIGH) {\n\t\t\tlocked = true;\n\t\t\tdigitalWrite(greenLed, LOW);\n\t\t\tdigitalWrite(redLed, HIGH);\n\t\t\tmyServo.write(90);\n\t\t\tSerial.println(\"the box is locked!\");\n\t\t\tdelay(1000);\n\t\t}\n\t}\n\tif (locked == true) {\n\t\tknockVal = analogRead(piezo);\n\t\tif (numberOfKnocks < 3 && knockVal > 0) {\n\t\t\tif (checkForKnock(knockVal) == true) {\n\t\t\t\tnumberOfKnocks++;\n\t\t\t}\n\t\t\tSerial.print(3 - numberOfKnocks);\n\t\t\tSerial.println(\" more knocks to go\");\n\t\t}\n\t\tif (numberOfKnocks >= 3) {\n\t\t\tlocked = false;\n\t\t\tmyServo.write(0);\n\t\t\tdelay(20);\n\t\t\tdigitalWrite(greenLed, HIGH);\n\t\t\tdigitalWrite(redLed, LOW);\n\t\t\tSerial.println(\"the box is unlocked!\");\n\t\t\tnumberOfKnocks = 0;\n\t\t}\n\t}\n}\nbool checkForKnock(int value) {\n\tif (value > quietKnock && value < loudKnock) {\n\t\tdigitalWrite(yellowLed, HIGH);\n\t\tdelay(50);\n\t\tdigitalWrite(yellowLed, LOW);\n\t\tSerial.print(\"Valid knock of value \");\n\t\tSerial.println(value);\n\t\treturn true;\n\t}\n\telse {\n\t\tSerial.print(\"Bad knock value \");\n\t\tSerial.println(value);\n\t\treturn false;\n\t}\n}",
+      "source": "Arduino examples - p12_KnockLock",
+      "length": 1612,
+      "id": 75
+    },
+    {
+      "text": "#include <CapacitiveSensor.h>\nCapacitiveSensor capSensor = CapacitiveSensor(4, 2);\nint threshold = 1000;\nconst int ledPin = 12;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(ledPin, OUTPUT);\n}\nvoid loop() {\n\tlong sensorValue = capSensor.capacitiveSensor(30);\n\tSerial.println(sensorValue);\n\tif (sensorValue > threshold) {\n\t\tdigitalWrite(ledPin, HIGH);\n\t}\n\telse {\n\t\tdigitalWrite(ledPin, LOW);\n\t}\n\tdelay(10);\n}",
+      "source": "Arduino examples - p13_TouchSensorLamp",
+      "length": 406,
+      "id": 76
+    },
+    {
+      "text": "void setup() {\n\tSerial.begin(9600);\n}\nvoid loop() {\n\tSerial.write(analogRead(A0) / 4);\n\tdelay(1);\n}",
+      "source": "Arduino examples - p14_TweakTheArduinoLogo",
+      "length": 99,
+      "id": 77
+    },
+    {
+      "text": "const int optoPin = 2;\nvoid setup() {\n\tpinMode(optoPin, OUTPUT);\n}\nvoid loop() {\n\tdigitalWrite(optoPin, HIGH);\n\tdelay(15);\n\tdigitalWrite(optoPin, LOW);\n\tdelay(21000);\n}",
+      "source": "Arduino examples - p15_HackingButtons",
+      "length": 168,
+      "id": 78
+    },
+    {
+      "text": "#include \"Arduino.h\"\n#undef SERIAL\n#define PROG_FLICKER true\n#define SPI_CLOCK (1000000/6)\n#if defined(ARDUINO_ARCH_AVR)\n\t#if SPI_CLOCK > (F_CPU / 128)\n\t\t#define USE_HARDWARE_SPI\n\t#endif\n#endif\n#ifndef ARDUINO_HOODLOADER2\n\t#define RESET 10\n\t#define LED_HB 9\n\t#define LED_ERR 8\n\t#define LED_PMODE 7\n\t#ifdef USE_OLD_STYLE_WIRING\n\t\t#define PIN_MOSI 11\n\t\t#define PIN_MISO 12\n\t\t#define PIN_SCK 13\n\t#endif\n#else\n\t#define RESET 4\n\t#define LED_HB 7\n\t#define LED_ERR 6\n\t#define LED_PMODE 5\n#endif\n#ifndef PIN_MOSI\n\t#define PIN_MOSI MOSI\n#endif\n#ifndef PIN_MISO\n\t#define PIN_MISO MISO\n#endif\n#ifndef PIN_SCK\n\t#define PIN_SCK SCK\n#endif\n#if (PIN_MISO != MISO) || (PIN_MOSI != MOSI) || (PIN_SCK != SCK)\n\t#undef USE_HARDWARE_SPI\n#endif\n#ifdef SERIAL_PORT_USBVIRTUAL\n\t#define SERIAL SERIAL_PORT_USBVIRTUAL\n#else\n\t#define SERIAL Serial\n#endif\n#define BAUDRATE 19200\n#define HWVER 2\n#define SWMAJ 1\n#define SWMIN 18\n#define STK_OK 0x10\n#define STK_FAILED 0x11\n#define STK_UNKNOWN 0x12\n#define STK_INSYNC 0x14\n#define STK_NOSYNC 0x15\n#define CRC_EOP 0x20\nvoid pulse(int pin, int times);\n#ifdef USE_HARDWARE_SPI\n#include \"SPI.h\"\n#else\n#define SPI_MODE0 0x00\n#if !defined(ARDUINO_API_VERSION) || ARDUINO_API_VERSION != 10001\nclass SPISettings {\n\tpublic:\n\t\tSPISettings(uint32_t clock, uint8_t bitOrder, uint8_t dataMode) : clockFreq(clock) {\n\t\t\t(void) bitOrder;\n\t\t\t(void) dataMode;\n\t\t};\n\t\tuint32_t getClockFreq() const {\n\t\t\treturn clockFreq;\n\t\t}\n\tprivate:\n\t\tuint32_t clockFreq;\n};\n#endif\nclass BitBangedSPI {\n\tpublic:\n\t\tvoid begin() {\n\t\t\tdigitalWrite(PIN_SCK, LOW);\n\t\t\tdigitalWrite(PIN_MOSI, LOW);\n\t\t\tpinMode(PIN_SCK, OUTPUT);\n\t\t\tpinMode(PIN_MOSI, OUTPUT);\n\t\t\tpinMode(PIN_MISO, INPUT);\n\t\t}\n\t\tvoid beginTransaction(SPISettings settings) {\n\t\t\tpulseWidth = (500000 + settings.getClockFreq() - 1) / settings.getClockFreq();\n\t\t\tif (pulseWidth == 0) {\n\t\t\t\tpulseWidth = 1;\n\t\t\t}\n\t\t}\n\t\tvoid end() {}\n\t\tuint8_t transfer(uint8_t b) {\n\t\t\tfor (unsigned int i = 0; i < 8; ++i) {\n\t\t\t\tdigitalWrite(PIN_MOSI, (b & 0x80) ? HIGH : LOW);\n\t\t\t\tdigitalWrite(PIN_SCK, HIGH);\n\t\t\t\tdelayMicroseconds(pulseWidth);\n\t\t\t\tb = (b << 1) | digitalRead(PIN_MISO);\n\t\t\t\tdigitalWrite(PIN_SCK, LOW);\n\t\t\t\tdelayMicroseconds(pulseWidth);\n\t\t\t}\n\t\t\treturn b;\n\t\t}\n\tprivate:\n\t\tunsigned long pulseWidth;\n};\nstatic BitBangedSPI SPI;\n#endif\nvoid setup() {\n\tSERIAL.begin(BAUDRATE);\n\tpinMode(LED_PMODE, OUTPUT);\n\tpulse(LED_PMODE, 2);\n\tpinMode(LED_ERR, OUTPUT);\n\tpulse(LED_ERR, 2);\n\tpinMode(LED_HB, OUTPUT);\n\tpulse(LED_HB, 2);\n}\nint ISPError = 0;\nint pmode = 0;\nunsigned int here;\nuint8_t buff[256];\n#define beget16(addr) (*addr * 256 + *(addr+1) )\ntypedef struct param {\n\tuint8_t devicecode;\n\tuint8_t revision;\n\tuint8_t progtype;\n\tuint8_t parmode;\n\tuint8_t polling;\n\tuint8_t selftimed;\n\tuint8_t lockbytes;\n\tuint8_t fusebytes;\n\tuint8_t flashpoll;\n\tuint16_t eeprompoll;\n\tuint16_t pagesize;\n\tuint16_t eepromsize;\n\tuint32_t flashsize;\n}\nparameter;\nparameter param;\nuint8_t hbval = 128;\nint8_t hbdelta = 8;\nvoid heartbeat() {\n\tstatic unsigned long last_time = 0;\n\tunsigned long now = millis();\n\tif ((now - last_time) < 40) {\n\t\treturn;\n\t}\n\tlast_time = now;\n\tif (hbval > 192) {\n\t\thbdelta = -hbdelta;\n\t}\n\tif (hbval < 32) {\n\t\thbdelta = -hbdelta;\n\t}\n\thbval += hbdelta;\n\tanalogWrite(LED_HB, hbval);\n}\nstatic bool rst_active_high;\nvoid reset_target(bool reset) {\n\tdigitalWrite(RESET, ((reset && rst_active_high) || (!reset && !rst_active_high)) ? HIGH : LOW);\n}\nvoid loop(void) {\n\tif (pmode) {\n\t\tdigitalWrite(LED_PMODE, HIGH);\n\t} else {\n\t\tdigitalWrite(LED_PMODE, LOW);\n\t}\n\tif (ISPError) {\n\t\tdigitalWrite(LED_ERR, HIGH);\n\t} else {\n\t\tdigitalWrite(LED_ERR, LOW);\n\t}\n\theartbeat();\n\tif (SERIAL.available()) {\n\t\tavrisp();\n\t}\n}\nuint8_t getch() {\n\twhile (!SERIAL.available());\n\treturn SERIAL.read();\n}\nvoid fill(int n) {\n\tfor (int x = 0; x < n; x++) {\n\t\tbuff[x] = getch();\n\t}\n}\n#define PTIME 30\nvoid pulse(int pin, int times) {\n\tdo {\n\t\tdigitalWrite(pin, HIGH);\n\t\tdelay(PTIME);\n\t\tdigitalWrite(pin, LOW);\n\t\tdelay(PTIME);\n\t} while (times--);\n}\nvoid prog_lamp(int state) {\n\tif (PROG_FLICKER) {\n\t\tdigitalWrite(LED_PMODE, state);\n\t}\n}\nuint8_t spi_transaction(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {\n\tSPI.transfer(a);\n\tSPI.transfer(b);\n\tSPI.transfer(c);\n\treturn SPI.transfer(d);\n}\nvoid empty_reply() {\n\tif (CRC_EOP == getch()) {\n\t\tSERIAL.print((char)STK_INSYNC);\n\t\tSERIAL.print((char)STK_OK);\n\t} else {\n\t\tISPError++;\n\t\tSERIAL.print((char)STK_NOSYNC);\n\t}\n}\nvoid breply(uint8_t b) {\n\tif (CRC_EOP == getch()) {\n\t\tSERIAL.print((char)STK_INSYNC);\n\t\tSERIAL.print((char)b);\n\t\tSERIAL.print((char)STK_OK);\n\t} else {\n\t\tISPError++;\n\t\tSERIAL.print((char)STK_NOSYNC);\n\t}\n}\nvoid get_version(uint8_t c) {\n\tswitch (c) {\n\t\tcase 0x80:\n\t\t\tbreply(HWVER);\n\t\t\tbreak;\n\t\tcase 0x81:\n\t\t\tbreply(SWMAJ);\n\t\t\tbreak;\n\t\tcase 0x82:\n\t\t\tbreply(SWMIN);\n\t\t\tbreak;\n\t\tcase 0x93:\n\t\t\tbreply('S');\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tbreply(0);\n\t}\n}\nvoid set_parameters() {\n\tparam.devicecode = buff[0];\n\tparam.revision = buff[1];\n\tparam.progtype = buff[2];\n\tparam.parmode = buff[3];\n\tparam.polling = buff[4];\n\tparam.selftimed = buff[5];\n\tparam.lockbytes = buff[6];\n\tparam.fusebytes = buff[7];\n\tparam.flashpoll = buff[8];\n\tparam.eeprompoll = beget16(&buff[10]);\n\tparam.pagesize = beget16(&buff[12]);\n\tparam.eepromsize = beget16(&buff[14]);\n\tparam.flashsize = buff[16] * 0x01000000 + buff[17] * 0x00010000 + buff[18] * 0x00000100 + buff[19];\n\trst_active_high = (param.devicecode >= 0xe0);\n}\nvoid start_pmode() {\n\treset_target(true);\n\tpinMode(RESET, OUTPUT);\n\tSPI.begin();\n\tSPI.beginTransaction(SPISettings(SPI_CLOCK, MSBFIRST, SPI_MODE0));\n\tdigitalWrite(PIN_SCK, LOW);\n\tdelay(20);\n\treset_target(false);\n\tdelayMicroseconds(100);\n\treset_target(true);\n\tdelay(50);\n\tspi_transaction(0xAC, 0x53, 0x00, 0x00);\n\tpmode = 1;\n}\nvoid end_pmode() {\n\tSPI.end();\n\tpinMode(PIN_MOSI, INPUT);\n\tpinMode(PIN_SCK, INPUT);\n\treset_target(false);\n\tpinMode(RESET, INPUT);\n\tpmode = 0;\n}\nvoid universal() {\n\tuint8_t ch;\n\tfill(4);\n\tch = spi_transaction(buff[0], buff[1], buff[2], buff[3]);\n\tbreply(ch);\n}\nvoid flash(uint8_t hilo, unsigned int addr, uint8_t data) {\n\tspi_transaction(0x40 + 8 * hilo, addr >> 8 & 0xFF, addr & 0xFF, data);\n}\nvoid commit(unsigned int addr) {\n\tif (PROG_FLICKER) {\n\t\tprog_lamp(LOW);\n\t}\n\tspi_transaction(0x4C, (addr >> 8) & 0xFF, addr & 0xFF, 0);\n\tif (PROG_FLICKER) {\n\t\tdelay(PTIME);\n\t\tprog_lamp(HIGH);\n\t}\n}\nunsigned int current_page() {\n\tif (param.pagesize == 32) {\n\t\treturn here & 0xFFFFFFF0;\n\t}\n\tif (param.pagesize == 64) {\n\t\treturn here & 0xFFFFFFE0;\n\t}\n\tif (param.pagesize == 128) {\n\t\treturn here & 0xFFFFFFC0;\n\t}\n\tif (param.pagesize == 256) {\n\t\treturn here & 0xFFFFFF80;\n\t}\n\treturn here;\n}\nvoid write_flash(int length) {\n\tfill(length);\n\tif (CRC_EOP == getch()) {\n\t\tSERIAL.print((char) STK_INSYNC);\n\t\tSERIAL.print((char) write_flash_pages(length));\n\t} else {\n\t\tISPError++;\n\t\tSERIAL.print((char) STK_NOSYNC);\n\t}\n}\nuint8_t write_flash_pages(int length) {\n\tint x = 0;\n\tunsigned int page = current_page();\n\twhile (x < length) {\n\t\tif (page != current_page()) {\n\t\t\tcommit(page);\n\t\t\tpage = current_page();\n\t\t}\n\t\tflash(LOW, here, buff[x++]);\n\t\tflash(HIGH, here, buff[x++]);\n\t\there++;\n\t}\n\tcommit(page);\n\treturn STK_OK;\n}\n#define EECHUNK (32)\nuint8_t write_eeprom(unsigned int length) {\n\tunsigned int start = here * 2;\n\tunsigned int remaining = length;\n\tif (length > param.eepromsize) {\n\t\tISPError++;\n\t\treturn STK_FAILED;\n\t}\n\twhile (remaining > EECHUNK) {\n\t\twrite_eeprom_chunk(start, EECHUNK);\n\t\tstart += EECHUNK;\n\t\tremaining -= EECHUNK;\n\t}\n\twrite_eeprom_chunk(start, remaining);\n\treturn STK_OK;\n}\nuint8_t write_eeprom_chunk(unsigned int start, unsigned int length) {\n\tfill(length);\n\tprog_lamp(LOW);\n\tfor (unsigned int x = 0; x < length; x++) {\n\t\tunsigned int addr = start + x;\n\t\tspi_transaction(0xC0, (addr >> 8) & 0xFF, addr & 0xFF, buff[x]);\n\t\tdelay(45);\n\t}\n\tprog_lamp(HIGH);\n\treturn STK_OK;\n}\nvoid program_page() {\n\tchar result = (char) STK_FAILED;\n\tunsigned int length = 256 * getch();\n\tlength += getch();\n\tchar memtype = getch();\n\tif (memtype == 'F') {\n\t\twrite_flash(length);\n\t\treturn;\n\t}\n\tif (memtype == 'E') {\n\t\tresult = (char)write_eeprom(length);\n\t\tif (CRC_EOP == getch()) {\n\t\t\tSERIAL.print((char) STK_INSYNC);\n\t\t\tSERIAL.print(result);\n\t\t} else {\n\t\t\tISPError++;\n\t\t\tSERIAL.print((char) STK_NOSYNC);\n\t\t}\n\t\treturn;\n\t}\n\tSERIAL.print((char)STK_FAILED);\n\treturn;\n}\nuint8_t flash_read(uint8_t hilo, unsigned int addr) {\n\treturn spi_transaction(0x20 + hilo * 8, (addr >> 8) & 0xFF, addr & 0xFF, 0);\n}\nchar flash_read_page(int length) {\n\tfor (int x = 0; x < length; x += 2) {\n\t\tuint8_t low = flash_read(LOW, here);\n\t\tSERIAL.print((char) low);\n\t\tuint8_t high = flash_read(HIGH, here);\n\t\tSERIAL.print((char) high);\n\t\there++;\n\t}\n\treturn STK_OK;\n}\nchar eeprom_read_page(int length) {\n\tint start = here * 2;\n\tfor (int x = 0; x < length; x++) {\n\t\tint addr = start + x;\n\t\tuint8_t ee = spi_transaction(0xA0, (addr >> 8) & 0xFF, addr & 0xFF, 0xFF);\n\t\tSERIAL.print((char) ee);\n\t}\n\treturn STK_OK;\n}\nvoid read_page() {\n\tchar result = (char)STK_FAILED;\n\tint length = 256 * getch();\n\tlength += getch();\n\tchar memtype = getch();\n\tif (CRC_EOP != getch()) {\n\t\tISPError++;\n\t\tSERIAL.print((char) STK_NOSYNC);\n\t\treturn;\n\t}\n\tSERIAL.print((char) STK_INSYNC);\n\tif (memtype == 'F') {\n\t\tresult = flash_read_page(length);\n\t}\n\tif (memtype == 'E') {\n\t\tresult = eeprom_read_page(length);\n\t}\n\tSERIAL.print(result);\n}\nvoid read_signature() {\n\tif (CRC_EOP != getch()) {\n\t\tISPError++;\n\t\tSERIAL.print((char) STK_NOSYNC);\n\t\treturn;\n\t}\n\tSERIAL.print((char) STK_INSYNC);\n\tuint8_t high = spi_transaction(0x30, 0x00, 0x00, 0x00);\n\tSERIAL.print((char) high);\n\tuint8_t middle = spi_transaction(0x30, 0x00, 0x01, 0x00);\n\tSERIAL.print((char) middle);\n\tuint8_t low = spi_transaction(0x30, 0x00, 0x02, 0x00);\n\tSERIAL.print((char) low);\n\tSERIAL.print((char) STK_OK);\n}\nvoid avrisp() {\n\tuint8_t ch = getch();\n\tswitch (ch) {\n\t\tcase '0':\n\t\t\tISPError = 0;\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase '1':\n\t\t\tif (getch() == CRC_EOP) {\n\t\t\t\tSERIAL.print((char) STK_INSYNC);\n\t\t\t\tSERIAL.print(\"AVR ISP\");\n\t\t\t\tSERIAL.print((char) STK_OK);\n\t\t\t} else {\n\t\t\t\tISPError++;\n\t\t\t\tSERIAL.print((char) STK_NOSYNC);\n\t\t\t}\n\t\t\tbreak;\n\t\tcase 'A':\n\t\t\tget_version(getch());\n\t\t\tbreak;\n\t\tcase 'B':\n\t\t\tfill(20);\n\t\t\tset_parameters();\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 'E':\n\t\t\tfill(5);\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 'P':\n\t\t\tif (!pmode) {\n\t\t\t\tstart_pmode();\n\t\t\t}\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 'U':\n\t\t\there = getch();\n\t\t\there += 256 * getch();\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 0x60:\n\t\t\tgetch();\n\t\t\tgetch();\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 0x61:\n\t\t\tgetch();\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 0x64:\n\t\t\tprogram_page();\n\t\t\tbreak;\n\t\tcase 0x74:\n\t\t\tread_page();\n\t\t\tbreak;\n\t\tcase 'V':\n\t\t\tuniversal();\n\t\t\tbreak;\n\t\tcase 'Q':\n\t\t\tISPError = 0;\n\t\t\tend_pmode();\n\t\t\tempty_reply();\n\t\t\tbreak;\n\t\tcase 0x75:\n\t\t\tread_signature();\n\t\t\tbreak;\n\t\tcase CRC_EOP:\n\t\t\tISPError++;\n\t\t\tSERIAL.print((char) STK_NOSYNC);\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tISPError++;\n\t\t\tif (CRC_EOP == getch()) {\n\t\t\t\tSERIAL.print((char)STK_UNKNOWN);\n\t\t\t} else {\n\t\t\t\tSERIAL.print((char)STK_NOSYNC);\n\t\t\t}\n\t}\n}",
+      "source": "Arduino examples - ArduinoISP",
+      "length": 10918,
+      "id": 79
+    },
+    {
+      "text": "const int groundpin = 18;\nconst int powerpin = 19;\nconst int xpin = A3;\nconst int ypin = A2;\nconst int zpin = A1;\nvoid setup() {\n\tSerial.begin(9600);\n\tpinMode(groundpin, OUTPUT);\n\tpinMode(powerpin, OUTPUT);\n\tdigitalWrite(groundpin, LOW);\n\tdigitalWrite(powerpin, HIGH);\n}\nvoid loop() {\n\tSerial.print(analogRead(xpin));\n\tSerial.print(\"\t\");\n\tSerial.print(analogRead(ypin));\n\tSerial.print(\"\t\");\n\tSerial.print(analogRead(zpin));\n\tSerial.println();\n\tdelay(100);\n}",
+      "source": "Arduino examples - ADXL3xx",
+      "length": 457,
+      "id": 80
+    }
+  ]
+}

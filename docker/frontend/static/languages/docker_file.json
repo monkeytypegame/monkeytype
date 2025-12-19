@@ -1,0 +1,25 @@
+{
+  "name": "docker_file",
+  "noLazyMode": true,
+  "words": [
+    "ADD",
+    "ARG",
+    "AS",
+    "CMD",
+    "COPY",
+    "ENTRYPOINT",
+    "ENV",
+    "EXPOSE",
+    "FROM",
+    "HEALTHCHECK",
+    "LABEL",
+    "MAINTAINER",
+    "ONBUILD",
+    "RUN",
+    "SHELL",
+    "STOPSIGNAL",
+    "USER",
+    "VOLUME",
+    "WORKDIR"
+  ]
+}

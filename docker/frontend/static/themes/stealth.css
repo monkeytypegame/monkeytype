@@ -1,0 +1,18 @@
+:root {
+  --bg-color: #010203;
+  --main-color: #383e42;
+  --caret-color: #e25303;
+  --sub-color: #5e676e;
+  --sub-alt-color: #121212;
+  --text-color: #383e42;
+  --error-color: #e25303;
+  --error-extra-color: #73280c;
+  --colorful-error-color: #e25303;
+  --colorful-error-extra-color: #73280c;
+}
+nav .textButton:nth-child(4) {
+  color: #e25303;
+}
+#liveStatsTextTop {
+  color: #5e676e;
+}

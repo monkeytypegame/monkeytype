@@ -1,0 +1,311 @@
+{
+  "language": "lithuanian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Kol kas tu man tik mažas berniukas, panašus į šimtus tūkstančių kitų berniukų. Tu man nereikalingas. Aš tau irgi nereikalinga. Aš tau esu tik lapė, panaši į šimtą tūkstančių kitų lapių. Bet jei mane prisijaukinsi, mudu tapsime vienas kitam reikalingi. Tu būsi man vienintelis pasaulyje... Aš būsiu tau vienintelė pasaulyje...",
+      "source": "Mažasis princas",
+      "length": 325,
+      "id": 1
+    },
+    {
+      "text": "Dabar ji suprato, kodėl jo veidas pilkas - odon įsiėdė akmens dulkės. Ji glostė abiem rankom didelį, grubų, kietą kumštį ir žiūrėjo sau po kojomis, ten, kur gulėjo akmenys, prigludę vienas prie kito, akmuo prie akmens, kieti kaip jie patys.",
+      "source": "Lygiosios trunka akimirką",
+      "length": 240,
+      "id": 2
+    },
+    {
+      "text": "Prasidėjus liepai, žemės paviršius atšilo, ir darbų padaugėjo: taigos properšoje Usolės lietuviai gavo sklypelį žemės. Mumyse atgijo žemdirbių kraujas. Tad puolėme kasti žemelę, sodinti bulves.",
+      "source": "Amžino įšalo žemė",
+      "length": 193,
+      "id": 3
+    },
+    {
+      "text": "Saulė švietė, lingavo žalios, skarotos maumedžių šakos, jose striksėjo voverės, žaibais į šešėlius nardė sabalai, o nuklydęs gilyn į girią, bijojai sutikti taigos šeimininką - lokį.",
+      "source": "Amžino įšalo žemė",
+      "length": 181,
+      "id": 4
+    },
+    {
+      "text": "Pusę vienuoliktos jis išgirdo, kaip visi nuėjo gulti. Kiek laiko jį erzino laukinis juokas iš dvynukų kambario - jie su lengvabūdiška paauglių linksmybe išdykavo prieš miegą, - bet pusę dvyliktos viskas nurimo ir išmušus vidurnaktį jis leidosi pirmyn.",
+      "source": "Kentervilio pilies vaiduoklis",
+      "length": 251,
+      "id": 5
+    },
+    {
+      "text": "Oras buvo vaiskus. Ralfas tiesiog nebesitvėrė iš džiaugsmo ir, negalėdamas to niekaip kitaip išreikšti, apsivertė kūlvirsčia. Kai visi trys prisikvatojo iki valiai, Saimonas nedrąsiai paglostė Ralfui ranką, ir vėl visi prapliupo juoktis.",
+      "source": "Musių valdovas",
+      "length": 237,
+      "id": 6
+    },
+    {
+      "text": "Palmių kraštai mėlynam vandenyne, kviečia atogrąžų saldūs kerai, o tarp savanų, smėlėtam žemyne, iš baobabų suręsti namai.",
+      "source": "Robinzonas",
+      "length": 122,
+      "id": 7
+    },
+    {
+      "text": "Nešęs velnias akmenį, didumo kaip gryčios,\nIr sudaužyt norėjęs Anykščių bažnyčios\nArba ažuverst upės; bet kaip tik išvydęs\nĄžuolyną pašvęstą ir gaidys pragydęs,\nTuoj iš nagų paleidęs ir smėlin įmušęs:\nNet žemė sudrebėjus, senos griuvę pušys.",
+      "source": "Anykščių šilelis",
+      "length": 241,
+      "id": 8
+    },
+    {
+      "text": "Jau saulelė vėl atkopdama budino svietą\nIr žiemos šaltos trūsus pargraudama juokės.\nŠalčių pramonės su ledais sugaišti pagavo,\nIr putodams sniegs visur į nieką pavirto.",
+      "source": "Metai",
+      "length": 168,
+      "id": 9
+    },
+    {
+      "text": "Kalk geležį, kol karšta, paskui neįveiksi, mokyk vaiką, kol mažas, paskui nepriveiksi.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 86,
+      "id": 10
+    },
+    {
+      "text": "Jei turi ką valgyti ir su kuo apsirėdyti, nieko geresnio neturėtum ir karalium būdamas.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 87,
+      "id": 11
+    },
+    {
+      "text": "Žodžiu galvos nepramuši, o sužeisti gali. Žodis kaip žvirblis, išlėks - nepagausi.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 82,
+      "id": 12
+    },
+    {
+      "text": "Tavęs klausiu apie ragaišį, o tu pasakoji, kad katinas nugaišo.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 63,
+      "id": 13
+    },
+    {
+      "text": "Geriau sužiedėjusi duona savo namuose, negu daugybė valgių ant svetimo stalo.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 77,
+      "id": 14
+    },
+    {
+      "text": "Gudrus svetimas klaidas suskaityti, kvailas, kai reikia savo nors vieną pamatyti.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 81,
+      "id": 15
+    },
+    {
+      "text": "Šerkšno ji nematė, tačiau jautė, kaip gyslose kraujas spragsėdamas virsta ledo kristalėliais. Jos plaukai tarsi jūržolės plaikstėsi ant pagalvės.",
+      "source": "Lietuvos nacionalinis diktantas - Milinė",
+      "length": 145,
+      "id": 16
+    },
+    {
+      "text": "Angelas nusklendė žemyn, praskyręs rūką įleido sielą vidun: eik, šį kartą tau bus lemta ilgiau Žemėje užtrukti - kol pastatysi šventovę.",
+      "source": "Lietuvos nacionalinis diktantas - Milinė",
+      "length": 136,
+      "id": 17
+    },
+    {
+      "text": "Ir neturėjau kam pasiskųsti, kad aš taip pavargau. Norėjau pailsėti nors valandėlę, nors penkiolika minučių. Sustojau ties aukštąja pušim ir atsirėmiau į jos kamieną.",
+      "source": "Diktantai - Pagalbinė medžiaga vidurinių mokyklų lietuvių kalbos dėstytojams",
+      "length": 166,
+      "id": 18
+    },
+    {
+      "text": "Po aprašytųjų peštynių lageryje santykiuose su mumis kažkas pasikeitė. Kažkas nauja dvelktelėjo. Pajutome kažkokią nematomą, neaiškią gerą ranką. Kažkas nematomas ėmė mus globoti.",
+      "source": "Dievų miškas",
+      "length": 179,
+      "id": 19
+    },
+    {
+      "text": "Dviratukas mano niekaip nesustoja. Aš minu į priekį ir dainas dainuoju.",
+      "source": "Dviratukas",
+      "length": 71,
+      "id": 20
+    },
+    {
+      "text": "Kudirkos poetinis palikimas tėra keliolika eilėraščių, tačiau retorinis kryptingumas ir idėjiniai akcentai simbolizuoja visą jo gyvenimo bei darbų prasmę.",
+      "source": "Kudirka",
+      "length": 154,
+      "id": 21
+    },
+    {
+      "text": "Nežadu tavęs paleist, nežadu tavęs nuvilt, ir neketinu lakstyti ir apleisti. Su manim neteks tau verkt, nereikės ištart sudie, nežadu tau pameluot, įskaudint.",
+      "source": "Rikas Astlys - Nežadu Tavęs Paleist",
+      "length": 158,
+      "id": 22
+    },
+    {
+      "text": "Šaly diendaržio durų, ant didžiulės spalių krūvos, guli senas Brisius - žilas, apžabalęs. Matyti jisai dar mato, bet tik kaip per dūmus, ir savo žmogaus labai dažnai nebepažįsta. Sunki senatvė ir jam: visų užmirštas, apleistas. Patsai gerai jaučia, kad mažai kam bereikalingas.",
+      "source": "Brisiaus galas",
+      "length": 277,
+      "id": 23
+    },
+    {
+      "text": "Nusiminęs, nebežinodamas, ką daryti, atžagaria ranka numečiau lanką ir strėlas ir neatsigręždamas parlėkiau namo. Širdyje jaučiau skausmą ir sunkumą: tarsi didelė didelė našta slėgė krūtinę. Tik trečią dieną drįsau išeiti laukan: katytė gulėjo aukštielninka, nebegyva. Čia pat prie jos buvo numesti lankas ir strėlos. Nutvėręs nuo žemės, lanką ir strėlas sulaužiau į šipulius ir toli išmėčiau po lauką.",
+      "source": "Kliudžiau",
+      "length": 402,
+      "id": 24
+    },
+    {
+      "text": "Geri vyrai geroj girioj gerą girą gėrė ir gerdami gyrė: geriems vyrams geroj girioj gerą girą gera gert.",
+      "source": "Lietuviškos greitakalbės",
+      "length": 104,
+      "id": 25
+    },
+    {
+      "text": "Pasiuto boba, prišiko trobą. atneškit bliūdą, išneškit šūdą.",
+      "source": "Lietuvių liaudies patarlės",
+      "length": 60,
+      "id": 26
+    },
+    {
+      "text": "Giliai po žeme, oloje, gyveno hobitas. Ne kokioje bjaurioje, purvinoje, drėgnoje skylėje, kur iš sienų kyšo sliekų uodegos ir tvyro pelėsių tvaikas, ir ne sausutėlaičiame smėlėtame urvelyje, kur nėra ant ko atsisėsti nei ko sukrimsti: tai buvo hobito ola, vadinasi, įtaisyta ištaigingai.",
+      "source": "Hobitas, arba ten ir atgal",
+      "length": 287,
+      "id": 27
+    },
+    {
+      "text": "Yra žmonių, kurių vienintelis paskyrimas — puošti pasaulį ir daryti kitiems malonumą. [...] Jie bus gerai išauklėti, malonūs, turės geras manieras, bet absoliučiai niekam nenaudingi. Jie neturės jokių pareigų ir nedirbs jokio darbo. Nedarydami niekam naudos, jie nedarys niekam nei žalos. Ir į klausimą, koks tų žmonių buvimo pateisinimas, nerasi jokio atsakymo kaip vien tai, kad jie puošia pasaulį. Kai kas tokius žmones vadina visuomenės parazitais.",
+      "source": "Altorių šešėly",
+      "length": 452,
+      "id": 28
+    },
+    {
+      "text": "Juk kiekviena meilė jaučiama. Ji nuolatos mums primena mylimą daiktą, liepia jo ilgėtis, jo netekus, liūsti, o, jam esant, džiaugtis. Meilė mus jaudina, egzaltuoja, priverčia mūsų širdį smarkiau plakti.",
+      "source": "Altorių šešėly",
+      "length": 202,
+      "id": 29
+    },
+    {
+      "text": "Juk kiekvienoje vietoje, kur mums tenka ilgiau pagyventi, mes paliekam savo širdies, savo sielos dalelę.",
+      "source": "Altorių šešėly",
+      "length": 104,
+      "id": 30
+    },
+    {
+      "text": "Šiandien mirė mama. O gal ir vakar, nežinau. Gavau iš prieglaudos telegramą: \"Mirė motina. Laidotuvės rytoj. Nuoširdžiai užjaučiame\". Bet kas žino. Gal ir vakar.",
+      "source": "Svetimas",
+      "length": 161,
+      "id": 31
+    },
+    {
+      "text": "Ir, prabėgus tiems vienuolikai mėnesių, kurių metu buvau tardomas, beveik stebėdamasis galiu pasakyti, kad vargu ar kas mane taip džiugino, kaip tos retos akimirkos, kai tardytojas išlydėdavo mane pro kabineto duris ir plodamas ranka per petį nuoširdžiu balsu ištardavo: \"Šiai dienai užteks, pone Antikriste\".",
+      "source": "Svetimas",
+      "length": 309,
+      "id": 32
+    },
+    {
+      "text": "Laimė ne tada, kai turi socialinę galimybę sėdėti sudėjęs rankas ir tik progai pasitaikius, paįvairinimui parodyti savo šaunumą, o kai nuolat nenuilsdamas užsiimi naudinga veikla ir tobulini praktiškai visus mūsų polinkius ir gebėjimus.",
+      "source": "Peterburgo kronika",
+      "length": 236,
+      "id": 33
+    },
+    {
+      "text": "Ką gi reiškia mano kančia ir vargas, jeigu turiu jėgų būti laimingas? Žinote, aš nesuprantu, kaip galima praeiti pro medį ir nesijausti laimingam, kad jį matai. Kalbėtis su žmogumi ir nebūti laimingam, kad myli jį! Tik nemoku žodžiais to išreikšti... Kiek daug kiekviename žingsnyje nuostabių dalykų, kurių grožį įžvelgia netgi visiškai suglumęs, pasiklydęs žmogus. Pažvelkite į vaiką, pažvelkite į dievišką ryto aušrą, pažvelkite į žaliuojančią žolę, pažvelkite į akis, kurios žiūri į jus ir jus myli...",
+      "source": "Idiotas",
+      "length": 504,
+      "id": 34
+    },
+    {
+      "text": "Vagis be aukštojo išsilavinimo gali nudžiauti ką nors iš prekybinio traukinio, o jeigu baigė universitetą, sugeba visą geležinkelį.",
+      "source": "Teodoras Ruzveltas",
+      "length": 131,
+      "id": 35
+    },
+    {
+      "text": "Negalite žaisti su savyje tūnančiu žvėrimi ir juo netapti. Negalite apgaudinėti kitų ir neišduoti savosios tiesos. Negalite išlikti jautrūs viduje, jei esate žiaurūs išorėje. Jei kas svajoja turėti gražų sodą, piktžolių neveisia.",
+      "source": "Dagas Hamaršeldas",
+      "length": 229,
+      "id": 36
+    },
+    {
+      "text": "Žmonėms nerūpi tavo norai ir problemos. Na, bent jau ne taip, kaip jų pačių norai ir problemos. Danties skausmas yra svarbesnis už badą Afrikoje, dėl kurio miršta tūkstančiai. Sugedęs automobilis rūpi labiau nei keturiasdešimt žemės drebėjimų Japonijoje. Prisiminkite tai, kai kitą kartą pradėsite pokalbį.",
+      "source": "Deilas Karnegis",
+      "length": 306,
+      "id": 37
+    },
+    {
+      "text": "Iš tiesų Kristaus vieta – tarp poetų ... Šelis ir Sofoklis – jo bičiuliai. Tačiau ir visas jo paties gyvenimas – nuostabiausia iš poemų. Jei spręsime pagal tai, kuri iš poemų sužadintų daugiau \"gailesčio ir baimės\", tai šiai neprilygtų nė viena graikų tragedija.",
+      "source": "Oskaras Vaildas",
+      "length": 262,
+      "id": 38
+    },
+    {
+      "text": "Pelėsiais ir kerpe apaugus aukštai Trakų štai garbinga pilis! Jos aukštus valdovus užmigdė kapai, O ji tebestovi dar vis.",
+      "source": "Trakų Pilis, Maironis",
+      "length": 121,
+      "id": 39
+    },
+    {
+      "text": "Ko ko, bet kvailių visur yra daugiau, negu reikia. Kiekviena tauta jų turi ir sau, ir eksportui pakankamai, lygiai kaip kiekviena tauta turi nuosavus latrus ir šventuosius.",
+      "source": "Dievų miškas",
+      "length": 172,
+      "id": 40
+    },
+    {
+      "text": "Lietuva, Tėvyne mūsų Tu didvyrių žeme, Iš praeities Tavo sūnūs Te stiprybę semia.",
+      "source": "Tautiška Giesmė, Vincas Kudirka",
+      "length": 81,
+      "id": 41
+    },
+    {
+      "text": "Katorgininkas privalo sau vinimi įsikalti į kaktą: lageryje visuomet kaltas yra nuskriaustasis, o ne skriaudėjas.",
+      "source": "Dievų miškas",
+      "length": 113,
+      "id": 42
+    },
+    {
+      "text": "Kai angelas atsisveikina su naujai gimusiuoju, jis paliečia pirštu jo veidą, kad atvykėlis į žemę neprisimintų dangaus. Štai kodėl tarp nosies ir viršutinės lūpos įspaustas griovelis.",
+      "source": "Balta drobulė",
+      "length": 183,
+      "id": 43
+    },
+    {
+      "text": "Juo labiau persekiojama idėja, juo brangesnė ir juo giliau leidžia šaknis į žmogaus širdį.",
+      "source": "Sename dvare",
+      "length": 90,
+      "id": 44
+    },
+    {
+      "text": "Gyvenimas yra įvairus, reikia stengtis jį suprasti.",
+      "source": "Jonas Biliūnas",
+      "length": 51,
+      "id": 45
+    },
+    {
+      "text": "Nes ir miškas lietuvį, kaip tik galėjęs, Taip visados raminęs, visados mylėjęs.",
+      "source": "Anykščių šilelis",
+      "length": 79,
+      "id": 46
+    },
+    {
+      "text": "Eik į gyvenimą pakelta galva ir atvira širdžia. Savo širdies vis tiek nenumarinsi. Priimk gyvenimą kaip būtinybę, bet manyk, kad geriau nė negalėjo būti. Nieko nesibijok, nieko nesigailėk ir dėl nieko nesisielok.",
+      "source": "Altorių šešėly",
+      "length": 212,
+      "id": 47
+    },
+    {
+      "text": "Dabartis savaime kuria ateitį. Jeigu mes visi norėtume numatyti, įspėti ateitį ir pagal ją formuoti dabartį, mes rizikuotume žiauriai apsirikti: prasilenkti su ateitim ir nieko gero neduoti dabarčiai.",
+      "source": "Altorių šešėly",
+      "length": 200,
+      "id": 48
+    },
+    {
+      "text": "Lygiam gyvenime siela apmiršta ir žmogus nebežino, ko jis vertas.",
+      "source": "Vytautas Mačernis",
+      "length": 65,
+      "id": 49
+    },
+    {
+      "text": "Toks jau lietuvių būdas: kai du vaidijasi, nors užsimuštinai mušasi, trečias bėga šalin, kad jam iš abiejų nekliūtų arba, vienam negyvam likus, kad liudytoju nereiktų būti.",
+      "source": "Dėdės ir dėdienės",
+      "length": 172,
+      "id": 50
+    }
+  ]
+}

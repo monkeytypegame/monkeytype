@@ -1,0 +1,39 @@
+name: Comment on PR for CI Failure
+permissions:
+  pull-requests: write
+
+on:
+  workflow_run:
+    workflows: [Monkey CI]
+    types: [completed]
+
+jobs:
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Download workflow artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read the pr_num file
+        id: pr_num_reader
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./pr_num/pr_num.txt
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ steps.pr_num_reader.outputs.content }}
+          body: |
+            Continuous integration check(s) failed. Please review the [failing check\'s logs](${{ github.event.workflow_run.html_url }}) and make the necessary changes.
+
+      - name: Apply label changes
+        uses: PauMAVA/add-remove-label-action@v1.0.3
+        with:
+          issue_number: ${{ steps.pr_num_reader.outputs.content }}
+          add: "waiting for update"
+          remove: "waiting for review"

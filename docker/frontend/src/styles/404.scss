@@ -1,0 +1,47 @@
+.page404 {
+  display: grid;
+  justify-content: center;
+  height: 100%;
+  align-content: center;
+  .content {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 4rem;
+    grid-template-columns: 300px 300px;
+
+    .image {
+      width: 100%;
+      align-self: center;
+      background-image: url("/images/monkeymeme.jpg");
+      aspect-ratio: 300/199;
+      background-size: contain;
+      border-radius: var(--roundness);
+    }
+
+    .title {
+      font-size: 5rem;
+      line-height: 4rem;
+      /* margin: -3rem; */
+      color: var(--main-color);
+      align-self: center;
+    }
+
+    .side {
+      justify-items: center;
+      display: grid;
+      gap: 1rem;
+      // width: min-content;
+      text-align: center;
+
+      .big {
+        font-size: 10rem;
+        line-height: 10rem;
+        color: var(--sub-color);
+      }
+      .button {
+        padding: 1rem 2rem;
+        width: max-content;
+      }
+    }
+  }
+}

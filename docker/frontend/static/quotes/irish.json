@@ -1,0 +1,743 @@
+{
+  "language": "irish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Aon uair amháin a gheibh duine ciall, tá deireadh aige le haoibhneas an tsaoghail.",
+      "source": "“Caisleáin Óir”, Séamus a Grianna.",
+      "length": 82,
+      "id": 1
+    },
+    {
+      "text": "Is deacair an seanfhocal a shárú.",
+      "source": "Seanfhocal",
+      "length": 33,
+      "id": 2
+    },
+    {
+      "text": "Ar scáth a chéile a mhaireann na daoine.",
+      "source": "Seanfhocal",
+      "length": 40,
+      "id": 3
+    },
+    {
+      "text": "Ní neart go cur le chéile.",
+      "source": "Seanfhocal",
+      "id": 4,
+      "length": 26
+    },
+    {
+      "text": "Is maol gualainn gan bhráthair.",
+      "source": "Seanfhocal",
+      "id": 5,
+      "length": 31
+    },
+    {
+      "text": "Is fuar agus is folamh clú gan chara.",
+      "source": "Seanfhocal",
+      "id": 6,
+      "length": 37
+    },
+    {
+      "text": "Is buan neach ina áit dhúchais.",
+      "source": "Seanfhocal",
+      "id": 7,
+      "length": 31
+    },
+    {
+      "text": "Is báiúil iad lucht na haonchéirde.",
+      "source": "Seanfhocal",
+      "id": 8,
+      "length": 35
+    },
+    {
+      "text": "Is mairg a bhíonn go holc, agus bocht ina dhiaidh sin.",
+      "source": "Seanfhocal",
+      "id": 9,
+      "length": 54
+    },
+    {
+      "text": "Má bhíonn tú ag lorg cara gan locht, beidh tú gan cara go deo.",
+      "source": "Seanfhocal",
+      "id": 10,
+      "length": 62
+    },
+    {
+      "text": "Ní traochta go huaigneas.",
+      "source": "Seanfhocal",
+      "id": 11,
+      "length": 25
+    },
+    {
+      "text": "Is fearr an t-imreas ná an t-uaigneas.",
+      "source": "Seanfhocal",
+      "id": 12,
+      "length": 38
+    },
+    {
+      "text": "C.E.A.R.T.A.\nIs cuma liom sa foc faoi aon gharda\nDúidín lasta, tá mise ró-ghasta\nní fheicfidh tú mise i mo sheasamh ró-fhada.",
+      "source": "Kneecap",
+      "id": 13,
+      "length": 125
+    },
+    {
+      "text": "Giorraíonn beirt bóthar.",
+      "source": "Seanfhocal",
+      "id": 14,
+      "length": 24
+    },
+    {
+      "text": "Ní hé lá na gaoithe lá na scolb.",
+      "source": "Seanfhocal",
+      "id": 15,
+      "length": 32
+    },
+    {
+      "text": "Bailíonn brobh beart.",
+      "source": "Seanfhocal",
+      "id": 16,
+      "length": 21
+    },
+    {
+      "text": "I ndiaidh a chéile a tógtar na caisleáin.",
+      "source": "Seanfhocal",
+      "id": 17,
+      "length": 41
+    },
+    {
+      "text": "Duine nach eol dó éisteacht, ní heol dó labhairt.",
+      "source": "Seanfhocal",
+      "id": 18,
+      "length": 49
+    },
+    {
+      "text": "Scéal a tharraingíonn scéal.",
+      "source": "Seanfhocal",
+      "id": 19,
+      "length": 28
+    },
+    {
+      "text": "Tarraingíonn scéal scéal eile.",
+      "source": "Seanfhocal",
+      "id": 20,
+      "length": 30
+    },
+    {
+      "text": "An rud a deir an saol go léir is fíor é.",
+      "source": "Seanfhocal",
+      "id": 21,
+      "length": 40
+    },
+    {
+      "text": "Cuirtear eireaball le scéal go minic.",
+      "source": "Seanfhocal",
+      "id": 22,
+      "length": 37
+    },
+    {
+      "text": "Ní bhíonn tréan buan.",
+      "source": "Seanfhocal",
+      "id": 23,
+      "length": 21
+    },
+    {
+      "text": "Níl ann sa saol ach ceo, is ní bheidh muid beo ach tamall.",
+      "source": "Seanfhocal",
+      "id": 24,
+      "length": 58
+    },
+    {
+      "text": "An rud a théann i bhfad téann sé i bhfuaire.",
+      "source": "Seanfhocal",
+      "id": 25,
+      "length": 44
+    },
+    {
+      "text": "Is trom cearc i bhfad.",
+      "source": "Seanfhocal",
+      "id": 26,
+      "length": 22
+    },
+    {
+      "text": "Insan aifreann (tá na baggies ar an talamh),\nnó ag fáil prescription (tá na baggies ar an talamh),\nLemon haze, snaois bhán, blues agus molly,\nGach uile dhuine stroke a Sainsbury’s trolley.",
+      "source": "Kneecap",
+      "id": 27,
+      "length": 188
+    },
+    {
+      "text": "Ní ualach do dhuine an léann.",
+      "source": "Seanfhocal",
+      "id": 28,
+      "length": 29
+    },
+    {
+      "text": "Dá fhad an lá, tagann an oíche.",
+      "source": "Seanfhocal",
+      "id": 29,
+      "length": 31
+    },
+    {
+      "text": "An té atá thuas óltar deoch air, ach an té atá thíos luítear cos air.",
+      "source": "Seanfhocal",
+      "id": 30,
+      "length": 69
+    },
+    {
+      "text": "Tosach sláinte codladh, agus deireadh sláinte osna.",
+      "source": "Seanfhocal",
+      "id": 31,
+      "length": 51
+    },
+    {
+      "text": "Is fearr an tsláinte ná na táinte.",
+      "source": "Seanfhocal",
+      "id": 32,
+      "length": 34
+    },
+    {
+      "text": "Is maith an t-anlann an t-ocras.",
+      "source": "Seanfhocal",
+      "id": 33,
+      "length": 32
+    },
+    {
+      "text": "Ag iarraidh ábhair cáca a bhéarfainn do na buailteoiribh,\nna buailteoirí a bhéarfadh sop tuí dhom,\nsop tuí a bhéarfainn don bhó,\nan bhó a bhéarfadh bainne dhom,\nan bainne a bhéarfainn don chat,\nan cat a scríobfadh an t‑im,\nan t‑im a rachadh i ladhar ghadhair,\nan gadhar a ruaigfeadh fia,\nan fia a shnámhfadh uisce,\nan t‑uisce a fhliuchfadh leac,\nleac a chuirfeadh faobhar ar tua,\ntua a ghearrfadh slat,\nslat a dhéanfadh gad,\na chrochadh Manachar, a d’ith mo chuid sú craobh.",
+      "source": "“Monachar agus Manachar”, Leabhar Sgeulaigheachta le Dúghlas de hÍde",
+      "id": 34,
+      "length": 474
+    },
+    {
+      "text": "Ní rún é má bhíonn a fhios ag triúr é.",
+      "source": "Seanfhocal",
+      "id": 35,
+      "length": 38
+    },
+    {
+      "text": "Sonas maidine duit! Ní theastaíonn eachtraí uainne anseo, go raibh míle maith agat! D’fhéadfá triail a bhaint as na daoine thar an gCnoc nó lastall den Dobhar.",
+      "source": "Biolbó Baigín, An Hobad",
+      "id": 36,
+      "length": 159
+    },
+    {
+      "text": "Caitheann sé seo gach uile chréatúr:\nCrainn, bláthanna, beithigh is éanlaith,\nItheann iarann, creimeann cruach,\nMeileann leac is cloch gan dua,\nScriosann cathracha, cuireann ríthe chun báis,\nIs tugann anuas gach mullach ard.",
+      "source": "Tomhas Golaim, An Hobad",
+      "id": 37,
+      "length": 224
+    },
+    {
+      "text": "Is airde ná gach crann é,\nA fhréamha ní bhraitear,\nSuas, suas a théann sé,\nIs ní bhíonn sé ag méadú?",
+      "source": "Tomhas Golaim, An Hobad",
+      "id": 38,
+      "length": 100
+    },
+    {
+      "text": "Ar chnoc dearg tríocha capall bána,\nBíonn siad ag cnagadh,\nBíonn siad ag greadadh,\nIs bíonn siad ansin go sámh.",
+      "source": "Tomhas Biolbó, An Hobad",
+      "id": 39,
+      "length": 111
+    },
+    {
+      "text": "Eitlíonn sé gan sciathán,\nGan ghuth ag sianáil,\nCognaíonn gan déad,\nIs labhraíonn gan bhéal.",
+      "source": "Tomhas Golaim, An Hobad",
+      "id": 40,
+      "length": 92
+    },
+    {
+      "text": "Dúirt súil ag féachaint ó pháirc ghorm anuas\nar shúil ag fás in aghaidh ghlas aníos,\n“Nach cosúil liom an tsúilín ach gur thuas\natáimse anseo agus ise thíos!”",
+      "source": "Tomhas Biolbó, An Hobad",
+      "id": 41,
+      "length": 158
+    },
+    {
+      "text": "Ní fheictear ’s ní bhraitear é,\nNí chloistear, le srón ní fhaightear é.\nAr chúl cnoc is reann ina luí,\nLíonann sé bearnaí gach aon oích’.\nBíonn ann go luath, bíonn ann faoi dheoidh,\nMaraíonn gáire is stopann beo.",
+      "source": "Tomhas Golaim, An Hobad",
+      "id": 42,
+      "length": 212
+    },
+    {
+      "text": "Bosca, gan eochair, gan chláirín, gan inse,\nAch faoi cheilt taobh istigh is órga an chiste.",
+      "source": "Tomhas Biolbó, An Hobad",
+      "id": 43,
+      "length": 91
+    },
+    {
+      "text": "Beo gan anáil,\nChomh fuar le huaigh;\nGan tart ag síoról,\nI máille gan fhuaim.",
+      "source": "Tomhas Golaim, An Hobad",
+      "id": 44,
+      "length": 77
+    },
+    {
+      "text": "Bhí gan chosa ina luí ar chos amháin, is dhá chos ina shuí ina aice ar trí chos, fuair ceithre chos beagán.",
+      "source": "Tomhas Biolbó, An Hobad",
+      "id": 45,
+      "length": 107
+    },
+    {
+      "text": "Níor bhris focal maith fiacail riamh.",
+      "source": "Seanfhocal",
+      "id": 46,
+      "length": 37
+    },
+    {
+      "text": "Is minic a bhris béal duine a shrón.",
+      "source": "Seanfhocal",
+      "id": 47,
+      "length": 36
+    },
+    {
+      "text": "Is fearr focal sa chúirt ná punt sa sparán.",
+      "source": "Seanfhocal",
+      "id": 48,
+      "length": 43
+    },
+    {
+      "text": "Molann an obair an fear.",
+      "source": "Seanfhocal",
+      "id": 49,
+      "length": 24
+    },
+    {
+      "text": "“Rud beag uisce dhuit, a Fharraige Mhór”, arsa an dreoilín,\nnuair a rinne sé a mhún isteach san fharraige.",
+      "source": "Seanfhocal",
+      "id": 50,
+      "length": 106
+    },
+    {
+      "text": "Is searbh an fhírinne.",
+      "source": "Seanfhocal",
+      "id": 51,
+      "length": 22
+    },
+    {
+      "text": "Is fearr beagán do’n ghaois ná mórán do’n aitheantas.",
+      "source": "Seanfhocal",
+      "id": 52,
+      "length": 53
+    },
+    {
+      "text": "Is iad na muca ciúine a itheann an mhin.",
+      "source": "Seanfhocal",
+      "id": 53,
+      "length": 40
+    },
+    {
+      "text": "Is fearr an t-ádh ná éirí go moch.",
+      "source": "Seanfhocal",
+      "id": 54,
+      "length": 34
+    },
+    {
+      "text": "An té a mbíonn an t-ádh ar maidin air, bíonn sé air maidin is tráthnóna.",
+      "source": "Seanfhocal",
+      "id": 55,
+      "length": 72
+    },
+    {
+      "text": "An té a mbíonn an t-ádh air, doirtear an bhó agus an bhodóg aige.",
+      "source": "Seanfhocal",
+      "id": 56,
+      "length": 65
+    },
+    {
+      "text": "Bíonn ádh ar amadán.",
+      "source": "Seanfhocal",
+      "id": 57,
+      "length": 20
+    },
+    {
+      "text": "Más é moladh atá uait, faigh bás. Más é cáineadh atá uait, pós.",
+      "source": "Seanfhocal",
+      "id": 58,
+      "length": 63
+    },
+    {
+      "text": "Ní féidir leis an ngobadán an dá thrá a fhreastal.",
+      "source": "Seanfhocal",
+      "id": 59,
+      "length": 50
+    },
+    {
+      "text": "An t-ualach is mó ar an gcapall is míne.",
+      "source": "Seanfhocal",
+      "id": 60,
+      "length": 40
+    },
+    {
+      "text": "Is fearr obair ná caint.",
+      "source": "Seanfhocal",
+      "id": 61,
+      "length": 24
+    },
+    {
+      "text": "Ní huasal ná íseal ach thuas seal agus thíos seal.",
+      "source": "Seanfhocal",
+      "id": 62,
+      "length": 50
+    },
+    {
+      "text": "Aithníonn ciaróg ciaróg eile.",
+      "source": "Seanfhocal",
+      "id": 63,
+      "length": 29
+    },
+    {
+      "text": "Aithníonn queer óg queer óg eile.",
+      "source": "Nuafhocal",
+      "id": 64,
+      "length": 33
+    },
+    {
+      "text": "Filleann an feall ar an bhfeallaire.",
+      "source": "Seanfhocal",
+      "id": 65,
+      "length": 36
+    },
+    {
+      "text": "Nuair a bhíonn an cat amuigh bíonn an luch ag rince.",
+      "source": "Seanfhocal",
+      "id": 66,
+      "length": 52
+    },
+    {
+      "text": "Ní fiú scéal gan údar.",
+      "source": "Seanfhocal",
+      "id": 67,
+      "length": 22
+    },
+    {
+      "text": "Ní fearr bia ná ciall.",
+      "source": "Seanfhocal",
+      "id": 68,
+      "length": 22
+    },
+    {
+      "text": "Nuair a bhíonn an fíon istigh, bíonn an ciall amuigh.",
+      "source": "Seanfhocal",
+      "id": 69,
+      "length": 53
+    },
+    {
+      "text": "Is túisce deoch ná scéal.",
+      "source": "Seanfhocal",
+      "id": 70,
+      "length": 25
+    },
+    {
+      "text": "Is iomaí cor sa tsaol.",
+      "source": "Seanfhocal",
+      "id": 71,
+      "length": 22
+    },
+    {
+      "text": "Súil le cúiteamh a mhilleas an cearrbhach.",
+      "source": "Seanfhocal",
+      "id": 72,
+      "length": 42
+    },
+    {
+      "text": "Ní baol don bhacach an gadaí.",
+      "source": "Seanfhocal",
+      "id": 73,
+      "length": 29
+    },
+    {
+      "text": "Is buaine focal ná toice an tsaoil.",
+      "source": "Seanfhocal",
+      "id": 74,
+      "length": 35
+    },
+    {
+      "text": "Is búaine clú ná saol.",
+      "source": "Seanfhocal",
+      "id": 75,
+      "length": 22
+    },
+    {
+      "text": "Is ait an mac an saol.",
+      "source": "Seanfhocal",
+      "id": 76,
+      "length": 22
+    },
+    {
+      "text": "Maireann croí éadrom i bhfad.",
+      "source": "Seanfhocal",
+      "id": 77,
+      "length": 29
+    },
+    {
+      "text": "Is iomaí lá sa chill orainn.",
+      "source": "Seanfhocal",
+      "id": 78,
+      "length": 28
+    },
+    {
+      "text": "Is geal leis an bhfiach dubh a ghearrcach féin.",
+      "source": "Seanfhocal",
+      "id": 79,
+      "length": 47
+    },
+    {
+      "text": "Folaíonn grá gráin.",
+      "source": "Seanfhocal",
+      "id": 80,
+      "length": 19
+    },
+    {
+      "text": "Aithnítear cara i gcruatán.",
+      "source": "Seanfhocal",
+      "id": 81,
+      "length": 27
+    },
+    {
+      "text": "Tagann an cruatan i ndiaidh an chaite.",
+      "source": "Seanfhocal",
+      "id": 82,
+      "length": 38
+    },
+    {
+      "text": "Is minic ubh bhán ag cearc dhubh.",
+      "source": "Seanfhocal",
+      "id": 83,
+      "length": 33
+    },
+    {
+      "text": "Briseann an dúchas trí shúile an chait.",
+      "source": "Seanfhocal",
+      "id": 84,
+      "length": 39
+    },
+    {
+      "text": "Bíonn caora dhubh ar an tréad is gile.",
+      "source": "Seanfhocal",
+      "id": 86,
+      "length": 38
+    },
+    {
+      "text": "An té nach bhfuil láidir ní folair dó a bheith glic.",
+      "source": "Seanfhocal",
+      "id": 87,
+      "length": 52
+    },
+    {
+      "text": "Ni théann cuileog sa mbéal a bhíos dúnta.",
+      "source": "Seanfhocal",
+      "id": 88,
+      "length": 41
+    },
+    {
+      "text": "Is binn béal ina thost.",
+      "source": "Seanfhocal",
+      "id": 89,
+      "length": 23
+    },
+    {
+      "text": "Dá mbeadh cuinneog ag an gcat, ba mhinic a phus féin inti.",
+      "source": "Seanfhocal",
+      "id": 90,
+      "length": 58
+    },
+    {
+      "text": "Tús maith leath na hoibre.",
+      "source": "Seanfhocal",
+      "id": 91,
+      "length": 26
+    },
+    {
+      "text": "Cad a dhéanfadh mac an chait, ach luch a mharú?",
+      "source": "Seanfhocal",
+      "id": 92,
+      "length": 47
+    },
+    {
+      "text": "Ní thig leat an craiceann is a luach a fháil.",
+      "source": "Seanfhocal",
+      "id": 93,
+      "length": 45
+    },
+    {
+      "text": "Mol an óige agus tiocfaidh sí.",
+      "source": "Seanfhocal",
+      "id": 94,
+      "length": 30
+    },
+    {
+      "text": "Ceannaigh drochrud is bí gan aon rud.",
+      "source": "Seanfhocal",
+      "id": 95,
+      "length": 37
+    },
+    {
+      "text": "Ní fhaigheann lámh iata ach dorn dúnta.",
+      "source": "Seanfhocal",
+      "id": 96,
+      "length": 39
+    },
+    {
+      "text": "Is baoth an duine nach nglacann comhairle,\nach is measa go mór an duine a ghlacann gach comhairle.",
+      "source": "Seanfhocal",
+      "id": 97,
+      "length": 98
+    },
+    {
+      "text": "Ní lia tír ná nós.",
+      "source": "Seanfhocal",
+      "id": 98,
+      "length": 18
+    },
+    {
+      "text": "Ní lia duine ná barúil.",
+      "source": "Seanfhocal",
+      "id": 99,
+      "length": 23
+    },
+    {
+      "text": "Níor chaill fear an mhisnigh riamh.",
+      "source": "Seanfhocal",
+      "id": 100,
+      "length": 35
+    },
+    {
+      "text": "Goid ó ghadaí is goid gan peaca.",
+      "source": "Seanfhocal",
+      "id": 101,
+      "length": 32
+    },
+    {
+      "text": "Is lú ná fríd máthair an oilc.",
+      "source": "Seanfhocal",
+      "id": 102,
+      "length": 30
+    },
+    {
+      "text": "Bíonn dhá insint ar scéal agus dhá leagan déag ar amhrán.",
+      "source": "Seanfhocal",
+      "id": 103,
+      "length": 57
+    },
+    {
+      "text": "Can an rud is áil leat agus cluinfidh tú an rud nach áil leat.",
+      "source": "Seanfhocal",
+      "id": 104,
+      "length": 62
+    },
+    {
+      "text": "Is olc an ghaoth nach séideann do dhuine éigin.",
+      "source": "Seanfhocal",
+      "id": 105,
+      "length": 47
+    },
+    {
+      "text": "An té a bhíonn amuigh fuaraíonn a chuid.",
+      "source": "Seanfhocal",
+      "id": 106,
+      "length": 40
+    },
+    {
+      "text": "Bíonn adharca fada ar na buaibh thar lear.",
+      "source": "Seanfhocal",
+      "id": 107,
+      "length": 42
+    },
+    {
+      "text": "Seacht sicín ina seasamh sa sneachta lá seaca.",
+      "source": "Rabhlóg",
+      "id": 108,
+      "length": 46
+    },
+    {
+      "text": "Is deacair stoca a stracadh trasna.",
+      "source": "Rabhlóg",
+      "id": 109,
+      "length": 35
+    },
+    {
+      "text": "Rug rón liath ar roc leathan rua.",
+      "source": "Rabhlóg",
+      "id": 110,
+      "length": 33
+    },
+    {
+      "text": "Ní péint dhearg a rinne dearg an deargadaol.",
+      "source": "Rabhlóg",
+      "id": 111,
+      "length": 44
+    },
+    {
+      "text": "Tá ceann tuí ar trí thigh atá thíos le taobh na toinne.",
+      "source": "Rabhlóg",
+      "id": 112,
+      "length": 55
+    },
+    {
+      "text": "Tá neascóid ar ioscaid an easpaig, ach níl a fhios ag an easpaig go bhfuil neascóid ar a ioscaid.",
+      "source": "Rabhlóg",
+      "id": 113,
+      "length": 97
+    },
+    {
+      "text": "D'ith damh dubh ubh amh ar neamh.",
+      "source": "Rabhlóg",
+      "id": 114,
+      "length": 33
+    },
+    {
+      "text": "Arsa Doug beag bog: “Rug gob beag bog gog beag bog.”.",
+      "source": "Rabhlóg",
+      "id": 115,
+      "length": 53
+    },
+    {
+      "text": "An bhfaca tú an bacach, nó an bhfaca tú a mhac?\nNí fhaca mé an bacach is ní fhaca mé a mhac,\nach dá bhfeicfinnse an bacach nó dá bhfeicfinnse a mhac,\nní bhacfainn leis an bacach is ní bhacfainn lena mhac!",
+      "source": "Rabhlóg",
+      "id": 116,
+      "length": 204
+    },
+    {
+      "text": "Go mbéadh seacht shliocht ag sliocht do shleachta.",
+      "source": "Rabhlóg",
+      "id": 117,
+      "length": 50
+    },
+    {
+      "text": "Meallann muilte Dé go mall ach meallann siad go mion.",
+      "source": "Rabhlóg",
+      "id": 118,
+      "length": 53
+    },
+    {
+      "text": "Sea, b’in é an t-aon uair ar leagas súil ar m’athair agus ar leag seisean súil ormsa - nóiméidín amháin sa station, agus ansin an tsíorscarúint go deo. Go dearfa, is agamsa a bhí an t-anró Gaaelach i rith mo shaol - an cruatan, an gátar, an t-anás, an anchaoi, an anacair, an t-anchor, an ainnise, an gorta agus an mí-ádh. Ní dóigh liom go mbeidh mo leithéid arís ann.",
+      "source": "Bónapárt Ó Cúnasa, An Béal Bocht",
+      "id": 119,
+      "length": 368
+    },
+    {
+      "text": "Ní raibh aon bhaint eile agam leis an oideachais ón lá sin agus dá bhrí sin níor scoilteadh mo chloigeann Gaelach ó shin. Ach seacht mbliana ina dhiaidh sin (nuair a bhíos seacht mbliana níos aosta) is amhlaidh a thit nithe iontacha amach sa chomharsanacht s’againne, nithe a raibh ceangal acu le ceist an léinn, agus ar a shon sin ní miste dom cur síos beag éigin a dhéanamh anseo orthu.",
+      "source": "Bónapárt Ó Cúnasa, An Béal Bocht",
+      "id": 120,
+      "length": 388
+    },
+    {
+      "text": "Ach tar éis an tsaoil, fuair sé fuascailt na noide sin. Míníodh dó - ní fios cé a mhínigh ach is cinnte gur duine ar bheagán Gaeilge a bhí sa chuaird - míníodh dó cad a bhí bunoscionn agus ceann-ar-lár agus tóin-i-dtosach le Corca Dhorcha mar ionad léinn. Is amhlaidh a bhí:\n1. Doineann na dúiche ródhoineanta;\n2. Bréantas na dúiche róbhréan;\n3. Bochtanas na dúiche róbhocht;\n4. Gaelachas na dúiche róghaelach;\n5. Seanchas na sean rósheanda.",
+      "source": "Bónapárt Ó Cúnasa, An Béal Bocht",
+      "id": 121,
+      "length": 441
+    },
+    {
+      "text": "Tháinig long ó Valparaiso,\nScaoileadh téad a seol sa chuan,\nChuir a hainm dom i gcuimhne\nRíocht na Gréine, Tír na mBua.\n\n“Gluais,’ ar sí, ‘ar thuras fada,\nLiom ó scamall is ó cheo,\nTá fé shleasaibh gorm Andes\nCathair scáfar, glé mar sheod.”\nBhíos óg is ní imeoinnse,\nAm an dóchais, tus mo shaoil,\nChreideas fós go raibh i ndán dom\nIontaisí na ndán ‘s na scéal.\n\nGhluais an long thar lintibh mara,\nFad ó shin is a crann mar ór,\nScríobh a scéal ar phár na hoíche,\nArd i rian na réaltean mór.",
+      "source": "Valparaiso, Pádraig de Brún/Oliver St John Gogarty)",
+      "id": 122,
+      "length": 489
+    },
+    {
+      "text": "Mise Raifteirí an file,\nLán dóchas is grá,\nLe súile gan solas,\nLe ciúnas gan chrá.\n‘Dul siar ar m’aistear\nLe solas mo chroí\nFann agus tuirseach\nGo deireadh mo shlí.\n\nFéach anois mé\nIs mo chúl le balla,\nAg seinm ceoil\nDo phócaí folmha.",
+      "source": "Mise Raifteirí an file, Antoine Ó Raifteirí",
+      "id": 123,
+      "length": 234
+    }
+  ]
+}

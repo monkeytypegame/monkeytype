@@ -1,0 +1,39 @@
+:root {
+  /* --bg-color: linear-gradient(215deg, #cbb8ba, #706768); */
+  --bg-color: #b3baff;
+  --main-color: #130f1a;
+  --caret-color: #00e9e5;
+  --sub-color: #6f6c91;
+  --sub-alt-color: #a3a7df;
+  --text-color: #130f1a;
+  --error-color: #ffe23e;
+  --error-extra-color: #fff1c3;
+  --colorful-error-color: #ffe23e;
+  --colorful-error-extra-color: #fff1c3;
+}
+
+.word.error {
+  border-bottom: dotted 2px var(--text-color);
+}
+
+nav > .textButton:nth-child(1) {
+  background: var(--caret-color);
+  border-radius: 50%;
+}
+
+nav > .textButton:nth-child(2) {
+  background: var(--error-color);
+  border-radius: 50%;
+}
+
+body.crtmode nav > .textButton:nth-child(1) {
+  box-shadow:
+    3px 0 1px var(--crt-caret-color-glow),
+    -3px 0 var(--crt-caret-color-glow);
+}
+
+body.crtmode nav > .textButton:nth-child(2) {
+  box-shadow:
+    3px 0 1px var(--crt-error-color-glow),
+    -3px 0 var(--crt-error-color-glow);
+}

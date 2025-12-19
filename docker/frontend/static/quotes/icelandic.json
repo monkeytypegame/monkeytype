@@ -1,0 +1,155 @@
+{
+  "language": "icelandic",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Það mælti mín móðir að mér skyldi kaupa fley og fagrar árar, fara á brott með víkingum, standa upp í stafni, stýra dýrum knerri, halda svo til hafnar, höggva mann og annan.",
+      "source": "Egils saga",
+      "length": 172,
+      "id": 1
+    },
+    {
+      "text": "Þórólfur gerðist þá svo óður að hann kastaði skildinum á bak sér en tók spjótið tveimur höndum. Hljóp hann þá fram og hjó eða lagði til beggja handa. Stukku menn þá frá tveggja vegna en hann drap marga.",
+      "source": "Egils saga",
+      "length": 202,
+      "id": 2
+    },
+    {
+      "text": "Egill settist þar niður og skaut skildinum fyrir fætur sér. Hann hafði hjálm á höfði og lagði sverðið um kné sér og dró annað skeið til hálfs en þá skellti hann aftur í slíðrin.",
+      "source": "Egils saga",
+      "length": 177,
+      "id": 3
+    },
+    {
+      "text": "Vitfirringurinn segir að búið sé að jarða sig. Á hverjum sunnudegi fer hann upp í kirkjugarð og setur blóm á leiðið.",
+      "source": "Englar Alheimsins",
+      "length": 116,
+      "id": 4
+    },
+    {
+      "text": "Við erum allir vistmenn á Kleppi. Verið svo vinsamlegir að hringja á lögregluna strax. Þetta var ákaflega ánægjuleg máltíð.",
+      "source": "Englar Alheimsins",
+      "length": 123,
+      "id": 5
+    },
+    {
+      "text": "Það var komið sumar þegar ég kvaddi háhýsi einverunnar og þennan jarðneska heim.",
+      "source": "Englar Alheimsins",
+      "length": 80,
+      "id": 6
+    },
+    {
+      "text": "Kleppur er alls ekki ósnotur bygging, ekki svo ólík höll.",
+      "source": "Englar Alheimsins",
+      "length": 57,
+      "id": 7
+    },
+    {
+      "text": "Askurinn er allra trjáa mestur og bestur. Limar hans dreifast yfir heim allan og standa yfir himni.",
+      "source": "Snorra Edda",
+      "length": 99,
+      "id": 8
+    },
+    {
+      "text": "Loki er fríður og fagur sýnum, illur í skaplyndi, mjög fjölbreytinn að háttum.",
+      "source": "Snorra Edda",
+      "length": 78,
+      "id": 9
+    },
+    {
+      "text": "Hrafnar tveir sitja á öxlum honum og segja í eyru honum öll tíðindi þau er þeir sjá eða heyra. Þeir heita svo: Huginn og Muninn.",
+      "source": "Snorra Edda",
+      "length": 128,
+      "id": 10
+    },
+    {
+      "text": "Þegar þú í draumum mínum birtist allt er ljúft og gott. Og ég vildi ég gæti sofið heila öld. Því að nóttin veitir aðeins skamma stund með þér.",
+      "source": "Stefán og Eyfi - Nína",
+      "length": 142,
+      "id": 11
+    },
+    {
+      "text": "Svo þegar þú birtist fer sólin að skína, smáfuglar kvaka við raust. Í brjálæðishrifningu býð ég þér Tópas og berjasaft skilyrðislaust.",
+      "source": "Stuðmenn - Popplag í G-dúr",
+      "length": 134,
+      "id": 12
+    },
+    {
+      "text": "Hvað getum við gert ef aðrir bjóða betur? Dregið okkur saman, skriðið inn í skelina?",
+      "source": "Ný Dönsk - Hjálpaðu mér upp",
+      "length": 84,
+      "id": 13
+    },
+    {
+      "text": "Við ræddum saman heima og geyma. Ég hélt mig hlyti að vera að dreyma en ég var örugglega vakandi.",
+      "source": "Stuðmenn - Ofboðslega frægur",
+      "length": 97,
+      "id": 14
+    },
+    {
+      "text": "Af hverju get ég ekki gengið menntaveginn þangað til að ég æli. Af hverju get ég ekki gert neitt af viti. Af hverju fæddist ég loser.",
+      "source": "Sólstrandargæjarnir - Rangur Maður",
+      "length": 133,
+      "id": 15
+    },
+    {
+      "text": "Glóð er enn í öskunni og flatbrauðssneið í töskunni. Lögg er enn í flöskunni. Við komum öskufullir heim.",
+      "source": "Helgi Björns og reiðmenn vindanna - Ríðum sem fjandinn",
+      "length": 104,
+      "id": 16
+    },
+    {
+      "text": "Stál og hnífur er merki mitt, merki farandverkamanna. Þitt var mitt og mitt var þitt meðan ég bjó á meðal manna.",
+      "source": "Bubbi Morthens - Stál og hnífur",
+      "length": 112,
+      "id": 17
+    },
+    {
+      "text": "Svitinn perlar á brjóstum þínum, þú bítur í hnúann. Þú flýgur á brott með syndum mínum, Svartur Afgan.",
+      "source": "Bubbi Morthens - Afgan",
+      "length": 102,
+      "id": 18
+    },
+    {
+      "text": "Það er stutt í það að storknað hraun mun renna á ný. Það er stutt í að jöklar munu breytast í gufuský.",
+      "source": "Utangarðsmenn - Hiroshima",
+      "length": 102,
+      "id": 19
+    },
+    {
+      "text": "Kvöldið er okkar og vor um Vaglaskóg. Við skulum tjalda í grænum berjamó. Leiddu mig vinur í lundinn frá í gær. Lindin þar niðar og birkihríslan grær.",
+      "source": "Vor í Vaglaskógi",
+      "length": 150,
+      "id": 20
+    },
+    {
+      "text": "Hlakka svo til að hitta börnin: Maríu Hænu, Hafþór og Örninn. Vinna upp tíma, klippa smá og líma. Í eltingaleik fram að háttatíma.",
+      "source": "Prins Póló - París norðursins",
+      "length": 130,
+      "id": 21
+    },
+    {
+      "text": "Sól slær silfri á voga, sjáið jökulinn loga. Allt er bjart fyrir okkur tveim, því ég er kominn heim.",
+      "source": "Ég er kominn heim",
+      "length": 100,
+      "id": 22
+    },
+    {
+      "text": "Fann á ný, betra líf. Af því ég fór loks að trúa því að það væri eitthvað annað, eitthvað meir og miklu stærra en allt sem er.",
+      "source": "Páll óskar - Betra líf",
+      "length": 126,
+      "id": 23
+    },
+    {
+      "text": "Hún fílar ekki lögin mín, en mér er sama. Eitt er fyrir víst að þessi gella er slæm dama. Hún er alltaf vond við mig, orðið að vana. Myndi gera allt saman, allt fyrir hana.",
+      "source": "JóiPé og Króli - B.O.B.A.",
+      "length": 172,
+      "id": 24
+    }
+  ]
+}

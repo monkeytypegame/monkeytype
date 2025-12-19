@@ -1,0 +1,478 @@
+:root {
+  --roundness: 0.5rem;
+  --font: "Roboto Mono", "Vazirmatn", monospace;
+  // scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+  font-weight: 400;
+  --crt-bg-color-shine: color-mix(
+    in oklab,
+    var(--main-color) 5%,
+    var(--bg-color)
+  );
+  --crt-bg-color-stripe: color-mix(in oklab, black 50%, var(--bg-color));
+  --crt-sub-color-glow: color-mix(in srgb, var(--sub-color) 20%, transparent);
+  --crt-sub-alt-color-glow: color-mix(
+    in srgb,
+    var(--sub-alt-color) 20%,
+    transparent
+  );
+  --crt-text-color-glow: color-mix(in srgb, var(--text-color) 20%, transparent);
+  --crt-main-color-glow: color-mix(in srgb, var(--main-color) 20%, transparent);
+  --crt-error-color-glow: color-mix(
+    in srgb,
+    var(--error-color) 20%,
+    transparent
+  );
+  --crt-caret-color-glow: color-mix(
+    in srgb,
+    var(--caret-color) 20%,
+    transparent
+  );
+
+  --balloon-font-size: 1rem;
+  --balloon-border-radius: calc(var(--roundness) / 2);
+}
+
+::placeholder {
+  color: var(--sub-color);
+  opacity: 1;
+  /* Firefox */
+}
+
+::selection {
+  background-color: var(--main-color);
+  color: var(--sub-alt-color);
+}
+
+#app {
+  min-height: 100vh;
+  grid-template-rows: [top-start] auto [content-start] 1fr [content-end] auto [top-end];
+  overflow: hidden;
+  row-gap: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  width: 100%;
+}
+
+// from an amazing guide by Kevin Powell https://www.youtube.com/watch?v=c13gpBrnGEw
+.content-grid {
+  --padding-inline: 2rem;
+  --content-max-width: 1536px;
+
+  --breakout-size: calc(
+    (calc(var(--content-max-width) + 12rem) - var(--content-max-width)) / 2
+  );
+
+  justify-content: center;
+  display: grid;
+  grid-template-columns:
+    [full-width-start]
+    var(--padding-inline)
+    [full-width-padding-start]
+    minmax(0, 1fr)
+    [breakout-start]
+    minmax(0, var(--breakout-size))
+    [content-start]
+    min(100% - (var(--padding-inline) * 2), var(--content-max-width))
+    [content-end]
+    minmax(0, var(--breakout-size))
+    [breakout-end]
+    minmax(0, 1fr)
+    [full-width-padding-end]
+    var(--padding-inline)
+    [full-width-end];
+}
+
+.content-grid > :not(.breakout, .full-width, .full-width-padding) {
+  grid-column: content;
+}
+
+.content-grid > .breakout {
+  grid-column: breakout;
+}
+
+.content-grid > .full-width {
+  grid-column: full-width;
+}
+
+.content-grid > .full-width-padding {
+  grid-column: full-width-padding;
+}
+
+#ad-vertical-left-wrapper,
+#ad-vertical-right-wrapper {
+  grid-row: content;
+  margin-right: 2rem;
+  position: fixed;
+}
+
+#ad-vertical-left-wrapper {
+  grid-column: full-width-start/content-start;
+  left: 0;
+}
+
+#ad-vertical-right-wrapper {
+  grid-column: content-end/full-width-end;
+  right: -2rem;
+}
+
+main {
+  display: grid; //stupid fix for stupid safari
+}
+
+#nocss {
+  display: none !important;
+  pointer-events: none;
+}
+
+.ffscroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sub-color) transparent;
+}
+
+html {
+  @extend .ffscroll;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  line-height: 1.25;
+}
+
+a {
+  display: inline-block;
+  color: var(--sub-color);
+  transition:
+    color 0.125s,
+    opacity 0.125s,
+    background 0.125s;
+  &:hover {
+    color: var(--text-color);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
+    border-radius: calc(var(--roundness) / 2);
+  }
+}
+
+a[router-link] * {
+  pointer-events: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text-color);
+  overflow-x: hidden;
+  background: var(--bg-color);
+}
+
+.customBackground {
+  content: "";
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: -999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#backgroundLoader {
+  height: 3px;
+  position: fixed;
+  width: 100%;
+  background: var(--main-color);
+  animation: loader 2s cubic-bezier(0.38, 0.16, 0.57, 0.82) infinite;
+  z-index: 9999;
+  opacity: 0;
+}
+
+key {
+  color: var(--bg-color);
+  background-color: var(--sub-color);
+  /* font-weight: bold; */
+  padding: 0.1rem 0.3rem;
+  margin: 0rem 0rem;
+  border-radius: 0.1rem;
+  display: inline-block;
+  font-size: 0.7rem;
+  line-height: 0.7rem;
+  margin: 0 0.5em;
+}
+
+.pageLoading {
+  height: 100%;
+  display: grid;
+  align-items: center;
+}
+
+.devIndicator {
+  position: fixed;
+  font-size: 3rem;
+  color: var(--sub-color);
+  opacity: 0.25;
+  z-index: -1;
+
+  &.tl {
+    top: 2rem;
+    left: 2rem;
+  }
+
+  &.tr {
+    top: 2rem;
+    right: 2rem;
+  }
+
+  &.bl {
+    bottom: 2rem;
+    left: 2rem;
+  }
+
+  &.br {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.scrollToTopContainer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99999999;
+
+  .scrollToTopButton {
+    pointer-events: all;
+    place-self: end end;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    width: 4rem;
+    height: 4rem;
+    text-align: center;
+
+    line-height: 4rem;
+    background: var(--sub-alt-color);
+    border-radius: 99rem;
+    outline: 0.5rem solid var(--bg-color);
+
+    cursor: pointer;
+    color: var(--sub-color);
+    transition: 0.25s;
+    &:hover {
+      background: var(--text-color);
+      color: var(--bg-color);
+    }
+  }
+}
+
+.inputAndIndicator {
+  input {
+    width: 100%;
+  }
+  position: relative;
+  .statusIndicator {
+    width: 2.25em;
+    height: 2.25em;
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* background: red; */
+    display: grid;
+    grid-template-columns: 2.25em;
+    grid-template-rows: 2.25em;
+    place-items: center center;
+    cursor: pointer;
+
+    .indicator {
+      grid-column: 1/2;
+      grid-row: 1/2;
+      &.level-1 {
+        color: var(--error-color);
+      }
+      &.level0 {
+        color: var(--sub-color);
+      }
+      &.level1 {
+        color: var(--main-color);
+      }
+    }
+  }
+}
+
+#devButtons {
+  position: fixed;
+  left: 0;
+  top: 10rem;
+  display: grid;
+  grid-auto-flow: row;
+  gap: 0.5rem;
+  text-decoration: none;
+  z-index: 999999999;
+  border-radius: 0 1rem 1rem 0;
+
+  .button {
+    padding: 1rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+.avatar {
+  --size: 1em;
+
+  transition:
+    opacity 0.125s,
+    filter 0.125s,
+    webkit-filter 0.125s;
+  width: var(--size);
+  height: var(--size);
+  font-size: var(--size);
+  line-height: var(--size);
+  display: grid;
+  place-content: center center;
+
+  div {
+    width: 1em;
+    height: 1em;
+    line-height: 1em;
+    font-size: var(--size);
+    border-radius: 100%;
+    grid-column: 1/2;
+    grid-row: 1/2;
+    place-self: center center;
+    display: grid;
+    place-content: center center;
+    overflow: hidden;
+    display: inline-block;
+    z-index: 1; //place above the loading spinner
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .userIcon {
+    display: grid;
+    border-radius: 0;
+  }
+
+  .loading {
+    font-size: 0.8em;
+    line-height: 0.8em;
+  }
+}
+
+.badge {
+  background: var(--sub-color);
+  color: var(--text-color);
+  border-radius: calc(var(--roundness) / 2);
+  // padding: 0.15em 0.5em;
+  -webkit-user-select: none;
+  user-select: none;
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: baseline;
+  --spacing: 0.5em;
+  --horizontalScale: 1.25;
+  .fas,
+  .far {
+    margin-right: calc(var(--spacing) * var(--horizontalScale));
+    margin-left: calc(var(--spacing) * var(--horizontalScale));
+    margin-top: var(--spacing);
+    margin-bottom: var(--spacing);
+    font-size: 0.9em;
+  }
+  .text {
+    margin-right: calc(var(--spacing) * var(--horizontalScale));
+  }
+}
+
+.notificationBubble {
+  position: absolute;
+  background: var(--main-color);
+  width: 1em;
+  height: 1em;
+  font-size: 0.5em;
+  line-height: 2em;
+  color: transparent;
+  border-radius: 100rem;
+  box-shadow: 0 0 0 0.5em var(--bg-color);
+  transition: 0.125s;
+  right: 0.5em;
+  top: 0.5em;
+}
+
+#fpsCounter {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: var(--sub-alt-color);
+  color: rgb(255, 217, 0);
+  padding: 0.25rem;
+  width: 10ch;
+  text-align: center;
+  z-index: 999999999;
+  &.main {
+    color: var(--text-color);
+  }
+  &.error {
+    color: var(--error-color);
+  }
+}
+
+// mouseover texts
+[aria-label][data-balloon-pos]:after {
+  font-family: var(--font);
+  font-size: var(--balloon-font-size);
+  line-height: var(--balloon-font-size);
+}
+
+// this here to prevent tooltips from showing when an element is focused via mouse click
+// to avoid reappearing popups after clicks, WITHOUT breaking keyboard nav.
+// so shortly we show balloon tooltips on hover and keyboard focus only. not on mouse focus!
+@supports selector(:focus-visible) {
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::before,
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+//sorted-tables
+.headerSorted {
+  font-weight: bold;
+}
+table {
+  z-index: 0;
+  td.sortable:hover {
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    background-color: var(--sub-alt-color);
+  }
+}

@@ -1,0 +1,75 @@
+#bannerCenter {
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  transition: opacity 0.25s;
+  .banner,
+  .psa {
+    background: var(--sub-color);
+    color: var(--bg-color);
+    justify-content: center;
+
+    &.clickable {
+      cursor: pointer;
+    }
+
+    &.withImage {
+      .lefticon {
+        display: none;
+      }
+    }
+
+    .container {
+      padding-right: 0.25em;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1em;
+      align-items: center;
+      width: 100%;
+      justify-items: center;
+      .image {
+        height: 2.25em;
+        background-size: cover;
+        aspect-ratio: 6/1;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .lefticon,
+      .image {
+        grid-column: 1;
+        grid-row: 1;
+      }
+      .text {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+      .closeButton {
+        padding: 0.25em;
+        transition: 0.125s;
+        &:hover {
+          cursor: pointer;
+          color: var(--text-color);
+        }
+      }
+    }
+    &.good {
+      background: var(--main-color);
+    }
+    &.bad {
+      background: var(--error-color);
+    }
+    a {
+      color: var(--bg-color);
+      text-decoration: underline;
+      &:hover {
+        color: var(--text-color);
+        cursor: pointer;
+      }
+    }
+  }
+
+  &.focus {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

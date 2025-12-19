@@ -1,0 +1,131 @@
+{
+  "language": "czech",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Představte si to ticho, kdyby lidé říkali jen to, co vědí.",
+      "source": "Karel Čapek",
+      "length": 58,
+      "id": 1
+    },
+    {
+      "text": "Mějte dobrou náladu. Dobrá nálada vaše problémy sice nevyřeší, ale naštve tolik lidí kolem, že stojí za to si ji užít.",
+      "source": "Jan Werich",
+      "length": 118,
+      "id": 2
+    },
+    {
+      "text": "Člověk je sám i mezi lidmi.",
+      "source": "Antoine de Saint-Exupéry",
+      "length": 27,
+      "id": 3
+    },
+    {
+      "text": "Svět patří těm, co se neposerou.",
+      "source": "Charles Bukowski",
+      "length": 32,
+      "id": 4
+    },
+    {
+      "text": "Mnozí z těch, co žijí, by zasluhovali smrt. A mnozí z těch, co zemřeli, by si zasloužili žít.",
+      "source": "J. R. R. Tolkien",
+      "length": 93,
+      "id": 5
+    },
+    {
+      "text": "Rána bičem působí modřinu, ale rána jazykem drtí kosti.",
+      "source": "Edgar Allan Poe",
+      "length": 55,
+      "id": 6
+    },
+    {
+      "text": "Peklo je prázdné, ďáblové jsou mezi námi.",
+      "source": "William Shakespeare",
+      "length": 41,
+      "id": 7
+    },
+    {
+      "text": "Nikdy neodkládám na zítřek, co lze udělat pozítří.",
+      "source": "Oscar Wilde",
+      "length": 50,
+      "id": 8
+    },
+    {
+      "text": "Každá revoluce končí tím, když se nová prasata dostanou ke korytům.",
+      "source": "Eric Arthur Blair",
+      "length": 67,
+      "id": 9
+    },
+    {
+      "text": "Na světě nejsou nejkrásnější věci, ale okamžiky.",
+      "source": "Karel Čapek",
+      "length": 48,
+      "id": 10
+    },
+    {
+      "text": "Bože, jak jednoduchý recept na šťastný život: To, co děláme, dělat z lásky k věci.",
+      "source": "Karel Čapek",
+      "length": 82,
+      "id": 11
+    },
+    {
+      "text": "Kdo víno má a nepije, kdo hrozny má a nejí je, kdo ženu má a nelíbá, kdo zábavě se vyhýbá, na toho vemte bič a hůl, to není člověk, to je vůl.",
+      "source": "Jan Werich",
+      "length": 142,
+      "id": 12
+    },
+    {
+      "text": "Ne všichni, kdo bloudí, jsou ztraceni.",
+      "source": "J. R. R. Tolkien",
+      "length": 38,
+      "id": 13
+    },
+    {
+      "text": "Usmívej se na toho, kdo ti nejvíc ublížil, aby neviděl, jak moc tě to bolí.",
+      "source": "Božena Němcová",
+      "length": 75,
+      "id": 14
+    },
+    {
+      "text": "Žít, to je nejvzácnější věc na světě, neboť většina lidí jenom existuje.",
+      "source": "Oscar Wilde",
+      "length": 72,
+      "id": 15
+    },
+    {
+      "text": "Když už člověk jednou je, tak má koukat aby byl. A když kouká, aby byl a je, tak má být to, co je a nemá být to, co není, jak tomu v mnoha případech je.",
+      "source": "Jan Werich",
+      "length": 152,
+      "id": 16
+    },
+    {
+      "text": "Kdo chce, hledá způsob. Kdo nechce, hledá důvod.",
+      "source": "Jan Werich",
+      "length": 48,
+      "id": 17
+    },
+    {
+      "text": "Ti nejskvělejší lidé jsou ti nejskromnější. To jenom hlupáci potřebují o sobě mluvit, aby sami ve svých očích vyrostli.",
+      "source": "Ota Pavel",
+      "length": 119,
+      "id": 18
+    },
+    {
+      "text": "Správně vidíme jen srdcem. Co je důležité je očím neviditelné.",
+      "source": "Antoine de Saint-Exupéry",
+      "length": 62,
+      "id": 19
+    },
+    {
+      "text": "Nebe je modrý a zlatý, bílá sluneční záře, horko a sváteční šaty, vřava a zpocený tváře. Vím, co se bude dít, býk už se v ohradě vzpíná, kdo chce, ten může jít, já si dám sklenici vína.",
+      "source": "Slavíci z Madridu",
+      "length": 185,
+      "id": 20
+    }
+  ]
+}

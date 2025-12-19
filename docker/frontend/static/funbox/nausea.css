@@ -1,0 +1,49 @@
+@keyframes nausea {
+  0% {
+    transform: rotateY(-15deg) skewY(10deg) rotateX(-15deg) scaleX(1.2)
+      scaleY(0.9);
+  }
+
+  25% {
+    transform: rotateY(15deg) skewY(-10deg) rotateX(15deg) scaleX(1) scaleY(0.8);
+  }
+
+  50% {
+    transform: rotateY(-15deg) skewY(10deg) rotateX(-15deg) scaleX(0.9)
+      scaleY(0.9);
+  }
+
+  75% {
+    transform: rotateY(15deg) skewY(-10deg) rotateX(15deg) scaleX(1.5)
+      scaleY(1.1);
+  }
+
+  100% {
+    transform: rotateY(-15deg) skewY(10deg) rotateX(-15deg) scaleX(1.2)
+      scaleY(0.9);
+  }
+}
+
+#typingTest {
+  animation: nausea 7s infinite cubic-bezier(0.5, 0, 0.5, 1);
+}
+
+header {
+  transform: rotate(2deg);
+  perspective: 500px;
+}
+
+footer {
+  transform: rotate(-2deg);
+  perspective: 500px;
+}
+
+body {
+  overflow: hidden;
+}
+
+#wordsInput {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

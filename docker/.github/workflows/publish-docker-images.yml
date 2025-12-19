@@ -1,0 +1,87 @@
+name: Publish Docker image
+
+permissions:
+  contents: read
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  push_to_registry:
+    env:
+      BE_REPO: monkeytype/monkeytype-backend
+      FE_REPO: monkeytype/monkeytype-frontend
+      PLATFORMS: linux/amd64,linux/arm64
+
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb
+      - name: Log in to Docker Hub
+        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: Backend extract metadata (tags, labels)
+        id: bemeta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        with:
+          images: ${{ env.BE_REPO }}
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Backend build and push Docker image
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
+        with:
+          context: .
+          platforms: ${{ env.PLATFORMS }}
+          file: ./docker/backend/Dockerfile
+          push: true
+          tags: ${{ env.BE_REPO }}:latest,${{ steps.bemeta.outputs.tags }}
+          labels: ${{ steps.bemeta.outputs.labels }}
+          build-args: |
+            server_version: ${{ github.event.release.tag_name }}
+
+      - name: Backend publish description
+        uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          repository: ${{ env.BE_REPO }}
+          short-description: Official backend server for monkeytype.com
+          readme-filepath: ./docs/SELF_HOSTING.md
+
+      - name: Frontend extract metadata (tags, labels)
+        id: femeta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        with:
+          images: ${{ env.FE_REPO }}
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Frontend build and push Docker image
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
+        with:
+          context: .
+          platforms: ${{ env.PLATFORMS }}
+          file: ./docker/frontend/Dockerfile
+          push: true
+          tags: ${{ env.FE_REPO }}:latest,${{ steps.femeta.outputs.tags }}
+          labels: ${{ steps.femeta.outputs.labels }}
+
+      - name: Frontend publish description
+        uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          repository: ${{ env.FE_REPO }}
+          short-description: Official frontend server for monkeytype.com
+          readme-filepath: ./docs/SELF_HOSTING.md

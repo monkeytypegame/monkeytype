@@ -1,0 +1,17 @@
+import Page from "./page";
+import * as Skeleton from "../utils/skeleton";
+import { qsr } from "../utils/dom";
+
+export const page = new Page({
+  id: "404",
+  element: qsr(".page.page404"),
+  path: "/404",
+  afterHide: async (): Promise<void> => {
+    Skeleton.remove("page404");
+  },
+  beforeShow: async (): Promise<void> => {
+    Skeleton.append("page404", "main");
+  },
+});
+
+Skeleton.save("page404");

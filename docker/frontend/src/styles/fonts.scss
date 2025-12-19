@@ -1,0 +1,33 @@
+@use "sass:map";
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/webfonts/Vazirmatn-Regular.woff2") format("woff2");
+}
+
+@each $font, $config in $fonts {
+  $dir: "webfonts";
+  $previewDir: "webfonts-preview";
+  @if variable-exists(previewFontsPath) {
+    $previewDir: $previewFontsPath;
+  }
+
+  @font-face {
+    font-family: "#{$font}";
+    font-style: normal;
+    font-weight: map-get($config, "weight");
+    font-display: block;
+    src: url("/#{$dir}/#{map-get($config, 'src')}") format("woff2");
+  }
+
+  @font-face {
+    font-family: "#{$font} Preview";
+    font-style: normal;
+    font-weight: map-get($config, "weight");
+    font-display: block;
+    src: url("/#{$previewDir}/#{map-get($config, 'src')}") format("woff2");
+  }
+}

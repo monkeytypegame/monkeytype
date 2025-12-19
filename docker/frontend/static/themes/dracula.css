@@ -1,0 +1,36 @@
+:root {
+  --bg-color: #282a36;
+  --main-color: #bd93f9;
+  --caret-color: #bd93f9;
+  --sub-color: #6272a4;
+  --sub-alt-color: #20222c;
+  --text-color: #f8f8f2;
+  --error-color: #ff5555;
+  --error-extra-color: #f1fa8c;
+  --colorful-error-color: #ff5555;
+  --colorful-error-extra-color: #f1fa8c;
+}
+
+nav > .textButton:nth-child(1) {
+  color: #ec75c4;
+}
+
+nav > .textButton:nth-child(2) {
+  color: #8be9fd;
+}
+
+nav > .textButton:nth-child(3) {
+  color: #50fa7b;
+}
+
+nav > .textButton:nth-child(4) {
+  color: #f1fa8c;
+}
+
+nav > .textButton:nth-child(5) {
+  color: #ffb86c;
+}
+
+nav > .textButton:nth-child(6) {
+  color: #ffb86c;
+}

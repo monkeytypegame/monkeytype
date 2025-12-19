@@ -1,0 +1,547 @@
+#keymap {
+  font-size: 1rem;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  justify-content: center;
+  white-space: nowrap;
+  // height: 140px;
+  gap: 0.25rem;
+  margin-top: 1rem;
+  -webkit-user-select: none;
+  user-select: none;
+
+  .row {
+    height: 2rem;
+    gap: 0.25rem;
+  }
+
+  .keymapKey {
+    display: flex;
+    background-color: var(--sub-alt-color);
+    color: var(--sub-color);
+    border-radius: var(--roundness);
+    // border: 0.05rem solid;
+    // border-color: var(--sub-color);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    width: 2rem;
+    height: 2rem;
+    position: relative;
+
+    .bump {
+      width: 0.5em;
+      height: 0.1em;
+      background: var(--bg-color);
+      position: absolute;
+      border-radius: 0.1em;
+      // margin-top: 1.5rem;
+      bottom: 0.2em;
+    }
+
+    &.activeKey {
+      color: var(--bg-color);
+      background-color: var(--main-color);
+      border-color: var(--main-color);
+
+      .bump {
+        background: var(--bg-color);
+      }
+    }
+
+    &.layoutIndicator {
+      width: 100%;
+      &:hover {
+        cursor: pointer;
+        color: var(--main-color);
+      }
+    }
+
+    &.keySpace.right {
+      width: 100%;
+      opacity: 0;
+    }
+
+    &.flash {
+      animation: flashKey 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  }
+
+  .hiddenKey,
+  .hideKey {
+    opacity: 0;
+  }
+
+  .keymapSplitSpacer,
+  .keymapStaggerSplitSpacer,
+  .keymapMatrixSplitSpacer {
+    display: none;
+  }
+
+  .r1 {
+    display: grid;
+    grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .r2 {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1rem;
+  }
+
+  .r3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .r4 {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.75fr;
+  }
+
+  .r5 {
+    display: grid;
+    grid-template-columns: 3.5fr 6fr 3.5fr;
+    font-size: 1rem;
+    // &.matrixSpace {
+    //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
+    //   grid-template-columns: 6.9fr 4.6fr 6.9fr; // wider spacebar
+    // }
+    // &.splitSpace {
+    //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
+    //   grid-template-columns: 4fr 7.5fr 4fr;
+    // }
+    .keySpace {
+      // since we can potentially have alphas in r5,
+      // we keep font-size: 1rem; for alphas to look the same as other rows,
+      // but reduce it again to 0.5rem for space, so layout name fits.
+      font-size: 0.5rem;
+    }
+
+    &[data-row5-has-alpha="true"] {
+      // space-alpha
+      &[data-row5-grid="3-1"] {
+        grid-template-columns: 4fr 4fr 1fr 4fr;
+      }
+
+      // alpha-space
+      &[data-row5-grid="1-3"] {
+        grid-template-columns: 4fr 1fr 4fr 4fr;
+      }
+    }
+  }
+  &.matrix {
+    .r1,
+    .r2,
+    .r3,
+    .r4 {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+
+    .r5 {
+      grid-template-columns: 1fr 3fr 4fr 3fr 1fr;
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 1fr 2fr 3fr 1fr 5fr;
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 2fr 3fr 1fr 3fr 3fr;
+        }
+      }
+    }
+  }
+  &.split {
+    .keymapSplitSpacer {
+      display: block;
+    }
+    .keymapStaggerSplitSpacer {
+      display: block;
+    }
+
+    .r1 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+    }
+
+    .r2 {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+
+    .r3 {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+    }
+
+    .r4 {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+    }
+    .r5 {
+      grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 5fr 3fr 1fr 1fr 6.5fr;
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 7fr 1fr 1fr 3fr 4.5fr;
+        }
+      }
+    }
+    .keySpace.right {
+      opacity: 1;
+    }
+  }
+  &.split_matrix {
+    .keymapSplitSpacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+    .keymapStaggerSplitSpacer {
+      display: none;
+    }
+    .keymapMatrixSplitSpacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+    .r1,
+    .r2,
+    .r3,
+    .r4 {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+
+    .r5 {
+      grid-template-columns: 1fr 2fr 3fr 1fr 3fr 2fr 1fr;
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 2fr 1fr 3fr 1fr 1fr 2fr 3fr;
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 4fr 1fr 1fr 1fr 3fr 1fr 2fr;
+        }
+      }
+    }
+    .keySpace.right {
+      opacity: 1;
+    }
+  }
+  &.steno,
+  &.steno_matrix {
+    .r2,
+    .r3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+    .r4 {
+      display: grid;
+      grid-template-columns: 3.25fr 1fr 1fr 1fr 1fr 1fr 3.25fr;
+    }
+    &.steno {
+      .r2,
+      .r3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      }
+      .r4 {
+        display: grid;
+        grid-template-columns: 2.6fr 1fr 1fr 0.1fr 1fr 1fr 3.65fr;
+        .keymapSplitSpacer {
+          display: block;
+        }
+      }
+      .r2 .keymapKey:nth-child(1),
+      .r2 .keymapKey:nth-child(5) {
+        height: 4.25rem;
+      }
+      .r3 .keymapKey:nth-child(1),
+      .r3 .keymapKey:nth-child(5) {
+        visibility: hidden;
+      }
+    }
+    &.steno_matrix {
+      .keymapSplitSpacer {
+        display: block;
+      }
+    }
+  }
+  &.alice {
+    .keymapSplitSpacer {
+      display: block;
+    }
+    .r4 .keymapSplitSpacer {
+      display: none;
+    }
+    .keymapStaggerSplitSpacer {
+      display: block;
+    }
+
+    .r1 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+      .keymapKey:nth-child(2) {
+        //1
+        margin-left: 45%;
+      }
+      .keymapKey:nth-child(3) {
+        //2
+        margin-top: -2px;
+        margin-left: 45%;
+      }
+      .keymapKey:nth-child(4),
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(6),
+      .keymapKey:nth-child(7) {
+        //3456
+        transform: rotate(10deg);
+        margin-left: 45%;
+      }
+      .keymapKey:nth-child(4) {
+        //3
+        margin-top: 3px;
+      }
+      .keymapKey:nth-child(5) {
+        //4
+        margin-top: 10px;
+      }
+      .keymapKey:nth-child(6) {
+        //5
+        margin-top: 17px;
+      }
+      .keymapKey:nth-child(7) {
+        //6
+        margin-top: 24px;
+      }
+      .keymapKey:nth-child(9),
+      .keymapKey:nth-child(10),
+      .keymapKey:nth-child(11),
+      .keymapKey:nth-child(12) {
+        //7890
+        transform: rotate(-10deg);
+        margin-left: -48%;
+      }
+      .keymapKey:nth-child(12) {
+        //7
+        margin-top: -1px;
+      }
+      .keymapKey:nth-child(11) {
+        //8
+        margin-top: 6px;
+      }
+      .keymapKey:nth-child(10) {
+        //9
+        margin-top: 13px;
+      }
+      .keymapKey:nth-child(9) {
+        //10
+        margin-top: 20px;
+      }
+      .keymapKey:nth-child(13),
+      .keymapKey:nth-child(14) {
+        //-=
+        margin-left: -40%;
+      }
+    }
+
+    .r2 {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      .keymapKey:nth-child(2) {
+        //Q
+        margin-left: 20%;
+      }
+      .keymapKey:nth-child(3),
+      .keymapKey:nth-child(4),
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(6) {
+        //WERT
+        transform: rotate(10deg);
+        margin-left: 45%;
+      }
+      .keymapKey:nth-child(4),
+      .keymapKey:nth-child(10) {
+        //EI
+        margin-top: 8px;
+      }
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(9) {
+        //RU
+        margin-top: 15px;
+      }
+      .keymapKey:nth-child(6),
+      .keymapKey:nth-child(8) {
+        //TY
+        margin-top: 22px;
+      }
+
+      .keymapKey:nth-child(8),
+      .keymapKey:nth-child(9),
+      .keymapKey:nth-child(10),
+      .keymapKey:nth-child(11) {
+        //YUIO
+        transform: rotate(-10deg);
+        margin-left: -12%;
+      }
+    }
+
+    .r3 {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+      .keymapKey:nth-child(2) {
+        //A
+        margin-left: -5px;
+      }
+      .keymapKey:nth-child(3),
+      .keymapKey:nth-child(4),
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(6) {
+        //SDFG
+        margin-left: -1px;
+        transform: rotate(10deg);
+      }
+      .keymapKey:nth-child(4),
+      .keymapKey:nth-child(10) {
+        //DK
+        margin-top: 8px;
+      }
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(9) {
+        //FJ
+        margin-top: 15px;
+      }
+      .keymapKey:nth-child(6),
+      .keymapKey:nth-child(8) {
+        //GH
+        margin-top: 22px;
+      }
+
+      .keymapKey:nth-child(8),
+      .keymapKey:nth-child(9),
+      .keymapKey:nth-child(10),
+      .keymapKey:nth-child(11) {
+        //HJKL
+        transform: rotate(-10deg);
+        margin-left: -25%;
+      }
+    }
+
+    .r4 {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+      .keymapKey:nth-child(2) {
+        margin-left: -18px;
+      }
+      .keymapKey:nth-child(3) {
+        //Z
+        margin-left: -15px;
+      }
+      .keymapKey:nth-child(4),
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(6),
+      .keymapKey:nth-child(7) {
+        //XCVB
+        margin-left: -11px;
+        transform: rotate(10deg);
+        margin-top: 2px;
+      }
+      .keymapKey:nth-child(12) {
+        //,
+        margin-top: 4px;
+        margin-left: -5px;
+      }
+      .keymapKey:nth-child(5),
+      .keymapKey:nth-child(11) {
+        //CM
+        margin-top: 10px;
+      }
+      .keymapKey:nth-child(6),
+      .keymapKey:nth-child(10) {
+        //VN
+        margin-top: 18px;
+      }
+      .keymapKey:nth-child(7) {
+        //B
+        margin-top: 24px;
+      }
+
+      .keymapKey:nth-child(10),
+      .keymapKey:nth-child(11),
+      .keymapKey:nth-child(12) {
+        //NM,
+        transform: rotate(-10deg);
+        margin-left: -25%;
+      }
+    }
+    .r5 {
+      grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+      // rotation/position of r5 keys moved under .r5 styles
+      // and made generic to left/right to account for alphas
+      div.keymapKey.left {
+        transform: rotate(10deg);
+        margin-left: -5%;
+        margin-top: 21%;
+      }
+      div.keymapKey.right {
+        opacity: 1;
+        transform: rotate(-10deg);
+        margin-left: -33%;
+        margin-top: 20%;
+      }
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+          div.keymapKey.right {
+            margin-left: -30%;
+            margin-top: 25%;
+          }
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+          div.keymapKey.left {
+            margin-left: 50%;
+            margin-top: 25%;
+          }
+        }
+      }
+    }
+    div#KeyBackslash.keymapKey {
+      visibility: hidden;
+    }
+
+    div.extraKey {
+      margin-top: 25px;
+      transform: rotate(-10deg) !important;
+      margin-left: -7px !important;
+      display: flex;
+      background-color: var(--sub-alt-color);
+      color: var(--sub-color);
+      border-radius: var(--roundness);
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      width: 2rem;
+      height: 2rem;
+      position: relative;
+    }
+  }
+}

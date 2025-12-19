@@ -1,0 +1,41 @@
+:root {
+  --bg-color: #eeebe2;
+  --main-color: #080909;
+  --caret-color: #7fa480;
+  --sub-color: #99947f;
+  --sub-alt-color: #d3cfc1;
+  --text-color: #080909;
+  --error-color: #c87e74;
+  --error-extra-color: #a56961;
+  --colorful-error-color: #c87e74;
+  --colorful-error-extra-color: #a56961;
+}
+
+.word letter.incorrect {
+  color: var(--error-color);
+}
+
+.word letter.incorrect.extra {
+  color: var(--error-extra-color);
+}
+
+.word.error {
+  border-bottom: solid 2px var(--error-color);
+}
+
+key {
+  color: var(--sub-color);
+  background-color: var(--main-color);
+}
+
+nav > .textButton {
+  color: var(--main-color);
+}
+
+nav > .textButton:nth-child(1) {
+  color: var(--error-color);
+}
+
+nav > .textButton:nth-child(4) {
+  color: var(--caret-color);
+}

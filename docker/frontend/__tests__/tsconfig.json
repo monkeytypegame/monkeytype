@@ -1,0 +1,10 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true
+  },
+  "files": ["vitest.d.ts"],
+  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
+}

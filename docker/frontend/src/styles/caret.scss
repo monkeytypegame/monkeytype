@@ -1,0 +1,85 @@
+#caret {
+  height: 1.2em;
+  background: var(--caret-color);
+  animation: caretFlashSmooth 1s infinite;
+  position: absolute;
+  border-radius: var(--roundness);
+  // transition: 0.05s;
+  transform-origin: top left;
+}
+
+#paceCaret {
+  height: 1.2em;
+  background: var(--sub-color);
+  opacity: 0.5;
+  position: absolute;
+  border-radius: var(--roundness);
+  // transition: 0.25s;
+  transform-origin: top left;
+}
+
+#caret,
+#paceCaret {
+  &.debug {
+    outline: 1px solid white;
+    &.hidden {
+      opacity: 0.5 !important;
+      display: block !important;
+    }
+  }
+
+  &.off {
+    width: 0;
+  }
+
+  &.default {
+    width: 0.1em;
+  }
+
+  &.carrot {
+    background-color: transparent;
+    background-image: url("/images/caret/carrot.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 0.25em;
+  }
+
+  &.banana {
+    background-color: transparent;
+    background-image: url("/images/caret/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1em;
+  }
+
+  &.monkey {
+    background-color: transparent;
+    background-image: url("/images/caret/monkey.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1em;
+  }
+
+  &.block {
+    width: 0.5em;
+    border-radius: 0;
+    z-index: -1;
+    border-radius: 0.05em;
+  }
+
+  &.outline {
+    @extend #caret, .block;
+    animation-name: none;
+    background: transparent;
+    border: 0.05em solid var(--caret-color);
+    border-radius: 0.05em;
+  }
+
+  &.underline {
+    height: 0.1em;
+    width: 0.5em;
+  }
+}

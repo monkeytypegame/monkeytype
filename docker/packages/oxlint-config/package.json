@@ -1,0 +1,8 @@
+{
+  "name": "@monkeytype/oxlint-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.json"
+  }
+}

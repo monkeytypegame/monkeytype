@@ -29,7 +29,7 @@ const obj: Config = {
   time: 30,
   mode: "time",
   quoteLength: [1],
-  language: "english",
+  language: "uzbek_70k",
   fontSize: 2,
   freedomMode: false,
   difficulty: "normal",

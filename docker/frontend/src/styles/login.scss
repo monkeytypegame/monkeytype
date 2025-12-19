@@ -1,0 +1,79 @@
+.pageLogin {
+  display: flex;
+  grid-auto-flow: column;
+  gap: 1rem;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+
+  .side {
+    display: grid;
+    gap: 0.5rem;
+    justify-content: center;
+    grid-template-columns: 1fr;
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 17rem;
+    }
+
+    .title {
+      display: inline-flex;
+      align-items: baseline;
+      color: var(--sub-color);
+      i {
+        margin-right: 0.5em;
+      }
+    }
+
+    &.login {
+      #forgotPasswordButton {
+        // height: 0;
+        font-size: 0.75rem;
+        // margin-left: -0.5em;
+        justify-content: right;
+      }
+
+      .providers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .orWithLine {
+        // height: 2.25rem;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 1rem;
+        .line {
+          background: var(--sub-alt-color);
+          width: 100%;
+          height: 0.25em;
+          border-radius: var(--roundness);
+        }
+      }
+      .checkbox {
+        height: 1.5rem;
+        align-items: center;
+      }
+    }
+  }
+
+  form {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .preloader {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    font-size: 2rem;
+    transform: translate(-50%, -50%);
+    color: var(--main-color);
+    transition: 0.25s;
+  }
+}

@@ -1,0 +1,827 @@
+{
+  "language": "turkish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Kimse görmek istemeyenler kadar kör değildir.",
+      "source": "Jonathan Swift",
+      "length": 45,
+      "id": 1
+    },
+    {
+      "text": "Bileklerimizi morartmış yeni Alman kelepçeleri, otobüsün kaloriferleri bozuldu Kaman’dan sonra. Sekiz saat oluyor karbonatlı bir çay bile içemedik, başımızda prensip sahibi bir başçavuş. Niğde üzerinden Adana Cezaevine gidiyoruz... Bi sen eksiktin ayışığı, gümüş bir tüy dikmek için manzaraya!",
+      "source": "Bir Sen Eksiktin Ay Işığı - Can Yücel",
+      "length": 293,
+      "id": 6
+    },
+    {
+      "text": "Artık demir almak günü gelmişse zamandan, meçhule giden bir gemi kalkar bu limandan. Hiç yolcusu yokmuş gibi sessizce alır yol; sallanmaz o kalkışta ne mendil ne de bir kol. Rıhtımda kalanlar bu seyahatten elemli, günlerce siyah ufka bakar gözleri nemli. Biçare gönüller! Ne giden son gemidir bu! Hicranlı hayatın ne de son matemidir bu! Dünyada sevilmiş ve seven nafile bekler; bilmez ki giden sevgililer dönmeyecekler. Birçok gidenin her biri memnun ki yerinden, birçok seneler geçti; dönen yok seferinden.",
+      "source": "Sessiz Gemi - Yahya Kemal Beyatlı",
+      "length": 508,
+      "id": 7
+    },
+    {
+      "text": "Ağılda oğlak doğsa ovada otu biter.",
+      "source": "Atasözü",
+      "length": 35,
+      "id": 8
+    },
+    {
+      "text": "Kel ölür, sırma saçlı olur; kör ölür, badem gözlü olur.",
+      "source": "Atasözü",
+      "length": 55,
+      "id": 9
+    },
+    {
+      "text": "Açık yerde tepecik kendini dağ sanır.",
+      "source": "Atasözü",
+      "length": 37,
+      "id": 10
+    },
+    {
+      "text": "Abanın kıymeti yağmurda bilinir.",
+      "source": "Atasözü",
+      "length": 32,
+      "id": 11
+    },
+    {
+      "text": "Aç aman bilmez, çocuk zaman bilmez.",
+      "source": "Atasözü",
+      "length": 35,
+      "id": 13
+    },
+    {
+      "text": "Adam adama yük değil, can gövdeye mülk değil.",
+      "source": "Atasözü",
+      "length": 45,
+      "id": 14
+    },
+    {
+      "text": "Ahmağa yüz, abdala söz vermeye gelmez.",
+      "source": "Atasözü",
+      "length": 38,
+      "id": 15
+    },
+    {
+      "text": "Aş taşınca kepçeye paha olmaz.",
+      "source": "Atasözü",
+      "length": 30,
+      "id": 16
+    },
+    {
+      "text": "Ağustos'ta gölge kovan, zemheride karnın ovar.",
+      "source": "Atasözü",
+      "length": 46,
+      "id": 17
+    },
+    {
+      "text": "Kalendere kış geliyor demişler, titremeye hazırım diye cevap vermiş.",
+      "source": "Atasözü",
+      "length": 68,
+      "id": 18
+    },
+    {
+      "text": "Gölgeyi hoş gören tekneyi boş görür.",
+      "source": "Atasözü",
+      "length": 36,
+      "id": 20
+    },
+    {
+      "text": "Göz odur ki dağın arkasını göre, akıl odur ki başa geleceği bile.",
+      "source": "Atasözü",
+      "length": 65,
+      "id": 21
+    },
+    {
+      "text": "Verip pişman olmaktan, vermeyip düşman olmak yeğdir.",
+      "source": "Atasözü",
+      "length": 52,
+      "id": 22
+    },
+    {
+      "text": "Lafla pilav pişerse deniz kadar yağı benden.",
+      "source": "Atasözü",
+      "length": 44,
+      "id": 23
+    },
+    {
+      "text": "Onmadık hacıyı deve üstünde yılan sokar.",
+      "source": "Atasözü",
+      "length": 40,
+      "id": 24
+    },
+    {
+      "text": "Oduncunun gözü omcada, dilencinin gözü çömcede.",
+      "source": "Atasözü",
+      "length": 47,
+      "id": 25
+    },
+    {
+      "text": "Tarlada izi olmayanın harmanında yüzü olmaz.",
+      "source": "Atasözü",
+      "length": 44,
+      "id": 26
+    },
+    {
+      "text": "Topalla gezen, aksamak öğrenir.",
+      "source": "Atasözü",
+      "length": 31,
+      "id": 27
+    },
+    {
+      "text": "Tayfanın akıllısı, geminin dümeninden uzak durur.",
+      "source": "Atasözü",
+      "length": 49,
+      "id": 28
+    },
+    {
+      "text": "Mart'ta sürmez, Eylül'de ekmezsen sabanı bırak.",
+      "source": "Atasözü",
+      "length": 47,
+      "id": 29
+    },
+    {
+      "text": "Işığını akşamdan önce yakan, sabah çırasına yağ bulamaz.",
+      "source": "Atasözü",
+      "length": 56,
+      "id": 30
+    },
+    {
+      "text": "Ahırın avlusunda oynarken aşağıda, gümüş söğütler altında görünmeyen derenin hazin şırıltısını duyardık. Evimiz iç çitin büyük kestane ağaçları arkasında kaybolmuş gibiydi. Annem İstanbul’a gittiği için benden bir yaş küçük kardeşim Hasan’la artık Dadaruh’un yanından hiç ayrılmıyorduk. Bu, babamın seyisi yaşlı bir adamdı. Sabahleyin erkenden ahıra koşuyorduk. En sevdiğimiz şey atlardı. Dadaruh’la beraber onları suya götürmek, çıplak sırtlarına binmek ne doyulmaz bir zevkti. Hasan korkar, yalnız binmezdi. Dadaruh, onu kendi önüne alırdı. Torbalara arpa koymak, yemliklere ot doldurmak, ahırı süpürmek, gübreleri kaldırmak en eğlenceli oyundan bile daha çok hoşumuza gidiyordu. Hele tımar… bu, en zevkli şeydi.",
+      "source": "Kaşağı - Ömer Seyfettin",
+      "length": 714,
+      "id": 31
+    },
+    {
+      "text": "At, ahır işlerinde sadece tımarı beceremiyordum. Boyum karnına bile varmıyordu. Ama en keyifli, en eğlenceli şey buydu. Sanki kaşağının muntazam tıkırtısı Tosun’un hoşuna gidiyor, kulaklarını kısıyor, kuyruğunu kocaman bir püskül gibi sallıyordu.",
+      "source": "Kaşağı - Ömer Seyfettin",
+      "length": 246,
+      "id": 32
+    },
+    {
+      "text": "Ertesi yıl annem, yaz olunca yine İstanbul'a gitti. Biz yalnız kaldık. Hasan'a ahır hala yasaktı. Geceleri yatakta atların ne yaptıklarını, tayların büyüyüp büyümediğini bana sorardı. Bir gün aniden hastalandı. Kasabaya at gönderildi. Doktor geldi. Kuşpalazı dedi. Çiftlikteki köylü kadınlar eve koştular. Birtakım tekir kuşları getiriyorlar, kesip kardeşimin boynuna sarıyorlardı. Babam yatağının dibinden ayrılmıyordu.",
+      "source": "Kaşağı - Ömer Seyfettin",
+      "length": 420,
+      "id": 33
+    },
+    {
+      "text": "Şehirde yaşayan ve bir tüccarla evli olan abla, köydeki kız kardeşini ziyarete gitmişti; kardeşi ise bir köylüyle evliydi. Semaver başında toplandıklarında, abla kent hayatının güzelliklerinden, yaşamlarının ne kadar rahat olduğundan, ne kadar güzel giyindiklerinden, çocukların şık elbiseler giyinip kuşandıklarından, lezzetli yiyecekler yiyip tiyatrolara, eğlencelere nasıl gittiklerinden bire bin katarak söz etmeye başladı.",
+      "source": "İnsan Ne İle Yaşar - Tolstoy",
+      "length": 427,
+      "id": 34
+    },
+    {
+      "text": "Fakat unutma, ne kadar büyük bir daire yapsan da, gün batmadan başladığın yere dönmek zorundasın; o zamana dek ne kadar yeri işaretlediysen, kendi malın say.",
+      "source": "İnsan Ne İle Yaşar - Tolstoy",
+      "length": 157,
+      "id": 35
+    },
+    {
+      "text": "Yine de 'Bir saat yorul, ömür boyu rahat et...' diye düşünüp yürüdü. Tam sola dönecekti ki bir dere gördü. 'Burayı topraklarıma katmazsam günah olur. Burada pamuk yetiştirebilirim...' diye düşündü.",
+      "source": "İnsan Ne İle Yaşar - Tolstoy",
+      "length": 197,
+      "id": 36
+    },
+    {
+      "text": "Ama kente girerken kafasındaki matkapların yerini başka bir şey alıverdi. Sabahın olağan trafik sıkışıklığında beklerken, çevrede garip giyimli bir sürü insan fark etti. Pelerinli insanlar.",
+      "source": "Harry Potter ve Felsefe Taşı - J. K. Rowling",
+      "length": 189,
+      "id": 37
+    },
+    {
+      "text": "Her yerdeki kuş meraklıları, ülkedeki bütün baykuşların bugün hiç alışılmadık şeyler yaptığını belirtmektedir. Baykuşlar genellikle geceleri avlanırlar, gün ışığında pek görülmezler, ama sabahtan beri bu kuşların her yöne uçuştuklarına yüzlerce kere tanık olunmuştur. Uzmanlar, baykuşların uyku alışkanlıklarını birdenbire neden değiştirdiklerini açıklayamamaktadırlar.",
+      "source": "Harry Potter ve Felsefe Taşı - J. K. Rowling",
+      "length": 369,
+      "id": 38
+    },
+    {
+      "text": "Son derece esrarengiz. Şimdi de Jim McGuffin'den hava raporu. Ne dersin, bu gece yine baykuş sağanağı olacak mı, Jim?",
+      "source": "Harry Potter ve Felsefe Taşı - J. K. Rowling",
+      "length": 117,
+      "id": 39
+    },
+    {
+      "text": "Kedinin baktığı köşede bir adam belirdi; öylesine ansızın, öylesine sessizce belirmişti ki, sanki yerden fışkırmış gibiydi. Kedinin kuyruğu titredi, gözleri kısıldı.",
+      "source": "Harry Potter ve Felsefe Taşı - J. K. Rowling",
+      "length": 165,
+      "id": 40
+    },
+    {
+      "text": "Bir fizik kuramı yalnızca bir varsayım olmak bakımından her zaman koşullu ve kesinlikten yoksundur, asla kanıtlayamazsınız. Deney sonuçları sayısız kez kuramla uygunluk gösterse de, bir sonraki deneyin sonucunun kuramla çelişmeyeceğini hiçbir zaman kesin olarak söyleyemezsiniz.",
+      "source": "Zamanın Kısa Tarihi - Stephen W. Hawking",
+      "length": 278,
+      "id": 41
+    },
+    {
+      "text": "Görelik kuramında biricik bir mutlak zaman yoktur, bunun yerine herkesin, nerede olduğuna ve nasıl devindiğine bağlı olarak işleyen kendi özel zaman ölçüsü vardır.",
+      "source": "Zamanın Kısa Tarihi - Stephen W. Hawking",
+      "length": 163,
+      "id": 42
+    },
+    {
+      "text": "Zorluk, sonsuz statik evrende hemen hemen her görüş çizgisinin bir yıldızın yüzeyinde sonlanacağından kaynaklanmaktadır. Bu yüzden bütün gökyüzünün, gece bile, güneş gibi parlak olması gerekirdi.",
+      "source": "Zamanın Kısa Tarihi - Stephen W. Hawking",
+      "length": 195,
+      "id": 43
+    },
+    {
+      "text": "İnsan, insan olmaya geliyor dünyaya. Kesinlikle bir tercihi yok. Hiçbir şeyi seçemeden de gömülüyor toprağa. Yerin iki metre altındayken de binbir böceğe lunapark oluyor daha önce binbir dudağın öptüğü bedeni...",
+      "source": "Kinyas ve Kayra - Hakan Günday",
+      "length": 211,
+      "id": 44
+    },
+    {
+      "text": "Her yerde olan fakirlik açlık ya da açıklık değildir. Fakirlik para ve altına sahip olamama da değildir. Fakirlik, sahafta satılmamış bir kitabın üzerindeki tozdur. Fakirlik, kağıt imha makinasında, gazete parçalayan bir bıçaktır. Fakirlik, arabanın camından dışarıya atılmış muz kabuğudur. Fakirlik yemeksiz geçirilen bir gece değildir, fakirlik düşünmeden geçirilen bir gecedir.",
+      "source": "Anne Baba Biz Suçluyuz - Ali Şeriati",
+      "length": 380,
+      "id": 45
+    },
+    {
+      "text": "Beni bir gün unutacaksan bir gün bırakıp gideceksen boşuna yorma derdi boş yere mağaramdan çıkarma beni alışkanlıklarımı özellikle yalnızlığa alışkanlığımı kaybettirme boşuna.",
+      "source": "Tutunamayanlar - Oğuz Atay",
+      "length": 175,
+      "id": 46
+    },
+    {
+      "text": "İçimin yeni heyecanlar için dolduğunu hissetmiyorum. Fakat, bilmeden yeni yaşantılara hazırlıyorum kendimi. İçimde bir Selim ölürken kalan bütün gücüyle yeni bir Selim yaratıyor.",
+      "source": "Tutunamayanlar - Oğuz Atay",
+      "length": 178,
+      "id": 47
+    },
+    {
+      "text": "Birazdan göreceğimiz gibi, var olabilmemiz için evrenin karbon gibi elementler içermesi gerekir; bu elementler yıldızların içinde pişen daha hafif elementlerden üretilir. O halde, karbon bir süpernova patlaması ile uzaya dağılmış, daha sonra yoğunlaşarak yeni nesil Güneş sistemindeki bir gezegenin parçası haline gelmiş olmalı.",
+      "source": "Büyük Tasarım - Stephen W. Hawking",
+      "length": 328,
+      "id": 48
+    },
+    {
+      "text": "İnsanların trafik kurallarına uymasını sağlamanın zor olduğunu düşünüyorsanız eğer, bir asteroidi bir elips üzerinde hareket ettirmesi için ikna etmeye çalıştığınızı hayal edin bir de.",
+      "source": "Büyük Tasarım - Stephen W. Hawking",
+      "length": 184,
+      "id": 49
+    },
+    {
+      "text": "Zaten sevgi her zaman nefretten üstün değil miydi?",
+      "source": "İki Şehrin Hikayesi - Charles Dickens",
+      "length": 50,
+      "id": 50
+    },
+    {
+      "text": "Dualar benim içimden geliyor, Jerry. Başkaca bir değerleri yok.",
+      "source": "İki Şehrin Hikayesi - Charles Dickens",
+      "length": 63,
+      "id": 51
+    },
+    {
+      "text": "Bunca kötülükten iyi bir şeyin çıkması mümkün değildi; böylesine mutsuz bir başlangıca mutlu son yakışmazdı!",
+      "source": "İki Şehrin Hikayesi - Charles Dickens",
+      "length": 108,
+      "id": 52
+    },
+    {
+      "text": "İnsanın iyi olmak için akla ihtiyacı yoktur. Çok zeki birini ele al, hemen hiçbir zaman iyi biri olmadığını görürsün.",
+      "source": "Fareler ve İnsanlar - John Steinbeck",
+      "length": 117,
+      "id": 53
+    },
+    {
+      "text": "Biz öyle değiliz! Neden değiliz? Çünkü sen bana bakarsın, ben sana bakarım da ondan. Can yoldaşı oluruz birbirimizin. Bizi umursayan bir can var, işte ondan.",
+      "source": "Fareler ve İnsanlar - John Steinbeck",
+      "length": 157,
+      "id": 54
+    },
+    {
+      "text": "Bazen gerçek olmayacağını bildiği hayaller kurar insan. O kadar çok hayal eder ki istediği şeyi, sonunda bir gün gerçek olabileceğine aniden inanır. İnandıkça daha çok düşünür, daha çok hayal eder... Ama hayatın unutulan gerçekleri çok geçmeden karşısına çıkıverir.",
+      "source": "Fareler ve İnsanlar - John Steinbeck",
+      "length": 265,
+      "id": 55
+    },
+    {
+      "text": "Doktor: 'Bu taze bir kadavra, yeni gelmiş.' dedi. 'Taze' ve 'Kadavra' kelimelerinin garip tezadı beni ürpertti.",
+      "source": "Dokuzuncu Hariciye Koğuşu - Peyami Safa",
+      "length": 111,
+      "id": 56
+    },
+    {
+      "text": "Ölüm, bir saniye kadar yakınken hiç ölmeyecekmiş gibi yaşamanın alemi ne?",
+      "source": "Necip Fazıl",
+      "length": 73,
+      "id": 57
+    },
+    {
+      "text": "Bir aralık etrafına ve insanların yüzlerine baktı. Tramvayda hiç kimse gülümsemiyordu. Hepsinde yük taşıyan insanların yorgunluğu ve bezginliği var. Tramvay onları bir tarafa götürmese, hepsi oldukları yerde senelerce kalacaklarmış gibi ezik ve bitik, hepsinde bir bedbinlik. En küçük sebeplerle kavgaya bahane arıyorlar.",
+      "source": "Fatih Harbiye - Peyami Safa",
+      "length": 321,
+      "id": 58
+    },
+    {
+      "text": "Ah, insanlar niçin her şeyi anlayamıyorlar? Beş dakika, on dakika, yarım saat kendilerini unutsalar, kendilerini karşılarındakinin yerine koysalar tam onun gibi - fakat hiç eksiksiz ve tam - onun gibi duysalar, her şey ne kadar yerli yerinde olacak. Hayır! İlla ki zıddiyetler, öfkeler, yanlış anlaşmalar, kıskançlıklar, inatlar, şüpheler, hakim olmak arzuları...",
+      "source": "Fatih Harbiye - Peyami Safa",
+      "length": 363,
+      "id": 59
+    },
+    {
+      "text": "İnsanların çoğu, en iyi arkadaşını alçalmış görmekten mutlu olur. Genellikle arkadaşlıkların bu temele inşa edildiğini de söylemek abartı olmaz. Bütün düşünen insanlar, bu eski gerçeği bilir.",
+      "source": "Fyodor Mihailoviç Dostoyevski",
+      "length": 191,
+      "id": 60
+    },
+    {
+      "text": "En geveze kuş ümittir. Kalbimizde hiç susmaz.",
+      "source": "Cenap Şahabettin",
+      "length": 45,
+      "id": 61
+    },
+    {
+      "text": "Tünelin ucunda ışık görünmese bile, ışık varmış gibi yürümek ve ışığın görüneceğine inanmak gerekir.",
+      "source": "Amin Maalouf",
+      "length": 100,
+      "id": 63
+    },
+    {
+      "text": "Cahile söz anlatmak, köre renk tarifi gibidir.",
+      "source": "İmam Evzai",
+      "length": 46,
+      "id": 64
+    },
+    {
+      "text": "İnsanın kazandığı paradan değil, paranın kazandığı insandan korkulur.",
+      "source": "Necip Fazıl Kısakürek",
+      "length": 69,
+      "id": 65
+    },
+    {
+      "text": "İmkânın sınırını görmek için imkânsızı denemek lazım.",
+      "source": "Fatih Sultan Mehmet",
+      "length": 53,
+      "id": 66
+    },
+    {
+      "text": "Ulu ağacın gürültüsü dal ile, mutlu evin yakışığı döl ile.",
+      "source": "Atasözü",
+      "length": 58,
+      "id": 67
+    },
+    {
+      "text": "Bana arkadaşını söyle sana kim olduğunu söyleyeyim.",
+      "source": "Atasözü",
+      "length": 51,
+      "id": 68
+    },
+    {
+      "text": "Cahile söz anlatmak, deveye hendek atlatmaktan güçtür.",
+      "source": "Atasözü",
+      "length": 54,
+      "id": 69
+    },
+    {
+      "text": "Kendi sorunlarını çözemeyen bir kişinin, kusurlarının acısını başkalarına çektirmeye hakkı yoktur. Yalnız, kişisel sorunları tek başına çözme eylemini de gereksiz bir aşırılığa götürmemelidir insan.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 198,
+      "id": 70
+    },
+    {
+      "text": "Başkalarına söyleyecek bir sözüm olabilmesi için önce kendime söz geçirmem gerektiğine inanıyorum. Bana bugün, ne yapmalı? diye soracak olurlarsa, ancak, önce kendini düzeltmelisin, diyebilirim. Bir temel ilkeden yola çıkmak gerekirse, bu temel ilke ancak şu olabilir: kendini çözemeyen kişi kendi dışında hiçbir sorunu çözemez.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 328,
+      "id": 71
+    },
+    {
+      "text": "İnanarak dinlememizi güçleştiriyorlar. İnsan her sözü kuşkuyla karşılıyor artık. Gerçekle düş birbirine karışıyor; yalanın nerede bittiğini anlamıyoruz. Tutunacak bir dalımız kalmıyor.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 184,
+      "id": 72
+    },
+    {
+      "text": "Hayatında ilk defa başka bir insan olma özlemini duydu. Hiç bilmediği bir içkinin susuzluğu gibi bir duygu. Değişebilmek. Kendinin bile tanıyamayacağı yeni bir varlık olmak... değişmek kendine yabancılaşmak demekti.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 215,
+      "id": 73
+    },
+    {
+      "text": "Unutulmalısın. Unutulan herkesin hatırlanması için ne kadar zaman geçiyorsa, o kadar zaman geçirmelisin mezarda. Orada bile acele etmemelisin. Senden önce ölüp, senden önce unutulanlar ve daha hatırlanmayanlar var. Dur bakalım, dur hele. Sıranı bekle.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 251,
+      "id": 74
+    },
+    {
+      "text": "Bu sabah uyandığım zaman gecenin sıkıntısı üstümden kalkmamıştı . Demek ölüm bu diye düşünüyorum... Sabahları uyandığıma sevinemiyorum; gecenin sıkıntısı öğleye kadar sürdüğü için, sabahın verdiği diriliği yaşayamıyorum. Öğleden sonra akşamın hüznü çöküyor.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 257,
+      "id": 75
+    },
+    {
+      "text": "Ben, sadece namuslu olmakla övünen kişiyi adamdan saymıyorum; toplumu iyiye, güzele götürmek için kendi gibi namuslu insanlarla birlikte bir çaba harcamamışsa, çevresindeki uygunsuz gidişe başkaldırmamışsa, o kişi namussuzdur benim için.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 237,
+      "id": 76
+    },
+    {
+      "text": "Bazı üstü örtülü olaylar, küçük ya da büyük bazı topluluklara gösterilen ilgisizlikler, tarihin tozlu raflarında unutulduğu için hemen önemi sezilmeyen yaşantılar ve yanlış yorumlamalar nedeniyle sınıflamalarda alt katta kalmış insanlar güneş ışığına çıkarılabilseydi Selim’in yalnızlığının sadece bir görünüşten ibaret olduğu anlaşılacaktı. Tarih, işine gelmeyen bütün belgeleri, Selim ve Selim gibilerden gizlemişti.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 418,
+      "id": 77
+    },
+    {
+      "text": "Değişebilmek. Kendinin bile tanıyamayacağı yeni bir varlık olmak. Bütün canlıların olanca güçleriyle karşı koydukları bir değişim, başkalaşım. Korkutucu ve aynı zamanda çekici bir eğilim. Hücreler bütün güçleriyle, dış etkenlere karşı koyar ve vücuda girmek isteyen yabancı unsurları dışarı atmaya çalışırken değişebileceğini, onların bu kör inadını yenebileceğini düşünmek, insan için ne kadar zordu. Değişmek kendine yabancılaşmak demekti.",
+      "source": "Oğuz Atay - Tutunamayanlar",
+      "length": 441,
+      "id": 78
+    },
+    {
+      "text": "Elbette ki daha iyi bir insan olduğumu iddia etmeye cüretim yok. Ama ben yalnızca daha mutlu biri olduğumu biliyorum, çünkü o hissiz hayatım için yeni bir anlam buldum, bu öyle bir anlam ki, yaşam sözcüğünün kendisinden başka bunu açıklayacak bir söz bulamıyorum.",
+      "source": "Stefan Zweig - Olağanüstü Bir Gece",
+      "length": 263,
+      "id": 80
+    },
+    {
+      "text": "Ne zaman senden beklenenin sınırına gelsen karşına aynı sorun çıkar – kendin olma sorunu! Bu yönde attığın ilk adımla artı ya da eksi diye bir şey olmadığını idrak eder, patenleri fırlatıp yüzmeye başlarsın. Acı diye bir şey yoktur artık çünkü güvenliğini tehdit edecek bir şey... daha fazla",
+      "source": "Henry Miller - Oğlak Dönencesi",
+      "length": 291,
+      "id": 81
+    },
+    {
+      "text": "Bir duygunun bir eyleme aktarılması onun ölümüdür. Mantıksal ölümü. Ama yasaklanan şeylerin eyleme dönüştürülmesi böyle değildir. Kendi mizacımızın merakıdır bu, kendi eğilimlerimizin isteyerek açığa vurulması, kanımızda dolaşan ham bir duygunun eylem ya da olay sanatına aktarılmasıdır. Çünkü bedenlerimizi yaşadığımız ölçüde ruhlarımızı iğdiş ederiz.",
+      "source": "Oscar Wilde",
+      "length": 352,
+      "id": 83
+    },
+    {
+      "text": "Şimdi öyle gelmez. Günün birinde buruş buruş olup çirkinleştiğinizde, derin düşünceler alnınızda çizgiler bırakıp arzularınızın yangınları dudaklarınızı mühürlediğinde anlarsınız, hem de acı acı anlarsınız.",
+      "source": "Oscar Wilde - Dorian Gray'in Portresi",
+      "length": 206,
+      "id": 84
+    },
+    {
+      "text": "Yazının icadı kadar fotoğrafın icadı da tayin edici önemde bir tarihsel olaydır. Yazıyla birlikte dar anlamda tarih, idolatriye karşı bir mücadele olarak başlamıştır. Fotoğrafla birlikte 'tarih sonrası'', tekstolatriye karşı bir mücadele olarak başlar.",
+      "source": "Vilém Flusser - Bir Fotoğraf Felsefesine Doğru",
+      "length": 252,
+      "id": 85
+    },
+    {
+      "text": "Hiçbir şey teknik görüntülerin bu emme gücünden kaçamaz - ne onları hedef almayan bir sanatsal, bilimsel veya politik faaliyet ne de fotoğraf, film veya video halinde kaydedilmek istemeyen bir gündelik eylem vardır. Çünkü her şey sonsuza dek hatırlanmak, sonsuzca yinelenebilir olmak ister.",
+      "source": "Vilém Flusser - Bir Fotoğraf Felsefesine Doğru",
+      "length": 290,
+      "id": 86
+    },
+    {
+      "text": "Satranç oyuncusu da satranç programında yeni olanaklar, yeni hamleler bulmaya çalışır. Onun satranç taşlarıyla oynaması gibi, fotoğrafçı da makinesiyle oynar. Fotoğraf makinesi bir alet değil oyuncaktır; fotoğrafçı da işçi değil oyuncu: 'homo faber' değil, 'homo ludens'. Ama fotoğrafçı oyuncağıyla oynamaz, oyuncağına karşı oynar.",
+      "source": "Vilém Flusser - Bir Fotoğraf Felsefesine Doğru",
+      "length": 331,
+      "id": 87
+    },
+    {
+      "text": "Hep aynı yöntemle daima yeni şeyler peşinde olma hırsının yerini daima yeni yöntemler aramaya duyulan ilgi almıştır. Oysa deklanşöre basıp duranlar ve dokümancılar 'bilginin' ne olduğunu anlamamıştır. Meydana getirdikleri şey bilgi değil aygıt hafızalarıdır ve bunu ne kadar iyi yaparlarsa, aygıtların insan karşısındaki zaferini o kadar kanıtlamış olurlar.",
+      "source": "Vilém Flusser - Bir Fotoğraf Felsefesine Doğru",
+      "length": 357,
+      "id": 88
+    },
+    {
+      "text": "Her fırsatta yazmayı sürdürmeliyim, çünkü düşünmeyi bırakmaya cüret edemiyorum. Büyük küçük her şey yazıya dökülmeli; belki de sonunda bize en çok öğretenler küçük şeyler olur.",
+      "source": "Bram Stoker - Dracula",
+      "length": 176,
+      "id": 92
+    },
+    {
+      "text": "Nereden geldiğini, kim olduğunu asla unutma çünkü etrafındaki kimse unutmaz bunu. Kendi gerçeğini güce çevir. Böylece hakkındaki gerçek asla zayıf noktan olmaz. Gerçeğin senin zırhın olsun ki, kimse seni o gerçeği kullanarak incitemesin.",
+      "source": "George R. R. Martin - Taht Oyunları",
+      "length": 237,
+      "id": 93
+    },
+    {
+      "text": "Bir an ikisi de susmuştu. Birbirlerine söyleyecek söz bulamadıkları için susmuşlardı. Zaman bir an için durmuştu. İşte bu tuhaf sessizlikte, kendilerine tamamen yabancı olan bir dünyanın içine düşüverdiler.",
+      "source": "Ian Fleming - Ahtapot",
+      "length": 206,
+      "id": 95
+    },
+    {
+      "text": "Siyah camlı gözlük takmış birkaç kişi de dikkatini çekti, fakat siyah gözlük artık tanınmamak için kullanılan bir şey olmaktan çoktan çıkmıştı.",
+      "source": "Ian Fleming - Zümrüt Küre",
+      "length": 143,
+      "id": 96
+    },
+    {
+      "text": "Şans bir hizmetliydi, efendi değil. Şans, bir omuz silkme ile kabullenmeli ya da avantajı sapına kadar kullanmalıydı. Fakat onun ne olduğunu anlamak ve fark etmek ve onu hatalı ihtimalleri takdir etmek ile karışmamak gerekiyordu. Çünkü kumarda en ölümcül günah, kötü oyunu kötü şans ile karıştırmaktı.",
+      "source": "Ian Fleming - Casino Royale",
+      "length": 301,
+      "id": 97
+    },
+    {
+      "text": "Yanılmıyorsam artık işler sona yaklaşıyor. Hemen önünde tatsız bir zaman var ama yüreğini sağlam tut! İşten alnının akıyla çıkman mümkün. Kuzgunların dahi duymadığı iyi haberler var.",
+      "source": "J. R. R. Tolkien - Hobbit",
+      "length": 182,
+      "id": 98
+    },
+    {
+      "text": "Yavanna'nın şarkısından başka çıt çıkmıyordu adeta. Bu ezginin eşliğinde fidanlar boy verdi, uzayıp letafet kazandılar ve çiçeklendiler; işte dünya yüzünde böylece belirdi Valinor'un iki ağacı.",
+      "source": "J. R. R. Tolkien - Silmarillion",
+      "length": 193,
+      "id": 99
+    },
+    {
+      "text": "Hatırlamak etik bir edimdir, kendi başına ve kendisi olarak etik değeri vardır. Hafıza ise, acı verici olsa da, ölülerle kurabileceğimiz tek bağdır.",
+      "source": "Susan Sontag - Başkalarının Acısına Bakmak",
+      "length": 148,
+      "id": 100
+    },
+    {
+      "text": "İnsan sadece yalnız olabildiği sürece, bütünüyle kendisi olur: Demek ki, yalnızlığı sevmeyen özgürlüğü de sevmez; çünkü insan ancak yalnız olduğunda özgürdür.",
+      "source": "Arthur Schopenhauer - Yaşam Bilgeliği Üzerine Aforizmalar",
+      "length": 158,
+      "id": 101
+    },
+    {
+      "text": "Benlik, genellikle rüya görenin hayatının kritik zamanlarında, kişinin tutumlarını ve yaşam biçimini değiştirmekte olduğu dönüm noktalarında görülen rüyalarda ortaya çıkar. Bu değişim suyu geçmekle sembolize edilir.",
+      "source": "Carl Gustav Jung - İnsan ve Sembolleri",
+      "length": 215,
+      "id": 102
+    },
+    {
+      "text": "Bir işaret her zaman temsil ettiği kavramdan daha azmi içermektedir; buna karşılık bir sembol, daima ilk bakışta görülebilenden daha fazla anlam taşır.",
+      "source": "Carl Gustav Jung - İnsan ve Sembolleri",
+      "length": 151,
+      "id": 103
+    },
+    {
+      "text": "Yönetici grubun iktidardan düşmesinin yalnız dört yolu vardır ya dışarıdan gelen bir kuvvete yenilinir ya kitleleri baş kaldırıya yöneltecek derecede kötü yönetir ya kuvvetli ve hoşnutsuz bir orta sınıf ortaya çıkmasına izin verir ya da kendine olan güvenini yitirir.",
+      "source": "George Orwell - 1984",
+      "length": 267,
+      "id": 106
+    },
+    {
+      "text": "Bütün hayvanlar eşittir ama bazı hayvanlar öbürlerinden daha eşittir.",
+      "source": "George Orwell - Hayvanlar Çiftliği",
+      "length": 69,
+      "id": 107
+    },
+    {
+      "text": "Ve en önemlisi, hiçbir hayvan kendi türünden olanlara zorbalık etmemeli. Güçlüsü güçsüzü, akıllısı akılsızı, hepimiz kardeşiz. Hiçbir hayvan başka bir hayvanı öldürmemeli. Bütün hayvanlar eşittir.",
+      "source": "George Orwell - Hayvanlar Çiftliği",
+      "length": 196,
+      "id": 108
+    },
+    {
+      "text": "Artık bende hiçbir yiyeceğin tadı, hiçbir suyun hissi, hiçbir rüzgârın sesi, hiçbir ağacın, otun, çiçeğin hatırası, ayın, yıldızların görüntüsü kalmadı.",
+      "source": "J. R. R. Tolkien - Yüzüklerin Efendisi",
+      "length": 152,
+      "id": 109
+    },
+    {
+      "text": "Okumayan bir toplumuz, sanatçımız, teknokratımız, bürokratımız, hekimimiz, yargıcımız, öğretmenimiz, işadamımız, askerimiz, sivilimiz, dahası bilginlerimiz ve de maalesef öğrencilerimiz hep az okuyor.",
+      "source": "İlber Ortaylı - Yakın Tarihin Gerçekleri",
+      "length": 200,
+      "id": 110
+    },
+    {
+      "text": "Cahilliklerini bilmenin utancı içindeydiler ve bilgisizliklerini nasıl açıklayacaklarını da bilemiyorlardı.",
+      "source": "William Golding - Sineklerin Tanrısı",
+      "length": 107,
+      "id": 111
+    },
+    {
+      "text": "Bir insanın yaşayabileceği en korkunç aydınlanma anı, babasının da insan olduğunu, etiyle kemiğiyle insan olduğunu keşfettiği andır.",
+      "source": "Frank Herbert - Dune",
+      "length": 132,
+      "id": 112
+    },
+    {
+      "text": "Korkmamalıyım. Korku katilidir aklın. Korku, mutlak yıkım getiren küçük ölümdür.",
+      "source": "Frank Herbert - Dune",
+      "length": 80,
+      "id": 113
+    },
+    {
+      "text": "Sonuna dek izlenen yol insanı hiçbir yere götürmez. Bir dağın gerçekten dağ olup olmadığını anlamak istiyorsanız, ona biraz tırmanmanız yeter. Dağın tepesine çıkarsanız dağı göremezsiniz.",
+      "source": "Frank Herbert - Dune",
+      "length": 187,
+      "id": 114
+    },
+    {
+      "text": "Öyleyse, özgün sanat yapıtlarını çevreleyen, aslında onların satış değerlerine bağlı olan bu yalancı dinsellik havası, fotoğraf makinasının resimleri yeniden canlandırılabilir kılmasından sonra resimlerin yitirdiği şeyin yerini almıştır.",
+      "source": "John Berger - Görme Biçimleri",
+      "length": 237,
+      "id": 115
+    },
+    {
+      "text": "İstese de, istemese de, sadık, sevecen, kibar biri. Makine sonuçta; öyle yapmışlar. İnsanlar için aynı şey söyleyebilir misin?",
+      "source": "Isaac Asimov - Ben Robot",
+      "length": 126,
+      "id": 116
+    },
+    {
+      "text": "İçim bir garip. Kalbim güm güm atıyor, çok gerginim.",
+      "source": "Isaac Asimov - Ben Robot",
+      "length": 52,
+      "id": 117
+    },
+    {
+      "text": "Kalbinin içinde bir şekil vardı... tekerlekli sandalyeye oturmuş bir insan!",
+      "source": "Isaac Asimov - Vakıf",
+      "length": 75,
+      "id": 118
+    },
+    {
+      "text": "Kahramanlar genelde gezginlerdir ve gezginlik asla nesnesini bulamayan bir arzunun, yitik anneye duyulan bir özlemin sembolüdür.",
+      "source": "Carl Gustav Jung - Maskülen",
+      "length": 128,
+      "id": 119
+    },
+    {
+      "text": "Salvador Dali, çişli bir çocukmuş. Uzun süre yatağına işemiş. Hem de elinde olmadığından, tutamadığı için değil, hayır, o sıvının bacaklarının arasından akması hoşuna gittiği için.",
+      "source": "Salvador Dali - Büyük Mastürbatör",
+      "length": 180,
+      "id": 120
+    },
+    {
+      "text": "Bazı deneyimler ve imalar vardır ki, insanı iyileşmesine izin vermeyecek denli derinden yaralarlar ve geriye sadece o ilk dehşeti çağrıştıran, artmış bir hassasiyet bırakırlar.",
+      "source": "H. P. Lovecraft - Deliliğin Dağlarında",
+      "length": 176,
+      "id": 121
+    },
+    {
+      "text": "Hislerim söz konusuysa asla iflah olmayacağımı biliyorum.",
+      "source": "Edgar Allan Poe - Kızıl Ölümün Maskesi",
+      "length": 57,
+      "id": 122
+    },
+    {
+      "text": "Hayat ve ölüm arasındaki çizgi oldukça belirsiz ve siliktir. Biri nerede biter, diğeri nerede başlar, kim bilir?",
+      "source": "Edgar Allan Poe - Bütün Hikayeleri",
+      "length": 112,
+      "id": 123
+    },
+    {
+      "text": "Gerçek şu ki, becerikli kişiler her zaman hayal kurarlar, yaratıcı olanlar ise çözümleyicilerdir.",
+      "source": "Edgar Allan Poe - Morgue Sokağı Cinayetleri",
+      "length": 97,
+      "id": 124
+    },
+    {
+      "text": "Bir amaca bağlanmayan ruh, yolunu kaybeder; çünkü, her yerde olmak hiçbir yerde olmamaktır.",
+      "source": "Montaigne - Denemeler",
+      "length": 91,
+      "id": 126
+    },
+    {
+      "text": "Hiç kimseye fazla sevgiyle bağlanmak, bir uşak gibi sadık olmak istemem. Çünkü insanı ihanete alet etmeye kalkarlar. Kendine ihanet eden, efendisine haydi haydi ihanet eder.",
+      "source": "Montaigne - Denemeler",
+      "length": 173,
+      "id": 127
+    },
+    {
+      "text": "Dünyanın oyunu bu kadardır: Mevsimler bitti mi, yeniden başlamaktan başka bir marifet gösteremez.",
+      "source": "Montaigne - Denemeler",
+      "length": 97,
+      "id": 128
+    },
+    {
+      "text": "En iyisi gençlerde öğrenme hevesini ve sevgisini uyandırmaktır, yoksa kitap yüklü birer eşek yaparız onları, kırbaç zoruyla bilim dolu bir çanta taşıtıyorlar onlara.",
+      "source": "Montaigne - Denemeler",
+      "length": 165,
+      "id": 129
+    },
+    {
+      "text": "Böylelikle, dünyayla iyi geçinilmez, genellikle sonunda, edepsiz Voltaire'in dediği duruma gelinir: “Sadece iki günümüz var yaşamak için: Bu günleri de aşağılık heriflerin önünde diz çökerek geçirmeye değmez.“",
+      "source": "Arthur Schopenhauer - Yaşam Bilgeliği Üzerine Aforizmalar",
+      "length": 209,
+      "id": 130
+    },
+    {
+      "text": "Kendi kendine yetmek, kendi kendisi için her şey olmak ve tüm varlığımı kendimde taşıyorum diyebilmek, elbette mutluluğumuz için en yararlı özelliktir.",
+      "source": "Arthur Schopenhauer - Yaşam Bilgeliği Üzerine Aforizmalar",
+      "length": 151,
+      "id": 131
+    },
+    {
+      "text": "Bu yüzden benden size nasihat, dostlarım: cezalandırma dürtüsü güçlü olan hiç kimseye güvenmeyin!",
+      "source": "Friedrich Nietzsche - Böyle Söyledi Zerdüşt",
+      "length": 97,
+      "id": 132
+    },
+    {
+      "text": "Özgür mü diyorsun kendine? Sana hükmeden düşünceni duymak isterim...",
+      "source": "Friedrich Nietzsche - Böyle Söyledi Zerdüşt",
+      "length": 68,
+      "id": 133
+    },
+    {
+      "text": "Öyle kolay bir sanat değildir uyumak... Onun uğruna bütün gün uyanık kalmak gerekir...",
+      "source": "Friedrich Nietzsche - Böyle Söyledi Zerdüşt",
+      "length": 86,
+      "id": 134
+    },
+    {
+      "text": "Mutluluk peşinden geliyor. Kadınların peşinden koşmadığım için geliyor. Oysa bir kadındır mutluluk!",
+      "source": "Friedrich Nietzsche - Böyle Söyledi Zerdüşt",
+      "length": 99,
+      "id": 135
+    },
+    {
+      "text": "Sahiden, kirli bir ırmaktır insan. Kirli bir ırmağı içine alıp da bozulmadan kalmak için zaten bir deniz olmak gerekir.",
+      "source": "Friedrich Nietzsche - Böyle Söyledi Zerdüşt",
+      "length": 119,
+      "id": 136
+    },
+    {
+      "text": "Kendi hedefime varmak istiyorum, kendi yolumda ilerliyorum; tereddüt edenlerin ve ağırdan alanların üzerinden atlayacağım. Benim yolum, onların batışı olsun!",
+      "source": "Friedrich Nietzsche - Böyle Söyledi Zerdüşt",
+      "length": 157,
+      "id": 137
+    },
+    {
+      "text": "Hayattaki mecburiyetlerden kurtulma duygusu yaşadıkça, dolu dolu yaşama isteği artıyor.",
+      "source": "Zülfü Livaneli - Serenad",
+      "length": 87,
+      "id": 138
+    },
+    {
+      "text": "Son zamanlarda, bilmem neden, bütün sevincimi yitirdim... Gerçekten öyle karardı ki içim... Güldüğünüze göre inanmıyorsunuz bana.",
+      "source": "William Shakespeare - Hamlet",
+      "length": 129,
+      "id": 140
+    },
+    {
+      "text": "Kartal hiçbir zaman kargayı öğrenmek zorunda bırakıldığı kadar zaman kaybetmedi.",
+      "source": "William Blake - Cennet ve Cehennemin Evliliği",
+      "length": 80,
+      "id": 141
+    },
+    {
+      "text": "Şansın yaver gitme ihtimali ne kadar düşük olursa olsun, şans oradaydı.",
+      "source": "Charlie ve Çikolata Fabrikası",
+      "length": 71,
+      "id": 142
+    },
+    {
+      "text": "Ama bu dünyada kötü insanlardan çok daha fazla iyi insan olduğuna ve iyi insanların birbirlerini kolladığına ve birbirlerine göz kulak olduğuna gerçekten inanıyorum.",
+      "source": "Wonder",
+      "length": 165,
+      "id": 143
+    },
+    {
+      "text": "Yapabildiğinden başka bir sebep olmaksızın gelip gitmekte özgürlük vardır. Her şey size sürekli hareket etmenizi, hızlı hareket etmenizi söylerken oturmayı ve hareketsiz kalmayı seçmekte özgürlük vardır.",
+      "source": "The Poet X",
+      "length": 203,
+      "id": 144
+    },
+    {
+      "text": "Dinle, Simon. Asla unutma. Sadece kendine inan. Benim inandığım Simon'a değil; senin inandığın Kamina'ya değil. Sana inanan Simon'a inan.",
+      "source": "Gurren Lagann",
+      "length": 137,
+      "id": 145
+    },
+    {
+      "text": "Sözlerime kulak verin! Bu matkap evrende bir delik açacak! Ve o delik arkamızdakiler için bir yol olacak! Düşenlerin hayalleri! Arkamızdan gelenlerin umutları! Bu iki hayal kümesi birlikte bir çift sarmal oluşturacak! Yarına doğru bir yol açıyoruz! Ve bu Tengen Toppa! Bu Gurren Lagann! Benim matkabım cenneti yaratan matkaptır!",
+      "source": "Gurren Lagann",
+      "length": 328,
+      "id": 146
+    },
+    {
+      "text": "Neden bana bunu yaptırdın? Etrafındaki herkesin ölümünü izleyebilmek için savaşıyorsun! Düşün, Mark! Bu gezegendeki her kırılgan, önemsiz varlıktan daha uzun yaşayacaksın. Bu dünyanın toz olup uçtuğunu görecek kadar yaşayacaksın! Bildiğin herkes ve her şey yok olacak! 500 yıl sonra elinde ne olacak?",
+      "source": "İnanılmaz Aile (TV Serisi)",
+      "length": 300,
+      "id": 147
+    },
+    {
+      "text": "Hayat asla adil değildir ve belki de adil olmaması çoğumuz için iyi bir şeydir.",
+      "source": "Oscar Wilde",
+      "length": 79,
+      "id": 148
+    },
+    {
+      "text": "Bu hayatta büyük şeyler yapamayız. Sadece büyük bir sevgiyle küçük şeyler yapabiliriz.",
+      "source": "Mother Teresa",
+      "length": 86,
+      "id": 149
+    },
+    {
+      "text": "Bir yaprak, sanki güneş ışınlarından destek alıyormuş gibi pencereden içeri süzüldü.",
+      "source": "Anais Nin",
+      "length": 84,
+      "id": 150
+    },
+    {
+      "text": "Umut, ruha tüneyen ve sözleri olmadan melodiyi söyleyen ve hiç durmayan tüylü bir şeydir.",
+      "source": "Emily Dickinson",
+      "length": 89,
+      "id": 151
+    },
+    {
+      "text": "Olasılıklar ne kadar saçma görünürse görünsün, içimizde bu zorlukların üstesinden gelme ve güzel bir şey başarma gücü vardır. Bir gün başladığımız yere dönüp baktığımızda ne kadar ilerlediğimizi görüp hayrete düşeceğiz.",
+      "source": "Technoblade",
+      "length": 219,
+      "id": 152
+    },
+    {
+      "text": "Hizmet personeline davranış biçimlerine bakarak bir kişinin karakteri hakkında çok şey söyleyebilirsiniz.",
+      "source": "Bilinmeyen",
+      "length": 105,
+      "id": 153
+    }
+  ]
+}

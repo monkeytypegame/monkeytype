@@ -1,0 +1,1463 @@
+{
+  "language": "polish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Są dwie drogi, aby przeżyć życie. Jedna to żyć tak, jakby nic nie było cudem. Druga to żyć tak, jakby cudem było wszystko.",
+      "source": "Albert Einstein",
+      "length": 122,
+      "id": 1
+    },
+    {
+      "text": "Nasze życie jest takim, jakim uczyniły je nasze myśli.",
+      "source": "Marek Aureliusz",
+      "length": 54,
+      "id": 2
+    },
+    {
+      "text": "Życie jest jak jazda na rowerze. Żeby utrzymać równowagę, musisz być w ciągłym ruchu.",
+      "source": "Albert Einstein",
+      "length": 85,
+      "id": 3
+    },
+    {
+      "text": "Jeżeli robisz to co łatwe, Twoje życie będzie trudne. Jeśli robisz to co trudne, Twoje życie będzie łatwe.",
+      "source": "Les Brown",
+      "length": 106,
+      "id": 4
+    },
+    {
+      "text": "Jest tylko jedna rzecz, która sprawia, że marzenie jest niemożliwe do osiągnięcia: strach przed porażką.",
+      "source": "Paulo Coelho",
+      "length": 104,
+      "id": 5
+    },
+    {
+      "text": "Dramatem życia jest to, że starzejemy się zbyt szybko, a mądrzejemy zbyt późno.",
+      "source": "Benjamin Franklin",
+      "length": 79,
+      "id": 6
+    },
+    {
+      "text": "Nie odnajdziesz spokoju unikając życia.",
+      "source": "Virginia Woolf",
+      "length": 39,
+      "id": 7
+    },
+    {
+      "text": "Krytyka jest czymś, czego możemy łatwo uniknąć nie mówiąc nic, nie robiąc nic i będąc nikim.",
+      "source": "Arystoteles",
+      "length": 92,
+      "id": 8
+    },
+    {
+      "text": "Życie zaczyna się po opuszczeniu wygodnego kokonu.",
+      "source": "Neale Donald Walsh",
+      "length": 50,
+      "id": 9
+    },
+    {
+      "text": "Nie ma nic stałego, oprócz zmiany.",
+      "source": "Heraklit z Efezu",
+      "length": 34,
+      "id": 10
+    },
+    {
+      "text": "Nigdy nie rezygnuj z marzenia, tylko dlatego, że zrealizowanie go wymaga czasu. Czas i tak upłynie.",
+      "source": "Earl Nightingale",
+      "length": 99,
+      "id": 11
+    },
+    {
+      "text": "Najcenniejszych rzeczy w życiu nie nabywa się za pieniądze.",
+      "source": "Albert Einstein",
+      "length": 59,
+      "id": 12
+    },
+    {
+      "text": "Nie wychowuj swoich dzieci, aby były bogate. Naucz je, aby były szczęśliwe - Więc kiedy dorosną, będą znać wartość rzeczy, a nie ich cenę.",
+      "source": "Steve Jobs",
+      "length": 138,
+      "id": 13
+    },
+    {
+      "text": "Nie chcę pod koniec życia stwierdzić, że przeżyłam tylko jego długość. Chcę przeżyć też pełną jego szerokość.",
+      "source": "Diane Ackerman",
+      "length": 109,
+      "id": 14
+    },
+    {
+      "text": "Największym powodem do chwały nie jest nigdy nie upaść, ale umieć podnieść się za każdym razem, kiedy upadniemy.",
+      "source": "Konfucjusz",
+      "length": 112,
+      "id": 15
+    },
+    {
+      "text": "Życie zaczyna się tam, gdzie kończy się lęk.",
+      "source": "Osho",
+      "length": 44,
+      "id": 16
+    },
+    {
+      "text": "Zaczynamy żyć, kiedy przestajemy się bać życia.",
+      "source": "Dorothy Thompson",
+      "length": 47,
+      "id": 17
+    },
+    {
+      "text": "Wiele osób umiera w wieku dwudziestu pięciu lat i nie zostaje pochowanych aż do siedemdziesięciu pięciu.",
+      "source": "Benjamin Franklin",
+      "length": 104,
+      "id": 18
+    },
+    {
+      "text": "Sukces jest kwestią szczęścia. Zapytaj każdego nieudacznika.",
+      "source": "Earl Wilson",
+      "length": 60,
+      "id": 19
+    },
+    {
+      "text": "Życie nie jest sprawiedliwe i być może to dobra wiadomość dla większości z nas.",
+      "source": "Oscar Wilde",
+      "length": 79,
+      "id": 20
+    },
+    {
+      "text": "Tragedią życia nie jest śmierć, ale to czemu pozwalamy umrzeć w sobie, kiedy żyjemy.",
+      "source": "Norman Cousins",
+      "length": 84,
+      "id": 21
+    },
+    {
+      "text": "Wasz czas jest ograniczony, więc nie marnujcie go, żyjąc cudzym życiem. Nie wpadajcie w pułapkę dogmatów, żyjąc poglądami innych ludzi. Nie pozwólcie, żeby hałas cudzych opinii zagłuszył wasz własny wewnętrzny głos. I najważniejsze - miejcie odwagę kierować się sercem i intuicją.",
+      "source": "Steve Jobs",
+      "length": 280,
+      "id": 22
+    },
+    {
+      "text": "Wielu życiowych przegranych to ludzie, którzy nie zdawali sobie sprawy, jak blisko byli sukcesu, kiedy się poddali.",
+      "source": "Thomas A. Edison",
+      "length": 115,
+      "id": 23
+    },
+    {
+      "text": "Jeśli nie potrafisz latać, biegnij. Jeśli nie potrafisz biegać, chodź. Jeśli nie potrafisz chodzić, czołgaj się. Cokolwiek jednak robisz, poruszaj się do przodu.",
+      "source": "Martin Luther King",
+      "length": 161,
+      "id": 24
+    },
+    {
+      "text": "Życia nie mierzy się ilością oddechów, ale ilością chwil, które zapierają dech w piersiach.",
+      "source": "Maya Angelou",
+      "length": 91,
+      "id": 25
+    },
+    {
+      "text": "Każdy myśli o zmienianiu świata, lecz nikt nie myśli o tym by zmienić samego siebie.",
+      "source": "Lew Tołstoj",
+      "length": 84,
+      "id": 26
+    },
+    {
+      "text": "Najpiękniejszych chwil w życiu nie zaplanujesz. One przyjdą same. Sztuka życia - to cieszyć się małym szczęściem.",
+      "source": "Phil Bosmans",
+      "length": 113,
+      "id": 27
+    },
+    {
+      "text": "To nieszczęście, że tak mały odstęp dzieli czas, gdy jesteśmy zbyt młodzi, od czasu, gdy jesteśmy zbyt starzy.",
+      "source": "Monteskiusz",
+      "length": 110,
+      "id": 28
+    },
+    {
+      "text": "Życie po prostu jest. Trzeba płynąć wraz z nim.",
+      "source": "Jerry Brown",
+      "length": 47,
+      "id": 29
+    },
+    {
+      "text": "Nigdy nie oddałbym życia za swoje przekonania, ponieważ mogę się mylić.",
+      "source": "Bertrand Russell",
+      "length": 71,
+      "id": 30
+    },
+    {
+      "text": "Jeśli idziesz przez piekło, nie zatrzymuj się.",
+      "source": "Winston Churchill",
+      "length": 46,
+      "id": 31
+    },
+    {
+      "text": "Przebaczyć to wypuścić więźnia na wolność i odkryć, że tym więźniem byłeś ty.",
+      "source": "Lewis B. Smedes",
+      "length": 77,
+      "id": 32
+    },
+    {
+      "text": "Życie jest wspaniałe, należy tylko spoglądać na nie przez właściwe okulary.",
+      "source": "Aleksander Dumas",
+      "length": 75,
+      "id": 33
+    },
+    {
+      "text": "To co nas nie zabije, uczyni nas silniejszymi.",
+      "source": "Friedrich Nietzsche",
+      "length": 46,
+      "id": 34
+    },
+    {
+      "text": "Być pięknym to być sobą. Inni nie muszą cię akceptować. To ty musisz akceptować sam siebie.",
+      "source": "Thich Nhat Hanh",
+      "length": 91,
+      "id": 35
+    },
+    {
+      "text": "Prawdziwa miłość nie wyczerpuje się nigdy. Im więcej dajesz, tym więcej ci jej zostaje.",
+      "source": "Seneka Młodszy",
+      "length": 87,
+      "id": 36
+    },
+    {
+      "text": "Prawdziwie żyć to najrzadsza rzecz na świecie. Większość ludzi jedynie egzystuje.",
+      "source": "Oscar Wilde",
+      "length": 81,
+      "id": 37
+    },
+    {
+      "text": "Najważniejszą rzeczą jest, aby cieszyć się swoim życiem - być szczęśliwym - tylko to się liczy.",
+      "source": "Audrey Hepburn",
+      "length": 95,
+      "id": 38
+    },
+    {
+      "text": "Zawsze kiedy znajdziesz się po stronie większości, czas zatrzymać się i zastanowić.",
+      "source": "Mark Twain",
+      "length": 83,
+      "id": 39
+    },
+    {
+      "text": "Przyjemność jest początkiem i celem życia szczęśliwego.",
+      "source": "Epikur",
+      "length": 55,
+      "id": 40
+    },
+    {
+      "text": "Sukces jest sumą małych wysiłków, powtarzanych dzień po dniu.",
+      "source": "Robert Collier",
+      "length": 61,
+      "id": 41
+    },
+    {
+      "text": "Życie bez radości jest jak długa podróż bez gospody.",
+      "source": "Demokryt z Abdery",
+      "length": 52,
+      "id": 42
+    },
+    {
+      "text": "Podróż tysiąca mil zaczyna się od jednego kroku.",
+      "source": "Lao Tzu",
+      "length": 48,
+      "id": 43
+    },
+    {
+      "text": "Wierzę w szczęście i odkryłem, że im ciężej pracuję, tym więcej go mam.",
+      "source": "Thomas Jefferson",
+      "length": 71,
+      "id": 44
+    },
+    {
+      "text": "Jeśli kiedykolwiek zamierzasz cieszyć się życiem - teraz jest na to czas - nie jutro, nie za rok. Dzisiaj powinno być zawsze najwspanialszym dniem.",
+      "source": "Thomas Dreier",
+      "length": 147,
+      "id": 45
+    },
+    {
+      "text": "Życie jest czymś, co przydarza się nam w czasie, kiedy jesteśmy zajęci planowaniem innych rzeczy.",
+      "source": "Anthony de Mello",
+      "length": 97,
+      "id": 46
+    },
+    {
+      "text": "Nie jest ważne, co przydarza ci się w życiu. Ważne jest, jakie przypisujesz temu znaczenie.",
+      "source": "Robert Kiyosaki",
+      "length": 91,
+      "id": 47
+    },
+    {
+      "text": "Kiedy człowiek boi się coś zrobić, wtedy wie, że żyje. Ale kiedy człowiek nie robi czegoś, tylko dlatego, że się boi, to wtedy jest martwy.",
+      "source": "William Faulkner",
+      "length": 139,
+      "id": 48
+    },
+    {
+      "text": "Odwaga nie zawsze krzyczy. Czasami odwaga to cichy głos na koniec dnia, który mówi: \"Spróbuję jutro jeszcze raz.\"",
+      "source": "Mary Anne Radmacher",
+      "length": 113,
+      "id": 49
+    },
+    {
+      "text": "Życie jest ciągiem doświadczeń, z których każde czyni nas silniejszymi, mimo że czasem trudno nam to sobie uświadomić.",
+      "source": "Henry Ford",
+      "length": 118,
+      "id": 50
+    },
+    {
+      "text": "Rób to co uważasz w swoim sercu za właściwe. I tak będziesz krytykowany.",
+      "source": "Eleanor Roosevelt",
+      "length": 72,
+      "id": 51
+    },
+    {
+      "text": "W chwili w której niewolnik postanawia, że nie będzie dłużej niewolnikiem, jego kajdany opadają. Wolność i niewola to stany umysłu.",
+      "source": "Mahatma Gandhi",
+      "length": 131,
+      "id": 52
+    },
+    {
+      "text": "Miłość sama w sobie jest nie do pojęcia, ale dzięki miłości możemy pojąć wszystko.",
+      "source": "Ks. Józef Tischner",
+      "length": 82,
+      "id": 53
+    },
+    {
+      "text": "Wybitne umysły zawsze napotykają na gwałtowny sprzeciw ze strony tych przeciętnych.",
+      "source": "Albert Einstein",
+      "length": 83,
+      "id": 54
+    },
+    {
+      "text": "Zaraz na początku życia ktoś powinien nam powiedzieć, że umieramy. Może wtedy żylibyśmy pełnią życia, w każdej minucie każdego dnia.",
+      "source": "Michael Landon",
+      "length": 132,
+      "id": 55
+    },
+    {
+      "text": "Rodzice zastanawiają się dlaczego strumienie są gorzkie, gdy tymczasem oni sami zatruli źródło.",
+      "source": "John Locke",
+      "length": 95,
+      "id": 56
+    },
+    {
+      "text": "Życia nie należy brać zawsze tak śmiertelnie poważnie, inaczej nie jest godne tego, aby je przeżyć.",
+      "source": "Licia Troisi",
+      "length": 99,
+      "id": 57
+    },
+    {
+      "text": "W życiu każdego człowieka są dwa wielkie dni - pierwszy, w którym się rodzimy i drugi, w którym odkrywamy po co.",
+      "source": "William Barclay",
+      "length": 112,
+      "id": 58
+    },
+    {
+      "text": "Ludzie zapomną, co mówiłeś. Ludzie zapomną, co zrobiłeś. Ale ludzie nigdy nie zapomną, jak się przy tobie czuli.",
+      "source": "Maya Angelou",
+      "length": 112,
+      "id": 59
+    },
+    {
+      "text": "Istnieją dwa sposoby na łatwe prześliźnięcie się przez życie: wierzyć we wszystko lub wątpić we wszystko. Oba chronią nas przed samodzielnym myśleniem.",
+      "source": "Alfred Korzybski",
+      "length": 151,
+      "id": 60
+    },
+    {
+      "text": "Człowiek, który w wieku pięćdziesięciu lat widzi świat tak samo, jak widział go mając dwadzieścia lat, zmarnował trzydzieści lat życia.",
+      "source": "Muhammad Ali",
+      "length": 135,
+      "id": 61
+    },
+    {
+      "text": "Jeden dzień na raz - to wystarczy. Nie oglądaj się za siebie i nie martw się przeszłością, ponieważ jej już nie ma. I nie niepokój się o przyszłość, bo ta jeszcze nie nadeszła. Żyj teraźniejszością i rób to tak pięknie, by była warta wspominania.",
+      "source": "Ida Scott Taylor",
+      "length": 246,
+      "id": 62
+    },
+    {
+      "text": "Twoje życie staje się lepsze, tylko gdy Ty stajesz się lepszym. Od życia dostaje się to, czego się oczekuje, a nie to, czego się chce.",
+      "source": "Brian Tracy",
+      "length": 134,
+      "id": 63
+    },
+    {
+      "text": "Wszyscy umrzemy. Celem nie jest żyć wiecznie, celem jest stworzyć coś, co będzie żyło.",
+      "source": "Chuck Palahniuk",
+      "length": 86,
+      "id": 64
+    },
+    {
+      "text": "Przeciwności, z którymi musimy się zmierzyć, często sprawiają, że stajemy się silniejsi. To, co dziś wydaje się stratą, jutro może okazać się zyskiem.",
+      "source": "Nick Vujicic",
+      "length": 150,
+      "id": 65
+    },
+    {
+      "text": "Bądź wdzięczny za to, co masz, a będziesz miał tego więcej. Jeśli koncentrujesz się na tym, czego nie masz, nigdy nie będziesz miał wystarczająco dużo.",
+      "source": "Oprah Winfrey",
+      "length": 151,
+      "id": 66
+    },
+    {
+      "text": "Masz w sobie tyle uroku co zdechła dżdżownica.",
+      "source": "Suzanne Collins, Igrzyska Śmierci",
+      "length": 46,
+      "id": 67
+    },
+    {
+      "text": "Lepiej zaliczać się do niektórych, niż do wszystkich.",
+      "source": "Andrzej Sapkowski, Krew elfów",
+      "length": 53,
+      "id": 68
+    },
+    {
+      "text": "Czytanie książek to najpiękniejsza zabawa, jaką sobie ludzkość wymyśliła.",
+      "source": "Wisława Szymborska",
+      "length": 73,
+      "id": 69
+    },
+    {
+      "text": "W chwili, kiedy zastanawiasz się czy kogoś kochasz, przestałeś go już kochać na zawsze.",
+      "source": "Carlos Ruiz Zafón, Cień wiatru",
+      "length": 87,
+      "id": 70
+    },
+    {
+      "text": "Robiący spis ludności raz chciał mnie przepytać. Zjadłem jego wątrobę z fasolką i wybornym chianti.",
+      "source": "Hannibal Lecter",
+      "length": 99,
+      "id": 71
+    },
+    {
+      "text": "Nic nie rozumiesz! Mogłem mieć klasę. Mogłem być mistrzem. Mogłem być kimś więcej, niż jestem.",
+      "source": "Terry Malloy",
+      "length": 94,
+      "id": 72
+    },
+    {
+      "text": "Przepraszam, czy to radio mogłoby być trochę ciszej? Ciszej nie, ale głośniej tak.",
+      "source": "Co mi zrobisz, jak mnie złapiesz?",
+      "length": 82,
+      "id": 73
+    },
+    {
+      "text": "Sąd sądem, ale sprawiedliwość musi być po naszej stronie.",
+      "source": "Sami swoi",
+      "length": 57,
+      "id": 74
+    },
+    {
+      "text": "Ja rozumiem, że wam jest zimno, ale jak jest zima, to musi być zimno!",
+      "source": "Miś",
+      "length": 69,
+      "id": 75
+    },
+    {
+      "text": "Ja to, proszę pana, mam bardzo dobre połączenie. Wstaję rano za piętnaście trzecia. Latem to już widno...",
+      "source": "Co mi zrobisz jak mnie złapiesz?",
+      "length": 105,
+      "id": 76
+    },
+    {
+      "text": "Nie będziesz dzwoniła do swoich byłych fagasów z mojej komóry, bejbe, pakuj się.",
+      "source": "Chłopaki nie płaczą",
+      "length": 80,
+      "id": 78
+    },
+    {
+      "text": "Powiem ci tak. Trudno znaleźć dobrą opiekunkę do dziecka... Ale jeszcze trudniej znaleźć dobre dziecko.",
+      "source": "Chłopaki nie płaczą",
+      "length": 103,
+      "id": 79
+    },
+    {
+      "text": "Co ty sobie myślisz, cwaniaczku, że z piątego przykazania możesz sobie zrobić spółkę z ograniczoną odpowiedzialnością?!",
+      "source": "Kiler",
+      "length": 119,
+      "id": 80
+    },
+    {
+      "text": "Co za ponury absurd... Żeby o życiu decydować za młodu, kiedy jest się kretynem?",
+      "source": "Dzień świra",
+      "length": 80,
+      "id": 81
+    },
+    {
+      "text": "Jestem skrajnie wyczerpany, a przecież jest rano.",
+      "source": "Dzień świra",
+      "length": 49,
+      "id": 82
+    },
+    {
+      "text": "Żeby nie jeść samotnie, jem z telewizorem.",
+      "source": "Dzień świra",
+      "length": 42,
+      "id": 83
+    },
+    {
+      "text": "Nie ma takiej możliwości, żeby było coś niemożliwe.",
+      "source": "Kogel-mogel",
+      "length": 51,
+      "id": 84
+    },
+    {
+      "text": "To dziecko chciało mnie zabić! Jesteś taki sam jak twój ojciec!",
+      "source": "Kogel-mogel",
+      "length": 63,
+      "id": 86
+    },
+    {
+      "text": "Zdobycie tego biletu, Rose, było najlepszą rzeczą, jaka mi się przydarzyła. To przyniosło mnie do Ciebie.",
+      "source": "Titanic",
+      "length": 105,
+      "id": 87
+    },
+    {
+      "text": "Z wiekiem czas zaczyna nam odbierać różne rzeczy. To w życiu normalne. Ale dowiadujemy się o tym dopiero, gdy coś stracimy.",
+      "source": "Męska Gra, Al Pacino",
+      "length": 123,
+      "id": 88
+    },
+    {
+      "text": "I panowie, kto zwycięży tu w środku, zwycięży również na zewnątrz.",
+      "source": "Coach Carter",
+      "length": 66,
+      "id": 89
+    },
+    {
+      "text": "Dan Milmann: Wiem więcej niż pan sądzi. Sokrates: A myślisz więcej niż wiesz. Wiedza to nie to samo co mądrość.",
+      "source": "Sokrates i Dan Milmann, Siła Spokoju",
+      "length": 111,
+      "id": 90
+    },
+    {
+      "text": "Nie ma dwóch bardziej szkodliwych słów, niż \"dobra robota\".",
+      "source": "Terence Fletcher, Wishplash",
+      "length": 59,
+      "id": 91
+    },
+    {
+      "text": "Nieważne, jak mocno uderzasz, ale jak dużo jesteś w stanie znieść i nadal iść do przodu.",
+      "source": "Rocky Balboa",
+      "length": 88,
+      "id": 92
+    },
+    {
+      "text": "Magia w przekraczaniu granic polega na ryzykowaniu wszystkiego dla marzenia, w które nie wierzy nikt oprócz Ciebie.",
+      "source": "Za Wszelką Cenę, Eddie Scrap-Iron Dupris",
+      "length": 115,
+      "id": 93
+    },
+    {
+      "text": "Jeśli masz marzenie, musisz je chronić. Ludzie nie potrafią sami czegoś zrobić, więc mówią, że ty też nie możesz. Jeśli czegoś chcesz, to zdobądź to. Kropka.",
+      "source": "W Pogoni za szczęściem, Chris Gardner",
+      "length": 157,
+      "id": 94
+    },
+    {
+      "text": "Nie trafiłem ponad 9000 rzutów w moim życiu. Przegrałem ponad 300 meczów. 26 razy zaufano mi, gdy miałem oddać rzut na miarę zwycięstwa i spudłowałem. Przegrywałem w moim życiu ciągle. Dlatego właśnie osiągnąłem sukces.",
+      "source": "Michael Jordan",
+      "length": 219,
+      "id": 95
+    },
+    {
+      "text": "Nienawidziłem każdej minuty treningu, ale powtarzałem sobie: nie poddawaj się, przecierp teraz i żyj resztę życia jako mistrz.",
+      "source": "Muhammad Ali",
+      "length": 126,
+      "id": 96
+    },
+    {
+      "text": "Nic nie jest podawane na tacy - każdy zawsze trafia na jakieś przeszkody po drodze. Kiedy się pojawią, zastanów się jak je pokonać, a nie myśl o tym, że to już koniec drogi.",
+      "source": "Michael Jordan",
+      "length": 173,
+      "id": 97
+    },
+    {
+      "text": "Ludzie, którzy tracą czas czekając, aż zaistnieją najbardziej sprzyjające warunki, nigdy nic nie zdziałają. Najlepszy czas na działanie jest teraz!",
+      "source": "Mark Fisher",
+      "length": 147,
+      "id": 98
+    },
+    {
+      "text": "Kiedy sięgasz do gwiazd, być może nie dotkniesz żadnej z nich, ale na pewno nie skończysz z garściami pełnymi błota.",
+      "source": "Leo Burnett",
+      "length": 116,
+      "id": 99
+    },
+    {
+      "text": "Zbyt często ludzie pracują ciężko nad niewłaściwą rzeczą. Pracować nad właściwą rzeczą jest prawdopodobnie ważniejsze niż pracować ciężko.",
+      "source": "Caterina Fake",
+      "length": 138,
+      "id": 100
+    },
+    {
+      "text": "Jeśli myślisz, że wszystko jest winą kogoś innego, dużo się wycierpisz. Kiedy zdasz sobie sprawę, że wszystko wypływa tylko z ciebie samego, poznasz zarówno spokój, jak i radość.",
+      "source": "Dalajlama",
+      "length": 178,
+      "id": 101
+    },
+    {
+      "text": "Oceniaj swój sukces na podstawie tego, z czego musiałaś zrezygnować, by go osiągnąć.",
+      "source": "Dalajlama",
+      "length": 84,
+      "id": 102
+    },
+    {
+      "text": "Podaruj tym, których kochasz, skrzydła, by mogli latać; korzenie, aby wracali, oraz powody, aby zostali.",
+      "source": "Dalajlama",
+      "length": 104,
+      "id": 103
+    },
+    {
+      "text": "Jeśli problem jest możliwy do rozwiązania, jeśli sytuacja jest taka, że możesz coś z nią zrobić, nie musisz się martwić. Jeśli problem nie jest możliwy do rozwiązania, nie martw się. Nie ma żadnych korzyści z zamartwiania się.",
+      "source": "Dalajlama",
+      "length": 226,
+      "id": 104
+    },
+    {
+      "text": "Istnieją tylko dwa dni w roku, w których nic nie może być zrobione. Jeden nazywamy wczoraj, a drugi jutro. Dzisiaj jest właściwy dzień, aby kochać, wierzyć i żyć w pełni.",
+      "source": "Dalajlama",
+      "length": 170,
+      "id": 105
+    },
+    {
+      "text": "Najbardziej zaskakuje mnie człowiek. Bo poświęca swoje zdrowie, by zarabiać pieniądze, następnie zaś poświęca pieniądze, by odzyskać zdrowie. Oprócz tego jest tak zaniepokojony swoją przyszłością, że nie cieszy się z teraźniejszości. W rezultacie nie żyje ani w teraźniejszości, ani w przyszłości; żyje tak, jakby nigdy nie miał umrzeć, po czym umiera, tak naprawdę nie żyjąc.",
+      "source": "Dalajlama",
+      "length": 376,
+      "id": 106
+    },
+    {
+      "text": "Pamiętaj, że nie otrzymać tego, czego się chce, to czasem wspaniały łut szczęścia.",
+      "source": "Dalajlama",
+      "length": 82,
+      "id": 107
+    },
+    {
+      "text": "Kiedy mówisz, powtarzasz tylko to, czego się wcześniej dowiedziałeś. Kiedy słuchasz, możesz nauczyć się czegoś nowego.",
+      "source": "Dalajlama",
+      "length": 118,
+      "id": 108
+    },
+    {
+      "text": "Aby samemu stać się lepszym, nie musisz czekać na lepszy świat.",
+      "source": "Bosmans Phil",
+      "length": 63,
+      "id": 109
+    },
+    {
+      "text": "Humor i cierpliwość to dwa wielbłądy, na których przemierzyć można wszystkie pustynie.",
+      "source": "Bosmans Phil",
+      "length": 86,
+      "id": 110
+    },
+    {
+      "text": "Po każdym dniu trzeba postawić kropkę, odwrócić kartę i zaczynać na nowo.",
+      "source": "Bosmans Phil",
+      "length": 73,
+      "id": 111
+    },
+    {
+      "text": "Nigdy nie jest za późno, aby się pojednać, nigdy nie jest za późno na to, aby pokochać, nigdy także nie jest za późno, aby być szczęśliwym.",
+      "source": "Bosmans Phil",
+      "length": 139,
+      "id": 112
+    },
+    {
+      "text": "Jedynie woda jest w stanie odmienić pustynię. Woda to życie. Miłość jest tą wodą.",
+      "source": "Bosmans Phil",
+      "length": 81,
+      "id": 113
+    },
+    {
+      "text": "Najlepiej bawić się w towarzystwie swoich przyjaciół. Oni podniosą cię, gdy upadniesz, podstawią nogę, by wywołać twój uśmiech.",
+      "source": "Bosmans Phil",
+      "length": 127,
+      "id": 114
+    },
+    {
+      "text": "Czas to nie droga szybkiego ruchu pomiędzy kołyską a grobem; czas - to miejsce na zaparkowanie pod słońcem.",
+      "source": "Bosmans Phil",
+      "length": 107,
+      "id": 115
+    },
+    {
+      "text": "Kto potrafi cieszyć się z małych rzeczy, mieszka w ogrodzie pełnym szczęśliwości.",
+      "source": "Bosmans Phil",
+      "length": 81,
+      "id": 116
+    },
+    {
+      "text": "Miłość oznacza być zupełnie blisko siebie, jednak bez chęci zawładnięcia drugim.",
+      "source": "Bosmans Phil",
+      "length": 80,
+      "id": 117
+    },
+    {
+      "text": "Najpiękniejszy dar to przebaczenie. Tam, gdzie nie chce się przebaczyć, od razu powstaje mur. Od muru zaś zaczyna się więzienie.",
+      "source": "Bosmans Phil",
+      "length": 128,
+      "id": 118
+    },
+    {
+      "text": "Sztuka życia to cieszyć się małym szczęściem.",
+      "source": "Bosmans Phil",
+      "length": 45,
+      "id": 119
+    },
+    {
+      "text": "Szczęście nie jest kolorowym motylem, za którym musisz pobiec, jeśli chcesz go złapać. Szczęście jest jak cień: podąża za Tobą nawet wtedy, gdy o nim nie myślisz.",
+      "source": "Bosmans Phil",
+      "length": 162,
+      "id": 120
+    },
+    {
+      "text": "Dziel z innymi swój chleb, a lepiej będzie ci smakował.",
+      "source": "Bosmans Phil",
+      "length": 55,
+      "id": 121
+    },
+    {
+      "text": "Marzenia są po to, by je realizować.",
+      "source": "Bosmans Phil",
+      "length": 36,
+      "id": 123
+    },
+    {
+      "text": "Wspomnienia ogrzewają człowieka od środka. Ale jednocześnie siekają go gwałtownie na kawałki.",
+      "source": "Murakami Haruki",
+      "length": 93,
+      "id": 124
+    },
+    {
+      "text": "Nie ma na świecie nic równie okrutnego, jak poczucie opuszczenia wywołane tym, że nie ma się na co czekać.",
+      "source": "Murakami Haruki",
+      "length": 106,
+      "id": 125
+    },
+    {
+      "text": "Są wspomnienia, których nie da się zatrzeć. Zostają w człowieku jak nieruchome głazy.",
+      "source": "Murakami Haruki",
+      "length": 85,
+      "id": 126
+    },
+    {
+      "text": "Zamykanie oczu nic nie pomoże. Nic nie zniknie. A raczej, kiedy się je znowu otworzy, będzie jeszcze gorzej. Otwórz szeroko oczy. Tylko mięczaki je zamykają. Tchórze odwracają wzrok od rzeczywistości. Czas mija nawet kiedy ma się zamknięte oczy i zasłonięte uszy.",
+      "source": "Murakami Haruki",
+      "length": 263,
+      "id": 127
+    },
+    {
+      "text": "Są rzeczy, których nie da się zrobić, jeżeli nie pójdzie się na koniec świata.",
+      "source": "Murakami Haruki",
+      "length": 78,
+      "id": 128
+    },
+    {
+      "text": "Wszystko jest kwestią wyobraźni. Nasza odpowiedzialność zaczyna się od wyobraźni.",
+      "source": "Murakami Haruki",
+      "length": 81,
+      "id": 129
+    },
+    {
+      "text": "Każdy z nas ma coś wyjątkowego, co może zdobyć tylko w wyjątkowym okresie życia. Coś w rodzaju małego płomyka. Nieliczni uważni i uprzywilejowani pielęgnują ten płomień, dbają o niego, trzymają niczym pochodnię oświetlającą ich życie. Kiedy jednak ten płomień gaśnie to już na zawsze.",
+      "source": "Murakami Haruki",
+      "length": 284,
+      "id": 130
+    },
+    {
+      "text": "Prawie nikt na świecie nie pragnie wolności. Ludzie tylko myślą, że jej pragną. To wszystko iluzja. Gdyby naprawdę dano im wolność, większość nie wiedziałaby, co począć. Lepiej to zapamiętaj. Ludzie w rzeczywistości lubią niewolę.",
+      "source": "Murakami Haruki",
+      "length": 230,
+      "id": 131
+    },
+    {
+      "text": "Złudzenia mają to do siebie, że im więcej się nad nimi zastanawia, tym bardziej rosną i nabierają tym wyraźniejszego kształtu. I wkrótce przestają być złudzeniami.",
+      "source": "Murakami Haruki",
+      "length": 163,
+      "id": 132
+    },
+    {
+      "text": "Ubywa przyszłości. Przybywa przeszłości. Ubywa możliwości. Przybywa żalu.",
+      "source": "Murakami Haruki",
+      "length": 73,
+      "id": 133
+    },
+    {
+      "text": "Jak masz głupio myśleć, lepiej odpocznij.",
+      "source": "Murakami Haruki",
+      "length": 41,
+      "id": 134
+    },
+    {
+      "text": "Serce przypomina głęboką studnię. Nikt nie wie, co jest na dnie. Można tylko sobie wyobrażać na podstawie tego, co czasami wypływa na powierzchnię.",
+      "source": "Murakami Haruki",
+      "length": 147,
+      "id": 135
+    },
+    {
+      "text": "Często się zdarza, że dopiero przyszłość pokazuje nam, ile coś było warte.",
+      "source": "Murakami Haruki",
+      "length": 74,
+      "id": 136
+    },
+    {
+      "text": "Ciasnota umysłowa, brak wyobraźni i nietolerancja są jak pasożyty. Zmieniają właściciela, zmieniają kształt i żyją wiecznie.",
+      "source": "Murakami Haruki",
+      "length": 124,
+      "id": 137
+    },
+    {
+      "text": "Jeśli kiedykolwiek poczujesz lęk, wiedz, że jest to znak. Od tej chwili musisz natychmiast zacząć działać. Przede wszystkim nie poddawaj się temu uczuciu. Twój lęk jest w istocie pragnieniem czegoś lepszego; jest tęsknotą za uwolnieniem od strachu i tęsknotą za poczuciem bezpieczeństwa. A gdzie znajdziesz spokój wewnętrzny? Znajdziesz go w swoich myślach o spokoju, w równowadze psychicznej i miłości.",
+      "source": "Joseph Murphy",
+      "length": 403,
+      "id": 138
+    },
+    {
+      "text": "Krytyka i szkalowanie bogatszych jest najpewniejszym sposobem odstraszenia dobrobytu.",
+      "source": "Joseph Murphy",
+      "length": 85,
+      "id": 139
+    },
+    {
+      "text": "Podświadomość ma niezawodne sposoby na rozwiązanie każdego problemu.",
+      "source": "Joseph Murphy",
+      "length": 68,
+      "id": 140
+    },
+    {
+      "text": "Zaprzestań osądzania ludzi. Twój osąd jest wyrokiem czy werdyktem wydanym we własnym umyśle. Mówiąc najkrócej - to twoja myśl. A ponieważ myśl ma naturę stwórczą, więc to, co myślisz o innych lub do nich czujesz, stwarzasz we własnym umyśle, ciele i doświadczeniu.",
+      "source": "Joseph Murphy",
+      "length": 264,
+      "id": 141
+    },
+    {
+      "text": "Cudze słowa i czyny mogą urazić cię tylko wtedy, kiedy im na to pozwolisz w myślach i uczuciach.",
+      "source": "Joseph Murphy",
+      "length": 96,
+      "id": 142
+    },
+    {
+      "text": "Wiele osób mówi mi, że chcieliby znaleźć jakąś wioskę albo miasteczko blisko plaży, gdzie mogliby odpocząć i wyciszyć się. Prawdą jest jednak, że dokądkolwiek się udajesz, zawsze zabierasz ze sobą swój umysł. Nie jesteś w stanie uciec od siebie. Jeśli twój umysł jest wzburzony, jeśli przepełnia cię niepokój i wciąż czymś się zamartwiasz, plaża lub góry niewiele pomogą. Pokój to owoc wyboru, a nie zewnętrznych okoliczności.",
+      "source": "Joseph Murphy",
+      "length": 426,
+      "id": 143
+    },
+    {
+      "text": "Pamiętaj, że serce przepełnione wdzięcznością otwiera się na dobrodziejstwa wszechświata.",
+      "source": "Joseph Murphy",
+      "length": 89,
+      "id": 144
+    },
+    {
+      "text": "Twoja podświadomość pomnaża wszystko, co jej powierzysz.",
+      "source": "Joseph Murphy",
+      "length": 56,
+      "id": 145
+    },
+    {
+      "text": "W drodze do szczęścia nie napotkasz żadnych przeszkód, prócz tych, które sam wzniesiesz w myślach i w wyobraźni.",
+      "source": "Joseph Murphy",
+      "length": 112,
+      "id": 146
+    },
+    {
+      "text": "Rób tak, jakby to już było rzeczywistością, a stanie się nią.",
+      "source": "Joseph Murphy",
+      "length": 61,
+      "id": 147
+    },
+    {
+      "text": "Takie wartości, jak miłość, piękno, spokój, radość i szczęście, mądrość, serdeczność i zrozumienie nigdy się nie zestarzeją. Twój charakter, zalety umysłu, wiara i przekonania nie zużywają się.",
+      "source": "Joseph Murphy",
+      "length": 193,
+      "id": 148
+    },
+    {
+      "text": "Masz wolny wybór. Wybierz pomyślność i zdrowie. Od Ciebie zależy, czy będziesz życzliwy, czy nie. Bądź uczynny, pogodny, życzliwy, ujmujący, a świat stanie się taki dla Ciebie.",
+      "source": "Joseph Murphy",
+      "length": 176,
+      "id": 149
+    },
+    {
+      "text": "Niezwykła siła podświadomości urzeczywistni każde wyobrażenie, jakie będziesz kreślić z wiarą i uporem. Zaufaj temu, a staną się rzeczy niezwykłe.",
+      "source": "Joseph Murphy",
+      "length": 146,
+      "id": 150
+    },
+    {
+      "text": "I wierz mi, że chociaż wiele cudów ujrzysz podczas włóczęgi po świecie, takiej rzeki jak Wisła i takiego miasta jak Warszawa nigdzie nie znajdziesz.",
+      "source": "Alfred Szklarski, Tomek w krainie kangurów",
+      "length": 148,
+      "id": 151
+    },
+    {
+      "text": "Przede wszystkim jednak trzeba umieć pozyskiwać sobie serca ludzi. Wyrozumiałość i tolerancja są najlepszą ku temu drogą.",
+      "source": "Alfred Szklarski, Tomek na Czarnym Lądzie",
+      "length": 121,
+      "id": 152
+    },
+    {
+      "text": "Nie śmiej się bratku z cudzego upadku, bo potem i ciebie nikt nie pożałuje!",
+      "source": "Alfred Szklarski, Tajemnicza wyprawa Tomka",
+      "length": 75,
+      "id": 153
+    },
+    {
+      "text": "W dalekim i dzikim kraju znajdziesz to, czego inni będą szukali bezskutecznie. Kiedy to się stanie, zyskasz najlepszego przyjaciela, który nigdy nie powie ani słowa...",
+      "source": "Alfred Szklarski, Tomek w krainie kangurów",
+      "length": 167,
+      "id": 154
+    },
+    {
+      "text": "Nie zasługuje na litość ten, kto sam jej nie ma.",
+      "source": "Alfred Szklarski, Tomek w grobowcach faraonów",
+      "length": 48,
+      "id": 155
+    },
+    {
+      "text": "Musisz jednak zrozumieć, że posłuszeństwo nie oznacza ograniczenia samodzielności.",
+      "source": "Alfred Szklarski, Tomek w krainie kangurów",
+      "length": 82,
+      "id": 156
+    },
+    {
+      "text": "Umysł zaś potrzebuje książek, podobnie jak miecz potrzebuje kamienia do ostrzenia, jeśli oczywiście, ma zachować ostrość.",
+      "source": "George R.R. Martin, Gra o Tron",
+      "length": 121,
+      "id": 157
+    },
+    {
+      "text": "Zdrada… to tylko słowo. Kiedy dwaj książęta walczą ze sobą o krzesło, na którym tylko jeden z nich może usiąść, zarówno wielcy lordowie, jak i prości ludzie muszą wybierać. Po bitwie zaś zwycięzców okrzykuje się wiernymi i lojalnymi ludźmi. Natomiast ci, którzy przegrali, będą od tej pory znani jako buntownicy i zdrajcy.",
+      "source": "George R.R. Martin, Rycerz Siedmiu Królestw",
+      "length": 322,
+      "id": 158
+    },
+    {
+      "text": "Ten, kto tańczy ze smokami, musi się liczyć z tym, że spłonie.",
+      "source": "George R.R. Martin, Rycerz Siedmiu Królestw",
+      "length": 62,
+      "id": 159
+    },
+    {
+      "text": "Aerion to prawdziwy potwór. No wiesz, uważa się za smoka w ludzkiej postaci. Dlatego tak się wściekł na to przedstawienie. Szkoda, że nie urodził się Fossowayem. Wtedy myślałby, że jest jabłkiem, i wszystkim nam żyłoby się znacznie bezpieczniej.",
+      "source": "George R.R. Martin, Rycerz Siedmiu Królestw",
+      "length": 245,
+      "id": 160
+    },
+    {
+      "text": "Słowa to wiatr, Jajo. Pozwól, by przepływały obok ciebie.",
+      "source": "George R.R. Martin, Rycerz Siedmiu Królestw",
+      "length": 57,
+      "id": 161
+    },
+    {
+      "text": "Walczyłem za księcia Rhaegara, choć on nawet nie znał mojego imienia. Nie potrafię ci powiedzieć, dlaczego za niego. Lord, któremu służyłem, służył lordowi, który służył lordowi, który postanowił poprzeć smoka, nie jelenia. Gdyby zdecydował inaczej, mógłbym się znaleźć po drugiej stronie rzeki.",
+      "source": "George R.R. Martin, Uczta dla wron. Sieć spisków",
+      "length": 295,
+      "id": 162
+    },
+    {
+      "text": "Mężczyźni są takimi okropnymi durniami. Nawet tacy, którzy rodzą się raz na tysiąc lat.",
+      "source": "George R.R. Martin, Uczta dla wron. Sieć spisków",
+      "length": 87,
+      "id": 163
+    },
+    {
+      "text": "Nigdy nie zapominaj o tym, kim jesteś, bo świat na pewno o tym nie zapomni. Uczyń z tego swoją siłę, a wtedy przestanie to być twoim słabym punktem. Zrób z tego swoją zbroję, a nikt nie użyje tego przeciwko tobie.",
+      "source": "George R.R. Martin, Gra o Tron",
+      "length": 213,
+      "id": 164
+    },
+    {
+      "text": "Dziewczyny dostają herby, lecz nie dostają mieczy. Bękartom daje się miecze, ale nie herby. Tak już jest, mała siostrzyczko, lecz nie ja wymyśliłem te zasady.",
+      "source": "George R.R. Martin, Gra o Tron",
+      "length": 158,
+      "id": 165
+    },
+    {
+      "text": "Lewica uważa, że ważniejsza jest załoga, prawica - że statek.",
+      "source": "Marcin Giełzak, Wieczna Lewica",
+      "length": 61,
+      "id": 166
+    },
+    {
+      "text": "Jeśli chcecie wiedzieć, co jest ideologią dominującą, nie czytajcie filozofów ani politologów. Oglądajcie reklamy.",
+      "source": "Marcin Giełzak, Wieczna Lewica",
+      "length": 114,
+      "id": 167
+    },
+    {
+      "text": "Problemem nie jest żądza władzy garstki ludzi, ale gotowość do uległości szerokich mas.",
+      "source": "Marcin Giełzak, Wieczna Lewica",
+      "length": 87,
+      "id": 168
+    },
+    {
+      "text": "Inuita podarował w mroźną noc wygłodniałemu europejskiemu odkrywcy nieco mięsa upolowanej foki. Ten ostatni odruchowo podziękował. Inuita był oburzony. Powiedział: \"Zrobiłem to, bo jesteś człowiekiem\". Do takiej etyki musimy aspirować.",
+      "source": "Marcin Giełzak, Wieczna Lewica",
+      "length": 235,
+      "id": 169
+    },
+    {
+      "text": "W czasach kultu \"Ja\" jedynymi prawdziwymi indywidualistami są antyindywidualiści.",
+      "source": "Marcin Giełzak, Wieczna Lewica",
+      "length": 81,
+      "id": 170
+    },
+    {
+      "text": "Wiadomym jest mi, że masz lat blisko czterdzieści, wyglądasz na blisko trzydzieści, wyobrażasz sobie, że masz nieco ponad dwadzieścia, a postępujesz tak, jakbyś miał niecałe dziesięć.",
+      "source": "Andrzej Sapkowski, Krew elfów",
+      "length": 183,
+      "id": 171
+    },
+    {
+      "text": "Zło to zło, Stregoborze. Mniejsze, większe, średnie, wszystko jedno, proporcje są umowne a granice zatarte. Nie jestem świątobliwym pustelnikiem, nie samo dobro czyniłem w życiu. Ale jeżeli mam wybierać pomiędzy jednym złem a drugim, to wolę nie wybierać wcale.",
+      "source": "Andrzej Sapkowski, Ostatnie życzenie",
+      "length": 261,
+      "id": 172
+    },
+    {
+      "text": "Smoku chędożony! Słuchaj, co ci rzeknie herold! Znaczy się ja! Jako pierwszy honorowo weźmie się za ciebie obłędny rycerz Eyck z Denesle! I wrazi ci kopię w kałdun, wedle świętego zwyczaju, na pohybel tobie, a na radość biednym dziewicom i królowi Niedamirowi! Walka ma być honorowa i wedle prawa, ziać ogniem nie lza, a jeno konfesjonalnie łupić jeden drugiego, dopokąd ten drugi ducha nie wyzionie albo nie zemrze! Czego ci życzymy z duszy, serca! Pojąłeś smoku?",
+      "source": "Andrzej Sapkowski, Miecz przeznaczenia",
+      "length": 464,
+      "id": 173
+    },
+    {
+      "text": "Zaprawdę, powiadam wam, oto nadchodzi wiek miecza i topora, wiek wilczej zamieci. Nadchodzi Czas Białego Zimna i Białego Światła, Czas Szaleństwa i Czas Pogardy... Czas Końca.",
+      "source": "Andrzej Sapkowski, Krew elfów",
+      "length": 175,
+      "id": 174
+    },
+    {
+      "text": "Kompania mi się trafiła... Towarzysze broni! Drużyna bohaterów! Nic, tylko ręce załamać. Wierszokleta z lutnią. Dzikie i pyskate pół driady, pół baby. Wampir, któremu idzie na pięćdziesiąty krzyżyk. I cholerny Nilfgaardczyk, który upiera się, że nie jest Nilfgaardczykiem.",
+      "source": "Andrzej Sapkowski, Chrzest ognia",
+      "length": 272,
+      "id": 175
+    },
+    {
+      "text": "Mości wiedźminie, z końmi jak z rybami. Jać tu dzianety niby szczupaki dorodne oferuję, a ty sobie płotkę wybierasz. Z czego się śmiejesz? Czy ja powiedziałem coś śmiesznego?",
+      "source": "Andrzej Sapkowski, Rozdroże kruków",
+      "length": 174,
+      "id": 176
+    },
+    {
+      "text": "Myśmy są porządni złodzieje, nie jacyś polityczni. Myśmy się na władzę nie zamachiwali. Myśmy ino kradli.",
+      "source": "Andrzej Sapkowski, Ostatnie życzenie",
+      "length": 105,
+      "id": 177
+    },
+    {
+      "text": "Przygody! To znaczy: nieprzyjemności, zburzony spokój, brak wygód. Przez takie rzeczy można się spóźnić na obiad.",
+      "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
+      "length": 113,
+      "id": 178
+    },
+    {
+      "text": "Nie można tego zobaczyć ani dotknąć palcami, nie można wyczuć węchem ani usłyszeć uszami. Jest pod górami, jest nad gwiazdami, pustej jaskini nie omija, po nas zostanie, było przed nami, życie gasi, a śmiech zabija.",
+      "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
+      "length": 215,
+      "id": 179
+    },
+    {
+      "text": "Tłuczmy szklanki, spodki, miski, niech gospodarz żyje nasz! A choć Bilbo płaczu bliski, niechaj drzazgi lecą z flasz!",
+      "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
+      "length": 117,
+      "id": 180
+    },
+    {
+      "text": "Trzy pierścienie dla królów elfów pod otwartym niebem, siedem dla władców krasnali w ich kamiennych pałacach, dziewięć dla śmiertelników, ludzi śmierci podległych, jeden dla Władcy Ciemności na czarnym tronie.",
+      "source": "J.R.R. Tolkien, Władca Pierścieni",
+      "length": 209,
+      "id": 181
+    },
+    {
+      "text": "Wielu spośród żyjących zasługuje na śmierć. A niejeden z tych, którzy umierają zasługuje na życie. Czy możesz ich nim obdarzyć? Nie bądź więc tak pochopny w ferowaniu wyroków śmierci, nawet bowiem najmądrzejszy nie wszystko wie.",
+      "source": "J.R.R. Tolkien, Władca Pierścieni",
+      "length": 228,
+      "id": 182
+    },
+    {
+      "text": "Co chcesz przez to powiedzieć? Czy życzysz mi dobrego dnia, czy oznajmiasz, że dzień jest dobry, niezależnie od tego, co ja o nim myślę; czy sam dobrze się tego ranka czujesz, czy może uważasz, że dzisiaj należy być dobrym? - Wszystko naraz. A na dodatek, że w taki piękny dzień dobrze jest wypalić fajkę na świeżym powietrzu.",
+      "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
+      "length": 326,
+      "id": 183
+    },
+    {
+      "text": "Czarodziej nigdy się nie spóźnia, nie jest też zbyt wcześnie, przybywa wtedy kiedy ma na to ochotę.",
+      "source": "J.R.R. Tolkien, Władca Pierścieni",
+      "length": 99,
+      "id": 184
+    },
+    {
+      "text": "Nie żałuj, nigdy nie żałuj, że mogłeś coś zrobić w życiu, a tego nie zrobiłeś. Nie zrobiłeś, bo nie mogłeś.",
+      "source": "Stanisław Lem, Szpital Przemienienia",
+      "length": 107,
+      "id": 185
+    },
+    {
+      "text": "Wcale nie chcemy zdobywać kosmosu, chcemy tylko rozszerzyć Ziemię do jego granic. Jedne planety mają być pustynne jak Sahara, inne lodowate jak biegun albo tropikalne jak dżungla brazylijska. Jesteśmy humanitarni i szlachetni, nie chcemy podbijać innych ras, chcemy tylko przekazać im nasze wartości i w zamian przejąć ich dziedzictwo. Mamy się za rycerzy świętego Kontaktu. To drugi fałsz. Nie szukamy nikogo oprócz ludzi. Nie potrzeba nam innych światów. Potrzeba nam luster. Nie wiemy, co począć z innymi światami. Wystarczy ten jeden, a już się nim dławimy.",
+      "source": "Stanisław Lem, Solaris",
+      "length": 561,
+      "id": 186
+    },
+    {
+      "text": "Można przypuścić, że wszyscy ludzie mają świadomość, lecz na ogół nie wszyscy zdają sobie z tego sprawę.",
+      "source": "Stanisław Lem, Okamgnienie",
+      "length": 104,
+      "id": 187
+    },
+    {
+      "text": "Marzenia zawsze zwyciężają rzeczywistość, gdy im na to pozwolić.",
+      "source": "Stanisław Lem, Kongres futurologiczny",
+      "length": 64,
+      "id": 188
+    },
+    {
+      "text": "Był człowiekiem niewątpliwie wykształconym, ale inteligencję miał jak ogródek japoński - niby mostek, dróżki, wszystko piękne, ale bardzo ograniczone i do niczego.",
+      "source": "Stanisław Lem, Szpital Przemienienia",
+      "length": 163,
+      "id": 189
+    },
+    {
+      "text": "Społeczeństwo, a przynajmniej społeczeństwo cywilizowane, nie jest skłonne wierzyć w nic złego o ludziach bogatych i zachwycających. Ludzie instynktownie czują, że formy są ważniejsze od moralności, i w ich mniemaniu najwyższa uczciwość jest mniej warta niż posiadanie dobrego kucharza.",
+      "source": "Oscar Wilde, Portret Doriana Graya",
+      "length": 286,
+      "id": 190
+    },
+    {
+      "text": "Sierp może wyobrażać sobie, że to on ścina zboże, a młotek, że wbija gwóźdź. Lecz jeden i drugi jest tylko narzędziem.",
+      "source": "Robert M. Wegner, Północ - Południe",
+      "length": 118,
+      "id": 191
+    },
+    {
+      "text": "Hańbą jest poddawać się złu, pochylać przed nim głowę, padać na kolana, zasłaniając się niechęcią do przemocy. Bo zło, któremu się nie przeciwstawisz, urośnie, spotężnieje i pójdzie w świat krzywdzić innych. A ich krzywda będzie twoją winą.",
+      "source": "Robert M. Wegner, Pamięć wszystkich słów. Opowieści z meekhańskiego pogranicza",
+      "length": 240,
+      "id": 192
+    },
+    {
+      "text": "Nadzieja wcale nie umiera ostatnia, po niej do głosu dochodzą szaleństwo i desperacja.",
+      "source": "Robert M. Wegner, Pamięć wszystkich słów. Opowieści z meekhańskiego pogranicza",
+      "length": 86,
+      "id": 193
+    },
+    {
+      "text": "Szczur mówił to gładkim, pełnym szczerości tonem, którym ludzie zawsze okłamują innych.",
+      "source": "Robert M. Wegner, Wschód - Zachód",
+      "length": 87,
+      "id": 194
+    },
+    {
+      "text": "Bo widzisz, Harry, to nasze wybory ukazują, kim naprawdę jesteśmy, o wiele bardziej, niż nasze zdolności.",
+      "source": "J.K. Rowling, Harry Potter i Komnata Tajemnic",
+      "length": 105,
+      "id": 195
+    },
+    {
+      "text": "Trzeba być bardzo dzielnym, by stawić czoło wrogom, ale tyle samo męstwa wymaga wierność przyjaciołom.",
+      "source": "J.K. Rowling, Harry Potter i Komnata Tajemnic",
+      "length": 102,
+      "id": 196
+    },
+    {
+      "text": "Oto nadchodzi ten, który ma moc pokonania Czarnego Pana... Zrodzony z tych, którzy trzykrotnie mu się oparli. A narodzi się, gdy siódmy miesiąc dobiegnie końca... A choć Czarny Pan naznaczy go jako równego sobie, będzie on miał moc, jakiej Czarny Pan nie zna... I jeden z nich musi zginąć z ręki drugiego, bo żaden nie może żyć, gdy drugi przeżyje... Ten, który ma moc pokonania Czarnego Pana narodzi się, gdy siódmy miesiąc dobiegnie końca...",
+      "source": "Harry Potter i Zakon Feniksa",
+      "length": 443,
+      "id": 197
+    },
+    {
+      "text": "Będziemy na tyle silni, na ile będziemy zjednoczeni i na tyle słabi, na ile będziemy podzieleni. Lord Voldemort posiada wielki talent siania niezgody i wrogości. Możemy mu przeciwstawić tylko równie silne więzi przyjaźni i zaufania.",
+      "source": "J.K. Rowling, Harry Potter i Czara Ognia",
+      "length": 232,
+      "id": 198
+    },
+    {
+      "text": "Głęboko w ludzkiej podświadomości tkwi przemożna potrzeba logicznego, mającego sens wszechświata. Ale rzeczywisty wszechświat jest zawsze o krok poza logiką.",
+      "source": "Frank Herbert, Diuna",
+      "length": 157,
+      "id": 199
+    },
+    {
+      "text": "Kiedy religia i polityka jadą na tym samym wozie, ci, co powożą, wierzą, że nic nie może im stanąć na drodze. Zaczynają pędzić na łeb na szyję... i nie pamiętają, że pędzącemu na oślep człowiekowi ukazuje się przepaść, kiedy już jest za późno.",
+      "source": "Frank Herbert, Diuna",
+      "length": 243,
+      "id": 200
+    },
+    {
+      "text": "Grzegorz Brzęczyszczykiewicz. Chrząszczyrzewoszczyce, powiat Łękołody.",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 70,
+      "id": 201
+    },
+    {
+      "text": "Melduję posłusznie, panie pułkowniku, ja tę wojnę zupełnie niechcący wywołałem.",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 79,
+      "id": 202
+    },
+    {
+      "text": "Każdy szczęściu dopomoże, każdy dzisiaj wygrać może. Czarna przegrywa, czerwona wygrywa. Raz, dwa, trzy...",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 106,
+      "id": 203
+    },
+    {
+      "text": "Umarł w drodze, na pewno od ran. - To nie od ran, panie pułkowniku! Śliwowica!",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 78,
+      "id": 204
+    },
+    {
+      "text": "Ty, chodź no tu. Gdzie ty tam idziesz? Chodź tu do pana. Jaki dobry! Jaką ma ładną panią! Tylko jakaś taka poważna… A czemu ona taka poważna, co? Grubciu… No masz. Co, dobre paproszki? Jedz, jedz. Jak nie będziesz jadł, to pani cię zamknie w takiej dziurze jak nas tutaj.",
+      "source": "Seksmisja",
+      "length": 271,
+      "id": 205
+    },
+    {
+      "text": "Ciemność, widzę ciemność, ciemność widzę.",
+      "source": "Seksmisja",
+      "length": 41,
+      "id": 206
+    },
+    {
+      "text": "Uratowani! Uratowani jesteśmy! Bocian! Patrz! Bocian! Jak on żyje, to znaczy, że my też możemy. Bocian, bociuś!",
+      "source": "Seksmisja",
+      "length": 111,
+      "id": 207
+    },
+    {
+      "text": "Liga broni, liga radzi, liga nigdy was nie zdradzi!",
+      "source": "Seksmisja",
+      "length": 51,
+      "id": 208
+    },
+    {
+      "text": "Za parę dni, proszę pana, to się dopiero zacznie: wywiady, autografy, wizyty w zakładach pracy.",
+      "source": "Seksmisja",
+      "length": 95,
+      "id": 209
+    },
+    {
+      "text": "Ja, książę Jeremi Wiśniowiecki, wojewoda ruski, pan na Łubniach i Wiśniowcu, przysięgam tobie, Boże żywy, w Trójcy Świętej jedyny, jako wznosząc tę szablę przeciw hultajstwu dopóty jej nie złożę, dopóki Ukrainy nie uspokoję, i buntów chłopskich we krwi nie utopię! Tak mi dopomóż Bóg!",
+      "source": "Ogniem i mieczem (1999)",
+      "length": 284,
+      "id": 210
+    },
+    {
+      "text": "Może chcesz waść zaczekać, aż siąpić przestanie. Żal umierać w taki deszcz. - Pułkownika będą chować, to i niebo płacze.",
+      "source": "Potop (1974)",
+      "length": 120,
+      "id": 211
+    },
+    {
+      "text": "Waść machasz jak cepem! - Kończ waść, wstydu oszczędź.",
+      "source": "Potop (1974)",
+      "length": 54,
+      "id": 212
+    },
+    {
+      "text": "Litwo! Ojczyzno moja! ty jesteś jak zdrowie. Ile cię trzeba cenić, ten tylko się dowie, kto cię stracił. Dziś piękność twą w całej ozdobie widzę i opisuję, bo tęsknię po tobie.",
+      "source": "Pan Tadeusz (1999)",
+      "length": 176,
+      "id": 213
+    },
+    {
+      "text": "Mówiłem panu zawsze - procesów zaniechać. Mówiłem panu zawsze - najechać, zajechać!",
+      "source": "Pan Tadeusz (1999)",
+      "length": 83,
+      "id": 214
+    },
+    {
+      "text": "Ja nie mam nic, ty nie masz nic, on nie ma nic... To razem właśnie mamy tyle, żeby założyć wielką fabrykę.",
+      "source": "Ziemia obiecana (1975)",
+      "length": 106,
+      "id": 215
+    },
+    {
+      "text": "Porozumienie osiąga się, gdy jedna ze stron udaje, że wierzy w dyrdymały opowiadane przez drugą.",
+      "source": "Andrzej Sapkowski, Lux perpetua",
+      "length": 96,
+      "id": 216
+    },
+    {
+      "text": "Tylko sześciu ludzi w Galaktyce wiedziało, że zadanie prezydenta polegało nie na sprawowaniu władzy, ale na odwracaniu od niej uwagi.",
+      "source": "Douglas Adams, Autostopem przez galaktykę",
+      "length": 133,
+      "id": 217
+    },
+    {
+      "text": "Stałem się śmiercią, niszczycielem światów.",
+      "source": "Robert Oppenheimer",
+      "length": 43,
+      "id": 218
+    },
+    {
+      "text": "Jeśli coś jest niemożliwe do wykonania, dajcie to zrobić Polakom.",
+      "source": "Napoleon Bonaparte",
+      "length": 65,
+      "id": 219
+    },
+    {
+      "text": "Nie ważne, jak długo żyjesz, ale jak mądrze. Nigdy nie jest za późno na naukę i rozwijanie się. Mądrość jest bezcenna, niezależnie od wieku.",
+      "source": "Janusz Korczak",
+      "length": 140,
+      "id": 220
+    },
+    {
+      "text": "Nie marnuj czasu, bo to materiał, z którego jest zrobione życie.",
+      "source": "Benjamin Franklin",
+      "length": 64,
+      "id": 221
+    },
+    {
+      "text": "Cudze chwalicie, swego nie znacie, sami nie wiecie co posiadacie.",
+      "source": "Polskie przysłowie",
+      "length": 65,
+      "id": 222
+    },
+    {
+      "text": "Nie kłóć się z głupcem, bo sprowadzi cię do swojego poziomu i pokona doświadczeniem.",
+      "source": "Polskie przysłowie",
+      "length": 84,
+      "id": 223
+    },
+    {
+      "text": "Lepiej jest milczeć i być uważanym za głupca, niż otworzyć usta i rozwiać wszelkie wątpliwości.",
+      "source": "Abraham Lincoln",
+      "length": 95,
+      "id": 224
+    },
+    {
+      "text": "Nie szata zdobi człowieka, szata jest dla człowieka, a nie człowiek dla szaty.",
+      "source": "Polskie przysłowie",
+      "length": 78,
+      "id": 225
+    },
+    {
+      "text": "Kto pod kim dołki kopie, ten sam w nie wpada. Czyli nie czyń drugiemu co tobie niemiłe.",
+      "source": "Polskie przysłowie",
+      "length": 87,
+      "id": 226
+    },
+    {
+      "text": "Nie sądź o człowieku po ubiorze, ale po tym, jakich ma przyjaciół. Człowiek jest bowiem tym, do kogo się przyłącza.",
+      "source": "Staropolskie Przysłowie",
+      "length": 115,
+      "id": 227
+    },
+    {
+      "text": "Co się odwlecze, to nie uciecze. Nie odwlekaj na jutro tego, co możesz zrobić dzisiaj.",
+      "source": "Polskie przysłowie",
+      "length": 86,
+      "id": 228
+    },
+    {
+      "text": "Najpierw człowiek uczy się chodzić, a potem biegać, później mówić, a następnie milczeć. Niezmiernie ważne jest, aby pewne rzeczy robić w odpowiedniej kolejności.",
+      "source": "Stefan Żeromski",
+      "length": 161,
+      "id": 229
+    },
+    {
+      "text": "Nie chwal dnia przed zachodem słońca, nie jesteś pewien, co może przynieść koniec dnia.",
+      "source": "Polskie przysłowie",
+      "length": 87,
+      "id": 230
+    },
+    {
+      "text": "Ja nigdy nie będę służył żadnemu królowi ani cesarzowi, tylko mojej ojczyźnie.",
+      "source": "Tadeusz Kościuszko",
+      "length": 78,
+      "id": 231
+    },
+    {
+      "text": "Niczego w życiu nie należy się bać, należy to tylko zrozumieć.",
+      "source": "Maria Skłodowska-Curie",
+      "length": 62,
+      "id": 232
+    },
+    {
+      "text": "Dopóki nie skorzystałem z Internetu, nie wiedziałem, że na świecie jest tylu idiotów.",
+      "source": "Stanisław Lem",
+      "length": 85,
+      "id": 233
+    },
+    {
+      "text": "Matematyka to jedyna dziedzina, w której nie da się niczego ukryć.",
+      "source": "Hugo Steinhaus",
+      "length": 66,
+      "id": 234
+    },
+    {
+      "text": "Nie wystarczy mówić do rzeczy, trzeba jeszcze mówić do ludzi.",
+      "source": "Tadeusz Kotarbiński",
+      "length": 61,
+      "id": 235
+    },
+    {
+      "text": "Matematyka jest najpiękniejszym językiem świata.",
+      "source": "Stefan Banach",
+      "length": 48,
+      "id": 236
+    },
+    {
+      "text": "Nauka powinna służyć ludzkości, nie jej zagładzie.",
+      "source": "Józef Rotblat",
+      "length": 50,
+      "id": 237
+    },
+    {
+      "text": "Jeżeli na ciało nie działa żadna siła lub siły działające się równoważą, to ciało pozostaje w spoczynku lub porusza się ruchem jednostajnym prostoliniowym.",
+      "source": "I zasada dynamiki Newtona (Fizyka)",
+      "length": 155,
+      "id": 238
+    },
+    {
+      "text": "Jeżeli na ciało działa stała siła, to porusza się ono ruchem jednostajnie przyspieszonym, a przyspieszenie jest wprost proporcjonalne do siły działającej na to ciało, a odwrotnie proporcjonalne do masy ciała.",
+      "source": "II zasada dynamiki Newtona (Fizyka)",
+      "length": 208,
+      "id": 239
+    },
+    {
+      "text": "Każde dwa ciała przyciągają się wzajemnie siłą, której wartość jest proporcjonalna do iloczynu ich mas i odwrotnie proporcjonalna do kwadratu odległości między nimi.",
+      "source": "Prawo powszechnego ciążenia (Fizyka)",
+      "length": 165,
+      "id": 240
+    },
+    {
+      "text": "Jeśli ciało A działa na ciało B siłą, to ciało B działa na ciało A siłą o tej samej wartości, lecz przeciwnie skierowaną.",
+      "source": "III zasada dynamiki Newtona (Fizyka)",
+      "length": 121,
+      "id": 241
+    },
+    {
+      "text": "Natężenie prądu w przewodniku jest proporcjonalne do napięcia i odwrotnie proporcjonalne do oporu.",
+      "source": "Prawo Ohma (Fizyka)",
+      "length": 98,
+      "id": 242
+    },
+    {
+      "text": "Energia nie może być stworzona ani zniszczona - może jedynie zmieniać formę.",
+      "source": "Zasada zachowania energii (Fizyka)",
+      "length": 76,
+      "id": 243
+    },
+    {
+      "text": "Na ciało zanurzone w cieczy działa siła wyporu równa ciężarowi wypartej cieczy.",
+      "source": "Prawo Archimedesa (Fizyka)",
+      "length": 79,
+      "id": 244
+    },
+    {
+      "text": "Siła elektrostatyczna między dwoma ładunkami jest proporcjonalna do iloczynu wartości tych ładunków i odwrotnie proporcjonalna do kwadratu odległości między nimi.",
+      "source": "Prawo Coulomba (Fizyka)",
+      "length": 162,
+      "id": 245
+    }
+  ]
+}

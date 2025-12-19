@@ -1,0 +1,333 @@
+@media only screen and (max-width: calc(640px + 5rem)) {
+  #mediaQueryDebug {
+    background: #7e57c2;
+    &::before {
+      content: "purple";
+    }
+  }
+  .content-grid {
+    --content-max-width: 100%;
+    --padding-inline: 1rem;
+  }
+  .ad.ad-h {
+    display: none;
+  }
+  .ad.ad-h-s {
+    display: grid;
+  }
+
+  .pageLeaderboards {
+    .content .bigtitle .text:after {
+      left: 0.1rem;
+      transform: none;
+    }
+    .content .tableAndUser {
+      font-size: clamp(0.7rem, 2.8vw, 0.9rem);
+      .bigUser {
+        gap: 1.5em;
+      }
+      table {
+        td {
+          padding: 0.5em;
+        }
+        .avatarNameBadge .flagsAndBadge .badge .text {
+          display: none;
+        }
+        tbody td:nth-child(2) {
+          width: 100%;
+        }
+      }
+      .bigUser {
+        padding: 0.5em;
+        padding-left: 1em;
+      }
+    }
+  }
+  header {
+    nav {
+      font-size: 0.9rem;
+      line-height: 0.9rem;
+      gap: 0.25rem;
+      .view-account {
+        .text {
+          display: none;
+        }
+      }
+    }
+    #logo {
+      grid-template-columns: 1fr;
+      .text {
+        display: none;
+      }
+    }
+  }
+  .pageLogin {
+    flex-direction: column;
+    gap: 4rem;
+    .side {
+      width: 100%;
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+  }
+  .pageTest {
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 12vw;
+    }
+    #testConfig {
+      display: none;
+    }
+    #mobileTestConfigButton {
+      display: block;
+    }
+    #result .wrapper {
+      .stats {
+        grid-template-columns: 1fr;
+        grid-template-areas: "wpm" "acc";
+        width: max-content;
+        justify-items: start;
+        justify-self: center;
+      }
+      .morestats {
+        justify-self: unset;
+        width: unset;
+
+        .group .bottom::after {
+          transform: none;
+          left: 0;
+        }
+      }
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: unset;
+        #nextTestButton {
+          grid-column: span 2;
+        }
+      }
+    }
+  }
+  .pageAbout {
+    .section {
+      .contactButtons {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+  .pageAccount {
+    .accountVerificatinNotice {
+      button {
+        grid-column: -1 / 1;
+      }
+    }
+    .group.resultBatches {
+      gap: 1rem;
+      grid-template-areas: "bar" "button" "text";
+      grid-template-columns: 1fr;
+    }
+    .group.topFilters {
+      .buttons {
+        grid-template-columns: 1fr;
+        button[filter="all"] {
+          grid-column: span 1;
+        }
+      }
+    }
+    .group.chart .below {
+      .buttons {
+        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+      }
+    }
+    .triplegroup.stats {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+    .group.aboveHistory {
+      grid-template-columns: 1fr;
+      .exportCSV {
+        grid-column: span 1;
+      }
+    }
+    .group.history table thead td:nth-child(8),
+    .group.history table tbody td:nth-child(8),
+    .group.history table thead td:nth-child(9),
+    .group.history table tbody td:nth-child(9) {
+      display: none;
+    }
+  }
+  .profile .pbsWords,
+  .profile .pbsTime {
+    font-size: 0.9rem;
+  }
+  .profile {
+    .pbsWords,
+    .pbsTime {
+      grid-template-columns: 1fr 1fr;
+    }
+    .details.none .typingStats,
+    .details.soc .typingStats,
+    .details.bioAndKey .typingStats,
+    .details.both .typingStats {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+    .details.bioAndKey {
+      grid-template-areas:
+        "avAndName"
+        "bioAndKey"
+        "typingStats";
+      grid-template-columns: 1fr;
+    }
+    .details.both {
+      grid-template-areas:
+        "avAndName"
+        "bioAndKey"
+        "typingStats"
+        "socials";
+      grid-template-columns: 1fr;
+    }
+    .leaderboardsPositions {
+      grid-template-areas: "title" "t15" "t60";
+    }
+  }
+  #keymap .row {
+    height: 1.25rem;
+  }
+  #keymap .keymapKey,
+  #keymap.split_matrix .keymapSplitSpacer {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.3rem;
+    font-size: 0.6rem;
+  }
+  footer {
+    .leftright {
+      grid-template-columns: 1fr 1fr;
+      .left {
+        width: unset;
+        grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+      }
+    }
+  }
+  #alertsPopup .modal {
+    max-width: calc(100% - 4rem);
+  }
+  .popupWrapper .modal,
+  .modalWrapper .modal {
+    padding: 1rem;
+  }
+  #customTextModal {
+    .modal {
+      .buttonsTop {
+        grid-template-columns: 1fr;
+      }
+      .inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+  #wordFilterModal {
+    .modal {
+      gap: 1rem;
+      .divider {
+        height: 0.25rem;
+        width: 100%;
+        position: relative;
+        display: grid;
+        &::before {
+          content: "or";
+          font-size: 0.75rem;
+          position: absolute;
+          top: -0.5em;
+          justify-self: center;
+          background: var(--bg-color);
+          color: var(--sub-color);
+          padding: 0 1rem;
+        }
+      }
+      grid-template-areas:
+        "top top"
+        "left left"
+        "divider divider"
+        "right right"
+        "bottom bottom";
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  #contactModal {
+    .modal {
+      .buttons {
+        grid-template-columns: 1fr;
+        .button {
+          padding: 0.5rem 1rem;
+          .icon,
+          .text {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+  #supportModal {
+    .modal {
+      .buttons {
+        grid-template-columns: 1fr;
+        button,
+        a.button {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          justify-content: start;
+          align-items: center;
+          gap: 1.5rem;
+          padding: 0;
+          .icon {
+            font-size: 1.5rem;
+            margin-left: 1.5rem;
+          }
+          .text {
+            text-align: left;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+  .testActivity {
+    .wrapper {
+      width: 100%;
+      .top {
+        grid-template-columns: 12rem 1fr 8rem;
+      }
+    }
+    // .activity {
+    //   gap: 0.1em;
+    // }
+    .activity div,
+    .legend div {
+      width: 100%;
+      height: unset;
+      aspect-ratio: 1;
+    }
+  }
+  .popupWrapper .modal .inputs.withLabel,
+  .modalWrapper .modal .inputs.withLabel {
+    grid-template-columns: 1fr;
+  }
+
+  .pageFriends {
+    .content .friends table {
+      td:nth-child(5),
+      td:nth-child(6) {
+        display: none;
+      }
+    }
+  }
+
+  .pageAccountSettings [data-tab="blockedUsers"] {
+    table {
+      font-size: 0.75rem;
+    }
+  }
+}

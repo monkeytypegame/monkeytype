@@ -1,0 +1,117 @@
+:root {
+  --bg-color: #111;
+  --main-color: #eee;
+  --caret-color: #eee;
+  --sub-color: #444;
+  --sub-alt-color: #1a1a1a;
+  --text-color: #eee;
+  --error-color: #eee;
+  --error-extra-color: #b3b3b3;
+  --colorful-error-color: #eee;
+  --colorful-error-extra-color: #b3b3b3;
+}
+
+@keyframes rgb {
+  0% {
+    color: hsl(120, 39%, 49%);
+  }
+  20% {
+    color: hsl(192, 48%, 48%);
+  }
+  40% {
+    color: hsl(264, 90%, 58%);
+  }
+  60% {
+    color: hsl(357, 89%, 50%);
+  }
+  80% {
+    color: hsl(46, 100%, 51%);
+  }
+  100% {
+    color: hsl(120, 39%, 49%);
+  }
+}
+
+@keyframes rgb-bg {
+  0% {
+    background: hsl(120, 39%, 49%);
+  }
+  20% {
+    background: hsl(192, 48%, 48%);
+  }
+  40% {
+    background: hsl(264, 90%, 58%);
+  }
+  60% {
+    background: hsl(357, 89%, 50%);
+  }
+  80% {
+    background: hsl(46, 100%, 51%);
+  }
+  100% {
+    background: hsl(120, 39%, 49%);
+  }
+}
+
+@keyframes rgb-fill {
+  0% {
+    fill: hsl(120, 39%, 49%);
+  }
+  20% {
+    fill: hsl(192, 48%, 48%);
+  }
+  40% {
+    fill: hsl(264, 90%, 58%);
+  }
+  60% {
+    fill: hsl(357, 89%, 50%);
+  }
+  80% {
+    fill: hsl(46, 100%, 51%);
+  }
+  100% {
+    fill: hsl(120, 39%, 49%);
+  }
+}
+
+.button.discord::after,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: rgb-bg 5s linear infinite;
+}
+
+#caret {
+  animation: rgb-bg 5s linear infinite !important;
+}
+
+header.focus .button.discord::after,
+header .button.discord.dotHidden::after {
+  animation-name: none !important;
+}
+
+#logo .bottom,
+header .config .group .buttons .textButton.active,
+#result .stats .group .bottom,
+nav .textButton:hover,
+nav button.text:hover,
+header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
+a:not(.button):hover,
+#words.flipped .word {
+  animation: rgb 5s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: rgb 5s linear infinite;
+}
+
+#words.flipped {
+  --correct-letter-animation: none;
+  --untyped-letter-animation: rgb 5s linear infinite;
+}
+
+header #logo path {
+  animation: rgb-fill 5s linear infinite;
+}

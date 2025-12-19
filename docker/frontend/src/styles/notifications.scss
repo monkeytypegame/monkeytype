@@ -1,0 +1,95 @@
+#notificationCenter {
+  width: 350px;
+  z-index: 99999999;
+  display: grid;
+  // gap: 1rem;
+  // margin-top: 1rem;
+  padding-top: 1rem;
+  position: fixed;
+  right: 1rem;
+  // top: 1rem;
+  transition: 0.125s opacity;
+
+  .clearAll.button {
+    font-size: 0.75em;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  &.focus .clearAll {
+    visibility: hidden;
+  }
+  &.focus .notif {
+    visibility: hidden;
+  }
+  &.focus .notif.important {
+    visibility: visible;
+  }
+  .history {
+    display: grid;
+    // gap: 1rem;
+  }
+
+  .notif {
+    --notif-border-color: rgba(0, 130, 251, 0.985);
+    --notif-background-color: rgba(0, 77, 148, 0.9);
+    transition: 0.125s background;
+    margin-bottom: 1rem;
+
+    -webkit-user-select: none;
+    user-select: none;
+    backdrop-filter: blur(15px);
+
+    .icon {
+      color: #ffffff92;
+      font-size: 1em;
+      margin-right: 0.5em;
+      display: inline;
+    }
+
+    .message {
+      padding: 1em;
+      color: #fff;
+      font-size: 14px;
+
+      .title {
+        color: #ffffff92;
+        font-weight: 500;
+        padding-bottom: 0.5em;
+      }
+    }
+
+    border-radius: 12px;
+    border: 2px solid var(--notif-border-color);
+    background: var(--notif-background-color);
+    color: #fff;
+
+    box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.08);
+
+    position: relative;
+    display: grid;
+    grid-template-columns: auto;
+
+    &.bad {
+      --notif-border-color: rgba(241, 51, 34, 0.71);
+      --notif-background-color: rgba(138, 18, 12, 0.9);
+    }
+
+    &.good {
+      --notif-border-color: rgba(100, 206, 100, 0.71);
+      --notif-background-color: rgba(0, 148, 0, 0.9);
+    }
+
+    &:hover {
+      cursor: pointer;
+      --notif-background-color: rgba(0, 77, 148, 0.5);
+
+      &.bad {
+        --notif-background-color: rgba(138, 18, 12, 0.5);
+      }
+
+      &.good {
+        --notif-background-color: rgba(0, 148, 0, 0.5);
+      }
+    }
+  }
+}

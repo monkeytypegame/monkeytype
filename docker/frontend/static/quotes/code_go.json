@@ -1,0 +1,317 @@
+{
+  "language": "code_go",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "package main\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, geeksforgeeks\")\n}",
+      "source": "GeekForGeeks - Introduction to Golang",
+      "length": 79,
+      "id": 1
+    },
+    {
+      "text": "package main\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"1 + 1 =\", 1 + 1)\n}",
+      "source": "GeekForGeeks - Introduction to Golang",
+      "length": 73,
+      "id": 2
+    },
+    {
+      "text": "package main\nimport \"fmt\"\n\nfunc main() {\n\tvar name = \"GeeksforGeeks\"\n}",
+      "source": "GeekForGeeks - Identifiers in Golang",
+      "length": 70,
+      "id": 3
+    },
+    {
+      "text": "// Go program to illustrate\n// the use of integers\npackage main\nimport \"fmt\"\n\nfunc main() {\n\t// Using 8-bit unsigned int\n\tvar X uint8 = 225\n\tfmt.Println(X, X-3)\n\n\t// Using 16-bit signed int\n\tvar Y int16 = 32767\n\tfmt.Println(Y+2, Y-2)\n}",
+      "source": "GeekForGeeks - Data Types",
+      "length": 235,
+      "id": 4
+    },
+    {
+      "text": "// Go program to illustrate\n// the use of complex numbers\npackage main\nimport \"fmt\"\n\nfunc main() {\n\nvar a complex128 = complex(6, 2)\nvar b complex64 = complex(9, 2)\nfmt.Println(a)\nfmt.Println(b)\n\n// Display the type\nfmt.Printf(\"The type of a is %T and \" +\n\t\t\t\"the type of b is %T\", a, b)\n}",
+      "source": "GeekForGeeks - Data Types",
+      "length": 289,
+      "id": 5
+    },
+    {
+      "text": "package main\n\nimport \"fmt\"\n\nconst PI = 3.14\n\nfunc main()\n{\n\tconst GFG = \"GeeksforGeeks\"\n\tfmt.Println(\"Hello\", GFG)\n\n\tfmt.Println(\"Happy\", PI, \"Day\")\n\n\tconst Correct = true\n\tfmt.Println(\"Go rules?\", Correct)\n}",
+      "source": "GeekForGeeks - Constants",
+      "length": 208,
+      "id": 6
+    },
+    {
+      "text": "package main\n\nimport \"fmt\"\n\nfunc main()\n{\n\tconst A = \"GFG\"\n\tvar B = \"GeeksforGeeks\"\n\n\t// Concat strings.\n\tvar helloWorld = A + \" \" + B\n\thelloWorld += \"!\"\n\tfmt.Println(helloWorld)\n\n\t// Compare strings.\n\tfmt.Println(A == \"GFG\")\n\tfmt.Println(B < A)\n}",
+      "source": "GeekForGeeks - Constants",
+      "length": 247,
+      "id": 7
+    },
+    {
+      "text": "// Const demonstration using go.\npackage main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nconst s string = \"GeeksForGeeks\"\n\nfunc main() {\n\tfmt.Println(s)\n\n\tconst n = 5\n\n\tconst d = 3e10 / n\n\tfmt.Println(d)\n\n\tfmt.Println(int64(d))\n\n\tfmt.Println(math.Sin(n))\n}",
+      "source": "GeekForGeeks - Constants",
+      "length": 241,
+      "id": 8
+    },
+    {
+      "text": "// Go program to illustrate the\n// use of Misc Operators\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\ta := 4\n\n\t// Using address of operator(&) and\n\t// pointer indirection(*) operator\n\tb := &a\n\tfmt.Println(*b)\n\t*b = 7\n\tfmt.Println(a)\n}",
+      "source": "GeekForGeeks - Operators in Golang",
+      "length": 232,
+      "id": 9
+    },
+    {
+      "text": "// Go program to illustrate the use\n// of := (short declaration operator)\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// declaring and initializing the variable\n\ta := 30\n\n\t// taking a string variable\n\tlanguage := \"Go Programming\"\n\n\tfmt.Println(\"The Value of a is: \", a)\n\tfmt.Println(\"The Value of language is: \", language)\n}",
+      "source": "GeekForGeeks - Short Declaration Operator(:=)",
+      "length": 323,
+      "id": 10
+    },
+    {
+      "text": "// Go program to show how to use\n// short variable declaration operator\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// taking a variable of int type\n\tz := 50\n\n\tfmt.Printf(\"Value of z is %d\", z)\n\n\t// reassigning the value of string type\n\t// it will give an error\n\tz := \"Golang\"\n}",
+      "source": "GeekForGeeks - Short Declaration Operator(:=)",
+      "length": 277,
+      "id": 11
+    },
+    {
+      "text": "// Go program to illustrate the\n// use of if..else..if ladder\npackage main\nimport \"fmt\"\n\nfunc main() {\n\t// taking a local variable\n\tvar v1 int = 700\n\n\t// checking the condition\n\tif v1 == 100 {\n\t\t// if condition is true then\n\t\t// display the following */\n\t\tfmt.Printf(\"Value of v1 is 100\n\")\n\t} else if v1 == 200 {\n\t\tfmt.Printf(\"Value of a is 20\n\")\n\t} else if v1 == 300 {\n\t\tfmt.Printf(\"Value of a is 300\n\")\n\t} else {\n\t\t// if none of the conditions is true\n\t\tfmt.Printf(\"None of the values is matching\n\")\n\t}\n}",
+      "source": "GeekForGeeks - Decision Making Statements",
+      "length": 506,
+      "id": 12
+    },
+    {
+      "text": "// Go program to illustrate the\n// use of an infinite loop\npackage main\nimport \"fmt\"\n\nfunc main() {\n\tfor {\n\t\tfmt.Printf(\"GeeksforGeeks\n\")\n\t}\n}",
+      "source": "GeekForGeeks - Loops in Golang",
+      "length": 142,
+      "id": 14
+    },
+    {
+      "text": "func swap(x *int, y *int) {\n\tvar temp int\n\ttemp = *x\n\t*x = *y\n\t*y = temp\n}",
+      "source": "tutorialspoint.com - Go - Call by reference",
+      "length": 74,
+      "id": 15
+    },
+    {
+      "text": "// Go program to illustrate the\n// concept of variadic function\npackage main\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Variadic function to join strings\nfunc joinstr(elements ...string) string {\n\treturn strings.Join(elements, \"-\")\n}\n\nfunc main() {\n\t// pass a slice in variadic function\n\telements := []string{\"geeks\", \"FOR\", \"geeks\"}\n\tfmt.Println(joinstr(elements...))\n}",
+      "source": "GeekForGeeks - Variadic Function",
+      "length": 360,
+      "id": 16
+    },
+    {
+      "text": "// Go program to pass arguments\n// in the anonymous function\npackage main\nimport \"fmt\"\n\nfunc main() {\n\tfunc(ele string) {\n\t\tfmt.Println(ele)\n\t}(\"GeeksforGeeks\")\n}",
+      "source": "GeekForGeeks - Anonymous Function",
+      "length": 162,
+      "id": 17
+    },
+    {
+      "text": "// Go program to pass an anonymous\n// function as an argument into\n// other function\npackage main\nimport \"fmt\"\n\n// Passing anonymous function\n// as an argument\nfunc GFG(i func(p, q string) string) {\n\tfmt.Println(i (\"Geeks\", \"for\"))\n}\n\nfunc main() {\n\tvalue := func(p, q string) string {\n\t\treturn p + q + \"Geeks\"\n\t}\n\tGFG(value)\n}",
+      "source": "GeekForGeeks - Anonymous Function",
+      "length": 327,
+      "id": 18
+    },
+    {
+      "text": "// Go program to illustrate how a\n// function return multiple values\npackage main\nimport \"fmt\"\n\n// myfunc return 3 values of int type\nfunc myfunc(p, q int)(int, int, int) {\n\treturn p - q, p * q, p + q\n}\n\nfunc main() {\n\t// The return values are assigned into\n\t// three different variables\n\tvar myvar1, myvar2, myvar3 = myfunc(4, 2)\n\n\t// Display the values\n\tfmt.Printf(\"Result is: %d\", myvar1)\n\tfmt.Printf(\"\nResult is: %d\", myvar2)\n\tfmt.Printf(\"\nResult is: %d\", myvar3)\n}",
+      "source": "GeekForGeeks - Function Returning Multiple Values",
+      "length": 469,
+      "id": 19
+    },
+    {
+      "text": "// Go program to illustrate how to\n// give names to the return values\npackage main\nimport \"fmt\"\n\nfunc myfunc(p, q int)(rectangle int, square int) {\n\trectangle = p * q\n\tsquare = p * p\n\treturn\n}\n\nfunc main() {\n\tvar area1, area2 = myfunc(2, 4)\n\n\tfmt.Printf(\"Area of the rectangle is: %d\", area1)\n\tfmt.Printf(\"\nArea of the square is: %d\", area2)\n}",
+      "source": "GeekForGeeks - Function Returning Multiple Values",
+      "length": 343,
+      "id": 20
+    },
+    {
+      "text": "// Golang program to illustrate\n// the pointer to struct\npackage main\nimport \"fmt\"\n\n// defining a structure\ntype Employee struct {\n\tfirstName, lastName string\n\tage, salary int\n}\n\nfunc main() {\n\t// passing the address of struct variable\n\t// emp is a pointer to the Employee struct\n\temp := &Employee{\"Sam\", \"Anderson\", 55, 6000}\n\n\t// (*emp).firstName is the syntax to access\n\t// the firstName field of the emp struct\n\tfmt.Println(\"First Name:\", (*emp).firstName)\n\tfmt.Println(\"Age:\", (*emp).age)\n}",
+      "source": "GeekForGeeks - Structures",
+      "length": 495,
+      "id": 21
+    },
+    {
+      "text": "// Go program to illustrate how to create\n// an array using shorthand declaration\n// and accessing the elements of the\n// array using for loop\npackage main\nimport \"fmt\"\n\nfunc main() {\n\tarr := [4]string{\"geek\", \"gfg\", \"Geeks1231\", \"GeeksforGeeks\"}\n\n\tfmt.Println(\"Elements of the array:\")\n\n\tfor i:= 0; i < 3; i++ {\n\t\tfmt.Println(arr[i])\n\t}\n}",
+      "source": "GeekForGeeks - Arrays in Golang",
+      "length": 339,
+      "id": 22
+    },
+    {
+      "text": "// Go program to illustrate\n// how to create strings\npackage main\nimport \"fmt\"\n\nfunc main() {\n\t// Creating and initializing a\n\t// variable with a string\n\tMy_value_1 := \"Welcome to GeeksforGeeks\"\n\n\t// Using var keyword\n\tvar My_value_2 string\n\tMy_value_2 = \"GeeksforGeeks\"\n\n\t// Displaying strings\n\tfmt.Println(\"String 1: \", My_value_1)\n\tfmt.Println(\"String 2: \", My_value_2)\n}",
+      "source": "GeekForGeeks - Strings in Golang",
+      "length": 374,
+      "id": 23
+    },
+    {
+      "text": "// Golang program to demonstrate the declaration\n// and initialization of pointers\npackage main\nimport \"fmt\"\n\nfunc main() {\n\t// taking a normal variable\n\tvar x int = 5748\n\n\t// declaration of pointer\n\tvar p *int\n\n\t// initialization of pointer\n\tp = &x\n\n\t// displaying the result\n\tfmt.Println(\"Value stored in x = \", x)\n\tfmt.Println(\"Address of x = \", &x)\n\tfmt.Println(\"Value stored in variable p = \", p)\n}",
+      "source": "GeekForGeeks - Pointers",
+      "length": 403,
+      "id": 24
+    },
+    {
+      "text": "// Go program to return the\n// pointer from the function\npackage main\nimport \"fmt\"\n\nfunc main() {\n\tn := rpf()\n\tfmt.Println(\"Value of n is: \", *n)\n}\n\n// defining function having integer\n// pointer as return type\nfunc rpf() *int {\n\t// taking a local variable\n\t// inside the function\n\t// using short declaration\n\t// operator\n\tlv := 100\n\n\t// returning the address of lv\n\treturn &lv\n}",
+      "source": "GeekForGeeks - Returning Pointer from a Function Argument",
+      "length": 379,
+      "id": 25
+    },
+    {
+      "text": "// Go program to illustrate the\n// concept of multiple interfaces\npackage main\nimport \"fmt\"\n\n// Interface 1\ntype AuthorDetails interface {\n\tdetails()\n}\n\n// Interface 2\ntype AuthorArticles interface {\n\tarticles()\n}\n\n// Structure\ntype author struct {\n\ta_name string\n\tbranch string\n\tcollege string\n\tyear int\n\tsalary int\n\tparticles int\n\ttarticles int\n}\n\n// Implementing method\n// of the interface 1\nfunc (a author) details() {\n\tfmt.Printf(\"Author Name: %s\", a.a_name)\n\tfmt.Printf(\"\nBranch: %s and passing year: %d\", a.branch, a.year)\n\tfmt.Printf(\"\nCollege Name: %s\", a.college)\n\tfmt.Printf(\"\nSalary: %d\", a.salary)\n\tfmt.Printf(\"\nPublished articles: %d\", a.particles)\n}\n\n// Implementing method\n// of the interface 2\nfunc (a author) articles() {\n\tpendingarticles := a.tarticles - a.particles\n\tfmt.Printf(\"\nPending articles: %d\", pendingarticles)\n}\n\nfunc main() {\n\t// Assigning values\n\t// to the structure\n\tvalues := author {\n\t\ta_name: \"Mickey\",\n\t\tbranch: \"Computer science\",\n\t\tcollege: \"XYZ\",\n\t\tyear: 2012,\n\t\tsalary: 50000,\n\t\tparticles: 209,\n\t\ttarticles: 309,\n\t}\n\n\t// Accessing the method\n\t// of the interface 1\n\tvar i1 AuthorDetails = values\n\ti1.details()\n\n\t// Accessing the method\n\t// of the interface 2\n\tvar i2 AuthorArticles = values\n\ti2.articles()\n}",
+      "source": "GeekForGeeks - Multiple Interfaces",
+      "length": 1248,
+      "id": 26
+    },
+    {
+      "text": "// Go program to illustrate\n// the concept of Goroutine\npackage main\nimport \"fmt\"\n\nfunc display(str string) {\n\tfor w := 0; w < 6; w++ {\n\t\tfmt.Println(str)\n\t}\n}\n\nfunc main() {\n\t// Calling Goroutine\n\tgo display(\"Welcome\")\n\n\t// Calling normal function\n\tdisplay(\"GeeksforGeeks\")\n}",
+      "source": "GeekForGeeks - Goroutines - Concurrency",
+      "length": 276,
+      "id": 27
+    },
+    {
+      "text": "// Go program to illustrate send\n// and receive operation\npackage main\nimport \"fmt\"\n\nfunc myfunc(ch chan int) {\n\tfmt.Println(234 + <-ch)\n}\n\nfunc main() {\n\tfmt.Println(\"start Main method\")\n\n\t// Creating a channel\n\tch := make(chan int)\n\n\tgo myfunc(ch)\n\tch <- 23\n\tfmt.Println(\"End Main method\")\n}",
+      "source": "GeekForGeeks - Channel in Golang",
+      "length": 293,
+      "id": 28
+    },
+    {
+      "text": "// Go program to illustrate how to\n// use for loop in the channel\npackage main\nimport \"fmt\"\n\nfunc main() {\n\t// Creating a channel\n\t// Using make() function\n\tmychnl := make(chan string)\n\n\t// Anonymous goroutine\n\tgo func() {\n\t\tmychnl <- \"GFG\"\n\t\tmychnl <- \"gfg\"\n\t\tmychnl <- \"Geeks\"\n\t\tmychnl <- \"GeeksforGeeks\"\n\t\tclose(mychnl)\n\t}()\n\n\tfor res := range mychnl {\n\t\tfmt.Println(res)\n\t}\n}",
+      "source": "GeekForGeeks - Channel in Golang",
+      "length": 379,
+      "id": 29
+    },
+    {
+      "text": "// Go program to illustrate the concept\n// of the unidirectional channel\npackage main\nimport \"fmt\"\n\nfunc main() {\n\t// Only for receiving\n\tmychanl1 := make(<-chan string)\n\n\t// Only for sending\n\tmychanl2 := make(chan<- string)\n\n\t// Display the types of channels\n\tfmt.Printf(\"%T\", mychanl1)\n\tfmt.Printf(\"\n%T\", mychanl2)\n}",
+      "source": "GeekForGeeks - Unidirectional Channel in Golang",
+      "length": 318,
+      "id": 30
+    },
+    {
+      "text": "func (c *Client) GetRole(ctx context.Context, params *GetRoleInput, optFns ...func(*Options)) (*GetRoleOutput, error) {\n\tif params == nil {\n\t\tparams = &GetRoleInput{}\n\t}\n\n\tresult, metadata, err := c.invokeOperation(ctx, \"GetRole\", params, optFns, c.addOperationGetRoleMiddlewares)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\tout := result.(*GetRoleOutput)\n\tout.ResultMetadata = metadata\n\treturn out, nil\n}",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 401,
+      "id": 31
+    },
+    {
+      "text": "type GetRoleAPIClient interface {\n\tGetRole(context.Context, *GetRoleInput, ...func(*Options)) (*GetRoleOutput, error)\n}\n\nvar _ GetRoleAPIClient = (*Client)(nil)",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 160,
+      "id": 32
+    },
+    {
+      "text": "func NewRoleExistsWaiter(client GetRoleAPIClient, optFns ...func(*RoleExistsWaiterOptions)) *RoleExistsWaiter {\n\toptions := RoleExistsWaiterOptions{}\n\toptions.MinDelay = 1 * time.Second\n\toptions.MaxDelay = 120 * time.Second\n\toptions.Retryable = roleExistsStateRetryable\n\n\tfor _, fn := range optFns {\n\t\tfn(&options)\n\t}\n\treturn &RoleExistsWaiter{\n\t\tclient:  client,\n\t\toptions: options,\n\t}\n}",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 388,
+      "id": 33
+    },
+    {
+      "text": "func roleExistsStateRetryable(ctx context.Context, input *GetRoleInput, output *GetRoleOutput, err error) (bool, error) {\n\n\tif err == nil {\n\t\treturn false, nil\n\t}\n\n\tif err != nil {\n\t\tvar apiErr smithy.APIError\n\t\tok := errors.As(err, &apiErr)\n\t\tif !ok {\n\t\t\treturn false, fmt.Errorf(\"expected err to be of type smithy.APIError, got %w\", err)\n\t\t}\n\n\t\tif \"NoSuchEntity\" == apiErr.ErrorCode() {\n\t\t\treturn true, nil\n\t\t}\n\t}\n\n\treturn true, nil\n}",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 436,
+      "id": 34
+    },
+    {
+      "text": "func VerifyChart(path, keyring string) (*provenance.Verification, error) {\n\t// For now, error out if it's not a tar file.\n\tswitch fi, err := os.Stat(path); {\n\tcase err != nil:\n\t\treturn nil, err\n\tcase fi.IsDir():\n\t\treturn nil, errors.New(\"unpacked charts cannot be verified\")\n\tcase !isTar(path):\n\t\treturn nil, errors.New(\"chart must be a tgz file\")\n\t}\n\n\tprovfile := path + \".prov\"\n\tif _, err := os.Stat(provfile); err != nil {\n\t\treturn nil, errors.Wrapf(err, \"could not load provenance file %s\", provfile)\n\t}\n\n\tsig, err := provenance.NewFromKeyring(keyring, \"\")\n\tif err != nil {\n\t\treturn nil, errors.Wrap(err, \"failed to load keyring\")\n\t}\n\treturn sig.Verify(path, provfile)\n}",
+      "source": "helm/helm - pkg/downloader/chart_downloader.go",
+      "length": 674,
+      "id": 35
+    },
+    {
+      "text": "func loadRepoConfig(file string) (*repo.File, error) {\n\tr, err := repo.LoadFile(file)\n\tif err != nil && !os.IsNotExist(errors.Cause(err)) {\n\t\treturn nil, err\n\t}\n\treturn r, nil\n}",
+      "source": "helm/helm - pkg/downloader/chart_downloader.go",
+      "length": 177,
+      "id": 36
+    },
+    {
+      "text": "func (f files) Glob(pattern string) files {\n\tg, err := glob.Compile(pattern, '/')\n\tif err != nil {\n\t\tg, _ = glob.Compile(\"**\")\n\t}\n\n\tnf := newFiles(nil)\n\tfor name, contents := range f {\n\t\tif g.Match(name) {\n\t\t\tnf[name] = contents\n\t\t}\n\t}\n\n\treturn nf\n}",
+      "source": "helm/helm - pkg/engine/files.go",
+      "length": 249,
+      "id": 37
+    },
+    {
+      "text": "func (f files) AsConfig() string {\n\tif f == nil {\n\t\treturn \"\"\n\t}\n\n\tm := make(map[string]string)\n\n\tfor k, v := range f {\n\t\tm[path.Base(k)] = string(v)\n\t}\n\n\treturn toYAML(m)\n}",
+      "source": "helm/helm - pkg/engine/files.go",
+      "length": 173,
+      "id": 38
+    },
+    {
+      "text": "func (f files) Lines(path string) []string {\n\tif f == nil || f[path] == nil {\n\t\treturn []string{}\n\t}\n\ts := string(f[path])\n\tif s[len(s)-1] == '\n' {\n\t\ts = s[:len(s)-1]\n\t}\n\treturn strings.Split(s, \"\n\")\n}",
+      "source": "helm/helm - pkg/engine/files.go",
+      "length": 201,
+      "id": 39
+    },
+    {
+      "text": "func fromYAML(str string) map[string]interface{} {\n\tm := map[string]interface{}{}\n\n\tif err := yaml.Unmarshal([]byte(str), &m); err != nil {\n\t\tm[\"Error\"] = err.Error()\n\t}\n\treturn m\n}",
+      "source": "helm/helm - pkg/engine/funcs.go",
+      "length": 181,
+      "id": 40
+    },
+    {
+      "text": "func getPlatformCommand(cmds []PlatformCommand) []string {\n\tvar command []string\n\teq := strings.EqualFold\n\tfor _, c := range cmds {\n\t\tif eq(c.OperatingSystem, runtime.GOOS) {\n\t\t\tcommand = strings.Split(os.ExpandEnv(c.Command), \" \")\n\t\t}\n\t\tif eq(c.OperatingSystem, runtime.GOOS) && eq(c.Architecture, runtime.GOARCH) {\n\t\t\treturn strings.Split(os.ExpandEnv(c.Command), \" \")\n\t\t}\n\t}\n\treturn command\n}",
+      "source": "helm/helm - pkg/plugin/plugin.go",
+      "length": 395,
+      "id": 41
+    },
+    {
+      "text": "func FindPlugins(plugdirs string) ([]*Plugin, error) {\n\tfound := []*Plugin{}\n\tfor _, p := range filepath.SplitList(plugdirs) {\n\t\tmatches, err := LoadAll(p)\n\t\tif err != nil {\n\t\t\treturn matches, err\n\t\t}\n\t\tfound = append(found, matches...)\n\t}\n\treturn found, nil\n}",
+      "source": "helm/helm - pkg/plugin/plugin.go",
+      "length": 260,
+      "id": 42
+    },
+    {
+      "text": "func LoadAll(basedir string) ([]*Plugin, error) {\n\tplugins := []*Plugin{}\n\tscanpath := filepath.Join(basedir, \"*\", PluginFileName)\n\tmatches, err := filepath.Glob(scanpath)\n\tif err != nil {\n\t\treturn plugins, errors.Wrapf(err, \"failed to find plugins in %q\", scanpath)\n\t}\n\tif matches == nil {\n\t\treturn plugins, nil\n\t}\n\n\tfor _, yaml := range matches {\n\t\tdir := filepath.Dir(yaml)\n\t\tp, err := LoadDir(dir)\n\t\tif err != nil {\n\t\t\treturn plugins, err\n\t\t}\n\t\tplugins = append(plugins, p)\n\t}\n\treturn plugins, detectDuplicates(plugins)\n}",
+      "source": "helm/helm - pkg/plugin/plugin.go",
+      "length": 525,
+      "id": 43
+    },
+    {
+      "text": "func PodCompleted(event watch.Event) (bool, error) {\n\tswitch event.Type {\n\tcase watch.Deleted:\n\t\treturn false, errors.NewNotFound(schema.GroupResource{Resource: \"pods\"}, \"\")\n\t}\n\tswitch t := event.Object.(type) {\n\tcase *v1.Pod:\n\t\tswitch t.Status.Phase {\n\t\tcase v1.PodFailed, v1.PodSucceeded:\n\t\t\treturn true, nil\n\t\t}\n\t}\n\treturn false, nil\n}",
+      "source": "kubernetes/kubernetes - pkg/client/conditions/conditions.go",
+      "length": 338,
+      "id": 44
+    },
+    {
+      "text": "func (gb *GraphBuilder) startMonitors(logger klog.Logger) {\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\n\tif !gb.running {\n\t\treturn\n\t}\n\n\t<-gb.informersStarted\n\n\tmonitors := gb.monitors\n\tstarted := 0\n\tfor _, monitor := range monitors {\n\t\tif monitor.stopCh == nil {\n\t\t\tmonitor.stopCh = make(chan struct{})\n\t\t\tgb.sharedInformers.Start(gb.stopCh)\n\t\t\tgo monitor.Run()\n\t\t\tstarted++\n\t\t}\n\t}\n\tlogger.V(4).Info(\"started new monitors\", \"new\", started, \"current\", len(monitors))\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 478,
+      "id": 45
+    },
+    {
+      "text": "func (gb *GraphBuilder) IsSynced(logger klog.Logger) bool {\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\n\tif len(gb.monitors) == 0 {\n\t\tlogger.V(4).Info(\"garbage controller monitor not synced: no monitors\")\n\t\treturn false\n\t}\n\n\tfor resource, monitor := range gb.monitors {\n\t\tif !monitor.controller.HasSynced() {\n\t\t\tlogger.V(4).Info(\"garbage controller monitor not yet synced\", \"resource\", resource)\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 444,
+      "id": 46
+    },
+    {
+      "text": "func (gb *GraphBuilder) Run(ctx context.Context) {\n\tlogger := klog.FromContext(ctx)\n\tlogger.Info(\"Running\", \"component\", \"GraphBuilder\")\n\tdefer logger.Info(\"Stopping\", \"component\", \"GraphBuilder\")\n\n\tgb.monitorLock.Lock()\n\tgb.stopCh = ctx.Done()\n\tgb.running = true\n\tgb.monitorLock.Unlock()\n\n\tgb.startMonitors(logger)\n\twait.Until(func() { gb.runProcessGraphChanges(logger) }, 1*time.Second, ctx.Done())\n\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\tmonitors := gb.monitors\n\tstopped := 0\n\tfor _, monitor := range monitors {\n\t\tif monitor.stopCh != nil {\n\t\t\tstopped++\n\t\t\tclose(monitor.stopCh)\n\t\t}\n\t}\n\n\tgb.monitors = nil\n\tlogger.Info(\"stopped monitors\", \"stopped\", stopped, \"total\", len(monitors))\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 703,
+      "id": 47
+    },
+    {
+      "text": "func (gb *GraphBuilder) addUnblockedOwnersToDeleteQueue(logger klog.Logger, removed []metav1.OwnerReference, changed []ownerRefPair) {\n\tfor _, ref := range removed {\n\t\tif ref.BlockOwnerDeletion != nil && *ref.BlockOwnerDeletion {\n\t\t\tnode, found := gb.uidToNode.Read(ref.UID)\n\t\t\tif !found {\n\t\t\t\tlogger.V(5).Info(\"cannot find uid in uidToNode\", \"uid\", ref.UID)\n\t\t\t\tcontinue\n\t\t\t}\n\t\t\tgb.attemptToDelete.Add(node)\n\t\t}\n\t}\n\tfor _, c := range changed {\n\t\twasBlocked := c.oldRef.BlockOwnerDeletion != nil && *c.oldRef.BlockOwnerDeletion\n\t\tisUnblocked := c.newRef.BlockOwnerDeletion == nil || (c.newRef.BlockOwnerDeletion != nil && !*c.newRef.BlockOwnerDeletion)\n\t\tif wasBlocked && isUnblocked {\n\t\t\tnode, found := gb.uidToNode.Read(c.newRef.UID)\n\t\t\tif !found {\n\t\t\t\tlogger.V(5).Info(\"cannot find uid in uidToNode\", \"uid\", c.newRef.UID)\n\t\t\t\tcontinue\n\t\t\t}\n\t\t\tgb.attemptToDelete.Add(node)\n\t\t}\n\t}\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 883,
+      "id": 48
+    },
+    {
+      "text": "func walkFiles(done <-chan struct{}, root string) (<-chan string, <-chan error) {\n\tpaths := make(chan string)\n\terrc := make(chan error, 1)\n\tgo func() {\n\t\tdefer close(paths)\n\n\t\terrc <- filepath.Walk(root, func(path string, info os.FileInfo, err error) error {\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\tif !info.Mode().IsRegular() {\n\t\t\t\treturn nil\n\t\t\t}\n\t\t\tselect {\n\t\t\tcase paths <- path:\n\t\t\tcase <-done:\n\t\t\t\treturn errors.New(\"walk canceled\")\n\t\t\t}\n\t\t\treturn nil\n\t\t})\n\t}()\n\treturn paths, errc\n}",
+      "source": "tmrts/go-patterns - concurrency/bounded_parallelism.go",
+      "length": 491,
+      "id": 49
+    },
+    {
+      "text": "func MD5All(root string) (map[string][md5.\"length\"]byte, error) {\n\tdone := make(chan struct{})\n\tdefer close(done)\n\n\tc, errc := sumFiles(done, root)\n\n\tm := make(map[string][md5.\"length\"]byte)\n\tfor r := range c {\n\t\tif r.err != nil {\n\t\t\treturn nil, r.err\n\t\t}\n\t\tm[r.path] = r.sum\n\t}\n\tif err := <-errc; err != nil {\n\t\treturn nil, err\n\t}\n\treturn m, nil\n}",
+      "source": "tmrts/go-patterns - concurrency/bounded_parallelism.go",
+      "length": 348,
+      "id": 50
+    },
+    {
+      "text": "var freeList = make(chan *Buffer, 100)\n var serverChan = make(chan *Buffer)\n func client() {\n for {\n var b *Buffer\n select {\n case b = <-freeList:\n default:\n b = new(Buffer)\n }\n load(b)\n serverChan <- b\n }\n }",
+      "source": "Go Documentation - Paralells",
+      "length": 208,
+      "id": 51
+    },
+    {
+      "text": "package main\n import (\n 'flag'\n 'html/template'\n 'log'\n 'net/http'\n )\n var addr = flag.String('addr', ':1718', 'http service address')\n var templ = template.Must(template.New('qr').Parse(templateStr))\n func main() { \nflag.Parse()\n http.Handle('/', http.HandlerFunc(QR))\n err := http.ListenAndServe(*addr, nil)\n if err != nil { \nlog.Fatal('ListenAndServe:', err)\n }\n }\n func QR(w http.ResponseWriter, req *http.Request) {\n templ.Execute(w, req.FormValue('s'))\n }",
+      "source": "Go Documentation - Paralells",
+      "length": 461,
+      "id": 52
+    }
+  ]
+}

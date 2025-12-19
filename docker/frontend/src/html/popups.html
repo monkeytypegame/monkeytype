@@ -1,0 +1,1367 @@
+<dialog id="registerCaptchaModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="g-recaptcha"></div>
+  </div>
+</dialog>
+
+<dialog id="forgotPasswordModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Forgot password</div>
+    <input type="text" placeholder="email" />
+    <div class="g-recaptcha"></div>
+    <!-- <button>send</button> -->
+  </div>
+</dialog>
+
+<dialog id="miniResultChartModal" class="modalWrapper hidden">
+  <div class="modal">
+    <canvas></canvas>
+  </div>
+</dialog>
+
+<dialog id="lastSignedOutResult" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Last signed out result</div>
+    <div class="question">Would you like to save it?</div>
+    <div class="divider"></div>
+    <div class="result">
+      <div class="group wpm">
+        <div class="sub">wpm</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group acc">
+        <div class="sub">accuracy</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group raw">
+        <div class="sub">raw</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group con">
+        <div class="sub">consistency</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group chardata">
+        <div class="sub">characters</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group testType">
+        <div class="sub">test type</div>
+        <div class="val">-</div>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="save">save</button>
+      <button class="discard">discard</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="devOptionsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Dev options</div>
+    <button class="generateData">generate data</button>
+    <button class="quickLogin">quick login</button>
+    <button class="toggleMediaQueryDebug">toggle media query debug</button>
+    <button class="showTestNotifications">show test notifications</button>
+    <button class="showRealWordsInput">show real words input</button>
+    <button class="xpBarTest">xp bar test</button>
+    <button class="toggleFakeChartData">toggle fake chart data</button>
+    <button class="toggleCaretDebug">toggle caret debug</button>
+    <button class="disableSlowTimerFail">disable slow timer fail</button>
+  </div>
+</dialog>
+
+<dialog id="alertsPopup" class="modalWrapper hidden">
+  <div class="modal">
+    <button class="mobileClose">
+      <i class="fas fa-times"></i>
+      Close
+    </button>
+    <div class="scrollWrapper">
+      <div class="accountAlerts">
+        <div class="title">
+          <div class="left">
+            <i class="fas fa-inbox"></i>
+            Inbox
+          </div>
+          <div class="right"></div>
+        </div>
+        <button class="claimAll hidden">
+          <i class="fas fa-fw fa-gift"></i>
+          Claim all
+        </button>
+        <button class="deleteAll hidden">
+          <i class="fas fa-fw fa-trash"></i>
+          Delete all
+        </button>
+        <div class="list">
+          <div class="nothing">Nothing to show</div>
+        </div>
+      </div>
+      <div class="separator accountSeparator"></div>
+      <div class="psas">
+        <div class="title">
+          <i class="fas fa-bullhorn"></i>
+          Announcements
+        </div>
+        <div class="list">
+          <div class="nothing">Nothing to show</div>
+        </div>
+      </div>
+      <div class="separator"></div>
+      <div class="notificationHistory">
+        <div class="title">
+          <i class="fas fa-comment-alt"></i>
+          Notifications
+        </div>
+        <div class="list">
+          <div class="nothing">Nothing to show</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="simpleModal" class="modalWrapper hidden">
+  <form class="modal"></form>
+</dialog>
+
+<dialog id="cookiesModal" class="modalWrapper hidden" data-nosnippet>
+  <div class="extensionMessage">
+    If you see this text, that means an extension is blocking a cookie consent
+    popup. This will cause the website to incorrectly assume its still visible
+    and stop you from enjoying Monkeytype. Please disable any extensions that
+    block cookie popups and refresh the page.
+  </div>
+  <div class="modal">
+    <div class="title">
+      <i class="fas fa-cookie-bite"></i>
+      We use cookies by the way
+    </div>
+    <div class="main">
+      <div class="text">
+        Cookies enhance your experience and help us improve our website.
+      </div>
+      <div class="buttons">
+        <button class="active acceptAll">accept all</button>
+        <button class="rejectAll">reject non-essential</button>
+        <button class="openSettings">more options</button>
+      </div>
+    </div>
+    <div class="settings hidden">
+      <div class="cookie security">
+        <label class="checkbox">
+          <div class="title">security</div>
+          <div class="description">
+            We use Cloudflare cookies to improve security and performance of our
+            site.
+            <br />
+            <br />
+            They
+            <b>do not</b>
+            store any personal information and are required.
+          </div>
+          <input type="checkbox" checked disabled />
+        </label>
+      </div>
+      <div class="cookie analytics">
+        <label class="checkbox">
+          <div class="title">analytics</div>
+          <div class="description">
+            We use Google Analytics to track the overall traffic and
+            demographics of our site.
+          </div>
+          <input type="checkbox" />
+        </label>
+      </div>
+      <div class="cookie sentry">
+        <label class="checkbox">
+          <div class="title">sentry</div>
+          <div class="description">
+            We use Sentry to track errors and performance issues on our site, as
+            well as record anonymized user sessions to help us debug issues and
+            improve our product.
+          </div>
+          <input type="checkbox" />
+        </label>
+      </div>
+      <div class="cookie ads">
+        <label class="checkbox">
+          <div class="title">advertising</div>
+          <div class="description">
+            Our advertising partner may use cookies to deliver ads that are more
+            relevant to you.
+          </div>
+          <div class="textButton">
+            Click to change your preferences on ad related cookies
+          </div>
+        </label>
+      </div>
+      <button class="active acceptSelected">accept selected</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="shareTestSettingsModal" class="modalWrapper hidden">
+  <!-- <div id="shareTestSettingsPopup"> -->
+  <div class="modal">
+    <div class="title">Share test settings</div>
+    <label class="checkboxWithSub mode">
+      <input type="checkbox" setting="mode" />
+      <div>Mode</div>
+      <div class="sub">Time, Words, Quote, Zen, Custom</div>
+    </label>
+    <label class="checkboxWithSub mode2 subgroup hidden">
+      <input type="checkbox" setting="mode2" />
+      <div>Mode2</div>
+      <div class="sub">Test seconds, Test words, Quote Id</div>
+    </label>
+    <label class="checkbox customText subgroup hidden">
+      <input type="checkbox" setting="customText" />
+      Custom text
+      <span></span>
+    </label>
+    <label class="checkbox punctuation">
+      <input type="checkbox" setting="punctuation" />
+      Punctuation
+      <span></span>
+    </label>
+    <label class="checkbox numbers">
+      <input type="checkbox" setting="numbers" />
+      Numbers
+      <span></span>
+    </label>
+    <label class="checkbox language">
+      <input type="checkbox" setting="language" />
+      Language
+      <span></span>
+    </label>
+    <label class="checkbox difficulty">
+      <input type="checkbox" setting="difficulty" />
+      Difficulty
+      <span></span>
+    </label>
+    <label class="checkbox funbox">
+      <input type="checkbox" setting="funbox" />
+      Funbox
+      <span></span>
+    </label>
+    <textarea
+      class="url"
+      placeholder="url"
+      value="monkeytype.com"
+      readonly
+    ></textarea>
+    <div class="tooLongWarning hidden">
+      <i class="fas fa-fw fa-exclamation-triangle"></i>
+      <span>The URL is over 2000 characters long - it might not work</span>
+    </div>
+    <!-- </div> -->
+  </div>
+</dialog>
+
+<dialog id="mobileTestConfigModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="group">
+      <button class="punctuation">punctuation</button>
+      <button class="numbers">numbers</button>
+    </div>
+    <div class="group modeGroup">
+      <button data-mode="time">time</button>
+      <button class="active" data-mode="words">words</button>
+      <button data-mode="quote">quote</button>
+      <button data-mode="zen">zen</button>
+      <button data-mode="custom">custom</button>
+    </div>
+    <div class="group timeGroup">
+      <button data-time="15">15</button>
+      <button class="button active" data-time="30">30</button>
+      <button data-time="60">60</button>
+      <button data-time="120">120</button>
+      <button data-time="custom">custom</button>
+    </div>
+    <div class="group wordsGroup hidden">
+      <button data-words="10">10</button>
+      <button data-words="25">25</button>
+      <button data-words="50">50</button>
+      <button data-words="100">100</button>
+      <button data-words="custom">custom</button>
+    </div>
+    <div class="group quoteGroup hidden">
+      <button data-quoteLength="all">all</button>
+      <button data-quoteLength="0">short</button>
+      <button data-quoteLength="1">medium</button>
+      <button data-quoteLength="2">long</button>
+      <button data-quoteLength="3">thicc</button>
+      <button id="quote-search-button" data-quoteLength="-2">search</button>
+    </div>
+    <div class="group customGroup hidden">
+      <button class="customChange">change</button>
+    </div>
+    <div class="group">
+      <button class="shareButton">share</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="videoAdPopupWrapper" class="popupWrapper hidden">
+  <div id="videoAdPopup">
+    <div class="preloader">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div>
+    <div id="eg-video-player" class="video"></div>
+  </div>
+</div>
+
+<dialog id="pbTablesModal" class="modalWrapper hidden">
+  <div class="modal">
+    <table>
+      <thead>
+        <tr>
+          <td width="1%">words</td>
+          <td>
+            <span class="unit">wpm</span>
+            <br />
+            <span class="sub">accuracy</span>
+          </td>
+          <td>
+            raw
+            <br />
+            <span class="sub">consistency</span>
+          </td>
+          <td>difficulty</td>
+          <td>language</td>
+          <td>punctuation</td>
+          <td>numbers</td>
+          <td>lazy mode</td>
+          <td>date</td>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</dialog>
+
+<dialog id="practiseWordsModal" class="modalWrapper hidden">
+  <div class="modal" actions="">
+    <div class="title">Practice words</div>
+    <!-- <div class="inputs"> -->
+    <div class="group" data-id="missed">
+      <div class="title">
+        <i class="fas fa-times"></i>
+        missed
+      </div>
+      <div class="sub">
+        Include missed words or biwords (which include the previous word).
+      </div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="missedOff" value="off">off</button>
+          <button class="missedWords" value="words">words</button>
+          <button class="missedBiwords" value="biwords">biwords</button>
+        </div>
+      </div>
+    </div>
+    <div class="group" data-id="slow">
+      <div class="title">
+        <i class="fas fa-tachometer-alt"></i>
+        slow
+      </div>
+      <div class="sub">Include words which you typed slower than others.</div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="slowOff" value="false">off</button>
+          <button class="slowOn" value="true">on</button>
+        </div>
+      </div>
+    </div>
+    <div></div>
+    <!-- </div> -->
+    <button class="start">start</button>
+  </div>
+</dialog>
+
+<dialog id="quoteRateModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="warning">
+      If you find a grammatical error, think the quote has inappropriate
+      language or feel like it's low quality -
+      <span>don't give it a low rating!</span>
+      Please report it instead. You can do so by closing this popup and clicking
+      the "Flag" icon.
+    </div>
+    <div class="quote">
+      <div class="text">-</div>
+      <div class="id">
+        <div class="top">id</div>
+        <div class="val">-</div>
+      </div>
+      <div class="length">
+        <div class="top">length</div>
+        <div class="val">-</div>
+      </div>
+      <div class="source">
+        <div class="top">source</div>
+        <div class="val">-</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="spacer2"></div>
+    <div class="ratingStats">
+      <div class="ratingCount">
+        <div class="top">ratings</div>
+        <div class="val">-</div>
+      </div>
+      <div class="ratingAverage">
+        <div class="top">average</div>
+        <div class="val">-</div>
+      </div>
+      <div class="starsWrapper">
+        <div class="top">your rating</div>
+        <div class="stars">
+          <button class="star" data-rating="1">
+            <i class="fas fa-fw fa-star"></i>
+          </button>
+          <button class="star" data-rating="2">
+            <i class="fas fa-fw fa-star"></i>
+          </button>
+          <button class="star" data-rating="3">
+            <i class="fas fa-fw fa-star"></i>
+          </button>
+          <button class="star" data-rating="4">
+            <i class="fas fa-fw fa-star"></i>
+          </button>
+          <button class="star" data-rating="5">
+            <i class="fas fa-fw fa-star"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="button rate1">
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <div class="button rate2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <div class="button rate3">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div> -->
+    <button
+      class="textButton submitButton"
+      aria-label="Submit review"
+      data-balloon-pos="up"
+    >
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</dialog>
+
+<dialog id="importExportSettingsModal" class="modalWrapper hidden">
+  <form class="modal" data-mode="">
+    <input type="text" title="import settings" />
+    <button>import settings</button>
+  </form>
+</dialog>
+
+<dialog id="shareCustomThemeUrlModal" class="modalWrapper hidden">
+  <div class="modal">
+    <input type="text" title="custom theme" />
+    <div class="button">ok</div>
+  </div>
+</dialog>
+<dialog id="customTextModal" class="modalWrapper hidden">
+  <div class="modal" action="">
+    <div class="buttonsTop">
+      <div class="button saveCustomText">
+        <i class="fas fa-save"></i>
+        save
+      </div>
+      <div class="button showSavedTexts">
+        <i class="fas fa-folder"></i>
+        saved texts
+      </div>
+    </div>
+    <div class="buttonsTop2">
+      <input id="fileInput" type="file" class="hidden" accept=".txt" />
+      <label for="fileInput" class="button importText">
+        <i class="fas fa-file-import"></i>
+        open file
+      </label>
+      <div class="button wordfilter">
+        <i class="fas fa-filter"></i>
+        words filter
+      </div>
+      <div class="button customGenerator">
+        <i class="fas fa-cogs"></i>
+        custom generator
+      </div>
+    </div>
+    <div class="savedTexts hidden" style="display: none">
+      <div class="title">saved texts</div>
+      <div class="buttons"></div>
+    </div>
+    <div class="textAreaWrapper" style="position: relative">
+      <div class="longCustomTextWarning">
+        <div>
+          <p>
+            A long custom text is currently loaded.
+            <br />
+            Editing the text will disable progress tracking.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to start editing the text.</p>
+        </div>
+      </div>
+      <div class="challengeWarning">
+        <div>
+          <p>
+            A challenge is currently loaded.
+            <br />
+            Editing the settings will clear the challenge.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to edit.</p>
+        </div>
+      </div>
+      <textarea class="textarea"></textarea>
+    </div>
+    <div class="inputs">
+      <div class="group" data-id="mode">
+        <div class="title">
+          <i class="fas fa-fw fa-cog"></i>
+          Mode
+        </div>
+        <div class="sub">Change the way words are generated.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="simple">simple</button>
+            <button value="repeat">repeat</button>
+            <button value="shuffle">shuffle</button>
+            <button value="random">random</button>
+          </div>
+        </div>
+      </div>
+      <div class="group" data-id="limit">
+        <div class="title">
+          <i class="fas fa-fw fa-step-forward"></i>
+          Limit
+        </div>
+        <div class="sub">
+          Control how many words to generate or for how long you want to type.
+        </div>
+        <div class="groupInputs limitInputs">
+          <input
+            class="words"
+            type="number"
+            value=""
+            min="0"
+            placeholder="words"
+          />
+          <input
+            class="sections hidden"
+            type="number"
+            value=""
+            min="0"
+            placeholder="sections"
+          />
+          <div class="or">or</div>
+          <input
+            class="time"
+            type="number"
+            value=""
+            min="0"
+            placeholder="time"
+          />
+        </div>
+      </div>
+
+      <div class="group" data-id="delimiter">
+        <div class="title">
+          <i class="fas fa-fw fa-grip-lines-vertical"></i>
+          Word delimiter
+        </div>
+        <div class="sub">
+          Change how words are separated. Using the pipe delimiter allows you to
+          randomize groups of words.
+        </div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="true">pipe</button>
+            <button value="false">space</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="zeroWidth">
+        <div class="title">
+          <i class="fas fa-fw fa-text-width"></i>
+          Remove zero-width characters
+        </div>
+        <div class="sub">Fully remove zero-width characters.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="fancy">
+        <div class="title">
+          <i class="fas fa-fw fa-pen-fancy"></i>
+          Remove fancy typography
+        </div>
+        <div class="sub">
+          Standardises typography symbols (for example “ and ” become ")
+        </div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="control">
+        <div class="title">
+          <i class="fas fa-fw fa-code"></i>
+          Replace control characters
+        </div>
+        <div class="sub">
+          Replace control characters (\n becomes a new line and \t becomes a
+          tab)
+        </div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="newlines">
+        <div class="title">
+          <i class="fas fa-fw fa-level-down-alt fa-rotate-90"></i>
+          Replace new lines with spaces
+        </div>
+        <div class="sub">
+          Replace all new line characters with spaces. Can automatically add
+          periods to the end of lines if you wish.
+        </div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="off">off</button>
+            <button value="space">space</button>
+            <button value="periodSpace">period + space</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="button apply">ok</div>
+  </div>
+</dialog>
+<dialog id="savedTextsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Saved texts</div>
+    <div class="list"></div>
+    <div class="title">Saved long texts</div>
+    <div class="listLong"></div>
+    <div class="divider"></div>
+    <div class="message">
+      Heads up! These texts are only stored locally. If you switch devices or
+      clear your local browser data they will be lost.
+    </div>
+  </div>
+</dialog>
+<dialog id="saveCustomTextModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Save custom text</div>
+    <input class="textName" type="text" placeholder="name" />
+    <div>
+      <label class="checkboxWithSub">
+        <input type="checkbox" class="isLongText" />
+        <div>Long text (book mode)</div>
+        <div class="sub">
+          Disables editing this text but allows you to save progress by pressing
+          shift + enter or bailing out. You can then load this text again to
+          continue where you left off.
+        </div>
+      </label>
+    </div>
+    <button class="save">save</button>
+  </form>
+</dialog>
+<dialog id="wordFilterModal" class="modalWrapper hidden">
+  <div class="modal">
+    <!-- hidden for now, dunno where to place it -->
+    <!-- <div class="loadingIndicator">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div> -->
+    <div class="top">
+      <div class="group">
+        <div class="title">language</div>
+        <select class="languageInput" title="language"></select>
+      </div>
+      <div class="tip">
+        You can manually filter words by length, words or characters (separated
+        by spaces) on the left side. On the right side you can generate filters
+        based on a preset and selected layout.
+      </div>
+    </div>
+    <div class="leftSide">
+      <div class="group lengthgrid">
+        <div class="title">min length</div>
+        <div class="title">max length</div>
+
+        <input
+          class="wordLength wordMinInput"
+          autocomplete="off"
+          type="number"
+          title="min"
+        />
+        <input
+          class="wordLength wordMaxInput"
+          autocomplete="off"
+          type="number"
+          title="max"
+        />
+      </div>
+      <div class="group">
+        <div class="title">include</div>
+        <input
+          class="wordIncludeInput"
+          id="wordIncludeInput"
+          autocomplete="off"
+          title="include"
+        />
+        <label class="checkbox">
+          <input id="exactMatchOnly" type="checkbox" />
+          Exact match only
+        </label>
+      </div>
+      <div class="group">
+        <div class="title">exclude</div>
+        <input
+          class="wordExcludeInput"
+          id="wordExcludeInput"
+          autocomplete="off"
+          title="exclude"
+        />
+      </div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="rightSide">
+      <div class="group">
+        <div class="title">presets</div>
+        <select class="presetInput"></select>
+      </div>
+      <div class="group">
+        <div class="title">layout</div>
+        <select class="layoutInput"></select>
+      </div>
+      <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
+      <button class="generateButton">apply</button>
+    </div>
+
+    <div class="bottom">
+      <div class="tip">
+        "Set" replaces the current custom word list with the filter result,
+        "Add" appends the filter result to the current custom word list.
+      </div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="customGeneratorModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="main">
+      <div class="group">
+        <div class="title">presets</div>
+        <select class="presetInput">
+          <option value="alphas">a-z</option>
+          <option value="numbers">0-9</option>
+          <option value="special">symbols</option>
+          <option value="bigrams">bigrams</option>
+          <option value="trigrams">trigrams</option>
+        </select>
+        <button class="generateButton">apply</button>
+      </div>
+      <div class="separator"></div>
+      <div class="tip">
+        Enter characters or strings separated by spaces. Random combinations
+        will be generated using these inputs.
+      </div>
+      <div class="group">
+        <div class="title">character set</div>
+        <textarea
+          class="characterInput"
+          id="characterInput"
+          autocomplete="off"
+          placeholder=""
+          title="characters"
+        ></textarea>
+      </div>
+      <div class="group lengthgrid">
+        <div class="title">min length</div>
+        <div class="title">max length</div>
+
+        <input
+          class="wordLength minLengthInput"
+          autocomplete="off"
+          type="number"
+          value="2"
+          min="1"
+          title="min"
+        />
+        <input
+          class="wordLength maxLengthInput"
+          autocomplete="off"
+          type="number"
+          value="5"
+          min="1"
+          title="max"
+        />
+      </div>
+      <div class="group">
+        <div class="title">word count</div>
+        <input
+          class="wordCountInput"
+          autocomplete="off"
+          type="number"
+          value="100"
+          min="1"
+          title="word count"
+        />
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="tip">
+        "Set" replaces the current custom text with generated words, "Add"
+        appends generated words to the current custom text.
+      </div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="googleSignUpModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Account name</div>
+    <div class="text">Please enter a username before continuing</div>
+    <input type="text" placeholder="username" />
+    <div class="captcha"></div>
+    <button>continue</button>
+  </form>
+</dialog>
+<dialog id="customWordAmountModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Custom word amount</div>
+    <input type="number" value="1" min="0" max="10000" />
+    <div class="tip">
+      You can start an infinite test by inputting 0. Then, to stop the test, use
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
+    </div>
+    <button>ok</button>
+  </form>
+</dialog>
+<dialog id="customTestDurationModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Test duration</div>
+    <div class="preview"></div>
+    <input value="1" title="test duration" min="0" />
+    <div class="tip">
+      You can use "h" for hours and "m" for minutes, for example "1h30m".
+      <br />
+      <br />
+      You can start an infinite test by inputting 0. Then, to stop the test, use
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
+    </div>
+    <button>ok</button>
+  </form>
+</dialog>
+<dialog id="quoteSearchModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div id="quoteSearchTop">
+      <div class="title">Quote search</div>
+      <div class="buttons">
+        <button class="goToQuoteSubmit">
+          <i class="fas fa-plus"></i>
+          Submit a quote
+        </button>
+        <button class="goToQuoteApprove">
+          <i class="fas fa-check"></i>
+          Approve quotes
+        </button>
+      </div>
+    </div>
+    <div id="quoteSearchControlsWrapper">
+      <input
+        id="searchBox"
+        class="searchBox"
+        type="text"
+        maxlength="200"
+        autocomplete="off"
+        placeholder="filter by text, source or id"
+      />
+      <select class="quoteLengthFilter" multiple></select>
+      <button class="toggleFavorites">
+        <i class="fas fa-fw fa-heart"></i>
+        <!-- favorites -->
+      </button>
+    </div>
+    <div id="quoteSearchResults" class="quoteSearchResults"></div>
+    <div id="quoteSearchPageNavigator">
+      <button class="prevPage" disabled>
+        <i class="fas fa-fw fa-chevron-left"></i>
+      </button>
+      <div class="pageInfo">No search results</div>
+      <button class="nextPage" disabled>
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</dialog>
+<dialog id="quoteSubmitModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Submit a quote</div>
+    <ul>
+      <li>
+        Do not include content that contains any libelous or otherwise unlawful,
+        abusive or obscene text.
+      </li>
+      <li>Verify quotes added aren't duplicates of any already present</li>
+      <li>
+        Please do not add extremely short quotes (less than 60 characters)
+      </li>
+      <li>
+        <b>
+          Submitting low quality quotes or misusing this form will cause you to
+          lose access to this feature
+        </b>
+      </li>
+    </ul>
+    <label>quote</label>
+    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
+    <label>source</label>
+    <input class="newQuoteSource" type="text" autocomplete="off" />
+    <label>language</label>
+    <select name="language" class="newQuoteLanguage"></select>
+    <div class="g-recaptcha"></div>
+    <button>submit</button>
+  </div>
+</dialog>
+<dialog id="quoteReportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Report a quote</div>
+    <div class="text">
+      Please report quotes responsibly - misuse may result in you losing access
+      to this feature.
+      <br />
+      <br />
+      <span class="red">Please add comments in English only.</span>
+    </div>
+    <label>quote</label>
+    <div class="quote"></div>
+    <label>reason</label>
+    <select name="report-reason" class="reason" title="reason">
+      <option value="Grammatical error">Grammatical error</option>
+      <option value="Duplicate quote">Duplicate quote</option>
+      <option value="Inappropriate content">Inappropriate content</option>
+      <option value="Low quality content">Low quality content</option>
+      <option value="Incorrect source">Incorrect source</option>
+    </select>
+    <label>comment</label>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <div
+      class="g-recaptcha"
+      data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+    ></div>
+    <button>report</button>
+  </div>
+</dialog>
+<dialog id="userReportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Report a user</div>
+    <div class="text">
+      Please report users responsibly and add comments in English only. Misuse
+      may result in you losing access to this feature.
+    </div>
+    <label>user</label>
+    <div class="user"></div>
+    <label>reason</label>
+    <select name="report-reason" class="reason">
+      <option value="Inappropriate name">Inappropriate name</option>
+      <option value="Inappropriate bio">Inappropriate bio</option>
+      <option value="Inappropriate social links">
+        Inappropriate social links
+      </option>
+      <option value="Suspected cheating">Suspected cheating</option>
+    </select>
+    <label>comment</label>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <div
+      class="g-recaptcha"
+      data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+    ></div>
+    <button>Report</button>
+  </div>
+</dialog>
+<dialog id="quoteApproveModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="top">
+      <div class="title">Approve quotes</div>
+      <button class="refreshList">
+        <i class="fas fa-sync-alt"></i>
+        Refresh list
+      </button>
+    </div>
+    <div class="quotes"></div>
+  </div>
+</dialog>
+<dialog id="streakHourOffsetModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Set streak hour offset</div>
+    <div class="text">
+      Streaks reset at midnight UTC by default. If this is not convenient for
+      you (for example if it means that streaks reset in the middle of the day),
+      you can change the hour offset here.
+      <br />
+      <br />
+      This will not take daylight savings time into consideration!
+      <br />
+      <br />
+      <span class="red">You can only do this once!</span>
+    </div>
+    <input type="number" min="-11" max="12" value="0" />
+    <div class="preview"></div>
+    <button>set</button>
+  </div>
+</dialog>
+<dialog id="editResultTagsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Edit result tags</div>
+    <div class="buttons"></div>
+    <button class="saveButton">save</button>
+  </div>
+</dialog>
+<dialog id="editPresetModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title popupTitle"></div>
+    <div class="group">
+      <div class="presetNameTitle">name</div>
+      <input type="text" title="presets" />
+    </div>
+    <label class="changePresetToCurrentCheckbox checkbox">
+      <input type="checkbox" />
+      Change preset to current settings
+    </label>
+    <div class="inputs">
+      <div class="presetType group" data-id="presetType">
+        <div class="title">Preset Type</div>
+        <div class="presetTypeButtonGroup">
+          <button value="full" type="button">full</button>
+          <button value="partial" type="button">partial</button>
+        </div>
+      </div>
+      <div class="partialPresetGroups group">
+        <div class="title">partial groups</div>
+        <div class="checkboxList"></div>
+      </div>
+    </div>
+    <div class="text deletePrompt"></div>
+    <button class="submit" type="submit">add</button>
+  </form>
+</dialog>
+<dialog id="shareCustomThemeModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Share custom theme</div>
+    <label class="checkbox">
+      <input type="checkbox" id="includeBackground" />
+      Include background information
+    </label>
+    <button>copy link to clipboard</button>
+  </div>
+</dialog>
+<dialog id="versionHistoryModal" class="modalWrapper hidden">
+  <div class="modal"></div>
+</dialog>
+<dialog id="supportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Support Monkeytype</div>
+    <div class="text">
+      Thank you so much for thinking about supporting this project. It would not
+      be possible without you and your continued support.
+      <i class="fas fa-heart"></i>
+    </div>
+    <div class="buttons">
+      <button class="ads">
+        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
+        <div class="text">Enable Ads</div>
+      </button>
+      <!-- <div class="button watchVideoAd">
+        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
+        <div class="text">
+          Watch
+          <br />
+          a Video Ad
+        </div>
+      </div> -->
+      <a
+        class="button"
+        href="https://ko-fi.com/monkeytype"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <div class="icon"><i class="fas fa-fw fa-donate"></i></div>
+        <div class="text">Donate</div>
+      </a>
+      <a
+        class="button"
+        href="https://www.patreon.com/monkeytype"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <div class="icon"><i class="fab fa-fw fa-patreon"></i></div>
+        <div class="text">Join Patreon</div>
+      </a>
+      <a
+        class="button"
+        href="https://monkeytype.store"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
+        <div class="text">Buy Merch</div>
+      </a>
+    </div>
+  </div>
+</dialog>
+<dialog id="contactModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Contact</div>
+    <div class="text">
+      Feel free to send an email to contact@monkeytype.com. For business
+      inquiries, email jack@monkeytype.com (the buttons below will open the
+      default mail client).
+      <br />
+      <br />
+      Please
+      <span>do not send</span>
+      requests to delete account, update email, update name or clear personal
+      bests - you can do that in the settings page.
+    </div>
+    <div class="buttons">
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:contact@monkeytype.com?subject=[Question] "
+        rel="noopener"
+      >
+        <div class="icon"><i class="fas fa-question-circle"></i></div>
+        <div class="textGroup">
+          <div class="text">Question</div>
+          <!-- <div class="subtext">Confused about something?</div> -->
+        </div>
+      </a>
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:contact@monkeytype.com?subject=[Feedback] "
+        rel="noopener"
+      >
+        <div class="icon"><i class="fas fa-comment-dots"></i></div>
+        <div class="textGroup">
+          <div class="text">Feedback</div>
+          <!-- <div class="subtext">Feel like the website could be improved?</div> -->
+        </div>
+      </a>
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:support@monkeytype.com?subject=[Bug] "
+        rel="noopener"
+      >
+        <div class="icon"><i class="fas fa-bug"></i></div>
+        <div class="textGroup">
+          <div class="text">Bug Report</div>
+          <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
+        </div>
+      </a>
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:support@monkeytype.com?subject=[Account] "
+        rel="noopener"
+      >
+        <div class="icon"><i class="fas fa-user-circle"></i></div>
+        <div class="textGroup">
+          <div class="text">Account Help</div>
+          <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
+        </div>
+      </a>
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:jack@monkeytype.com?subject=[Business] "
+        rel="noopener"
+      >
+        <div class="icon"><i class="fas fa-briefcase"></i></div>
+        <div class="textGroup">
+          <div class="text">Business Inquiry</div>
+          <!-- <div class="subtext">Let's work together.</div> -->
+        </div>
+      </a>
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:contact@monkeytype.com?subject=[Other] "
+        rel="noopener"
+      >
+        <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
+        <div class="textGroup">
+          <div class="text">Other</div>
+          <!-- <div class="subtext">We will try to help.</div> -->
+        </div>
+      </a>
+    </div>
+  </div>
+</dialog>
+<dialog id="commandLine" class="modalWrapper hidden">
+  <div class="modal">
+    <div
+      style="
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+      "
+    >
+      <div class="searchicon">
+        <i class="fas fa-fw fa-search"></i>
+      </div>
+      <div class="checkingicon hidden">
+        <i class="fas fa-fw fa-circle-notch fa-spin"></i>
+      </div>
+      <input type="text" class="input" placeholder="Type to search" />
+    </div>
+    <div class="warning hidden">
+      <div class="icon">
+        <i class="fas fa-fw fa-exclamation-triangle"></i>
+      </div>
+      <div class="text">This is some warning text.</div>
+    </div>
+    <div class="suggestions"></div>
+  </div>
+</dialog>
+
+<dialog id="editProfileModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Edit Profile</div>
+    <div>
+      <label>name</label>
+      <div>
+        To update your name, go to Account Settings > Account > Update account
+        name
+      </div>
+    </div>
+    <div>
+      <label>avatar</label>
+      <div>
+        To update your avatar make sure your Discord account is linked, then go
+        to Account Settings > Account > Discord Integration and click "Update
+        Avatar"
+      </div>
+    </div>
+    <div>
+      <label>bio</label>
+      <textarea
+        class="bio"
+        type="text"
+        autocomplete="off"
+        maxlength="250"
+      ></textarea>
+    </div>
+    <div>
+      <label>keyboard</label>
+      <textarea
+        class="keyboard"
+        type="text"
+        autocomplete="off"
+        maxlength="75"
+      ></textarea>
+    </div>
+    <div>
+      <label>github</label>
+      <div class="socialURL">
+        <p>https://github.com/</p>
+        <input
+          class="github"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="39"
+        />
+      </div>
+    </div>
+    <div>
+      <label>twitter</label>
+      <div class="socialURL">
+        <p>https://x.com/</p>
+        <input
+          class="twitter"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="20"
+        />
+      </div>
+    </div>
+    <div>
+      <label>website</label>
+      <input class="website" type="text" value="" maxlength="200" />
+    </div>
+    <div>
+      <label>badge</label>
+      <div class="badgeSelectionContainer"></div>
+    </div>
+    <div>
+      <label>public activity</label>
+      <label class="checkbox">
+        <input
+          class="editProfileShowActivityOnPublicProfile"
+          type="checkbox"
+          checked
+        />
+        <span>Include test activity graph on your public profile.</span>
+      </label>
+    </div>
+    <button class="edit-profile-submit" type="submit">save</button>
+  </form>
+</dialog>

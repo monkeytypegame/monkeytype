@@ -1,0 +1,47 @@
+{
+  "language": "code_julia",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "println('Enter the number')\na = readline()\nprintln('Entered the number: ', a)\n\nprintln(parse(Int64, a, 8))\n\nprint(typeof(parse(Int64, a, 8)))",
+      "source": "geeksforgeeks - String to Number Conversion in Julia",
+      "id": 1,
+      "length": 141
+    },
+    {
+      "text": "println('Enter the number')\na = readline()\nprintln('Entered the number: ', a)\n\nprintln('Enter the base(10,8,16,2)') \nbase = readline()\nprintln('Entered base: ', base)\n\nprintln(parse(Int64, a, parse(Int64,base)))\nprint(typeof(parse(Int64, a, parse(Int64,base))))",
+      "source": "geeksforgeeks - String to Number Conversion in Julia",
+      "id": 2,
+      "length": 261
+    },
+    {
+      "text": "println(parse(Float64, '123.345'))\nprint(typeof(parse(Float64, '123.345')))",
+      "source": "geeksforgeeks - String to Number Conversion in Julia",
+      "id": 3,
+      "length": 75
+    },
+    {
+      "text": "Array1 = [1, 2, 3, 4]\nprintln(Array1)\n\nArray2 = [1 2 3; 4 5 6]\nprintln(Array2)\n\nArray3 = cat([1 2; 3 4], [5 6; 7 8], [2 2; 3 4], dims = 3)\nprintln(Array3)",
+      "source": "geeksforgeeks - Arrays in Julia",
+      "id": 4,
+      "length": 154
+    },
+    {
+      "text": "A = [5 10; 15 20]\nprintln(findmax(A, dims = 1))\nprintln(findmax(A, dims = 2))",
+      "source": "geeksforgeeks - Find maximum element along with its index in Julia - findmax() Method",
+      "id": 5,
+      "length": 77
+    },
+    {
+      "text": "using Primes\n\nfunction divisors(n)\n\n\td = Int64[1]\n\n\tfor (p,e) in factor(n)\n\t\tt = Int64[]\n\t\tr = 1\n\n\t\tfor i in 1:e\n\t\t\tr *= p\n\t\t\tfor u in d\n\t\t\t\tpush!(t, u*r)\n\t\t\tend\n\t\tend\n\t\tappend!(d, t)\n\tend\n\n\treturn sort(d)\nend\nprintln(divisors(5040))",
+      "source": "GitHub - trizen/julia-scripts - divisors by Trizen",
+      "id": 6,
+      "length": 233
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+:root {
+  --bg-color: #ada6c2;
+  --main-color: #e4e3e9;
+  --caret-color: #e4e3e9;
+  --sub-color: #e4e3e9;
+  --sub-alt-color: #a19bb9;
+  --text-color: #2f2a41;
+  --error-color: #ca4754;
+  --error-extra-color: #7e2a33;
+  --colorful-error-color: #ca4754;
+  --colorful-error-extra-color: #7e2a33;
+}
+
+nav .textButton {
+  border-radius: 10rem !important;
+  background: var(--text-color);
+  color: var(--main-color);
+}
+
+nav .textButton:hover {
+  color: var(--bg-color);
+  background: var(--text-color);
+}
+
+body.crtmode nav .textButton {
+  box-shadow:
+    3px 0 1px var(--crt-text-color-glow),
+    -3px 0 var(--crt-text-color-glow),
+    0 0 3px;
+}

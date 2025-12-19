@@ -1,0 +1,281 @@
+{
+  "language": "code_javascript",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "//a function that generates random gibberish at random length\n\nexport function getGibberish() {\n\tlet randLen = Math.floor(Math.random() * 7) + 1;\n\tlet ret = \"\";\n\tfor (let i = 0; i < randLen; i++) {\n\t\tret += String.fromCharCode(97 + Math.floor(Math.random() * 26));\n\t}\n\treturn ret;\n}",
+      "source": "Monkeytype Sourcecode",
+      "id": 1,
+      "length": 282
+    },
+    {
+      "text": "export function capitalizeFirstLetter(str) {\n\treturn str.charAt(0).toUpperCase() + str.slice(1);\n}",
+      "source": "Monkeytype Sourcecode",
+      "length": 98,
+      "id": 2
+    },
+    {
+      "text": "export function roundTo2(num) {\n\treturn Math.round((num + Number.EPSILON) * 100) / 100;\n}",
+      "source": "Monkeytype Sourcecode",
+      "length": 89,
+      "id": 3
+    },
+    {
+      "text": "export default function App(props) {\n\treturn (\n\t\t<div {...props}>\n\t\t\tHello World!\n\t\t</div>\n\t);\n}",
+      "source": "Basic React.js Example",
+      "length": 96,
+      "id": 4
+    },
+    {
+      "text": "const arrayToHtmlList = (arr, listID) =>\n\t(el => (\n\t\t(el = document.querySelector('#' + listID)),\n\t\t(el.innerHTML += arr.map(item => `<li>${item}</li>`).join(''))\n\t))();",
+      "source": "GitHub Gist - fatosmorina/array_to_html.js",
+      "length": 169,
+      "id": 5
+    },
+    {
+      "text": "subdivide(quadrant) {\n\tswitch (quadrant) {\n\t\tcase 'ne':\n\t\t\treturn new Rectangle(this.x + this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\n\t\tcase 'nw':\n\t\t\treturn new Rectangle(this.x - this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\n\t\tcase 'se':\n\t\t\treturn new Rectangle(this.x + this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\n\t\tcase 'sw':\n\t\treturn new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\n\t}\n}",
+      "source": "Github - CodingTrain/QuadTree",
+      "length": 462,
+      "id": 6
+    },
+    {
+      "text": "canvas.parent('rgb-Canvas');\nlet colors = [];\nlet labels = [];\nfor (let record of data.entries) {\n\tlet col = [record.r / 255, record.g / 255, record.b / 255];\n\tcolors.push(col);\n\tlabels.push(labelList.indexOf(record.label));\n}",
+      "source": "GitHub - CodingTrain/ColorClassifer-TensorFlow.js",
+      "length": 226,
+      "id": 7
+    },
+    {
+      "text": "$('button').click(function(){\n\t$.post('demo_test_post.asp',\n{\n\t\tname: 'Donald Duck',\n\t\tcity: 'Duckburg'\n\t},\n\tfunction(data, status){\n\t\talert('Data: ' + data + '\nStatus: ' + status);\n\t});\n});",
+      "source": "W3Schools - jQuery Get/Post",
+      "length": 190,
+      "id": 8
+    },
+    {
+      "text": "const points = [40, 100, 1, 5, 25, 10];\n\nfor (let i = points.length -1; i > 0; i--) {\n\tlet j = Math.floor(Math.random() * i)\n\tlet k = points[i]\n\tpoints[i] = points[j]\n\tpoints[j] = k\n}",
+      "source": "W3Schools JS Array Sort - Fisher Bates Method",
+      "length": 183,
+      "id": 9
+    },
+    {
+      "text": "function quicksort(arr){\n\tvar pivot = arr[0];\n\n\tvar left = [];\n\tvar right = [];\n\n\tfor (var i = 1; i < arr.length; i++) {\n\t\tarr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);\n\t}\n\n\treturn quicksort(left).concat(pivot, quicksort(right));\n}",
+      "source": "JavaScript Quicksort Algorithm",
+      "length": 242,
+      "id": 10
+    },
+    {
+      "text": "const disableAnimations = () => {\n\tconst rule = `\n\t\t*,\n\t\t::before,\n\t\t::after {\n\t\t\tanimation: initial !important;\n\t\t\ttransition: initial !important;\n\t\t}\n\t`;\n\n\tconst style = document.createElement('style');\n\tdocument.body.append(style);\n\n\tstyle.sheet.insertRule(rule);\n};",
+      "source": "Sindre Sorhus - capture-website sourcecode",
+      "length": 269,
+      "id": 11
+    },
+    {
+      "text": "export async function fileTypeFromFile(path) {\n\tconst tokenizer = await strtok3.fromFile(path);\n\ttry {\n\t\treturn await fileTypeFromTokenizer(tokenizer);\n\t} finally {\n\t\tawait tokenizer.close();\n\t}\n}",
+      "source": "Sindre Sorhus - file-type sourcecode",
+      "length": 196,
+      "id": 12
+    },
+    {
+      "text": "export class IpNotFoundError extends Error {\n\tconstructor(options) {\n\t\tsuper('Could not get the public IP address', options);\n\t\tthis.name = 'IpNotFoundError';\n\t}\n}",
+      "source": "Sindre Sorhus - public-ip sourcecode",
+      "length": 163,
+      "id": 13
+    },
+    {
+      "text": "function keysSorter(input) {\n\tif (Array.isArray(input)) {\n\t\treturn input.sort();\n\t}\n\n\tif (typeof input === 'object') {\n\t\treturn keysSorter(Object.keys(input))\n\t\t\t.sort((a, b) => Number(a) - Number(b))\n\t\t\t.map(key => input[key]);\n\t}\n\n\treturn input;\n}",
+      "source": "Sindre Sorhus - query-string sourcecode",
+      "length": 249,
+      "id": 14
+    },
+    {
+      "text": "function getHash(url) {\n\tlet hash = '';\n\tconst hashStart = url.indexOf('#');\n\tif (hashStart !== -1) {\n\t\thash = url.slice(hashStart);\n\t}\n\n\treturn hash;\n}",
+      "source": "Sindre Sorhus - query-string sourcecode",
+      "length": 152,
+      "id": 15
+    },
+    {
+      "text": "export default function isJpg(buffer) {\n\tif (!buffer || buffer.length < 3) {\n\t\treturn false;\n\t}\n\n\treturn buffer[0] === 255\n\t\t&& buffer[1] === 216\n\t\t&& buffer[2] === 255;\n}",
+      "source": "Sindre Sorhus - is-jpg sourcecode",
+      "length": 171,
+      "id": 16
+    },
+    {
+      "text": "const UPPERCASE = /[p{Lu}]/u;\nconst LOWERCASE = /[p{Ll}]/u;\nconst LEADING_CAPITAL = /^[p{Lu}](?![p{Lu}])/gu;\nconst IDENTIFIER = /([p{Alpha}p{N}_]|$)/u;\nconst SEPARATORS = /[_.- ]+/;\n\nconst LEADING_SEPARATORS = new RegExp('^' + SEPARATORS.source);\nconst SEPARATORS_AND_IDENTIFIER = new RegExp(SEPARATORS.source + IDENTIFIER.source, 'gu');\nconst NUMBERS_AND_IDENTIFIER = new RegExp('\\d+' + IDENTIFIER.source, 'gu');",
+      "source": "Sindre Sorhus - camelcase sourcecode",
+      "length": 413,
+      "id": 17
+    },
+    {
+      "text": "navigator.serviceWorker.onmessage = function(event) {\n\tlet data = event.data.message\n\tlet text = JSON.stringify(JSON.parse(data), null, 2)\n\n\tdocument.getElementById(\"receivedNotifications\").innerHTML +=\n\t\"<pre><code>\" + text + \"</code></pre>\"\n}",
+      "source": "Zanin Andrea - web-push-tester sourcecode",
+      "length": 244,
+      "id": 18
+    },
+    {
+      "text": "if (!req.query.url) {\n\tres.send(\"you should pass a url parameter\")\n}\nconst filename = \"./cache/\" + sanitize(req.query.url) + \"-\" +req.query.width + \"-\" + req.query.height\n\nconst thumbnailResizer = sharp()\n\t.resize(req.query.width ? parseInt(req.query.width) : null, req.query.height ? parseInt(req.query.height) : null)\n\t.rotate()\n\t.png();",
+      "source": "Zanin Andrea - image_resizer sourcecode",
+      "length": 339,
+      "id": 19
+    },
+    {
+      "text": "function delay(func, wait, ...args) {\n\tif (typeof func !== \"function\") {\n\t\tthrow new TypeError(\"Expected a function\");\n\t}\n\treturn setTimeout(func, +wait || 0, ...args);\n}",
+      "source": "Lodash - delay sourcecode",
+      "length": 170,
+      "id": 20
+    },
+    {
+      "text": "function intersectionWith(...arrays) {\n\tlet comparator = last(arrays)\n\tconst mapped = map(arrays, castArrayLikeObject)\n\n\tcomparator = typeof comparator === \"function\" ? comparator : undefined\n\tif (comparator) {\n\t\tmapped.pop()\n\t}\n\treturn mapped.length && mapped[0] === arrays[0]\n\t\t? baseIntersection(mapped, undefined, comparator)\n\t\t: []\n}",
+      "source": "Lodash - intersectionWith sourcecode",
+      "length": 338,
+      "id": 21
+    },
+    {
+      "text": "function invert(object) {\n\tconst result = {}\n\tObject.keys(object).forEach((key) => {\n\t\tlet value = object[key]\n\t\tif (value != null && typeof value.toString !== \"function\") {\n\t\t\tvalue = toString.call(value)\n\t\t}\n\t\tresult[value] = key\n\t})\n\treturn result\n}",
+      "source": "Lodash - invert sourcecode",
+      "length": 252,
+      "id": 22
+    },
+    {
+      "text": "export default function memoize(func, hasher) {\n\tvar memoize = function (key) {\n\t\tvar cache = memoize.cache\n\t\tvar address = \"\" + (hasher ? hasher.apply(this, arguments) : key)\n\t\tif (!has(cache, address)) cache[address] = func.apply(this, arguments)\n\t\treturn cache[address]\n\t}\n\tmemoize.cache = {}\n\treturn memoize\n}",
+      "source": "Underscore - memoize sourcecode",
+      "length": 313,
+      "id": 23
+    },
+    {
+      "text": "export default function unzip(array) {\n\tvar length = array && max(array, getLength).length || 0;\n\tvar result = Array(length);\n\n\tfor (var index = 0; index < length; index++) {\n\t\tresult[index] = pluck(array, index);\n\t}\n\treturn result;\n}",
+      "source": "Underscore - unzip sourcecode",
+      "length": 234,
+      "id": 24
+    },
+    {
+      "text": "const fibSequence = [1]\n\nlet currentValue = 1\nlet previousValue = 0\n\nif (n === 1) {\n\treturn fibSequence\n}\n\nlet iterationsCounter = n - 1\n\nwhile (iterationsCounter) {\n\tcurrentValue += previousValue\n\tpreviousValue = currentValue - previousValue\n\n\tfibSequence.push(currentValue)\n\n\titerationsCounter -= 1\n}",
+      "source": "trekhleb/javascript-algorithms - fibonacci sourcecode",
+      "length": 302,
+      "id": 25
+    },
+    {
+      "text": "class BinarySearchTree {\n\tconstructor(nodeValueCompareFunction) {\n\t\tthis.root = new BinarySearchTreeNode(null, nodeValueCompareFunction)\n\t\tthis.nodeComparator = this.root.nodeComparator\n\t}\n\n\tinsert(value) {\n\t\treturn this.root.insert(value)\n\t}\n\n\tcontains(value) {\n\t\treturn this.root.contains(value)\n\t}\n\n\tremove(value) {\n\t\treturn this.root.remove(value)\n\t}\n\n\ttoString() {\n\t\treturn this.root.toString()\n\t}\n}",
+      "source": "trekhleb/javascript-algorithms - Binary Search Tree sourcecode",
+      "length": 404,
+      "id": 26
+    },
+    {
+      "text": "const product = []\n\nfor (let indexA = 0; indexA < setA.length; indexA += 1) {\n\tfor (let indexB = 0; indexB < setB.length; indexB += 1) {\n\t\t// Add current product pair to the product set.\n\t\tproduct.push([setA[indexA], setB[indexB]])\n\t}\n}",
+      "source": "trekhleb/javascript-algorithms - Cartesian Product sourcecode",
+      "length": 236,
+      "id": 27
+    },
+    {
+      "text": "function fisherYates(originalArray) {\n\tconst array = originalArray.slice(0)\n\n\tfor (let i = array.length - 1; i > 0; i -= 1) {\n\t\tconst randomIndex = Math.floor(Math.random() * (i + 1));\n\t\t[array[i], array[randomIndex]] = [array[randomIndex], array[i]]\n\t}\n\n\treturn array\n}",
+      "source": "trekhleb/javascript-algorithms - Fisher-Yates sourcecode",
+      "length": 270,
+      "id": 28
+    },
+    {
+      "text": "const getRandomNumber = (min, max) => Math.random() * (max - min) + min\ngetRandomNumber(2, 10)\n\nconst getRandomNumberInclusive = (min, max) => {\n\tmin = Math.ceil(min)\n\tmax = Math.floor(max)\n\treturn Math.floor(Math.random() * (max - min + 1)) + min\n}\ngetRandomNumberInclusive(2, 10)",
+      "source": "JSsnippets - random number sourcecode",
+      "length": 281,
+      "id": 29
+    },
+    {
+      "text": "const span = document.querySelector(\"span\")\nlet classes = span.classList\n\nspan.addEventListener(\"click\", function () {\n\tlet result = classes.toggle(\"active\")\n\n\tif (result) {\n\t\tconsole.log(\"active class was added\")\n\t} else {\n\t\tconsole.log(\"active class was removed\")\n\t}\n})",
+      "source": "JSsnippets - JS toggle sourcecode",
+      "length": 271,
+      "id": 30
+    },
+    {
+      "text": "function cuid() {\n\tlet letter = \"c\" // hard-coded allows for sequential access\n\n\tlet timestamp = new Date().getTime().toString(base)\n\t// Prevent same-machine collisions.\n\tlet counter = pad(safeCounter().toString(base), blockSize)\n\tlet print = fingerprint()\n\tlet random = randomBlock() + randomBlock()\n\n\treturn letter + timestamp + counter + print + random\n}",
+      "source": "Eric Elliot - cuid sourcecode",
+      "length": 357,
+      "id": 31
+    },
+    {
+      "text": "const [isEditing, setisEditing] = useState(false)\n\nconst handleNameClick = () => setisEditing(!isEditing)\n\nconst statuses = [\n\t{ name: \"accepted\", value: \"Accepted\" },\n\t{ name: \"rejected\", value: \"Rejected\" },\n\t{ name: \"unanswered\", value: \"Unanswered\" },\n]",
+      "source": "thijsgadiot - rejection sourcecode",
+      "length": 257,
+      "id": 32
+    },
+    {
+      "text": "function createSalt(keyLength, callback) {\n\tcrypto.randomBytes(keyLength, function (err, buff) {\n\t\tif (err) {\n\t\t\treturn callback(err)\n\t\t}\n\t\tcallback(null, buff.toString(\"base64\"))\n\t})\n}",
+      "source": "Eric Elliot - credential sourcecode",
+      "length": 185,
+      "id": 33
+    },
+    {
+      "text": "export function quadratic(a, b, c) {\n\tif (nearlyEquals(a, 0) && nearlyEquals(b, 0)) return []\n\tif (nearlyEquals(a, 0)) return [-c / b]\n\n\tconst p = -b / 2 / a\n\tconst q = Math.sqrt(b * b - 4 * a * c) / 2 / a\n\treturn [p + q, p - q]\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 230,
+      "id": 34
+    },
+    {
+      "text": "function binomial(n, k) {\n\tif (k < 0 || k > n) return 0\n\tif (k === 0) return 1\n\tif (2 * k > n) return binomial(n, n - k)\n\n\tlet coeff = 1\n\tfor (let i = 1; i <= k; ++i) coeff *= (n - i + 1) / i\n\treturn Math.round(coeff)\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 219,
+      "id": 35
+    },
+    {
+      "text": "if (typeof c1 === \"number\") c1 = new Complex(c1, 0)\nif (typeof c2 === \"number\") c2 = new Complex(c2, 0)\n\nconst re = c1.re * c2.re - c1.im * c2.im\nconst im = c1.im * c2.re + c1.re * c2.im\nreturn new Complex(re, im)",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 213,
+      "id": 36
+    },
+    {
+      "text": "if (typeof c1 === \"number\") c1 = new Complex(c1, 0)\nif (typeof c2 === \"number\") c2 = new Complex(c2, 0)\n\nif (Math.abs(c2.re) < Number.EPSILON || Math.abs(c2.im) < Number.EPSILON) {\n\treturn new Complex(Infinity, Infinity)\n}\n\nconst denominator = c2.re * c2.re + c2.im * c2.im\nconst re = (c1.re * c2.re + c1.im * c2.im) / denominator\nconst im = (c1.im * c2.re - c1.re * c2.im) / denominator\n\nreturn new Complex(re, im)",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 415,
+      "id": 37
+    },
+    {
+      "text": "function rotation(angle) {\n\tconst sin = Math.sin(angle)\n\tconst cos = Math.cos(angle)\n\treturn [\n\t\t[cos, -sin],\n\t\t[sin, cos],\n\t]\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 128,
+      "id": 38
+    },
+    {
+      "text": "const T = []\nfor (let j = 0; j < M[0].length; ++j) {\n\tconst row = []\n\tfor (let i = 0; i < M.length; ++i) {\n\t\trow.push(M[i][j])\n\t}\n\tT.push(row)\n}\nreturn T",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 153,
+      "id": 39
+    },
+    {
+      "text": "function poisson(l = 1) {\n\tif (l <= 0) return 0\n\tconst L = Math.exp(-l)\n\tlet p = 1\n\n\tlet k = 0\n\tfor (; p > L; ++k) p *= Math.random()\n\treturn k - 1\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 149,
+      "id": 40
+    },
+    {
+      "text": "export function normalPDF(x: number, m = 1, v = 0) {\n\treturn Math.exp(-((x - m) ** 2) / (2 * v)) / Math.sqrt(2 * Math.PI * v)\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 127,
+      "id": 41
+    },
+    {
+      "text": "if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z))\n\nz -= 1\nlet x = P[0]\nfor (let i = 1; i < G + 2; i++) x += P[i] / (z + i)\nconst t = z + G + 0.5\n\nreturn Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 236,
+      "id": 42
+    },
+    {
+      "text": "const date = toDate(dirtyDate)\nconst amount = toInteger(dirtyAmount)\nif (isNaN(amount)) {\n\treturn new Date(NaN)\n}\nif (!amount) {\n\t// If 0 days, no-op to avoid changing times in the hour before end of DST\n\treturn date\n}\ndate.setDate(date.getDate() + amount)\nreturn date",
+      "source": "date-fns sourcecode",
+      "length": 268,
+      "id": 43
+    },
+    {
+      "text": "function toLatLng (str) {\r\n\tvar match = /^\\s*?(-?[0-9]+\\.?[0-9]+?)\\s*,\\s*(-?[0-9]+\\.?[0-9]+?)\\s*$/.exec(str);\r\n\r\n\tif (match && match.length === 3) {\r\n\t\tvar lat = parseFloat(match[1]);\r\n\t\tvar lng = parseFloat(match[2]);\r\n\r\n\t\tif ((lat >= -90) && (lat <= 90) && (lng >= -180) && (lng <= 180)) {\r\n\t\t\treturn [lat, lng];\r\n\t\t}\r\n\t\telse {\r\n\t\t\treturn null;\r\n\t\t}\r\n\t}\r\n\treturn null;\r\n}",
+      "source": "Mark Stosberg - parse-coordinates sourcecode",
+      "length": 373,
+      "id": 44
+    },
+    {
+      "text": "/** @type {import('postcss-load-config').Config} */\nconst config = {\n\tparser: \"postcss-scss\",\n\tplugins: [require(\"autoprefixer\")],\n};\n\nmodule.exports = config;",
+      "source": "Monkeytype Sourcecode",
+      "length": 159,
+      "id": 45
+    }
+  ]
+}

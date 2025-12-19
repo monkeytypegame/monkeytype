@@ -1,0 +1,56 @@
+:root {
+  --bg-color: #ffffff;
+  --main-color: #2d2076;
+  --caret-color: #fbdb8c;
+  --sub-color: #385eca;
+  --sub-alt-color: #c8cedf;
+  --text-color: #2d2076;
+  --error-color: #f2ce83;
+  --error-extra-color: #f2ce83;
+  --colorful-error-color: #f2ce83;
+  --colorful-error-extra-color: #f2ce83;
+}
+
+nav > .textButton {
+  color: #f2ce83;
+}
+
+nav > .textButton:hover {
+  color: #c6915e;
+}
+
+header #logo .text {
+  background-color: #ffffff; /* fallback */
+  background: -webkit-linear-gradient(
+    #2d2076,
+    #2d2076 25%,
+    #2e3395 25%,
+    #2e3395 50%,
+    #3049ba 50%,
+    #3049ba 75%,
+    #385eca 75%,
+    #385eca
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.1em;
+}
+
+/* fix logo clipping */
+header #logo .icon {
+  padding-bottom: 0.05em;
+}
+nav {
+  padding-bottom: 0.2em;
+}
+
+header {
+  margin-bottom: -0.1em;
+}
+/*  */
+
+header #logo .text .top {
+  /* prevent it from being transparent */
+  -webkit-text-fill-color: #385eca;
+}

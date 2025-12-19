@@ -1,0 +1,56 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env"],
+  "tasks": {
+    "parallel": {
+      "dependsOn": ["^parallel"]
+    },
+    "lint": {
+      "dependsOn": ["^parallel", "^build"]
+    },
+    "lint-fast": {
+      "dependsOn": ["^parallel", "^build"]
+    },
+    "ts-check": {
+      "dependsOn": ["^parallel"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "integration-test": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "start": {
+      "dependsOn": ["build"]
+    },
+    "@monkeytype/frontend#check-assets": {
+      "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
+    },
+    "@monkeytype/frontend#build": {
+      "dependsOn": ["^build"],
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SENTRY"],
+      "outputs": ["dist/**"]
+    },
+    "@monkeytype/frontend#dev": {
+      "dependsOn": ["^build"],
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SERVER_OPEN"],
+      "persistent": true
+    },
+    "@monkeytype/backend#dev": {
+      "dependsOn": ["^build"],
+      "env": ["DB_URI", "REDIS_URI", "PORT"],
+      "persistent": true
+    }
+  }
+}

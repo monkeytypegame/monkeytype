@@ -1,0 +1,46 @@
+extends:
+  - recommended
+
+apis:
+  internal@v2:
+    root: dist/static/api/openapi.json
+  public-filter:
+    root: dist/static/api/openapi.json
+    decorators:
+      filter-in:
+        property: x-public
+        value: yes
+  public@v2:
+    root: dist/static/api/public.json
+
+openapi:
+  theme:
+    logo:
+      gutter: "2rem"
+    colors:
+      primary:
+        main: "#e2b714"
+      border:
+        dark: "#e2b714"
+        light: "#e2b714"
+      error:
+        main: "#da3333"
+      success:
+        main: "#009400"
+      text:
+        primary: "#646669"
+        secondary: "#d1d0c5"
+      warning:
+        main: "#FF00FF"
+      http:
+        delete: "#da3333"
+        post: "#004D94"
+        patch: "#af8d0f"
+        get: "#009400"
+    sidebar:
+      backgroundColor: "#323437"
+      textColor: "#d1d0c5"
+      activeTextColor: "#e2b714"
+    rightPanel:
+      backgroundColor: "#323437"
+      textColor: "#d1d0c5"

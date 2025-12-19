@@ -1,0 +1,103 @@
+@media only screen and (max-width: calc(1280px + 5rem)) {
+  #mediaQueryDebug {
+    background: #ffee58;
+    &::before {
+      content: "yellow";
+    }
+  }
+  .content-grid {
+    --content-max-width: 1024px;
+  }
+  .pageSettings {
+    .section {
+      grid-template-columns: 1.5fr 1fr;
+      &.themes .tabContainer .tabContent.customTheme {
+        .customThemeInputs .customThemeInput {
+          grid-template-columns: 15em 1fr;
+        }
+      }
+    }
+  }
+  .pageAccountSettings .main {
+    gap: 2rem;
+    .right .tab .section {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: auto 250px;
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+  .pageTest {
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 9rem;
+    }
+  }
+  #customTextModal {
+    .modal {
+      .buttonsTop {
+        grid-template-columns: 1fr 1fr;
+      }
+      // textarea {
+      //   min-height: 426px;
+      // }
+    }
+  }
+  .testActivity {
+    --box-size: 0.9em;
+    --font-size: 0.9em;
+    // .days {
+    //   font-size: 0.8em;
+    // }
+    .activity div,
+    .legend div {
+      height: var(--box-size);
+    }
+    .days {
+      display: grid;
+    }
+    .daysFull {
+      display: none;
+    }
+  }
+  .pageLeaderboards {
+    .content .tableAndUser {
+      font-size: 0.9rem;
+      .bigUser {
+        grid-template-columns: auto 1fr auto auto auto;
+      }
+      .narrow {
+        display: table-cell;
+      }
+      .wide {
+        display: none;
+      }
+      table tbody {
+        td.date {
+          font-size: 1em;
+        }
+      }
+      table td {
+        padding: 1em;
+      }
+      .bigUser {
+        padding: 1em;
+      }
+    }
+  }
+  .pageFriends {
+    .content .friends table,
+    .content .pendingRequests table {
+      font-size: 0.9rem;
+
+      .badge .text {
+        display: none;
+      }
+    }
+  }
+}

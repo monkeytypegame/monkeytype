@@ -1,0 +1,299 @@
+{
+  "language": "norwegian_nynorsk",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Hjelp eit menneske i motbakke, ikkje når han kommer opp.",
+      "source": "Ordtak",
+      "id": 1,
+      "length": 56
+    },
+    {
+      "text": "Det kunne vore verre! Det hadde ikkje vore betre, det...",
+      "source": "Ordtak",
+      "id": 2,
+      "length": 56
+    },
+    {
+      "text": "Når uløkka er ute, kan ein skjera seg i fua på ein smørkule.",
+      "source": "Ordtak",
+      "id": 3,
+      "length": 60
+    },
+    {
+      "text": "Eit ljos brenn ikkje dårligare om ein kveikjer eit annat med det.",
+      "source": "Ordtak",
+      "id": 4,
+      "length": 65
+    },
+    {
+      "text": "Ein høg himmel, ein brei fjord, eit landskap like frodig som Cuba.",
+      "source": "Ordtak",
+      "id": 5,
+      "length": 66
+    },
+    {
+      "text": "Nøtt' itte å bygge bil da vettu, når'n itte eier nåla i veggen.",
+      "source": "Flåklypa Grand Prix, Reodor Felgen",
+      "id": 6,
+      "length": 63
+    },
+    {
+      "text": "Kjøra! Kjøra! Farli' norsk hengebro', Kjøra! Tempo! Kjøra!",
+      "source": "Flåypa Grand Prix, Ben Redic Fy Fazan",
+      "id": 7,
+      "length": 58
+    },
+    {
+      "text": "Ååå... Det var vondt det... Har aldri hatt det så vondt. Att det går ann å ha det så vondt a!",
+      "source": "Flåklypa Grand Prix, Ludvig",
+      "id": 8,
+      "length": 93
+    },
+    {
+      "text": "Næ jø så nøfyse! No' så fryktelig nøfyse! Æ'kke detta fali' så veit ikke jeg hva som er fali'!",
+      "source": "Flåklypa Grand Prix, Ludvig",
+      "id": 9,
+      "length": 94
+    },
+    {
+      "text": "Je e villi tell når som helst, hvor som helst, å møte åkken som helst.",
+      "source": "Flåklypa Grand Prix, Rudolf Blodstrupmoen",
+      "id": 10,
+      "length": 70
+    },
+    {
+      "text": "Eg helsar Fy Fazan fra ørkenlandet, og dét har nokon og kvar fått sanne at denne sjeiken var stinn tå gryn! For oppfinnaren han kjensle fekk, og skreiv så ut ein stor, gild sjekk slik at på startstreken no til helgen stiller sykkelreparatør Reodor Felgen opp med noko som triller fort og som bærer navnet på denne kantante: Racerbilen Il Tempo Gigante.",
+      "source": "Flåklypa Grand Prix, Hallstein Bronskimlet",
+      "id": 11,
+      "length": 352
+    },
+    {
+      "text": "Nordisk Råds litteraturpris kan gjenge dit den vil for meg. Eg hev folketrygda!",
+      "source": "Flåklypa Tidende, Hallstein Bronskimlet d.a.y.",
+      "id": 12,
+      "length": 79
+    },
+    {
+      "text": "Eg likte bedre når folk satt i ro, hadde stripete dressar. Og så røkte de - satt og røkte, heilt roleg.. stripete dressar. Det er sånn fjernsyn som eg kunne forhalde meg til.",
+      "source": "Ragnar Hovland",
+      "id": 13,
+      "length": 174
+    },
+    {
+      "text": "Dersom det skal vere nokon vits i å skrive ei barnebok, må det også vere ei vaksenbok i ho.",
+      "source": "Ragnar Hovland",
+      "id": 14,
+      "length": 91
+    },
+    {
+      "text": "For å skrive romanar må ein først og fremst vere fylt av eit kontrollert raseri og ei kjensle av at ein skal ut og ta dei, jævlane.",
+      "source": "Ragnar Hovland",
+      "id": 15,
+      "length": 131
+    },
+    {
+      "text": "Har du sagt A, så har du sagt A. Verden vil både bedras og bedra. Kem bryr seg om at rett har blitt makt, Eller ka skriftå på veggen har sagt. Livet e lurvete, Skabbete , skurvete. Løgnen har ordet, og løgnen må le. For Løgnen e møkkete, Krokete, krøkkete. Og sannheten e kje te leva med.",
+      "source": "Ingvar Hovland, Har du sagt A, så har du sagt A",
+      "id": 16,
+      "length": 288
+    },
+    {
+      "text": "To somrar, på NRKs distriktskontor i Ålesund. Eg lærte mykje dei to somrane. Det er eg heilt sikker på. Men eg hugsar berre to ting. Eg lærte at det er utrulig kor mykje nyheiter det er mulig å lage om fisk. Og eg lærte at dersom det ikkje finst nyheiter, så er det berre å spørje folk om noko. Det var ikkje ofte at det ikkje fanst nyheiter, men eg hugsar i alle fall ein gong. Alt var prøvd. Vi hadde vore gjennom alle fiskeslaga. Vi hadde ringt alle fiskarorganisasjonane. Vi hadde snakka med fiskebåtreiarane. Vi hadde sjekka om det var nokre nye lakseparasittar på gang. Niks. Null. Nada.",
+      "source": "Are Kalvø",
+      "id": 17,
+      "length": 593
+    },
+    {
+      "text": "Lenge har det vore eit mål å få folk til å flytte tilbake til bygdene. Ein har prøvd å nå dette målet ved å apellere til folks samfunnsånd og fortelje ungdom med stor studiegjeld at det kanskje er litt korttenkt å skaffe seg ein spennande og godt betalt jobb i Oslo når det går an å sitte arbeidslaus på Vestlandet og sjå på eit fjell. Av ein eller annan grunn har denne politikken berre vore sånn måtelig vellykka.",
+      "source": "Are Kalvø",
+      "id": 18,
+      "length": 415
+    },
+    {
+      "text": "Det levande har ikkje skal. Skal trengs ikkje no. Ikkje noko måhaldast unna. Berre tid er av betydning. Tid kjem. Tid tar av den tid som alt levande har. Mellom blaute dyr finst ikkje luft. Lag på lag med daude, blaute dyr, lagar botnen av grunnen. Utvikling gjer at blautdyr får skal. Vi kallar det vekst. Dyr får skal. Skaldyr blir mange formar skaldyr. Alle sine skal fulle av kalk. Dei døyr. Ramlar til botnen av hav. Born av hav blir pressa saman, til eit skal om kloden. For skal treng kloden. Først for å forsvare alt levande mot sin kraft. Seinare for ikkje lokke det levande til å misbruke kloda sin kraft.",
+      "source": "Mette Karlsvik, Vekstvilkår",
+      "id": 19,
+      "length": 615
+    },
+    {
+      "text": "Frå Atlanterhavets rygg står flammar opp. Overalt er han spektakulær, den gedigne flammeknoppen. Men særskilt er det, lengst i nord; når flammane bryt is, blir det store kontrastar. I skåret syner kloden at han har ein heit kropp. Over isen over vatnet, over eit vatn i isbreen, over ein tung gass, blir han forma: grunn alabast.",
+      "source": "Mette Karlsvik, Varmá",
+      "id": 20,
+      "length": 329
+    },
+    {
+      "text": "Verten skjenkte oppi ein kopp av den typen som er så liten at når du har drukke han så hugsar du det ikkje, og når dei krev betaling av deg tar du det for ein spøk, og når du ser at det er alvorleg meint begynner du å reflektere over kor absurd verda er og kva er meininga med alt saman.",
+      "source": "Ragnar Hovland, Sveve over vatna",
+      "id": 21,
+      "length": 287
+    },
+    {
+      "text": "Mennesket, tenkte eg, dette underlege dyret som svevar over vatna. Det går både opp og ned med det, men ein sjelden gong når det heilt svimlande høgder av stordom.",
+      "source": "Ragnar Hovland, Sveve over vatna",
+      "id": 22,
+      "length": 163
+    },
+    {
+      "text": "Det fanst sjølvsagt ingen heis, men i fellesskap fekk vi kofferten opp.",
+      "source": "Ragnar Hovland, Sveve over vatna",
+      "id": 23,
+      "length": 71
+    },
+    {
+      "text": "Vi skulder alle Gud ein død, slik vi skulder Lånekassen eit semester vekttal.",
+      "source": "Ragnar Hovland, Sveve over vatna",
+      "id": 24,
+      "length": 77
+    },
+    {
+      "text": "Å, langrenn, du lukt av tjøre, du lyd av skarpe og mjuke krystallar, du lys av ein eigen himmel. Du idrett av fysikk og av sjølvstendigheit. Du nasjonale av alle idrettar, som Nansen sa. Vi smurte oss bort frå deg.",
+      "source": "Gudmund Skjeldal",
+      "id": 25,
+      "length": 214
+    },
+    {
+      "text": "Dæm har itj sjans! Det e så lett! Barneskirenn!",
+      "source": "Petter Northug",
+      "id": 26,
+      "length": 47
+    },
+    {
+      "text": "Det var så kaldt den dagen je vart født at je sku' ønske det hadde vørti utsatt.",
+      "source": "Tor Karseth, La det flara",
+      "id": 27,
+      "length": 80
+    },
+    {
+      "text": "Gje ungdommen ei flaska brennevin før idretten tar de.",
+      "source": "Per Inge Torkelsen",
+      "id": 28,
+      "length": 54
+    },
+    {
+      "text": "Tungt det er tunga å røra; eg orkar mest ikkje anden å draga. Det er ikkje von eg vinn å kveda, frå djupet i hugen henta opp kvedskap.",
+      "source": "Egilssoga, Sonetapet",
+      "id": 29,
+      "length": 134
+    },
+    {
+      "text": "Betre bør ber ingen på vegen enn mykje mannevit. Verre niste på vegen har ingen enn ovdrykk av øl. Fe døyr, frendar døyr, ein sjølv døyr òg. Eg veit éitt som aldri døyr, domen om kvar ein daud.",
+      "source": "Den eldre Edda, Håvamål",
+      "id": 30,
+      "length": 193
+    },
+    {
+      "text": "Ein kan naturlegvis lure på kva dette med det underlege og ugripelege i måten snøen snøar på og dette med å ikkje vere klar over kva noko er, før ein brått blir klar over det, har å gjere med omgrepet \"audmjuk\". Og her skulle det ha kome ei god og imponerande forklaring. Men eg har problem med å sjå nokon samanheng. Sanninga er at eg sat ved pulten min i klasserommet og såg ut av vindauget, på dette snøvêret, eg sat vel rettare sagt og stira inn i dette snøvêret, medan ein frase gjekk om att og om att inne i hovudet mitt, om lag som på ein karusell: \"Audmjuk tenar. Audmjuk tenar. Audmjuk tenar.\"",
+      "source": "Gunnhild Øyehaug, Stol og ekstase, Ei drøfting av omgrepet audmjuk",
+      "id": 31,
+      "length": 602
+    },
+    {
+      "text": "Når du var i barnehagen på dagtid, sat vi bak pc-ar på jobben og kjende oss tomme for vilje og håp, før vi samla oss og begynte å fyre kvarandre opp med meldingar, visste at vi kunne, visste kva vi måtte gjere, det var berre å gjere det, vi var einige, og då det var tid for henting i barnehagen, stod vi begge klare med rak rygg og milde smil. Men du gjennomskoda oss kvar dag, og heldt fram med di uforståelege veksling mellom passivitet og sinne. Du såg ikkje på oss, eller så såg du på oss med uutgrundelege auge som vi ikkje forstod, men likevel la altfor mykje meining i. Du såg på oss der innanfrå, og dømte skodespelet vårt.",
+      "source": "Olaug Nilssen, Tung tids tale",
+      "id": 32,
+      "length": 632
+    },
+    {
+      "text": "Toget dundrar og går. Sat ein oppe i ein ås, ville toget likne ein orm som vrid seg fram og har ein glo å sjå eit fattig stykke framfor seg med. Og med nokre fattige ljos bakover langs kroppen. I ei veldig natt. Ein elendig liten orm.",
+      "source": "Tarjei Vesaas, Vindane, Fall",
+      "id": 33,
+      "length": 234
+    },
+    {
+      "text": "Folk klagar over blodspor på fortauet. Folk vil ikkje sjå ferske flekkar spreidde i betongen. Folk vil ikkje vite at kvinna dreg hjartet sitt med seg overalt, at ho ikkje slepper taket i gåvesnora. Folk fnyser, folk meiner. Nokre seier direkte til henne at ho heller burde skaffe seg ein hund.",
+      "source": "Marit O. Kaldhol, Mjølketannmuseet, Blodspor",
+      "id": 34,
+      "length": 293
+    },
+    {
+      "text": "Geir kika utover. Det var i grunnen lite folk ute til å vere dette tidspunktet på føremiddagen. Det måtte vere glattisen som skremde folk frå å ta dei vante turane sine. Han greip etter sjokoldaplata som låg i setet ved sida av, og akkurat då såg han i augnekroken Asle stå bak fabrikkveggen som starta der den gamle, morkne kaia låg.",
+      "source": "Gunnhild Øyehaug, Knutar, Lette, lande",
+      "id": 35,
+      "length": 334
+    },
+    {
+      "text": "Millom Bakkar og Berg ut med Havet heve Nordmannen fenget sin Heim, der han sjølv heve Tufterna gravet og sett sjølv sine Hus uppaa deim.",
+      "source": "Ivar Aasen, Nordmannen",
+      "id": 36,
+      "length": 137
+    },
+    {
+      "text": "Det har vori reint for stridt i det siste, tenker han. Det har teki meg inn til beinet. Du får bremse. Gå inn og legg deg som eit anna menneske. Men det kan ikkje forklarast. Trur du ikkje dei tenkte på dei andre her òg i kveld? Høyrde du ikkje kor dei haspa og stengde seg inn. Og høyr toget. Det er underleg med toget og med natta. Ja, gå inn og legg deg.",
+      "source": "Tarjei Vesaas, Vindane, Fall",
+      "id": 37,
+      "length": 357
+    },
+    {
+      "text": "Eg kjenner eg er kvinne, grodd av jord og ikkje skapt av usselt ribbebein. Eg kjenner meg i slekt med gras som gror, med henne som vart steina og med dei som kasta stein.",
+      "source": "Marie Takvam, Merke etter liv, Det glade raseri",
+      "id": 38,
+      "length": 170
+    },
+    {
+      "text": "Eg er so gamal eg held meg til ljå. Stilt syng han i graset, og tankane kan gå. Det gjer ikkje vondt heller, segjer graset, å falla for ljå.",
+      "source": "Olav H. Hauge, Dropar i austavind, Ljåen",
+      "id": 39,
+      "length": 140
+    },
+    {
+      "text": "Eg er berre ei sleggje. Eg stend der no. Eg lyt berre til når det røyner på.",
+      "source": "Olav H. Hauge, Dropar i austavind, Sleggja",
+      "id": 40,
+      "length": 76
+    },
+    {
+      "text": "Skrat, segjer sagi. Stød ved. Ho segjer kva ho tykkjer, sagi.",
+      "source": "Olav H. Hauge, Dropar i austavind, Sagi",
+      "id": 41,
+      "length": 61
+    },
+    {
+      "text": "På andre sida av dei skrå jernbretta er omnane. Martin Anda  og Olsen har slått seg ned på ein benk for å sjå på tappen. På dei små menneska som arbeider i det veldige rommet. Dei lange surstoffrøyra blir pressa inn mot kolet. Metallet smeltar som voks. Så går det hol, og metallet fløymer nedover i renna. Hallen flammar opp. Mennene sveittar i varmen. Kranar som løfter beholdarar med flytande metall glir under taket. På golvet går dei svarte mennene med hakar og stenger. Når metallet blir tømt i avkjølingsformene, sprutar gneistane mot taket. Hallen blir strålande lys. Det er eit overdøyvande bråk. Formannen står framfor dei.",
+      "source": "Tor Obrestad, Sauda! Streik, I fabrikken",
+      "id": 42,
+      "length": 633
+    },
+    {
+      "text": "Slik prøver kapitalen å få arbeidaren i tale. Og derfor kjem dei aldri på talefot. Kapitalen får ikkje arbeidarens sjel og ikkje hans skaparkraft. Slik er klassekampen noko konkret og nærverande på alle nivå i fabrikken.",
+      "source": "Tor Obrestad, Sauda! Streik!, I fabrikken",
+      "id": 43,
+      "length": 220
+    },
+    {
+      "text": "Koss kan vi få eit tillitsforhold? Dei brukar styringsretten i kvar minste detalj. Dersom du prøver å gjere ditt beste og arbeider nøyaktig, får du ingen takk.",
+      "source": "Tor Obrestad, Sauda! Streik!, I fabrikken",
+      "id": 44,
+      "length": 159
+    },
+    {
+      "text": "Dei kjører så lenge med reiskapen at den blir nedsliten slik at den ikkje kan rettast opp att. Ingen vågar å rapportere om dårleg vedlikehald. Dei er redde for bråk. For å miste jobben. Dei kjører heller til dess det ikkje er filla att og tenker: \"Det held for meg. Neste mann får ta bråket\".",
+      "source": "Tor Obrestad, Sauda! Streik!, I fabrikken",
+      "id": 45,
+      "length": 292
+    },
+    {
+      "text": "Far, eg er så trøtt i beina. Faren stanser. Opnar kofferten. Bare eit par skjortar der. Faren puttar barnet i kofferten. Så går han vidare.",
+      "source": "Marit Kaldhol, Signaler, Mann med koffert",
+      "id": 46,
+      "length": 139
+    },
+    {
+      "text": "Same kor mykje bestemor mi fôra og klipte sauer, mjølka kyr, mòka møkk og lempa stein, så var det ingen som kalla henne bonde, ho var kvinnfolk, kjerring, ein sjeldan gong dame eller kvinne om nokon jåla seg til i språket.",
+      "source": "Sigmund Løvåsen, Med øksene dei haustar inn, Kvinnene i kulturlandskapet",
+      "id": 47,
+      "length": 222
+    },
+    {
+      "text": "Den beste måten å øve opp ein brekt finger på, er å spele fiolin.",
+      "source": "Ordtak",
+      "id": 48,
+      "length": 65
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+name: "Mark Stale PRs"
+on:
+  schedule:
+    - cron: "30 20 * * *"
+
+permissions:
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v8
+        with:
+          stale-pr-message: "This PR is stale. Please trigger a re-run of the PR check action."
+          days-before-stale: 7

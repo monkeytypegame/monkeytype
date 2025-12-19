@@ -1,0 +1,306 @@
+:root {
+  --bg-color: #f5f5f5;
+  --main-color: #363636;
+  --caret-color: #0d0d0d;
+  --sub-color: #4f4f4f;
+  --sub-alt-color: #e0e0e0;
+  --text-color: #1f1f1f;
+  --error-color: #ff0008;
+  --colorful-error-color: #ff0008;
+}
+
+header #logo .text {
+  background: linear-gradient(
+    90deg,
+    #60b6ce,
+    #7ce3e1,
+    #b2e259,
+    #f6ee75,
+    #f5b83d,
+    #f49a98,
+    #ed7abd,
+    #dea2fa,
+    #a966f5
+  );
+  background-size: 500% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-gradient 30s alternate ease-in-out infinite;
+  padding-bottom: 0.1em;
+}
+
+/* fix logo clipping */
+header #logo .icon {
+  padding-bottom: 0.05em;
+}
+nav {
+  padding-bottom: 0.2em;
+}
+
+header {
+  margin-bottom: -0.1em;
+}
+/*  */
+
+header #logo .top,
+.view-account .levelAndBar .level,
+[aria-label][data-balloon-pos]::after {
+  -webkit-text-fill-color: initial;
+}
+
+button.text:hover,
+.textButton:hover,
+#restartTestButton:hover > i,
+#restartTestButton:hover > i,
+#showWordHistoryButton:hover > i,
+#saveScreenshotButton:hover > i,
+#restartTestButtonWithSameWordset:hover > i,
+#nextTestButton:hover > i,
+#practiseWordsButton:hover > i,
+#watchReplayButton:hover > i,
+#watchVideoAdButton:hover > i {
+  background: linear-gradient(
+    90deg,
+    #60b6ce,
+    #7ce3e1,
+    #b2e259,
+    #f6ee75,
+    #f5b83d,
+    #f49a98,
+    #ed7abd,
+    #dea2fa,
+    #a966f5
+  );
+  background-size: 500% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-gradient 5s alternate ease-in-out infinite;
+  transition: all 1s ease;
+}
+
+.current-theme.textButton {
+  animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
+}
+
+.current-theme.textButton:hover {
+  -webkit-text-fill-color: initial;
+}
+
+#liveStatsTextTop.timerMain,
+#liveStatsTextBottom.timerMain,
+#liveStatsMini.timerMain {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: rainbow-infinite-loop 5s linear infinite;
+  --incorrect-letter-animation: error-repeat 1s alternate ease-in-out infinite;
+  --extra-letter-animation: error-repeat 1s alternate ease-in-out infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: rainbow 7.5s ease-in-out forwards;
+}
+
+#words.highlight-word .word.active letter {
+  animation: var(--correct-letter-animation);
+}
+
+#words.flipped {
+  --correct-letter-animation: none;
+  --untyped-letter-animation: rainbow-infinite-loop 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+.button:hover,
+button:not(.textButton):not(.text):hover {
+  animation: glowing-button 2s alternate ease-in-out infinite;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: rainbow-infinite-loop 5s linear infinite;
+}
+
+.row .textButton:not(.active) {
+  color: #999999;
+}
+
+.textButton.active {
+  color: #111111;
+}
+
+@keyframes rainbow {
+  0% {
+    color: #60b6ce;
+    opacity: 1;
+  }
+  11.11% {
+    color: #7ce3e1;
+    opacity: 1;
+  }
+  22.22% {
+    color: #b2e259;
+    opacity: 1;
+  }
+  33.33% {
+    color: #f6ee75;
+    opacity: 1;
+  }
+  44.44% {
+    color: #f5b83d;
+    opacity: 1;
+  }
+  55.56% {
+    color: #f49a98;
+    opacity: 1;
+  }
+  66.67% {
+    color: #ed7abd;
+    opacity: 1;
+  }
+  77.78% {
+    color: #dea2fa;
+    opacity: 1;
+  }
+  88.89% {
+    color: #a966f5;
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rainbow-infinite-loop {
+  0% {
+    color: #60b6ce;
+  }
+  11.11% {
+    color: #7ce3e1;
+  }
+  22.22% {
+    color: #b2e259;
+  }
+  33.33% {
+    color: #f6ee75;
+  }
+  44.44% {
+    color: #f5b83d;
+  }
+  55.56% {
+    color: #f49a98;
+  }
+  66.67% {
+    color: #ed7abd;
+  }
+  77.78% {
+    color: #dea2fa;
+  }
+  88.89% {
+    color: #a966f5;
+  }
+  100% {
+    color: #60b6ce;
+  }
+}
+
+@keyframes rainbow-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes error-repeat {
+  0% {
+    color: #ff0000;
+  }
+  100% {
+    color: #ff000075;
+  }
+}
+
+@keyframes light-rainbow-infinite-loop {
+  0% {
+    color: #60b6ce;
+  }
+  14% {
+    color: #7ce3e1;
+  }
+  28% {
+    color: #b2e259;
+  }
+  42% {
+    color: #f6ee75;
+  }
+  57% {
+    color: #f5b83d;
+  }
+  71% {
+    color: #f49a98;
+  }
+  85% {
+    color: #ed7abd;
+  }
+  100% {
+    color: #dea2fa;
+  }
+}
+
+@keyframes glowing-button {
+  0% {
+    box-shadow:
+      0 0 7.5px 2.5px #60b6ce,
+      0 0 12.5px 2.5px #60b6ce;
+  }
+  14% {
+    box-shadow:
+      0 0 7.5px 2.5px #7ce3e1,
+      0 0 12.5px 2.5px #7ce3e1;
+  }
+  28% {
+    box-shadow:
+      0 0 7.5px 2.5px #b2e259,
+      0 0 12.5px 2.5px #b2e259;
+  }
+  42% {
+    box-shadow:
+      0 0 7.5px 2.5px #f6ee75,
+      0 0 12.5px 2.5px #f6ee75;
+  }
+  57% {
+    box-shadow:
+      0 0 7.5px 2.5px #f5b83d,
+      0 0 12.5px 2.5px #f5b83d;
+  }
+  71% {
+    box-shadow:
+      0 0 7.5px 2.5px #f49a98,
+      0 0 12.5px 2.5px #f49a98;
+  }
+  85% {
+    box-shadow:
+      0 0 7.5px 2.5px #ed7abd,
+      0 0 12.5px 2.5px #ed7abd;
+  }
+  100% {
+    box-shadow:
+      0 0 7.5px 2.5px #dea2fa,
+      0 0 12.5px 2.5px #dea2fa;
+  }
+}

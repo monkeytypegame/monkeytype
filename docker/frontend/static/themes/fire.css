@@ -1,0 +1,100 @@
+:root {
+  --bg-color: #0f0000;
+  --main-color: #b31313;
+  --caret-color: #b31313;
+  --sub-color: #683434;
+  --sub-alt-color: #200a0a;
+  --text-color: #ffffff;
+  --error-color: #2f3cb6;
+  --error-extra-color: #434a8f;
+  --colorful-error-color: #2f3cb6;
+  --colorful-error-extra-color: #434a8f;
+}
+
+@keyframes fire {
+  0% {
+    color: #b31313;
+  }
+  25% {
+    color: #ff9000;
+  }
+  50% {
+    color: #fdda16;
+  }
+  75% {
+    color: #ff9000;
+  }
+  100% {
+    color: #b31313;
+  }
+}
+
+@keyframes fire-bg {
+  0% {
+    background: #b31313;
+  }
+  25% {
+    background: #ff9000;
+  }
+  50% {
+    background: #fdda16;
+  }
+  75% {
+    background: #ff9000;
+  }
+  100% {
+    background: #b31313;
+  }
+}
+
+.button.discord::after,
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: fire-bg 5s linear infinite;
+}
+
+header.focus .button.discord::after,
+header .button.discord.dotHidden::after {
+  animation-name: none !important;
+}
+
+#logo .bottom,
+header .config .group .buttons .textButton.active,
+#result .stats .group .bottom,
+nav .textButton:hover,
+nav button.text:hover,
+header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
+a:not(.button):hover {
+  animation: fire 5s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: fire 5s linear infinite;
+}
+
+#words.flipped {
+  --untyped-letter-color: var(--sub-color);
+  --correct-letter-animation: none;
+  --untyped-letter-animation: fire 5s linear infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: fire 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: fire 5s linear infinite;
+}

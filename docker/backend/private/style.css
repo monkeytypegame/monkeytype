@@ -1,0 +1,204 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
+
+:root {
+  --roundness: 0.5rem;
+  --bg-color: #323437;
+  --main-color: #e2b714;
+  --caret-color: #e2b714;
+  --sub-color: #646669;
+  --sub-alt-color: #2c2e31;
+  --text-color: #d1d0c5;
+  --error-color: #ca4754;
+}
+
+body {
+  font-family: "Roboto Mono", monospace;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+}
+
+#header {
+  color: #fff;
+}
+
+.header-container {
+  padding: 1rem 0;
+  max-width: 60rem;
+  margin: 0 auto;
+  display: flex;
+}
+
+#logo {
+  align-items: center;
+  background-color: transparent;
+  display: grid;
+  width: 3rem;
+  margin-right: 1rem;
+}
+
+#header h1 {
+  font-size: 1.5rem;
+}
+
+#logo path {
+  fill: var(--main-color);
+}
+
+#root {
+  padding: 2rem;
+  background-color: #fff;
+  max-width: 60rem;
+  margin: 0rem auto;
+  border-radius: var(--roundness);
+}
+
+.button {
+  background-color: var(--bg-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-right: 1rem;
+  font-family: "Roboto Mono", monospace;
+}
+
+.array-input {
+  margin: 1rem auto;
+}
+
+.array-input-delete {
+  margin-left: 1rem;
+  background-color: #d84b4b;
+}
+
+#save,
+#export {
+  position: fixed;
+  right: 6rem;
+  bottom: 3rem;
+  background-color: var(--sub-alt-color);
+  color: var(--text-color);
+  font-style: bold;
+  border-radius: 3px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  display: inline-block;
+  width: 125px;
+  text-align: center;
+  transition: 0.125s;
+}
+
+#export {
+  bottom: 9rem;
+}
+
+#save:hover,
+#export:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+#save.good {
+  background-color: var(--main-color);
+  color: var(--bg-color);
+}
+
+#save.bad {
+  background-color: var(--error-color);
+  color: var(--bg-color);
+}
+
+label {
+  display: block;
+}
+
+.base-input {
+  margin: 0.5rem;
+  border: 1px solid #767676;
+  border-radius: calc(var(--roundness) / 2);
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+  font-size: 1rem;
+  padding: 0.25rem;
+  font-family: "Roboto Mono", monospace;
+}
+
+input[type="checkbox"] {
+  display: inline-block;
+  accent-color: var(--main-color);
+  color: white;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.form-element {
+  padding-left: 3rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-left: #64666955 0.5px solid;
+  background: #fff;
+}
+
+.array-form-element-decorator {
+  display: flex;
+  align-items: flex-start;
+}
+
+#root > .form-element:first-child {
+  border-left: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shadow {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.unknown-input {
+  color: #d84b4b;
+}
+
+.loader {
+  margin: auto;
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--bg-color);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.tooltip:hover .tooltip-text {
+  display: block;
+}
+
+.tooltip-text {
+  display: none;
+  color: var(--text-color);
+  background-color: var(--sub-alt-color);
+  position: absolute;
+  z-index: 1000;
+  padding: 10px;
+  border-radius: var(--roundness);
+}

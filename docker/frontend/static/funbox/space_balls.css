@@ -1,0 +1,26 @@
+:root {
+  --bg-color: #000000;
+  --main-color: #ffffff;
+  --caret-color: #ffffff;
+  --sub-color: rgba(255, 255, 255, 0.1);
+  --text-color: #ffd100;
+  --error-color: #da3333;
+  --error-extra-color: #791717;
+  --colorful-error-color: #da3333;
+  --colorful-error-extra-color: #791717;
+}
+
+body {
+  background-image: url("https://media0.giphy.com/media/5VD0q2EDp2gvNQVCIN/giphy.gif");
+  background-size: cover;
+  background-position: center;
+}
+
+main {
+  perspective: 500px;
+  overflow: hidden;
+}
+
+main .page {
+  transform: rotateX(35deg);
+}

@@ -1,0 +1,179 @@
+{
+  "language": "code_csharp",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "string aFriend = \"Bill\";\nConsole.WriteLine($\"Hello {aFriend}\");",
+      "source": "Microsoft Learn - Hello World",
+      "id": 1,
+      "length": 63
+    },
+    {
+      "text": "static int Factorial(int n)\n{\n\tint result = 1;\n\tfor (int i = 1; i <= n; i++)\n\t{\n\t\tresult = result * i;\n\t}\n\treturn result;\n}",
+      "id": 2,
+      "source": "Geeks for Geeks - C# Methods",
+      "length": 123
+    },
+    {
+      "text": "public static int Fibonacci(int n) {\n\tif (n <= 2) {\n\t\treturn 1;\n\t} else {\n\t\treturn Fibonacci(n - 1) + Fibonacci(n - 2);\n}",
+      "id": 3,
+      "source": "Find the nth Fibonacci Number Recursively",
+      "length": 121
+    },
+    {
+      "text": "public static int BinarySearch(int[] arr, int x) {\n\tint low = 0;\n\tint mid = 0;\n\tint high = arr.Length - 1;\n\twhile (low <= high) {\n\t\tmid = (low + high) / 2;\n\t\tif (x == arr[mid]) {\n\t\t\treturn mid;\n\t\t} else if (x > arr[mid]) {\n\t\t\tlow = mid + 1;\n\t\t} else {\n\t\t\thigh = mid - 1;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "id": 4,
+      "source": "Binary Search",
+      "length": 291
+    },
+    {
+      "text": "public static void InsertionSort(int[] arr) {\n\tfor (int i = 1; i < arr.Length; i++) {\n\t\tint next = arr[i];\n\t\tint j;\n\t\tfor (j = i - 1; j >= 0 && arr[j] > next; j--) {\n\t\t\tarr[j + 1] = arr[j];\n\t\t}\n\t\tarr[j + 1] = next;\n\t}\n}",
+      "id": 5,
+      "source": "Insertion Sort",
+      "length": 219
+    },
+    {
+      "text": "public static void SelectionSort(int[] arr) {\n\tfor (int last = arr.Length - 1; last > 0; last--) {\n\t\tint largest = last;\n\t\tfor (int i = 0; i < last; i++) {\n\t\t\tif (arr[i] > arr[largest]) {\n\t\t\t\tlargest = i;\n\t\t\t}\n\t\t}\n\t\tint temp = arr[largest];\n\t\tarr[largest] = arr[last];\n\t\tarr[last] = temp;\n\t}\n}",
+      "id": 6,
+      "source": "Selection Sort",
+      "length": 293
+    },
+    {
+      "text": "public static void BubbleSort(int[] arr) {\n\tfor (int i = 1; i < arr.Length; i++) {\n\t\tfor (int j = 0; j < arr.Length - i; j++) {\n\t\t\tif (arr[j] > arr[j + 1]) {\n\t\t\t\tint temp = arr[j];\n\t\t\t\tarr[j] = arr[j + 1];\n\t\t\t\tarr[j + 1] = temp;\n\t\t\t}\n\t\t}\n\t}\n}",
+      "id": 7,
+      "source": "Bubble Sort",
+      "length": 242
+    },
+    {
+      "text": "public static void MergeSort(int[] arr) {\n\tMergeSort(arr, 0, arr.Length - 1);\n}\npublic static void MergeSort(int[] arr, int leftmost, int rightmost) {\n\tif (leftmost < rightmost) {\n\t\tint mid = (leftmost + rightmost) / 2;\n\t\tMergeSort(arr, leftmost, mid);\n\t\tMergeSort(arr, mid + 1, rightmost);\n\t\tMerge(arr, leftmost, mid, rightmost);\n\t}\n}\npublic static void Merge(int[] arr, int leftmost, int mid, int rightmost) {\n\tint[] subArray = new int[rightmost - leftmost + 1];\n\tint left = leftmost;\n\tint right = mid + 1;\n\tint i = 0;\n\twhile (left <= mid && right <= rightmost) {\n\t\tif (arr[left] <= arr[right]) {\n\t\t\tsubArray[i++] = arr[left++];\n\t\t} else {\n\t\t\tsubArray[i++] = arr[right++];\n\t\t}\n\t}\n\twhile (left <= mid) subArray[i++] = arr[left++];\n\twhile (right <= rightmost) subArray[i++] = arr[right++];\n\tfor (int j = 0; j < subArray.Length; j++) {\n\t\tarr[leftmost + j] = subArray[j];\n\t}\n}",
+      "id": 8,
+      "source": "Merge Sort",
+      "length": 874
+    },
+    {
+      "text": "public static void QuickSort(int[] arr) {\n\tQuickSort(arr, 0, arr.Length - 1);\n}\npublic static void QuickSort(int[] arr, int i, int j) {\n\tif (i < j) {\n\t\tint pivotIdx = Partition(arr, i, j);\n\t\tQuickSort(arr, i, pivotIdx - 1);\n\t\tQuickSort(arr, pivotIdx + 1, j);\n\t}\n}\npublic static void Swap(int[] arr, int i, int j) {\n\tint temp = arr[i];\n\tarr[i] = arr[j];\n\tarr[j] = temp;\n}\npublic static int Partition(int[] arr, int i, int j) {\n\tint pivot = arr[i];\n\tint m = i;\n\tfor (int k = i + 1; k <= j; k++) {\n\t\tif (arr[k] < pivot) {\n\t\t\tm++;\n\t\t\tSwap(arr, k, m);\n\t\t}\n\t}\n\tSwap(arr, i, m);\n\treturn m;\n}",
+      "id": 9,
+      "source": "Quick Sort",
+      "length": 584
+    },
+    {
+      "text": "public static int QuickSelect(int[] arr, int target) {\n\treturn QuickSelect(arr, target, 0, arr.Length - 1);\n}\npublic static int QuickSelect(int[] arr, int target, int i, int j) {\n\tint pivotIdx = Partition(arr, i, j);\n\tif (pivotIdx == target) {\n\t\treturn arr[target];\n\t} else if (target < pivotIdx) {\n\t\treturn QuickSelect(arr, target, i, pivotIdx - 1);\n\t} else {\n\t\treturn QuickSelect(arr, target, pivotIdx + 1, j);\n\t}\n}\npublic static void Swap(int[] arr, int i, int j) {\n\tint temp = arr[i];\n\tarr[i] = arr[j];\n\tarr[j] = temp;\n}\npublic static int Partition(int[] arr, int i, int j) {\n\tint pivot = arr[i];\n\tint m = i;\n\tfor (int k = i + 1; k <= j; k++) {\n\t\tif (arr[k] < pivot) {\n\t\t\tm++;\n\t\t\tSwap(arr, k, m);\n\t\t}\n\t}\n\tSwap(arr, i, m);\n\treturn m;\n}",
+      "id": 10,
+      "source": "Quick Select",
+      "length": 738
+    },
+    {
+      "text": "public int IndexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.GetTail()) {\n\t\tif (curr.GetElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "source": "Get the Index of an Element in a Linked List",
+      "id": 11,
+      "length": 202
+    },
+    {
+      "text": "public void SetTail(Node curr, Node next) {\n\tif (curr == null) {\n\t\tnext.SetNext(head);\n\t\thead = next;\n\t} else {\n\t\tnext.SetNext(curr.GetNext());\n\t\tcurr.SetNext(next);\n\t}\n\tnumNodes++;\n}",
+      "source": "Set the Tail of a Linked List",
+      "id": 12,
+      "length": 183
+    },
+    {
+      "text": "public int Remove(Node curr) {\n\tint value;\n\tif (curr == null) {\n\t\tvalue = head.GetElem();\n\t\thead = head.GetNext();\n\t} else {\n\t\tvalue = curr.GetNext().GetElem();\n\t\tcurr.SetNext(curr.GetNext().GetNext());\n\t}\n\tnumNodes--;\n\treturn value;\n}",
+      "source": "Remove a Node from a Linked List",
+      "id": 13,
+      "length": 235
+    },
+    {
+      "text": "public void AddAtIndex(int index, int elem) {\n\tif (index < 0 || index > Size()) {\n\t\tConsole.WriteLine(\"index out of bounds\");\n\t}\n\tNode curr = null;\n\tNode newNode = new Node(item);\n\tif (index != 0) {\n\t\tcurr = GetNodeAtIndex(index - 1);\n\t}\n\tSetTail(curr, newNode);\n}",
+      "source": "Add an Element at an Index in a Linked List",
+      "id": 14,
+      "length": 264
+    },
+    {
+      "text": "public int RemoveAtIndex(int index) {\n\tif (index < 0 || index >= Size()) {\n\t\tConsole.WriteLine(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = GetNodeAtIndex(index - 1);\n\t}\n\treturn Remove(curr);\n}",
+      "source": "Remove an Element using its Index in a Linked List",
+      "id": 15,
+      "length": 254
+    },
+    {
+      "text": "public void EnlargeArr() {\n\tint newSize = capacity * 2;\n\tint[] newArr = new int[newSize];\n\tfor (int i = 0; i <= topIdx; i++) {\n\t\tnewArr[i] = arr[i];\n\t}\n\tarr = newArr;\n\tcapacity = newSize;\n}",
+      "source": "Enlarge an Array-based Stack or Queue",
+      "id": 16,
+      "length": 189
+    },
+    {
+      "text": "public Nullable<int> Pop() {\n\tNullable<int> elem = Peek();\n\tif (elem != null) topIdx--;\n\treturn elem;\n}",
+      "source": "Pop the top element off an Array-based Stack",
+      "id": 17,
+      "length": 103
+    },
+    {
+      "text": "public void Push(Nullable<int> elem) {\n\tif (top >= capacity - 1) EnlargeArr();\n\ttopIdx++;\n\tarr[topIdx] = elem;\n}",
+      "source": "Push an element onto an Array-based Stack",
+      "id": 18,
+      "length": 112
+    },
+    {
+      "text": "public Boolean Add(int elem) {\n\tif (elems.Contains(elem)) {\n\t\treturn false;\n\t}\n\telems.Add(elem);\n\treturn true;\n}",
+      "source": "Add an Element to a ArrayList-based Set",
+      "id": 19,
+      "length": 112
+    },
+    {
+      "text": "public Nullable<int> Dequeue() {\n\tif (empty()) return null;\n\tNullable<int> elem = arr[front];\n\tfront = (front + 1) % capacity;\n\treturn elem;\n}",
+      "source": "Dequeue an Array-based Queue",
+      "id": 20,
+      "length": 142
+    },
+    {
+      "text": "public void Enqueue(Nullable<int> elem) {\n\tif (((back + 1) % capacity) == front) EnlargeArr();\n\tarr[back] = elem;\n\tback = (back + 1) % capacity;\n}",
+      "source": "Enqueue an Array-based Queue",
+      "id": 21,
+      "length": 146
+    },
+    {
+      "text": "public static int[] BogoSort(int[] arr) {\n\twhile (!IsSorted(arr)) Shuffle(arr);\n\treturn arr;\n}\npublic static void Shuffle(int[] arr) {\n\tRandom r = new Random();\n\tfor (int i = 0; i < arr.Length; i++) {\n\t\tSwap(arr, i, (int) (r.NextDouble() * i));\n\t}\n}",
+      "id": 22,
+      "source": "BogoSort",
+      "length": 249
+    },
+    {
+      "text": "for (int i = 0; i < 2; i++) {\n\tfor (int j = 0; j < 2; j++) {\n\t\tfor (int k = 0; k < 3; k++) {\n\t\t\tConsole.WriteLine(\"element at index [{0}, {1}, {2}] is : {3}\", i, j, k, arr.GetValue(i, j, k));\n\t\t}\n\t}\n }",
+      "id": 23,
+      "source": "Geeks For Geeks - Array.GetValue() Method in C# with Examples",
+      "length": 201
+    },
+    {
+      "text": "public static void Main() {\n\t\tstring[] @for = {\"C#\", \"PHP\", \"Java\", \"Python\"};\n\t\tforeach (string @as in @for) {\n\t\t\tConsole.WriteLine(\"Element of Array: {0}\", @as); \n\t\t\t} \n\t\t}",
+      "id": 24,
+      "source": "Geeks For Geeks - C# | Verbatim String Literal",
+      "length": 174
+    },
+    {
+      "text": "public void StartTheQuiz() {\n\taddend1 = randomizer.Next(51);\n\taddend2 = randomizer.Next(51);\n\tplusLeftLabel.Text = addend1.ToString();\n\tplusRightLabel.Text = addend2.ToString();\n\tsum.Value = 0;\n\t}",
+      "id": 25,
+      "source": "Microsoft Learn - Add math problems to a math quiz WinForms app",
+      "length": 196
+    },
+    {
+      "text": "private void label1_Click(object sender, EventArgs e) {\n\tLabel clickedLabel = sender as Label;\n if (clickedLabel != null) {\n\t\tif (clickedLabel.ForeColor == Color.Black) \n\t\t\treturn; \n\t\tif (firstClicked == null) {\n\t\t\tfirstClicked = clickedLabel;\n\t\t\tfirstClicked.ForeColor = Color.Black;\n\t\t\treturn;\n\t\t\t}\n\t\t}\n\t}",
+      "id": 26,
+      "source": "Microsoft Learn - Add reference variables and a timer control to your matching game WinForms app",
+      "length": 307
+    },
+    {
+      "text": "public static T MidPoint<T>(IEnumerable<T> sequence) {\n\tif (sequence is IList<T> list) {\n\t\treturn list[list.Count / 2];\n\t}\n\telse if (sequence is null) {\n\t\tthrow new ArgumentNullException(nameof(sequence), \"Sequence can't be null.\");\n\t}\n\telse {\n\t\tint halfLength = sequence.Count() / 2 - 1;\n\t\tif (halfLength < 0)\n\t\t\thalfLength = 0;\n\t\treturn sequence.Skip(halfLength).First();\n\t\t}\n\t}",
+      "id": 27,
+      "source": "Microsoft Learn - Pattern Matching",
+      "length": 380
+    },
+    {
+      "text": "class ExecuteRectangle { \n\tstatic void Main(string[] args) { \n\t\tRectangle r = new Rectangle();\n\t\tr.length = 4.5;\n\t\tr.width = 3.5;\n\t\tr.Display();\n\t\tConsole.ReadLine();\n\t\t}\n\t}",
+      "id": 28,
+      "source": "Tutorialspoint (C# - Encapsulation)",
+      "length": 173
+    }
+  ]
+}

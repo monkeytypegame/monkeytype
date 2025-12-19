@@ -1,0 +1,27 @@
+@keyframes woah {
+  0% {
+    transform: rotateZ(0deg);
+  }
+
+  50% {
+    transform: rotateZ(180deg);
+  }
+
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
+#typingTest {
+  animation: woah 5s infinite linear;
+}
+
+body {
+  overflow: hidden;
+}
+
+#wordsInput {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -1,0 +1,19 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES6",
+    "noImplicitAny": false,
+    "strictFunctionTypes": false,
+    "useUnknownInCatchVariables": false,
+    "strictPropertyInitialization": false
+  },
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "worker.js",
+    "setup-tests.ts",
+    "**/*.spec.ts"
+  ]
+}

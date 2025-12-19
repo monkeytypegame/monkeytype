@@ -1,0 +1,197 @@
+{
+  "language": "code_c",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "asmlinkage __visible void __init __no_sanitize_address start_kernel(void)",
+      "source": "Linux Kernel Source Code",
+      "length": 73,
+      "id": 1
+    },
+    {
+      "text": "void reverse(char s[]) {\n\tint c, i, j;\n\tfor ( i = 0, j = strlen(s)-1; i < j; i++, j--) {\n\t\tc = s[i];\n\t\ts[i] = s[j];\n\t\ts[j] = c;\n\t}\n}\nvoid itoa(int n, char s[], int width) {\n\tint i, sign;\n\tif ((sign = n) < 0)\n\t\tn = -n;\n\ti = 0;\n\tdo {\n\t\ts[i++] = n % 10 + '0';\n\t\tprintf(\"%d %% %d + '0' = %d\n\", n, 10, s[i-1]);\n\t} while ((n /= 10) > 0);\n\tif (sign < 0)\n\t\ts[i++] = '-';\n\twhile (i < width)\n\t\ts[i++] = ' ';\n\ts[i] = '\\\\0';\n\treverse(s);\n}",
+      "source": "clc-wiki - atoi",
+      "length": 427,
+      "id": 2
+    },
+    {
+      "text": "int hexalpha_to_int(int c)\n{\n\tchar hexalpha[] = \"aAbBcCdDeEfF\";\n\tint i;\n\tint answer = 0;\n\tfor(i = 0; answer == 0 && hexalpha[i] != '\\\\0'; i++)\n\t{\n\t\tif(hexalpha[i] == c)\n\t\t{\n\t\t\tanswer = 10 + (i / 2);\n\t\t}\n\t}\n\treturn answer;\n}\nunsigned int htoi(const char s[])\n{\n\tunsigned int answer = 0;\n\tint i = 0;\n\tint valid = 1;\n\tint hexit;\n\n\tif(s[i] == '0')\n\t{\n\t\t++i;\n\t\tif(s[i] == 'x' || s[i] == 'X')\n\t\t{\n\t\t\t++i;\n\t\t}\n\t}\n\twhile(valid && s[i] != '\\\\0')\n\t{\n\t\tanswer = answer * 16;\n\t\tif(s[i] >= '0' && s[i] <= '9')\n\t\t{\n\t\t\tanswer = answer + (s[i] - '0');\n\t\t}\n\t\telse\n\t\t{\n\t\t\thexit = hexalpha_to_int(s[i]);\n\t\t\tif(hexit == 0)\n\t\t\t{\n\t\t\t\tvalid = 0;\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\tanswer = answer + hexit;\n\t\t\t}\n\t\t}\n\t\t++i;\n\t}\n\tif(!valid)\n\t{\n\t\tanswer = 0;\n\t}\n\treturn answer;\n}",
+      "source": "clc-wiki - htoi",
+      "length": 738,
+      "id": 3
+    },
+    {
+      "text": "unsigned rightrot(unsigned x, unsigned n)\n{\n\twhile (n > 0) {\n\t\tif ((x & 1) == 1)\n\t\t\tx = (x >> 1) | ~(~0U >> 1);\n\t\telse\n\t\t\tx = (x >> 1);\n\t\tn--;\n\t}\n\treturn x;\n}",
+      "source": "clc-wiki - rightrot",
+      "length": 158,
+      "id": 4
+    },
+    {
+      "text": "#include <stdio.h>\nint fib(int n)\n{\n\tif (n <= 1)\n\t\treturn n;\n\treturn fib(n - 1) + fib(n - 2);\n}\nint main()\n{\n\tint n = 9;\n\tprintf(\"%d\", fib(n));\n\tgetchar();\n\treturn 0;\n}",
+      "source": "Geeks for Geeks - C Program For Fibonacci Numbers",
+      "length": 168,
+      "id": 5
+    },
+    {
+      "text": "int\nmain(int argc, char **argv)\n{\n\tstruct api_signature *sig = NULL;\n\tint load_type, load_unit, load_slice, load_partition;\n\tint i;\n\tconst char *ldev;",
+      "source": "FreeBSD Boot Sequence",
+      "length": 150,
+      "id": 6
+    },
+    {
+      "text": "tree\nc_sizeof (exp)\n\ttree exp;\n{\n\tif (pedantic)\n\t{\n\t\tenum tree_code code = TREE_CODE (TREE_TYPE (exp));\n\t\tif (code == FUNCTION_TYPE)\n\t\t\twarning (\"sizeof applied to a value of function type\");\n\t\tif (code == VOID_TYPE)\n\t\t\twarning (\"sizeof applied to a value of void type\");\n\t}\n\treturn size_in_bytes (exp);\n}",
+      "source": "GCC Version 0.9",
+      "length": 305,
+      "id": 7
+    },
+    {
+      "text": "static int initialized;\nstatic void PyThread__init_thread(void); /* Forward */\nvoid\nPyThread_init_thread(void)\n{\n#ifdef Py_DEBUG\n\tconst char *p = Py_GETENV(\"PYTHONTHREADDEBUG\");\n\tif (p) {\n\t\tif (*p)\n\t\t\tthread_debug = atoi(p);\n\t\telse\n\t\t\tthread_debug = 1;\n\t}\n#endif /* Py_DEBUG */\n\tif (initialized)\n\t\treturn;\n\tinitialized = 1;\n\tdprintf((\"PyThread_init_thread called\"));\n\tPyThread__init_thread();\n}",
+      "source": "Python 3.10.8 Source Code",
+      "length": 394,
+      "id": 8
+    },
+    {
+      "text": "static bool read_shader(struct vkd3d_shader_code *shader, FILE *f)\n{\n\tsize_t size = 4096;\n\tstruct stat st;\n\tsize_t pos = 0;\n\tuint8_t *data;\n\tsize_t ret;\n\tmemset(shader, 0, sizeof(*shader));\n\tif (fstat(fileno(f), &st) == -1)\n\t{\n\t\tfprintf(stderr, \"Could not stat input.\");\n\t\treturn false;\n\t}\n\tif (S_ISREG(st.st_mode))\n\t\tsize = st.st_size;\n\tif (!(data = malloc(size)))\n\t{\n\t\tfprintf(stderr, \"Out of memory.\");\n\t\treturn false;\n\t}\n\tfor (;;)\n\t{\n\t\tif (pos >= size)\n\t\t{\n\t\t\tif (size > SIZE_MAX / 2 || !(data = realloc(data, size * 2)))\n\t\t\t{\n\t\t\t\tfprintf(stderr, \"Out of memory.\");\n\t\t\t\tfree(data);\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tsize *= 2;\n\t\t}\n\t\tif (!(ret = fread(&data[pos], 1, size - pos, f)))\n\t\t\tbreak;\n\t\tpos += ret;\n\t}\n\tif (!feof(f))\n\t{\n\t\tfree(data);\n\t\treturn false;\n\t}\n\tshader->code = data;\n\tshader->size = pos;\n\treturn true;\n}",
+      "source": "vkd3d 3D Graphics Library",
+      "length": 815,
+      "id": 9
+    },
+    {
+      "text": "struct nlist *lookup(char *);\nchar *strdup(char *);\n\nstruct nlist *install(char *name, char *defn)\n{\n\tstruct nlist *np;\n\tunsigned hashval;\n\tif ((np = lookup(name)) == NULL) {\n\t\tnp = (struct nlist *) malloc(sizeof(*np));\n\t\tif (np == NULL || (np->name = strdup(name)) == NULL)\n\t\t\treturn NULL;\n\t\thashval = hash(name);\n\t\tnp->next = hashtab[hashval];\n\t\thashtab[hashval] = np;\n\t} else\n\t\tfree((void *) np->defn);\n\tif ((np->defn = strdup(defn)) == NULL)\n\t\treturn NULL;\n\treturn np;\n}",
+      "source": "The C Programming Language (K&R)",
+      "length": 474,
+      "id": 10
+    },
+    {
+      "text": "int strcmp(char *s, char *t)\n{\n\tfor ( ; *s == *t; s++, t++)\n\t\tif (*s == '\\0')\n\t\t\treturn 0;\n\treturn *s - *t;\n}",
+      "source": "The C Programming Language (K&R)",
+      "length": 109,
+      "id": 11
+    },
+    {
+      "text": "void vterm_keyboard_start_paste(VTerm *vt)\n{\n\tif(vt->state->mode.bracketpaste)\n\t\tvterm_push_output_sprintf_ctrl(vt, C1_CSI, \"200~\");\n}\n\nvoid vterm_keyboard_end_paste(VTerm *vt)\n{\n\tif(vt->state->mode.bracketpaste)\n\t\tvterm_push_output_sprintf_ctrl(vt, C1_CSI, \"201~\");\n}",
+      "source": "Vim Source Code",
+      "length": 268,
+      "id": 12
+    },
+    {
+      "text": "void\ngtk_css_section_unref (GtkCssSection *section)\n{\n\tg_return_if_fail (section != NULL);\n\n\tsection->ref_count -= 1;\n\tif (section->ref_count > 0)\n\t\treturn;\n\n\tif (section->parent)\n\t\tgtk_css_section_unref (section->parent);\n\tif (section->file)\n\t\tg_object_unref (section->file);\n\n\tg_free (section);\n}",
+      "source": "GTK Source Code",
+      "length": 298,
+      "id": 13
+    },
+    {
+      "text": "long\n_ttelldir (_TDIR * dirp)\n{\n\terrno = 0;\n\n\tif (!dirp)\n\t\t{\n\t\t\terrno = EFAULT;\n\t\t\treturn -1;\n\t\t}\n\treturn dirp->dd_stat;\n}",
+      "source": "GLib Source Code",
+      "length": 122,
+      "id": 14
+    },
+    {
+      "text": "static int had_init_audio_ctrl(struct snd_pcm_substream *substream, struct snd_intelhad *intelhaddata)",
+      "source": "Linux Sound Source Code",
+      "length": 102,
+      "id": 15
+    },
+    {
+      "text": "for (; t->map; t++) {\n\tif (t->spk_mask == spk)\n\t\treturn t->map;\n\t}\n\treturn 0;\n}",
+      "source": "Linux Sound Source Code",
+      "length": 79,
+      "id": 16
+    },
+    {
+      "text": "static int had_calculate_maud_value(u32 aud_samp_freq, u32 link_rate)",
+      "source": "Linux Sound Source Code",
+      "length": 69,
+      "id": 17
+    },
+    {
+      "text": "unsigned long long elfcorehdr_addr = ELFCORE_ADDR_MAX;\nEXPORT_SYMBOL_GPL(elfcorehdr_addr);",
+      "source": "Linux Kernel Source Code",
+      "length": 90,
+      "id": 18
+    },
+    {
+      "text": "static int __init setup_elfcorehdr(char *arg)\n{\n\tchar *end;\n\tif (!arg)\n\t\treturn -EINVAL;\n\telfcorehdr_addr = memparse(arg, &end);\n\tif (*end == '@') {\n\t\telfcorehdr_size = elfcorehdr_addr;\n\t\telfcorehdr_addr = memparse(end + 1, &end);\n\t}\n\treturn end > arg ? 0 : -EINVAL;\n}",
+      "source": "Linux Kernel Source Code",
+      "length": 268,
+      "id": 19
+    },
+    {
+      "text": "rcu_read_lock();\ndec_rlimit_ucounts(task_ucounts(p), UCOUNT_RLIMIT_NPROC, 1);\nrcu_read_unlock();",
+      "source": "Linux Kernel Source Code",
+      "length": 96,
+      "id": 20
+    },
+    {
+      "text": "#ifdef CONFIG_POSIX_TIMERS\n\tposix_cpu_timers_exit(tsk);\n\tif (group_dead)\n\t\tposix_cpu_timers_exit_group(tsk);\n#endif",
+      "source": "Linux Kernel Source Code",
+      "id": 21,
+      "length": 115
+    },
+    {
+      "text": "fail_nomem_anon_vma_fork:\n\tmpol_put(vma_policy(tmp));\nfail_nomem_policy:\n\tvm_area_free(tmp);\nfail_nomem:\n\tretval = -ENOMEM;\n\tvm_unacct_memory(charge);\n\tgoto loop_out;",
+      "source": "Linux Kernel Source Code",
+      "length": 166,
+      "id": 22
+    },
+    {
+      "text": "#define short_option(c) ((c) <= CHAR_MAX)",
+      "source": "GNU Make Source Code",
+      "length": 41,
+      "id": 23
+    },
+    {
+      "text": "static int silent_flag;\nstatic const int default_silent_flag = 0;\nstatic enum variable_origin silent_origin = o_default;",
+      "source": "GNU Make Source Code",
+      "length": 120,
+      "id": 24
+    },
+    {
+      "text": "const char *shell;\nchar pwdbuf[256];\nchar *pwd;\nshell = getenv (\"SHELL\");\nif (shell != NULL)\n\tvms_gnv_shell = 1;",
+      "source": "GNU Make Source Code",
+      "length": 112,
+      "id": 25
+    },
+    {
+      "text": "# if defined SIGCHLD\n\tbsd_signal (SIGCHLD, child_handler);\n# endif\n# if defined SIGCLD && SIGCLD != SIGCHLD\n\tbsd_signal (SIGCLD, child_handler);\n# endif",
+      "source": "GNU Make Source Code",
+      "length": 152,
+      "id": 26
+    },
+    {
+      "text": "\tprintf (\"%sGNU Make %s\n\", precede, version_string);\n\tif (!remote_description || *remote_description == '\\0')\n\t\tprintf (_(\"%sBuilt for %s\n\"), precede, make_host);\n\telse\n\t\tprintf (_(\"%sBuilt for %s (%s)\n\"), precede, make_host, remote_description);\n#if MK_OS_W32\n\tprintf (_(\"%sANSI code page: %u\n\"), precede, GetACP ());\n\tprintf (_(\"%sConsole code page: %u\n\"), precede, GetConsoleOutputCP ());\n#endif",
+      "source": "GNU Make Source Code",
+      "length": 398,
+      "id": 27
+    },
+    {
+      "text": "GOptionContext *context;\nGError *error = NULL;\nShellGlobal *global;\nGjsContext *js_context;\nconst char *filename;\nchar *title;\nuint8_t code;",
+      "source": "GNOME Shell Source Code",
+      "length": 140,
+      "id": 28
+    },
+    {
+      "text": "\n#define MIN_DOWNSCALE_SIZE 256.f\n#define MAX_RADIUS 12.f\ntypedef enum\n{\n\tACTOR_PAINTED = 1 << 0,\n\tBLUR_APPLIED = 1 << 1,\n} CacheFlags;",
+      "source": "GNOME Shell Source Code",
+      "length": 135,
+      "id": 29
+    },
+    {
+      "text": "typedef struct\n{\n\tCoglFramebuffer *framebuffer;\n\tCoglPipeline *pipeline;\n\tCoglTexture *texture;\n} FramebufferData;",
+      "source": "GNOME Shell Source Code",
+      "length": 114,
+      "id": 30
+    },
+    {
+      "text": "\nif (error)\n\tkeyval = mods = 0;\nif (accelerator_key)\n\t*accelerator_key = keyval;\nif (accelerator_mods)\n\t*accelerator_mods = mods;",
+      "source": "KDE Plasma Desktop Source Code",
+      "length": 129,
+      "id": 31
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": ["node_modules", "__migration__", "dist", ".turbo"],
+  "extends": [
+    "../packages/oxlint-config/index.jsonc"
+    // "@monkeytype/oxlint-config"
+  ]
+}

@@ -1,0 +1,18 @@
+export const ModifierKeys = [
+  "Alt",
+  "AltGraph",
+  "CapsLock",
+  "Control",
+  "Fn",
+  "FnLock",
+  "Hyper",
+  "Meta",
+  "OS",
+  "NumLock",
+  "ScrollLock",
+  "Scroll",
+  "Shift",
+  "Super",
+  "Symbol",
+  "SymbolLock",
+];

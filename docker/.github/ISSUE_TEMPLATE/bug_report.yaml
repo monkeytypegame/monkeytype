@@ -1,0 +1,137 @@
+name: Bug report
+description: Create a report to help us improve
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Welcome
+        ```
+        Thanks for taking the time to fill out this bug! If you need real-time help, join us on Discord: discord.gg/monkeytype
+        ```
+
+  - type: checkboxes
+    attributes:
+      label: Did you clear cache before opening an issue?
+      description: Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or is just a side effect of a new update. If you don't know how to do that, this website should help https://www.pcmag.com/how-to/how-to-clear-your-cache-on-any-browser.
+      options:
+        - label: I have cleared my cache
+          required: true
+
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please [search](https://github.com/monkeytypegame/monkeytype/issues?q=is%3Aissue) to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have [searched](https://github.com/monkeytypegame/monkeytype/issues?q=is%3Aissue) the existing open and closed issues
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        # Basic debugging
+        ```
+        Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
+        ```
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen when logged in?
+      options: ["Yes", "No", "N/A"]
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen when logged out?
+      options: ["Yes", "No"]
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen in incognito mode when logged in?
+      options: ["Yes", "No", "N/A"]
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen in incognito mode when logged out?
+      options: ["Yes", "No"]
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Account name
+      description: Your Monkeytype account name.
+      placeholder: |
+        Miodec
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Account config
+      description: If your issue only happens when logged in, please provide your config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
+      placeholder: |
+        Miodec
+        {"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        # Issue details
+        ```
+        Please provide a detailed description of what's happening, and most importantly - solid steps to reproduce the issue. This will help us find it quicker.
+        ```
+
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        examples:
+          - **OS**: Windows 10
+          - **Browser**: Google Chrome
+          - **Browser Version**: 94.0.4606.71 (Official Build) (64-bit)
+      value: |
+        - OS:
+        - Browser:
+        - Browser Version:
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Links? References? Anything that will give us more context about the issue you are encountering!
+
+        Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false

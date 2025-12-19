@@ -1,0 +1,71 @@
+{
+  "language": "afrikaans",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Sy oë dobber soos 'n bootjie op die see, 'Dude, ek dink nou ek is 'n cyborg.' Dan eers verstaan ek. Plank het die transponder in sy hand ingeplant.",
+      "source": "Donker Web, Fanie Viljoen",
+      "length": 147,
+      "id": 1
+    },
+    {
+      "text": "Ja, die hele wêreld word stil en luister in die donker uur, na die naggeluide van Lisa se klavier.",
+      "source": "Lisa se klavier - Koos Kombuis",
+      "length": 98,
+      "id": 2
+    },
+    {
+      "text": "Maar ek het vasgestaan en gesê ek gaan, man-alleen een donker nag. Ek het myself gestaal en my perd laat haal, maar ek het so iets nooit verwag.",
+      "source": "Op Pad Na Nooitgedacht - Koos du Plessis",
+      "length": 144,
+      "id": 3
+    },
+    {
+      "text": "'As Google of die een of ander app jou vra vir toegang tot die persoonlike besonderhede op jou selfoon, besluit jy met daardie een simpel klik van Accept: Hiermee staan ek my outonomie af aan die Technium. Hiermee begin ek myself vrywillig daaraan oorgee.'",
+      "source": "Donker Web, Fanie Viljoen",
+      "length": 256,
+      "id": 4
+    },
+    {
+      "text": "Dis hoe vrees voel: Vuur blits deur jou lyf, elke senuwee ruk wakker, adrenalien gooi jou gedagtes in snelrat, jou oë sper oop, jou asemhaling hou op jou en jou borsholte pers saam. En jy hoor dit - jou eie hart. Klop. Klop. Klop.",
+      "source": "Onderwêreld, Fanie Viljoen",
+      "length": 230,
+      "id": 5
+    },
+    {
+      "text": "Ek ken 'n ou, ou liedjie van lewenswel en weë, van lank-vergane skepe in, die kelders van die see. Die woorde is vergete, en tog die deuntjie draal soos vaag-bekende grepies in 'n baie ou verhaal.",
+      "source": "Kinders van die wind - Koos du Plessis",
+      "length": 196,
+      "id": 6
+    },
+    {
+      "text": "Vergeet om my te vergeet. Onthou om te onthou. En weet dat jy altyd weet, ek is lief vir jou.",
+      "source": "Vergeet Om My Te Vergeet (Onthou Om My Te Onthou) - Anton Goosen",
+      "length": 93,
+      "id": 7
+    },
+    {
+      "text": "Ek skryf 'n brief aan die man op die maan - bladsye en bladsye vol. Ek rol dit in 'n koker op, bind dit aan 'n pyl, en skiet dit met 'n wilgerboog dat dit hoog die lug inseil. Ek sien hoe dit deur die sterre trek en om die maan gaan draai en al verder deur die donker lug 'n duisend briewe saai. Nou wonder ek -en wonder jy?- het hy ooit sy pos gekry, of sou daar iemand anders wees wat al die briewe dalk nou lees",
+      "source": "Sterrekyker - Franci Greyling",
+      "length": 414,
+      "id": 8
+    },
+    {
+      "text": "Toe my ouma 'n kind was, speel hulle op die wye vlakte, deel granate in die boord, lees boeke in hulle soeke na kennis en klets met maats as die foun twee kortes en drie langes lui. As kind bly my ma op 'n ruim erf met 'n grasperk en twee bome, sit sy vasgenael voor die kassie - vol drome om eendag oor die wye wêreld te swerf. Sy ken mense wat al oorsee was! Haar niggies in die stad gaan naweke fliek en voor matriek sien sy hoe die eerste selfone lyk. Ek klik met 'n muis die wêreld tot in my huis, die web is my werf en Gumtree my boom. Ek is deel van 'n boek waar mense hul gesigte gedeeltelik ontsluier en klankloos klets en kuier. Ek kan kennis onmiddellik op aanvraag verkry en met 'n ieder en elk in verbinding bly. Die moontlikhede is duiselingwek- kend GROOT en die wêreld het so klein geword dit pas in die twaalf vierkante meter van my Kamer in.",
+      "source": "Die wêreld het so klein geword - Alta Marincowitz",
+      "length": 859,
+      "id": 9
+    },
+    {
+      "text": "Wie sal ooit die liefde kan verstaan? Nader as 'n hartklop, verder as die maan. Daar is 'n tyd van kom, en 'n tyd van gaan. Dit het ek gelees maar. Hoe sal ek dit ooit verstaan?",
+      "source": "Stille Waters - Laurika Rauch",
+      "length": 177,
+      "id": 10
+    }
+  ]
+}

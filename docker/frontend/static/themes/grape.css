@@ -1,0 +1,100 @@
+:root {
+  --bg-color: #2c003e;
+  --main-color: #ff8f00;
+  --caret-color: #ff8f00;
+  --sub-color: #6e225e;
+  --sub-alt-color: #1f002d;
+  --text-color: #fff;
+  --error-color: #ff4081;
+  --error-extra-color: #bf2054;
+  --colorful-error-color: #ff4081;
+  --colorful-error-extra-color: #bf2054;
+}
+
+@keyframes pastel {
+  0% {
+    color: #00b8d4;
+  }
+  25% {
+    color: #ffac41;
+  }
+  50% {
+    color: #ffcc80;
+  }
+  75% {
+    color: #ffac41;
+  }
+  100% {
+    color: #00b8d4;
+  }
+}
+
+@keyframes pastel-bg {
+  0% {
+    background: #00b8d4;
+  }
+  25% {
+    background: #ffac41;
+  }
+  50% {
+    background: #ffcc80;
+  }
+  75% {
+    background: #ffac41;
+  }
+  100% {
+    background: #00b8d4;
+  }
+}
+
+.button.discord::after,
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: pastel-bg 5s linear infinite;
+}
+
+header.focus .button.discord::after,
+header .button.discord.dotHidden::after {
+  animation-name: none !important;
+}
+
+#logo .bottom,
+header .config .group .buttons .textButton.active,
+#result .stats .group .bottom,
+nav .textButton:hover,
+nav button.text:hover,
+header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
+a:not(.button):hover {
+  animation: pastel 5s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: pastel 5s linear infinite;
+}
+
+#words.flipped {
+  --untyped-letter-color: var(--sub-color);
+  --correct-letter-animation: none;
+  --untyped-letter-animation: pastel 5s linear infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: pastel 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: pastel 5s linear infinite;
+}

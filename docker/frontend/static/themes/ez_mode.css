@@ -1,0 +1,28 @@
+:root {
+  --bg-color: #0068c6;
+  --main-color: #fa62d5;
+  --caret-color: #4ddb47;
+  --sub-color: #138bf7;
+  --sub-alt-color: #005bac;
+  --text-color: #ffffff;
+  --error-color: #4ddb47;
+  --error-extra-color: #42ba3b;
+  --colorful-error-color: #4ddb47;
+  --colorful-error-extra-color: #42ba3b;
+}
+
+.pageSettings .section h1 {
+  color: var(--text-color);
+}
+
+.pageSettings .section > .text {
+  color: var(--sub-color);
+}
+
+.pageAbout .section .title {
+  color: var(--text-color);
+}
+
+.pageAbout .section p {
+  color: var(--sub-color);
+}

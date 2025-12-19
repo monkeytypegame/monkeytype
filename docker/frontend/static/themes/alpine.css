@@ -1,0 +1,12 @@
+:root {
+  --bg-color: #6c687f; /*Background*/
+  --main-color: #ffffff; /*Color after typing, monkeytype logo, WPM Number acc number etc*/
+  --caret-color: #585568; /*Cursor Color*/
+  --sub-color: #9994b8;
+  --sub-alt-color: #77738c; /*WPM text color of scrollbar and general color, before typed color*/
+  --text-color: #ffffff; /*Color of text after hovering over it*/
+  --error-color: #e32b2b;
+  --error-extra-color: #a62626;
+  --colorful-error-color: #e32b2b;
+  --colorful-error-extra-color: #a62626;
+}

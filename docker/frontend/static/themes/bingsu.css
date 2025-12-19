@@ -1,0 +1,21 @@
+:root {
+  /* --bg-color: linear-gradient(215deg, #cbb8ba, #706768); */
+  --bg-color: #b8a7aa;
+  --main-color: #83616e;
+  --caret-color: #ebe6ea;
+  --sub-color: #48373d;
+  --sub-alt-color: #ab989e;
+  --text-color: #ebe6ea;
+  --error-color: #921341;
+  --error-extra-color: #640b2c;
+  --colorful-error-color: #921341;
+  --colorful-error-extra-color: #640b2c;
+}
+
+/* .word.error{
+  border-bottom: double 4px var(--error-color);
+} */
+
+nav .textButton:nth-child(1) {
+  color: var(--caret-color);
+}

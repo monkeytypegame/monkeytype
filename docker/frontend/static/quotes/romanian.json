@@ -1,0 +1,443 @@
+{
+  "language": "romanian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Trecutul trebuie să rămână, în viețile noastre, la fel de plin de posibilități ca viitorul.",
+      "source": "Inocenții",
+      "length": 91,
+      "id": 1
+    },
+    {
+      "text": "Admir întotdeauna ocolurile prin spațiu și timp pe care le face destinul.",
+      "source": "Inocenții",
+      "length": 73,
+      "id": 2
+    },
+    {
+      "text": "Toți oamenii mari au fost cândva niște copii, dar puțini dintre ei și-o reamintesc.",
+      "source": "Micul Prinț",
+      "length": 83,
+      "id": 3
+    },
+    {
+      "text": "Fiecare dintre noi este (era) pastișa caricaturală a celuilalt.",
+      "source": "Cartea de nisip",
+      "length": 63,
+      "id": 4
+    },
+    {
+      "text": "E mare stăpân rușinarea, și om să fii ca să nu i te pleci dacă o cunoști.",
+      "source": "Mara",
+      "length": 73,
+      "id": 5
+    },
+    {
+      "text": "Norocul nu umblă târâș, ci zboară pe aripi iuți și-ți iese, când îi vine rândul, fără de veste-n cale: degeaba îl cauți când nu-l găsești; degeaba fugi când el aleargă după tine; norocul tău e numai al tău, și chiar dacă nu l-ai cunoaște tu pe el, te cunoaște el pe tine și nu te părăsește.",
+      "source": "Mara",
+      "length": 290,
+      "id": 6
+    },
+    {
+      "text": "S-a dus, cu toate aceste, și după-amiazăzi la Lipova, s-a dus cum merge omul osândit să-și ia pedeapsa, dar s-a dus râzând, fiindcă era crescută de maica Aegidia, care mereu îi zicea: \"Să râzi când îți vine să plângi și să plângi numai când vezi pe alții plângând\".",
+      "source": "Mara",
+      "length": 265,
+      "id": 7
+    },
+    {
+      "text": "Nu te face să te simți trist să știi că viața este mai mult decât ceea ce ești?",
+      "source": "Goo Goo Dolls - Name",
+      "length": 79,
+      "id": 8
+    },
+    {
+      "text": "Oamenii cu idei nu au putere, iar oamenii cu putere nu au idei.",
+      "source": "5,001 Wisdom Quotations of Mike Murdock",
+      "length": 63,
+      "id": 9
+    },
+    {
+      "text": "Trebuie să iei viața așa cum vine la tine și să faci ce e mai bun din ea.",
+      "source": "Life of Pi",
+      "length": 73,
+      "id": 10
+    },
+    {
+      "text": "Dacă trebuie să întrebi, nu vei ști niciodată. Dacă știi, trebuie doar să întrebi.",
+      "source": "Harry Potter and the Deathly Hallows",
+      "length": 82,
+      "id": 11
+    },
+    {
+      "text": "Sunt sigur că există lucruri pe care le știi și nu știi nici măcar că le știi.",
+      "source": "UnSouled",
+      "length": 78,
+      "id": 12
+    },
+    {
+      "text": "Nu poți folosi ieșirea de urgență pentru că nu ești făcut din foc.",
+      "source": "Undertale",
+      "length": 66,
+      "id": 13
+    },
+    {
+      "text": "Persoana care are cea mai mare influență asupra a ceea ce ți se întâmplă ești tu!",
+      "source": "Unlimited Memory: How to Use Advanced Learning Strategies to Learn Faster, Remember More and Be More Productive",
+      "length": 81,
+      "id": 14
+    },
+    {
+      "text": "Există întunericuri în viață și există lumini, și tu ești una dintre luminile, lumina tuturor luminilor.",
+      "source": "Dracula",
+      "length": 104,
+      "id": 15
+    },
+    {
+      "text": "Dacă faci doar ceea ce poți face, nu vei fi niciodată mai mult decât ceea ce ești acum.",
+      "source": "Kung Fu Panda",
+      "length": 87,
+      "id": 16
+    },
+    {
+      "text": "Dacă trebuie să aud încă o dată că ai făcut asta pentru familie...",
+      "source": "Breaking Bad",
+      "length": 66,
+      "id": 17
+    },
+    {
+      "text": "Și în final, dragostea pe care o primești este egală cu dragostea pe care o faci.",
+      "source": "The End",
+      "length": 81,
+      "id": 18
+    },
+    {
+      "text": "Te-am iubit întotdeauna, și când iubești pe cineva, iubești întreaga persoană, așa cum este ea, și nu așa cum ai vrea să fie.",
+      "source": "Anna Karenina",
+      "length": 125,
+      "id": 19
+    },
+    {
+      "text": "Memoria este o modalitate de a ține strâns lucrurile pe care le iubești, lucrurile care ești, lucrurile pe care nu vrei să le pierzi niciodată.",
+      "source": "Unlimited Memory: How to Use Advanced Learning Strategies to Learn Faster, Remember More and Be More Productive",
+      "length": 143,
+      "id": 20
+    },
+    {
+      "text": "Nu ar trebui niciodată să îndoi ceva de care nimeni nu este sigur.",
+      "source": "Charlie and the Chocolate Factory",
+      "length": 66,
+      "id": 21
+    },
+    {
+      "text": "Asigură-te că te căsătorești cu cineva care râde de aceleași lucruri ca tine.",
+      "source": "The Catcher in the Rye",
+      "length": 77,
+      "id": 22
+    },
+    {
+      "text": "Am așteptat vieți întregi să te găsesc. Acum, când ești aici, pot să-ți reamintesc lucrurile la care am visat de două ori.",
+      "source": "Stay Ready",
+      "length": 122,
+      "id": 23
+    },
+    {
+      "text": "Încerci să mă impresionezi? Ceea ce m-ar impresiona mai mult este să nu mai faci asta niciodată.",
+      "source": "Portal 2",
+      "length": 96,
+      "id": 24
+    },
+    {
+      "text": "Da, ești tu, ești cel care mă face să mă simt bine. Am fost îndrăgostit de ea de o veșnicie și nu reușesc să o fac bine. M-am îndrăgostit de ea treptat, toată viața mea.",
+      "source": "Me and You Together Song",
+      "length": 169,
+      "id": 25
+    },
+    {
+      "text": "Crede într-o singură chestie prea mult și nu mai ai loc pentru idei noi.",
+      "source": "The October Country",
+      "length": 72,
+      "id": 26
+    },
+    {
+      "text": "Curățarea casei când copiii sunt în jur este ca și cum ai da cu lopata în timp ce ninge.",
+      "source": "Funny Quotes: Slightly Twisted Words of Wisdom & Other Funny Sayings",
+      "length": 88,
+      "id": 27
+    },
+    {
+      "text": "Ziua în care puterea iubirii învinge iubirea de putere, lumea va cunoaște pacea.",
+      "source": "Doing Research in Emergency and Acute Care: Making Order Out of Chaos",
+      "length": 80,
+      "id": 28
+    },
+    {
+      "text": "Sunt cel mai înțelept om în viață, pentru că știu un singur lucru, și anume că nu știu nimic.",
+      "source": "The Republic",
+      "length": 93,
+      "id": 29
+    },
+    {
+      "text": "Nu poți să mă convingi că ceea ce vreau și ceea ce am nevoie sunt lucruri separate.",
+      "source": "Wants / Needs",
+      "length": 83,
+      "id": 30
+    },
+    {
+      "text": "E ușor să nu abuzezi de puterea ta când, de fapt, nu ai nicio putere.",
+      "source": "Inside The Mind of an Introvert",
+      "length": 69,
+      "id": 31
+    },
+    {
+      "text": "De multe ori cred că bărbații nu înțeleg ce este nobil și ce este ignorant, deși tot timpul vorbesc despre asta.",
+      "source": "Anna Karenina",
+      "length": 112,
+      "id": 32
+    },
+    {
+      "text": "Acum este timpul pentru odihnă. Unele lucruri sunt greu de auzit când lumea e în umbră.",
+      "source": "The Lord of The Rings",
+      "length": 87,
+      "id": 33
+    },
+    {
+      "text": "Curajul este rezistența la frică, stăpânirea fricii - nu absența fricii.",
+      "source": "Strangers",
+      "length": 72,
+      "id": 34
+    },
+    {
+      "text": "Nu există niciun motiv pentru care un fals nu ar putea face ceea ce ar face realitatea. Și este posibil ca un fals să fie mai real decât realitatea.",
+      "source": "Monogatari Series",
+      "length": 148,
+      "id": 35
+    },
+    {
+      "text": "Nu contează cum moare un om, ci cum trăiește. Actul morții nu este important, durează atât de puțin timp.",
+      "source": "The Life of Samuel Johnson",
+      "length": 105,
+      "id": 36
+    },
+    {
+      "text": "Eu sunt el așa cum ești el așa cum sunt eu și suntem toți împreună.",
+      "source": "I Am the Walrus",
+      "length": 67,
+      "id": 37
+    },
+    {
+      "text": "\"Internetul lucrurilor\", a spus Ogarew, \"este un subiect care ne preocupă în mod deosebit aici. Cu Web 4.0, internetul ajunge pretutindeni. De la mașini la televizoare și până la jucăriile pentru copii. Astăzi există deja cincisprezece miliarde de dispozitive conectate. În 2020 vor fi cincizeci de miliarde. Totul trebuie să fie în mod inherent sigur. Modul în care făcea Microsoft în trecut nu mai funcționează astăzi. Lansare pe piață și apoi stinge incendiul în urmă.\"",
+      "source": "Dark Web: Thriller, Veit Etzold",
+      "length": 472,
+      "id": 38
+    },
+    {
+      "text": "Cel mai frumos lucru pe care îl putem experimenta este misterul.",
+      "source": "Albert Einstein",
+      "length": 64,
+      "id": 39
+    },
+    {
+      "text": "Viața nu este de sute de ori prea scurtă pentru a te plictisi în ea?",
+      "source": "Friedrich Nietzsche",
+      "length": 68,
+      "id": 40
+    },
+    {
+      "text": "Lumea este mult prea periculoasă pentru a trăi în ea - nu din cauza oamenilor care fac rău, ci din cauza oamenilor care stau alături și îi lasă să facă rău.",
+      "source": "Albert Einstein",
+      "length": 156,
+      "id": 41
+    },
+    {
+      "text": "A te cunoaște pe tine însuți este începutul oricărei înțelepciuni.",
+      "source": "Aristotel",
+      "length": 66,
+      "id": 42
+    },
+    {
+      "text": "Îmi este teamă de ziua în care tehnologia ne depășește umanitatea. Lumea va deveni atunci o generație de idioți.",
+      "source": "Albert Einstein",
+      "length": 112,
+      "id": 43
+    },
+    {
+      "text": "Cine cunoaște scopul poate decide. Cine decide, găsește liniștea. Cine găsește liniștea este în siguranță. Cine este în siguranță poate reflecta. Cine reflectează poate îmbunătăți.",
+      "source": "Confucius",
+      "length": 180,
+      "id": 44
+    },
+    {
+      "text": "De fiecare dată când am fost disperat, am găsit mângâiere în faptul că dragostea și adevărul au triumfat întotdeauna în istorie.",
+      "source": "Mahatma Gandhi",
+      "length": 128,
+      "id": 45
+    },
+    {
+      "text": "Majoritatea oamenilor nu sunt ei înșiși. Gândurile lor sunt gândurile altora, viața lor este o imitație, pasiunea lor este o citare.",
+      "source": "Oscar Wilde",
+      "length": 132,
+      "id": 46
+    },
+    {
+      "text": "Nu poți învăța pe cineva ceva, poți doar să-l ajuți să descopere în el însuși.",
+      "source": "Galileo Galilei",
+      "length": 78,
+      "id": 47
+    },
+    {
+      "text": "Ce lume am putea construi dacă am folosi puterile pe care le eliberează un război pentru construcție. O zecime din energie, o fracțiune din bani ar fi suficiente pentru a ajuta oamenii din toate țările să ducă o viață demnă de om.",
+      "source": "Albert Einstein",
+      "length": 230,
+      "id": 48
+    },
+    {
+      "text": "Gândește-te mai bine la ceea ce ai, decât la ceea ce îți lipsește! Alege cele mai bune lucruri din cele pe care le ai și apoi ia în considerare cât de îngrijorat ai fi că le-ai căuta dacă nu le-ai avea.",
+      "source": "Marcus Aurelius",
+      "length": 202,
+      "id": 49
+    },
+    {
+      "text": "Rareori ne gândim la ceea ce avem, dar întotdeauna la ceea ce ne lipsește.",
+      "source": "Arthur Schopenhauer",
+      "length": 74,
+      "id": 50
+    },
+    {
+      "text": "Este o mare greșeală să crezi că un om este mereu același. Un om nu este mult timp același. El se schimbă în mod constant. Nici măcar pentru o jumătate de oră nu rămâne același.",
+      "source": "G. I. Gurdjieff",
+      "length": 177,
+      "id": 51
+    },
+    {
+      "text": "Cel mai dificil exercițiu de gimnastică este încă să te iei singur în brațe.",
+      "source": "Curt Goetz",
+      "length": 76,
+      "id": 52
+    },
+    {
+      "text": "Nu există alt diavol decât cel pe care îl avem în propria noastră inimă.",
+      "source": "Hans Christian Andersen",
+      "length": 72,
+      "id": 53
+    },
+    {
+      "text": "Cred că pericolele așteaptă doar pe cei care nu răspund la viață.",
+      "source": "Michail Gorbatschow",
+      "length": 65,
+      "id": 54
+    },
+    {
+      "text": "În zilele noastre, tineretul iubește luxul. Are maniere proaste, disprețuiește autoritatea, nu are respect pentru cei mai în vârstă, vorbește unde ar trebui să lucreze. Tinerii nu mai stau în picioare când cei mai în vârstă intră în cameră. Ei își contrazic părinții, vorbesc mult în societate, devorează dulciuri la masă, își încrucișează picioarele și îi tiranizează pe profesorii lor.",
+      "source": "Socrates",
+      "length": 387,
+      "id": 55
+    },
+    {
+      "text": "Amintirile încălzesc omul din interior. Dar în același timp, îl taie în bucăți cu violență.",
+      "source": "Murakami Haruki",
+      "length": 91,
+      "id": 56
+    },
+    {
+      "text": "Nu există nimic pe lumea asta atât de crud precum sentimentul de abandon generat de faptul că nu ai ce aștepta.",
+      "source": "Murakami Haruki",
+      "length": 111,
+      "id": 57
+    },
+    {
+      "text": "Există amintiri pe care nu le poți șterge. Rămân în om ca niște stânci nemișcate.",
+      "source": "Murakami Haruki",
+      "length": 81,
+      "id": 58
+    },
+    {
+      "text": "Închiderea ochilor nu ajută deloc. Nimic nu dispare. Mai degrabă, când îi deschizi din nou, va fi și mai rău. Deschide larg ochii. Doar cei slabi îi închid. Lași privirea să se abată de la realitate. Timpul trece chiar și când ai ochii închiși și urechile acoperite.",
+      "source": "Murakami Haruki",
+      "length": 266,
+      "id": 59
+    },
+    {
+      "text": "Există lucruri pe care nu le poți face decât dacă mergi până la capătul lumii.",
+      "source": "Murakami Haruki",
+      "length": 78,
+      "id": 60
+    },
+    {
+      "text": "Totul depinde de imaginație. Responsabilitatea noastră începe cu imaginația.",
+      "source": "Murakami Haruki",
+      "length": 76,
+      "id": 61
+    },
+    {
+      "text": "Fiecare dintre noi are ceva special, ce poate obține doar într-un moment deosebit al vieții. Ceva asemănător cu o mică flacără. Puțini, atenți și privilegiați, îngrijesc această flacără, au grijă de ea, o țin ca o torță luminându-și viața. Dar atunci când acea flacără se stinge, este pentru totdeauna.",
+      "source": "Murakami Haruki",
+      "length": 302,
+      "id": 62
+    },
+    {
+      "text": "Aproape nimeni în lume nu dorește cu adevărat libertatea. Oamenii doar cred că o doresc. Este doar o iluzie. Dacă li s-ar oferi cu adevărat libertatea, majoritatea nu ar ști ce să facă cu ea. Mai bine să ții minte asta. Oamenii, de fapt, se simt bine în robie.",
+      "source": "Murakami Haruki",
+      "length": 260,
+      "id": 63
+    },
+    {
+      "text": "Iluziile au aceeași caracteristică că, cu cât te gândești mai mult la ele, cu atât cresc și devin din ce în ce mai clare. Și în curând, nu mai sunt iluzii.",
+      "source": "Murakami Haruki",
+      "length": 155,
+      "id": 64
+    },
+    {
+      "text": "Viitorul scade. Trecutul crește. Oportunitățile scad. Durerea crește.",
+      "source": "Murakami Haruki",
+      "length": 69,
+      "id": 65
+    },
+    {
+      "text": "Dacă te simți prost gândindu-te prost, mai bine odihnește-te.",
+      "source": "Murakami Haruki",
+      "length": 61,
+      "id": 66
+    },
+    {
+      "text": "Inima seamănă cu o fântână adâncă. Nimeni nu știe ce este la fund. Poți doar să-ți imaginezi în funcție de ceea ce apare uneori la suprafață.",
+      "source": "Murakami Haruki",
+      "length": 141,
+      "id": 67
+    },
+    {
+      "text": "De multe ori, viitorul ne arată cât de valoros a fost ceva.",
+      "source": "Murakami Haruki",
+      "length": 59,
+      "id": 68
+    },
+    {
+      "text": "Îngustimea mentală, lipsa imaginației și intoleranța sunt ca niște paraziți. Schimbă stăpânul, schimbă forma și trăiesc veșnic.",
+      "source": "Murakami Haruki",
+      "length": 127,
+      "id": 69
+    },
+    {
+      "text": "E destul de mult, spuse mama, parcă bucuroasă că totuși nu greșise complet. Apoi, toți s-au retras în camera în care se pregătea cafeaua.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 137,
+      "id": 70
+    },
+    {
+      "text": "Vecinii au început curând să arate semne de nerăbdare. Singuri cu mama, voiau într-un fel să marcheze faptul că nu intenționau să fie jucăria ei. Credeau că începea să devină prea mândră de fiul ei.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 198,
+      "id": 71
+    },
+    {
+      "text": "Un grad înalt de inteligență conferă feței ceva bogat și matur, este ca și cum obezitatea spiritului ar urca în față, obezitatea Minervei.",
+      "source": "Edith Södergran, Dikter och aforismer",
+      "length": 138,
+      "id": 72
+    }
+  ]
+}

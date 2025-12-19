@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+  },
+  "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
+  "extends": [
+    "./rules/enabled.jsonc",
+    "./rules/ts-enabled.jsonc",
+    "./rules/disabled.jsonc",
+    "./rules/ts-disabled.jsonc",
+    "./rules/consider.jsonc",
+    "./rules/ts-consider.jsonc",
+    "./overrides.jsonc",
+  ],
+}

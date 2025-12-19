@@ -1,0 +1,29 @@
+api:
+  - any: ["frontend/src/ts/ape/**/*", "backend/src/api/**/*"]
+
+assets:
+  - any: ["frontend/static/**/*"]
+    all: ["!frontend/static/**/*.html"]
+
+backend:
+  - any: ["backend/**/*"]
+
+docs:
+  - any: ["**/*.md"]
+
+frontend:
+  - any: ["frontend/**/*"]
+
+packages:
+  - any: ["packages/**/*"]
+
+local dev:
+  - any:
+      [
+        "**/turbo.json",
+        "**/tsconfig.json",
+        "**/knip.json",
+        "**/.prettierrc",
+        "**/.oxlintrc.json",
+        "**/.eslintrc.cjs",
+      ]

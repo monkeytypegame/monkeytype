@@ -1,0 +1,77 @@
+@use "sass:list";
+@use "sass:map";
+@import "@fortawesome/fontawesome-free/scss/_functions.scss";
+
+@import "@fortawesome/fontawesome-free/scss/_variables.scss";
+@import "@fortawesome/fontawesome-free/scss/_mixins.scss";
+@import "@fortawesome/fontawesome-free/scss/_core.scss";
+
+/** fixed-with **/
+@import "@fortawesome/fontawesome-free/scss/_fixed-width.scss"; //fa-fw
+/** animated **/
+@import "@fortawesome/fontawesome-free/scss/_animated.scss"; //fa-spin
+/** rotated **/
+@import "@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
+
+@font-face {
+  font-family: "Font Awesome";
+  font-display: block;
+  font-weight: 900;
+  @if variable-exists(fontAwesomeOverride) {
+    src: url("#{$fontAwesomeOverride}/fa-solid-900.woff2") format("woff2");
+  } @else {
+    src: url("/webfonts-generated/fa-solid-900.woff2") format("woff2");
+  }
+}
+
+@font-face {
+  font-family: "Font Awesome";
+  font-display: block;
+  font-weight: 400;
+  @if variable-exists(fontAwesomeOverride) {
+    src: url("#{$fontAwesomeOverride}/fa-regular-400.woff2") format("woff2");
+  } @else {
+    src: url("/webfonts-generated/fa-regular-400.woff2") format("woff2");
+  }
+}
+
+.fa,
+.fas {
+  font-family: "Font Awesome";
+  font-weight: 900;
+}
+
+.far {
+  font-family: "Font Awesome";
+  font-weight: 400;
+}
+
+.fab {
+  font-family: "Font Awesome Brands";
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Font Awesome Brands";
+  font-display: block;
+  font-weight: 400;
+  @if variable-exists(fontAwesomeOverride) {
+    src: url("#{$fontAwesomeOverride}/fa-brands-400.woff2") format("woff2");
+  } @else {
+    src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
+  }
+}
+
+@each $name in $fontawesomeSolid {
+  $icon: map.get($fa-icons, $name);
+  .#{$fa-css-prefix}-#{$name}::before {
+    content: unquote('"#{ $icon }"');
+  }
+}
+
+@each $name in $fontawesomeBrands {
+  $icon: map.get($fa-brand-icons, $name);
+  .#{$fa-css-prefix}-#{$name}:before {
+    content: unquote('"#{ $icon }"');
+  }
+}

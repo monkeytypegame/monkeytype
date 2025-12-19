@@ -1,0 +1,23 @@
+
+node_modules
+frontend/node_modules
+backend/node_modules
+
+# Firebase
+.firebase/
+.firebaserc
+serviceAccountKey*.json
+frontend/src/ts/constants/firebase-config.ts
+frontend/src/ts/constants/firebase-config-live.ts
+
+#frontend
+frontend/.env
+
+#cloudflare
+.cloudflareKey.txt
+.cloudflareKey_copy.txt
+
+#backend
+backend/src/credentials/*.json
+backend/.env
+backend/dist

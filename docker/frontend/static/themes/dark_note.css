@@ -1,0 +1,189 @@
+:root {
+  --bg-color: #1f1f1f;
+  --main-color: #f2c17b;
+  --caret-color: #e3dce0;
+  --sub-color: #768f95;
+  --sub-alt-color: #141414;
+  --text-color: #d2dff4;
+  --error-color: #ff0000;
+  --error-extra-color: #588498;
+  --colorful-error-color: var(--error-color);
+  --colorful-error-extra-color: var(--error-extra-color);
+  /* custom vars */
+  --theme-bg-stripe-color: #434653;
+  --theme-bg-stripe-opacity: 0.1;
+  --theme-accent-stripe-color: #bf8200;
+  --current-color: var(--text-color);
+}
+
+.colorfulMode {
+  --current-color: var(--main-color);
+}
+
+.button:not(.accountButtonAndMenu *),
+#testConfig .row {
+  --roundness: 5em; /* overwriting default roundness to make it softer */
+}
+
+/* Notepad style overlay */
+body {
+  position: relative;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 100%;
+  opacity: var(--theme-bg-stripe-opacity);
+  display: block;
+  z-index: -9999;
+}
+
+body::after {
+  left: 0;
+  width: 100%;
+  background-image: linear-gradient(
+    0deg,
+    var(--theme-bg-stripe-color) 0.1em,
+    transparent 0.1em,
+    transparent 100%
+  );
+  background-size: 1em 2em;
+}
+
+body::before {
+  left: 10vw;
+  width: 0.1em;
+  background: var(--theme-accent-stripe-color);
+}
+
+#commandLine .modal {
+  --roundness: 0; /* making command line sharp */
+}
+
+/* restyling error displays to be strike-through instead of underlined */
+#wordsWrapper .word.error {
+  border-bottom: none;
+}
+
+#words .word.error {
+  text-shadow: none;
+}
+
+#words:not(.blind).colorfulMode .word letter.incorrect:not(.extra),
+#words:not(.blind) .word letter.incorrect:not(.extra) {
+  color: var(--current-color);
+}
+
+#words:not(.blind) .word.error letter:not(.correct):not(.incorrect)::after {
+  background: var(--sub-color);
+}
+
+#words:not(.blind) .word letter.incorrect,
+#words:not(.blind).colorfulMode .word letter.incorrect {
+  text-decoration: line-through;
+  text-decoration-color: var(--error-color);
+  text-decoration-thickness: 2px;
+}
+
+/* transform already typed letters into appropriately colored dots */
+
+/* setting variables to the appropriate colors */
+#wordsWrapper {
+  --c-dot: var(--text-color);
+  --c-dot--error: var(--error-color);
+}
+
+.colorfulMode {
+  --c-dot: var(--main-color);
+  --c-dot--error: var(--colorful-error-color);
+}
+
+#words .typed letter {
+  animation: darkNoteToDust 200ms ease-out 0ms 1 forwards !important;
+}
+#words .typed letter::after {
+  animation: darkNoteFadeIn 100ms ease-in 100ms 1 forwards;
+}
+
+.word letter {
+  position: relative;
+}
+
+#words:not(.withLigatures) .word letter::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+#wordsWrapper .typed letter::after {
+  background: var(--c-dot);
+}
+
+#wordsWrapper #words:not(.blind) .word letter.incorrect::after {
+  background: var(--c-dot--error);
+}
+
+/* hide hint during dot transformation */
+hint {
+  transition: 300ms ease opacity;
+  opacity: 1;
+}
+
+#wordsWrapper .word:not(.active) letter.incorrect hint {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion) {
+  #words .typed letter {
+    animation: none !important;
+    transform: scale(0.4);
+    color: transparent;
+  }
+  #words .typed letter::after {
+    animation: none !important;
+    opacity: 1;
+  }
+}
+
+@keyframes darkNoteFadeIn {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes darkNoteToDust {
+  0% {
+    transform: scale(1);
+    color: var(--current-color);
+  }
+  10% {
+    /* transform: scale(1); */
+  }
+  15% {
+    transform: scale(1);
+    color: var(--c-dot);
+  }
+  80% {
+    /* transform: scale(0.5); */
+    color: var(--c-dot);
+  }
+  100% {
+    transform: scale(0.4);
+    color: transparent;
+  }
+}

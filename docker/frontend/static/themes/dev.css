@@ -1,0 +1,13 @@
+/*this theme is based on "Dev theme by KDr3w" color pallet: https://www.deviantart.com/kdr3w/art/Dev-825722799 */
+:root {
+  --bg-color: #1b2028;
+  --main-color: #23a9d5;
+  --caret-color: #4b5975;
+  --sub-color: #4b5975;
+  --sub-alt-color: #151a21;
+  --text-color: #ccccb5;
+  --error-color: #b81b2c;
+  --error-extra-color: #84131f;
+  --colorful-error-color: #b81b2c;
+  --colorful-error-extra-color: #84131f;
+}

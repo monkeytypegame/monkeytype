@@ -1,0 +1,115 @@
+footer {
+  position: relative;
+  text-align: center;
+  line-height: 1rem;
+  font-size: 0.75rem;
+  color: var(--sub-color);
+  // margin: -0.5em;
+
+  .keyTips {
+    transition: 0.125s;
+    margin-bottom: 2em;
+    line-height: 2;
+  }
+
+  #commandLineMobileButton {
+    display: none;
+    // top: -4rem;
+    bottom: 2rem;
+    left: 2rem;
+    position: fixed;
+    font-size: 1rem;
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    line-height: 3rem;
+    background: var(--main-color);
+    border-radius: 99rem;
+    z-index: 99;
+    cursor: pointer;
+    color: var(--bg-color);
+    transition: 0.25s;
+  }
+
+  .leftright {
+    margin: -0.5em;
+    -webkit-user-select: none;
+    user-select: none;
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    gap: 2rem;
+    .textButton {
+      text-decoration: none;
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding: 0.25em 0.5em;
+    }
+    .left {
+      text-align: left;
+      display: flex;
+      justify-items: start;
+      width: max-content;
+    }
+    .right {
+      text-align: right;
+      display: flex;
+      justify-self: right;
+      width: max-content;
+      height: max-content;
+    }
+    .left .textButton,
+    .right .textButton {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 0.25rem;
+      align-items: baseline;
+      width: -moz-available;
+      width: max-content;
+    }
+  }
+
+  .currentVersion {
+    display: flex;
+    #newVersionIndicator {
+      margin: 0;
+      font-size: unset;
+      background-color: var(--main-color);
+      border-radius: calc(var(--roundness) / 2);
+      color: var(--bg-color);
+      text-align: center;
+      cursor: pointer;
+      transition: 0.125s;
+    }
+  }
+
+  .current-theme {
+    .icon {
+      position: relative;
+      .favIndicator {
+        font-size: 0.5em;
+        top: -0.5em;
+        right: -0.5em;
+        padding: 0.25em;
+        position: absolute;
+        background: var(--bg-color);
+        border-radius: 100%;
+      }
+    }
+  }
+
+  &.focus {
+    .keyTips {
+      opacity: 0 !important;
+    }
+    .textButton {
+      opacity: 0 !important;
+    }
+    #newVersionIndicator {
+      opacity: 0 !important;
+    }
+    #commandLineMobileButton {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
+}

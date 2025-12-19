@@ -1,0 +1,21 @@
+:root {
+  --bg-color: #303c36;
+  --main-color: #a59682;
+  --caret-color: #601420;
+  --sub-color: #181d1a;
+  --sub-alt-color: #36453c;
+  --text-color: #a59682;
+  --error-color: #601420;
+  --error-extra-color: #5f0715;
+  --colorful-error-color: #601420;
+  --colorful-error-extra-color: #5f0715;
+}
+
+nav > .textButton:nth-child(1),
+nav > .textButton:nth-child(2),
+nav > .textButton:nth-child(3),
+nav > .textButton:nth-child(4),
+nav > .textButton:nth-child(5),
+nav > .textButton:nth-child(6) {
+  color: #601420;
+}

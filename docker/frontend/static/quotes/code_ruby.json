@@ -1,0 +1,173 @@
+{
+  "language": "code_ruby",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "class Greeter\n\tdef initialize(name = \"World\")\n\t\t@name = name\n\tend\n\tdef say_hi\n\t\tputs \"Hi #{@name}!\"\n\tend\n\tdef say_bye\n\t\tputs \"Bye #{@name}, come back soon.\"\n\tend\nend\n",
+      "source": "ruby-lang.org - Quickstart page 2",
+      "length": 166,
+      "id": 1
+    },
+    {
+      "text": "class MegaGreeter\n\tattr_accessor :names\n\n\t# Create the object\n\tdef initialize(names = \"World\")\n\t\t@names = names\n\tend\n\n\t# Say hi to everybody\n\tdef say_hi\n\t\tif @names.nil?\n\t\t\tputs \"...\"\n\t\telsif @names.respond_to?(\"each\")\n\t\t\t# @names is a list of some kind, iterate!\n\t\t\t@names.each do |name|\n\t\t\t\tputs \"Hello #{name}!\"\n\t\t\tend\n\t\telse\n\t\t\tputs \"Hello #{@names}!\"\n\t\tend\n\tend\n\n\t# Say bye to everybody\n\tdef say_bye\n\t\tif @names.nil?\n\t\t\tputs \"...\"\n\t\telsif @names.respond_to?(\"join\")\n\t\t\t# Join the list elements with commas\n\t\t\tputs \"Goodbye #{@names.join(\", \")}.  Come back soon!\"\n\t\telse\n\t\t\tputs \"Goodbye #{@names}.  Come back soon!\"\n\t\tend\n\tend\nend",
+      "source": "ruby-lang.org - Quickstart page 3",
+      "length": 635,
+      "id": 2
+    },
+    {
+      "text": "Point = Struct.new(:x, :y)\n\nRect = Struct.new(:x1, :y1, :x2, :y2) do\n\tdef contains?(point)\n\t\tpoint.x.between?(x1,x2) && point.y.between?(y1,y2)\n\tend\nend\n\nb = Rect.new(0,0,2,5).contains?(Point.new(0,0))",
+      "source": "programming-idioms.org - Check if point is inside rectangle",
+      "length": 201,
+      "id": 3
+    },
+    {
+      "text": "i = 0\nloop do\n\tputs \"i is #{i}\"\n\ti += 1\n\tbreak if i == 10\nend",
+      "source": "theodinproject.com - Ruby loops",
+      "length": 61,
+      "id": 4
+    },
+    {
+      "text": "def even_odd(number)\n\tif number % 2 == 0\n\t\t\"That is an even number.\"\n\telse\n\t\t\"That is an odd number.\"\n\tend\nend",
+      "source": "theodinproject.com - Ruby methods",
+      "length": 110,
+      "id": 5
+    },
+    {
+      "text": "class PostsController < ApplicationController\n\tdef create\n\t\t@post = Post.new(allowed_post_params)\n\t\tif @post.save\n\t\t\tredirect_to post_path(@post.id)\n\t\telse\n\t\t\trender :new, status: :unprocessable_entity\n\t\tend\n\tend\n\n\tprivate\n\n\tdef allowed_post_params\n\t\tparams.require(:post).permit(:title,:body,:author_id)\n\tend\nend",
+      "source": "theodinproject.com - Ruby on Rails controllers",
+      "length": 313,
+      "id": 6
+    },
+    {
+      "text": "def geeks (*var)\n\tputs \"Number of parameters is: #{var.length}\"\n\n\tfor i in 0...var.length\n\t\tputs \"Parameters are: #{var[i]}\"\n\tend\nend",
+      "source": "GeeksforGeeks - Ruby | Methods",
+      "length": 133,
+      "id": 7
+    },
+    {
+      "text": "def RecursiveSum(arrayofNumbers)\n\treturn 0 if arrayofNumbers.empty?\n\n\tsum = arrayofNumbers.pop\n\treturn sum + RecursiveSum(arrayofNumbers)\nend",
+      "source": "GeeksforGeeks - Recursion in Ruby",
+      "length": 141,
+      "id": 8
+    },
+    {
+      "text": "def RecursiveFactorial(number)\n\tif (0..1).include?(number)\n\t\treturn 1\n\tend\n\n\tnumber * RecursiveFactorial(number - 1)\nend",
+      "source": "GeeksforGeeks - Recursion in Ruby",
+      "length": 120,
+      "id": 9
+    },
+    {
+      "text": "def Fibonacci(number)\n\tif number < 2\n\t\tnumber\n\telse\n\t\tFibonacci(number - 1) + Fibonacci(number - 2)\n\tend\nend",
+      "source": "GeeksforGeeks - Recursion in Ruby",
+      "length": 108,
+      "id": 10
+    },
+    {
+      "text": "class Language\n\tattr_reader :language_name\n\tattr_writer :topic_name\n\tattr_reader :topic_name\n\n\tdef initialize(language_name, topic_name)\n\t\t@language_name = language_name\n\t\t@topic_name = topic_name\n\tend\nend",
+      "source": "GeeksforGeeks - Object-Oriented Programming in Ruby | Set 1",
+      "length": 205,
+      "id": 11
+    },
+    {
+      "text": "def contains_vowel(str)\n\tstr =~ /[aeiou]/\nend",
+      "source": "GeeksforGeeks - Ruby | Regular Expressions",
+      "length": 45,
+      "id": 12
+    },
+    {
+      "text": "class CreateArticles < ActiveRecord::Migration[7.0]\n\tdef change\n\t\tcreate_table :articles do |t|\n\t\t\tt.string :title\n\t\t\tt.text :body\n\n\t\t\tt.timestamps\n\t\tend\n\tend\nend",
+      "source": "guides.rubyonrails.org - Getting Started: Database Migrations",
+      "length": 162,
+      "id": 13
+    },
+    {
+      "text": "class ArticlesController < ApplicationController\n\tdef index\n\t\t@articles = Article.all\n\tend\n\n\tdef show\n\t\t@article = Article.find(params[:id])\n\tend\nend",
+      "source": "guides.rubyonrails.org - Getting Started: Showing a Single Article",
+      "length": 149,
+      "id": 14
+    },
+    {
+      "text": "class CommentsController < ApplicationController\n\tdef create\n\t\t@article = Article.find(params[:article_id])\n\t\t@comment = @article.comments.create(comment_params)\n\t\tredirect_to article_path(@article)\n\tend\n\n\tprivate\n\t\tdef comment_params\n\t\t\tparams.require(:comment).permit(:commenter, :body)\n\t\tend\nend",
+      "source": "guides.rubyonrails.org - Getting Started: Generating a Controller",
+      "length": 298,
+      "id": 15
+    },
+    {
+      "text": "def bubble_sort(a)\n\tn = a.length\n\tfor i in 0...n-1\n\t\tswapped = false\n\t\tfor j in 0...n-i-1\n\t\t\tif a[j] > a[j+1]\n\t\t\t\ttemp = a[j]\n\t\t\t\ta[j] = a[j+1]\n\t\t\t\ta[j+1] = temp\n\t\t\t\tswapped = true\n\t\t\tend\n\t\tend\n\t\tif swapped == false\n\t\t\tbreak\n\t\tend\n\tend\n\treturn a\nend",
+      "source": "rubyalgo.github.io - bubble sort",
+      "length": 249,
+      "id": 16
+    },
+    {
+      "text": "def insertion_sort(a)\n\tfor i in 1...(a.length)\n\t\tj = i\n\t\twhile j > 0\n\t\t\tif a[j-1] > a[j]\n\t\t\t\ttemp = a[j]\n\t\t\t\ta[j] = a[j-1]\n\t\t\t\ta[j-1] = temp\n\t\t\telse\n\t\t\t\tbreak\n\t\t\tend\n\t\t\tj = j - 1\n\t\tend\n\tend\n\treturn a\nend",
+      "source": "rubyalgo.github.io - insertion sort",
+      "length": 203,
+      "id": 17
+    },
+    {
+      "text": "def binary_search(a, key)\n\tlo = 0\n\thi = a.length - 1\n\n\twhile (lo <= hi)\n\t\tmid = lo + ((hi - lo) / 2)\n\n\t\tif a[mid] == key\n\t\t\treturn mid\n\t\telsif a[mid] < key\n\t\t\tlo = mid + 1\n\t\telse\n\t\t\thi = mid - 1\n\t\tend\n\tend\n\n\treturn \"Value not found in array\"\nend",
+      "source": "rubyalgo.github.io - binary search",
+      "length": 245,
+      "id": 18
+    },
+    {
+      "text": "def from_module(mod, candidate_rank = 0, start_line = nil)\n\tcandidate = Pry::WrappedModule(mod).candidate(candidate_rank)\n\tstart_line ||= candidate.line\n\tnew(candidate.source, start_line, :ruby)\nend",
+      "source": "pry/pry gem sourcecode",
+      "length": 198,
+      "id": 19
+    },
+    {
+      "text": "def initialize(lines = [], start_line = 1, code_type = :ruby)\n\tlines = lines.lines if lines.is_a? String\n\t@lines = lines.each_with_index.map do |line, lineno|\n\t\tLOC.new(line, lineno + start_line.to_i)\n\tend\n\t@code_type = code_type\n\n\t@with_marker = @with_indentation = @with_line_numbers = nil\nend",
+      "source": "pry/pry gem sourcecode",
+      "length": 295,
+      "id": 20
+    },
+    {
+      "text": "def repl\n\tloop do\n\t\tcase val = read\n\t\twhen :control_c\n\t\t\toutput.puts \"\"\n\t\t\tpry.reset_eval_string\n\t\twhen :no_more_input\n\t\t\toutput.puts \"\" if output.tty?\n\t\t\tbreak\n\t\telse\n\t\t\toutput.puts \"\" if val.nil? && output.tty?\n\t\t\treturn pry.exit_value unless pry.eval(val)\n\t\tend\n\tend\nend",
+      "source": "pry/pry gem sourcecode",
+      "length": 273,
+      "id": 21
+    },
+    {
+      "text": "def inject_local(name, value, binding)\n\tvalue = value.is_a?(Proc) ? value.call : value\n\tif binding.respond_to?(:local_variable_set)\n\t\tbinding.local_variable_set name, value\n\telse # < 2.1\n\t\tbegin\n\t\t\tPry.current[:pry_local] = value\n\t\t\tbinding.eval \"#{name} = ::Pry.current[:pry_local]\"\n\t\tensure\n\t\t\tPry.current[:pry_local] = nil\n\t\tend\n\tend\nend",
+      "source": "pry/pry gem sourcecode",
+      "length": 340,
+      "id": 22
+    },
+    {
+      "text": "def process_yardoc_tag(comment, tag)\n\tin_tag_block = nil\n\tcomment.lines.map do |v|\n\t\tif in_tag_block && v !~ /^\\S/\n\t\t\tPry::Helpers::Text.strip_color Pry::Helpers::Text.strip_color(v)\n\t\telsif in_tag_block\n\t\t\tin_tag_block = false\n\t\t\tv\n\t\telse\n\t\t\tin_tag_block = true if v =~ /^@#{tag}/\n\t\t\tv\n\t\tend\n\tend.join\nend",
+      "source": "pry/pry gem sourcecode",
+      "length": 306,
+      "id": 23
+    },
+    {
+      "text": "def load(*filenames)\n\twith(*filenames) do |f|\n\t\tignoring_nonexistent_files do\n\t\t\tenv = Environment.new(f, true)\n\t\t\tinstrument(\"dotenv.load\", env: env) { env.apply }\n\t\tend\n\tend\nend",
+      "source": "bkeepers/dotenv gem sourcecode",
+      "length": 179,
+      "id": 24
+    },
+    {
+      "text": "def with(*filenames)\n\tfilenames << \".env\" if filenames.empty?\n\n\tfilenames.reduce({}) do |hash, filename|\n\t\thash.merge!(yield(File.expand_path(filename)) || {})\n\tend\nend",
+      "source": "bkeepers/dotenv gem sourcecode",
+      "length": 168,
+      "id": 25
+    },
+    {
+      "text": "module Dotenv\n\tclass Error < StandardError; end\n\n\tclass MissingKeys < Error # :nodoc:\n\t\tdef initialize(keys)\n\t\t\tkey_word = \"key#{keys.size > 1 ? \"s\" : \"\"}\"\n\t\t\tsuper(\"Missing required configuration #{key_word}: #{keys.inspect}\")\n\t\tend\n\tend\nend",
+      "source": "bkeepers/dotenv gem sourcecode",
+      "length": 242,
+      "id": 26
+    },
+    {
+      "text": "def template_line(line)\n\tvar, value = line.split(\"=\")\n\ttemplate = var.gsub(EXPORT_COMMAND, \"\")\n\tis_a_comment = var.strip[0].eql?(\"#\")\n\tvalue.nil? || is_a_comment ? line : \"#{var}=#{template}\"\nend",
+      "source": "bkeepers/dotenv gem sourcecode",
+      "length": 195,
+      "id": 27
+    }
+  ]
+}

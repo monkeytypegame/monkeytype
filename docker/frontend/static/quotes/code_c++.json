@@ -1,0 +1,197 @@
+{
+  "language": "code_c++",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n\tint len;\n\tcin >> len;\n\tvector <int> array(len);\n\tint sum = 0;\n\tfor(int i = 0; i < len; i++){\n\t\tcin >> array[i];\n\t\tsum += array[i];\n\t}\n\tcout << sum;\n\treturn 0;\n}\n",
+      "source": "Sum of array in C++",
+      "length": 220,
+      "id": 1
+    },
+    {
+      "text": "float Q_rsqrt( float number )\n{\n\tlong i;\n\tfloat x2, y;\n\tconst float threehalfs = 1.5F;\n\n\tx2 = number * 0.5F;\n\ty  = number;\n\ti  = * ( long * ) &y;\n\ti  = 0x5f3759df - ( i >> 1 );\n\ty  = * ( float * ) &i;\n\ty  = y * ( threehalfs - ( x2 * y * y ) );\n\treturn y;\n}\n",
+      "source": "Quake III Arena Source Code (Fast Inverse Square Root)",
+      "length": 257,
+      "id": 2
+    },
+    {
+      "text": "#include <iostream>\nint main() {\n\tint arr1[10];\n\tconst int n = 10;\n\tint arr2[n];\n\treturn 0;\n}",
+      "source": "geeksforgeeks - Arrays",
+      "length": 93,
+      "id": 3
+    },
+    {
+      "text": "int main() { int arr[6] = {10, 20, 30, 40}; }",
+      "source": "geeksforgeeks - Arrays",
+      "length": 45,
+      "id": 4
+    },
+    {
+      "text": "#include <stdio.h>\nint main() {\n\tint arr[5];\n\tarr[0] = 5;\n\tarr[2] = -10;\n\tarr[3 / 2] = 2;\n\tarr[3] = arr[0];\n\tprintf(\"%d %d %d %d\", arr[0], arr[1], arr[2], arr[3]);\n\treturn 0;\n}",
+      "source": "geeksforgeeks - Arrays",
+      "length": 176,
+      "id": 5
+    },
+    {
+      "text": "#include <iostream>\nusing namespace std;\nint main() {\n\tint x[3][2] = {{0, 1}, {2, 3}, {4, 5}};\n\tfor (int i = 0; i < 3; i++) {\n\t\tfor (int j = 0; j < 2; j++) {\n\t\t\tcout << \"Element at x[\" << i << \"][\" << j << \"]: \";\n\t\t\tcout << x[i][j] << endl;\n\t\t}\n\t}\n\treturn 0;\n}",
+      "source": "geeksforgeeks - Multidimensional Arrays",
+      "length": 260,
+      "id": 6
+    },
+    {
+      "text": "#include <cstring>\n#include <iostream>\nusing namespace std;\nint main() {\n\tchar str[] = \"This is a string\";\n\tchar *ch = strrchr(str, 'a');\n\tcout << ch - str + 1;\n\treturn 0;\n}",
+      "source": "geeksforgeeks - strrchr() function in C/C++",
+      "length": 173,
+      "id": 7
+    },
+    {
+      "text": "#include <iostream>\nint max(int x, int y) {\n\tif (x > y)\n\t\treturn x;\n\telse\n\t\treturn y;\n}",
+      "source": "geeksforgeeks - Functions in C/C++",
+      "length": 87,
+      "id": 8
+    },
+    {
+      "text": "#include <iostream>\nusing namespace std;\nint main() {\n\tint a = 10, b = 20;\n\tint m = max(a, b);\n\tcout << \"m is \" << m;\n\treturn 0;\n}",
+      "source": "geeksforgeeks - Functions in C/C++",
+      "length": 130,
+      "id": 9
+    },
+    {
+      "text": "void fun(int x) { x = 30; }",
+      "source": "geeksforgeeks - Functions in C/C++",
+      "length": 27,
+      "id": 10
+    },
+    {
+      "text": "void fun(int *ptr) { *ptr = 30; }",
+      "source": "geeksforgeeks - Functions in C/C++",
+      "length": 33,
+      "id": 11
+    },
+    {
+      "text": "class CImage {\npublic:\n\tCImage();\n\t~CImage();\n\tstruct SImageInfo *pImageInfo;\n\tvoid Rotate(double angle);\n\tvoid Scale(double scaleFactorX, double scaleFactorY);\n\tvoid Move(int toX, int toY);\nprivate:\n\tvoid InitImageInfo();\n};",
+      "source": "geeksforgeeks - Opaque Pointer",
+      "length": 225,
+      "id": 12
+    },
+    {
+      "text": "#include <iostream>\nusing namespace std;\nvoid swap(int &first, int &second) {\n\tint temp = first;\n\tfirst = second;\n\tsecond = temp;\n}",
+      "source": "geeksforgeeks - References",
+      "length": 131,
+      "id": 13
+    },
+    {
+      "text": "struct Student {\n\tstring name;\n\tstring address;\n\tint rollNo;\n};",
+      "source": "geeksforgeeks - References",
+      "length": 63,
+      "id": 14
+    },
+    {
+      "text": "void print(const Student &s) {\n\tcout << s.name << \"  \" << s.address << \"  \" << s.rollNo << '\\n';\n}",
+      "source": "geeksforgeeks - References",
+      "length": 98,
+      "id": 15
+    },
+    {
+      "text": "#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n\tvector<int> vect{10, 20, 30, 40};\n\tfor (int &x : vect) {\n\t\tx = x + 5;\n\t}\n\tfor (int x : vect) {\n\t\tcout << x << \" \";\n\t}\n\tcout << '\\n';\n\treturn 0;\n}",
+      "source": "geeksforgeeks - References",
+      "length": 218,
+      "id": 16
+    },
+    {
+      "text": "int &fun() {\n\tstatic int x = 10;\n\treturn x;\n}",
+      "source": "geeksforgeeks - References",
+      "length": 45,
+      "id": 17
+    },
+    {
+      "text": "int fun(int &x) { return x; }",
+      "source": "geeksforgeeks - References",
+      "length": 29,
+      "id": 18
+    },
+    {
+      "text": "class Test {\nprivate:\n\tint x;\npublic:\n\tvoid setX(int x) { this->x = x; }\n\tvoid print() { cout << \"x = \" << x << endl; }\n};",
+      "source": "geeksforgeeks - 'this' pointer in C++",
+      "length": 122,
+      "id": 19
+    },
+    {
+      "text": "Test &Test::func() {\n\t// Some processing\n\treturn *this;\n}",
+      "source": "geeksforgeeks - 'this' pointer in C++",
+      "length": 57,
+      "id": 20
+    },
+    {
+      "text": "class Test {\nprivate:\n\tint x;\npublic:\n\tTest(int x = 0) { this->x = x; }\n\tvoid change(Test *t) { this = t; }\n\tvoid print() { cout << \"x = \" << x << endl; }\n};",
+      "source": "geeksforgeeks - 'this' pointer in C++",
+      "length": 157,
+      "id": 21
+    },
+    {
+      "text": "class person {\n\tchar name[20];\n\tint id;\npublic:\n\tvoid getdetails() {}\n};",
+      "source": "geeksforgeeks - Object Oriented Programming in C++",
+      "length": 72,
+      "id": 22
+    },
+    {
+      "text": "class Geeks {\npublic:\n\tstring geekname;\n\tvoid printname() { cout << \"Geekname is: \" << geekname; }\n};",
+      "source": "geeksforgeeks - C++ Classes and Objects",
+      "length": 101,
+      "id": 23
+    },
+    {
+      "text": "class Geeks {\npublic:\n\tint id;\n\t~Geeks() { cout << \"Destructor called for id: \" << id << endl; }\n};",
+      "source": "geeksforgeeks - C++ Classes and Objects",
+      "length": 99,
+      "id": 24
+    },
+    {
+      "text": "int main() {\n\tGeeks obj1;\n\tobj1.id = 7;\n\tint i = 0;\n\twhile (i < 5) {\n\t\tGeeks obj2;\n\t\tobj2.id = i;\n\t\ti++;\n\t}\n\treturn 0;\n}",
+      "source": "geeksforgeeks - C++ Classes and Objects",
+      "length": 120,
+      "id": 25
+    },
+    {
+      "text": "class Person {\n\tint id;\n\tchar name[100];\npublic:\n\tvoid set_p();\n\tvoid display_p();\n};\nvoid Person::set_p() {\n\tcout << \"Enter the Id:\";\n\tcin >> id;\n\tfflush(stdin);\n\tcout << \"Enter the Name:\";\n\tcin.get(name, 100);\n}",
+      "source": "geeksforgeeks - Inheritance in C++",
+      "length": 213,
+      "id": 26
+    },
+    {
+      "text": "class Student : private Person {\n\tchar course[50];\n\tint fee;\npublic:\n\tvoid set_s();\n\tvoid display_s();\n};",
+      "source": "geeksforgeeks - Inheritance in C++",
+      "length": 105,
+      "id": 28
+    },
+    {
+      "text": "void Student::set_s() {\n\tset_p();\n\tcout << \"Enter the Course Name:\";\n\tfflush(stdin);\n\tcin.getline(course, 50);\n\tcout << \"Enter the Course Fee:\";\n\tcin >> fee;\n}",
+      "source": "geeksforgeeks - Inheritance in C++",
+      "length": 159,
+      "id": 29
+    },
+    {
+      "text": "void Student::display_s() {\n\tdisplay_p();\n\tcout << \"t\" << course << \"\t\" << fee;\n}",
+      "source": "geeksforgeeks - Inheritance in C++",
+      "length": 81,
+      "id": 30
+    },
+    {
+      "text": "int main() {\n\tStudent s;\n\ts.set_s();\n\ts.display_s();\n\treturn 0;\n}",
+      "source": "geeksforgeeks - Inheritance in C++",
+      "length": 65,
+      "id": 31
+    },
+    {
+      "text": "void Person::set_p(int id, char n[]) {\n\tthis->id = id;\n\tstrcpy(this->name, n);\n}",
+      "source": "geeksforgeeks - Inheritance in C++",
+      "length": 80,
+      "id": 32
+    }
+  ]
+}

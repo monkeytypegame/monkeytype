@@ -1,0 +1,132 @@
+@keyframes loader {
+  0% {
+    transform: translateX(-100%) scaleX(0);
+  }
+  50% {
+    transform: translateX(0) scaleX(1);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes caretFlashSmooth {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes caretFlashHard {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes flashKey {
+  from {
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+  }
+
+  to {
+    color: var(--sub-color);
+    background-color: var(--bg-color);
+    border-color: var(--sub-color);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(2px, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-2px, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(2px, 0) rotate(0deg);
+  }
+}
+
+@keyframes accountRowHighlight {
+  0% {
+    outline: 0.25em solid var(--main-color);
+  }
+  100% {
+    outline: 0.25em solid transparent;
+  }
+}
+
+@keyframes rgb-bg {
+  0% {
+    background: hsl(120, 39%, 49%);
+  }
+  20% {
+    background: hsl(192, 48%, 48%);
+  }
+  40% {
+    background: hsl(264, 90%, 58%);
+  }
+  60% {
+    background: hsl(357, 89%, 50%);
+  }
+  80% {
+    background: hsl(46, 100%, 51%);
+  }
+  100% {
+    background: hsl(120, 39%, 49%);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    bottom: 100%;
+  }
+  80% {
+    bottom: 100%;
+  }
+  100% {
+    bottom: 0%;
+  }
+}
+
+@keyframes flashBorder {
+  0% {
+    box-shadow: 0 0 0 0.2em var(--main-color);
+  }
+  100% {
+    box-shadow: 0 0 0 0.2em transparent;
+  }
+}
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

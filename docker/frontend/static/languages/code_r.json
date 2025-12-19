@@ -1,0 +1,27 @@
+{
+  "name": "code_r",
+  "noLazyMode": true,
+  "words": [
+    "if",
+    "for",
+    "FALSE",
+    "NA_integer_",
+    "return",
+    "else",
+    "in",
+    "NULL",
+    "NA_real_",
+    "repeat",
+    "next",
+    "Inf",
+    "NA_complex_",
+    "while",
+    "break",
+    "NaN",
+    "NA_character_",
+    "function",
+    "TRUE",
+    "NA",
+    "..."
+  ]
+}

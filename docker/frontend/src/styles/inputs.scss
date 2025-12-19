@@ -1,0 +1,371 @@
+input,
+textarea {
+  outline: none;
+  border: none;
+  border-radius: var(--roundness);
+  background: var(--sub-alt-color);
+  color: var(--text-color);
+  padding: 0.5em;
+  font-size: 1em;
+  font-family: var(--font);
+  caret-color: var(--main-color);
+  line-height: 1.25em;
+  &:focus-visible {
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
+  }
+}
+
+.textareaWithCounter {
+  position: relative;
+
+  .char-counter {
+    position: absolute;
+    top: -1.75rem;
+    right: 0.25rem;
+    color: var(--sub-color);
+    -webkit-user-select: none;
+    user-select: none;
+    &.error {
+      color: var(--error-color);
+    }
+    &.warning {
+      color: color-mix(in srgb, var(--text-color) 50%, var(--error-color) 50%);
+    }
+  }
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  padding: 0;
+  width: 100%;
+  height: 1.25em;
+  border-radius: var(--roundness);
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    padding: 0;
+    border: none;
+    width: 25%;
+    height: 1.25em;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+    &:hover {
+      cursor: grab;
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &::-moz-range-thumb {
+    -webkit-appearance: none;
+    padding: 0;
+    border: none;
+    width: 25%;
+    height: 1.25em;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+    &:hover {
+      cursor: grab;
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+  &:focus-visible {
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
+  }
+}
+
+label.checkbox {
+  display: flex;
+  gap: 0.5em;
+  user-select: none;
+}
+
+label.checkboxWithSub {
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 0.5em;
+  align-items: center;
+  .sub {
+    font-size: 0.75em;
+    color: var(--sub-color);
+    grid-column: 2;
+  }
+}
+
+#wordFilterModal #exactMatchOnly {
+  width: 1.25em;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  height: 1.25em;
+  width: 1.25em;
+  border-radius: calc(var(--roundness) / 2);
+  position: relative;
+  transition: background 0.125s;
+  flex-shrink: 0;
+  &:after {
+    font-family: "Font Awesome";
+    content: "\f00c";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: calc((var(--roundness) / 2) - 0.1em);
+    font-weight: 900;
+    position: absolute;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    font-size: 0.75em;
+    transition: color 0.125s;
+    color: transparent;
+  }
+
+  &:checked:after {
+    color: var(--main-color);
+  }
+  &:hover:after {
+    color: var(--bg-color);
+  }
+  &:hover:checked:after {
+    color: var(--text-color);
+  }
+
+  &[disabled] {
+    opacity: 0.33;
+    pointer-events: none;
+    &:hover:after {
+      color: var(--sub-alt-color);
+    }
+    &:hover:checked:after {
+      color: var(--main-color);
+    }
+  }
+}
+
+label:has(input[type="checkbox"][disabled]) {
+  color: color-mix(in srgb, transparent 66%, var(--text-color));
+}
+
+input[type="color"] {
+  height: 3px; //i dont know why its 3, but safari gods have spoken - 3 makes it work
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+input:disabled,
+textarea:disabled {
+  // color: var(--sub-color);
+  opacity: 0.33;
+}
+
+::-moz-color-swatch {
+  border: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: none;
+  outline: 0.15em solid var(--main-color);
+  font-family: inherit;
+  -webkit-text-fill-color: var(--text-color);
+  -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  caret-color: var(--text-color);
+}
+
+// slim-select styles
+.ss-main {
+  border-radius: var(--roundness);
+  outline: none;
+  border: none;
+  border-radius: var(--roundness);
+  background: var(--sub-alt-color);
+  color: var(--text-color);
+  padding: 0.5em;
+  font-size: 1em;
+  font-family: var(--font);
+  caret-color: var(--main-color);
+  line-height: 1.25;
+  min-height: 2.25em;
+  &:focus {
+    box-shadow: inherit;
+  }
+  &:focus-visible {
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
+  }
+  .ss-arrow path {
+    stroke: var(--text-color);
+    transition: none;
+  }
+  &.ss-disabled {
+    opacity: 0.33;
+    pointer-events: none;
+    background: var(--sub-alt-color);
+    cursor: pointer;
+  }
+  .ss-values {
+    .ss-placeholder {
+      padding: 0;
+      margin: 0;
+      color: var(--sub-color);
+    }
+    .ss-single {
+      margin: 0;
+    }
+    .ss-value {
+      animation: unset !important;
+      background-color: unset;
+      .ss-value-text {
+        height: 100%;
+        color: var(--bg-color);
+        background: var(--main-color);
+        border-radius: calc(var(--roundness) / 2) 0 0 calc(var(--roundness) / 2);
+        display: flex;
+        align-items: center;
+        padding: 0.35em 0.5em;
+      }
+      .ss-value-delete {
+        border-left: 1px solid var(--bg-color);
+        background: var(--main-color);
+        height: 100%;
+        box-sizing: border-box;
+        width: min-content;
+        border-radius: 0 calc(var(--roundness) / 2) calc(var(--roundness) / 2) 0;
+        transition: background 0.125s;
+        svg path {
+          stroke: var(--bg-color);
+        }
+        &:hover {
+          background: var(--text-color);
+          svg path {
+            stroke: var(--bg-color);
+          }
+        }
+      }
+    }
+    .ss-max {
+      height: 100%;
+      color: var(--bg-color);
+      background: var(--main-color);
+      border-radius: calc(var(--roundness) / 2);
+      display: flex;
+      align-items: center;
+      padding: 0.35em 0.5em;
+    }
+  }
+}
+
+.ss-content {
+  transition: none;
+  border: none;
+  background: var(--sub-alt-color);
+  color: var(--text-color);
+  .ss-search {
+    padding: 0.5em;
+    border-top: 0.1em solid var(--bg-color);
+    border-bottom: 0.1em solid var(--bg-color);
+    input {
+      border: none;
+      background: var(--bg-color);
+      font-size: 1em;
+      padding: 0.5em;
+      &:focus-visible {
+        box-shadow:
+          0 0 0 0.1rem var(--bg-color),
+          0 0 0 0.2rem var(--text-color);
+      }
+      &:focus {
+        border: none;
+      }
+      &::placeholder {
+        color: var(--sub-color);
+      }
+      &::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+      }
+    }
+  }
+  .ss-list {
+    .ss-optgroup {
+      .ss-optgroup-label {
+        margin-top: 1em;
+        padding: 0.5em;
+        padding-left: 1em;
+        .ss-optgroup-label-text {
+          color: var(--sub-color);
+        }
+      }
+    }
+    .ss-optgroup .ss-option,
+    .ss-optgroup .ss-option:not(.ss-disabled),
+    .ss-option,
+    .ss-option:not(.ss-disabled) {
+      padding: 0.5em;
+      padding-left: 0.5em;
+      color: var(--text-color);
+      &.ss-selected {
+        background: var(--main-color);
+        color: var(--bg-color);
+      }
+      &:hover,
+      &.ss-highlighted {
+        background: var(--text-color);
+        color: var(--bg-color);
+      }
+      // &:last-child {
+      //   margin-bottom: 1em;
+      // }
+    }
+    .ss-optgroup .ss-option,
+    .ss-optgroup .ss-option:not(.ss-disabled) {
+      padding-left: 1em;
+    }
+  }
+  &.ss-open-below {
+    border-bottom-left-radius: var(--roundness);
+    border-bottom-right-radius: var(--roundness);
+  }
+  &.ss-open-above {
+    border-top-left-radius: var(--roundness);
+    border-top-right-radius: var(--roundness);
+  }
+}

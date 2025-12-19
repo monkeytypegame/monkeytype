@@ -1,0 +1,33 @@
+:root {
+  --bg-color: #ffffff;
+  --main-color: #ff360d;
+  --caret-color: #ff0000;
+  --sub-color: #b7b7b7;
+  --sub-alt-color: #ececec;
+  --text-color: #000000;
+  --error-color: #d70000;
+  --error-extra-color: #b00000;
+  --colorful-error-color: #000000;
+  --colorful-error-extra-color: #000000;
+}
+
+nav .textButton:nth-child(1) {
+  color: #ff0000;
+}
+
+nav .textButton:nth-child(5) {
+  color: #ff0000;
+}
+
+/* kinda confusing to type with this */
+/* .word letter.incorrect {
+  -webkit-transform: scale(0.5) translate(-100%, -100%);
+}
+
+.word letter.incorrect.extra {
+  -webkit-transform: scale(0.5);
+} */
+
+.word.error {
+  border-bottom: solid 2px #ff0000;
+}

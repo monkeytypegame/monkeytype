@@ -1,0 +1,113 @@
+{
+  "language": "latin",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Cuiusvis hominis est errare; nullius nisi insipientis, in errore perseverare.",
+      "source": "Cicero",
+      "length": 77,
+      "id": 1
+    },
+    {
+      "text": "Equo ne credite, Teucri. Quidquid id est, timeo Danaos et dona ferentes.",
+      "source": "Virgil",
+      "length": 72,
+      "id": 2
+    },
+    {
+      "text": "Donec eris felix, multos numerabis amicos: Tempora si fuerint nubila, solus eris.",
+      "source": "Ovid",
+      "length": 81,
+      "id": 3
+    },
+    {
+      "text": "Inde ferunt, totidem qui vivere debeat annos, corpore de patrio parvum phoenica renasci.",
+      "source": "Ovid",
+      "length": 88,
+      "id": 4
+    },
+    {
+      "text": "In verbis etiam tenuis cautusque serendis dixeris egregie, notum si callida verbum reddiderit iunctura novum.",
+      "source": "Horace",
+      "length": 109,
+      "id": 5
+    },
+    {
+      "text": "Et ait Petrus, 'homo, nescio quod dicis,' et continuo adhuc illo loquente cantavit gallus.",
+      "source": "Gospel of Luke 22:59-60",
+      "length": 90,
+      "id": 6
+    },
+    {
+      "text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur. Hi omnes lingua, institutis, legibus inter se differunt.",
+      "source": "Gaius Julius Caesar, Commentarii de Bello Gallico",
+      "length": 202,
+      "id": 7
+    },
+    {
+      "text": "serius aut citius sedem properamus ad unam. tendimus huc omnes, haec est domus ultima.",
+      "source": "Ovid, Metamorphoses 10.33-34",
+      "length": 86,
+      "id": 8
+    },
+    {
+      "text": "ut aegroto, dum anima est, spes esse dicitur, sic ego, quoad Pompeius in Italia fuit, sperare non destiti.",
+      "source": "Marcus Tullius Cicero, Epistulae ad Atticum",
+      "length": 106,
+      "id": 9
+    },
+    {
+      "text": "nec audiendi qui solent dicere, vox populi, vox dei, quum tumultuositas vulgi semper insaniae proxima sit.",
+      "source": "Alcuin, Letter to Charlemagne",
+      "length": 106,
+      "id": 10
+    },
+    {
+      "text": "an quidquid stultius, quam quos singulos contemnas, eos aliquid putare esse universos?",
+      "source": "Cicero",
+      "length": 86,
+      "id": 11
+    },
+    {
+      "text": "Successus textor amat coponiaes ancillam nomine Hiredem quae quidem illum non curat sed illa commiseretur. scribit rivalis, vale.",
+      "source": "Graffiti found in Pompeii",
+      "length": 129,
+      "id": 12
+    },
+    {
+      "text": "vasia quae rapui, quaeris formosa puella accipe quae rapui non ego solus; ama. quisquis amat valeat.",
+      "source": "Graffiti found in Pompeii",
+      "length": 100,
+      "id": 13
+    },
+    {
+      "text": "O tempora, o mores! Senatus haec intellegit, Consul videt; hic tamen vivit. vivit? immo vero etiam in Senatum venit, fit publici consili particeps, notat et designat oculis ad caedem unum quemque nostrum!",
+      "source": "Cicero, First Oration against Catiline",
+      "length": 204,
+      "id": 14
+    },
+    {
+      "text": "cui dono lepidum novum libellum\narida modo pumice expolitum\nCorneli tibi namque tu solebas\nmeas esse aliquid putare nugas\niam tum cum ausus es unus Italorum\nomne aevum tribus explicare cartis\ndoctis Iuppiter et laboriosis\nquare habe tibi quidquid hoc libelli\nqualecumque quod o patrona virgo\nplus uno maneat perenne saeclo",
+      "source": "Catullus 1",
+      "length": 322,
+      "id": 15
+    },
+    {
+      "text": "o Memmi, bene me ac diu supinum\ntota ista trabe lentus irrumasti.\nsed, quantum video, pari fuistis\ncasu: nam nihilo minore verpa\nfarti estis.",
+      "source": "Catallus 28",
+      "length": 141,
+      "id": 16
+    },
+    {
+      "text": "audio quid ueteres olim moneatis amici, \"pone seram, cohibe.\" sed quis custodiet ipsos custodes? cauta est et ab illis incipit uxor.",
+      "source": "Juvenal, Satire VI",
+      "length": 132,
+      "id": 17
+    }
+  ]
+}

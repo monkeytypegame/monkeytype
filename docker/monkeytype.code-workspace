@@ -1,0 +1,97 @@
+{
+  "folders": [
+    //root needs to be first
+    {
+      "name": "root",
+      "path": "./",
+    },
+    {
+      "name": "backend",
+      "path": "backend",
+    },
+    {
+      "name": "frontend",
+      "path": "frontend",
+    },
+    {
+      "name": "packages",
+      "path": "packages",
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "frontend": true,
+      "backend": true,
+      "packages": true,
+    },
+    "search.exclude": {
+      //defaults
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/*.code-search": true,
+      //exclude generated directories
+      "**/build/**": true,
+      "**/dist/**": true,
+      "**/public/**": true,
+      "**/coverage/**": true,
+      "**/logs/**": true,
+      "**/.firebase/**": true,
+      "**/.turbo/**": true,
+    },
+    "oxc.fmt.experimental": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSaveMode": "file",
+    "editor.formatOnSave": true,
+    "testing.automaticallyOpenTestResults": "neverOpen",
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[scss]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
+    "vitest.maximumConfigs": 10,
+    "oxc.typeAware": true,
+    "typescript.format.enable": false,
+  },
+
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Backend: Attach",
+        "port": 9229,
+        "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      },
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "Frontend: Open and Attach",
+        "port": 9222,
+        "skipFiles": ["**/node_modules/**"],
+        "webRoot": "${workspaceFolder:frontend}/src",
+        "url": "http://localhost:3000",
+      },
+    ],
+    "compounds": [],
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "vitest.explorer",
+      "huntertran.auto-markdown-toc",
+      "dbaeumer.vscode-eslint",
+      "oxc.oxc-vscode",
+    ],
+  },
+}

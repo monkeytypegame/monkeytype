@@ -1,0 +1,29 @@
+{
+  "language": "slovak",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Naše aktivity priťahovali mladých ako magnet. Ako svetlo nočné motýle.",
+      "source": "Christian Picciolini",
+      "length": 70,
+      "id": 1
+    },
+    {
+      "text": "Vrtkavá, vlažná, neláskavá je tá naša láska, vieme, vieme. Nenávidíme? Milujeme?",
+      "source": "Emil Boleslav Lukáč",
+      "length": 80,
+      "id": 2
+    },
+    {
+      "text": "Neviem, čo pre teba znamená odplata. Ale viem, čo nechceš aby znamenala. Moju odplatu.",
+      "source": "Úlomky Ženy",
+      "length": 86,
+      "id": 3
+    }
+  ]
+}

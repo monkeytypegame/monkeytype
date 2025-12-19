@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+if [ $(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/') = "master" ] && [ $(git remote get-url origin) = "https://github.com/monkeytypegame/monkeytype" ]; then
+  npx --no -- commitlint --edit ${1}
+fi
+
