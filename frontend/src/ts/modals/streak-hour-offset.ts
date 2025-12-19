@@ -46,10 +46,9 @@ function updatePreview(): void {
   const newDate = new Date();
   newDate.setUTCHours(0, 0, 0, 0);
 
-  const hours = Math.floor(inputValue); // integer part is hour offset
-  const minutes = (inputValue % 1) * 60; // fractional part is minutes
+  const hours = Math.floor(inputValue);
+  const minutes = (inputValue % 1) * 60;
 
-  // apply hr and min offsets
   newDate.setUTCHours(newDate.getUTCHours() + hours);
   newDate.setUTCMinutes(newDate.getUTCMinutes() + minutes);
 
@@ -73,7 +72,6 @@ async function apply(): Promise<void> {
     return;
   }
 
-  // 0.0 or 0.5 (assuming we only wanna allow 30 min offsets like in original issue)
   if (value < -11 || value > 12 || (value % 1 !== 0 && value % 1 !== 0.5)) {
     Notifications.add(
       "Streak offset must be between -11 and 12. Times ending in .5 can be used for 30-minute increments.",
@@ -95,7 +93,6 @@ async function apply(): Promise<void> {
     Notifications.add("Streak hour offset set", 1);
     const snap = getSnapshot() as Snapshot;
 
-    // Save the new streak hour offset
     snap.streakHourOffset = value;
     setSnapshot(snap);
     hide();
