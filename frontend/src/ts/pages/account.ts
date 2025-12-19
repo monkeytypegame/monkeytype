@@ -1124,8 +1124,6 @@ qs(".pageAccount")?.onChild(
 
       chartData = response.body.data.chartData as ChartData;
 
-      chartData = response.body.data.chartData as ChartData;
-
       //update local cache
       result.chartData = chartData;
       const dbResult = DB.getSnapshot()?.results?.find(
