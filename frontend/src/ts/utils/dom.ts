@@ -755,34 +755,6 @@ export class ElementsWithUtils<
   }
 
   /**
-   * Attach an event listener to child elements matching the query in the array.
-   * Useful for dynamically added elements.
-   */
-  onChild<K extends keyof HTMLElementEventMap>(
-    event: K,
-    query: string,
-    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
-  ): this;
-  onChild(
-    event: string,
-    query: string,
-    handler: EventListenerOrEventListenerObject,
-  ): this;
-  onChild(
-    event: keyof HTMLElementEventMap | string,
-    query: string,
-    handler:
-      | EventListenerOrEventListenerObject
-      | ((this: HTMLElement, ev: Event) => void),
-  ): this {
-    for (const item of this) {
-      item.onChild(event, query, handler);
-    }
-
-    return this;
-  }
-
-  /**
    * Set attribute value on all elements in the array
    */
   setAttribute(key: string, value: string): this {

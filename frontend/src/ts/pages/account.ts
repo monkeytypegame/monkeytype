@@ -1152,15 +1152,17 @@ qs(".pageAccount")?.onChild(
   },
 );
 
-qsa(".pageAccount .group.topFilters, .pageAccount .filterButtons")?.onChild(
-  "click",
-  "button",
-  () => {
+const filterButtons = qsa(
+  ".pageAccount .group.topFilters, .pageAccount .filterButtons",
+);
+
+filterButtons.forEach((filterButton) => {
+  filterButton.onChild("click", "button", () => {
     setTimeout(() => {
       void update();
     }, 0);
-  },
-);
+  });
+});
 
 qs(".pageAccount .group.presetFilterButtons")?.onChild(
   "click",
