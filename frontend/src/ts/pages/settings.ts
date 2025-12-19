@@ -784,7 +784,7 @@ qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
   "click",
   "button",
   (e) => {
-    const target = e.currentTarget as HTMLElement;
+    const target = e.target as HTMLElement;
     const funbox = target?.getAttribute("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
