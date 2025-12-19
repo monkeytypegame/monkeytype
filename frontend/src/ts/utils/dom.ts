@@ -652,18 +652,6 @@ export class ElementsWithUtils<
   }
 
   /**
-   * Set value of all inputs or textareas in the array to a string.
-   */
-
-  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
-    for (const item of this) {
-      item.setValue(value);
-    }
-
-    return this as unknown as this;
-  }
-
-  /**
    * Set the disabled attribute on all elements in the array
    */
   disable(): this {
