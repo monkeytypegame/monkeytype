@@ -6,5 +6,5 @@
     "noEmit": true
   },
   "files": ["vitest.d.ts"],
-  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
+  "include": ["./**/*.spec.ts", "./setup-tests.ts", "utils/dom.jsdom-spec.ts"]
 }

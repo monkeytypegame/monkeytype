@@ -339,14 +339,14 @@ async function fillSettingsPage(): Promise<void> {
       // Display as "underscore_spaces". Does not replace underscores with spaces.
       funboxElHTML += `<button class="funbox" data-funbox-name="underscore_spaces" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</button>`;
     } else {
-      funboxElHTML += `<button class="funbox" data-funbox-name="${
+      funboxElHTML += `<div class="funbox" data-funbox-name="${
         funbox.name
       }" data-config-value='${funbox.name}' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
         /_/g,
         " ",
-      )}<i>test</i></button>`;
+      )}<div class="nested">test</div></div>`;
     }
   }
 
@@ -792,7 +792,7 @@ function toggleSettingsGroup(groupName: string): void {
 //funbox
 $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
-  "button",
+  "div",
   (e) => {
     /*
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
@@ -810,7 +810,7 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
 
 qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
   "click",
-  "button",
+  "div",
   (e) => {
     console.log("### qs", {
       target: e.target,

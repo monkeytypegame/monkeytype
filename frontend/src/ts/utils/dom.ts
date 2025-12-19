@@ -269,6 +269,10 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Attach an event listener to child elements matching the selector.
    * Useful for dynamically added elements.
+   *
+   * The handler is not called when the event occurs directly on the bound element, but only for descendants (inner elements)
+   * that match the selector. jQuery bubbles the event from the event target up to the element where the handler is attached
+   * (i.e., innermost to outermost element) and runs the handler for any elements along that path matching the selector.
    */
   onChild<K extends keyof HTMLElementEventMap>(
     event: K,
