@@ -1093,7 +1093,7 @@ qs(".pageAccount")?.onChild(
     const target = new ElementWithUtils(event.currentTarget as HTMLElement);
     const resultId: string = target
       .getFirstMatchingParent("tr")
-      ?.getAttribute("id") as string;
+      ?.getAttribute("data-id") as string;
     if (target.hasClass("loading")) return;
     if (target.hasClass("disabled")) return;
 
