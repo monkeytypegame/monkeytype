@@ -796,7 +796,7 @@ qs(".pageSettings .section.tags")?.onChild(
   "click",
   ".tagsList .tag .tagButton",
   (e) => {
-    const target = e.currentTarget as HTMLElement;
+    const target = e.target as HTMLElement;
     const tagid = target.parentElement?.getAttribute("data-id") as string;
     TagController.toggle(tagid);
     target.classList.toggle("active");
