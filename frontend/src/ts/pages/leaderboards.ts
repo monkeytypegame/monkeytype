@@ -389,7 +389,7 @@ async function requestData(update = false): Promise<void> {
 }
 
 function updateJumpButtons(): void {
-  const el = qs(".page.pageLeaderboards .titleAndButtons .jumpButtons");
+  const el = qsa(".page.pageLeaderboards .titleAndButtons .jumpButtons");
   el?.qsa("button")?.removeClass("active");
 
   const totalPages = Math.ceil(state.count / state.pageSize);

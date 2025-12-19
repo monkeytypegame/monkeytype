@@ -715,6 +715,38 @@ export class ElementsWithUtils<
   }
 
   /**
+   * Query all elements in the array for a child element matching the selector
+   */
+  qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const found = item.native.querySelector<U>(selector);
+      if (found) allElements.push(new ElementWithUtils<U>(found));
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
+   * Query all elements in the array for all child elements matching the selector
+   */
+  qsa<U extends HTMLElement = HTMLElement>(
+    selector: string,
+  ): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const elements = Array.from(item.native.querySelectorAll<U>(selector));
+      for (const el of elements) {
+        if (el !== null) allElements.push(new ElementWithUtils<U>(el));
+      }
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
    * Attach an event listener to all elements in the array
    */
   on<K extends keyof HTMLElementEventMap>(
