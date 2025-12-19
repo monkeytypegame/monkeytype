@@ -257,11 +257,14 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       console.log("\n\x1b[1mRunning oxlint...\x1b[0m");
 
       try {
-        const output = execSync("npx oxlint . --type-aware --type-check", {
-          cwd: process.cwd(),
-          encoding: "utf-8",
-          env: { ...process.env, FORCE_COLOR: "3" },
-        });
+        const output = execSync(
+          "npx oxlint . && npx oxlint . --type-aware --type-check",
+          {
+            cwd: process.cwd(),
+            encoding: "utf-8",
+            env: { ...process.env, FORCE_COLOR: "3" },
+          },
+        );
 
         if (output) {
           console.log(output);
