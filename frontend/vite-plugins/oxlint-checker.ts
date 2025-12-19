@@ -118,6 +118,14 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
         output += data.toString();
       });
 
+      childProcess.on("error", (error: Error) => {
+        output += `\nError: ${error.message}`;
+        if (currentProcess === childProcess) {
+          currentProcess = null;
+        }
+        resolve({ code: 1, output });
+      });
+
       childProcess.on("close", (code: number | null) => {
         if (currentProcess === childProcess) {
           currentProcess = null;
