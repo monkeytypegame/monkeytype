@@ -476,7 +476,7 @@ export function hideAccountSection(): void {
 }
 
 function showAccountSection(): void {
-  qs(`.pageSettings .section.needsAccount`)?.show();
+  qsa(`.pageSettings .section.needsAccount`)?.show();
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
 }
