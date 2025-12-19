@@ -844,7 +844,7 @@ function fillUser(): void {
 }
 
 function updateContent(): void {
-  qs(".page.pageLeaderboards .loading")?.hide();
+  qsa(".page.pageLeaderboards .loading").hide();
   qsa(".page.pageLeaderboards .updating").addClass("invisible");
   qs(".page.pageLeaderboards .error")?.hide();
 
@@ -863,7 +863,7 @@ function updateContent(): void {
     disableButtons();
     qs(".page.pageLeaderboards .bigUser")?.hide();
     qsa(".page.pageLeaderboards .titleAndButtons")?.hide();
-    qs(".page.pageLeaderboards .loading")?.show();
+    qsa(".page.pageLeaderboards .loading").show();
     qs(".page.pageLeaderboards table")?.hide();
     return;
   } else {
