@@ -35,7 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
-import { qs, qsa, qsr, onDOMReady, ElementWithUtils } from "../utils/dom";
+import { qs, qsa, qsr, onWindowLoad, ElementWithUtils } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1286,6 +1286,6 @@ export const page = new Page<undefined>({
   },
 });
 
-onDOMReady(() => {
+onWindowLoad(() => {
   Skeleton.save("pageAccount");
 });

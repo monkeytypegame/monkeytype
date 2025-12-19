@@ -43,7 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -1040,6 +1040,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onDOMReady(async () => {
+onWindowLoad(async () => {
   Skeleton.save("pageSettings");
 });
