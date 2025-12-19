@@ -24,10 +24,7 @@ async function getData(): Promise<boolean> {
 
   if (response.status !== 200) {
     blockedUsers = [];
-    Notifications.add(
-      "Error getting blocked users: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Error getting blocked users", -1, { response });
     return false;
   }
 

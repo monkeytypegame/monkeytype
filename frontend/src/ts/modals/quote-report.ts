@@ -121,7 +121,7 @@ async function submitReport(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to report quote: " + response.body.message, -1);
+    Notifications.add("Failed to report quote", -1, { response });
     return;
   }
 
