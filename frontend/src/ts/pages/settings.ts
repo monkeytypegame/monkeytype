@@ -349,6 +349,8 @@ async function fillSettingsPage(): Promise<void> {
       )}<i>test</i></button>`;
     }
   }
+
+  funboxElHTML += "<div>decoy should not click</div>";
   funboxEl.innerHTML = funboxElHTML;
 
   const fontsEl = document.querySelector(

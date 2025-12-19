@@ -297,22 +297,17 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
       const matchedTarget = target.closest(query);
-      /*console.log("### onChild", {
-        matchedTarget,
-        target: e.target,
-        currentTarget: e.currentTarget,
-      });
-      */
 
-      if (target !== null && target.matches(query)) {
+      if (target !== null && matchedTarget !== null) {
         if (typeof handler === "function") {
           handler.call(target, Object.assign(e, { matchedTarget }));
         } else {
           handler.handleEvent(Object.assign(e, { matchedTarget }));
         }
       } else {
-        console.log("###onChild ignore click, target not matching", {
+        console.log("###onChild ignore click", {
           target,
+          matchedTarget,
           query,
         });
       }
