@@ -43,7 +43,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
   };
 
   const killCurrentProcess = (): boolean => {
-    if (currentProcess && !currentProcess.killed) {
+    if ((currentProcess && !currentProcess.killed) || currentProcess !== null) {
       currentProcess.kill();
       currentProcess = null;
       return true;
