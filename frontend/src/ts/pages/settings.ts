@@ -807,7 +807,7 @@ qs(".pageSettings .section.presets")?.onChild(
   "click",
   ".presetsList .preset .presetButton",
   async (e) => {
-    const target = e.currentTarget as HTMLElement;
+    const target = e.target as HTMLElement;
     const presetid = target.parentElement?.getAttribute("data-id") as string;
     await PresetController.apply(presetid);
     void update();
