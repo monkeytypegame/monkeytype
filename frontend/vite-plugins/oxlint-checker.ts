@@ -110,7 +110,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
    *   may have started in the meantime.
    *
    * @param args Additional command-line arguments to pass to `oxlint`.
-   * @returns A promise that resolves with the process exit code (or {@code null} if
+   * @returns A promise that resolves with the process exit code (or `null` if
    *          the process exited due to a signal) and the full stdout/stderr output
    *          produced by the lint run.
    */
