@@ -105,19 +105,16 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
-export type DomUtilsEvent<T extends Event = Event> = Omit<
-  T,
-  "currentTarget"
-> & {
+export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
   /**
-   * emulates the `currentTarget` attribute from jQuery
+   * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
    */
   matchedTarget: EventTarget | null;
 };
 
-type DomUtilsEventListenerOrEventListenerObject =
-  | { (evt: DomUtilsEvent): void }
-  | { handleEvent(object: DomUtilsEvent): void };
+type OnChildEventListenerOrEventListenerObject =
+  | { (evt: OnChildEvent): void }
+  | { handleEvent(object: OnChildEvent): void };
 
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
@@ -270,37 +267,49 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Attach an event listener to child elements matching the query.
+   * Attach an event listener to child elements matching the selector.
    * Useful for dynamically added elements.
    */
   onChild<K extends keyof HTMLElementEventMap>(
     event: K,
-    query: string,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
     handler: (
       this: HTMLElement,
-      ev: DomUtilsEvent<HTMLElementEventMap[K]>,
+      ev: OnChildEvent<HTMLElementEventMap[K]>,
     ) => void,
   ): this;
   onChild(
     event: string,
-    query: string,
-    handler: DomUtilsEventListenerOrEventListenerObject,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
+    handler: OnChildEventListenerOrEventListenerObject,
   ): this;
   onChild(
     event: keyof HTMLElementEventMap | string,
-    query: string,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
     handler:
-      | DomUtilsEventListenerOrEventListenerObject
-      | ((this: HTMLElement, ev: DomUtilsEvent) => void),
+      | OnChildEventListenerOrEventListenerObject
+      | ((this: HTMLElement, ev: OnChildEvent) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
-      const matchedTarget = target.closest(query);
+      const matchedTarget = target.closest(selector);
 
       if (target !== null && matchedTarget !== null) {
         if (typeof handler === "function") {
-          handler.call(target, Object.assign(e, { matchedTarget }));
+          handler.call(
+            matchedTarget as HTMLElement,
+            Object.assign(e, { matchedTarget }),
+          );
         } else {
           handler.handleEvent(Object.assign(e, { matchedTarget }));
         }
@@ -308,7 +317,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         console.log("###onChild ignore click", {
           target,
           matchedTarget,
-          query,
+          query: selector,
         });
       }
     });
