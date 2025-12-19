@@ -49,14 +49,16 @@ nano .env
 
 ```env
 # Frontend Configuration
-HTTP_PORT=80
+# 80-port Nginx tomonidan ishlatiladi, shuning uchun 8080 ishlatamiz
+HTTP_PORT=8080
 
 # Backend Configuration  
 BACKEND_PORT=5005
 
 # Domain Configuration for monkeytype.uz
+# Backend /api path orqali ishlatiladi (api subdomain yo'q)
 MONKEYTYPE_FRONTENDURL=https://monkeytype.uz
-MONKEYTYPE_BACKENDURL=https://api.monkeytype.uz
+MONKEYTYPE_BACKENDURL=https://monkeytype.uz/api
 
 # Firebase Configuration (kerak bo'lsa)
 FIREBASE_APIKEY=your-firebase-api-key
@@ -123,7 +125,26 @@ server {
     ssl_certificate /etc/letsencrypt/live/monkeytype.uz/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/monkeytype.uz/privkey.pem;
 
-    # Frontend uchun
+    # Backend API uchun /api path orqali
+    location /api/ {
+        proxy_pass http://localhost:5005/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # CORS headers (agar kerak bo'lsa)
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        
+        if ($request_method = 'OPTIONS') {
+            return 204;
+        }
+    }
+
+    # Frontend uchun (barcha boshqa pathlar)
     location / {
         proxy_pass http://localhost:8080;
         proxy_http_version 1.1;
@@ -134,34 +155,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
-    }
-
-    # Backend API uchun (agar alohida subdomain bo'lsa)
-    # location /api/ {
-    #     proxy_pass http://localhost:5005;
-    #     proxy_http_version 1.1;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    # }
-}
-
-# API uchun alohida subdomain (tavsiya etiladi)
-server {
-    listen 443 ssl http2;
-    server_name api.monkeytype.uz;
-
-    ssl_certificate /etc/letsencrypt/live/monkeytype.uz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/monkeytype.uz/privkey.pem;
-
-    location / {
-        proxy_pass http://localhost:5005;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
 ```
@@ -177,7 +170,8 @@ sudo systemctl reload nginx
 ### 7-qadam: SSL sertifikatini olish (Let's Encrypt)
 
 ```bash
-sudo certbot --nginx -d monkeytype.uz -d www.monkeytype.uz -d api.monkeytype.uz
+# Faqat monkeytype.uz va www.monkeytype.uz uchun (api subdomain yo'q)
+sudo certbot --nginx -d monkeytype.uz -d www.monkeytype.uz
 ```
 
 ## Variant 2: Lokal Build Qilish
@@ -334,7 +328,7 @@ docker compose up -d
 Deploy qilgandan keyin quyidagilarni tekshiring:
 
 1. Frontend: https://monkeytype.uz
-2. Backend API: https://api.monkeytype.uz
+2. Backend API: https://monkeytype.uz/api (yoki https://monkeytype.uz/api/health)
 3. Default til o'zbek tilida ekanligini tekshiring
 
 ## Qo'shimcha Ma'lumot
