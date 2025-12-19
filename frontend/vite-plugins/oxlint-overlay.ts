@@ -1,5 +1,6 @@
 // Oxlint overlay client-side code
 let overlay: HTMLDivElement | null = null;
+let hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function createOverlay(): HTMLDivElement {
   if (overlay) return overlay;
@@ -50,6 +51,12 @@ function updateOverlay(data: {
 }): void {
   const overlayEl = createOverlay();
 
+  // Clear any pending hide timeout
+  if (hideTimeout !== null) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
+
   // Show running icon if linting is running and there were issues before
   if (data.running) {
     if (data.hadIssues || data.typeAware) {
@@ -90,8 +97,9 @@ function updateOverlay(data: {
       overlayEl.style.color = "#e4dec8ff";
 
       // Hide after 3 seconds
-      setTimeout(() => {
+      hideTimeout = setTimeout(() => {
         overlayEl.style.display = "none";
+        hideTimeout = null;
       }, 3000);
     } else {
       // Two good lints in a row - don't show anything
