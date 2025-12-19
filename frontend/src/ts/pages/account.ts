@@ -1077,7 +1077,7 @@ qs(".pageAccount #accountHistoryChart")?.on("click", () => {
     throw new Error("Cannot find result for index " + index);
   }
   const element = qs(`.resultRow[data-id="${resultId}"`);
-  qsa(".resultRow")?.removeClass("active");
+  qsa(".resultRow").removeClass("active");
 
   element?.scrollIntoView({
     block: "center",
