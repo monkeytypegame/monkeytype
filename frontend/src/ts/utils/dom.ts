@@ -105,6 +105,12 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
+export type DomUtilsEvent<T extends Event = Event> = Omit<T, "currentTarget">;
+
+type DomUtilsEventListenerOrEventListenerObject =
+  | { (evt: DomUtilsEvent): void }
+  | { handleEvent(object: DomUtilsEvent): void };
+
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * The native dom element
@@ -252,19 +258,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
+    handler: (this: T, ev: DomUtilsEvent<HTMLElementEventMap[K]>) => void,
   ): this;
-  on(event: string, handler: EventListenerOrEventListenerObject): this;
+  on(event: string, handler: DomUtilsEventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
     handler:
-      | EventListenerOrEventListenerObject
-      | ((this: T, ev: Event) => void),
+      | DomUtilsEventListenerOrEventListenerObject
+      | ((this: T, ev: DomUtilsEvent) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(
       event,
-      handler as EventListenerOrEventListenerObject,
+      handler as DomUtilsEventListenerOrEventListenerObject,
     );
     return this;
   }
@@ -276,19 +282,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   onChild<K extends keyof HTMLElementEventMap>(
     event: K,
     query: string,
-    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
+    handler: (
+      this: HTMLElement,
+      ev: DomUtilsEvent<HTMLElementEventMap[K]>,
+    ) => void,
   ): this;
   onChild(
     event: string,
     query: string,
-    handler: EventListenerOrEventListenerObject,
+    handler: DomUtilsEventListenerOrEventListenerObject,
   ): this;
   onChild(
     event: keyof HTMLElementEventMap | string,
     query: string,
     handler:
-      | EventListenerOrEventListenerObject
-      | ((this: HTMLElement, ev: Event) => void),
+      | DomUtilsEventListenerOrEventListenerObject
+      | ((this: HTMLElement, ev: DomUtilsEvent) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
@@ -741,14 +750,14 @@ export class ElementsWithUtils<
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
+    handler: (this: T, ev: DomUtilsEvent<HTMLElementEventMap[K]>) => void,
   ): this;
-  on(event: string, handler: EventListenerOrEventListenerObject): this;
+  on(event: string, handler: DomUtilsEventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
     handler:
-      | EventListenerOrEventListenerObject
-      | ((this: T, ev: Event) => void),
+      | DomUtilsEventListenerOrEventListenerObject
+      | ((this: T, ev: DomUtilsEvent) => void),
   ): this {
     for (const item of this) {
       item.on(event, handler);
