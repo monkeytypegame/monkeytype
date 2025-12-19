@@ -3,6 +3,9 @@ version: "3.8"
 services:
   monkeytype-frontend:
     container_name: monkeytype-frontend
+    build:
+      context: ..
+      dockerfile: ./docker/frontend/Dockerfile
     image: monkeytype/monkeytype-frontend:latest
     ports:
       - "${HTTP_PORT:-8080}:80"
