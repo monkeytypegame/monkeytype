@@ -30,7 +30,7 @@ import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
@@ -155,12 +155,12 @@ async function fetchPendingConnections(): Promise<void> {
 }
 
 function updatePendingConnections(): void {
-  qsa(".pageFriends .pendingRequests").hide();
+  qs(".pageFriends .pendingRequests")?.hide();
 
   if (pendingRequests === undefined || pendingRequests.length === 0) {
-    qsa(".pageFriends .pendingRequests").hide();
+    qs(".pageFriends .pendingRequests")?.hide();
   } else {
-    qsa(".pageFriends .pendingRequests").show();
+    qs(".pageFriends .pendingRequests")?.show();
 
     const html = pendingRequests
       .map(
