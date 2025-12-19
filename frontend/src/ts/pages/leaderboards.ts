@@ -845,7 +845,7 @@ function fillUser(): void {
 
 function updateContent(): void {
   qs(".page.pageLeaderboards .loading")?.hide();
-  qsa(".page.pageLeaderboards .updating")?.addClass("invisible");
+  qsa(".page.pageLeaderboards .updating").addClass("invisible");
   qs(".page.pageLeaderboards .error")?.hide();
 
   if (state.error !== undefined) {
@@ -857,7 +857,7 @@ function updateContent(): void {
 
   if (state.updating) {
     disableButtons();
-    qs(".page.pageLeaderboards .updating")?.removeClass("invisible");
+    qsa(".page.pageLeaderboards .updating").removeClass("invisible");
     return;
   } else if (state.loading) {
     disableButtons();
