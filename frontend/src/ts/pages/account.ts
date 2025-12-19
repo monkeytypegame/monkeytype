@@ -1140,7 +1140,7 @@ qs(".pageAccount")?.onChild(
           "aria-label",
           "Graph history is not available for long tests",
         );
-        target?.setAttribute("data-baloon-pos", "up");
+        target?.setAttribute("data-balloon-pos", "up");
         target.addClass("disabled");
 
         Notifications.add("Graph history is not available for long tests", 0);
