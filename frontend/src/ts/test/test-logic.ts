@@ -1152,11 +1152,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  if (completedEvent.chartData !== "toolong") {
-    // @ts-expect-error TODO: check if this is needed
-    delete completedEvent.chartData.unsmoothedRaw;
-  }
-
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
     completedEvent.keySpacing = "toolong";
