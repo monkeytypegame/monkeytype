@@ -46,6 +46,7 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
+import * as ConnectionState from "../states/connection";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -1006,6 +1007,11 @@ export async function update(
   } else {
     $("#result #watchVideoAdButton").removeClass("hidden");
   }
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
+
   updateWpmAndAcc();
   updateConsistency();
   updateTime();

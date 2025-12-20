@@ -982,6 +982,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
+  TestStats.setLastResult(structuredClone(completedEvent));
+
   ///////// completed event ready
 
   //afk check
@@ -1137,12 +1139,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
-  }
-
-  TestStats.setLastResult(structuredClone(completedEvent));
-
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
   }
 
   await Result.update(
