@@ -831,7 +831,7 @@ qs("#exportSettingsButton")?.on("click", () => {
 });
 
 qsa(".pageSettings .sectionGroupTitle")?.on("click", (e) => {
-  const target = e.target as HTMLElement;
+  const target = e.currentTarget as HTMLElement;
   toggleSettingsGroup(target.getAttribute("group") as string);
 });
 
