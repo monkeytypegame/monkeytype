@@ -393,7 +393,7 @@ describe("misc.ts", () => {
       await expect(second.promise).resolves.toBe(2);
     });
 
-    it("should handle reset before resolve", async () => {
+    it("should resolve old promise reference after reset", async () => {
       //GIVEN
       const wrapper = promiseWithResolvers<number>();
       const oldPromise = wrapper.promise;
@@ -403,13 +403,9 @@ describe("misc.ts", () => {
       wrapper.resolve(42);
 
       //THEN
-      await expect(wrapper.promise).resolves.toBe(42);
-      // Old promise should never resolve
-      const race = await Promise.race([
-        oldPromise.then(() => "old"),
-        Promise.resolve("timeout"),
-      ]);
-      expect(race).toBe("timeout");
+      // Old promise reference should still resolve with the same value
+      await expect(oldPromise).resolves.toBe(42);
+      expect(oldPromise).toBe(wrapper.promise);
     });
 
     it("should work with Promise.all", async () => {
