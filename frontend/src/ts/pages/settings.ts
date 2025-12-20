@@ -968,7 +968,7 @@ function handleHighlightSection(highlight: Highlight | undefined): void {
 }
 
 qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
-  const target = e.target as HTMLElement;
+  const target = e.currentTarget as HTMLElement;
   const section = target.parentElement?.parentElement;
   const configName = (section?.dataset?.["configName"] ??
     section?.dataset?.["sectionId"]) as Highlight | undefined;
