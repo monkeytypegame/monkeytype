@@ -12,7 +12,7 @@ describe("dom", () => {
       function registerOnChild(event: string, selector: string): void {
         const parent = qs("#parent");
         parent?.onChild(event, selector, (e) =>
-          handler({ target: e.target, matchedTarget: e.matchedTarget }),
+          handler({ target: e.target, childTarget: e.childTarget }),
         );
         $("#parent").on(event, selector, (e) =>
           jqHandler({ target: e.target, currentTarget: e.currentTarget }),
@@ -69,7 +69,7 @@ describe("dom", () => {
         expect(handler).toHaveBeenCalledWith(
           expect.objectContaining({
             target: clickTarget,
-            matchedTarget: clickTarget,
+            childTarget: clickTarget,
           }),
         );
         expect(jqHandler).toHaveBeenCalledWith(
@@ -93,7 +93,7 @@ describe("dom", () => {
         expect(handler).toHaveBeenCalledWith(
           expect.objectContaining({
             target: clickTarget,
-            matchedTarget: selectorTarget,
+            childTarget: selectorTarget,
           }),
         );
         expect(jqHandler).toHaveBeenCalledWith(
@@ -137,14 +137,14 @@ describe("dom", () => {
           1,
           expect.objectContaining({
             target: clickTarget,
-            matchedTarget: firstSelectorTarget,
+            childTarget: firstSelectorTarget,
           }),
         );
         expect(handler).toHaveBeenNthCalledWith(
           2,
           expect.objectContaining({
             target: clickTarget,
-            matchedTarget: secondSelectorTarget,
+            childTarget: secondSelectorTarget,
           }),
         );
       });

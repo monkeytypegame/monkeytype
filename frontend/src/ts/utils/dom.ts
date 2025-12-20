@@ -109,7 +109,7 @@ export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
   /**
    * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
    */
-  matchedTarget: EventTarget | null;
+  childTarget: EventTarget | null;
 };
 
 type OnChildEventListenerOrEventListenerObject =
@@ -271,7 +271,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Useful for dynamically added elements.
    *
    * The handler is not called when the event occurs directly on the bound element, but only for descendants (inner elements)
-   * that match the selector. jQuery bubbles the event from the event target up to the element where the handler is attached
+   * that match the selector. Bubbles the event from the event target up to the element where the handler is attached
    * (i.e., innermost to outermost element) and runs the handler for any elements along that path matching the selector.
    */
   onChild<K extends keyof HTMLElementEventMap>(
@@ -303,26 +303,26 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       | OnChildEventListenerOrEventListenerObject
       | ((this: HTMLElement, ev: OnChildEvent) => void),
   ): this {
-    // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
-      const matchedTarget = target.closest(selector);
+      if (target === null) return; //ignore event
 
-      if (target !== null && matchedTarget !== null) {
+      let childTarget = target.closest(selector);
+      //bubble up until no match found or the parent el+ement is reached
+      while (childTarget !== null && childTarget !== this.native) {
         if (typeof handler === "function") {
           handler.call(
-            matchedTarget as HTMLElement,
-            Object.assign(e, { matchedTarget }),
+            childTarget as HTMLElement,
+            Object.assign(e, { childTarget }),
           );
         } else {
-          handler.handleEvent(Object.assign(e, { matchedTarget }));
+          handler.handleEvent(Object.assign(e, { childTarget }));
         }
-      } else {
-        console.log("###onChild ignore click", {
-          target,
-          matchedTarget,
-          query: selector,
-        });
+
+        childTarget =
+          childTarget !== null && childTarget.parentElement !== null
+            ? childTarget.parentElement.closest(selector)
+            : null;
       }
     });
     return this;

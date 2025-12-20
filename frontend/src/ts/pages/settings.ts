@@ -814,7 +814,7 @@ qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
   (e) => {
     console.log("### qs", {
       target: e.target,
-      matchedTarget: e.matchedTarget,
+      childTarget: e.childTarget,
       //@ts-expect-error disabled
       currentTarget: e["currentTarget"] as unknown,
     });
