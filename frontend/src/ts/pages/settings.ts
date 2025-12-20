@@ -784,7 +784,7 @@ qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
   "click",
   "button",
   (e) => {
-    const target = e.target as HTMLElement;
+    const target = e.childTarget as HTMLElement;
     const funbox = target?.getAttribute("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
@@ -796,7 +796,7 @@ qs(".pageSettings .section.tags")?.onChild(
   "click",
   ".tagsList .tag .tagButton",
   (e) => {
-    const target = e.target as HTMLElement;
+    const target = e.childTarget as HTMLElement;
     const tagid = target.parentElement?.getAttribute("data-id") as string;
     TagController.toggle(tagid);
     target.classList.toggle("active");
@@ -807,7 +807,7 @@ qs(".pageSettings .section.presets")?.onChild(
   "click",
   ".presetsList .preset .presetButton",
   async (e) => {
-    const target = e.target as HTMLElement;
+    const target = e.childTarget as HTMLElement;
     const presetid = target.parentElement?.getAttribute("data-id") as string;
     await PresetController.apply(presetid);
     void update();
