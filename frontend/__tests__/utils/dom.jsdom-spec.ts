@@ -28,7 +28,7 @@ describe("dom", () => {
 
         root.innerHTML = `
           <div id="parent" data-testid="parent">
-            
+            <section id="decoy">
             <div id="mid1" data-testid="mid1" class="middle">
                 <div id="inner1" class="inner">test</div>
                 <div id="inner2" data-testid="inner2" class="inner">
@@ -40,6 +40,7 @@ describe("dom", () => {
                 <div id="inner3" class="inner">test</div>
                 <div id="inner4" class="inner">test</div>
             </div>
+            </section>
         </div>
         `;
         document.body.appendChild(root);
@@ -93,31 +94,37 @@ describe("dom", () => {
         );
       });
 
-      it("should fire when any child of the selector is clicked", async () => {
+      it("should fire on each element matching the selector from the child up to the parent", async () => {
         //GIVEN
         registerOnChild("click", "div");
 
         //WHEN
-        const grandChildTarget = screen.getByTestId("inner2");
-        const childTarget = screen.getByTestId("mid1");
         const clickTarget = screen.getByTestId("button");
         await userEvent.click(clickTarget);
 
         //THEN
+
+        //This is the same behavior as jQuery `.on` with selector.
+        //The handler will be called two times,
+        //It does NOT call on the <section> or the parent element itself
         expect(handler).toHaveBeenCalledTimes(2);
+
+        //First call is for childTarget inner2 (grand child of parent)
         expect(handler).toHaveBeenNthCalledWith(
           1,
           expect.objectContaining({
             target: clickTarget,
-            childTarget: grandChildTarget,
+            childTarget: screen.getByTestId("inner2"),
             currentTarget: screen.getByTestId("parent"),
           }),
         );
+
+        //Second call is for childTarget mid1 (child of parent)
         expect(handler).toHaveBeenNthCalledWith(
           2,
           expect.objectContaining({
             target: clickTarget,
-            childTarget: childTarget,
+            childTarget: screen.getByTestId("mid1"),
             currentTarget: screen.getByTestId("parent"),
           }),
         );
