@@ -549,19 +549,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the first parent element matching a selector
+   * Get the first element matching a selector, starting from this.native and going
+     up through its parents
    */
-  getFirstMatchingParent(selector: string): ElementWithUtils | null {
-    let parent = this.getParent();
-    while (parent) {
-      if (parent.matches(selector)) {
-        return parent;
-      }
-
-      parent = parent.getParent();
-    }
-
-    return null;
+  closest(selector: string): ElementWithUtils | null {
+    const el = this.native.closest(selector) as HTMLElement;
+    return el !== null ? new ElementWithUtils(el) : null;
   }
 
   /**
