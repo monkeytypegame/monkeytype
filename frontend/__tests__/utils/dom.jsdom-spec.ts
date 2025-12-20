@@ -7,21 +7,16 @@ describe("dom", () => {
   describe("ElementWithUtils", () => {
     describe("onChild", () => {
       const handler = vi.fn();
-      const jqHandler = vi.fn();
 
       function registerOnChild(event: string, selector: string): void {
         const parent = qs("#parent");
         parent?.onChild(event, selector, (e) =>
           handler({ target: e.target, childTarget: e.childTarget }),
         );
-        $("#parent").on(event, selector, (e) =>
-          jqHandler({ target: e.target, currentTarget: e.currentTarget }),
-        );
       }
 
       beforeEach(() => {
         handler.mockReset();
-        jqHandler.mockReset();
 
         document.body.innerHTML = "";
         const root = document.createElement("div");
@@ -54,7 +49,6 @@ describe("dom", () => {
 
         //THEN
         expect(handler).not.toHaveBeenCalled();
-        expect(jqHandler).not.toHaveBeenCalled();
       });
 
       it("should fire on selector", async () => {
@@ -70,12 +64,6 @@ describe("dom", () => {
           expect.objectContaining({
             target: clickTarget,
             childTarget: clickTarget,
-          }),
-        );
-        expect(jqHandler).toHaveBeenCalledWith(
-          expect.objectContaining({
-            target: clickTarget,
-            currentTarget: clickTarget,
           }),
         );
       });
@@ -96,55 +84,32 @@ describe("dom", () => {
             childTarget: selectorTarget,
           }),
         );
-        expect(jqHandler).toHaveBeenCalledWith(
-          expect.objectContaining({
-            target: clickTarget,
-            currentTarget: selectorTarget,
-          }),
-        );
       });
 
-      it("should fire on each selector if child is clicked", async () => {
+      it("should fire on each selector (child, grandchild, etc) if child is clicked", async () => {
         //GIVEN
         registerOnChild("click", "div");
 
         //WHEN
-        const firstSelectorTarget = screen.getByTestId("inner2");
-        const secondSelectorTarget = screen.getByTestId("mid1");
+        const grandChildTarget = screen.getByTestId("inner2");
+        const childTarget = screen.getByTestId("mid1");
         const clickTarget = screen.getByTestId("button");
         await userEvent.click(clickTarget);
 
         //THEN
-
-        expect(jqHandler).toHaveBeenCalledTimes(2);
-        expect(jqHandler).toHaveBeenNthCalledWith(
-          1,
-          expect.objectContaining({
-            target: clickTarget,
-            currentTarget: firstSelectorTarget,
-          }),
-        );
-        expect(jqHandler).toHaveBeenNthCalledWith(
-          2,
-          expect.objectContaining({
-            target: clickTarget,
-            currentTarget: secondSelectorTarget,
-          }),
-        );
-
         expect(handler).toHaveBeenCalledTimes(2);
         expect(handler).toHaveBeenNthCalledWith(
           1,
           expect.objectContaining({
             target: clickTarget,
-            childTarget: firstSelectorTarget,
+            childTarget: grandChildTarget,
           }),
         );
         expect(handler).toHaveBeenNthCalledWith(
           2,
           expect.objectContaining({
             target: clickTarget,
-            childTarget: secondSelectorTarget,
+            childTarget: childTarget,
           }),
         );
       });
