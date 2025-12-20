@@ -1212,7 +1212,7 @@ list.devGenerateData = new SimpleModal({
         const span = document.querySelector(
           "#devGenerateData_1 + span",
         ) as HTMLInputElement;
-        span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
+        span.innerText = `if checked, user will be created with ${target.value}@example.com and password: password`;
         return;
       },
       validation: {
