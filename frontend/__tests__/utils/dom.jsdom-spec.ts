@@ -1,15 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/dom";
 import { userEvent } from "@testing-library/user-event";
-import { qs } from "../../src/ts/utils/dom";
+import { ElementWithUtils, qsr } from "../../src/ts/utils/dom";
 
 describe("dom", () => {
   describe("ElementWithUtils", () => {
     describe("onChild", () => {
       const handler = vi.fn();
 
-      function registerOnChild(event: string, selector: string): void {
-        const parent = qs("#parent");
+      function registerOnChild(
+        event: string,
+        selector: string,
+        options?: {
+          parent?: ElementWithUtils;
+        },
+      ): void {
+        const parent = options?.parent ?? qsr("#parent");
         parent?.onChild(event, selector, (e) =>
           handler({
             target: e.target,
@@ -33,7 +39,10 @@ describe("dom", () => {
                 <div id="inner1" class="inner">test</div>
                 <div id="inner2" data-testid="inner2" class="inner">
                   test
-                  <button id="button" data-testid="button">click</button>
+                  <button id="button" data-testid="button">
+                    click me 
+                    <i id="icon" data-testid="icon">test</i>
+                  </button>
                 </div>
             </div>
             <div id="mid2" class="middle">
@@ -52,6 +61,18 @@ describe("dom", () => {
 
         //WHEN
         await userEvent.click(screen.getByTestId("parent"));
+
+        //THEN
+        expect(handler).not.toHaveBeenCalled();
+      });
+
+      it("should not fire when selector doesnt match", async () => {
+        //GIVEN
+        const buttonEl = qsr("#button");
+        registerOnChild("click", "div", { parent: buttonEl });
+
+        //WHEN
+        await userEvent.click(screen.getByTestId("icon"));
 
         //THEN
         expect(handler).not.toHaveBeenCalled();
