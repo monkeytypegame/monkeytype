@@ -598,6 +598,7 @@ export function applyReducedMotion(animationTime: number): number {
  * Creates a promise with resolvers.
  * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
  * The returned promise reference stays constant even after reset() - it will always await the current internal promise.
+ * Note: Promise chains created via .then()/.catch()/.finally() will always follow the current internal promise state, even if created before reset().
  */
 export function promiseWithResolvers<T = void>(): {
   resolve: (value: T) => void;
