@@ -1175,8 +1175,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   completedEvent.uid = user.uid;
 
-  Result.updateRateQuote(TestWords.currentQuote);
-
   if (!completedEvent.bailedOut) {
     const challenge = ChallengeContoller.verify(completedEvent);
     if (challenge !== null) completedEvent.challenge = challenge;

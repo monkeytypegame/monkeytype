@@ -47,6 +47,7 @@ import { z } from "zod";
 import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../states/connection";
+import { currentQuote } from "./test-words";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -1075,6 +1076,7 @@ export async function update(
       $("main #result #rateQuoteButton").addClass("hidden");
       $("main #result #reportQuoteButton").addClass("hidden");
     } else {
+      updateRateQuote(currentQuote);
       $("main #result #reportQuoteButton").removeClass("hidden");
     }
     $("main #result .stats .dailyLeaderboard").addClass("hidden");
