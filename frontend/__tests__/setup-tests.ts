@@ -2,9 +2,9 @@ import { vi } from "vitest";
 import $ from "jquery";
 import { ElementWithUtils } from "../src/ts/utils/dom";
 
-//@ts-expect-error add to globl
+//@ts-expect-error add to global
 global["$"] = $;
-//@ts-expect-error add to globl
+//@ts-expect-error add to global
 global["jQuery"] = $;
 
 vi.mock("../src/ts/constants/env-config", () => ({
