@@ -1083,8 +1083,31 @@ export async function update(
     $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
-  TestConfig.hide();
+  if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
+    const roundedTime = Math.round(res.testDuration);
 
+    const messages = [
+      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
+      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
+      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
+      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
+      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
+      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
+      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
+      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
+      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
+      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
+    ];
+
+    showConfetti();
+    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
+      customTitle: "Nice",
+      duration: 15,
+      important: true,
+    });
+  }
+
+  TestConfig.hide();
   Focus.set(false);
 
   const canQuickRestart = canQuickRestartFn(
