@@ -1,6 +1,7 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
+import * as TestInput from "../test/test-input";
 import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
 import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
@@ -290,6 +291,12 @@ export class Caret {
       const letters = word?.qsa("letter") ?? [];
       const wordText = TestWords.words.get(options.wordIndex);
 
+      // in zen mode, use the input content to determine word direction
+      const wordTextForDirection =
+        Config.mode === "zen"
+          ? TestInput.input.current
+          : TestWords.words.get(options.wordIndex);
+
       // caret can be either on the left side of the target letter or the right
       // we stick to the left side unless we are on the last letter or beyond
       // then we switch to the right side
@@ -334,7 +341,7 @@ export class Caret {
       const { left, top, width } = this.getTargetPositionAndWidth({
         word,
         letter,
-        wordText,
+        wordText: wordTextForDirection,
         side,
         isLanguageRightToLeft: options.isLanguageRightToLeft,
         isDirectionReversed: options.isDirectionReversed,
