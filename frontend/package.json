@@ -22,14 +22,6 @@
     "tsc": "tsc",
     "docker": "docker compose -f docker/compose.dev.yml up"
   },
-  "lint-staged": {
-    "*": [
-      "oxfmt --no-error-on-unmatched-pattern"
-    ],
-    "*.{ts,js}": [
-      "oxlint --type-aware --type-check"
-    ]
-  },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
     "@monkeytype/contracts": "workspace:*",
@@ -72,6 +64,8 @@
     "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/user-event": "14.6.1",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",
@@ -109,6 +103,14 @@
     "vite-plugin-minify": "2.1.0",
     "vite-plugin-pwa": "1.1.0",
     "vitest": "4.0.15"
+  },
+  "lint-staged": {
+    "*": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ],
+    "*.{ts,js}": [
+      "oxlint --type-aware --type-check"
+    ]
   },
   "browserslist": [
     "defaults",

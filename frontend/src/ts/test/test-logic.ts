@@ -77,7 +77,6 @@ import { debounce } from "throttle-debounce";
 import tribeSocket from "../tribe/tribe-socket";
 import * as Time from "../states/time";
 
-let resolve: TribeTypes.ResultResolve = {};
 let failReason = "";
 
 export let notSignedInLastResult: CompletedEvent | null = null;
@@ -731,13 +730,7 @@ export async function retrySavingResult(): Promise<void> {
 
   Notifications.add("Retrying to save...");
 
-  const tribeChartData = {
-    wpm: [...(completedEvent.chartData as ChartData).wpm],
-    burst: [...(completedEvent.chartData as ChartData).burst],
-    err: [...(completedEvent.chartData as ChartData).err],
-  };
-
-  await saveResult(completedEvent, tribeChartData, true);
+  await saveResult(completedEvent, true);
 }
 
 function buildCompletedEvent(
@@ -878,12 +871,15 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-let resolveTestSavePromise: (value: TribeTypes.ResultResolve) => void;
-let testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
-  (resolve) => {
-    resolveTestSavePromise = resolve;
-  },
-);
+// let resolveTestSavePromise: (value: TribeTypes.ResultResolve) => void;
+// let testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
+//   (resolve) => {
+//     resolveTestSavePromise = resolve;
+//   },
+// );
+
+let { promise: testSavePromise, resolve: resolveTestSavePromise } =
+  Misc.promiseWithResolvers<TribeTypes.ResultResolve>();
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
@@ -917,9 +913,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
-  testSavePromise = new Promise((resolve) => {
-    resolveTestSavePromise = resolve;
-  });
+  ({ promise: testSavePromise, resolve: resolveTestSavePromise } =
+    Misc.promiseWithResolvers<TribeTypes.ResultResolve>());
 
   // in zen mode, ensure the replay words list reflects the typed input history
   // even if the current input was empty at finish (e.g., after submitting a word).
@@ -1018,6 +1013,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
+  TestStats.setLastResult(structuredClone(completedEvent));
+
   ///////// completed event ready
 
   //afk check
@@ -1026,8 +1023,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
-
-  resolve = {};
 
   let tooShort = false;
   //fail checks
@@ -1047,27 +1042,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
       duration: 1,
     });
     dontSave = true;
-    resolve.failed = true;
-    resolve.failedReason = failReason;
-    // resolveTestSavePromise({
-    //   failed: true,
-    //   failedReason: failReason,
-    // });
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
+    TestStats.setInvalid();
     dontSave = true;
-    resolve.afk = true;
     TribeState.setAutoReady(false);
-    // resolveTestSavePromise({
-    //   afk: true,
-    // });
   } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
+    TestStats.setInvalid();
     dontSave = true;
-    resolve.repeated = true;
-    // resolveTestSavePromise({
-    //   repeated: true,
-    // });
   } else if (
     completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
@@ -1088,9 +1071,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
+    TestStats.setInvalid();
     tooShort = true;
     dontSave = true;
-    resolve.tooShort = true;
   } else if (
     completedEvent.wpm < 0 ||
     (completedEvent.wpm > 350 &&
@@ -1103,7 +1086,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-    resolve.valid = false;
   } else if (
     completedEvent.rawWpm < 0 ||
     (completedEvent.rawWpm > 350 &&
@@ -1116,7 +1098,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
-    resolve.valid = false;
   } else if (
     (!DB.getSnapshot()?.lbOptOut &&
       (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
@@ -1126,10 +1107,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;
-    resolve.valid = false;
-    // resolveTestSavePromise({
-    //   valid: false,
-    // });
   }
 
   // test is valid
@@ -1193,37 +1170,89 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
   Result.updateTodayTracker();
 
-  if (completedEvent.bailedOut) {
-    resolve.bailedOut = true;
-  }
+  const tribeChartData = {
+    wpm: [...(completedEvent.chartData as ChartData).wpm],
+    burst: [...(completedEvent.chartData as ChartData).burst],
+    err: [...(completedEvent.chartData as ChartData).err],
+  };
 
-  if (completedEvent.bailedOut) {
-    resolve.bailedOut = true;
-  }
+  let savingResultPromise: Promise<null> | ReturnType<typeof saveResult> =
+    Promise.resolve(null);
+  const user = getAuthenticatedUser();
+  if (user !== null) {
+    // logged in
+    if (dontSave) {
+      void AnalyticsController.log("testCompletedInvalid");
+      resolveTestSavePromise({
+        afk: afkDetected,
+        bailedOut: completedEvent.bailedOut,
+        repeated: TestState.isRepeated,
+        tooShort: tooShort,
+        failed: difficultyFailed,
+        failedReason: failReason,
+        login: true,
+        valid: false,
+      });
+    } else {
+      TestStats.resetIncomplete();
 
-  if (!isAuthenticated()) {
-    $(".pageTest #result #rateQuoteButton").addClass("hidden");
-    $(".pageTest #result #reportQuoteButton").addClass("hidden");
-    void AnalyticsController.log("testCompletedNoLogin");
-    if (!dontSave) notSignedInLastResult = completedEvent;
-    dontSave = true;
-    // resolveTestSavePromise({
-    //   login: false,
-    // });
-    resolve.login = false;
+      if (completedEvent.testDuration > 122) {
+        completedEvent.chartData = "toolong";
+        completedEvent.keySpacing = "toolong";
+        completedEvent.keyDuration = "toolong";
+      }
+
+      if (!completedEvent.bailedOut) {
+        const challenge = ChallengeContoller.verify(completedEvent);
+        if (challenge !== null) completedEvent.challenge = challenge;
+      }
+
+      completedEvent.uid = user.uid;
+      completedEvent.hash = objectHash(completedEvent);
+
+      savingResultPromise = saveResult(completedEvent, false);
+      void savingResultPromise.then((promise) => {
+        if (promise.response && promise.response.status === 200) {
+          void AnalyticsController.log("testCompleted");
+          resolveTestSavePromise({
+            afk: afkDetected,
+            bailedOut: completedEvent.bailedOut,
+            repeated: TestState.isRepeated,
+            tooShort: tooShort,
+            failed: difficultyFailed,
+            failedReason: failReason,
+            isPb: promise.response.body.data?.isPb ?? false,
+            saved: promise.saved,
+            saveFailedMessage: promise.message,
+            login: true,
+            valid: true,
+          });
+        }
+      });
+    }
   } else {
-    $(".pageTest #result #reportQuoteButton").removeClass("hidden");
+    // logged out
+    void AnalyticsController.log("testCompletedNoLogin");
+    if (!dontSave) {
+      // if its valid save it for later
+      notSignedInLastResult = completedEvent;
+    }
+    resolveTestSavePromise({
+      afk: afkDetected,
+      bailedOut: completedEvent.bailedOut,
+      repeated: TestState.isRepeated,
+      tooShort: tooShort,
+      failed: difficultyFailed,
+      failedReason: failReason,
+      login: false,
+      valid: !dontSave,
+    });
+
+    // it wont save but result.update needs it
+    dontSave = true;
   }
 
-  $("#result .stats .dailyLeaderboard").addClass("hidden");
-
-  TestStats.setLastResult(structuredClone(completedEvent));
-
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
-  }
-
-  await Result.update(
+  const resultUpdatePromise = Result.update(
     completedEvent,
     difficultyFailed,
     failReason,
@@ -1234,96 +1263,30 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  if (completedEvent.chartData !== "toolong") {
-    // @ts-expect-error TODO: check if this is needed
-    delete completedEvent.chartData.unsmoothedRaw;
-  }
+  await Promise.all([savingResultPromise, resultUpdatePromise]);
 
-  const tribeChartData = {
-    wpm: [...(completedEvent.chartData as ChartData).wpm],
-    burst: [...(completedEvent.chartData as ChartData).burst],
-    err: [...(completedEvent.chartData as ChartData).err],
-  };
-
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    completedEvent.keySpacing = "toolong";
-    completedEvent.keyDuration = "toolong";
-  }
-
-  if (
-    completedEvent.wpm === 0 &&
-    !difficultyFailed &&
-    completedEvent.testDuration >= 5
-  ) {
-    const roundedTime = Math.round(completedEvent.testDuration);
-
-    const messages = [
-      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
-      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
-      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
-      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
-      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
-      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
-      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
-      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
-      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
-      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
-    ];
-
-    Result.showConfetti();
-    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
-      customTitle: "Nice",
-      duration: 15,
-      important: true,
-    });
-  }
-
-  if (dontSave) {
-    void AnalyticsController.log("testCompletedInvalid");
-    resolveTestSavePromise(resolve);
-    void TribeResults.send({
-      wpm: completedEvent.wpm,
-      raw: completedEvent.rawWpm,
-      acc: completedEvent.acc,
-      consistency: completedEvent.consistency,
-      testDuration: completedEvent.testDuration,
-      charStats: completedEvent.charStats,
-      chartData: tribeChartData,
-      resolve: await testSavePromise,
-    });
-    return;
-  }
-
-  // because of the dont save check above, we know the user is signed in
-  // we check here again so that typescript doesnt complain
-  const user = getAuthenticatedUser();
-  if (!user) {
-    return;
-  }
-
-  // user is logged in
-  TestStats.resetIncomplete();
-
-  completedEvent.uid = user.uid;
-
-  Result.updateRateQuote(TestWords.currentQuote);
-
-  if (!completedEvent.bailedOut) {
-    const challenge = ChallengeContoller.verify(completedEvent);
-    if (challenge !== null) completedEvent.challenge = challenge;
-  }
-
-  completedEvent.hash = objectHash(completedEvent);
-
-  await saveResult(completedEvent, tribeChartData, false);
+  void TribeResults.send({
+    wpm: completedEvent.wpm,
+    raw: completedEvent.rawWpm,
+    acc: completedEvent.acc,
+    consistency: completedEvent.consistency,
+    testDuration: completedEvent.testDuration,
+    charStats: completedEvent.charStats,
+    chartData: tribeChartData,
+    resolve: await testSavePromise,
+  });
 }
+
+type SaveResultResponse = {
+  saved: boolean;
+  message: string;
+  response: Awaited<ReturnType<typeof Ape.results.add>> | null;
+};
 
 async function saveResult(
   completedEvent: CompletedEvent,
-  tribeChartData: ChartData,
   isRetrying: boolean,
-): Promise<void> {
+): Promise<SaveResultResponse> {
   AccountButton.loading(true);
 
   if (!TestState.savingEnabled) {
@@ -1333,20 +1296,11 @@ async function saveResult(
       important: true,
     });
     AccountButton.loading(false);
-    resolve.saved = false;
-    resolve.saveFailedMessage = "Disabled by user";
-    resolveTestSavePromise(resolve);
-    void TribeResults.send({
-      wpm: completedEvent.wpm,
-      raw: completedEvent.rawWpm,
-      acc: completedEvent.acc,
-      consistency: completedEvent.consistency,
-      testDuration: completedEvent.testDuration,
-      charStats: completedEvent.charStats,
-      chartData: tribeChartData,
-      resolve: await testSavePromise,
-    });
-    return;
+    return {
+      saved: false,
+      message: "Disabled by user",
+      response: null,
+    };
   }
 
   if (!ConnectionState.get()) {
@@ -1356,25 +1310,16 @@ async function saveResult(
       important: true,
     });
     AccountButton.loading(false);
-    resolve.saved = false;
-    resolve.saveFailedMessage = "Offline";
-    resolveTestSavePromise(resolve);
-    void TribeResults.send({
-      wpm: completedEvent.wpm,
-      raw: completedEvent.rawWpm,
-      acc: completedEvent.acc,
-      consistency: completedEvent.consistency,
-      testDuration: completedEvent.testDuration,
-      charStats: completedEvent.charStats,
-      chartData: tribeChartData,
-      resolve: await testSavePromise,
-    });
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
     if (!isRetrying) {
       retrySaving.completedEvent = completedEvent;
     }
-    return;
+    return {
+      saved: false,
+      message: "Offline",
+      response: null,
+    };
   }
 
   const response = await Ape.results.add({ body: { result: completedEvent } });
@@ -1393,20 +1338,6 @@ async function saveResult(
         retrySaving.completedEvent = completedEvent;
       }
     }
-    resolve.login = true;
-    resolve.saved = false;
-    resolve.saveFailedMessage = response.body.message;
-    resolveTestSavePromise(resolve);
-    void TribeResults.send({
-      wpm: completedEvent.wpm,
-      raw: completedEvent.rawWpm,
-      acc: completedEvent.acc,
-      consistency: completedEvent.consistency,
-      testDuration: completedEvent.testDuration,
-      charStats: completedEvent.charStats,
-      chartData: tribeChartData,
-      resolve: await testSavePromise,
-    });
     console.log("Error saving result", completedEvent);
     if (response.body.message === "Old key data format") {
       response.body.message =
@@ -1419,7 +1350,11 @@ async function saveResult(
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
     Notifications.add("Failed to save result", -1, { response });
-    return;
+    return {
+      saved: false,
+      message: response.body.message,
+      response,
+    };
   }
 
   const data = response.body.data;
@@ -1459,8 +1394,6 @@ async function saveResult(
     }
     dataToSave.result = result;
   }
-
-  void AnalyticsController.log("testCompleted");
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
@@ -1505,28 +1438,17 @@ async function saveResult(
     );
   }
 
-  resolve.login = true;
-  resolve.saved = true;
-  resolve.isPb = response.body.data?.isPb ?? false;
-
-  resolveTestSavePromise(resolve);
-
   $("#retrySavingResultButton").addClass("hidden");
   if (isRetrying) {
     Notifications.add("Result saved", 1, { important: true });
   }
 
-  void TribeResults.send({
-    wpm: completedEvent.wpm,
-    raw: completedEvent.rawWpm,
-    acc: completedEvent.acc,
-    consistency: completedEvent.consistency,
-    testDuration: completedEvent.testDuration,
-    charStats: completedEvent.charStats,
-    chartData: tribeChartData,
-    resolve: await testSavePromise,
-  });
   DB.saveLocalResult(dataToSave);
+  return {
+    saved: true,
+    message: response.body.message,
+    response,
+  };
 }
 
 export function fail(reason: string): void {
