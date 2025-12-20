@@ -892,7 +892,7 @@ qs(
 });
 
 qsa(".pageSettings .quickNav .links a")?.on("click", (e) => {
-  const target = e.target as HTMLElement;
+  const target = e.currentTarget as HTMLElement;
   const settingsGroup = target.innerText;
   const isClosed = qs(
     `.pageSettings .settingsGroup.${settingsGroup}`,
