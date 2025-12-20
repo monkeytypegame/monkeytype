@@ -34,7 +34,8 @@ export function show(): void {
 }
 
 function updatePreview(): void {
-  const inputValue = parseFloat( // parse float to support fractional stuff
+  const inputValue = parseFloat(
+    // parse float to support fractional stuff
     modal.getModal().querySelector("input")?.value as string,
   );
 
@@ -63,7 +64,8 @@ function hide(): void {
 }
 
 async function apply(): Promise<void> {
-  const value = parseFloat( // parse float again
+  const value = parseFloat(
+    // parse float again
     modal.getModal().querySelector("input")?.value as string,
   );
 
