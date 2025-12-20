@@ -311,7 +311,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
 
       let childTarget = target.closest(selector);
       //bubble up until no match found or the parent element is reached
-      while (childTarget !== null && childTarget !== this.native) {
+      while (
+        childTarget !== null &&
+        childTarget !== this.native && //stop on parent
+        this.native.contains(childTarget) //stop above parent
+      ) {
         if (typeof handler === "function") {
           handler.call(
             childTarget as HTMLElement,
