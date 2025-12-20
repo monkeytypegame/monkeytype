@@ -871,13 +871,6 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-// let resolveTestSavePromise: (value: TribeTypes.ResultResolve) => void;
-// let testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
-//   (resolve) => {
-//     resolveTestSavePromise = resolve;
-//   },
-// );
-
 let { promise: testSavePromise, resolve: resolveTestSavePromise } =
   Misc.promiseWithResolvers<TribeTypes.ResultResolve>();
 
