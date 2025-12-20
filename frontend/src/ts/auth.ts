@@ -45,14 +45,11 @@ async function sendVerificationEmail(): Promise<void> {
 
   Loader.show();
   qs(".sendVerificationEmail")?.disable();
-  const result = await Ape.users.verificationEmail();
+  const response = await Ape.users.verificationEmail();
   qs(".sendVerificationEmail")?.enable();
-  if (result.status !== 200) {
+  if (response.status !== 200) {
     Loader.hide();
-    Notifications.add(
-      "Failed to request verification email: " + result.body.message,
-      -1,
-    );
+    Notifications.add("Failed to request verification email", -1, { response });
   } else {
     Loader.hide();
     Notifications.add("Verification email sent", 1);

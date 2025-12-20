@@ -44,7 +44,7 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeTypes from "../tribe/types";
 import * as ConnectionState from "../states/connection";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as ArabicLazyMode from "../states/arabic-lazy-mode";
+import * as LazyModeState from "../states/remember-lazy-mode";
 import Format from "../utils/format";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -75,6 +75,7 @@ import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import tribeSocket from "../tribe/tribe-socket";
+import * as Time from "../states/time";
 
 let resolve: TribeTypes.ResultResolve = {};
 let failReason = "";
@@ -108,6 +109,7 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
+  Time.set(0);
   TestTimer.clear();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
@@ -356,7 +358,6 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 let lastInitError: Error | null = null;
-let rememberLazyMode: boolean;
 let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
@@ -440,39 +441,43 @@ async function init(): Promise<boolean> {
       .some((lang) => !lang.noLazyMode);
 
     if (Config.lazyMode && !anySupportsLazyMode) {
-      rememberLazyMode = true;
-      Notifications.add(
-        "None of the selected polyglot languages support lazy mode.",
-        0,
-        {
-          important: true,
-        },
-      );
+      LazyModeState.setRemember(true);
+      if (!showedLazyModeNotification) {
+        Notifications.add(
+          "None of the selected polyglot languages support lazy mode.",
+          0,
+          {
+            important: true,
+          },
+        );
+        showedLazyModeNotification = true;
+      }
       setConfig("lazyMode", false);
-    } else if (rememberLazyMode && anySupportsLazyMode) {
-      setConfig("lazyMode", true, {
-        nosave: true,
-      });
+    } else if (LazyModeState.getRemember() && anySupportsLazyMode) {
+      setConfig("lazyMode", true);
+      LazyModeState.setRemember(false);
+      showedLazyModeNotification = false;
     }
   } else {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
-      rememberLazyMode = true;
-      showedLazyModeNotification = true;
-      Notifications.add("This language does not support lazy mode.", 0, {
-        important: true,
-      });
-
+      LazyModeState.setRemember(true);
+      if (!showedLazyModeNotification) {
+        Notifications.add("This language does not support lazy mode.", 0, {
+          important: true,
+        });
+        showedLazyModeNotification = true;
+      }
       setConfig("lazyMode", false);
-    } else if (rememberLazyMode && !language.noLazyMode) {
-      setConfig("lazyMode", true, {
-        nosave: true,
-      });
+    } else if (LazyModeState.getRemember() && allowLazyMode) {
+      setConfig("lazyMode", true);
+      LazyModeState.setRemember(false);
+      showedLazyModeNotification = false;
     }
   }
 
   if (!Config.lazyMode && !language.noLazyMode) {
-    rememberLazyMode = false;
+    LazyModeState.setRemember(false);
   }
 
   if (Config.mode === "custom") {
@@ -1413,7 +1418,7 @@ async function saveResult(
       response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    Notifications.add("Failed to save result: " + response.body.message, -1);
+    Notifications.add("Failed to save result", -1, { response });
     return;
   }
 
@@ -1725,7 +1730,10 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (ActivePage.get() === "test") {
     if (key === "language") {
       //automatically enable lazy mode for arabic
-      if ((newValue as string)?.startsWith("arabic") && ArabicLazyMode.get()) {
+      if (
+        (newValue as string)?.startsWith("arabic") &&
+        LazyModeState.getArabicPref()
+      ) {
         setConfig("lazyMode", true, {
           nosave: true,
         });
@@ -1758,13 +1766,7 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   }
   if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
-      ArabicLazyMode.set(newValue);
-    }
-    if (newValue) {
-      if (!showedLazyModeNotification) {
-        rememberLazyMode = false;
-      }
-      showedLazyModeNotification = false;
+      LazyModeState.setArabicPref(newValue);
     }
   }
 });

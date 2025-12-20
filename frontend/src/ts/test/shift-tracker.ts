@@ -4,7 +4,7 @@ import * as KeyConverter from "../utils/key-converter";
 export let leftState = false;
 export let rightState = false;
 
-$(document).on("keydown", (e) => {
+document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.code === "ShiftLeft") {
     leftState = true;
     rightState = false;
@@ -14,7 +14,7 @@ $(document).on("keydown", (e) => {
   }
 });
 
-$(document).on("keyup", (e) => {
+document.addEventListener("keyup", (e: KeyboardEvent) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;

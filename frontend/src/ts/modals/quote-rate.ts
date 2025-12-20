@@ -60,10 +60,7 @@ export async function getQuoteStats(
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to get quote ratings: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Failed to get quote ratings", -1, { response });
     return;
   }
 
@@ -156,10 +153,7 @@ async function submit(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to submit quote rating: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Failed to submit quote rating", -1, { response });
     return;
   }
 

@@ -48,7 +48,7 @@ export function show(action: string, id?: string, name?: string): void {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
       presetNameEl ??= new ValidatedHtmlInputElement(
-        qsr("#editPresetModal .modal input"),
+        qsr("#editPresetModal .modal input[type=text]"),
         {
           schema: PresetNameSchema,
         },
@@ -284,7 +284,7 @@ async function apply(): Promise<void> {
 
     if (response.status !== 200 || response.body.data === null) {
       Notifications.add(
-        "Failed to add preset: " +
+        "Failed to add preset" +
           response.body.message.replace(presetName, propPresetName),
         -1,
       );
@@ -325,7 +325,7 @@ async function apply(): Promise<void> {
     });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to edit preset: " + response.body.message, -1);
+      Notifications.add("Failed to edit preset", -1, { response });
     } else {
       Notifications.add("Preset updated", 1);
 
@@ -344,10 +344,7 @@ async function apply(): Promise<void> {
     const response = await Ape.presets.delete({ params: { presetId } });
 
     if (response.status !== 200) {
-      Notifications.add(
-        "Failed to remove preset: " + response.body.message,
-        -1,
-      );
+      Notifications.add("Failed to remove preset", -1, { response });
     } else {
       Notifications.add("Preset removed", 1);
       snapshotPresets.forEach((preset: SnapshotPreset, index: number) => {

@@ -403,6 +403,11 @@ key {
     }
   }
 
+  .userIcon {
+    display: grid;
+    border-radius: 0;
+  }
+
   .loading {
     font-size: 0.8em;
     line-height: 0.8em;

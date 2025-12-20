@@ -49,7 +49,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     Loader.hide();
 
     if (response.status !== 200) {
-      Notifications.add("Failed to link Discord: " + response.body.message, -1);
+      Notifications.add("Failed to link Discord", -1, { response });
       return;
     }
 

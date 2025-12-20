@@ -300,7 +300,7 @@ export class Caret {
       if (options.letterIndex >= letters.length) {
         side = "afterLetter";
 
-        if (Config.blindMode) {
+        if (Config.blindMode || Config.hideExtraLetters) {
           options.letterIndex = wordText?.length - 1;
         } else {
           options.letterIndex = letters.length - 1;
@@ -450,6 +450,9 @@ export class Caret {
     let left = 0;
     let top = 0;
 
+    const tapeOffset =
+      wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
       let afterLetterCorrection = 0;
@@ -475,8 +478,7 @@ export class Caret {
         left += options.letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
           left += options.word.getOffsetWidth();
@@ -486,8 +488,7 @@ export class Caret {
           left += width * -1;
         }
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
         } else {
           left += options.letter.getOffsetLeft();
           left += options.word.getOffsetLeft();
@@ -508,15 +509,13 @@ export class Caret {
         left += options.letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
         }
       } else if (Config.tapeMode === "letter") {
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += tapeOffset;
         } else {
           left += options.letter.getOffsetLeft();
           left += options.word.getOffsetLeft();

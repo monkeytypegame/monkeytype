@@ -43,7 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -763,13 +763,28 @@ function toggleSettingsGroup(groupName: string): void {
   //The highlight is repeated/broken when toggling the group
   handleHighlightSection(undefined);
 
-  const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
-  groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
-  if (groupEl.hasClass("slideup")) {
+  const groupEl = qs(`.pageSettings .settingsGroup.${groupName}`);
+  if (!groupEl?.hasClass("slideup")) {
+    groupEl?.animate({
+      height: 0,
+      duration: 250,
+      onComplete: () => {
+        groupEl?.hide();
+      },
+    });
+    groupEl?.addClass("slideup");
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
       "rotateIcon",
     );
   } else {
+    groupEl?.show();
+    groupEl?.setStyle({ height: "" });
+    const height = groupEl.getOffsetHeight();
+    groupEl?.animate({
+      height: [0, height],
+      duration: 250,
+    });
+    groupEl?.removeClass("slideup");
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon",
     );

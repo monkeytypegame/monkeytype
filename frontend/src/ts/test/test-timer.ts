@@ -62,7 +62,6 @@ export function enableTimerDebug(): void {
 
 export function clear(): void {
   clearLowFpsMode();
-  Time.set(0);
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
 }
