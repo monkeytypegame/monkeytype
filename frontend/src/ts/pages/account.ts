@@ -1166,7 +1166,7 @@ qs(".pageAccount .group.presetFilterButtons")?.onChild(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
   async (e) => {
-    const target = e.target as HTMLElement;
+    const target = e.childTarget as HTMLElement;
     await ResultFilters.setFilterPreset(
       target.getAttribute("data-id") as string,
     );
