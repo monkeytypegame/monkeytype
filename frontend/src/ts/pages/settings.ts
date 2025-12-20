@@ -339,18 +339,16 @@ async function fillSettingsPage(): Promise<void> {
       // Display as "underscore_spaces". Does not replace underscores with spaces.
       funboxElHTML += `<button class="funbox" data-funbox-name="underscore_spaces" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</button>`;
     } else {
-      funboxElHTML += `<div class="funbox" data-funbox-name="${
+      funboxElHTML += `<button class="funbox" data-funbox-name="${
         funbox.name
       }" data-config-value='${funbox.name}' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
         /_/g,
         " ",
-      )}<div class="nested">test</div></div>`;
+      )}</button>`;
     }
   }
-
-  funboxElHTML += "<div>decoy should not click</div>";
   funboxEl.innerHTML = funboxElHTML;
 
   const fontsEl = document.querySelector(
@@ -792,32 +790,11 @@ function toggleSettingsGroup(groupName: string): void {
 //funbox
 $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
-  "div",
+  "button",
   (e) => {
-    /*
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
-    */
-    console.log("### jq", {
-      // oxlint-disable-next-line no-unsafe-assignment
-      target: e.target,
-      // oxlint-disable-next-line no-unsafe-assignment
-      currentTarget: e.currentTarget,
-    });
-  },
-);
-
-qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
-  "click",
-  "div",
-  (e) => {
-    console.log("### qs", {
-      target: e.target,
-      childTarget: e.childTarget,
-      //@ts-expect-error disabled
-      currentTarget: e["currentTarget"] as unknown,
-    });
   },
 );
 
