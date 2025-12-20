@@ -1138,13 +1138,48 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
   Result.updateTodayTracker();
 
-  if (!isAuthenticated()) {
+  let savingResultPromise: ReturnType<typeof saveResult> =
+    Promise.resolve(null);
+  const user = getAuthenticatedUser();
+  if (user !== null) {
+    // logged in
+    if (dontSave) {
+      void AnalyticsController.log("testCompletedInvalid");
+    } else {
+      TestStats.resetIncomplete();
+
+      if (completedEvent.testDuration > 122) {
+        completedEvent.chartData = "toolong";
+        completedEvent.keySpacing = "toolong";
+        completedEvent.keyDuration = "toolong";
+      }
+
+      if (!completedEvent.bailedOut) {
+        const challenge = ChallengeContoller.verify(completedEvent);
+        if (challenge !== null) completedEvent.challenge = challenge;
+      }
+
+      completedEvent.uid = user.uid;
+      completedEvent.hash = objectHash(completedEvent);
+
+      savingResultPromise = saveResult(completedEvent, false);
+      void savingResultPromise.then((response) => {
+        if (response && response.status === 200) {
+          void AnalyticsController.log("testCompleted");
+        }
+      });
+    }
+  } else {
+    // logged out
     void AnalyticsController.log("testCompletedNoLogin");
-    if (!dontSave) notSignedInLastResult = completedEvent;
+    if (!dontSave) {
+      // if its valid save it for later
+      notSignedInLastResult = completedEvent;
+    }
     dontSave = true;
   }
 
-  await Result.update(
+  const resultUpdatePromise = Result.update(
     completedEvent,
     difficultyFailed,
     failReason,
@@ -1155,43 +1190,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  if (dontSave) {
-    void AnalyticsController.log("testCompletedInvalid");
-    return;
-  }
-
-  // because of the dont save check above, we know the user is signed in
-  // we check here again so that typescript doesnt complain
-  const user = getAuthenticatedUser();
-  if (!user) {
-    return;
-  }
-
-  // user is logged in
-  TestStats.resetIncomplete();
-
-  completedEvent.uid = user.uid;
-
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    completedEvent.keySpacing = "toolong";
-    completedEvent.keyDuration = "toolong";
-  }
-
-  if (!completedEvent.bailedOut) {
-    const challenge = ChallengeContoller.verify(completedEvent);
-    if (challenge !== null) completedEvent.challenge = challenge;
-  }
-
-  completedEvent.hash = objectHash(completedEvent);
-
-  await saveResult(completedEvent, false);
+  await Promise.all([savingResultPromise, resultUpdatePromise]);
 }
 
 async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
-): Promise<void> {
+): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
   AccountButton.loading(true);
 
   if (!TestState.savingEnabled) {
@@ -1201,7 +1206,7 @@ async function saveResult(
       important: true,
     });
     AccountButton.loading(false);
-    return;
+    return null;
   }
 
   if (!ConnectionState.get()) {
@@ -1216,7 +1221,7 @@ async function saveResult(
     if (!isRetrying) {
       retrySaving.completedEvent = completedEvent;
     }
-    return;
+    return null;
   }
 
   const response = await Ape.results.add({ body: { result: completedEvent } });
@@ -1244,7 +1249,7 @@ async function saveResult(
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
     Notifications.add("Failed to save result", -1, { response });
-    return;
+    return response;
   }
 
   const data = response.body.data;
@@ -1284,8 +1289,6 @@ async function saveResult(
     }
     dataToSave.result = result;
   }
-
-  void AnalyticsController.log("testCompleted");
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
@@ -1335,6 +1338,7 @@ async function saveResult(
     Notifications.add("Result saved", 1, { important: true });
   }
   DB.saveLocalResult(dataToSave);
+  return response;
 }
 
 export function fail(reason: string): void {
