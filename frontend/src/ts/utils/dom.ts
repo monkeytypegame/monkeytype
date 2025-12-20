@@ -105,6 +105,8 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
+//TODO: after the migration from jQuery to dom-utils we might want to add currentTarget back to the event object, if we have a use-case for it.
+// For now we remove it because currentTarget is not the same element when using dom-utils intead of jQuery to get compile errors.
 export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
   /**
    * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
