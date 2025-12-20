@@ -40,7 +40,7 @@ describe("dom", () => {
         document.body.appendChild(root);
       });
 
-      it("should not fire on parent element", () => {
+      it("should not fire when parent element is clicked", () => {
         //GIVEN
         registerOnChild("click", "div");
 
@@ -51,7 +51,7 @@ describe("dom", () => {
         expect(handler).not.toHaveBeenCalled();
       });
 
-      it("should fire on selector", async () => {
+      it("should fire when selector is clicked", async () => {
         //GIVEN
         registerOnChild("click", "div");
 
@@ -68,7 +68,7 @@ describe("dom", () => {
         );
       });
 
-      it("should fire on selector if child is clicked", async () => {
+      it("should fire when child of selector is clicked", async () => {
         //GIVEN
         registerOnChild("click", "div.middle");
 
@@ -86,7 +86,7 @@ describe("dom", () => {
         );
       });
 
-      it("should fire on each selector (child, grandchild, etc) if child is clicked", async () => {
+      it("should fire when any child of the selector is clicked", async () => {
         //GIVEN
         registerOnChild("click", "div");
 
