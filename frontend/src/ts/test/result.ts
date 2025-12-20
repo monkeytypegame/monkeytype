@@ -1064,10 +1064,14 @@ export async function update(
   } else {
     $("main #result .stats").removeClass("hidden");
     $("main #result .chart").removeClass("hidden");
-    // $("main #result #resultWordsHistory").removeClass("hidden");
     if (!isAuthenticated()) {
       $("main #result .loginTip").removeClass("hidden");
+      $("main #result #rateQuoteButton").addClass("hidden");
+      $("main #result #reportQuoteButton").addClass("hidden");
+    } else {
+      $("main #result #reportQuoteButton").removeClass("hidden");
     }
+    $("main #result .stats .dailyLeaderboard").addClass("hidden");
     $("main #result #showWordHistoryButton").removeClass("hidden");
     $("main #result #watchReplayButton").removeClass("hidden");
     $("main #result #saveScreenshotButton").removeClass("hidden");

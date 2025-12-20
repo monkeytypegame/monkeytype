@@ -1134,16 +1134,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Result.updateTodayTracker();
 
   if (!isAuthenticated()) {
-    $(".pageTest #result #rateQuoteButton").addClass("hidden");
-    $(".pageTest #result #reportQuoteButton").addClass("hidden");
     void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
-  } else {
-    $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
-
-  $("#result .stats .dailyLeaderboard").addClass("hidden");
 
   TestStats.setLastResult(structuredClone(completedEvent));
 
