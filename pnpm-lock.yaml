@@ -36,14 +36,14 @@ importers:
         specifier: 1.2.1
         version: 1.2.1
       oxfmt:
-        specifier: 0.18.0
-        version: 0.18.0
+        specifier: 0.19.0
+        version: 0.19.0
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       prettier:
         specifier: 3.7.1
         version: 3.7.1
@@ -232,11 +232,11 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       readline-sync:
         specifier: 1.4.10
         version: 1.4.10
@@ -399,7 +399,7 @@ importers:
         version: 5.0.2
       '@vitest/coverage-v8':
         specifier: 4.0.15
-        version: 4.0.15(vitest@4.0.15(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
+        version: 4.0.15(vitest@4.0.15(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
       autoprefixer:
         specifier: 10.4.20
         version: 10.4.20(postcss@8.4.31)
@@ -431,11 +431,11 @@ importers:
         specifier: 8.0.1
         version: 8.0.1
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       postcss:
         specifier: 8.4.31
         version: 8.4.31
@@ -460,9 +460,6 @@ importers:
       vite-bundle-visualizer:
         specifier: 1.2.1
         version: 1.2.1(rollup@2.79.2)
-      vite-plugin-checker:
-        specifier: 0.11.0
-        version: 0.11.0(eslint@9.39.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.33.0(oxlint-tsgolint@0.9.0))(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
       vite-plugin-filter-replace:
         specifier: 0.1.14
         version: 0.1.14
@@ -480,7 +477,7 @@ importers:
         version: 1.1.0(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))(workbox-build@7.1.1)(workbox-window@7.1.0)
       vitest:
         specifier: 4.0.15
-        version: 4.0.15(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
+        version: 4.0.15(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
 
   packages/contracts:
     dependencies:
@@ -504,11 +501,11 @@ importers:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.9.3)
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
@@ -538,11 +535,11 @@ importers:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.9.3)
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
@@ -571,11 +568,11 @@ importers:
         specifier: 3.1.4
         version: 3.1.4
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
 
   packages/schemas:
     dependencies:
@@ -593,11 +590,11 @@ importers:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.9.3)
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
@@ -618,11 +615,11 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -641,11 +638,11 @@ importers:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.9.3)
       oxlint:
-        specifier: 1.33.0
-        version: 1.33.0(oxlint-tsgolint@0.9.0)
+        specifier: 1.34.0
+        version: 1.34.0(oxlint-tsgolint@0.9.2)
       oxlint-tsgolint:
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.9.2
+        version: 0.9.2
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
@@ -2558,113 +2555,113 @@ packages:
     resolution: {integrity: sha512-aKcOkyrorBGlajjRdVoJWHTxfxO1vCNHLJVlSDaRHDIdjU+pX8IYQPvPDkYiujKLbRnWU+1TBwEt0QRgSm4SGA==}
     engines: {node: '>=14'}
 
-  '@oxfmt/darwin-arm64@0.18.0':
-    resolution: {integrity: sha512-Dp3mOFUtLtG/0eDclI3rx2be5FEnUxh2T6zlq7Zx5Q1c+DS9LJF8H97nQx+O/OU+o0e0J90kN8Msf9v3j7Hhsg==}
+  '@oxfmt/darwin-arm64@0.19.0':
+    resolution: {integrity: sha512-FfNpn3ximwbBZCaS8WL2vAXcFuQFQgvv/brO6D1WdmL4pnFOgfBIpFfkeFnKfdmdpxtg9O0wF8NTcdw5Iyl2Bg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxfmt/darwin-x64@0.18.0':
-    resolution: {integrity: sha512-Oe3KS4tdfLq+f1Ebje7D9BF7/0xmBYSMN6dWatSko1xfvu8oCZzKcNCcbwz0a8rBnoH/BnIiGFUEbgJDnA/JLQ==}
+  '@oxfmt/darwin-x64@0.19.0':
+    resolution: {integrity: sha512-31FWUHAgTdTzOslz0zoA60UDEdeZZpeM6wTzCdffetwLbHkK8ZuCuzd+DauHZPNlSU8G72iw4lF7Zve9pSkK9w==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxfmt/linux-arm64-gnu@0.18.0':
-    resolution: {integrity: sha512-zW9z8LrAgL9bswgsaFOnQmoImCbq9YQST8B15FAoTeZYr9sb/VfdD6/PQEBLCptYlFmoTvmDNHjppi9g61NwHQ==}
+  '@oxfmt/linux-arm64-gnu@0.19.0':
+    resolution: {integrity: sha512-BkU9h39xKj/8uko82uFDJUharM8VxZO+uXKglpBnEC8XxWRzXocVCX4wpLT/Tfk4NyBy6fRM9DeISdZvQKZCjA==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxfmt/linux-arm64-musl@0.18.0':
-    resolution: {integrity: sha512-mFnpcasZZv1s/+6YDPradhIgR2G7GWr+mnzgJMIKQOJAtX3b0vzG+FE4f7hDIZPEUhC0hvZSd8f31FjAtrX0aQ==}
+  '@oxfmt/linux-arm64-musl@0.19.0':
+    resolution: {integrity: sha512-wWYk6Z/3iC+0zZAUkVCcEHui/IsUqsl+GEm9o6H7oARPLisXajbwCQcmqYslUD7eK6OXdYoWriBkEvSX/5dU4A==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxfmt/linux-x64-gnu@0.18.0':
-    resolution: {integrity: sha512-G1AXQNHVkPgVgRrAvDYdNi0x3gkvVyEmpL6WLMwoSjMnwYWQLt5/jrndHbS2Db8/CcmMo6VPP8lUQGvM4TRVaQ==}
+  '@oxfmt/linux-x64-gnu@0.19.0':
+    resolution: {integrity: sha512-EB/b3or437E3uDie8QxeU3eA502JcmR1koyIBcH9rFidY0cMik58xvw54tXCY3WpMRxEXf37aHZzUSDP3qJnZg==}
     cpu: [x64]
     os: [linux]
 
-  '@oxfmt/linux-x64-musl@0.18.0':
-    resolution: {integrity: sha512-M/KEIMHDr5lcK9gDxgIGr9xVwX7Pfl3PZs+6e8SySuckMgoJMkee6uWxhMdxws3dfU94saAkVmNQzM2+l3hvtA==}
+  '@oxfmt/linux-x64-musl@0.19.0':
+    resolution: {integrity: sha512-htMB45orYoa1oFSjSmoGgcBDsD47/0joDfqpa8TrTDI5qsW5kAedpFR5wSce8Is9oj7SJ07omhOj96P/QiekWA==}
     cpu: [x64]
     os: [linux]
 
-  '@oxfmt/win32-arm64@0.18.0':
-    resolution: {integrity: sha512-LunuNBTLOgfkYFjiHOeNHD/Ii5paO/GVyNPSEYBwEPULbdeMGnjHqxzQHLGU8QIQjwu55mp4uuBP0DAXTli2TQ==}
+  '@oxfmt/win32-arm64@0.19.0':
+    resolution: {integrity: sha512-x7+3Eh/VWdXEda+BUmAKYlhGrRJVera7RfWw47Yx8PJUGtNqBfeYGDbf0W59ceK8Z3bY3OinrmOO3d1jOuXzMQ==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxfmt/win32-x64@0.18.0':
-    resolution: {integrity: sha512-0kJJwn4FPeGJ4uV6ofOCiY+oBKWg+RWpRjYc9bywTjDbxWR6JAqtuXkiARCJej8UD/rJeXnHYTF78sFALkwZyA==}
+  '@oxfmt/win32-x64@0.19.0':
+    resolution: {integrity: sha512-X+FKXBg2jx4CxF5SJs3xpx1msMw5JfxaGD5qBZYqlHGdryQsy6zUY+bQwDDcuy3Ic/WNGD8ZNEuggeYNE7jx/Q==}
     cpu: [x64]
     os: [win32]
 
-  '@oxlint-tsgolint/darwin-arm64@0.9.0':
-    resolution: {integrity: sha512-dztZZwzSzX58pgwQoYex5svEdISDNpEM0A0cB0ISeaD3mFsro7h2idMK6q373hxnhNw4Rs1eu/4dwPpKEz6ouw==}
+  '@oxlint-tsgolint/darwin-arm64@0.9.2':
+    resolution: {integrity: sha512-AujIYejzo2KgSWEn65FxkTwJ7Xkq106wUjyKYpljpEsrldO3QkW1yjj6osisoIjM/NdV0VO21YWjIGFIKd0/Ug==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint-tsgolint/darwin-x64@0.9.0':
-    resolution: {integrity: sha512-GK/TOqKTqP41/yHyCwO4tJ0jF4vAwlsTXhgGXMD6GgTXv4t8kPcX4EFHZOfgMf+E84vE4MsvLFNI+NXfVIqWzQ==}
+  '@oxlint-tsgolint/darwin-x64@0.9.2':
+    resolution: {integrity: sha512-rNLCdo5DjSBcMjRwND4eOaboPD30Ssp0sfqS3KpHvo/0acQmQVCJwOaDUO7s2a77YPDJ6jSaGDWYo8HLnEXALg==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint-tsgolint/linux-arm64@0.9.0':
-    resolution: {integrity: sha512-Rc+ea/v2Y+AmZrCOMWMV2NxQ7h967ivELqn7+gCIw53dCnvwp0JsGfL4e1tNkLddXaCfrC11zW61Ayie224GNA==}
+  '@oxlint-tsgolint/linux-arm64@0.9.2':
+    resolution: {integrity: sha512-xVL66moJftyrvmFSwstWDQ1bqVjn9HCSz+QJLLInf3/b51xZl5QbbGEPX4bf4SKut+7v5ZEM527DbVGg1yRmKQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint-tsgolint/linux-x64@0.9.0':
-    resolution: {integrity: sha512-i3QRMXHCIGxGQTvFyE8LTy96SBvToZpkHPirBs6dvtKfDFHeKMX2WSc44rUdoU/LhjF5qYyU0lTITzj4VFEY/w==}
+  '@oxlint-tsgolint/linux-x64@0.9.2':
+    resolution: {integrity: sha512-sVH2DADkdUmFZhggaMM/r8NOdn2Ud1Az/nJoGbAiV82Lipw3Kp6y6yV2w+NWfmETHZZ+0gwlWTZod7NSmQuR5w==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint-tsgolint/win32-arm64@0.9.0':
-    resolution: {integrity: sha512-D6jeKoCfNAwBXJyxab4gZk8Rw9BjzGgQPd7DdLRLjDRY6DkdK4PVUwNzbboZk2SAxluO/UkSUXpoEoTJdl+cIQ==}
+  '@oxlint-tsgolint/win32-arm64@0.9.2':
+    resolution: {integrity: sha512-0nvXzcY+W84Vo4pq5qh+0k3BsSb7ImzB9VaX5jIbjTNvx3EYS/KZzo0smhZ+drs43V4oNqJjgt2jnkeWF9Yj/g==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint-tsgolint/win32-x64@0.9.0':
-    resolution: {integrity: sha512-v7yGASaDJ2GXrvlDLwhrASRyM8zpOxU8oi3BLqE1mqbKSNbWNeTAaBfRNLyCUztiV1eFvx54hnF0AElPfglVYQ==}
+  '@oxlint-tsgolint/win32-x64@0.9.2':
+    resolution: {integrity: sha512-OGx2CIyWjpOhFOL7tvVjLrKlkjJSOVZBe5S/jmBnxY+vRjFrXQr0zNUXy+S+ggIv6rsMlz3B+ixSriyUIKwDeQ==}
     cpu: [x64]
     os: [win32]
 
-  '@oxlint/darwin-arm64@1.33.0':
-    resolution: {integrity: sha512-PmEQDLHAxiAdyttQ1ZWXd+5VpHLbHf3FTMJL9bg5TZamDnhNiW/v0Pamv3MTAdymnoDI3H8IVLAN/SAseV/adw==}
+  '@oxlint/darwin-arm64@1.34.0':
+    resolution: {integrity: sha512-euz3Dtp5/UE9axFkQnllOWp3gOwoqaxfZPUUwiW8HBelqhI9PRMVIfQ/akmwl+G5XixQZIgXkXQ5SJxnb1+Qww==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint/darwin-x64@1.33.0':
-    resolution: {integrity: sha512-2R9aH3kR0X2M30z5agGikv3tfNTi8/uLhU5/tYktu33VGUXpbf0OLZSlD25UEuwOKAlf3RVtzV5oDyjoq93JuQ==}
+  '@oxlint/darwin-x64@1.34.0':
+    resolution: {integrity: sha512-XpmNviE5KOnHkhmQPwJJIBs+mJkr0qItTZBN4dz+O3p9gWN+gCqi3CBP71RiVahZw4qAEQSgY4wro+z0kx+erg==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@1.33.0':
-    resolution: {integrity: sha512-yb/k8GaMDgnX2LyO6km33kKItZ/n573SlbiHBBFU2HmeU7tzEHL5jHkHQXXcysUkapmqHd7UsDhOZDqPmXaQRg==}
+  '@oxlint/linux-arm64-gnu@1.34.0':
+    resolution: {integrity: sha512-aCPdoEUGsJGF9y88vDYoaugG4IEGwSBa+usyuAvEVl3vTfuTmE0RDQEC1Z+WnJ3J/cIEpbgKOzS12VwbzFicjg==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-arm64-musl@1.33.0':
-    resolution: {integrity: sha512-03pt9IO1C4ZfVOW6SQiOK26mzklAhLM3Kc79OXpX1kgZRlxk+rvFoMhlgCOzn7tEdrEgbePkBoxNnwDnJDFqJQ==}
+  '@oxlint/linux-arm64-musl@1.34.0':
+    resolution: {integrity: sha512-cMo72LQBFmdnVLRKLAHD94ZUBq5Z+aA9Y+RKzkjhCmJuef5ZAfKC24TJD/6c5LxGYzkwwmyySoQAHq5B69i3PQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-x64-gnu@1.33.0':
-    resolution: {integrity: sha512-Z7ImLWM50FoVXzYvyxUQ+QwBkBfRyK4YdLEGonyAGMp7iT3DksonDaTK9ODnJ1qHyAyAZCvuqXD7AEDsDvzDbA==}
+  '@oxlint/linux-x64-gnu@1.34.0':
+    resolution: {integrity: sha512-+9xFhhkqgNIysEh+uHvcba8v4UtL1YzxuyDS2wTLdWrkGvIllCx5WjJItt3K/AhwatciksgNEXSo2Hh4fcQRog==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/linux-x64-musl@1.33.0':
-    resolution: {integrity: sha512-idb55Uzu5kkqqpMiVUfI9nP7zOqPZinQKsIRQAIU40wILcf/ijvhNZKIu3ucDMmye0n6IWOaSnxIRL5W2fNoUQ==}
+  '@oxlint/linux-x64-musl@1.34.0':
+    resolution: {integrity: sha512-qa7TL2DfEDdMeSP5UiU5JMs6D2PW7ZJAQ0WZYTgqDV8BlZ6nMkIYVBVIk3QPxIfkyxvfJVbG1RB3PkSWDcfwpA==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/win32-arm64@1.33.0':
-    resolution: {integrity: sha512-wKKFt7cubfrLelNzdmDsNSmtBrlSUe1fWus587+uSxDZdpFbQ7liU0gsUlCbcHvym0H1Tc2O3K3cnLrgQORLPQ==}
+  '@oxlint/win32-arm64@1.34.0':
+    resolution: {integrity: sha512-mSJumUveg1S3DiOgvsrVNAGuvenBbbC/zsfT1qhltT+GLhJ7RPBK2I/jz0fTdE+I7M9/as8yc0XJ/eY23y2amA==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint/win32-x64@1.33.0':
-    resolution: {integrity: sha512-ReyR8rNHjKNnO7dxGny9RCPELRAdhm3y780FNBcA07E1wvxSCkB+Mn5db0Pa5bRmxrsU/MTZ/aaBFa+ERXDdXw==}
+  '@oxlint/win32-x64@1.34.0':
+    resolution: {integrity: sha512-izsDDt5WY4FSISCkPRLUYQD1aRaaEJkPLtEZe3DlioSUdUVAdvVbE+BGllFqR16DWfTTwO/6K4jDeooxQzTMjw==}
     cpu: [x64]
     os: [win32]
 
@@ -3789,8 +3786,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  baseline-browser-mapping@2.9.7:
-    resolution: {integrity: sha512-k9xFKplee6KIio3IDbwj+uaCLpqzOwakOgmqzPezM0sFJlFKcg30vk2wOiAJtkTSfx0SSQDSe8q+mWA/fSH5Zg==}
+  baseline-browser-mapping@2.9.10:
+    resolution: {integrity: sha512-2VIKvDx8Z1a9rTB2eCkdPE5nSe28XnA+qivGnWHoB40hMMt/h1hSz0960Zqsn6ZyxWXUie0EBdElKv8may20AA==}
     hasBin: true
 
   basic-auth-connect@1.0.0:
@@ -3988,8 +3985,8 @@ packages:
   caniuse-lite@1.0.30001715:
     resolution: {integrity: sha512-7ptkFGMm2OAOgvZpwgA4yjQ5SQbrNVGdRjzH0pBdy1Fasvcr+KAeECmbCAECzTuDuoX0FCY8KzUxjf9+9kfZEw==}
 
-  caniuse-lite@1.0.30001760:
-    resolution: {integrity: sha512-7AAMPcueWELt1p3mi13HR/LHH0TJLT11cnwDJEs3xA4+CK/PLKeO9Kl1oru24htkyUKtkGCvAx4ohB0Ttry8Dw==}
+  caniuse-lite@1.0.30001761:
+    resolution: {integrity: sha512-JF9ptu1vP2coz98+5051jZ4PwQgd2ni8A+gYSN7EA7dPKIMf0pDlSUxhdmVOaV3/fYK5uWBkgSXJaRLr4+3A6g==}
 
   canvas-confetti@1.5.1:
     resolution: {integrity: sha512-Ncz+oZJP6OvY7ti4E1slxVlyAV/3g7H7oQtcCDXgwGgARxPnwYY9PW5Oe+I8uvspYNtuHviAdgA0LfcKFWJfpg==}
@@ -7091,10 +7088,6 @@ packages:
     resolution: {integrity: sha512-ppwTtiJZq0O/ai0z7yfudtBpWIoxM8yE6nHi1X47eFR2EWORqfbu6CnPlNsjeN683eT0qG6H/Pyf9fCcvjnnnQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  npm-run-path@6.0.0:
-    resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
-    engines: {node: '>=18'}
-
   npmlog@5.0.1:
     resolution: {integrity: sha512-AqZtDUWOMKs1G/8lwylVjrdYgqA4d9nu8hc+0gzRxlDb1I10+FHBGMXs6aiQHFdCUUlqH99MUMuLfzWDNDtfxw==}
     deprecated: This package is no longer supported.
@@ -7224,21 +7217,21 @@ packages:
     resolution: {integrity: sha512-qFOyK5PjiWZd+QQIh+1jhdb9LpxTF0qs7Pm8o5QHYZ0M3vKqSqzsZaEB6oWlxZ+q2sJBMI/Ktgd2N5ZwQoRHfg==}
     engines: {node: '>= 0.4'}
 
-  oxfmt@0.18.0:
-    resolution: {integrity: sha512-XqVS+LQi7ARsFlIftB69+jGN2qQaJNBjQU2b9ZQYt+iaUV9digh+dBIsU0isQIZhaQ1ihxGFfsTYQXE/Oak8Qw==}
+  oxfmt@0.19.0:
+    resolution: {integrity: sha512-tPTa3j4kXdJBzBRlK9wR0/Lnd4J21rzg29cRr/VVqqfvdhZs6M+Q6TkL+rxI/IQpq8ZY8L3c+KZvga/RgeuMsg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
-  oxlint-tsgolint@0.9.0:
-    resolution: {integrity: sha512-JzZ3w7DAgf3RE3O7a4uNLtLUy8Q46r4SN4NOsfRv7lwuhLNhaXoVwOpwdPvAdfQeIJ+HSMgNkjP44vdSdC7O9A==}
+  oxlint-tsgolint@0.9.2:
+    resolution: {integrity: sha512-UKLudgnuEPyAzpLk5FeZyCdjRaHQE6cSqmlTBwmEp2lGJ1wN59qGc4gfjAXVSCrKrd30jXDGf5/zQ3CTa6BNNQ==}
     hasBin: true
 
-  oxlint@1.33.0:
-    resolution: {integrity: sha512-4WCL0K8jiOshwJ8WrVk35VAuVaZHC0iX6asjKsrENOrynkAAGcTLLx0Urf0eXZ1Tq7r+qAe3Z9EyHMFPzVyUkg==}
+  oxlint@1.34.0:
+    resolution: {integrity: sha512-Ni0N8wAiKlgaYkI/Yz4VrutfVIZgd2shDtS+loQxyBTwO8YUAnk3+g7OQ1cyI/aatHiFwvFNfV/uvZyHUtyPpA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
-      oxlint-tsgolint: '>=0.9.0'
+      oxlint-tsgolint: '>=0.9.2'
     peerDependenciesMeta:
       oxlint-tsgolint:
         optional: true
@@ -8633,9 +8626,6 @@ packages:
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
 
-  tiny-invariant@1.3.3:
-    resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
-
   tiny-lru@8.0.2:
     resolution: {integrity: sha512-ApGvZ6vVvTNdsmt676grvCkUCGwzG9IqXma5Z07xJgiC5L7akUMof5U8G2JTI9Rz/ovtVhJBlY6mNhEvtjzOIg==}
     engines: {node: '>=6'}
@@ -8960,10 +8950,6 @@ packages:
     resolution: {integrity: sha512-lRfVq8fE8gz6QMBuDM6a+LO3IAzTi05H6gCVaUpir2E1Rwpo4ZUog45KpNXKC/Mn3Yb9UDuHumeFTo9iV/D9FQ==}
     engines: {node: '>=18'}
 
-  unicorn-magic@0.3.0:
-    resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
-    engines: {node: '>=18'}
-
   unique-filename@3.0.0:
     resolution: {integrity: sha512-afXhuC55wkAmZ0P18QsVE6kp8JaxrEokN2HGIoIVv2ijHQd419H0+6EigAFcIzXeMIkcIkNBpB3L/DXB3cTS/g==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -9027,8 +9013,8 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
-  update-browserslist-db@1.2.2:
-    resolution: {integrity: sha512-E85pfNzMQ9jpKkA7+TJAi4TJN+tBCuWh5rUcS/sv6cFi+1q9LYDwDI5dpUL0u/73EElyQ8d3TEaeW4sPedBqYA==}
+  update-browserslist-db@1.2.3:
+    resolution: {integrity: sha512-Js0m9cx+qOgDxo0eMiFGEueWztz+d4+M3rGlmKPT+T4IS/jP4ylw3Nwpu6cpTTP8R1MAC1kF4VbdLt3ARf209w==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
@@ -9107,43 +9093,6 @@ packages:
     resolution: {integrity: sha512-7SpgZmU7R+dDnSmvXE1mfDtnHLHQSisdySVR7lO8ceAXvM0otZeuQQ6C8LrS5d/aYyP/QZ0hI0L+dIPrm4YlFQ==}
     peerDependencies:
       vite: ^2.6.0 || ^3.0.0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0
-
-  vite-plugin-checker@0.11.0:
-    resolution: {integrity: sha512-iUdO9Pl9UIBRPAragwi3as/BXXTtRu4G12L3CMrjx+WVTd9g/MsqNakreib9M/2YRVkhZYiTEwdH2j4Dm0w7lw==}
-    engines: {node: '>=16.11'}
-    peerDependencies:
-      '@biomejs/biome': '>=1.7'
-      eslint: '>=7'
-      meow: ^13.2.0
-      optionator: ^0.9.4
-      oxlint: '>=1'
-      stylelint: '>=16'
-      typescript: '*'
-      vite: '>=5.4.20'
-      vls: '*'
-      vti: '*'
-      vue-tsc: ~2.2.10 || ^3.0.0
-    peerDependenciesMeta:
-      '@biomejs/biome':
-        optional: true
-      eslint:
-        optional: true
-      meow:
-        optional: true
-      optionator:
-        optional: true
-      oxlint:
-        optional: true
-      stylelint:
-        optional: true
-      typescript:
-        optional: true
-      vls:
-        optional: true
-      vti:
-        optional: true
-      vue-tsc:
-        optional: true
 
   vite-plugin-filter-replace@0.1.14:
     resolution: {integrity: sha512-3onEAYgjJQTCJN+/f8+1vOUH3X/tRmXsfxmgH3QtpReGKi+xtP1jMpAEnYsNqw9mI2shZmxFm3LS+n52XczwYQ==}
@@ -9254,9 +9203,6 @@ packages:
 
   vlq@0.2.3:
     resolution: {integrity: sha512-DRibZL6DsNhIgYQ+wNdWDL2SL3bKPlVrRiBqV5yuMm++op8W4kGFtaQfCs4KEJn0wBZcHVHJ3eoywX8983k1ow==}
-
-  vscode-uri@3.1.0:
-    resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
   walkdir@0.4.1:
     resolution: {integrity: sha512-3eBwRyEln6E1MSzcxcVpQIhRG8Q1jLvEqRmCZqS3dsfXEDR/AhOF4d+jHg1qvDCpYaVRZjENPQyrVxAkQqxPgQ==}
@@ -11750,70 +11696,70 @@ snapshots:
 
   '@opentelemetry/semantic-conventions@1.34.0': {}
 
-  '@oxfmt/darwin-arm64@0.18.0':
+  '@oxfmt/darwin-arm64@0.19.0':
     optional: true
 
-  '@oxfmt/darwin-x64@0.18.0':
+  '@oxfmt/darwin-x64@0.19.0':
     optional: true
 
-  '@oxfmt/linux-arm64-gnu@0.18.0':
+  '@oxfmt/linux-arm64-gnu@0.19.0':
     optional: true
 
-  '@oxfmt/linux-arm64-musl@0.18.0':
+  '@oxfmt/linux-arm64-musl@0.19.0':
     optional: true
 
-  '@oxfmt/linux-x64-gnu@0.18.0':
+  '@oxfmt/linux-x64-gnu@0.19.0':
     optional: true
 
-  '@oxfmt/linux-x64-musl@0.18.0':
+  '@oxfmt/linux-x64-musl@0.19.0':
     optional: true
 
-  '@oxfmt/win32-arm64@0.18.0':
+  '@oxfmt/win32-arm64@0.19.0':
     optional: true
 
-  '@oxfmt/win32-x64@0.18.0':
+  '@oxfmt/win32-x64@0.19.0':
     optional: true
 
-  '@oxlint-tsgolint/darwin-arm64@0.9.0':
+  '@oxlint-tsgolint/darwin-arm64@0.9.2':
     optional: true
 
-  '@oxlint-tsgolint/darwin-x64@0.9.0':
+  '@oxlint-tsgolint/darwin-x64@0.9.2':
     optional: true
 
-  '@oxlint-tsgolint/linux-arm64@0.9.0':
+  '@oxlint-tsgolint/linux-arm64@0.9.2':
     optional: true
 
-  '@oxlint-tsgolint/linux-x64@0.9.0':
+  '@oxlint-tsgolint/linux-x64@0.9.2':
     optional: true
 
-  '@oxlint-tsgolint/win32-arm64@0.9.0':
+  '@oxlint-tsgolint/win32-arm64@0.9.2':
     optional: true
 
-  '@oxlint-tsgolint/win32-x64@0.9.0':
+  '@oxlint-tsgolint/win32-x64@0.9.2':
     optional: true
 
-  '@oxlint/darwin-arm64@1.33.0':
+  '@oxlint/darwin-arm64@1.34.0':
     optional: true
 
-  '@oxlint/darwin-x64@1.33.0':
+  '@oxlint/darwin-x64@1.34.0':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@1.33.0':
+  '@oxlint/linux-arm64-gnu@1.34.0':
     optional: true
 
-  '@oxlint/linux-arm64-musl@1.33.0':
+  '@oxlint/linux-arm64-musl@1.34.0':
     optional: true
 
-  '@oxlint/linux-x64-gnu@1.33.0':
+  '@oxlint/linux-x64-gnu@1.34.0':
     optional: true
 
-  '@oxlint/linux-x64-musl@1.33.0':
+  '@oxlint/linux-x64-musl@1.34.0':
     optional: true
 
-  '@oxlint/win32-arm64@1.33.0':
+  '@oxlint/win32-arm64@1.34.0':
     optional: true
 
-  '@oxlint/win32-x64@1.33.0':
+  '@oxlint/win32-x64@1.34.0':
     optional: true
 
   '@paralleldrive/cuid2@2.2.2':
@@ -12590,6 +12536,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitest/coverage-v8@4.0.15(vitest@4.0.15(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))':
+    dependencies:
+      '@bcoe/v8-coverage': 1.0.2
+      '@vitest/utils': 4.0.15
+      ast-v8-to-istanbul: 0.3.8
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.2.0
+      magicast: 0.5.1
+      obug: 2.1.1
+      std-env: 3.10.0
+      tinyrainbow: 3.0.3
+      vitest: 4.0.15(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
+    transitivePeerDependencies:
+      - supports-color
+
   '@vitest/expect@4.0.15':
     dependencies:
       '@standard-schema/spec': 1.0.0
@@ -13002,7 +12965,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  baseline-browser-mapping@2.9.7: {}
+  baseline-browser-mapping@2.9.10: {}
 
   basic-auth-connect@1.0.0: {}
 
@@ -13139,11 +13102,11 @@ snapshots:
 
   browserslist@4.28.0:
     dependencies:
-      baseline-browser-mapping: 2.9.7
-      caniuse-lite: 1.0.30001760
+      baseline-browser-mapping: 2.9.10
+      caniuse-lite: 1.0.30001761
       electron-to-chromium: 1.5.267
       node-releases: 2.0.27
-      update-browserslist-db: 1.2.2(browserslist@4.28.0)
+      update-browserslist-db: 1.2.3(browserslist@4.28.0)
 
   bson@6.8.0: {}
 
@@ -13268,7 +13231,7 @@ snapshots:
 
   caniuse-lite@1.0.30001715: {}
 
-  caniuse-lite@1.0.30001760: {}
+  caniuse-lite@1.0.30001761: {}
 
   canvas-confetti@1.5.1: {}
 
@@ -17022,11 +16985,6 @@ snapshots:
     dependencies:
       path-key: 4.0.0
 
-  npm-run-path@6.0.0:
-    dependencies:
-      path-key: 4.0.0
-      unicorn-magic: 0.3.0
-
   npmlog@5.0.1:
     dependencies:
       are-we-there-yet: 2.0.0
@@ -17191,39 +17149,39 @@ snapshots:
       object-keys: 1.1.1
       safe-push-apply: 1.0.0
 
-  oxfmt@0.18.0:
+  oxfmt@0.19.0:
     dependencies:
       tinypool: 2.0.0
     optionalDependencies:
-      '@oxfmt/darwin-arm64': 0.18.0
-      '@oxfmt/darwin-x64': 0.18.0
-      '@oxfmt/linux-arm64-gnu': 0.18.0
-      '@oxfmt/linux-arm64-musl': 0.18.0
-      '@oxfmt/linux-x64-gnu': 0.18.0
-      '@oxfmt/linux-x64-musl': 0.18.0
-      '@oxfmt/win32-arm64': 0.18.0
-      '@oxfmt/win32-x64': 0.18.0
+      '@oxfmt/darwin-arm64': 0.19.0
+      '@oxfmt/darwin-x64': 0.19.0
+      '@oxfmt/linux-arm64-gnu': 0.19.0
+      '@oxfmt/linux-arm64-musl': 0.19.0
+      '@oxfmt/linux-x64-gnu': 0.19.0
+      '@oxfmt/linux-x64-musl': 0.19.0
+      '@oxfmt/win32-arm64': 0.19.0
+      '@oxfmt/win32-x64': 0.19.0
 
-  oxlint-tsgolint@0.9.0:
+  oxlint-tsgolint@0.9.2:
     optionalDependencies:
-      '@oxlint-tsgolint/darwin-arm64': 0.9.0
-      '@oxlint-tsgolint/darwin-x64': 0.9.0
-      '@oxlint-tsgolint/linux-arm64': 0.9.0
-      '@oxlint-tsgolint/linux-x64': 0.9.0
-      '@oxlint-tsgolint/win32-arm64': 0.9.0
-      '@oxlint-tsgolint/win32-x64': 0.9.0
+      '@oxlint-tsgolint/darwin-arm64': 0.9.2
+      '@oxlint-tsgolint/darwin-x64': 0.9.2
+      '@oxlint-tsgolint/linux-arm64': 0.9.2
+      '@oxlint-tsgolint/linux-x64': 0.9.2
+      '@oxlint-tsgolint/win32-arm64': 0.9.2
+      '@oxlint-tsgolint/win32-x64': 0.9.2
 
-  oxlint@1.33.0(oxlint-tsgolint@0.9.0):
+  oxlint@1.34.0(oxlint-tsgolint@0.9.2):
     optionalDependencies:
-      '@oxlint/darwin-arm64': 1.33.0
-      '@oxlint/darwin-x64': 1.33.0
-      '@oxlint/linux-arm64-gnu': 1.33.0
-      '@oxlint/linux-arm64-musl': 1.33.0
-      '@oxlint/linux-x64-gnu': 1.33.0
-      '@oxlint/linux-x64-musl': 1.33.0
-      '@oxlint/win32-arm64': 1.33.0
-      '@oxlint/win32-x64': 1.33.0
-      oxlint-tsgolint: 0.9.0
+      '@oxlint/darwin-arm64': 1.34.0
+      '@oxlint/darwin-x64': 1.34.0
+      '@oxlint/linux-arm64-gnu': 1.34.0
+      '@oxlint/linux-arm64-musl': 1.34.0
+      '@oxlint/linux-x64-gnu': 1.34.0
+      '@oxlint/linux-x64-musl': 1.34.0
+      '@oxlint/win32-arm64': 1.34.0
+      '@oxlint/win32-x64': 1.34.0
+      oxlint-tsgolint: 0.9.2
 
   p-defer@3.0.0: {}
 
@@ -18905,8 +18863,6 @@ snapshots:
 
   through@2.3.8: {}
 
-  tiny-invariant@1.3.3: {}
-
   tiny-lru@8.0.2: {}
 
   tinybench@2.9.0: {}
@@ -19197,8 +19153,6 @@ snapshots:
 
   unicorn-magic@0.1.0: {}
 
-  unicorn-magic@0.3.0: {}
-
   unique-filename@3.0.0:
     dependencies:
       unique-slug: 4.0.0
@@ -19263,7 +19217,7 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  update-browserslist-db@1.2.2(browserslist@4.28.0):
+  update-browserslist-db@1.2.3(browserslist@4.28.0):
     dependencies:
       browserslist: 4.28.0
       escalade: 3.2.0
@@ -19349,24 +19303,6 @@ snapshots:
   vite-hot-client@2.1.0(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)):
     dependencies:
       vite: 7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
-
-  vite-plugin-checker@0.11.0(eslint@9.39.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.33.0(oxlint-tsgolint@0.9.0))(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)):
-    dependencies:
-      '@babel/code-frame': 7.27.1
-      chokidar: 4.0.3
-      npm-run-path: 6.0.0
-      picocolors: 1.1.1
-      picomatch: 4.0.3
-      tiny-invariant: 1.3.3
-      tinyglobby: 0.2.15
-      vite: 7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
-      vscode-uri: 3.1.0
-    optionalDependencies:
-      eslint: 9.39.1
-      meow: 13.2.0
-      optionator: 0.9.4
-      oxlint: 1.33.0(oxlint-tsgolint@0.9.0)
-      typescript: 5.9.3
 
   vite-plugin-filter-replace@0.1.14:
     dependencies:
@@ -19515,9 +19451,45 @@ snapshots:
       - tsx
       - yaml
 
-  vlq@0.2.3: {}
+  vitest@4.0.15(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1):
+    dependencies:
+      '@vitest/expect': 4.0.15
+      '@vitest/mocker': 4.0.15(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
+      '@vitest/pretty-format': 4.0.15
+      '@vitest/runner': 4.0.15
+      '@vitest/snapshot': 4.0.15
+      '@vitest/spy': 4.0.15
+      '@vitest/utils': 4.0.15
+      es-module-lexer: 1.7.0
+      expect-type: 1.2.2
+      magic-string: 0.30.21
+      obug: 2.1.1
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 3.10.0
+      tinybench: 2.9.0
+      tinyexec: 1.0.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.0.3
+      vite: 7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 24.9.1
+      happy-dom: 20.0.10
+    transitivePeerDependencies:
+      - jiti
+      - less
+      - lightningcss
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - yaml
 
-  vscode-uri@3.1.0: {}
+  vlq@0.2.3: {}
 
   walkdir@0.4.1: {}
 
