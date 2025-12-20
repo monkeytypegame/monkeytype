@@ -96,10 +96,10 @@ describe("dom", () => {
 
       it("should fire on each element matching the selector from the child up to the parent", async () => {
         //GIVEN
-        registerOnChild("click", "div");
+        registerOnChild("click", "div.middle, div.inner");
 
         //WHEN
-        const clickTarget = screen.getByTestId("button");
+        let clickTarget = screen.getByTestId("button");
         await userEvent.click(clickTarget);
 
         //THEN
@@ -125,6 +125,22 @@ describe("dom", () => {
           expect.objectContaining({
             target: clickTarget,
             childTarget: screen.getByTestId("mid1"),
+            currentTarget: screen.getByTestId("parent"),
+          }),
+        );
+
+        //WHEN click on mid1 handler is only called one time
+        handler.mockReset();
+        clickTarget = screen.getByTestId("mid1");
+        await userEvent.click(clickTarget);
+
+        //THEN
+        expect(handler).toHaveBeenCalledTimes(1);
+
+        expect(handler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            target: clickTarget,
+            childTarget: clickTarget,
             currentTarget: screen.getByTestId("parent"),
           }),
         );
