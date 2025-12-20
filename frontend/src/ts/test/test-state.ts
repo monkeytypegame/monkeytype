@@ -67,16 +67,18 @@ export function setIsDirectionReversed(val: boolean): void {
   isDirectionReversed = val;
 }
 
-let { promise: testRestartingPromise, resolve: restartingResolve } =
-  promiseWithResolvers();
+const {
+  promise: testRestartingPromise,
+  resolve: restartingResolve,
+  reset: resetTestRestarting,
+} = promiseWithResolvers();
 
 export { testRestartingPromise };
 
 export function setTestRestarting(val: boolean): void {
   testRestarting = val;
   if (val) {
-    ({ promise: testRestartingPromise, resolve: restartingResolve } =
-      promiseWithResolvers());
+    resetTestRestarting();
   } else {
     restartingResolve();
   }

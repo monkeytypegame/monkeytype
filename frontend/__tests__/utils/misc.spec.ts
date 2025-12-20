@@ -1,5 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { getErrorMessage, isObject, escapeHTML } from "../../src/ts/utils/misc";
+import { describe, it, expect, vi } from "vitest";
+import {
+  getErrorMessage,
+  isObject,
+  escapeHTML,
+  promiseWithResolvers,
+} from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
@@ -216,6 +221,227 @@ describe("misc.ts", () => {
         const result = getErrorMessage(test.input);
         expect(result).toBe(test.expected);
       });
+    });
+  });
+
+  describe("promiseWithResolvers", () => {
+    it("should resolve the promise from outside", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+
+      //WHEN
+      resolve(42);
+
+      //THEN
+      await expect(promise).resolves.toBe(42);
+    });
+
+    it("should resolve new promise after reset using same promise reference", async () => {
+      const { promise, resolve, reset } = promiseWithResolvers<number>();
+      const firstPromise = promise;
+
+      reset();
+
+      resolve(10);
+
+      await expect(firstPromise).resolves.toBe(10);
+      expect(promise).toBe(firstPromise);
+    });
+
+    it("should reject the promise from outside", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const error = new Error("test error");
+
+      //WHEN
+      reject(error);
+
+      //THEN
+      await expect(promise).rejects.toThrow("test error");
+    });
+
+    it("should work with void type", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers();
+
+      //WHEN
+      resolve();
+
+      //THEN
+      await expect(promise).resolves.toBeUndefined();
+    });
+
+    it("should allow multiple resolves (only first takes effect)", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+
+      //WHEN
+      resolve(42);
+      resolve(100); // This should have no effect
+
+      //THEN
+      await expect(promise).resolves.toBe(42);
+    });
+
+    it("should reset and create a new promise", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      wrapper.resolve(42);
+      await expect(wrapper.promise).resolves.toBe(42);
+
+      //WHEN
+      wrapper.reset();
+      wrapper.resolve(100);
+
+      //THEN
+      await expect(wrapper.promise).resolves.toBe(100);
+    });
+
+    it("should keep the same promise reference after reset", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      const firstPromise = wrapper.promise;
+      wrapper.resolve(42);
+      await expect(firstPromise).resolves.toBe(42);
+
+      //WHEN
+      wrapper.reset();
+      const secondPromise = wrapper.promise;
+      wrapper.resolve(100);
+
+      //THEN
+      expect(firstPromise).toBe(secondPromise); // Same reference
+      await expect(wrapper.promise).resolves.toBe(100);
+    });
+
+    it("should allow reject after reset", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      wrapper.resolve(42);
+      await wrapper.promise;
+
+      //WHEN
+      wrapper.reset();
+      const error = new Error("after reset");
+      wrapper.reject(error);
+
+      //THEN
+      await expect(wrapper.promise).rejects.toThrow("after reset");
+    });
+
+    it("should work with complex types", async () => {
+      //GIVEN
+      type ComplexType = { id: number; data: string[] };
+      const { promise, resolve } = promiseWithResolvers<ComplexType>();
+      const data: ComplexType = { id: 1, data: ["a", "b", "c"] };
+
+      //WHEN
+      resolve(data);
+
+      //THEN
+      await expect(promise).resolves.toEqual(data);
+    });
+
+    it("should handle rejection with non-Error values", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+
+      //WHEN
+      reject("string error");
+
+      //THEN
+      await expect(promise).rejects.toBe("string error");
+    });
+
+    it("should allow chaining with then/catch", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+      const onFulfilled = vi.fn((value) => value * 2);
+      const chained = promise.then(onFulfilled);
+
+      //WHEN
+      resolve(21);
+
+      //THEN
+      await expect(chained).resolves.toBe(42);
+      expect(onFulfilled).toHaveBeenCalledWith(21);
+    });
+
+    it("should support async/await patterns", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<string>();
+
+      //WHEN
+      setTimeout(() => resolve("delayed"), 10);
+
+      //THEN
+      const result = await promise;
+      expect(result).toBe("delayed");
+    });
+
+    it("should maintain independent state for multiple instances", async () => {
+      //GIVEN
+      const first = promiseWithResolvers<number>();
+      const second = promiseWithResolvers<number>();
+
+      //WHEN
+      first.resolve(1);
+      second.resolve(2);
+
+      //THEN
+      await expect(first.promise).resolves.toBe(1);
+      await expect(second.promise).resolves.toBe(2);
+    });
+
+    it("should handle reset before resolve", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      const oldPromise = wrapper.promise;
+
+      //WHEN
+      wrapper.reset();
+      wrapper.resolve(42);
+
+      //THEN
+      await expect(wrapper.promise).resolves.toBe(42);
+      // Old promise should never resolve
+      const race = await Promise.race([
+        oldPromise.then(() => "old"),
+        Promise.resolve("timeout"),
+      ]);
+      expect(race).toBe("timeout");
+    });
+
+    it("should work with Promise.all", async () => {
+      //GIVEN
+      const first = promiseWithResolvers<number>();
+      const second = promiseWithResolvers<number>();
+      const third = promiseWithResolvers<number>();
+
+      //WHEN
+      first.resolve(1);
+      second.resolve(2);
+      third.resolve(3);
+
+      //THEN
+      await expect(
+        Promise.all([first.promise, second.promise, third.promise]),
+      ).resolves.toEqual([1, 2, 3]);
+    });
+
+    it("should work with Promise.race", async () => {
+      //GIVEN
+      const first = promiseWithResolvers<string>();
+      const second = promiseWithResolvers<string>();
+
+      //WHEN
+      first.resolve("first");
+      setTimeout(() => second.resolve("second"), 100);
+
+      //THEN
+      await expect(Promise.race([first.promise, second.promise])).resolves.toBe(
+        "first",
+      );
     });
   });
 });

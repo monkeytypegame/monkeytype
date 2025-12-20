@@ -597,19 +597,70 @@ export function applyReducedMotion(animationTime: number): number {
 /**
  * Creates a promise with resolvers.
  * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
+ * The returned promise reference stays constant even after reset() - it will always await the current internal promise.
  */
 export function promiseWithResolvers<T = void>(): {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
   promise: Promise<T>;
+  reset: () => void;
 } {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
+  let innerResolve!: (value: T) => void;
+  let innerReject!: (reason?: unknown) => void;
+  let currentPromise = new Promise<T>((res, rej) => {
+    innerResolve = res;
+    innerReject = rej;
   });
-  return { resolve, reject, promise };
+
+  /**
+   * This was fully AI generated to make the reset function work. Black magic, but its unit-tested and works.
+   */
+
+  const promiseLike = {
+    // oxlint-disable-next-line no-thenable promise-function-async require-await
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
+      onrejected?:
+        | ((reason: unknown) => TResult2 | PromiseLike<TResult2>)
+        | null,
+    ): Promise<TResult1 | TResult2> {
+      return currentPromise.then(onfulfilled, onrejected);
+    },
+    // oxlint-disable-next-line promise-function-async
+    catch<TResult = never>(
+      onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
+    ): Promise<T | TResult> {
+      return currentPromise.catch(onrejected);
+    },
+    // oxlint-disable-next-line promise-function-async
+    finally(onfinally?: (() => void) | null): Promise<T> {
+      return currentPromise.finally(onfinally);
+    },
+    [Symbol.toStringTag]: "Promise" as const,
+  };
+
+  const reset = (): void => {
+    currentPromise = new Promise<T>((res, rej) => {
+      innerResolve = res;
+      innerReject = rej;
+    });
+  };
+
+  // Wrapper functions that always call the current resolver/rejecter
+  const resolve = (value: T): void => {
+    innerResolve(value);
+  };
+
+  const reject = (reason?: unknown): void => {
+    innerReject(reason);
+  };
+
+  return {
+    resolve,
+    reject,
+    promise: promiseLike as Promise<T>,
+    reset,
+  };
 }
 
 /**
