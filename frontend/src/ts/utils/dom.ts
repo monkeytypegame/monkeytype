@@ -310,7 +310,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       if (target === null) return; //ignore event
 
       let childTarget = target.closest(selector);
-      //bubble up until no match found or the parent el+ement is reached
+      //bubble up until no match found or the parent element is reached
       while (childTarget !== null && childTarget !== this.native) {
         if (typeof handler === "function") {
           handler.call(
@@ -322,7 +322,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         }
 
         childTarget =
-          childTarget !== null && childTarget.parentElement !== null
+          childTarget.parentElement !== null
             ? childTarget.parentElement.closest(selector)
             : null;
       }

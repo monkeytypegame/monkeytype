@@ -22,7 +22,7 @@ function convertTests(
 
     let updatedName =
       name === null || typeof name === "string"
-        ? `${name} (${root}) `
+        ? `${name} (${root})`
         : { ...name, label: `${name.label} (${root})` };
 
     return {

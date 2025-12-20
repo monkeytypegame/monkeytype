@@ -33,7 +33,7 @@ describe("dom", () => {
                 <div id="inner1" class="inner">test</div>
                 <div id="inner2" data-testid="inner2" class="inner">
                   test
-                  <button id="button" data-testid="button">click</div>
+                  <button id="button" data-testid="button">click</button>
                 </div>
             </div>
             <div id="mid2" class="middle">
@@ -46,12 +46,12 @@ describe("dom", () => {
         document.body.appendChild(root);
       });
 
-      it("should not fire when parent element is clicked", () => {
+      it("should not fire when parent element is clicked", async () => {
         //GIVEN
         registerOnChild("click", "div");
 
         //WHEN
-        userEvent.click(screen.getByTestId("parent"));
+        await userEvent.click(screen.getByTestId("parent"));
 
         //THEN
         expect(handler).not.toHaveBeenCalled();
