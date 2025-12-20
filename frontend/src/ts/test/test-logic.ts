@@ -1013,9 +1013,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
+    TestStats.setInvalid();
     dontSave = true;
   } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
+    TestStats.setInvalid();
     dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
@@ -1037,6 +1039,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
+    TestStats.setInvalid();
     tooShort = true;
     dontSave = true;
   } else if (
