@@ -1090,7 +1090,7 @@ qs(".pageAccount")?.onChild(
   "click",
   ".miniResultChartButton",
   async (event) => {
-    const target = new ElementWithUtils(event.target as HTMLElement);
+    const target = new ElementWithUtils(event.childTarget as HTMLElement);
     const resultId: string = target
       .getFirstMatchingParent("tr")
       ?.getAttribute("data-id") as string;
