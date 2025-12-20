@@ -133,18 +133,20 @@ export function updateActiveElement(
 
     let previousActiveWordTop: number | null = null;
     if (initial === undefined) {
-      const previousActiveWord = wordsEl.querySelector(
-        ".active",
-      ) as HTMLElement;
-      if (direction === "forward") {
-        previousActiveWord.classList.add("typed");
-      } else if (direction === "back") {
-        if (Config.mode === "zen") {
-          previousActiveWord.remove();
+      const previousActiveWord = wordsEl.querySelector<HTMLElement>(".active");
+      if (previousActiveWord !== null) {
+        previousActiveWordTop = previousActiveWord.offsetTop;
+        if (direction === "forward") {
+          previousActiveWord.classList.add("typed");
+          previousActiveWord.classList.remove("active");
+        } else if (direction === "back") {
+          if (Config.mode === "zen") {
+            previousActiveWord.remove();
+          } else {
+            previousActiveWord.classList.remove("active");
+          }
         }
       }
-      previousActiveWord.classList.remove("active");
-      previousActiveWordTop = previousActiveWord.offsetTop;
     }
 
     const newActiveWord = getActiveWordElement();
