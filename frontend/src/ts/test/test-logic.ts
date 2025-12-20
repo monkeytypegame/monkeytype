@@ -1152,12 +1152,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    completedEvent.keySpacing = "toolong";
-    completedEvent.keyDuration = "toolong";
-  }
-
   if (dontSave) {
     void AnalyticsController.log("testCompletedInvalid");
     return;
@@ -1174,6 +1168,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestStats.resetIncomplete();
 
   completedEvent.uid = user.uid;
+
+  if (completedEvent.testDuration > 122) {
+    completedEvent.chartData = "toolong";
+    completedEvent.keySpacing = "toolong";
+    completedEvent.keyDuration = "toolong";
+  }
 
   if (!completedEvent.bailedOut) {
     const challenge = ChallengeContoller.verify(completedEvent);
