@@ -11,7 +11,12 @@ describe("dom", () => {
       function registerOnChild(event: string, selector: string): void {
         const parent = qs("#parent");
         parent?.onChild(event, selector, (e) =>
-          handler({ target: e.target, childTarget: e.childTarget }),
+          handler({
+            target: e.target,
+            childTarget: e.childTarget,
+            //@ts-expect-error will be added later, check TODO on the ChildEvent
+            currentTarget: e.currentTarget,
+          }),
         );
       }
 
@@ -64,6 +69,7 @@ describe("dom", () => {
           expect.objectContaining({
             target: clickTarget,
             childTarget: clickTarget,
+            currentTarget: screen.getByTestId("parent"),
           }),
         );
       });
@@ -82,6 +88,7 @@ describe("dom", () => {
           expect.objectContaining({
             target: clickTarget,
             childTarget: selectorTarget,
+            currentTarget: screen.getByTestId("parent"),
           }),
         );
       });
@@ -103,6 +110,7 @@ describe("dom", () => {
           expect.objectContaining({
             target: clickTarget,
             childTarget: grandChildTarget,
+            currentTarget: screen.getByTestId("parent"),
           }),
         );
         expect(handler).toHaveBeenNthCalledWith(
@@ -110,6 +118,7 @@ describe("dom", () => {
           expect.objectContaining({
             target: clickTarget,
             childTarget: childTarget,
+            currentTarget: screen.getByTestId("parent"),
           }),
         );
       });
