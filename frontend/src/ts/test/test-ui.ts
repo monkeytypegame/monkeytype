@@ -134,18 +134,15 @@ export function updateActiveElement(
     let previousActiveWordTop: number | null = null;
     if (initial === undefined) {
       const previousActiveWord = wordsEl.querySelector<HTMLElement>(".active");
+      // in zen mode, because of the animation frame, previousActiveWord will be removed at this point, so check for null
       if (previousActiveWord !== null) {
-        previousActiveWordTop = previousActiveWord.offsetTop;
         if (direction === "forward") {
           previousActiveWord.classList.add("typed");
-          previousActiveWord.classList.remove("active");
         } else if (direction === "back") {
-          if (Config.mode === "zen") {
-            previousActiveWord.remove();
-          } else {
-            previousActiveWord.classList.remove("active");
-          }
+          //
         }
+        previousActiveWord.classList.remove("active");
+        previousActiveWordTop = previousActiveWord.offsetTop;
       }
     }
 
