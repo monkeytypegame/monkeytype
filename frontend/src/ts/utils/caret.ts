@@ -412,11 +412,21 @@ export class Caret {
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
-    const isWordRTL = isWordRightToLeft(
+    const baseWordIsRTL = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
     );
+
+    // that's for zen mode, for mixed RTL/LTR input
+    const isWordRTL =
+      Config.mode === "zen"
+        ? isWordRightToLeft(
+            options.letter.native.textContent ?? "",
+            options.isDirectionReversed ? !baseWordIsRTL : baseWordIsRTL,
+            options.isDirectionReversed,
+          )
+        : baseWordIsRTL;
 
     //if the letter is not visible, use the closest visible letter
     const isLetterVisible = options.letter.getOffsetWidth() > 0;
