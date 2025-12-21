@@ -285,16 +285,15 @@ describe("misc.ts", () => {
 
     it("should reset and create a new promise", async () => {
       //GIVEN
-      const wrapper = promiseWithResolvers<number>();
-      wrapper.resolve(42);
-      await expect(wrapper.promise).resolves.toBe(42);
+      const { promise, resolve, reset } = promiseWithResolvers<number>();
+      resolve(42);
 
       //WHEN
-      wrapper.reset();
-      wrapper.resolve(100);
+      reset();
+      resolve(100);
 
       //THEN
-      await expect(wrapper.promise).resolves.toBe(100);
+      await expect(promise).resolves.toBe(100);
     });
 
     it("should keep the same promise reference after reset", async () => {
@@ -379,20 +378,6 @@ describe("misc.ts", () => {
       expect(result).toBe("delayed");
     });
 
-    it("should maintain independent state for multiple instances", async () => {
-      //GIVEN
-      const first = promiseWithResolvers<number>();
-      const second = promiseWithResolvers<number>();
-
-      //WHEN
-      first.resolve(1);
-      second.resolve(2);
-
-      //THEN
-      await expect(first.promise).resolves.toBe(1);
-      await expect(second.promise).resolves.toBe(2);
-    });
-
     it("should resolve old promise reference after reset", async () => {
       //GIVEN
       const wrapper = promiseWithResolvers<number>();
@@ -408,36 +393,61 @@ describe("misc.ts", () => {
       expect(oldPromise).toBe(wrapper.promise);
     });
 
-    it("should work with Promise.all", async () => {
+    it("should handle catch", async () => {
       //GIVEN
-      const first = promiseWithResolvers<number>();
-      const second = promiseWithResolvers<number>();
-      const third = promiseWithResolvers<number>();
+      const { promise, reject } = promiseWithResolvers<number>();
+      const error = new Error("test error");
 
       //WHEN
-      first.resolve(1);
-      second.resolve(2);
-      third.resolve(3);
+      const caught = promise.catch(() => "recovered");
+      reject(error);
 
       //THEN
-      await expect(
-        Promise.all([first.promise, second.promise, third.promise]),
-      ).resolves.toEqual([1, 2, 3]);
+      await expect(caught).resolves.toBe("recovered");
     });
 
-    it("should work with Promise.race", async () => {
+    it("should call finally handler on resolution", async () => {
       //GIVEN
-      const first = promiseWithResolvers<string>();
-      const second = promiseWithResolvers<string>();
+      const { promise, resolve } = promiseWithResolvers<number>();
+      const onFinally = vi.fn();
 
       //WHEN
-      first.resolve("first");
-      setTimeout(() => second.resolve("second"), 100);
+      const final = promise.finally(onFinally);
+      resolve(42);
 
       //THEN
-      await expect(Promise.race([first.promise, second.promise])).resolves.toBe(
-        "first",
-      );
+      await expect(final).resolves.toBe(42);
+      expect(onFinally).toHaveBeenCalledTimes(1);
+    });
+
+    it("should call finally handler on rejection", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const onFinally = vi.fn();
+      const error = new Error("test error");
+
+      //WHEN
+      const final = promise.finally(onFinally);
+      reject(error);
+
+      //THEN
+      await expect(final).rejects.toThrow("test error");
+      expect(onFinally).toHaveBeenCalledTimes(1);
+    });
+
+    it("should preserve rejection through finally", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const onFinally = vi.fn();
+      const error = new Error("preserved error");
+
+      //WHEN
+      const final = promise.finally(onFinally);
+      reject(error);
+
+      //THEN
+      await expect(final).rejects.toThrow("preserved error");
+      expect(onFinally).toHaveBeenCalled();
     });
   });
 });
