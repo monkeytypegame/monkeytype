@@ -34,19 +34,53 @@ export type Result = {
   resolve: ResultResolve;
 };
 
-export type ResultResolve = {
-  login?: boolean;
-  saved?: boolean;
-  failed?: boolean;
-  afk?: boolean;
-  repeated?: boolean;
-  failedReason?: string;
-  valid?: boolean;
-  tooShort?: boolean;
-  saveFailedMessage?: string;
-  isPb?: boolean;
-  bailedOut?: boolean;
-};
+type LoggedInDontSave = {
+  login: true;
+  bailedOut: boolean;
+} & (
+  | {
+      valid: false;
+      invalidReason: string;
+    }
+  | {
+      failed: true;
+      failedReason: string;
+    }
+  // oxlint-disable-next-line no-empty-object-type
+  | {}
+);
+
+type LoggedInSave = {
+  login: true;
+  bailedOut: boolean;
+} & (
+  | {
+      saved: true;
+      isPb: boolean;
+    }
+  | {
+      saved: false;
+      saveFailedMessage: string;
+    }
+);
+
+type LoggedOut = {
+  login: false;
+  bailedOut: boolean;
+} & (
+  | {
+      valid: false;
+      invalidReason: string;
+    }
+  | {
+      failed: true;
+      failedReason: string;
+    }
+  // oxlint-disable-next-line no-empty-object-type
+  | {}
+);
+
+export type ResultResolve = LoggedInDontSave | LoggedInSave | LoggedOut;
 
 export type RoomJoin = {
   room: Room;

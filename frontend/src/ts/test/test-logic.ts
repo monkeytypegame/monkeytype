@@ -1018,6 +1018,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const mode2Number = parseInt(completedEvent.mode2);
 
   let tooShort = false;
+  let invalidReason = "";
   //fail checks
   const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
   if (
@@ -1029,6 +1030,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - inconsistent test duration", 0);
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
+    invalidReason = "inconsistent test duration";
     dontSave = true;
   } else if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, {
@@ -1039,11 +1041,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - AFK detected", 0);
     TestStats.setInvalid();
     dontSave = true;
+    invalidReason = "afk detected";
     TribeState.setAutoReady(false);
   } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
     TestStats.setInvalid();
     dontSave = true;
+    invalidReason = "repeated test";
   } else if (
     completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
@@ -1065,6 +1069,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ) {
     Notifications.add("Test invalid - too short", 0);
     TestStats.setInvalid();
+    invalidReason = "too short";
     tooShort = true;
     dontSave = true;
   } else if (
@@ -1078,6 +1083,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
+    invalidReason = "wpm";
     dontSave = true;
   } else if (
     completedEvent.rawWpm < 0 ||
@@ -1090,6 +1096,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
+    invalidReason = "raw wpm";
     dontSave = true;
   } else if (
     (!DB.getSnapshot()?.lbOptOut &&
@@ -1099,6 +1106,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
+    invalidReason = "accuracy";
     dontSave = true;
   }
 
@@ -1177,14 +1185,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (dontSave) {
       void AnalyticsController.log("testCompletedInvalid");
       resolveTestSavePromise({
-        afk: afkDetected,
-        bailedOut: completedEvent.bailedOut,
-        repeated: TestState.isRepeated,
-        tooShort: tooShort,
-        failed: difficultyFailed,
-        failedReason: failReason,
         login: true,
-        valid: false,
+        bailedOut: completedEvent.bailedOut,
+        ...(TestStats.invalid
+          ? { valid: false, invalidReason }
+          : difficultyFailed
+            ? {
+                failed: true,
+                failedReason: failReason,
+              }
+            : {}),
       });
     } else {
       TestStats.resetIncomplete();
@@ -1208,17 +1218,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
         if (promise.response && promise.response.status === 200) {
           void AnalyticsController.log("testCompleted");
           resolveTestSavePromise({
-            afk: afkDetected,
-            bailedOut: completedEvent.bailedOut,
-            repeated: TestState.isRepeated,
-            tooShort: tooShort,
-            failed: difficultyFailed,
-            failedReason: failReason,
-            isPb: promise.response.body.data?.isPb ?? false,
-            saved: promise.saved,
-            saveFailedMessage: promise.message,
             login: true,
-            valid: true,
+            bailedOut: completedEvent.bailedOut,
+            ...(promise.saved
+              ? {
+                  saved: true,
+                  isPb: promise.response.body.data?.isPb ?? false,
+                }
+              : {
+                  saved: false,
+                  saveFailedMessage: promise.message,
+                }),
           });
         }
       });
@@ -1231,14 +1241,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
       notSignedInLastResult = completedEvent;
     }
     resolveTestSavePromise({
-      afk: afkDetected,
-      bailedOut: completedEvent.bailedOut,
-      repeated: TestState.isRepeated,
-      tooShort: tooShort,
-      failed: difficultyFailed,
-      failedReason: failReason,
       login: false,
-      valid: !dontSave,
+      bailedOut: completedEvent.bailedOut,
+      ...(TestStats.invalid
+        ? { valid: false, invalidReason }
+        : difficultyFailed
+          ? {
+              failed: true,
+              failedReason: failReason,
+            }
+          : {}),
     });
 
     // it wont save but result.update needs it
