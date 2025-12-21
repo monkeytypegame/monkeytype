@@ -553,12 +553,14 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the first element matching a selector, starting from this.native and going
-     up through its parents
+   * Get the first parent that matches a selector
    */
-  closest(selector: string): ElementWithUtils | null {
-    const el = this.native.closest(selector) as HTMLElement;
-    return el !== null ? new ElementWithUtils(el) : null;
+
+  closestParent(selector: string): ElementWithUtils | null {
+    const closestParent = this.native.parentElement?.closest(
+      selector,
+    ) as HTMLElement;
+    return closestParent !== null ? new ElementWithUtils(closestParent) : null;
   }
 
   /**

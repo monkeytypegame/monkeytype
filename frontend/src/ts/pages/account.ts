@@ -1092,7 +1092,7 @@ qs(".pageAccount")?.onChild(
   async (event) => {
     const target = new ElementWithUtils(event.childTarget as HTMLElement);
     const resultId: string = target
-      .closest("tr")
+      .closestParent("tr")
       ?.getAttribute("data-id") as string;
     if (target.hasClass("loading")) return;
     if (target.hasClass("disabled")) return;
