@@ -871,8 +871,11 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-let { promise: testSavePromise, resolve: resolveTestSavePromise } =
-  Misc.promiseWithResolvers<TribeTypes.ResultResolve>();
+const {
+  promise: testSavePromise,
+  resolve: resolveTestSavePromise,
+  reset: resetTestSavePromise,
+} = Misc.promiseWithResolvers<TribeTypes.ResultResolve>();
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
@@ -906,8 +909,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
-  ({ promise: testSavePromise, resolve: resolveTestSavePromise } =
-    Misc.promiseWithResolvers<TribeTypes.ResultResolve>());
+  resetTestSavePromise();
 
   // in zen mode, ensure the replay words list reflects the typed input history
   // even if the current input was empty at finish (e.g., after submitting a word).
