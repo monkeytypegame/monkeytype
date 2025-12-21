@@ -33,6 +33,7 @@ import * as FPSCounter from "../elements/fps-counter";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
+import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -376,6 +377,17 @@ export const commands: CommandsSubgroup = {
       icon: "fa-users",
       exec: (): void => {
         window.open("https://discord.gg/monkeytype");
+      },
+    },
+    {
+      id: "signOut",
+      display: "Sign out",
+      icon: "fa-sign-out-alt",
+      exec: (): void => {
+        void signOut();
+      },
+      available: () => {
+        return isAuthAvailable() && isAuthenticated();
       },
     },
   ],

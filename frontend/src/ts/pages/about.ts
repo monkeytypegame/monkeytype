@@ -10,11 +10,11 @@ import * as Skeleton from "../utils/skeleton";
 import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { qsr } from "../utils/dom";
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 function reset(): void {
-  $(".pageAbout .contributors").empty();
-  $(".pageAbout .supporters").empty();
+  qs(".pageAbout .contributors")?.empty();
+  qs(".pageAbout .supporters")?.empty();
 
   ChartController.globalSpeedHistogram.getDataset("count").data = [];
   void ChartController.globalSpeedHistogram.updateColors();
@@ -43,11 +43,11 @@ function updateStatsAndHistogram(): void {
       end: secondsRounded * 1000,
     });
 
-    $(".pageAbout #totalTimeTypingStat .val").text(
+    qs(".pageAbout #totalTimeTypingStat .val")?.setText(
       timeTypingDuration.years?.toString() ?? "",
     );
-    $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
-    $(".pageAbout #totalTimeTypingStat").attr(
+    qs(".pageAbout #totalTimeTypingStat .valSmall")?.setText("years");
+    qs(".pageAbout #totalTimeTypingStat")?.setAttribute(
       "aria-label",
       numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours",
     );
@@ -56,15 +56,15 @@ function updateStatsAndHistogram(): void {
       typingStatsResponseData.testsStarted,
     );
 
-    $(".pageAbout #totalStartedTestsStat .val").text(
+    qs(".pageAbout #totalStartedTestsStat .val")?.setText(
       startedWithMagnitude.rounded < 10
-        ? startedWithMagnitude.roundedTo2
-        : startedWithMagnitude.rounded,
+        ? startedWithMagnitude.roundedTo2.toString()
+        : startedWithMagnitude.rounded.toString(),
     );
-    $(".pageAbout #totalStartedTestsStat .valSmall").text(
+    qs(".pageAbout #totalStartedTestsStat .valSmall")?.setText(
       startedWithMagnitude.orderOfMagnitude,
     );
-    $(".pageAbout #totalStartedTestsStat").attr(
+    qs(".pageAbout #totalStartedTestsStat")?.setAttribute(
       "aria-label",
       numberWithSpaces(typingStatsResponseData.testsStarted) + " tests",
     );
@@ -73,15 +73,15 @@ function updateStatsAndHistogram(): void {
       typingStatsResponseData.testsCompleted,
     );
 
-    $(".pageAbout #totalCompletedTestsStat .val").text(
+    qs(".pageAbout #totalCompletedTestsStat .val")?.setText(
       completedWIthMagnitude.rounded < 10
-        ? completedWIthMagnitude.roundedTo2
-        : completedWIthMagnitude.rounded,
+        ? completedWIthMagnitude.roundedTo2.toString()
+        : completedWIthMagnitude.rounded.toString(),
     );
-    $(".pageAbout #totalCompletedTestsStat .valSmall").text(
+    qs(".pageAbout #totalCompletedTestsStat .valSmall")?.setText(
       completedWIthMagnitude.orderOfMagnitude,
     );
-    $(".pageAbout #totalCompletedTestsStat").attr(
+    qs(".pageAbout #totalCompletedTestsStat")?.setAttribute(
       "aria-label",
       numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests",
     );
@@ -212,6 +212,6 @@ export const page = new Page({
   },
 });
 
-$(() => {
+onWindowLoad(() => {
   Skeleton.save("pageAbout");
 });

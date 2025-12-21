@@ -208,6 +208,20 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if element is visible
+   */
+
+  isVisible(): boolean {
+    return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
+  }
+
+  scrollIntoView(options: ScrollIntoViewOptions): this {
+    this.native.scrollIntoView(options);
+
+    return this;
+  }
+
+  /**
    * Add a class to the element
    */
   addClass(className: string | string[]): this {
@@ -539,6 +553,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the first parent that matches a selector
+   */
+
+  closestParent(selector: string): ElementWithUtils | null {
+    const closestParent = this.native.parentElement?.closest(
+      selector,
+    ) as HTMLElement;
+    return closestParent !== null ? new ElementWithUtils(closestParent) : null;
+  }
+
+  /**
+   * Check if element matches a selector
+   */
+
+  matches(selector: string): boolean {
+    return this.native.matches(selector);
+  }
+
+  /**
    * Replace this element with another element
    */
   replaceWith(element: HTMLElement | ElementWithUtils): this {
@@ -708,6 +741,38 @@ export class ElementsWithUtils<
       item.setStyle(object);
     }
     return this;
+  }
+
+  /**
+   * Query all elements in the array for a child element matching the selector
+   */
+  qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const found = item.native.querySelector<U>(selector);
+      if (found) allElements.push(new ElementWithUtils<U>(found));
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
+   * Query all elements in the array for all child elements matching the selector
+   */
+  qsa<U extends HTMLElement = HTMLElement>(
+    selector: string,
+  ): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const elements = Array.from(item.native.querySelectorAll<U>(selector));
+      for (const el of elements) {
+        if (el !== null) allElements.push(new ElementWithUtils<U>(el));
+      }
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
   }
 
   /**

@@ -136,18 +136,17 @@ export function updateActiveElement(
 
     let previousActiveWordTop: number | null = null;
     if (initial === undefined) {
-      const previousActiveWord = wordsEl.querySelector(
-        ".active",
-      ) as HTMLElement;
-      if (direction === "forward") {
-        previousActiveWord.classList.add("typed");
-      } else if (direction === "back") {
-        if (Config.mode === "zen") {
-          previousActiveWord.remove();
+      const previousActiveWord = wordsEl.querySelector<HTMLElement>(".active");
+      // in zen mode, because of the animation frame, previousActiveWord will be removed at this point, so check for null
+      if (previousActiveWord !== null) {
+        if (direction === "forward") {
+          previousActiveWord.classList.add("typed");
+        } else if (direction === "back") {
+          //
         }
+        previousActiveWord.classList.remove("active");
+        previousActiveWordTop = previousActiveWord.offsetTop;
       }
-      previousActiveWord.classList.remove("active");
-      previousActiveWordTop = previousActiveWord.offsetTop;
     }
 
     const newActiveWord = getActiveWordElement();
@@ -1819,20 +1818,19 @@ export async function afterTestWordChange(
     //
   } else if (direction === "back") {
     if (Config.mode === "zen") {
-      const wordsChildren = [...(wordsEl.children ?? [])] as HTMLElement[];
-
+      // because we need to delete newline, beforenewline and afternewline elements which dont have wordindex attributes
+      // we need to do this loop thingy and delete all elements after the active word
       let deleteElements = false;
-      for (const child of wordsChildren) {
-        if (
-          !deleteElements &&
-          parseInt(child.getAttribute("data-wordindex") ?? "-1", 10) ===
-            TestState.activeWordIndex
-        ) {
-          deleteElements = true;
-          continue;
-        }
+      for (const child of wordsEl.children) {
         if (deleteElements) {
           child.remove();
+          continue;
+        }
+        const attr = child.getAttribute("data-wordindex");
+        if (attr === null) continue;
+        const wordIndex = parseInt(attr, 10);
+        if (wordIndex === TestState.activeWordIndex) {
+          deleteElements = true;
         }
       }
     }

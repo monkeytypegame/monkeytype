@@ -12,14 +12,14 @@ import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 import { addFriend } from "./friends";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 function reset(): void {
-  $(".page.pageProfile .error").addClass("hidden");
-  $(".page.pageProfile .preloader").removeClass("hidden");
-  $(".page.pageProfile .profile").html(`
+  qs(".page.pageProfile .error")?.hide();
+  qs(".page.pageProfile .preloader")?.show();
+  qs(".page.pageProfile .profile")?.setHtml(`
       <div class="details none">
         <div class="avatarAndName">
           <div class="avatar"></div>
@@ -189,7 +189,7 @@ type UpdateOptions = {
 async function update(options: UpdateOptions): Promise<void> {
   const getParamExists = checkIfGetParameterExists("isUid");
   if (options.data) {
-    $(".page.pageProfile .preloader").addClass("hidden");
+    qs(".page.pageProfile .preloader")?.hide();
     await Profile.update("profile", options.data);
     PbTables.update(
       // this cast is fine because pb tables can handle the partial data inside user profiles
@@ -202,15 +202,15 @@ async function update(options: UpdateOptions): Promise<void> {
       query: { isUid: getParamExists },
     });
 
-    $(".page.pageProfile .preloader").addClass("hidden");
+    qs(".page.pageProfile .preloader")?.hide();
 
     if (response.status === 404) {
       const message = getParamExists
         ? "User not found"
         : `User ${options.uidOrName} not found`;
-      $(".page.pageProfile .preloader").addClass("hidden");
-      $(".page.pageProfile .error").removeClass("hidden");
-      $(".page.pageProfile .error .message").text(message);
+      qs(".page.pageProfile .preloader")?.hide();
+      qs(".page.pageProfile .error")?.show();
+      qs(".page.pageProfile .error .message")?.setText(message);
     } else if (response.status === 200) {
       const profile = response.body.data;
       window.history.replaceState(null, "", `/profile/${profile.name}`);
@@ -235,7 +235,7 @@ async function update(options: UpdateOptions): Promise<void> {
         TestActivity.clear(testActivity);
       }
     } else {
-      // $(".page.pageProfile .failedToLoad").removeClass("hidden");
+      // qs(".page.pageProfile .failedToLoad")?.show();
       Notifications.add("Failed to load profile: " + response.body.message, -1);
       return;
     }
@@ -244,27 +244,33 @@ async function update(options: UpdateOptions): Promise<void> {
   }
 }
 
-$(".page.pageProfile").on("click", ".profile .userReportButton", () => {
-  const uid = $(".page.pageProfile .profile").attr("uid") ?? "";
-  const name = $(".page.pageProfile .profile").attr("name") ?? "";
+qs(".page.pageProfile")?.onChild("click", ".profile .userReportButton", () => {
+  const uid = qs(".page.pageProfile .profile")?.getAttribute("uid") ?? "";
+  const name = qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
   const lbOptOut =
-    ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
+    (qs(".page.pageProfile .profile")?.getAttribute("lbOptOut") ?? "false") ===
+    "true";
 
   void UserReportModal.show({ uid, name, lbOptOut });
 });
 
-$(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
-  const friendName = $(".page.pageProfile .profile").attr("name") ?? "";
+qs(".page.pageProfile")?.onChild(
+  "click",
+  ".profile .addFriendButton",
+  async () => {
+    const friendName =
+      qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
 
-  const result = await addFriend(friendName);
+    const result = await addFriend(friendName);
 
-  if (result === true) {
-    Notifications.add(`Request sent to ${friendName}`);
-    $(".profile .details .addFriendButton").addClass("disabled");
-  } else {
-    Notifications.add(result, -1);
-  }
-});
+    if (result === true) {
+      Notifications.add(`Request sent to ${friendName}`);
+      qs(".profile .details .addFriendButton")?.disable();
+    } else {
+      Notifications.add(result, -1);
+    }
+  },
+);
 
 export const page = new Page<undefined | UserProfile>({
   id: "profile",
@@ -278,18 +284,18 @@ export const page = new Page<undefined | UserProfile>({
     Skeleton.append("pageProfile", "main");
     const uidOrName = options?.params?.["uidOrName"] ?? "";
     if (uidOrName) {
-      $(".page.pageProfile .preloader").removeClass("hidden");
-      $(".page.pageProfile .search").addClass("hidden");
-      $(".page.pageProfile .content").removeClass("hidden");
+      qs(".page.pageProfile .preloader")?.show();
+      qs(".page.pageProfile .search")?.hide();
+      qs(".page.pageProfile .content")?.show();
       reset();
       void update({
         uidOrName,
         data: options?.data,
       });
     } else {
-      $(".page.pageProfile .preloader").addClass("hidden");
-      $(".page.pageProfile .search").removeClass("hidden");
-      $(".page.pageProfile .content").addClass("hidden");
+      qs(".page.pageProfile .preloader")?.hide();
+      qs(".page.pageProfile .search")?.show();
+      qs(".page.pageProfile .content")?.hide();
     }
   },
 });
