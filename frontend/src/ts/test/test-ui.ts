@@ -805,15 +805,18 @@ export async function updateWordLetters({
 
         for (let i = 0; i < compositionData.length; i++) {
           const compositionChar = compositionData[i];
-          let charToShow =
-            currentWordChars[input.length + i] ?? compositionChar;
+          // Render the target character (if known) during composition to keep line width stable,
+          // falling back to the preedit char when beyond the word length.
+          const targetChar = currentWordChars[input.length + i];
+          let charToShow = targetChar ?? compositionChar;
 
           if (Config.compositionDisplay === "replace") {
-            charToShow = compositionChar === " " ? "_" : compositionChar;
+            charToShow =
+              targetChar ?? (compositionChar === " " ? "_" : compositionChar);
           }
 
           let correctClass = "";
-          if (compositionChar === currentWordChars[input.length + i]) {
+          if (compositionChar === targetChar) {
             correctClass = "correct";
           }
 
