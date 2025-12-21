@@ -730,14 +730,18 @@ TribeSocket.in.room.userResult((data) => {
     TribeResults.update("result", data.userId);
     TribeUserList.update("result");
     setTimeout(async () => {
-      if (data.everybodyCompleted) {
-        await TribeChartController.drawAllCharts();
-      } else {
-        await TribeChartController.drawChart(data.userId);
-      }
+      await TribeChartController.drawChart(data.userId);
       if (TribeState.getState() >= 21) {
         void TribeChartController.updateChartMaxValues();
       }
+    }, 250);
+  }
+});
+
+TribeSocket.in.room.raceFinished(() => {
+  if (!TestState.isActive) {
+    setTimeout(() => {
+      void TribeChartController.drawAllCharts();
     }, 250);
   }
 });

@@ -222,10 +222,13 @@ function userResult(
   callback: (data: {
     userId: string;
     result: TribeTypes.Result | undefined;
-    everybodyCompleted: boolean;
   }) => void,
 ): void {
   Socket.on("room_user_result", callback);
+}
+
+function raceFinished(callback: () => void): void {
+  Socket.on("room_race_finished", callback);
 }
 
 function finishTimerCountdown(
@@ -287,6 +290,7 @@ export default {
     countdown,
     usersUpdate,
     raceStarted,
+    raceFinished,
     progressUpdate,
     userResult,
     finishTimerCountdown,
