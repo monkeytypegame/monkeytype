@@ -697,16 +697,14 @@ TribeSocket.in.room.userResult((data) => {
   const resolve = data.result?.resolve;
   if (
     resolve === undefined ||
-    resolve?.afk ||
-    resolve?.repeated ||
-    resolve?.valid === false ||
-    resolve?.saved === false ||
-    resolve?.failed === true
+    ("valid" in resolve && !resolve.valid) ||
+    ("saved" in resolve && !resolve.saved) ||
+    ("failed" in resolve && resolve.failed)
   ) {
     //todo only one
 
     let color: ColorName | undefined = undefined;
-    if (resolve?.failed === true) {
+    if (resolve === undefined || ("failed" in resolve && resolve.failed)) {
       color = "colorfulError";
     }
 
@@ -716,7 +714,7 @@ TribeSocket.in.room.userResult((data) => {
     if (!TribeConfig.isConfigInfinite(room.config)) {
       TribeResults.fadeUser("result", data.userId);
     }
-    if (resolve?.afk) {
+    if (resolve === undefined || ("valid" in resolve && !resolve.valid)) {
       TribeCarets.destroy(data.userId);
     }
   } else {

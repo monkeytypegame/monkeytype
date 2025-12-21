@@ -263,19 +263,15 @@ function updateUser(page: string, userId: string): void {
 
       let otherText = "-";
       const resolve = userResult.resolve;
-      if (resolve.afk) {
-        otherText = "afk";
-      } else if (resolve.repeated) {
-        otherText = "repeated";
-      } else if (resolve.failed && !configInfinite) {
+      if ("valid" in resolve && !resolve.valid) {
+        otherText = `invalid(${resolve.invalidReason})`;
+      } else if ("failed" in resolve && resolve.failed) {
         otherText = `failed(${resolve.failedReason})`;
-      } else if (resolve.saved === false) {
+      } else if ("saved" in resolve && !resolve.saved) {
         otherText = `save failed(${resolve.saveFailedMessage})`;
-      } else if (resolve.valid === false) {
-        otherText = `invalid`;
       } else if (configInfinite) {
         otherText = `${Math.round(userResult.testDuration)}s`;
-      } else if (resolve.saved && resolve.isPb) {
+      } else if ("saved" in resolve && resolve.saved && resolve.isPb) {
         otherText = "new pb";
       }
       userEl.find(`.other .text`).text(otherText);
