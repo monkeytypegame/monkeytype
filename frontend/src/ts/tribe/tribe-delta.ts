@@ -18,7 +18,17 @@ export function update(): void {
 
   for (const [userId, user] of Object.entries(room.users)) {
     if (userId === tribeSocket.getId()) continue;
-    if (user.result?.resolve.afk || user.result?.resolve.failed) continue;
+
+    const res = user.result;
+
+    if (res === undefined) continue;
+
+    if (
+      ("valid" in res.resolve && !res.resolve.valid) ||
+      ("failed" in res.resolve && res.resolve.failed)
+    ) {
+      continue;
+    }
     if ((user?.progress?.wpm ?? 0) > maxWpm) maxWpm = user?.progress?.wpm ?? 0;
   }
 
