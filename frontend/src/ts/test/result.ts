@@ -46,6 +46,8 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
+import * as ConnectionState from "../states/connection";
+import { currentQuote } from "./test-words";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -1006,6 +1008,11 @@ export async function update(
   } else {
     $("#result #watchVideoAdButton").removeClass("hidden");
   }
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
+
   updateWpmAndAcc();
   updateConsistency();
   updateTime();
@@ -1064,17 +1071,45 @@ export async function update(
   } else {
     $("main #result .stats").removeClass("hidden");
     $("main #result .chart").removeClass("hidden");
-    // $("main #result #resultWordsHistory").removeClass("hidden");
     if (!isAuthenticated()) {
       $("main #result .loginTip").removeClass("hidden");
+      $("main #result #rateQuoteButton").addClass("hidden");
+      $("main #result #reportQuoteButton").addClass("hidden");
+    } else {
+      updateRateQuote(currentQuote);
+      $("main #result #reportQuoteButton").removeClass("hidden");
     }
+    $("main #result .stats .dailyLeaderboard").addClass("hidden");
     $("main #result #showWordHistoryButton").removeClass("hidden");
     $("main #result #watchReplayButton").removeClass("hidden");
     $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
-  TestConfig.hide();
+  if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
+    const roundedTime = Math.round(res.testDuration);
 
+    const messages = [
+      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
+      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
+      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
+      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
+      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
+      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
+      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
+      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
+      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
+      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
+    ];
+
+    showConfetti();
+    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
+      customTitle: "Nice",
+      duration: 15,
+      important: true,
+    });
+  }
+
+  TestConfig.hide();
   Focus.set(false);
 
   const canQuickRestart = canQuickRestartFn(
