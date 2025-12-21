@@ -417,7 +417,7 @@ describe("misc.ts", () => {
 
       //THEN
       await expect(final).resolves.toBe(42);
-      expect(onFinally).toHaveBeenCalledTimes(1);
+      expect(onFinally).toHaveBeenCalledOnce();
     });
 
     it("should call finally handler on rejection", async () => {
@@ -432,7 +432,7 @@ describe("misc.ts", () => {
 
       //THEN
       await expect(final).rejects.toThrow("test error");
-      expect(onFinally).toHaveBeenCalledTimes(1);
+      expect(onFinally).toHaveBeenCalledOnce();
     });
 
     it("should preserve rejection through finally", async () => {
