@@ -378,9 +378,9 @@ const lists = {
 
 const subGroupByConfigKey = Object.fromEntries(
   commands.list
-    .filter((it) => it.id.startsWith("change"))
-    .map((it) => [it.id.slice("change".length).toLowerCase(), it.subgroup]),
-);
+    .filter((it) => it.subgroup?.configKey !== undefined)
+    .map((it) => [it.subgroup?.configKey, it.subgroup]),
+) as Record<string, CommandsSubgroup>;
 
 export function doesListExist(listName: string): boolean {
   if (subGroupByConfigKey[listName] !== undefined) {
