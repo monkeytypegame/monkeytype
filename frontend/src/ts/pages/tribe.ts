@@ -17,8 +17,10 @@ export const page = new Page({
   afterHide: async () => {
     // TODO: Fill it up later
     TribeChat.reset("lobby");
-    tribeSocket.disconnect();
-    TribePagePreloader.reset();
+    if (!TribeState.isInARoom()) {
+      tribeSocket.disconnect();
+      TribePagePreloader.reset();
+    }
   },
   beforeShow: async () => {
     if (TribeState.isInARoom()) {
