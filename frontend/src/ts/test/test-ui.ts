@@ -217,7 +217,7 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  const isWordRightToLeft = Strings.isWordRightToLeft(
+  const [isWordRightToLeft, _isFullMatch] = Strings.isWordRightToLeft(
     TestWords.words.getCurrent(),
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,

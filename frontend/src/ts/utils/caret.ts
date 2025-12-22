@@ -405,7 +405,7 @@ export class Caret {
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
-    const isWordRTL = isWordRightToLeft(
+    const [isWordRTL, isFullMatch] = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
@@ -455,7 +455,7 @@ export class Caret {
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
-      if (options.wordText) options.word.addClass("wordRtl");
+      if (isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {
