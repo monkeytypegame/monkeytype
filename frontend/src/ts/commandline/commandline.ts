@@ -20,6 +20,7 @@ import {
 } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
+import { ConfigKey } from "@monkeytype/schemas/configs";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -70,7 +71,10 @@ function addCommandlineBackground(): void {
 }
 
 type ShowSettings = {
-  subgroupOverride?: CommandsSubgroup | string;
+  subgroupOverride?:
+    | CommandsSubgroup
+    | CommandlineLists.ListsObjectKeys
+    | ConfigKey;
   commandOverride?: string;
   singleListOverride?: boolean;
 };
@@ -102,7 +106,7 @@ export function show(
           if (exists) {
             Loader.show();
             subgroupOverride = await CommandlineLists.getList(
-              settings.subgroupOverride as CommandlineLists.ListsObjectKeys,
+              settings.subgroupOverride,
             );
             Loader.hide();
           } else {
