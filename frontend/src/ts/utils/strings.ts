@@ -250,15 +250,17 @@ export function isWordRightToLeft(
   // punctuation like "word؟" or "،word" doesn't flip the direction detection
   // and if only punctuation/symbols/whitespace, use main language direction
   const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
-  if (core.length === 0)
+  if (core.length === 0) {
     return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
+  }
 
   // cache by core to handle variants like "word" vs "word؟"
   const cached = wordDirectionCache.get(core);
-  if (cached !== undefined)
+  if (cached !== undefined) {
     return reverseDirection
       ? [!cached[0], false]
       : [cached[0], cached[1] === word.length];
+  }
 
   const result = hasRTLCharacters(core);
   wordDirectionCache.set(core, result);
