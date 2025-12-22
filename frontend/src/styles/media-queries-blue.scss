@@ -57,8 +57,12 @@
     #result .wrapper {
       grid-template-columns: 1fr;
       grid-template-areas:
-        "stats" "chart"
-        "morestats";
+        "tribeResults"
+        "stats"
+        "chart"
+        "morestats"
+        "bottom"
+        "tribeBottom";
       .stats {
         grid-template-columns: 1fr 1fr;
         grid-template-areas: "wpm acc";
