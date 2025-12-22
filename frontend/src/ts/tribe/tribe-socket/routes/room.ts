@@ -188,7 +188,9 @@ function initRace(callback: (data: { seed: number }) => void): void {
   Socket.on("room_init_race", callback);
 }
 
-function stateChanged(callback: (data: { state: number }) => void): void {
+function stateChanged(
+  callback: (data: { state: TribeTypes.RoomState }) => void,
+): void {
   Socket.on("room_state_changed", callback);
 }
 

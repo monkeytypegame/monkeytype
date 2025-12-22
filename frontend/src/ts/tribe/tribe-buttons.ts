@@ -1,5 +1,6 @@
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
+import { ROOM_STATE } from "./types";
 
 function showStartButton(page: string): void {
   let elString = "";
@@ -227,7 +228,13 @@ export function update(page?: string): void {
     hideAfkButton(page);
 
     disableStartButton(page);
-    if (TribeState.getState() === 5 || TribeState.getState() === 22) {
+
+    const tribeRoom = TribeState.getRoom();
+
+    if (
+      tribeRoom?.state === ROOM_STATE.LOBBY ||
+      tribeRoom?.state === ROOM_STATE.READY_TO_CONTINUE
+    ) {
       enableStartButton(page);
     }
 
@@ -285,7 +292,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
 });
 
 $(
-  `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`
+  `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`,
 ).on("click", (_e) => {
   tribeSocket.out.room.backToLobby();
 });
@@ -298,9 +305,14 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton,
   } else {
     $(e.currentTarget).removeClass("active");
   }
+
+  const tribeRoomState = TribeState.getRoom()?.state;
   if (
     TribeState.getAutoReady() &&
-    [5, 21, 22].includes(TribeState.getState()) &&
+    tribeRoomState !== undefined &&
+    ["LOBBY", "SHOWING_RESULTS", "READY_TO_CONTINUE"].includes(
+      tribeRoomState,
+    ) &&
     TribeState.getSelf()?.isReady !== true
   ) {
     tribeSocket.out.room.readyUpdate();

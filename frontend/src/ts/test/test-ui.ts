@@ -1854,13 +1854,13 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   getInputElement().style.left = "0";
 
   if (ActivePage.get() === "test") {
-    if (TribeState.getState() < 5) {
-      Focus.set(false);
-    } else {
+    if (TribeState.isInARoom()) {
       Focus.set(true);
+    } else {
+      Focus.set(false);
     }
   }
-  if (TribeState.getState() > 5) {
+  if (TribeState.isInARoom()) {
     TestConfig.hide();
   } else {
     TestConfig.show();

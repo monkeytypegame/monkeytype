@@ -30,7 +30,7 @@ export const page = new Page({
   },
   beforeShow: async (options): Promise<void> => {
     updateFooterAndVerticalAds(false);
-    if (TribeState.getState() > 5) {
+    if (TribeState.isInARoom()) {
       TestConfig.hide();
     } else {
       TestConfig.show();

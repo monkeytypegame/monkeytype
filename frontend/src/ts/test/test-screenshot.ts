@@ -44,7 +44,7 @@ function revert(): void {
     fb.functions.applyGlobalCSS();
   }
 
-  if (TribeState.getState() > 5) {
+  if (TribeState.isInARoom()) {
     $(".pageTest #result .inviteLink").removeClass("hidden");
   }
 }

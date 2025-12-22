@@ -3,6 +3,7 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeChat from "../tribe/tribe-chat";
 import { qsr } from "../utils/dom";
+import { CLIENT_STATE } from "../tribe/types";
 
 export const page = new Page({
   id: "tribe",
@@ -16,7 +17,7 @@ export const page = new Page({
     TribeChat.reset("lobby");
   },
   beforeShow: async () => {
-    if (TribeState.getState() === 5) {
+    if (TribeState.isInARoom()) {
       TribeChat.fill("lobby");
       setTimeout(() => {
         TribeChat.scrollChat();
@@ -24,7 +25,7 @@ export const page = new Page({
     }
   },
   afterShow: async () => {
-    if (TribeState.getState() < 1) {
+    if (TribeState.getState() === CLIENT_STATE.DISCONNECTED) {
       void Tribe.init();
     }
   },

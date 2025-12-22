@@ -127,7 +127,7 @@ export function setLoadingIndicator(bool: boolean): void {
 }
 
 function sync(): void {
-  if (TribeState.getState() <= 1) return;
+  if (!TribeState.isInARoom()) return;
   if (!TribeState.getSelf()?.isLeader) return;
   setLoadingIndicator(true);
   TribeButtons.disableStartButton();

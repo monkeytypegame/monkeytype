@@ -518,7 +518,7 @@ async function getQuoteWordList(
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength,
-    TribeState.getState() >= 5,
+    TribeState.isInARoom(),
   );
   Loader.hide();
 
@@ -553,9 +553,7 @@ async function getQuoteWordList(
     }
     rq = randomQuote;
   } else {
-    const randomQuote = QuotesController.getRandomQuote(
-      TribeState.getState() >= 5,
-    );
+    const randomQuote = QuotesController.getRandomQuote(TribeState.isInARoom());
     if (randomQuote === null) {
       setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");

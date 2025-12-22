@@ -23,7 +23,7 @@ const lobbyChatSuggestions1 = new InputSuggestions(
   3,
   0,
   "top",
-  ["Enter", "Tab"]
+  ["Enter", "Tab"],
 );
 
 const lobbyChatSuggestions2 = new InputSuggestions(
@@ -33,7 +33,7 @@ const lobbyChatSuggestions2 = new InputSuggestions(
   3,
   1,
   "top",
-  ["Enter", "Tab"]
+  ["Enter", "Tab"],
 );
 
 const resultChatSuggestions1 = new InputSuggestions(
@@ -43,7 +43,7 @@ const resultChatSuggestions1 = new InputSuggestions(
   3,
   0,
   "top",
-  ["Enter", "Tab"]
+  ["Enter", "Tab"],
 );
 
 const resultChatSuggestions2 = new InputSuggestions(
@@ -53,7 +53,7 @@ const resultChatSuggestions2 = new InputSuggestions(
   3,
   1,
   "top",
-  ["Enter", "Tab"]
+  ["Enter", "Tab"],
 );
 
 export function isAnyChatSuggestionVisible(): boolean {
@@ -118,7 +118,7 @@ export function fill(where: "both" | "lobby" | "result"): void {
       message.isSystem,
       message.socketId,
       message.message,
-      where
+      where,
     );
   }
 }
@@ -149,7 +149,7 @@ function sendChattingUpdate(bool: boolean): void {
 export function scrollChat(): void {
   const chatEl = $(".pageTribe .lobby .chat .messages")[0] as HTMLElement;
   const chatEl2 = $(
-    ".pageTest #result #tribeResultBottom .chat .messages"
+    ".pageTest #result #tribeResultBottom .chat .messages",
   )[0] as HTMLElement;
 
   if (shouldScrollChat) {
@@ -182,11 +182,11 @@ export function updateIsTyping(): void {
         string += `<span class="who">${Misc.escapeHTML(names[i] ?? "")}</span>`;
       } else if (i === names.length - 1) {
         string += ` and <span class="who">${Misc.escapeHTML(
-          names[i] ?? ""
+          names[i] ?? "",
         )}</span>`;
       } else {
         string += `, <span class="who">${Misc.escapeHTML(
-          names[i] ?? ""
+          names[i] ?? "",
         )}</span>`;
       }
     }
@@ -213,13 +213,12 @@ async function insertImageEmoji(text: string): Promise<string> {
       const result = emoji.find(
         (e) =>
           Misc.escapeHTML(e.from).toLowerCase() ===
-          textSplit[i]?.replace(/&#58;/g, "").toLowerCase()
+          textSplit[i]?.replace(/&#58;/g, "").toLowerCase(),
       );
       if (result !== undefined) {
         if (result.type === "image") {
-          textSplit[
-            i
-          ] = `<div class="imageemoji ${big}" style="background-image: url('${result.to}')"></div>`;
+          textSplit[i] =
+            `<div class="imageemoji ${big}" style="background-image: url('${result.to}')"></div>`;
         } else if (result.type === "emoji") {
           textSplit[i] = `<div class="emoji ${big}">${result.to}</div>`;
         }
@@ -232,7 +231,7 @@ async function insertImageEmoji(text: string): Promise<string> {
 export function appendMessage(
   isSystem: boolean,
   socketId: string | undefined,
-  message: string
+  message: string,
 ): void {
   chatHistory.push({
     isSystem,
@@ -251,7 +250,7 @@ export async function displayMessage(
   isSystem: boolean,
   socketId: string | undefined,
   message: string,
-  where: "both" | "lobby" | "result" = "both" //todo remove both
+  where: "both" | "lobby" | "result" = "both", //todo remove both
 ): Promise<void> {
   let cls = "message";
   let author = "";
@@ -324,15 +323,15 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
     if (e.key === "Enter") {
       if (isAnyChatSuggestionVisible()) return;
       const msg = $(
-        ".pageTest #result #tribeResultBottom .chat .input input"
+        ".pageTest #result #tribeResultBottom .chat .input input",
       ).val();
       sendMessage(msg as string);
     }
-  }
+  },
 );
 
 $(document).on("keydown", (e) => {
-  if (TribeState.getState() === 5) {
+  if (TribeState.isInARoom()) {
     if (
       e.key === "/" &&
       !$(".pageTribe .lobby .chat .input input").is(":focus")
@@ -340,13 +339,18 @@ $(document).on("keydown", (e) => {
       $(".pageTribe .lobby .chat .input input").trigger("focus");
       e.preventDefault();
     }
-  } else if (TestState.resultVisible && TribeState.getState() >= 20) {
+  } else if (
+    TestState.resultVisible &&
+    (TribeState.getRoom()?.state === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED ||
+      TribeState.getRoom()?.state === TribeTypes.ROOM_STATE.SHOWING_RESULTS ||
+      TribeState.getRoom()?.state === TribeTypes.ROOM_STATE.READY_TO_CONTINUE)
+  ) {
     if (
       e.key === "/" &&
       !$(".pageTest #result #tribeResultBottom .chat .input input").is(":focus")
     ) {
       $(".pageTest #result #tribeResultBottom .chat .input input").trigger(
-        "focus"
+        "focus",
       );
       e.preventDefault();
     }
@@ -355,7 +359,7 @@ $(document).on("keydown", (e) => {
 
 $(".pageTribe .tribePage.lobby .chat .input input").on("input", (_e) => {
   const val = $(
-    ".pageTribe .tribePage.lobby .chat .input input"
+    ".pageTribe .tribePage.lobby .chat .input input",
   ).val() as string;
   $(".pageTest #result #tribeResultBottom .chat .input input").val(val);
   const vallen = val.length;
@@ -370,7 +374,7 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
   "input",
   (_e) => {
     const val = $(
-      ".pageTest #result #tribeResultBottom .chat .input input"
+      ".pageTest #result #tribeResultBottom .chat .input input",
     ).val() as string;
     $(".pageTribe .tribePage.lobby .chat .input input").val(val);
     const vallen = val.length;
@@ -379,7 +383,7 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
     } else if (vallen === 0) {
       sendChattingUpdate(false);
     }
-  }
+  },
 );
 
 $(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {

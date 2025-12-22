@@ -27,7 +27,7 @@ function updateList(list: TribeType.Room[]): void {
       </div>
       <div class="state">
         <div class="title">state</div>
-        <div class="value">${Tribe.getStateString(room.state)}</div>
+        <div class="value">${room.state}</div>
       </div>
       <div class="config">
         <div class="title">config</div>

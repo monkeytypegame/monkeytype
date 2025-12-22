@@ -145,11 +145,7 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
-  if (
-    TribeState.getRoom() !== undefined &&
-    TribeState.getState() >= 10 &&
-    TribeState.getState() < 12
-  ) {
+  if (!TribeState.isRaceActive()) {
     event.preventDefault();
     return;
   }

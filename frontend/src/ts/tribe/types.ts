@@ -86,9 +86,30 @@ export type RoomJoin = {
   room: Room;
 };
 
+export const ROOM_STATE = {
+  LOBBY: "LOBBY",
+  RACE_INIT: "RACE_INIT",
+  RACE_COUNTDOWN: "RACE_COUNTDOWN",
+  RACE_ONGOING: "RACE_ONGOING",
+  RACE_ONE_FINISHED: "RACE_ONE_FINISHED",
+  RACE_AWAITING_RESULTS: "RACE_AWAITING_RESULTS",
+  SHOWING_RESULTS: "SHOWING_RESULTS",
+  READY_TO_CONTINUE: "READY_TO_CONTINUE",
+} as const;
+
+export type RoomState = (typeof ROOM_STATE)[keyof typeof ROOM_STATE];
+
+export const CLIENT_STATE = {
+  DISCONNECTED: "DISCONNECTED",
+  CONNECTED: "CONNECTED",
+  IN_ROOM: "IN_ROOM",
+} as const;
+
+export type ClientState = (typeof CLIENT_STATE)[keyof typeof CLIENT_STATE];
+
 export type Room = {
   id: string;
-  state: number;
+  state: RoomState;
   users: {
     [socketId: string]: User;
   };

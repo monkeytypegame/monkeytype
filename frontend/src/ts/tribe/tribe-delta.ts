@@ -183,7 +183,7 @@ export function reset(): void {
 
 export function show(): void {
   if (!TestState.isActive) return;
-  if (TribeState.getState() < 5) return;
+  if (!TribeState.isInARoom()) return;
   if (Config.tribeDelta !== "text") return;
 
   if (!el.hasClass("hidden")) return;
@@ -208,7 +208,7 @@ export function hide(): void {
 }
 
 export function showBar(): void {
-  if (TribeState.getState() < 5) return;
+  if (!TribeState.isInARoom()) return;
   if (Config.tribeDelta !== "bar") return;
 
   if (!elBar.hasClass("hidden")) return;

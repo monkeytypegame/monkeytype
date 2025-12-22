@@ -10,6 +10,7 @@ import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
 import * as NavigationEvent from "../observables/navigation-event";
 import { isTribeEnabled } from "../utils/misc";
+import { ROOM_STATE } from "../tribe/types";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -60,8 +61,11 @@ const routes: Route[] = [
         return;
       }
 
-      if (isTribeEnabled() && TribeState.getState() >= 5) {
-        if (TribeState.getState() === 22 && TribeState.getSelf()?.isLeader) {
+      if (isTribeEnabled()) {
+        if (
+          TribeState.getSelf()?.isLeader &&
+          TribeState.getRoomState() === ROOM_STATE.READY_TO_CONTINUE
+        ) {
           tribeSocket.out.room.backToLobby();
         } else {
           await navigate("/tribe", options);
@@ -191,7 +195,10 @@ const routes: Route[] = [
         return;
       }
 
-      if (TribeState.getState() === 22 && TribeState.getSelf()?.isLeader) {
+      if (
+        TribeState.getSelf()?.isLeader &&
+        TribeState.getRoomState() === ROOM_STATE.READY_TO_CONTINUE
+      ) {
         tribeSocket.out.room.backToLobby();
       } else {
         await PageController.change("tribe", {
@@ -227,8 +234,9 @@ export async function navigate(
 ): Promise<void> {
   if (
     isTribeEnabled() &&
-    TribeState.getState() > 5 &&
-    TribeState.getState() < 22 &&
+    TribeState.isInARoom() &&
+    TribeState.getRoomState() !== ROOM_STATE.LOBBY &&
+    TribeState.getRoomState() !== ROOM_STATE.READY_TO_CONTINUE &&
     !options?.tribeOverride
   ) {
     return;

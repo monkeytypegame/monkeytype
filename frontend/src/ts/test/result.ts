@@ -1134,7 +1134,7 @@ export async function update(
   // todo: move this
   $("#result .bottom .buttons div").addClass("hidden");
   $("#result #tribeResultBottom").addClass("hidden");
-  if (TribeState.getState() >= 12) {
+  if (TribeState.isInARoom()) {
     $("#result #tribeResultBottom").removeClass("hidden");
     if (TribeState.getSelf()?.isLeader) {
       $("#result #nextTestButton").removeClass("hidden");

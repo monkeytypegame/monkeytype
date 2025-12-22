@@ -1,7 +1,7 @@
 import TribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
 
-let state = -1;
+let state: TribeTypes.ClientState = "DISCONNECTED";
 
 let room: TribeTypes.Room | undefined = undefined;
 
@@ -15,30 +15,11 @@ export function getAutoReady(): boolean {
   return autoReady;
 }
 
-export function setState(newState: number): void {
+export function setState(newState: TribeTypes.ClientState): void {
   state = newState;
 }
 
-/**
- * -1  "error";
- *
- * 1  "connected";
- *
- * 5  "lobby";
- *
- * 10  "preparing race";
- *
- * 11  "race countdown";
- *
- * 12  "race active";
- *
- * 20  "at least one finished";
- *
- * 21  "everyone finished, waiting for everyone ready or view result timer to be over";
- *
- * 22  "everyone ready / timer over";
- */
-export function getState(): number {
+export function getState(): TribeTypes.ClientState {
   return state;
 }
 
@@ -50,6 +31,10 @@ export function getRoom(): TribeTypes.Room | undefined {
   return room;
 }
 
+export function getRoomState(): TribeTypes.RoomState | undefined {
+  return room?.state;
+}
+
 export function getSelf(): TribeTypes.User | undefined {
   return room?.users?.[TribeSocket.getId()];
 }
@@ -59,18 +44,31 @@ export function isLeader(): boolean {
 }
 
 export function isInARoom(): boolean {
-  return getState() >= 5;
+  return getRoom() !== undefined;
 }
 
 export function isRaceActive(): boolean {
-  const s = getState();
-  return s >= 10 && s <= 20;
+  const s = getRoom()?.state;
+  if (s === undefined) return false;
+  return [
+    // "RACE_INIT",
+    // "RACE_COUNTDOWN",
+    "RACE_ONGOING",
+    "RACE_ONE_FINISHED",
+  ].includes(s);
+}
+
+export function isDisconnected(): boolean {
+  return getState() === "DISCONNECTED";
 }
 
 export function canChangeConfig(override: boolean): boolean {
-  if (getState() <= 1) return true;
+  const room = getRoom();
+
+  if (room === undefined) return true;
+
   if (getSelf()?.isLeader) {
-    if (getState() !== 5) return false;
+    if (room.state !== TribeTypes.ROOM_STATE.LOBBY) return false;
     //is leader, allow
     return true;
   } else {

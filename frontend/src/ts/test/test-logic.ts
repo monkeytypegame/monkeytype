@@ -171,7 +171,7 @@ export function restart(options = {} as RestartOptions): void {
   if (
     TestState.testRestarting ||
     TestUI.resultCalculating ||
-    (TribeState.getState() > 5 && !options.tribeOverride)
+    (TribeState.isInARoom() && !options.tribeOverride)
   ) {
     options.event?.preventDefault();
     return;
@@ -362,7 +362,7 @@ let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
   console.debug("Initializing test");
-  if (TribeState.getState() > 5 && TribeState.getRoom()) {
+  if (TribeState.isInARoom() && TribeState.getRoom()) {
     Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
   }
 
@@ -1337,7 +1337,7 @@ async function saveResult(
     //only allow retry if status is not in this list
     if (
       ![460, 461, 463, 464, 465, 466].includes(response.status) &&
-      TribeState.getState() < 5
+      !TribeState.isInARoom()
     ) {
       retrySaving.canRetry = true;
       $("#retrySavingResultButton").removeClass("hidden");
@@ -1512,7 +1512,9 @@ $(".pageTest").on("click", "#testInitFailed button.restart", () => {
 });
 
 $(".pageTest").on("click", "#restartTestButton", () => {
-  if (TribeState.getState() >= 5) return;
+  if (TribeState.isInARoom()) {
+    return;
+  }
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
