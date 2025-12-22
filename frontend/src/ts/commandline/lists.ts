@@ -367,11 +367,6 @@ export const commands: CommandsSubgroup = {
   ],
 };
 
-function findCommandById(key: string): Command | undefined {
-  const id = "change" + key.charAt(0).toUpperCase() + key.slice(1);
-  return commands.list.find((it) => it.id === id);
-}
-
 const lists = {
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
@@ -381,8 +376,14 @@ const lists = {
   resultSaving: ResultSavingCommands[0]?.subgroup,
 };
 
+const subGroupByConfigKey = Object.fromEntries(
+  commands.list
+    .filter((it) => it.id.startsWith("change"))
+    .map((it) => [it.id.slice("change".length).toLowerCase(), it.subgroup]),
+);
+
 export function doesListExist(listName: string): boolean {
-  if (findCommandById(listName)) {
+  if (subGroupByConfigKey[listName] !== undefined) {
     return true;
   }
 
@@ -394,9 +395,9 @@ export async function getList(
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
-  const commandList = findCommandById(listName);
-  if (commandList !== undefined && commandList.subgroup !== undefined) {
-    return commandList.subgroup;
+  const subGroup = subGroupByConfigKey[listName];
+  if (subGroup !== undefined) {
+    return subGroup;
   }
 
   const list = lists[listName as ListsObjectKeys];
