@@ -1,6 +1,6 @@
 export function updateIcon(iconName: string, spinning = false): void {
   $(".pageTribe .tribePage.preloader .icon").html(
-    `<i class="fas fa-fw fa-${iconName} ${spinning ? "fa-spin" : ""}"></i>`
+    `<i class="fas fa-fw fa-${iconName} ${spinning ? "fa-spin" : ""}"></i>`,
   );
 }
 
@@ -26,4 +26,11 @@ export function showReconnectButton(): void {
 
 export function hideReconnectButton(): void {
   $(".pageTribe .tribePage.preloader .reconnectButton").addClass(`hidden`);
+}
+
+export function reset(): void {
+  updateIcon("circle-notch", true);
+  updateText("Connecting to Tribe");
+  updateSubtext("Please wait...");
+  hideReconnectButton();
 }

@@ -4,6 +4,8 @@ import * as TribeState from "../tribe/tribe-state";
 import * as TribeChat from "../tribe/tribe-chat";
 import { qsr } from "../utils/dom";
 import { CLIENT_STATE } from "../tribe/types";
+import tribeSocket from "../tribe/tribe-socket";
+import * as TribePagePreloader from "../tribe/pages/tribe-page-preloader";
 
 export const page = new Page({
   id: "tribe",
@@ -15,6 +17,8 @@ export const page = new Page({
   afterHide: async () => {
     // TODO: Fill it up later
     TribeChat.reset("lobby");
+    tribeSocket.disconnect();
+    TribePagePreloader.reset();
   },
   beforeShow: async () => {
     if (TribeState.isInARoom()) {
