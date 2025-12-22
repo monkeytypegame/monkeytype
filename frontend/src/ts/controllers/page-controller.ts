@@ -282,9 +282,9 @@ export async function change(
     typeof nextPageLoadingMode === "object" &&
     nextPageLoadingMode.mode === "async"
   ) {
-    nextPageLoadingMode.beforeLoading();
+    nextPageLoadingMode.beforeLoading?.();
     void nextPage?.loadingOptions?.loadingPromise().then(() => {
-      nextPageLoadingMode.afterLoading();
+      nextPageLoadingMode.afterLoading?.();
     });
   }
 

@@ -41,7 +41,7 @@ export type LoadingOptions = {
   loadingMode: () =>
     | "none"
     | "sync"
-    | { mode: "async"; beforeLoading: () => void; afterLoading: () => void };
+    | { mode: "async"; beforeLoading?: () => void; afterLoading?: () => void };
   /**
    * When this promise resolves, the loading screen will be hidden.
    */
