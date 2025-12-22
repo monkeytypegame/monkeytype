@@ -376,14 +376,14 @@ const lists = {
   resultSaving: ResultSavingCommands[0]?.subgroup,
 };
 
-const subGroupByConfigKey = Object.fromEntries(
+const subgroupByConfigKey = Object.fromEntries(
   commands.list
     .filter((it) => it.subgroup?.configKey !== undefined)
     .map((it) => [it.subgroup?.configKey, it.subgroup]),
 ) as Record<string, CommandsSubgroup>;
 
 export function doesListExist(listName: string): boolean {
-  if (subGroupByConfigKey[listName] !== undefined) {
+  if (subgroupByConfigKey[listName] !== undefined) {
     return true;
   }
 
@@ -395,7 +395,7 @@ export async function getList(
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
-  const subGroup = subGroupByConfigKey[listName];
+  const subGroup = subgroupByConfigKey[listName];
   if (subGroup !== undefined) {
     return subGroup;
   }
