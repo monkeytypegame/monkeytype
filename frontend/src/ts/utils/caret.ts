@@ -423,7 +423,7 @@ export class Caret {
       Config.mode === "zen"
         ? isWordRightToLeft(
             options.letter.native.textContent ?? "",
-            options.isDirectionReversed ? !baseWordIsRTL : baseWordIsRTL,
+            options.isLanguageRightToLeft,
             options.isDirectionReversed,
           )
         : baseWordIsRTL;
