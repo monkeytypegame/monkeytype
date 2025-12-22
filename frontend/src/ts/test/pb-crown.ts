@@ -3,7 +3,11 @@ import { applyReducedMotion } from "../utils/misc";
 
 export function hide(): void {
   visible = false;
-  $("#result .stats .wpm .crown").css("opacity", 0).addClass("hidden");
+  const crown = document.querySelector("#result .stats .wpm .crown") as HTMLElement | null;
+  if (crown) {
+    crown.style.opacity = "0";
+    crown.classList.add("hidden");
+  }
 }
 
 export type CrownType =
@@ -38,10 +42,9 @@ export function show(): void {
 
 export function update(type: CrownType): void {
   currentType = type;
-  const el = $("#result .stats .wpm .crown");
-  el.removeClass("ineligible");
-  el.removeClass("pending");
-  el.removeClass("error");
-  el.removeClass("warning");
-  el.addClass(type);
+  const crown = document.querySelector("#result .stats .wpm .crown");
+  if (crown) {
+    crown.classList.remove("ineligible", "pending", "error", "warning");
+    crown.classList.add(type);
+  }
 }

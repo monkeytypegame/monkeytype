@@ -8,12 +8,16 @@ const ls = new LocalStorageWithSchema({
   fallback: false,
 });
 
+const noticeSelector = ".pageSettings .accountSettingsNotice";
+
 if (ls.get()) {
-  $(".pageSettings .accountSettingsNotice").remove();
+  document.querySelector(noticeSelector)?.remove();
 }
 
-$(".pageSettings .accountSettingsNotice .dismissAndGo").on("click", () => {
-  ls.set(true);
-  void navigate("/account-settings");
-  $(".pageSettings .accountSettingsNotice").remove();
-});
+document
+  .querySelector(`${noticeSelector} .dismissAndGo`)
+  ?.addEventListener("click", () => {
+    ls.set(true);
+    void navigate("/account-settings");
+    document.querySelector(noticeSelector)?.remove();
+  });
