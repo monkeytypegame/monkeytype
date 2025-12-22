@@ -61,7 +61,7 @@ const routes: Route[] = [
         return;
       }
 
-      if (isTribeEnabled()) {
+      if (isTribeEnabled() && TribeState.isInARoom()) {
         if (
           TribeState.getSelf()?.isLeader &&
           TribeState.getRoomState() === ROOM_STATE.READY_TO_CONTINUE
