@@ -1910,7 +1910,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   } else {
     CompositionDisplay.hide();
   }
-  void SoundController.clearAllSounds();
+  // void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
 }
