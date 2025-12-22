@@ -68,6 +68,7 @@ function updateState(newState: number): void {
   if (state === 5) {
     TribePageLobby.enableNameVisibilityButtons();
     TribeBars.hide("tribe");
+    NavigationEvent.dispatch("/tribe");
   } else if (state === 10) {
     TribeButtons.disableStartButton("lobby");
     TribeButtons.disableReadyButton("lobby");
@@ -786,9 +787,9 @@ TribeSocket.in.room.readyTimerOver(() => {
   }
 });
 
-TribeSocket.in.room.backToLobby(() => {
-  NavigationEvent.dispatch("/tribe");
-});
+// TribeSocket.in.room.backToLobby(() => {
+//   NavigationEvent.dispatch("/tribe");
+// });
 
 TribeSocket.in.room.finalPositions((data) => {
   const room = TribeState.getRoom();
