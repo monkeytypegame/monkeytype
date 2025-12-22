@@ -196,7 +196,9 @@ export function setConfig<T extends keyof Config>(
 
   config[key] = value;
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
-  if (!options?.tribeOverride) TribeConfigSyncEvent.dispatch();
+  if (!options?.tribeOverride && metadata.tribeBlocked) {
+    TribeConfigSyncEvent.dispatch();
+  }
 
   // @ts-expect-error i can't figure this out
   ConfigEvent.dispatch({
