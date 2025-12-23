@@ -170,6 +170,7 @@ async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
   void TribePages.change("lobby");
   TribeSound.play("join");
   TribeChat.updateSuggestionData();
+  TribeState.setAutoReady(false);
   // history.replaceState(null, "", `/tribe/${e.room.id}`);
 }
 
