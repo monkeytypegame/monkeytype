@@ -26,7 +26,7 @@ function hide(): void {
         100,
         () => {
           $("#tribeRoomCodePopupWrapper").addClass("hidden");
-        }
+        },
       );
   }
 }
@@ -65,7 +65,7 @@ $("#tribeRoomCodePopup .textButton").on("click", async () => {
   } catch (e) {
     Notifications.add(
       "Something went wrong when trying to paste: " + (e as Error).message,
-      -1
+      -1,
     );
   }
 });

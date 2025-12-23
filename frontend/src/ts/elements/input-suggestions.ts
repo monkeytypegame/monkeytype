@@ -20,7 +20,7 @@ export class InputSuggestions {
     maxSuggestions: number,
     minInputForSuggestions: number,
     position: "top" | "bottom",
-    applyWith: string[]
+    applyWith: string[],
   ) {
     this.inputElement = inputElement;
     this.data = {};
@@ -111,14 +111,14 @@ export class InputSuggestions {
     } else {
       //first filter by keys that begin with search, then add keys that contain search
       found = Object.keys(this.data).filter((key) =>
-        key.toLowerCase().startsWith(searchString.toLowerCase())
+        key.toLowerCase().startsWith(searchString.toLowerCase()),
       );
       found = found.concat(
         Object.keys(this.data).filter(
           (key) =>
             key.toLowerCase().includes(searchString.toLowerCase()) &&
-            !found.includes(key)
-        )
+            !found.includes(key),
+        ),
       );
     }
 
@@ -152,10 +152,10 @@ export class InputSuggestions {
           suggestion.imageIcon !== undefined
             ? `<div class="icon"><img src="${suggestion.imageIcon}" /></div>`
             : suggestion.faIcon !== undefined
-            ? `<div class="icon"><i class="fas fa-fw ${suggestion.faIcon}"></i></div>`
-            : suggestion.textIcon !== undefined
-            ? `<div class="icon"><span>${suggestion.textIcon}</span></div>`
-            : ""
+              ? `<div class="icon"><i class="fas fa-fw ${suggestion.faIcon}"></i></div>`
+              : suggestion.textIcon !== undefined
+                ? `<div class="icon"><span>${suggestion.textIcon}</span></div>`
+                : ""
         }
         <span>${suggestion.display}</span>
       </div>

@@ -304,7 +304,7 @@ export async function drawChart(userId: string): Promise<void> {
   try {
     if (charts[userId]) return;
     const element = $(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`
+      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`,
     )[0] as HTMLCanvasElement | undefined;
 
     const room = TribeState.getRoom();
@@ -318,10 +318,10 @@ export async function drawChart(userId: string): Promise<void> {
 
     charts[userId] = chart;
     $(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart`
+      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart`,
     ).removeClass("hidden");
     $(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .progress`
+      `.pageTest #result #tribeResults table tbody tr#${userId} .progress`,
     ).addClass("hidden");
     return;
   } catch (e) {

@@ -6,13 +6,13 @@ export function show(userId: string): void {
   if (!userId) {
     Notifications.add(
       "Cannot show user settings without passing in user id",
-      -1
+      -1,
     );
     return;
   }
   if ($("#tribeUserSettingsPopupWrapper").hasClass("hidden")) {
     $("#tribeUserSettingsPopup .title").text(
-      `User settings (${TribeState.getRoom()?.users[userId]?.name})`
+      `User settings (${TribeState.getRoom()?.users[userId]?.name})`,
     );
     $("#tribeUserSettingsPopup").attr("userid", userId);
     $("#tribeUserSettingsPopupWrapper")
@@ -37,7 +37,7 @@ export function hide(): void {
         100,
         (): void => {
           $("#tribeUserSettingsPopupWrapper").addClass("hidden");
-        }
+        },
       );
   }
 }

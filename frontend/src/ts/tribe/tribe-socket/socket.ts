@@ -13,5 +13,5 @@ export default io(
     query: {
       name: "Guest",
     },
-  }
+  },
 );

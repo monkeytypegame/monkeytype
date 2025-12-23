@@ -24,7 +24,7 @@ export function hide(): void {
         100,
         () => {
           $("#tribeStartRacePopupWrapper").addClass("hidden");
-        }
+        },
       );
   }
 }
