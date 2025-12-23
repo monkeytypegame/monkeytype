@@ -1,10 +1,10 @@
 {
   "name": "@monkeytype/release",
   "private": true,
-  "type": "module",
   "bin": {
     "monkeytype-release": "./src/index.js"
   },
+  "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --exec \"node ./src/index.js --dry\"",
     "dev-hotfix": "nodemon --watch src --exec \"node ./src/index.js --dry --hotfix\"",
