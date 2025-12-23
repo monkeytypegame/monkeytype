@@ -171,7 +171,7 @@ async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
   TribeSound.play("join");
   TribeChat.updateSuggestionData();
   TribeState.setAutoReady(false);
-  // history.replaceState(null, "", `/tribe/${e.room.id}`);
+  history.replaceState(null, "", `/tribe/${room.id}`);
 }
 
 export function joinRoom(roomId: string, fromBrowser = false): void {
@@ -395,6 +395,7 @@ TribeSocket.in.room.left(() => {
   void TribePages.change("menu").then(() => {
     void reset();
   });
+  history.replaceState(null, "", `/tribe`);
   TribeChat.updateIsTyping();
   name = defaultName;
 });
