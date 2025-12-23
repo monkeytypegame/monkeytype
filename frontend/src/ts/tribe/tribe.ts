@@ -106,9 +106,13 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     } else {
       TribeResults.updateTimerText("Time left for everyone to finish");
     }
+  } else if (state === TribeTypes.ROOM_STATE.RACE_AWAITING_RESULTS) {
+    //
   } else if (state === TribeTypes.ROOM_STATE.SHOWING_RESULTS) {
     TribeResults.hideTimer();
+    TribeCountdown.hide();
     TribeResults.updateTimerText("Time left for everyone to get ready");
+    void TribeChartController.drawAllCharts();
     if (TribeState.getAutoReady()) {
       TribeSocket.out.room.readyUpdate();
     }
@@ -717,14 +721,6 @@ TribeSocket.in.room.userResult((data) => {
   }
 });
 
-TribeSocket.in.room.raceFinished(() => {
-  if (!TestState.isActive) {
-    setTimeout(() => {
-      void TribeChartController.drawAllCharts();
-    }, 250);
-  }
-});
-
 TribeSocket.in.room.finishTimerCountdown((data) => {
   if (TestState.isActive) {
     TribeCountdown.update(data.time.toString());
@@ -733,19 +729,9 @@ TribeSocket.in.room.finishTimerCountdown((data) => {
   }
 });
 
-TribeSocket.in.room.finishTimerOver(() => {
-  TribeCountdown.hide();
-  TribeResults.hideTimer();
+TribeSocket.in.room.raceForceFinish((data) => {
   if (TestState.isActive) {
-    TimerEvent.dispatch("fail", "out of time");
-  }
-});
-
-TribeSocket.in.room.destroyTest((data) => {
-  if (TestState.isActive) {
-    if (data.reason === "afk") {
-      TimerEvent.dispatch("fail", "afk");
-    }
+    TimerEvent.dispatch("fail", data.reason);
   }
 });
 

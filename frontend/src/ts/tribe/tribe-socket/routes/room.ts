@@ -116,8 +116,8 @@ function backToLobbyOut(): void {
   Socket.emit("room_back_to_lobby");
 }
 
-function destroyTest(callback: (data: { reason: string }) => void): void {
-  Socket.on("room_destroy_test", callback);
+function raceForceFinish(callback: (data: { reason: string }) => void): void {
+  Socket.on("room_race_force_finish", callback);
 }
 
 function joined(callback: (data: { room: TribeTypes.Room }) => void): void {
@@ -229,18 +229,10 @@ function userResult(
   Socket.on("room_user_result", callback);
 }
 
-function raceFinished(callback: () => void): void {
-  Socket.on("room_race_finished", callback);
-}
-
 function finishTimerCountdown(
   callback: (data: { time: number }) => void,
 ): void {
   Socket.on("room_finishTimer_countdown", callback);
-}
-
-function finishTimerOver(callback: () => void): void {
-  Socket.on("room_finishTimer_over", callback);
 }
 
 function readyTimerCountdown(callback: (data: { time: number }) => void): void {
@@ -292,16 +284,14 @@ export default {
     countdown,
     usersUpdate,
     raceStarted,
-    raceFinished,
     progressUpdate,
     userResult,
     finishTimerCountdown,
-    finishTimerOver,
     readyTimerCountdown,
     readyTimerOver,
     backToLobby,
     finalPositions,
-    destroyTest,
+    raceForceFinish,
   },
   out: {
     getPublicRooms,
