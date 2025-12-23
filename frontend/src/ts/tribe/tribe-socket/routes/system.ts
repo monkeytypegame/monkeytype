@@ -135,7 +135,11 @@ function reconnectAttempt(callback: (attempt: number) => void): void {
 }
 
 function notification(
-  callback: (data: { message: string; level?: number }) => void,
+  callback: (data: {
+    message: string;
+    level?: number;
+    playMentionSound?: boolean;
+  }) => void,
 ): void {
   Socket.on("system_notification", callback);
 }

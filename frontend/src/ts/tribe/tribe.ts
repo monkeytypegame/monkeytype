@@ -248,32 +248,6 @@ async function connect(): Promise<void> {
   }
 }
 
-function checkIfEveryoneIsReady(): void {
-  const room = TribeState.getRoom();
-  if (!room) return;
-  if (TribeState.getSelf()?.isLeader) {
-    if (Object.keys(room.users).length <= 1) return;
-    let everyoneReady = true;
-    Object.keys(room.users).forEach((userId) => {
-      if (
-        room !== undefined &&
-        (room.users[userId]?.isLeader || room.users[userId]?.isAfk)
-      ) {
-        return;
-      }
-      if (room !== undefined && !room.users[userId]?.isReady) {
-        everyoneReady = false;
-      }
-    });
-    if (everyoneReady) {
-      Notifications.add("Everyone is ready", 1, {
-        customTitle: "Tribe",
-      });
-      TribeSound.play("chat_mention");
-    }
-  }
-}
-
 TribeSocket.in.system.connect(() => {
   void connect();
 });
@@ -365,6 +339,9 @@ TribeSocket.in.system.reconnectAttempt((attempt) => {
 });
 
 TribeSocket.in.system.notification((data) => {
+  if (data.playMentionSound) {
+    TribeSound.play("chat_mention");
+  }
   Notifications.add(data.message, data.level ?? 0, {
     customTitle: "Tribe",
   });
@@ -399,7 +376,6 @@ TribeSocket.in.room.playerLeft((data) => {
     TribeCarets.destroy(data.userId);
     TribeResults.fadeUser("result", data.userId);
     TribeResults.update("result", data.userId);
-    checkIfEveryoneIsReady();
     TribeChat.updateSuggestionData();
     TribeChat.updateIsTyping();
   }
@@ -441,7 +417,6 @@ TribeSocket.in.room.userIsReady((data) => {
   (room.users[data.userId] as TribeTypes.User).isReady = true;
   TribeUserList.update();
   TribeButtons.update();
-  checkIfEveryoneIsReady();
 });
 
 TribeSocket.in.room.userAfkUpdate((data) => {
