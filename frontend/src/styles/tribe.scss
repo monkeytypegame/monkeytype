@@ -449,7 +449,11 @@
       color: var(--text-color);
       .nameAndIcons {
         display: flex;
-        gap: 0.25rem;
+        gap: 0.25em;
+        align-items: center;
+        .avatar {
+          --size: 0.9em;
+        }
       }
       .icons {
         display: grid;
@@ -741,17 +745,26 @@
     padding-right: 0;
   }
   .player {
+    color: var(--sub-color);
     &.faded {
       opacity: 0.25;
     }
+    .avatarAndName {
+      .avatar {
+        --size: 0.9em;
+      }
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
     .name {
-      color: var(--sub-color);
       text-overflow: ellipsis;
       max-width: 125px;
       overflow: hidden;
     }
     .progress {
       width: 100%;
+      vertical-align: middle;
       .barBg {
         width: 100%;
         height: 0.25rem;
@@ -766,22 +779,27 @@
         }
       }
     }
-    .stats {
+    .acc {
       text-align: right;
-      grid-template-columns: auto auto;
-      color: var(--sub-color);
-      display: flex;
-      justify-content: flex-end;
-      min-width: 90px;
-      .acc {
-        margin-left: 1rem;
-      }
+      width: 4ch;
     }
+    .wpm {
+      text-align: right;
+      width: 3ch;
+    }
+    // .stats {
+    //   text-align: right;
+    //   grid-template-columns: auto auto;
+    //   color: var(--sub-color);
+    //   display: flex;
+    //   justify-content: flex-end;
+    //   min-width: 90px;
+    //   .acc {
+    //     margin-left: 1rem;
+    //   }
+    // }
     &.me {
-      .name,
-      .stats {
-        color: var(--text-color);
-      }
+      color: var(--text-color);
       .progress .bar {
         background: var(--main-color);
       }

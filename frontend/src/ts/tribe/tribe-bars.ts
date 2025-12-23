@@ -4,6 +4,7 @@ import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
 import * as ThemeColors from "../elements/theme-colors";
 import { isConfigInfinite } from "./tribe-config";
+import { getAvatarElement } from "../utils/discord-avatar";
 
 export function init(page: string): void {
   let el: JQuery | undefined;
@@ -15,52 +16,80 @@ export function init(page: string): void {
   }
 
   const room = TribeState.getRoom();
-  if (el) {
-    el.empty();
-  }
 
+  if (!el) return;
   if (!room) return;
+
+  let html = "";
 
   for (const [userId, user] of Object.entries(room.users)) {
     if (userId === tribeSocket.getId()) continue;
     let me = false;
     if (userId === tribeSocket.getId()) me = true;
-    if (user.isTyping && el) {
-      el.append(`
+    if (user.isTyping) {
+      html += `
       <tr class="player ${me ? "me" : ""}" id="${userId}">
-        <td class="name">${user.name}</td>
+        <td class="avatarAndName">
+          <div class="avatar">
+            ${
+              getAvatarElement({
+                discordId: undefined,
+                discordAvatar: undefined,
+              }).innerHTML
+            }
+          </div>
+          <div class="name">
+          ${user.name}
+          </div>
+        </td>
         <td class="progress">
           <div class="barBg">
             <div class="bar" style="width: 0%;"></div>
           </div>
         </td>
-        <td class="stats">
-          <div class="wpm">-</div>
-          <div class="acc">-</div>
+        <td>
+        <div class="wpm">-</div>
+        </td>
+        <td>
+        <div class="acc">-</div>
         </td>
       </tr>
-      `);
+      `;
     }
   }
-  if (el) {
-    const tribeSelf = TribeState.getSelf();
-    if (tribeSelf?.isTyping) {
-      el.append(`
+  const tribeSelf = TribeState.getSelf();
+  if (tribeSelf?.isTyping) {
+    html += `
       <tr class="player me" id="${tribeSelf?.id}">
-        <td class="name">${tribeSelf?.name}</td>
+        <td class="avatarAndName">
+          <div class="avatar">
+            ${
+              getAvatarElement({
+                discordId: undefined,
+                discordAvatar: undefined,
+              }).innerHTML
+            }
+          </div>
+          <div class="name">
+          ${tribeSelf?.name}
+          </div>
+        </td>
         <td class="progress">
           <div class="barBg">
             <div class="bar" style="width: 0%;"></div>
           </div>
         </td>
-        <td class="stats">
-          <div class="wpm">-</div>
-          <div class="acc">-</div>
+        <td>
+        <div class="wpm">-</div>
+        </td>
+        <td>
+        <div class="acc">-</div>
         </td>
       </tr>
-      `);
-    }
+      `;
   }
+
+  el.html(html);
 }
 
 export function show(page: string): void {

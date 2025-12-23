@@ -2,6 +2,7 @@ import * as TribeState from "./tribe-state";
 import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
 import tribeSocket from "./tribe-socket";
 import { User } from "./types";
+import { getAvatarElement } from "../utils/discord-avatar";
 
 export function reset(page?: string): void {
   if (page === undefined) {
@@ -29,7 +30,7 @@ export function update(page?: string): void {
     usersArray.push(room.users[userId]);
   }
   const sortedUsers = usersArray.sort(
-    (a, b) => (b?.points ?? 0) - (a?.points ?? 0)
+    (a, b) => (b?.points ?? 0) - (a?.points ?? 0),
   ) as User[];
   sortedUsers.forEach((user) => {
     let icons = "";
@@ -55,11 +56,19 @@ export function update(page?: string): void {
       user.isAfk ? "afk" : ""
     }'>
     <div class="nameAndIcons">
-      <div class='icons'>
-      ${icons}
+      <div class='avatar'>
+      ${
+        getAvatarElement({
+          discordId: undefined,
+          discordAvatar: undefined,
+        }).innerHTML
+      }
       </div>
       <div class='name'>
       ${user.name}
+      </div>
+      <div class='icons'>
+      ${icons}
       </div>
       ${
         TribeState.getSelf()?.isLeader && user.id !== tribeSocket.getId()
@@ -76,7 +85,7 @@ export function update(page?: string): void {
       $(".pageTribe .lobby .userlist .list").append(appendData);
     } else if (page === "result") {
       $(".pageTest #result #tribeResultBottom .userlist .list").append(
-        appendData
+        appendData,
       );
     }
   });
@@ -88,5 +97,5 @@ $(document).on(
   (e) => {
     const userId = $(e.currentTarget).attr("userid") as string;
     TribeUserSettingsPopup.show(userId);
-  }
+  },
 );
