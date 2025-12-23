@@ -37,6 +37,7 @@ import * as TribeTypes from "./types";
 import * as NavigationEvent from "../observables/navigation-event";
 import { ColorName } from "../elements/theme-colors";
 import * as TribeAutoJoin from "./tribe-auto-join";
+import { authPromise } from "../firebase";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -121,12 +122,12 @@ function updateRoomState(state: TribeTypes.RoomState): void {
 export async function init(): Promise<void> {
   if (!isTribeEnabled()) return;
 
+  TribePagePreloader.hideReconnectButton();
   TribePagePreloader.updateIcon("circle-notch", true);
-  // TribePagePreloader.updateText("Waiting for login");
-  // await AccountController.authPromise;
+  TribePagePreloader.updateText("Awaiting authentication");
+  await authPromise;
   TribePagePreloader.updateText("Connecting to Tribe");
   TribePagePreloader.updateSubtext("Please wait...");
-  TribePagePreloader.hideReconnectButton();
 
   const snapName = DB.getSnapshot()?.name;
   if (snapName !== undefined) {
