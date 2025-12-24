@@ -91,11 +91,17 @@ export function createElementWithUtils<T extends HTMLElement>(
   tagName: string,
   options?: {
     classList?: string[];
+    dataset?: Record<string, string>;
   },
 ): ElementWithUtils<T> {
   const element = document.createElement(tagName) as T;
   if (options?.classList !== undefined) {
     element.classList.add(...options.classList);
+  }
+  if (options?.dataset !== undefined) {
+    for (const key of Object.keys(options.dataset)) {
+      element.dataset[key] = options.dataset[key];
+    }
   }
   return new ElementWithUtils(element);
 }
