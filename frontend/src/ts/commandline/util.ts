@@ -61,6 +61,8 @@ function _buildCommandForConfigKey<
       commandMeta.subgroup,
       configMeta,
       schema,
+      commandMeta.minimumSearchQuery,
+      commandMeta.available,
     );
   }
 
@@ -102,6 +104,8 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   subgroupProps: SubgroupProps<K>,
   configMeta: ConfigMetadata<K>,
   schema: ZodSchema,
+  minimumSearchQuery?: string,
+  available?: () => boolean | Promise<boolean>,
 ): Command {
   if (subgroupProps === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
@@ -144,6 +148,8 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
       list,
     },
     alias: rootAlias,
+    minimumSearchQuery: minimumSearchQuery ?? undefined,
+    available: available ?? undefined,
   };
 }
 
@@ -240,6 +246,8 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
     hover: inputProps?.hover,
+    minimumSearchQuery: inputProps?.minimumSearchQuery ?? undefined,
+    available: inputProps?.available ?? undefined,
   };
 
   if (inputProps?.inputValueConvert !== undefined) {

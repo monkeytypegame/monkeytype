@@ -8,8 +8,6 @@ import CustomBackgroundCommands from "./lists/custom-background";
 import FontFamilyCommands from "./lists/font-family";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
-import TribeDeltaCommands from "./lists/tribe-delta";
-import TribeCaretsCommands from "./lists/tribe-carets";
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
@@ -151,8 +149,7 @@ export const commands: CommandsSubgroup = {
     ),
 
     //tribe
-    ...TribeDeltaCommands,
-    ...TribeCaretsCommands,
+    ...buildCommands("tribeDelta", "tribeCarets"),
 
     //sound
     ...buildCommands(
@@ -542,6 +539,8 @@ function buildSingleListCommands(
             ((await command?.available?.()) ?? true)
           );
         },
+        minimumSearchQuery:
+          parentCommand.minimumSearchQuery ?? command.minimumSearchQuery,
       };
       commands.push(newCommand);
     } else {

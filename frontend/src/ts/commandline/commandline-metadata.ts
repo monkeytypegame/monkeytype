@@ -13,7 +13,7 @@ import * as ActivePage from "../states/active-page";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
-import { typedKeys } from "../utils/misc";
+import { getTribeMode, typedKeys } from "../utils/misc";
 
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"
@@ -46,6 +46,7 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
   display?: string;
   minimumSearchQuery?: string;
+  available?: () => boolean | Promise<boolean>;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
   defaultValue?: () => string;
   /**
@@ -73,6 +74,7 @@ export type CommandlineConfigMetadata<
   display?: string;
   isVisible?: boolean;
   minimumSearchQuery?: string;
+  available?: () => boolean | Promise<boolean>;
   input?: InputProps<T> | SecondaryInputProps<T2> | Record<never, never>;
   subgroup?: SubgroupProps<T>;
 };
@@ -750,11 +752,15 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
 
   //tribe
   tribeDelta: {
+    minimumSearchQuery: "tribe",
+    available: (): boolean => getTribeMode() !== "disabled",
     subgroup: {
       options: "fromSchema",
     },
   },
   tribeCarets: {
+    minimumSearchQuery: "tribe",
+    available: (): boolean => getTribeMode() !== "disabled",
     subgroup: {
       options: "fromSchema",
     },
