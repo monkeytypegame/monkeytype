@@ -1,184 +1,143 @@
 import * as TribeState from "./tribe-state";
 import Config from "../config";
 import * as TestState from "../test/test-state";
-import tribeSocket from "./tribe-socket";
 import * as ConfigEvent from "../observables/config-event";
 import { mapRange } from "@monkeytype/util/numbers";
+import { qs } from "../utils/dom";
+// import { isConfigInfinite } from "./tribe-config";
 
-const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
-const elBar = $(".pageTest #tribeDeltaBar");
+const textEl = qs(".pageTest #liveStatsMini .tribeDelta");
+const barEl = qs(".pageTest #tribeDeltaBar");
+const aheadBarEl = barEl?.qs(".ahead .bar");
+const behindBarEl = barEl?.qs(".behind .bar");
 
-let lastDelta = 0;
+let lastState = 0;
+let state = 0;
 
 export function update(): void {
   const room = TribeState.getRoom();
   if (!room) return;
 
-  let maxWpm = 0;
+  const orderedUsers = Object.values(room.users).sort((a, b) => {
+    // if (Config.mode === "time" || isConfigInfinite(room.config)) {
+    return (b.progress?.wpm ?? 0) - (a.progress?.wpm ?? 0);
+    // }else{
+    //   return (b.progress?.progress ?? 0) - (a.progress?.progress ?? 0);
+    // }
+  });
 
-  for (const [userId, user] of Object.entries(room.users)) {
-    if (userId === tribeSocket.getId()) continue;
+  const self = TribeState.getSelf();
+  const userIsLeading = orderedUsers[0]?.id === self?.id;
+  const user = orderedUsers.find((u) => u.id === self?.id);
+  if (!user) return;
 
-    const res = user.result;
+  const secondUser = orderedUsers[1];
+  const leadingUser = orderedUsers[0];
 
-    if (res === undefined) continue;
+  if (!secondUser || !leadingUser) return;
 
-    if (
-      ("valid" in res.resolve && !res.resolve.valid) ||
-      ("failed" in res.resolve && res.resolve.failed)
-    ) {
-      continue;
-    }
-    if ((user?.progress?.wpm ?? 0) > maxWpm) maxWpm = user?.progress?.wpm ?? 0;
-  }
-
-  const delta = Math.round(maxWpm - (TribeState.getSelf()?.progress?.wpm ?? 0));
-
-  el.removeClass("bad");
-  if (delta === 0) {
-    el.text("-");
-  } else if (delta > 0) {
-    el.text("-" + delta);
-    el.addClass("bad");
-  } else if (delta < 0) {
-    el.text("+" + Math.abs(delta));
-  }
-
-  //bar test
-
-  const max = room.maxWpm;
-  const center = maxWpm;
-  let min = room.minWpm;
-  if (min < 0) min = 0;
-  if (min > center) min = center - (max - center);
-
-  // $("#tribeDeltaBar .text").text(`${min}\t${center}\t${max}`);
-
-  // const deltaPercent = mapRange(delta, min, max, -100, 100);
-
-  const myspeed = TribeState.getSelf()?.progress?.wpm ?? center;
-
-  const behindbarel = $("#tribeDeltaBar .behind .bar");
-  const aheadbarel = $("#tribeDeltaBar .ahead .bar");
-
-  //check if the sign of the current delta is the same as the last one
-
-  const duration = TribeState.getRoom()?.updateRate ?? 500;
-  if (Math.sign(delta) === Math.sign(lastDelta) && Math.sign(delta) !== 0) {
-    behindbarel.stop(true, false).animate(
-      {
-        width: mapRange(myspeed, min, center, 100, 0) + "%",
-      },
-      duration,
-      "linear",
-    );
-    aheadbarel.stop(true, false).animate(
-      {
-        width: mapRange(myspeed, center, max, 0, 100) + "%",
-      },
-      duration,
-      "linear",
-    );
+  if (userIsLeading) {
+    // positive state
+    const delta = user.progress?.wpm ?? 0 - (secondUser.progress?.wpm ?? 0);
+    lastState = state;
+    state = delta;
   } else {
-    if (delta > 0) {
-      aheadbarel.stop(true, false).animate(
-        {
-          width: mapRange(myspeed, center, max, 0, 100) + "%",
-        },
-        duration / 2,
-        "linear",
-        () => {
-          behindbarel.stop(true, false).animate(
-            {
-              width: mapRange(myspeed, min, center, 100, 0) + "%",
-            },
-            duration / 2,
-            "linear",
-          );
-        },
-      );
-    } else if (delta < 0) {
-      behindbarel.stop(true, false).animate(
-        {
-          width: mapRange(myspeed, min, center, 100, 0) + "%",
-        },
-        duration / 2,
-        "linear",
-        () => {
-          aheadbarel.stop(true, false).animate(
-            {
-              width: mapRange(myspeed, center, max, 0, 100) + "%",
-            },
-            duration / 2,
-            "linear",
-          );
-        },
-      );
-    } else if (delta === 0) {
-      behindbarel.stop(true, false).animate(
-        {
-          width: "0%",
-        },
-        duration,
-        "linear",
-      );
-      aheadbarel.stop(true, false).animate(
-        {
-          width: "0%",
-        },
-        duration,
-        "linear",
-      );
-    }
+    // negative state
+    const delta = (leadingUser.progress?.wpm ?? 0) - (user.progress?.wpm ?? 0);
+    lastState = state;
+    state = -delta;
   }
 
-  lastDelta = delta;
+  if (Config.tribeDelta === "bar") {
+    const scaledPositive = mapRange(
+      user.progress?.wpm ?? 0,
+      secondUser.progress?.wpm ?? 0,
+      room.maxWpm,
+      0,
+      100,
+    );
+    const scaledNegative = mapRange(
+      user.progress?.wpm ?? 0,
+      room.minWpm,
+      leadingUser.progress?.wpm ?? 0,
+      100,
+      0,
+    );
+    const animationDuaration = room.updateRate ?? 500;
 
-  // if (myspeed < center) {
-
-  //   behindbarel.stop(true, true).animate(
-  //     {
-  //       width: mapRange(myspeed, min, center, 100, 0) + "%",
-  //     },
-  //     1000,
-  //     "linear"
-  //   );
-  //   aheadbarel.css("width", 0);
-  // } else if (myspeed > center) {
-
-  //   aheadbarel.stop(true, true).animate(
-  //     {
-  //       width: mapRange(myspeed, center, max, 0, 100) + "%",
-  //     },
-  //     1000,
-  //     "linear"
-  //   );
-  //   behindbarel.css("width", 0);
-  // } else {
-  //   aheadbarel.stop(true, true).animate(
-  //     {
-  //       width: 0,
-  //     },
-  //     1000,
-  //     "linear"
-  //   );
-  //   behindbarel.stop(true, true).animate(
-  //     {
-  //       width: 0,
-  //     },
-  //     1000,
-  //     "linear"
-  //   );
-  // }
+    // check if the sign of the current state is the same as the last one
+    if (Math.sign(state) === Math.sign(lastState)) {
+      //same sign
+      if (state > 0) {
+        void aheadBarEl?.promiseAnimate({
+          width: scaledPositive + "%",
+          duration: animationDuaration,
+          ease: "linear",
+        });
+      } else {
+        void behindBarEl?.promiseAnimate({
+          width: Math.abs(scaledNegative) + "%",
+          duration: animationDuaration,
+          ease: "linear",
+        });
+      }
+    } else {
+      //different sign
+      if (state > 0) {
+        // negative to positive
+        void behindBarEl
+          ?.promiseAnimate({
+            width: "0%",
+            duration: animationDuaration / 2,
+            ease: "linear",
+          })
+          .then(() => {
+            void aheadBarEl?.promiseAnimate({
+              width: scaledPositive + "%",
+              duration: animationDuaration / 2,
+              ease: "linear",
+            });
+          });
+      } else {
+        // positive to negative
+        void aheadBarEl
+          ?.promiseAnimate({
+            width: "0%",
+            duration: animationDuaration / 2,
+            ease: "linear",
+          })
+          .then(() => {
+            void behindBarEl?.promiseAnimate({
+              width: Math.abs(scaledNegative) + "%",
+              duration: animationDuaration / 2,
+              ease: "linear",
+            });
+          });
+      }
+    }
+  } else if (Config.tribeDelta === "text") {
+    if (state > 0) {
+      textEl
+        ?.setText(`+${Math.floor(state)}`)
+        .addClass("good")
+        .removeClass("bad");
+    } else if (state < 0) {
+      textEl
+        ?.setText(`${Math.floor(state)}`)
+        .addClass("bad")
+        .removeClass("good");
+    } else {
+      textEl?.setText(`0`).removeClass("good").removeClass("bad");
+    }
+  }
 }
 
 export function reset(): void {
-  el.text("-");
-  lastDelta = 0;
-  const behindbarel = $("#tribeDeltaBar .behind .bar");
-  const aheadbarel = $("#tribeDeltaBar .ahead .bar");
-  behindbarel.stop(true, true).css("width", 0);
-  aheadbarel.stop(true, true).css("width", 0);
+  textEl?.setText("-");
+  state = 0;
+  lastState = 0;
+  aheadBarEl?.setStyle({ width: "0%" });
+  behindBarEl?.setStyle({ width: "0%" });
 }
 
 export function show(): void {
@@ -186,51 +145,22 @@ export function show(): void {
   if (!TribeState.isInARoom()) return;
   if (Config.tribeDelta !== "text") return;
 
-  if (!el.hasClass("hidden")) return;
-  el.removeClass("hidden").css("opacity", 0).animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-  );
+  textEl?.show();
 }
 
 export function hide(): void {
-  el.animate(
-    {
-      opacity: 0,
-    },
-    125,
-    () => {
-      el.addClass("hidden");
-    },
-  );
+  textEl?.hide();
 }
 
 export function showBar(): void {
   if (!TribeState.isInARoom()) return;
   if (Config.tribeDelta !== "bar") return;
 
-  if (!elBar.hasClass("hidden")) return;
-  elBar.removeClass("hidden").css("opacity", 0).animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-  );
+  barEl?.show();
 }
 
 export function hideBar(): void {
-  console.log("hide delta bar");
-  elBar.animate(
-    {
-      opacity: 0,
-    },
-    125,
-    () => {
-      elBar.addClass("hidden");
-    },
-  );
+  barEl?.hide();
 }
 
 ConfigEvent.subscribe(({ key, newValue }) => {

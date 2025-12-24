@@ -1488,8 +1488,14 @@
       width: 100%;
     }
 
-    .tribeDelta.bad {
-      color: var(--error-color);
+    .tribeDelta {
+      color: var(--sub-color);
+      &.bad {
+        color: var(--error-color);
+      }
+      &.good {
+        color: var(--main-color);
+      }
     }
 
     div {
