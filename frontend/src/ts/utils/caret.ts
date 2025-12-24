@@ -41,13 +41,20 @@ export class Caret {
   private marginTopAnimation: JSAnimation | null = null;
   private marginLeftAnimation: JSAnimation | null = null;
 
-  constructor(element: ElementWithUtils, style: CaretStyle) {
+  metadata: Record<string, string> = {};
+
+  constructor(element: ElementWithUtils, style: CaretStyle, metadata = {}) {
     this.id = element.native.id;
     this.element = element;
     this.setStyle(style);
     if (this.id === "caret") {
       this.isMainCaret = true;
     }
+    this.metadata = metadata;
+  }
+
+  public getElement(): ElementWithUtils {
+    return this.element;
   }
 
   public setStyle(style: CaretStyle): void {
