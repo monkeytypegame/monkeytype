@@ -9,9 +9,8 @@ import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
 import * as NavigationEvent from "../observables/navigation-event";
-import { getTribeMode } from "../utils/tribe";
+import { getAwaitedTribeMode, getTribeMode } from "../utils/tribe";
 import { ROOM_STATE } from "../tribe/types";
-import { configurationPromise } from "../ape/server-configuration";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -182,8 +181,7 @@ const routes: Route[] = [
   {
     path: "/tribe",
     load: async (params, options): Promise<void> => {
-      await configurationPromise;
-      if (getTribeMode() === "disabled") {
+      if ((await getAwaitedTribeMode()) === "disabled") {
         await navigate("/", options);
         return;
       }
@@ -214,8 +212,7 @@ const routes: Route[] = [
   {
     path: "/tribe/:roomId",
     load: async (params, options): Promise<void> => {
-      await configurationPromise;
-      if (getTribeMode() === "disabled") {
+      if ((await getAwaitedTribeMode()) === "disabled") {
         await navigate("/", options);
         return;
       }
