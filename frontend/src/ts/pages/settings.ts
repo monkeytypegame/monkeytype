@@ -2,6 +2,7 @@ import SettingsGroup from "../elements/settings/settings-group";
 import Config, { setConfig, configLoadPromise } from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
+import * as tribe from "../utils/tribe";
 import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
@@ -246,7 +247,7 @@ async function initGroups(): Promise<void> {
 
 async function initAsyncGroups(): Promise<void> {
   await configurationPromise;
-  if (Misc.getTribeMode() === "enabled") {
+  if (tribe.getTribeMode() === "enabled") {
     groups["tribeDelta"] = new SettingsGroup("tribeDelta", "button");
     groups["tribeCarets"] = new SettingsGroup("tribeCarets", "button");
   }

@@ -11,6 +11,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs, qsa } from "./utils/dom";
+import { getTribeMode } from "./utils/tribe";
 
 onDOMReady(async () => {
   await configLoadPromise;
@@ -44,7 +45,7 @@ onDOMReady(async () => {
       if (!ServerConfiguration.get()?.connections.enabled) {
         qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
       }
-      const tribeMode = Misc.getTribeMode();
+      const tribeMode = getTribeMode();
       if (tribeMode === "enabled") {
         qs("header nav .textButton.view-tribe")?.removeClass("hidden");
       }

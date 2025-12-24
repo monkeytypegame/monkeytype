@@ -21,7 +21,7 @@ import {
   getActiveFunboxesWithProperty,
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
-import * as TribeState from "../../tribe/tribe-state";
+import * as tribeConfigCheck from "../../tribe/tribe-config-check";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 export function toggleScript(...params: string[]): void {
@@ -36,7 +36,7 @@ export function setFunbox(
   funbox: FunboxName[],
   tribeOverride = false,
 ): boolean {
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
+  if (!tribeConfigCheck.canChangeConfig(tribeOverride)) return false;
   if (funbox.length === 0) {
     for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
       fb.functions.clearGlobal();

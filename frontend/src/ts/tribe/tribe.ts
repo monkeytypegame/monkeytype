@@ -22,12 +22,8 @@ import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as ActivePage from "../states/active-page";
 import * as TribeState from "./tribe-state";
-import {
-  escapeRegExp,
-  escapeHTML,
-  getTribeMode,
-  isDevEnvironment,
-} from "../utils/misc";
+import { escapeRegExp, escapeHTML, isDevEnvironment } from "../utils/misc";
+import { getTribeMode } from "../utils/tribe";
 import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
@@ -217,6 +213,7 @@ export function readyUp(): void {
 }
 
 async function connect(): Promise<void> {
+  TribeState.setSocketId(TribeSocket.getId());
   const versionCheck =
     await TribeSocket.out.system.versionCheck(expectedVersion);
 
@@ -276,6 +273,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
     TribeAutoJoin.setAutoJoin(roomId);
   }
   TribeState.setRoom(undefined);
+  TribeState.setSocketId(undefined);
   updateClientState(TribeTypes.CLIENT_STATE.DISCONNECTED);
 
   if (!$(".pageTribe").hasClass("active")) {
@@ -306,6 +304,7 @@ TribeSocket.in.system.connectFailed((err) => {
       customTitle: "Tribe",
     });
   }
+  TribeState.setSocketId(undefined);
   TribeState.setRoom(undefined);
   void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
@@ -323,6 +322,7 @@ TribeSocket.in.system.connectError((err) => {
       customTitle: "Tribe",
     });
   }
+  TribeState.setSocketId(undefined);
   TribeState.setRoom(undefined);
   void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");

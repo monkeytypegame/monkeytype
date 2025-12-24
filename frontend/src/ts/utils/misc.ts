@@ -1,7 +1,6 @@
 import * as Loader from "../elements/loader";
 import * as Random from "../utils/random";
 import { envConfig } from "virtual:env-config";
-import * as ServerConfiguration from "../ape/server-configuration";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
@@ -491,11 +490,6 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
-export function getTribeMode(): "disabled" | "enabled" | "enabled_stealth" {
-  if (envConfig.forceTribe) return "enabled";
-  return ServerConfiguration.get()?.tribe?.mode ?? "disabled";
-}
-
 export function zipfyRandomArrayIndex(dictLength: number): number {
   /**
    * get random index based on probability distribution of Zipf's law,
@@ -809,5 +803,3 @@ export function getTotalInlineMargin(element: HTMLElement): number {
     parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
   );
 }
-
-// DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

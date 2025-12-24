@@ -1,6 +1,7 @@
 import { navigate } from "../../controllers/route-controller";
 import { isAuthenticated } from "../../firebase";
-import { getTribeMode, toggleFullscreen } from "../../utils/misc";
+import { toggleFullscreen } from "../../utils/misc";
+import { getTribeMode } from "../../utils/tribe";
 import { Command } from "../types";
 
 const commands: Command[] = [

@@ -13,7 +13,8 @@ import * as ActivePage from "../states/active-page";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
-import { getTribeMode, typedKeys } from "../utils/misc";
+import { typedKeys } from "../utils/misc";
+import { getTribeMode } from "../utils/tribe";
 
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"

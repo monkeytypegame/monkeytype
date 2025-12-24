@@ -9,7 +9,7 @@ import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
 import * as NavigationEvent from "../observables/navigation-event";
-import { getTribeMode } from "../utils/misc";
+import { getTribeMode } from "../utils/tribe";
 import { ROOM_STATE } from "../tribe/types";
 import { configurationPromise } from "../ape/server-configuration";
 

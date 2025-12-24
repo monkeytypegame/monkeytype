@@ -1,10 +1,12 @@
-import * as TribeState from "../tribe/tribe-state";
+import * as tribeConfigCheck from "../tribe/tribe-config-check";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
-
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CompletedEventCustomTextSchema } from "@monkeytype/schemas/results";
+import {
+  CustomTextSettings,
+  CustomTextSettingsSchema,
+} from "@monkeytype/schemas/results";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
@@ -26,14 +28,6 @@ const customTextLongLS = new LocalStorageWithSchema({
   schema: CustomTextLongObjectSchema,
   fallback: {},
 });
-
-export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
-  textLen: true,
-}).extend({
-  text: z.array(z.string()).min(1),
-});
-
-export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
 
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 
@@ -70,7 +64,7 @@ export function getText(): string[] {
 }
 
 export function setText(txt: string[], tribeOverride = false): void {
-  if (!TribeState.canChangeConfig(tribeOverride)) return;
+  if (!tribeConfigCheck.canChangeConfig(tribeOverride)) return;
   const currentSettings = customTextSettings.get();
   customTextSettings.set({
     ...currentSettings,
@@ -86,7 +80,7 @@ export function getMode(): CustomTextMode {
 }
 
 export function setMode(val: CustomTextMode, tribeOverride = false): void {
-  if (!TribeState.canChangeConfig(tribeOverride)) return;
+  if (!tribeConfigCheck.canChangeConfig(tribeOverride)) return;
   const currentSettings = customTextSettings.get();
   customTextSettings.set({
     ...currentSettings,
@@ -112,7 +106,7 @@ export function getLimitMode(): CustomTextLimitMode {
 }
 
 export function setLimitValue(val: number, tribeOverride = false): void {
-  if (!TribeState.canChangeConfig(tribeOverride)) return;
+  if (!tribeConfigCheck.canChangeConfig(tribeOverride)) return;
   const currentSettings = customTextSettings.get();
   customTextSettings.set({
     ...currentSettings,
@@ -125,7 +119,7 @@ export function setLimitMode(
   val: CustomTextLimitMode,
   tribeOverride = false,
 ): void {
-  if (!TribeState.canChangeConfig(tribeOverride)) return;
+  if (!tribeConfigCheck.canChangeConfig(tribeOverride)) return;
 
   const currentSettings = customTextSettings.get();
   customTextSettings.set({
@@ -140,7 +134,7 @@ export function getPipeDelimiter(): boolean {
 }
 
 export function setPipeDelimiter(val: boolean, tribeOverride = false): void {
-  if (!TribeState.canChangeConfig(tribeOverride)) return;
+  if (!tribeConfigCheck.canChangeConfig(tribeOverride)) return;
   const currentSettings = customTextSettings.get();
   customTextSettings.set({
     ...currentSettings,

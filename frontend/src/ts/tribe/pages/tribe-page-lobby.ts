@@ -5,8 +5,6 @@ import * as TribeConfig from "../tribe-config";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
 import tribeSocket from "../tribe-socket";
-import { qs } from "../../utils/dom";
-import * as Commandline from "../../commandline/commandline";
 import { RoomConfig } from "../types";
 import { configMetadata } from "../../config-metadata";
 
@@ -521,16 +519,5 @@ $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
     const name = prompt("Enter new room name");
     if (name === null) return;
     tribeSocket.out.user.setName(name);
-  },
-);
-
-qs(".pageTribe .tribePage.lobby .currentConfig")?.onChild(
-  "click",
-  ".group",
-  (e) => {
-    const command = (e.target as HTMLElement).getAttribute("commands");
-    if (command === null) return;
-    if (!TribeState.isLeader()) return;
-    Commandline.show({ subgroupOverride: command });
   },
 );

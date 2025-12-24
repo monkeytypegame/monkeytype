@@ -8,7 +8,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import * as TribeState from "./tribe/tribe-state";
+import * as TribeConfigCheck from "./tribe/tribe-config-check";
 import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
 import {
   createErrorMessage,
@@ -131,7 +131,7 @@ export function setConfig<T extends keyof Config>(
 
   if (
     metadata.tribeBlocked &&
-    !TribeState.canChangeConfig(options?.tribeOverride ?? false)
+    !TribeConfigCheck.canChangeConfig(options?.tribeOverride ?? false)
   ) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
@@ -229,7 +229,7 @@ export function toggleFunbox(
   if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
   }
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
+  if (!TribeConfigCheck.canChangeConfig(tribeOverride)) return false;
 
   const previousValue = config.funbox;
 

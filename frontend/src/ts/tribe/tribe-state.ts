@@ -1,11 +1,13 @@
-import TribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
 
+let socketId: string | undefined = undefined;
 let state: TribeTypes.ClientState = "DISCONNECTED";
-
 let room: TribeTypes.Room | undefined = undefined;
-
 let autoReady = false;
+
+export function setSocketId(newSocketId: string | undefined): void {
+  socketId = newSocketId;
+}
 
 export function setAutoReady(newAutoReady: boolean): void {
   autoReady = newAutoReady;
@@ -36,7 +38,8 @@ export function getRoomState(): TribeTypes.RoomState | undefined {
 }
 
 export function getSelf(): TribeTypes.User | undefined {
-  return room?.users?.[TribeSocket.getId()];
+  if (socketId === undefined) return undefined;
+  return room?.users?.[socketId];
 }
 
 export function isLeader(): boolean {
@@ -60,23 +63,4 @@ export function isRaceActive(): boolean {
 
 export function isDisconnected(): boolean {
   return getState() === "DISCONNECTED";
-}
-
-export function canChangeConfig(override: boolean): boolean {
-  const room = getRoom();
-
-  if (room === undefined) return true;
-
-  if (getSelf()?.isLeader) {
-    if (room.state !== TribeTypes.ROOM_STATE.LOBBY) return false;
-    //is leader, allow
-    return true;
-  } else {
-    //not leader, check if its being forced by tribe
-    if (override) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 }

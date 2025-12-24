@@ -1,10 +1,10 @@
-import { CustomTextSettings } from "../test/custom-text";
+import { CustomTextSettings } from "@monkeytype/schemas/results";
 
 export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: CustomTextSettings,
+  customText: CustomTextSettings,
   customTextIsLong: boolean,
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -13,12 +13,12 @@ export function canQuickRestart(
 
   const customTextRandomWordsLong =
     mode === "custom" &&
-    (CustomText.limit.mode === "word" || CustomText.limit.mode === "section") &&
-    (CustomText.limit.value >= 1000 || CustomText.limit.value === 0);
+    (customText.limit.mode === "word" || customText.limit.mode === "section") &&
+    (customText.limit.value >= 1000 || customText.limit.value === 0);
   const customTextRandomTimeLong =
     mode === "custom" &&
-    CustomText.limit.mode === "time" &&
-    (CustomText.limit.value >= 900 || CustomText.limit.value === 0);
+    customText.limit.mode === "time" &&
+    (customText.limit.value >= 900 || customText.limit.value === 0);
 
   if (
     wordsLong ||

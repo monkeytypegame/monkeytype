@@ -1,7 +1,6 @@
-import { ChartData } from "@monkeytype/schemas/results";
-import { CustomTextSettings } from "../test/custom-text";
+import { ChartData, CustomTextSettings } from "@monkeytype/schemas/results";
 import { configMetadata } from "../config-metadata";
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import { Config } from "@monkeytype/schemas/configs";
 
 export type SystemStats = {
   pingStart: number;
@@ -133,7 +132,7 @@ type TribeBlockedKeys = {
     : never;
 }[keyof typeof configMetadata];
 
-export type RoomConfig = Pick<ConfigSchemas.Config, TribeBlockedKeys> & {
+export type RoomConfig = Pick<Config, TribeBlockedKeys> & {
   customText: CustomTextSettings;
 };
 
