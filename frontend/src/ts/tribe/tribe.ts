@@ -640,7 +640,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       acc,
       progress,
       wordIndex: TestState.activeWordIndex,
-      letterIndex: inputLen - 1,
+      letterIndex: inputLen,
       afk: TestInput.afkHistory[TestInput.afkHistory.length - 1] ?? false,
     });
   }
