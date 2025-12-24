@@ -44,8 +44,11 @@ onDOMReady(async () => {
       if (!ServerConfiguration.get()?.connections.enabled) {
         qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
       }
-      if (Misc.isTribeEnabled()) {
+      const tribeMode = Misc.getTribeMode();
+      if (tribeMode === "enabled") {
         qs("header nav .textButton.view-tribe")?.removeClass("hidden");
+      }
+      if (tribeMode !== "disabled") {
         for (const el of qsa(".pageSettings [group='tribe']")) {
           el.removeClass("hidden");
         }
@@ -53,7 +56,7 @@ onDOMReady(async () => {
           el.removeClass("hidden");
         }
         qs(
-          ".pageSettings .settingsGroup.quickNav button[href='#group_tribe']",
+          ".pageSettings .settingsGroup.quickNav .textButton[href='#group_tribe']",
         )?.removeClass("hidden");
       }
     });

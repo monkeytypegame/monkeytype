@@ -491,9 +491,9 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
-export function isTribeEnabled(): boolean {
-  if (envConfig.forceTribe) return true;
-  return ServerConfiguration.get()?.tribe?.enabled ?? false;
+export function getTribeMode(): "disabled" | "enabled" | "enabled_stealth" {
+  if (envConfig.forceTribe) return "enabled";
+  return ServerConfiguration.get()?.tribe?.mode ?? "disabled";
 }
 
 export function zipfyRandomArrayIndex(dictLength: number): number {

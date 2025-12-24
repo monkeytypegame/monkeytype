@@ -45,6 +45,7 @@ export type CommandlineConfigMetadataObject = {
 export type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
   display?: string;
+  minimumSearchQuery?: string;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
   defaultValue?: () => string;
   /**
@@ -71,6 +72,7 @@ export type CommandlineConfigMetadata<
   alias?: string;
   display?: string;
   isVisible?: boolean;
+  minimumSearchQuery?: string;
   input?: InputProps<T> | SecondaryInputProps<T2> | Record<never, never>;
   subgroup?: SubgroupProps<T>;
 };

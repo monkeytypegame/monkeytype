@@ -104,7 +104,7 @@ export const BASE_CONFIGURATION: Configuration = {
     },
   },
   connections: { enabled: false, maxPerUser: 100 },
-  tribe: { enabled: false },
+  tribe: { mode: "disabled" },
 };
 
 type BaseSchema = {
@@ -126,6 +126,11 @@ type StringSchema = {
   type: "string";
 } & BaseSchema;
 
+type SelectSchema = {
+  type: "select";
+  options: string[];
+} & BaseSchema;
+
 type ArraySchema<T extends unknown[]> = {
   type: "array";
   items: Schema<T>[number];
@@ -144,7 +149,7 @@ type Schema<T> = {
       : T[P] extends boolean
         ? BooleanSchema
         : T[P] extends string
-          ? StringSchema
+          ? StringSchema | SelectSchema
           : T[P] extends object
             ? ObjectSchema<T[P]>
             : never;
@@ -620,7 +625,11 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
       type: "object",
       label: "Tribe (Multiplayer)",
       fields: {
-        enabled: { type: "boolean", label: "Enabled" },
+        mode: {
+          type: "select",
+          label: "Mode",
+          options: ["disabled", "enabled", "enabled_stealth"],
+        },
       },
     },
   },

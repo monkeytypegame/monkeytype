@@ -44,6 +44,7 @@ import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { configurationPromise } from "../ape/server-configuration";
 
 let settingsInitialized = false;
 
@@ -241,7 +242,11 @@ async function initGroups(): Promise<void> {
     "customBackgroundSize",
     "button",
   );
-  if (Misc.isTribeEnabled()) {
+}
+
+async function initAsyncGroups(): Promise<void> {
+  await configurationPromise;
+  if (Misc.getTribeMode() === "enabled") {
     groups["tribeDelta"] = new SettingsGroup("tribeDelta", "button");
     groups["tribeCarets"] = new SettingsGroup("tribeCarets", "button");
   }
@@ -467,6 +472,7 @@ async function fillSettingsPage(): Promise<void> {
   setEventDisabled(true);
 
   await initGroups();
+  void initAsyncGroups();
   await ThemePicker.fillCustomButtons();
 
   setEventDisabled(false);

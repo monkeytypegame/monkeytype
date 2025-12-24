@@ -22,6 +22,7 @@ export type Command = {
   alias?: string;
   input?: boolean;
   visible?: boolean;
+  minimumSearchQuery?: string;
   customStyle?: string;
   opensModal?: boolean;
   defaultValue?: () => string;

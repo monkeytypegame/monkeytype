@@ -25,7 +25,7 @@ import * as TribeState from "./tribe-state";
 import {
   escapeRegExp,
   escapeHTML,
-  isTribeEnabled,
+  getTribeMode,
   isDevEnvironment,
 } from "../utils/misc";
 import * as Time from "../states/time";
@@ -124,7 +124,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
 }
 
 export async function init(): Promise<void> {
-  if (!isTribeEnabled()) return;
+  if (getTribeMode() === "disabled") return;
 
   TribePagePreloader.hideReconnectButton();
   TribePagePreloader.updateIcon("circle-notch", true);

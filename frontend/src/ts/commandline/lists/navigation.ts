@@ -1,6 +1,6 @@
 import { navigate } from "../../controllers/route-controller";
 import { isAuthenticated } from "../../firebase";
-import { toggleFullscreen } from "../../utils/misc";
+import { getTribeMode, toggleFullscreen } from "../../utils/misc";
 import { Command } from "../types";
 
 const commands: Command[] = [
@@ -20,6 +20,19 @@ const commands: Command[] = [
     icon: "fa-crown",
     exec: (): void => {
       void navigate("/leaderboards");
+    },
+  },
+  {
+    id: "viewTribe",
+    display: "View Tribe Page",
+    alias: "navigate go to",
+    icon: "fa-crown",
+    minimumSearchQuery: "tribe",
+    available: (): boolean => {
+      return getTribeMode() !== "disabled";
+    },
+    exec: (): void => {
+      void navigate("/tribe");
     },
   },
   {

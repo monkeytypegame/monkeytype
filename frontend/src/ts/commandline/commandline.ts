@@ -256,6 +256,19 @@ async function filterSubgroup(): Promise<void> {
       continue;
     }
 
+    // Check if minimum search query requirement is met
+    if (command.minimumSearchQuery !== undefined) {
+      if (
+        !inputNoQuickSingle.includes(command.minimumSearchQuery.toLowerCase())
+      ) {
+        matches.push({
+          matchCount: -1,
+          matchStrength: -1,
+        });
+        continue;
+      }
+    }
+
     const displaySplit = (
       usingSingleList
         ? (command.singleListDisplayNoIcon ?? "") || command.display

@@ -66,6 +66,27 @@ const buildStringInput = (parentState, key) => {
   return input;
 };
 
+const buildSelectInput = (schema, parentState, key) => {
+  const select = document.createElement("select");
+  select.classList.add("base-input");
+
+  schema.options.forEach((option) => {
+    const optionElement = document.createElement("option");
+    optionElement.value = option;
+    optionElement.textContent = option;
+    if (parentState[key] === option) {
+      optionElement.selected = true;
+    }
+    select.appendChild(optionElement);
+  });
+
+  select.addEventListener("change", () => {
+    parentState[key] = select.value;
+  });
+
+  return select;
+};
+
 const defaultValueForType = (type) => {
   switch (type) {
     case "number":
@@ -195,6 +216,9 @@ const render = (state, schema) => {
       parent.classList.add("input-label");
     } else if (type === "string") {
       parent.appendChild(buildStringInput(parentState, currentKey));
+      parent.classList.add("input-label");
+    } else if (type === "select") {
+      parent.appendChild(buildSelectInput(schema, parentState, currentKey));
       parent.classList.add("input-label");
     } else if (type === "boolean") {
       parent.appendChild(buildBooleanInput(parentState, currentKey));

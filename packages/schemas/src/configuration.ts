@@ -128,7 +128,7 @@ export const ConfigurationSchema = z.object({
     maxPerUser: z.number().int().nonnegative(),
   }),
   tribe: z.object({
-    enabled: z.boolean(),
+    mode: z.enum(["disabled", "enabled", "enabled_stealth"]),
   }),
 });
 export type Configuration = z.infer<typeof ConfigurationSchema>;

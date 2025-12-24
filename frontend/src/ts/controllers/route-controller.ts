@@ -9,8 +9,9 @@ import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
 import * as NavigationEvent from "../observables/navigation-event";
-import { isTribeEnabled } from "../utils/misc";
+import { getTribeMode } from "../utils/misc";
 import { ROOM_STATE } from "../tribe/types";
+import { configurationPromise } from "../ape/server-configuration";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -61,7 +62,7 @@ const routes: Route[] = [
         return;
       }
 
-      if (isTribeEnabled() && TribeState.isInARoom()) {
+      if (getTribeMode() !== "disabled" && TribeState.isInARoom()) {
         if (
           TribeState.getSelf()?.isLeader &&
           TribeState.getRoomState() === ROOM_STATE.READY_TO_CONTINUE
@@ -181,7 +182,8 @@ const routes: Route[] = [
   {
     path: "/tribe",
     load: async (params, options): Promise<void> => {
-      if (!isTribeEnabled()) {
+      await configurationPromise;
+      if (getTribeMode() === "disabled") {
         await navigate("/", options);
         return;
       }
@@ -212,7 +214,8 @@ const routes: Route[] = [
   {
     path: "/tribe/:roomId",
     load: async (params, options): Promise<void> => {
-      if (!isTribeEnabled()) {
+      await configurationPromise;
+      if (getTribeMode() === "disabled") {
         await navigate("/", options);
         return;
       }
@@ -233,7 +236,7 @@ export async function navigate(
   options = {} as NavigationEvent.NavigateOptions,
 ): Promise<void> {
   if (
-    isTribeEnabled() &&
+    getTribeMode() !== "disabled" &&
     TribeState.isInARoom() &&
     TribeState.getRoomState() !== ROOM_STATE.LOBBY &&
     TribeState.getRoomState() !== ROOM_STATE.READY_TO_CONTINUE &&

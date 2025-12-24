@@ -3,7 +3,7 @@ import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, isTribeEnabled, reloadAfter } from "./utils/misc";
+import { isDevEnvironment, getTribeMode, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";
@@ -211,7 +211,7 @@ export const configMetadata = {
     changeRequiresRestart: false,
     group: "tribe",
     isBlocked: () => {
-      return !isTribeEnabled();
+      return getTribeMode() === "disabled";
     },
   },
   tribeCarets: {
@@ -220,7 +220,7 @@ export const configMetadata = {
     changeRequiresRestart: false,
     group: "tribe",
     isBlocked: () => {
-      return !isTribeEnabled();
+      return getTribeMode() === "disabled";
     },
   },
 
