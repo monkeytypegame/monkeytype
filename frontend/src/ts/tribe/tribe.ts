@@ -275,6 +275,8 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribeState.setRoom(undefined);
   TribeState.setSocketId(undefined);
   updateClientState(TribeTypes.CLIENT_STATE.DISCONNECTED);
+  TribeDelta.hide();
+  TribeCountdown.hide();
 
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
@@ -306,6 +308,8 @@ TribeSocket.in.system.connectFailed((err) => {
   }
   TribeState.setSocketId(undefined);
   TribeState.setRoom(undefined);
+  TribeDelta.hide();
+  TribeCountdown.hide();
   void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
@@ -322,6 +326,8 @@ TribeSocket.in.system.connectError((err) => {
       customTitle: "Tribe",
     });
   }
+  TribeDelta.hide();
+  TribeCountdown.hide();
   TribeState.setSocketId(undefined);
   TribeState.setRoom(undefined);
   void TribePages.change("preloader");
