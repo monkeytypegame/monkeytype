@@ -101,13 +101,17 @@ function hydrateInputs(): void {
     </button>`,
   );
 
-  $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
-    const selectionId = $(currentTarget).attr("selection-id") as string;
-    currentSelectedBadgeId = parseInt(selectionId, 10);
+  badgeIdsSelect
+    ?.qsa(".badgeSelectionItem")
+    ?.on("click", ({ currentTarget }) => {
+      const selectionId = (currentTarget as HTMLElement).getAttribute(
+        "selection-id",
+      ) as string;
+      currentSelectedBadgeId = parseInt(selectionId, 10);
 
-    badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
-    $(currentTarget).addClass("selected");
-  });
+      badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
+      (currentTarget as HTMLElement).classList.add("selected");
+    });
 
   indicators.forEach((it) => it.hide());
 }
