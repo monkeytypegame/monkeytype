@@ -7,6 +7,7 @@ import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
+import { qsa } from "../utils/dom";
 
 type State = {
   resultId: string;
@@ -90,12 +91,12 @@ function appendButtons(): void {
 }
 
 function updateActiveButtons(): void {
-  for (const button of $("#editResultTagsModal .modal .buttons button")) {
-    const tagid: string = $(button).attr("data-tag-id") ?? "";
+  for (const button of qsa("#editResultTagsModal .modal .buttons button")) {
+    const tagid: string = button.getAttribute("data-tag-id") ?? "";
     if (state.tags.includes(tagid)) {
-      $(button).addClass("active");
+      button.addClass("active");
     } else {
-      $(button).removeClass("active");
+      button.removeClass("active");
     }
   }
 }
