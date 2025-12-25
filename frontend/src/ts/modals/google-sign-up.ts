@@ -37,7 +37,7 @@ function show(credential: UserCredential): void {
       }
       CaptchaController.reset("googleSignUpModal");
       CaptchaController.render(
-        $("#googleSignUpModal .captcha")[0] as HTMLElement,
+        qsr("#googleSignUpModal .captcha").native,
         "googleSignUpModal",
       );
       enableInput();
@@ -93,7 +93,9 @@ async function apply(): Promise<void> {
   disableButton();
 
   Loader.show();
-  const name = $("#googleSignUpModal input").val() as string;
+  const name = qsr<HTMLInputElement>(
+    "#googleSignUpModal input",
+  ).getValue() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create({ body: { name, captcha } });
@@ -135,11 +137,11 @@ async function apply(): Promise<void> {
 }
 
 function enableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", false);
+  qsr("#googleSignUpModal button").enable();
 }
 
 function disableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", true);
+  qsr("#googleSignUpModal button").disable();
 }
 
 const nameInputEl = qsr<HTMLInputElement>("#googleSignUpModal input");
