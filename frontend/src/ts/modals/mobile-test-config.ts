@@ -10,58 +10,59 @@ import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as ShareTestSettingsPopup from "./share-test-settings";
+import { qsr } from "../utils/dom";
 
 function update(): void {
-  const el = $("#mobileTestConfigModal");
-  el.find("button").removeClass("active");
+  const el = qsr("#mobileTestConfigModal");
+  el.qs("button")?.removeClass("active");
 
-  el.find(`.modeGroup button[data-mode='${Config.mode}']`).addClass("active");
-  el.find(".timeGroup").addClass("hidden");
-  el.find(".wordsGroup").addClass("hidden");
-  el.find(".quoteGroup").addClass("hidden");
-  el.find(".customGroup").addClass("hidden");
-  el.find(`.${Config.mode}Group`).removeClass("hidden");
+  el.qs(`.modeGroup button[data-mode='${Config.mode}']`)?.addClass("active");
+  el.qs(".timeGroup")?.hide();
+  el.qs(".wordsGroup")?.hide();
+  el.qs(".quoteGroup")?.hide();
+  el.qs(".customGroup")?.hide();
+  el.qs(`.${Config.mode}Group`)?.show();
 
   if (Config.punctuation) {
-    el.find(".punctuation").addClass("active");
+    el.qs(".punctuation")?.addClass("active");
   } else {
-    el.find(".punctuation").removeClass("active");
+    el.qs(".punctuation")?.removeClass("active");
   }
 
   if (Config.numbers) {
-    el.find(".numbers").addClass("active");
+    el.qs(".numbers")?.addClass("active");
   } else {
-    el.find(".numbers").removeClass("active");
+    el.qs(".numbers")?.removeClass("active");
   }
 
   if (Config.mode === "time") {
-    el.find(`.timeGroup button[data-time='${Config.time}']`).addClass("active");
-    el.find(".punctuation").removeClass("disabled");
-    el.find(".numbers").removeClass("disabled");
+    el.qs(`.timeGroup button[data-time='${Config.time}']`)?.addClass("active");
+    el.qs(".punctuation")?.enable();
+    el.qs(".numbers")?.enable();
   } else if (Config.mode === "words") {
-    el.find(`.wordsGroup button[data-words='${Config.words}']`).addClass(
+    el.qs(`.wordsGroup button[data-words='${Config.words}']`)?.addClass(
       "active",
     );
-    el.find(".punctuation").removeClass("disabled");
-    el.find(".numbers").removeClass("disabled");
+    el.qs(".punctuation")?.enable();
+    el.qs(".numbers")?.enable();
   } else if (Config.mode === "quote") {
     if (areUnsortedArraysEqual(Config.quoteLength, [0, 1, 2, 3])) {
-      el.find(`.quoteGroup button[data-quoteLength='all']`).addClass("active");
+      el.qs(`.quoteGroup button[data-quoteLength='all']`)?.addClass("active");
     } else {
       for (const ql of Config.quoteLength) {
-        el.find(`.quoteGroup button[data-quoteLength='${ql}']`).addClass(
+        el.qs(`.quoteGroup button[data-quoteLength='${ql}']`)?.addClass(
           "active",
         );
       }
     }
-    el.find(".punctuation").addClass("disabled");
-    el.find(".numbers").addClass("disabled");
+    el.qs(".punctuation")?.disable();
+    el.qs(".numbers")?.disable();
   } else if (Config.mode === "zen") {
-    el.find(".punctuation").addClass("disabled");
-    el.find(".numbers").addClass("disabled");
+    el.qs(".punctuation")?.disable();
+    el.qs(".numbers")?.disable();
   } else if (Config.mode === "custom") {
-    el.find(".punctuation").removeClass("disabled");
-    el.find(".numbers").removeClass("disabled");
+    el.qs(".punctuation")?.enable();
+    el.qs(".numbers")?.enable();
   }
 }
 
