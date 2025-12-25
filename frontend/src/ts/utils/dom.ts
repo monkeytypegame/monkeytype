@@ -744,6 +744,16 @@ export class ElementsWithUtils<
   }
 
   /**
+   * Set value of all input elements in the array
+   */
+  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
+    for (const item of this) {
+      item.setValue(value);
+    }
+    return this as unknown as this;
+  }
+
+  /**
    * Query all elements in the array for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
