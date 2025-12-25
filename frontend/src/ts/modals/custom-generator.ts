@@ -5,6 +5,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { qs, qsr } from "../utils/dom";
 
 type Preset = {
   display: string;
@@ -91,10 +92,15 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 }
 
 function applyPreset(): void {
-  const presetName = $("#customGeneratorModal .presetInput").val() as string;
+  const presetName = qs<HTMLSelectElement>(
+    "#customGeneratorModal .presetInput",
+  )?.getValue();
+
   if (presetName !== undefined && presetName !== "" && presets[presetName]) {
     const preset = presets[presetName];
-    $("#customGeneratorModal .characterInput").val(preset.characters.join(" "));
+    qsr<HTMLInputElement>("#customGeneratorModal .characterInput").setValue(
+      preset.characters.join(" "),
+    );
   }
 }
 
@@ -105,17 +111,30 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 function generateWords(): string[] {
-  const characterInput = $(
+  const characterInput = qs<HTMLInputElement>(
     "#customGeneratorModal .characterInput",
-  ).val() as string;
-  const minLength =
-    parseInt($("#customGeneratorModal .minLengthInput").val() as string) || 2;
-  const maxLength =
-    parseInt($("#customGeneratorModal .maxLengthInput").val() as string) || 5;
-  const wordCount =
-    parseInt($("#customGeneratorModal .wordCountInput").val() as string) || 100;
+  )?.getValue();
 
-  if (!characterInput || characterInput.trim() === "") {
+  const minLength =
+    parseInt(
+      qs<HTMLInputElement>(
+        "#customGeneratorModal .minLengthInput",
+      )?.getValue() as string,
+    ) || 2;
+  const maxLength =
+    parseInt(
+      qs<HTMLInputElement>(
+        "#customGeneratorModal .maxLengthInput",
+      )?.getValue() as string,
+    ) || 5;
+  const wordCount =
+    parseInt(
+      qs<HTMLInputElement>(
+        "#customGeneratorModal .wordCountInput",
+      )?.getValue() as string,
+    ) || 100;
+
+  if (characterInput === undefined || characterInput.trim() === "") {
     Notifications.add("Character set cannot be empty", 0);
     return [];
   }
