@@ -1,6 +1,7 @@
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
+import { qs } from "../utils/dom";
 
 type State = {
   missed: "off" | "words" | "biwords";
@@ -15,20 +16,20 @@ const state: State = {
 const practiseModal = "#practiseWordsModal .modal";
 
 function updateUI(): void {
-  $(`${practiseModal} .group[data-id="missed"] button`).removeClass("active");
-  $(
+  qs(`${practiseModal} .group[data-id="missed"] button`)?.removeClass("active");
+  qs(
     `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`,
-  ).addClass("active");
+  )?.addClass("active");
 
-  $(`${practiseModal} .group[data-id="slow"] button`).removeClass("active");
-  $(
+  qs(`${practiseModal} .group[data-id="slow"] button`)?.removeClass("active");
+  qs(
     `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`,
-  ).addClass("active");
+  )?.addClass("active");
 
   if (state.missed === "off" && !state.slow) {
-    $(`${practiseModal} .start`).prop("disabled", true);
+    qs(`${practiseModal} .start`)?.disable();
   } else {
-    $(`${practiseModal} .start`).prop("disabled", false);
+    qs(`${practiseModal} .start`)?.enable();
   }
 }
 
