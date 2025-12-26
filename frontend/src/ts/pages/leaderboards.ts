@@ -1485,13 +1485,19 @@ export const page = new PageWithUrlParams({
   element: qsr(".page.pageLeaderboards"),
   path: "/leaderboards",
   urlParamsSchema: UrlParameterSchema,
+  loadingOptions: {
+    style: "spinner",
+    loadingMode: () => "sync",
+    loadingPromise: async () => {
+      await ServerConfiguration.configurationPromise;
+    },
+  },
 
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
     stopTimer();
   },
   beforeShow: async (options): Promise<void> => {
-    await ServerConfiguration.configurationPromise;
     Skeleton.append("pageLeaderboards", "main");
     await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();
