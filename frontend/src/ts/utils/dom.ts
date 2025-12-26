@@ -255,8 +255,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Toggle a class on the element
    */
-  toggleClass(className: string): this {
-    this.native.classList.toggle(className);
+  toggleClass(className: string, force?: boolean): this {
+    this.native.classList.toggle(className, force);
     return this;
   }
 
