@@ -395,7 +395,7 @@ export const configMetadata = {
     icon: "fa-minus",
     displayString: "strict space",
     changeRequiresRestart: true,
-    tribeBlocked: true,
+    // tribeBlocked: true,
     group: "input",
   },
   oppositeShiftMode: {
@@ -423,7 +423,7 @@ export const configMetadata = {
     icon: "fa-backspace",
     displayString: "confidence mode",
     changeRequiresRestart: false,
-    tribeBlocked: true,
+    // tribeBlocked: true,
     group: "input",
     overrideConfig: ({ value }) => {
       if (value !== "off") {

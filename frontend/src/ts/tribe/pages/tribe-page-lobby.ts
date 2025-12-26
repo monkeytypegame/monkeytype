@@ -242,18 +242,18 @@ const configOrder: Record<
     text: (config) => config.customPolyglot.join(","),
     showIf: (config) => config.funbox.includes("polyglot"),
   },
-  strictSpace: {
-    commandsKey: "strictSpace",
-    icon: "fas fa-arrows-alt-h",
-    label: "Strict Space",
-    text: (config) => (config.strictSpace ? "on" : "off"),
-  },
-  confidenceMode: {
-    commandsKey: "confidenceMode",
-    icon: "fas fa-check-circle",
-    label: "Confidence Mode",
-    text: (config) => (config.confidenceMode ? "on" : "off"),
-  },
+  // strictSpace: {
+  //   commandsKey: "strictSpace",
+  //   icon: "fas fa-arrows-alt-h",
+  //   label: "Strict Space",
+  //   text: (config) => (config.strictSpace ? "on" : "off"),
+  // },
+  // confidenceMode: {
+  //   commandsKey: "confidenceMode",
+  //   icon: "fas fa-check-circle",
+  //   label: "Confidence Mode",
+  //   text: (config) => (config.confidenceMode ? "on" : "off"),
+  // },
 } as const;
 
 export function updateRoomConfig(): void {
