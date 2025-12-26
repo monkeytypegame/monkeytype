@@ -473,25 +473,24 @@
           Retry saving result
         </button>
         <div class="buttons">
-          <div
+          <button
+            class="text hidden"
             id="readyButton"
-            class="hidden"
             aria-label="Ready"
+            role="button"
             data-balloon-pos="down"
-            tabindex="0"
-            onclick="this.blur()"
           >
             <i class="fas fa-fw fa-check"></i>
-          </div>
-          <div
+          </button>
+          <button
+            class="hidden"
             id="queueAgainButton"
             aria-label="Queue again"
+            role="button"
             data-balloon-pos="down"
-            tabindex="0"
-            onclick="this.blur()"
           >
             <i class="fas fa-fw fas fa-satellite-dish"></i>
-          </div>
+          </button>
           <button
             class="text"
             id="nextTestButton"
