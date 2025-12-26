@@ -24,7 +24,6 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 import * as TribeState from "../../tribe/tribe-state";
-import { CLIENT_STATE } from "../../tribe/types";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
@@ -146,11 +145,7 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
-  if (
-    TribeState.getState() === CLIENT_STATE.CONNECTED &&
-    TribeState.isInARoom() &&
-    !TribeState.isRaceActive()
-  ) {
+  if (TribeState.isInARoom() && !TribeState.isRaceActive()) {
     event.preventDefault();
     return;
   }
