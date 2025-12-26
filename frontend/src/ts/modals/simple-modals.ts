@@ -46,6 +46,7 @@ import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
+import { qs, qsr } from "../utils/dom";
 
 type PopupKey =
   | "updateEmail"
@@ -1141,9 +1142,9 @@ list.updateCustomTheme = new SimpleModal({
     if (updateColors === "true") {
       for (const color of ThemeController.colorVars) {
         newColors.push(
-          $(
+          qsr<HTMLInputElement>(
             `.pageSettings .tabContent.customTheme #${color}[type='color']`,
-          ).attr("value") as string,
+          ).getValue() as string,
         );
       }
     } else {
@@ -1336,89 +1337,105 @@ export function showPopup(
 }
 
 //todo: move these event handlers to their respective files (either global event files or popup files)
-$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
+qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
   showPopup("unlinkDiscord");
 });
 
-$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
   showPopup("removeGoogleAuth");
 });
 
-$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
   showPopup("removeGithubAuth");
 });
 
-$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
   showPopup("removePasswordAuth");
 });
 
-$("#resetSettingsButton").on("click", () => {
+qs("#resetSettingsButton")?.on("click", () => {
   showPopup("resetSettings");
 });
 
-$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
+qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
   showPopup("revokeAllTokens");
 });
 
-$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
-  showPopup("resetPersonalBests");
-});
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#resetPersonalBestsButton",
+  () => {
+    showPopup("resetPersonalBests");
+  },
+);
 
-$(".pageAccountSettings").on("click", "#updateAccountName", () => {
+qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
   showPopup("updateName");
 });
 
-$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
+qs("#bannerCenter")?.onChild("click", ".banner .text .openNameChange", () => {
   showPopup("updateName");
 });
 
-$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
 });
 
-$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
   showPopup("updateEmail");
 });
 
-$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
   showPopup("updatePassword");
 });
 
-$(".pageAccountSettings").on("click", "#deleteAccount", () => {
+qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
   showPopup("deleteAccount");
 });
 
-$(".pageAccountSettings").on("click", "#resetAccount", () => {
+qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
   showPopup("resetAccount");
 });
 
-$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
-  showPopup("optOutOfLeaderboards");
-});
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#optOutOfLeaderboardsButton",
+  () => {
+    showPopup("optOutOfLeaderboards");
+  },
+);
 
-$(".pageSettings").on(
+qs(".pageSettings")?.onChild(
   "click",
   ".section.themes .customTheme .delButton",
   (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
+    const $parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = $parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
     showPopup("deleteCustomTheme", [customThemeId]);
   },
 );
 
-$(".pageSettings").on(
+qs(".pageSettings")?.onChild(
   "click",
   ".section.themes .customTheme .editButton",
   (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
+    const $parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = $parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
     showPopup("updateCustomTheme", [customThemeId], {
       focusFirstInput: "focusAndSelect",
     });
   },
 );
 
-$(".pageSettings").on(
+qs(".pageSettings")?.onChild(
   "click",
   ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
   () => {
