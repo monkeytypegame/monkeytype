@@ -452,7 +452,7 @@
         gap: 0.25em;
         align-items: center;
         .avatar {
-          --size: 0.9em;
+          --size: 0.91em; //0.9 causes clipping
         }
       }
       .icons {
@@ -736,7 +736,7 @@
     }
     .avatarAndName {
       .avatar {
-        --size: 0.9em;
+        --size: 0.91em; //0.9 causes clipping
       }
       display: flex;
       align-items: center;
