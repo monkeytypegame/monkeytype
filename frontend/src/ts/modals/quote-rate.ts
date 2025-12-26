@@ -6,6 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { qs, qsa, qsr } from "../utils/dom";
 
 let rating = 0;
 
@@ -25,12 +26,12 @@ export function clearQuoteStats(): void {
 }
 
 function reset(): void {
-  $(`#quoteRateModal .quote .text`).text("-");
-  $(`#quoteRateModal .quote .source .val`).text("-");
-  $(`#quoteRateModal .quote .id .val`).text("-");
-  $(`#quoteRateModal .quote .length .val`).text("-");
-  $("#quoteRateModal .ratingCount .val").text("-");
-  $("#quoteRateModal .ratingAverage .val").text("-");
+  qsr(`#quoteRateModal .quote .text`).setText("-");
+  qsr(`#quoteRateModal .quote .source .val`).setText("-");
+  qsr(`#quoteRateModal .quote .id .val`).setText("-");
+  qsr(`#quoteRateModal .quote .length .val`).setText("-");
+  qsr("#quoteRateModal .ratingCount .val").setText("-");
+  qsr("#quoteRateModal .ratingAverage .val").setText("-");
 }
 
 function getRatingAverage(quoteStats: QuoteStats): number {
@@ -78,16 +79,19 @@ export async function getQuoteStats(
 
 function refreshStars(force?: number): void {
   const limit = force ?? rating;
-  $(`#quoteRateModal .star`).removeClass("active");
+  qsa(`#quoteRateModal .star`).removeClass("active");
   for (let i = 1; i <= limit; i++) {
-    $(`#quoteRateModal .star[data-rating=${i}]`).addClass("active");
+    qsr(`#quoteRateModal .star[data-rating="${i}"]`).addClass("active");
   }
 }
 
 async function updateRatingStats(): Promise<void> {
   if (!quoteStats) await getQuoteStats();
-  $("#quoteRateModal .ratingCount .val").text(quoteStats?.ratings ?? "0");
-  $("#quoteRateModal .ratingAverage .val").text(
+  const ratings = quoteStats?.ratings;
+  qsr("#quoteRateModal .ratingCount .val").setText(
+    ratings === undefined ? "0" : ratings.toString(),
+  );
+  qsr("#quoteRateModal .ratingAverage .val").setText(
     quoteStats?.average?.toFixed(1) ?? "-",
   );
 }
@@ -104,10 +108,10 @@ function updateData(): void {
   } else if (currentQuote.group === 3) {
     lengthDesc = "thicc";
   }
-  $(`#quoteRateModal .quote .text`).text(currentQuote.text);
-  $(`#quoteRateModal .quote .source .val`).text(currentQuote.source);
-  $(`#quoteRateModal .quote .id .val`).text(currentQuote.id);
-  $(`#quoteRateModal .quote .length .val`).text(lengthDesc as string);
+  qsr(`#quoteRateModal .quote .text`).setText(currentQuote.text);
+  qsr(`#quoteRateModal .quote .source .val`).setText(currentQuote.source);
+  qsr(`#quoteRateModal .quote .id .val`).setText(`${currentQuote.id}`);
+  qsr(`#quoteRateModal .quote .length .val`).setText(lengthDesc as string);
   void updateRatingStats();
 }
 
@@ -201,11 +205,11 @@ async function submit(): Promise<void> {
   DB.setSnapshot(snapshot);
 
   quoteStats.average = getRatingAverage(quoteStats);
-  $(".pageTest #result #rateQuoteButton .rating").text(
+  qs(".pageTest #result #rateQuoteButton .rating")?.setText(
     quoteStats.average?.toFixed(1),
   );
-  $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
-  $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
+  qs(".pageTest #result #rateQuoteButton .icon")?.removeClass("far");
+  qs(".pageTest #result #rateQuoteButton .icon")?.addClass("fas");
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
