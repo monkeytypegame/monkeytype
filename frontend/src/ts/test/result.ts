@@ -1188,6 +1188,7 @@ export function updateTribe(): void {
     TribeButtons.update("result");
   } else {
     qs("#result #tribeResultBottom")?.hide();
+    qs("#result #readyButton")?.hide();
     qs("#result #nextTestButton")?.show();
     qs("#result #restartTestButtonWithSameWordset")?.show();
     qs("#result #practiseWordsButton")?.show();
