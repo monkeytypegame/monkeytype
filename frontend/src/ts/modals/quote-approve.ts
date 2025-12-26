@@ -5,13 +5,15 @@ import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Quote } from "@monkeytype/schemas/quotes";
 import { escapeHTML } from "../utils/misc";
+import { qsr, createElementWithUtils } from "../utils/dom";
 
 let quotes: Quote[] = [];
 
 function updateList(): void {
-  $("#quoteApproveModal .quotes").empty();
+  qsr("#quoteApproveModal .quotes").empty();
   quotes.forEach((quote, index) => {
-    const quoteEl = $(`
+    const quoteEl = createElementWithUtils("div");
+    quoteEl.setHtml(`
       <div class="quote" data-id="${index}" data-db-id="${quote._id}">
         <textarea class="text">${escapeHTML(quote.text)}</textarea>
         <input type="text" class="source" placeholder="Source" value="${escapeHTML(
@@ -37,42 +39,29 @@ function updateList(): void {
         </div>
       </div>
     `);
-    $("#quoteApproveModal .quotes").append(quoteEl);
-    quoteEl.find(".source").on("input", () => {
-      $(`#quoteApproveModal .quote[data-id=${index}] .undo`).prop(
-        "disabled",
-        false,
-      );
-      $(`#quoteApproveModal .quote[data-id=${index}] .approve`).addClass(
-        "hidden",
-      );
-      $(`#quoteApproveModal .quote[data-id=${index}] .edit`).removeClass(
-        "hidden",
-      );
+
+    qsr("#quoteApproveModal .quotes").append(quoteEl);
+    quoteEl.qsr(".source").on("input", () => {
+      qsr(`#quoteApproveModal .quote[data-id="${index}"] .undo`).enable();
+      qsr(`#quoteApproveModal .quote[data-id="${index}"] .approve`).hide();
+      qsr(`#quoteApproveModal .quote[data-id="${index}"] .edit`).show();
     });
-    quoteEl.find(".text").on("input", () => {
-      $(`#quoteApproveModal .quote[data-id=${index}] .undo`).prop(
-        "disabled",
-        false,
-      );
-      $(`#quoteApproveModal .quote[data-id=${index}] .approve`).addClass(
-        "hidden",
-      );
-      $(`#quoteApproveModal .quote[data-id=${index}] .edit`).removeClass(
-        "hidden",
-      );
+    quoteEl.qsr(".text").on("input", () => {
+      qsr(`#quoteApproveModal .quote[data-id="${index}"] .undo`).enable();
+      qsr(`#quoteApproveModal .quote[data-id="${index}"] .approve`).hide();
+      qsr(`#quoteApproveModal .quote[data-id="${index}"] .edit`).show();
       updateQuoteLength(index);
     });
-    quoteEl.find(".undo").on("click", () => {
+    quoteEl.qsr(".undo").on("click", () => {
       undoQuote(index);
     });
-    quoteEl.find(".approve").on("click", () => {
+    quoteEl.qsr(".approve").on("click", () => {
       void approveQuote(index, quote._id);
     });
-    quoteEl.find(".refuse").on("click", () => {
+    quoteEl.qsr(".refuse").on("click", () => {
       void refuseQuote(index, quote._id);
     });
-    quoteEl.find(".edit").on("click", () => {
+    quoteEl.qsr(".edit").on("click", () => {
       void editQuote(index, quote._id);
     });
   });
@@ -80,15 +69,21 @@ function updateList(): void {
 
 function updateQuoteLength(index: number): void {
   const len = (
-    $(`#quoteApproveModal .quote[data-id=${index}] .text`).val() as string
+    qsr<HTMLTextAreaElement>(
+      `#quoteApproveModal .quote[data-id="${index}"] .text`,
+    ).getValue() as string
   )?.length;
-  $(`#quoteApproveModal .quote[data-id=${index}] .length`).html(
+  qsr(`#quoteApproveModal .quote[data-id="${index}"] .length`).setHtml(
     `<i class="fas fa-fw fa-ruler"></i>${len}`,
   );
   if (len < 60) {
-    $(`#quoteApproveModal .quote[data-id=${index}] .length`).addClass("red");
+    qsr(`#quoteApproveModal .quote[data-id="${index}"] .length`).addClass(
+      "red",
+    );
   } else {
-    $(`#quoteApproveModal .quote[data-id=${index}] .length`).removeClass("red");
+    qsr(`#quoteApproveModal .quote[data-id="${index}"] .length`).removeClass(
+      "red",
+    );
   }
 }
 
@@ -123,33 +118,31 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 // }
 
 function resetButtons(index: number): void {
-  const quote = $(`#quoteApproveModal .quotes .quote[data-id=${index}]`);
-  quote.find("button").prop("disabled", false);
-  if (quote.find(".edit").hasClass("hidden")) {
-    quote.find(".undo").prop("disabled", true);
+  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  quote.qsa("button").enable();
+  if (quote.qsr(".edit").hasClass("hidden")) {
+    quote.qsr(".undo").disable();
   }
 }
 
 function undoQuote(index: number): void {
-  $(`#quoteApproveModal .quote[data-id=${index}] .text`).val(
-    quotes[index]?.text ?? "",
-  );
-  $(`#quoteApproveModal .quote[data-id=${index}] .source`).val(
-    quotes[index]?.source ?? "",
-  );
-  $(`#quoteApproveModal .quote[data-id=${index}] .undo`).prop("disabled", true);
-  $(`#quoteApproveModal .quote[data-id=${index}] .approve`).removeClass(
-    "hidden",
-  );
-  $(`#quoteApproveModal .quote[data-id=${index}] .edit`).addClass("hidden");
+  qsr<HTMLTextAreaElement>(
+    `#quoteApproveModal .quote[data-id="${index}"] .text`,
+  ).setValue(quotes[index]?.text ?? "");
+  qsr<HTMLInputElement>(
+    `#quoteApproveModal .quote[data-id="${index}"] .source`,
+  ).setValue(quotes[index]?.source ?? "");
+  qsr(`#quoteApproveModal .quote[data-id="${index}"] .undo`).disable();
+  qsr(`#quoteApproveModal .quote[data-id="${index}"] .approve`).show();
+  qsr(`#quoteApproveModal .quote[data-id="${index}"] .edit`).hide();
   updateQuoteLength(index);
 }
 
 async function approveQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
-  const quote = $(`#quoteApproveModal .quotes .quote[data-id=${index}]`);
-  quote.find("button").prop("disabled", true);
-  quote.find("textarea, input").prop("disabled", true);
+  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  quote.qsa("button").disable();
+  quote.qsa("textarea, input").disable();
 
   Loader.show();
   const response = await Ape.quotes.approveSubmission({
@@ -159,7 +152,7 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
 
   if (response.status !== 200) {
     resetButtons(index);
-    quote.find("textarea, input").prop("disabled", false);
+    quote.qsa("textarea, input").enable();
     Notifications.add("Failed to approve quote", -1, { response });
     return;
   }
@@ -171,9 +164,9 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
 
 async function refuseQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
-  const quote = $(`#quoteApproveModal .quotes .quote[data-id=${index}]`);
-  quote.find("button").prop("disabled", true);
-  quote.find("textarea, input").prop("disabled", true);
+  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  quote.qsa("button").disable();
+  quote.qsa("textarea, input").disable();
 
   Loader.show();
   const response = await Ape.quotes.rejectSubmission({
@@ -183,7 +176,7 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
 
   if (response.status !== 200) {
     resetButtons(index);
-    quote.find("textarea, input").prop("disabled", false);
+    quote.qsa("textarea, input").enable();
     Notifications.add("Failed to refuse quote", -1, { response });
     return;
   }
@@ -195,15 +188,15 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
 
 async function editQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
-  const editText = $(
-    `#quoteApproveModal .quote[data-id=${index}] .text`,
-  ).val() as string;
-  const editSource = $(
-    `#quoteApproveModal .quote[data-id=${index}] .source`,
-  ).val() as string;
-  const quote = $(`#quoteApproveModal .quotes .quote[data-id=${index}]`);
-  quote.find("button").prop("disabled", true);
-  quote.find("textarea, input").prop("disabled", true);
+  const editText = qsr<HTMLTextAreaElement>(
+    `#quoteApproveModal .quote[data-id="${index}"] .text`,
+  ).getValue() as string;
+  const editSource = qsr<HTMLInputElement>(
+    `#quoteApproveModal .quote[data-id="${index}"] .source`,
+  ).getValue() as string;
+  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  quote.qsa("button").disable();
+  quote.qsa("textarea, input").disable();
 
   Loader.show();
   const response = await Ape.quotes.approveSubmission({
@@ -217,7 +210,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
 
   if (response.status !== 200) {
     resetButtons(index);
-    quote.find("textarea, input").prop("disabled", false);
+    quote.qsa("textarea, input").enable();
     Notifications.add("Failed to approve quote", -1, { response });
     return;
   }
@@ -232,7 +225,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
 
 async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector("button.refreshList")?.addEventListener("click", () => {
-    $("#quoteApproveModal .quotes").empty();
+    qsr("#quoteApproveModal .quotes").empty();
     void getQuotes();
   });
 }
