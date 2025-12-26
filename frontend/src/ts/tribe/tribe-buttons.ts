@@ -8,9 +8,7 @@ function showStartButton(page: string): void {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
-                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
-                .pageTest #result .bottom .buttons #nextTestButton,
-                .pageTest #result .bottom .buttons #backToLobbyButton`;
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton`;
   }
   $(elString).removeClass("hidden");
 }
@@ -21,9 +19,7 @@ function hideStartButton(page: string): void {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
-                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
-                .pageTest #result .bottom .buttons #nextTestButton,
-                .pageTest #result .bottom .buttons #backToLobbyButton`;
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton`;
   }
   $(elString).addClass("hidden");
 }
@@ -39,9 +35,7 @@ export function disableStartButton(page?: string): void {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
-                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
-                .pageTest #result .bottom .buttons #nextTestButton,
-                .pageTest #result .bottom .buttons #backToLobbyButton`;
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton`;
   }
   $(elString).addClass("disabled");
 }
@@ -57,9 +51,7 @@ export function enableStartButton(page: string): void {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
-                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
-                .pageTest #result .bottom .buttons #nextTestButton,
-                .pageTest #result .bottom .buttons #backToLobbyButton`;
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton`;
   }
   $(elString).removeClass("disabled");
 }
@@ -73,8 +65,7 @@ function showReadyButton(page: string): void {
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .readyButtonGroup,
                 .pageTest #tribeResultBottom .buttons .userReadyButton,
-                .pageTest #tribeResultBottom .buttons .autoReadyButton,
-                .pageTest #result .bottom .buttons #readyButton`;
+                .pageTest #tribeResultBottom .buttons .autoReadyButton`;
   }
   $(elString).removeClass("hidden");
 }
@@ -84,8 +75,7 @@ function hideReadyButton(page: string): void {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .readyButtonGroup";
   } else if (page === "result") {
-    elString = `.pageTest #tribeResultBottom .buttons .readyButtonGroup,
-                .pageTest #result .bottom .buttons #readyButton`;
+    elString = `.pageTest #tribeResultBottom .buttons .readyButtonGroup`;
   }
   $(elString).addClass("hidden");
 }
@@ -95,8 +85,7 @@ export function disableReadyButton(page: string): void {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
   } else if (page === "result") {
-    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
-                .pageTest #result .bottom .buttons #readyButton`;
+    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton`;
   }
   $(elString).addClass("disabled");
 }
@@ -106,8 +95,7 @@ export function enableReadyButton(page: string): void {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
   } else if (page === "result") {
-    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
-                .pageTest #result .bottom .buttons #readyButton`;
+    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton`;
   }
   $(elString).removeClass("disabled");
 }
@@ -205,16 +193,6 @@ export function updateAutoReadyButton(page: string): void {
   }
 }
 
-export function reset(): void {
-  $("#result .bottom .buttons div").addClass("hidden");
-  $("#result #nextTestButton").removeClass("hidden");
-  $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
-  $("#result #practiseWordsButton").removeClass("hidden");
-  $("#result #watchReplayButton").removeClass("hidden");
-  $("#result #showWordHistoryButton").removeClass("hidden");
-  $("#result #saveScreenshotButton").removeClass("hidden");
-}
-
 export function update(page?: string): void {
   if (page === undefined) {
     update("lobby");
@@ -286,15 +264,10 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton,
   tribeSocket.out.room.leave();
 });
 
-$(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
-.pageTest #tribeResultBottom .buttons .userReadyButton`).on("click", (_e) => {
-  tribeSocket.out.room.readyUpdate();
-});
-
 $(
-  `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`,
+  `.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton, .pageTest #tribeResultBottom .buttons .userReadyButton`,
 ).on("click", (_e) => {
-  tribeSocket.out.room.backToLobby();
+  tribeSocket.out.room.readyUpdate();
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton,

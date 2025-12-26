@@ -34,6 +34,7 @@ import * as NavigationEvent from "../observables/navigation-event";
 import { ColorName } from "../elements/theme-colors";
 import * as TribeAutoJoin from "./tribe-auto-join";
 import { authPromise } from "../firebase";
+import * as Result from "../test/result";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -159,7 +160,6 @@ async function reset(): Promise<void> {
   TribeBars.hide();
   TribePageLobby.reset();
   TribeBars.reset();
-  TribeButtons.reset();
 }
 
 async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
@@ -277,6 +277,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   updateClientState(TribeTypes.CLIENT_STATE.DISCONNECTED);
   TribeDelta.hide();
   TribeCountdown.hide();
+  Result.updateTribe();
 
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
@@ -306,6 +307,7 @@ TribeSocket.in.system.connectFailed((err) => {
       customTitle: "Tribe",
     });
   }
+  Result.updateTribe();
   TribeState.setSocketId(undefined);
   TribeState.setRoom(undefined);
   TribeDelta.hide();
@@ -326,6 +328,7 @@ TribeSocket.in.system.connectError((err) => {
       customTitle: "Tribe",
     });
   }
+  Result.updateTribe();
   TribeDelta.hide();
   TribeCountdown.hide();
   TribeState.setSocketId(undefined);

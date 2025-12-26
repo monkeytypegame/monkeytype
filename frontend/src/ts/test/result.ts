@@ -54,6 +54,7 @@ import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../states/connection";
 import { currentQuote } from "./test-words";
+import { qs } from "../utils/dom";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -1130,29 +1131,7 @@ export async function update(
     TestUI.toggleResultWords(true);
   }
 
-  //tribe
-  // todo: move this
-  $("#result .bottom .buttons div").addClass("hidden");
-  $("#result #tribeResultBottom").addClass("hidden");
-  if (TribeState.isInARoom()) {
-    $("#result #tribeResultBottom").removeClass("hidden");
-    if (TribeState.getSelf()?.isLeader) {
-      $("#result #nextTestButton").removeClass("hidden");
-      $("#result #backToLobbyButton").removeClass("hidden");
-    } else {
-      $("#result #readyButton").removeClass("hidden");
-    }
-    TribeResults.update("result");
-    TribeUserList.update("result");
-    TribeButtons.update("result");
-  } else {
-    $("#result #nextTestButton").removeClass("hidden");
-    $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
-    $("#result #practiseWordsButton").removeClass("hidden");
-    $("#result #watchReplayButton").removeClass("hidden");
-  }
-  $("#result #showWordHistoryButton").removeClass("hidden");
-  $("#result #saveScreenshotButton").removeClass("hidden");
+  updateTribe();
 
   AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
@@ -1170,11 +1149,6 @@ export async function update(
     duration: Misc.applyReducedMotion(125),
   });
 
-  Misc.scrollToCenterOrTop(resultEl);
-  void AdController.renderResult();
-  TestUI.setResultCalculating(false);
-  $("#words").empty();
-  ChartController.result.resize();
   TribeChat.scrollChat();
   const room = TribeState.getRoom();
   if (room?.users) {
@@ -1184,6 +1158,39 @@ export async function update(
         void TribeChartController.drawChart(userId);
       }
     }
+  }
+
+  Misc.scrollToCenterOrTop(resultEl);
+  void AdController.renderResult();
+  TestUI.setResultCalculating(false);
+  $("#words").empty();
+  ChartController.result.resize();
+}
+
+export function updateTribe(): void {
+  if (TribeState.isInARoom()) {
+    qs("#result #tribeResultBottom")?.show();
+    qs("#result #restartTestButtonWithSameWordset")?.hide();
+    qs("#result #practiseWordsButton")?.hide();
+
+    if (TribeState.isLeader()) {
+      qs("#result #nextTestButton")?.show();
+      qs("#result #backToLobbyButton")?.show();
+      qs("#result #readyButton")?.hide();
+    } else {
+      qs("#result #nextTestButton")?.hide();
+      qs("#result #backToLobbyButton")?.hide();
+      qs("#result #readyButton")?.show();
+    }
+
+    TribeResults.update("result");
+    TribeUserList.update("result");
+    TribeButtons.update("result");
+  } else {
+    qs("#result #tribeResultBottom")?.hide();
+    qs("#result #nextTestButton")?.show();
+    qs("#result #restartTestButtonWithSameWordset")?.show();
+    qs("#result #practiseWordsButton")?.show();
   }
 }
 
