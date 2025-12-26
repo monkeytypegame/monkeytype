@@ -7,6 +7,7 @@ import "./event-handlers/settings";
 import "./event-handlers/account";
 import "./event-handlers/leaderboards";
 import "./event-handlers/login";
+import "./event-handlers/tribe";
 
 import "./modals/google-sign-up";
 
