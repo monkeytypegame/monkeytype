@@ -50,9 +50,13 @@ export async function show(
         return quote.id === quoteId;
       });
 
-      $("#quoteReportModal .quote").text(state.quoteToReport?.text as string);
-      $("#quoteReportModal .reason").val("Grammatical error");
-      $("#quoteReportModal .comment").val("");
+      qsr("#quoteReportModal .quote").setText(
+        state.quoteToReport?.text as string,
+      );
+      qsr<HTMLSelectElement>("#quoteReportModal .reason").setValue(
+        "Grammatical error",
+      );
+      qsr<HTMLTextAreaElement>("#quoteReportModal .comment").setValue("");
 
       state.reasonSelect = new SlimSelect({
         select: "#quoteReportModal .reason",
@@ -81,8 +85,12 @@ async function submitReport(): Promise<void> {
 
   const quoteId = state.quoteToReport?.id.toString();
   const quoteLanguage = removeLanguageSize(Config.language);
-  const reason = $("#quoteReportModal .reason").val() as QuoteReportReason;
-  const comment = $("#quoteReportModal .comment").val() as string;
+  const reason = qsr<HTMLSelectElement>(
+    "#quoteReportModal .reason",
+  ).getValue() as QuoteReportReason;
+  const comment = qsr<HTMLTextAreaElement>(
+    "#quoteReportModal .comment",
+  ).getValue() as string;
   const captcha = captchaResponse;
 
   if (quoteId === undefined || quoteId === "") {
