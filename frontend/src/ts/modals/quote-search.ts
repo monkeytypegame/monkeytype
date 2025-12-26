@@ -22,6 +22,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
+import { qs, qsr } from "../utils/dom";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
@@ -52,8 +53,13 @@ function getSearchService<T>(
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
-  const quoteLengthDropdown = $("#quoteSearchModal .quoteLengthFilter");
-  const quoteLengthFilterValue = quoteLengthDropdown.val() as string[];
+  const quoteLengthDropdown = qs<HTMLSelectElement>(
+    "#quoteSearchModal .quoteLengthFilter",
+  );
+  const selectedOptions = quoteLengthDropdown
+    ? Array.from(quoteLengthDropdown.native.selectedOptions)
+    : [];
+  const quoteLengthFilterValue = selectedOptions.map((el) => el.value);
 
   if (quoteLengthFilterValue.length === 0) {
     usingCustomLength = true;
@@ -69,7 +75,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (customFilterIndex !== -1) {
     if (QuoteFilterPopup.removeCustom) {
       QuoteFilterPopup.setRemoveCustom(false);
-      const selectElement = quoteLengthDropdown.get(0) as
+      const selectElement = quoteLengthDropdown?.native as
         | HTMLSelectElement
         | null
         | undefined;
@@ -276,38 +282,38 @@ async function updateResults(searchText: string): Promise<void> {
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
   );
 
-  const resultsList = $("#quoteSearchResults");
+  const resultsList = qsr("#quoteSearchResults");
   resultsList.empty();
 
   const totalPages = Math.ceil(quotesToShow.length / pageSize);
 
   if (currentPageNumber >= totalPages) {
-    $("#quoteSearchPageNavigator .nextPage").prop("disabled", true);
+    qsr("#quoteSearchPageNavigator .nextPage").disable();
   } else {
-    $("#quoteSearchPageNavigator .nextPage").prop("disabled", false);
+    qsr("#quoteSearchPageNavigator .nextPage").enable();
   }
 
   if (currentPageNumber <= 1) {
-    $("#quoteSearchPageNavigator .prevPage").prop("disabled", true);
+    qsr("#quoteSearchPageNavigator .prevPage").disable();
   } else {
-    $("#quoteSearchPageNavigator .prevPage").prop("disabled", false);
+    qsr("#quoteSearchPageNavigator .prevPage").enable();
   }
 
   if (quotesToShow.length === 0) {
-    $("#quoteSearchModal  .pageInfo").html("No search results");
+    qsr("#quoteSearchModal  .pageInfo").setHtml("No search results");
     return;
   }
 
   const startIndex = (currentPageNumber - 1) * pageSize;
   const endIndex = Math.min(currentPageNumber * pageSize, quotesToShow.length);
 
-  $("#quoteSearchModal  .pageInfo").html(
+  qsr("#quoteSearchModal  .pageInfo").setHtml(
     `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`,
   );
 
   quotesToShow.slice(startIndex, endIndex).forEach((quote) => {
     const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
-    resultsList.append(quoteSearchResult);
+    resultsList.appendHtml(quoteSearchResult);
   });
 
   const searchResults = modal
@@ -358,11 +364,11 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
     focusFirstInput: true,
     beforeAnimation: async () => {
       if (!isAuthenticated()) {
-        $("#quoteSearchModal .goToQuoteSubmit").addClass("hidden");
-        $("#quoteSearchModal .toggleFavorites").addClass("hidden");
+        qsr("#quoteSearchModal .goToQuoteSubmit").hide();
+        qsr("#quoteSearchModal .toggleFavorites").hide();
       } else {
-        $("#quoteSearchModal .goToQuoteSubmit").removeClass("hidden");
-        $("#quoteSearchModal .toggleFavorites").removeClass("hidden");
+        qsr("#quoteSearchModal .goToQuoteSubmit").show();
+        qsr("#quoteSearchModal .toggleFavorites").show();
       }
 
       const quoteMod = DB.getSnapshot()?.quoteMod;
@@ -371,9 +377,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         (quoteMod === true || (quoteMod as string) !== "");
 
       if (isQuoteMod) {
-        $("#quoteSearchModal .goToQuoteApprove").removeClass("hidden");
+        qsr("#quoteSearchModal .goToQuoteApprove").show();
       } else {
-        $("#quoteSearchModal .goToQuoteApprove").addClass("hidden");
+        qsr("#quoteSearchModal .goToQuoteApprove").hide();
       }
 
       lengthSelect = new SlimSelect({
@@ -461,7 +467,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-  const $button = $(
+  const $button = qsr(
     `#quoteSearchModal .searchResult[data-quote-id=${quoteId}] .textButton.favorite i`,
   );
   const dbSnapshot = DB.getSnapshot();
@@ -507,7 +513,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         return;
       }
 
-      $(e.target as HTMLElement).toggleClass("active");
+      (e.target as HTMLElement).classList.toggle("active");
       searchForQuotes();
     });
   modalEl.querySelector(".goToQuoteApprove")?.addEventListener("click", (e) => {
