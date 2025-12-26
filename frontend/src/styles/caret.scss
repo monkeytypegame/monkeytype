@@ -22,6 +22,28 @@
   position: absolute;
   border-radius: var(--roundness);
   transform-origin: top left;
+  z-index: -1;
+
+  .caretName {
+    position: absolute;
+    font-size: 0.33em;
+    bottom: -1.33em;
+    // right: 0.5em;
+    right: 0;
+    color: var(--sub-color);
+    border-radius: calc(var(--roundness) / 2);
+    padding: 0.25em 0.5em;
+    background: var(--sub-alt-color);
+  }
+
+  &.error {
+    background: var(--error-color);
+    opacity: 0.25;
+    .caretName {
+      background: var(--error-color);
+      color: var(--bg-color);
+    }
+  }
 }
 
 #caret,

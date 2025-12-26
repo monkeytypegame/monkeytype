@@ -12,7 +12,6 @@ import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
-import * as LineJumpEvent from "../observables/line-jump-event";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
@@ -60,6 +59,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as TribeDelta from "../tribe/tribe-delta";
 import * as TribeState from "../tribe/tribe-state";
+import * as TribeCarets from "../tribe/tribe-carets";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -490,6 +490,7 @@ function showWords(): void {
   });
   updateWordWrapperClasses();
   PaceCaret.resetCaretPosition();
+  TribeCarets.resetAllPositions();
 }
 
 export function appendEmptyWordElement(
@@ -1048,6 +1049,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
     Caret.caret.handleTapeWordsRemoved(widthRemoved);
     PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
+    TribeCarets.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1094,6 +1096,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   Caret.caret.handleTapeScroll(caretScrollOptions);
   PaceCaret.caret.handleTapeScroll(caretScrollOptions);
+  TribeCarets.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
     animate(wordsEl, {
@@ -1201,6 +1204,7 @@ export async function lineJump(
     };
     Caret.caret.handleLineJump(caretLineJumpOptions);
     PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+    TribeCarets.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -1218,7 +1222,6 @@ export async function lineJump(
       currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
     }
-    LineJumpEvent.dispatch(wordHeight);
   }
   currentTestLine++;
   updateWordsWrapperHeight();

@@ -499,21 +499,6 @@
 }
 
 .pageTest {
-  .tribeCaret {
-    transition: 0.125s background;
-    .caretName {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      font-size: clamp(0.25em, 0.5em, 1rem);
-      color: var(--text-color);
-      background: inherit;
-      border-radius: calc(var(--roundness) / 2);
-      padding: 0 0.4em;
-      margin-bottom: -1em;
-      user-select: none;
-    }
-  }
   #result {
     #tribeResultBottom {
       margin-top: 1rem;

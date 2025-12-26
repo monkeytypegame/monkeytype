@@ -689,9 +689,9 @@ TribeSocket.in.room.userResult((data) => {
     let color: ColorName | undefined = undefined;
     if (resolve === undefined || ("failed" in resolve && resolve.failed)) {
       color = "colorfulError";
+      TribeCarets.setError(data.userId, true);
     }
 
-    if (color !== undefined) TribeCarets.changeColor(data.userId, color);
     TribeBars.fadeUser("test", data.userId, color);
     TribeBars.fadeUser("tribe", data.userId, color);
     if (!TribeConfig.isConfigInfinite(room.config)) {
