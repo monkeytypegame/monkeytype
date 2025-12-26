@@ -1,10 +1,11 @@
-import { Chart, ChartConfiguration } from "chart.js";
+import { Chart, ChartConfiguration, ChartDataset } from "chart.js";
 import * as TribeState from "./tribe-state";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Notifications from "../elements/notifications";
 import { createErrorMessage } from "../utils/misc";
 import tribeSocket from "./tribe-socket";
-import { smooth } from "../utils/arrays";
+import { blendTwoHexColors } from "../utils/colors";
+import { smoothWithValueWindow } from "../utils/arrays";
 
 const charts: Record<string, Chart> = {};
 
@@ -14,47 +15,59 @@ const settings: ChartConfiguration = {
     labels: [1, 2, 3],
     datasets: [
       {
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
+        clip: false,
         label: "wpm",
-        data: [100, 100, 100],
+        data: [],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 1,
+        borderWidth: 2,
         yAxisID: "wpm",
         order: 2,
-        radius: 1,
+        pointRadius: 1,
+        tension: 0.5,
+        fill: "origin",
       },
       {
-        label: "raw",
-        data: [110, 110, 110],
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
+        clip: false,
+        label: "burst",
+        data: [],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 1,
-        yAxisID: "raw",
-        order: 3,
-        radius: 1,
+        borderWidth: 2,
+        yAxisID: "burst",
+        order: 4,
+        pointRadius: 1,
+        tension: 0.5,
+        fill: "origin",
       },
       {
+        //@ts-expect-error the type is defined incorrectly, have to ignore the error
+        clip: false,
         label: "errors",
-        data: [1, 0, 1],
+        data: [],
         borderColor: "rgba(255, 125, 125, 1)",
         pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 1,
+        borderWidth: 2,
         order: 1,
         yAxisID: "error",
         type: "scatter",
         pointStyle: "crossRot",
-        pointRadius: function (context): 0 | 2 {
+        pointRadius: function (context): number {
           const index = context.dataIndex;
-          const value = (context.dataset.data[index] ?? 0) as number;
-          return value <= 0 ? 0 : 2;
+          const value = context.dataset.data[index] as number;
+          return (value ?? 0) <= 0 ? 0 : 3;
         },
-        pointHoverRadius: function (context): 0 | 3 {
+        pointHoverRadius: function (context): number {
           const index = context.dataIndex;
-          const value = (context.dataset.data[index] ?? 0) as number;
-          return value <= 0 ? 0 : 3;
+          const value = context.dataset.data[index] as number;
+          return (value ?? 0) <= 0 ? 0 : 5;
         },
       },
     ],
   },
   options: {
+    responsive: true,
+    maintainAspectRatio: false,
     interaction: {
       intersect: false,
       mode: "index",
@@ -163,8 +176,6 @@ const settings: ChartConfiguration = {
     //     defaultFontFamily: "Roboto Mono",
     //   },
     // },
-    responsive: true,
-    maintainAspectRatio: false,
     scales: {
       x: {
         axis: "x",
@@ -209,7 +220,7 @@ const settings: ChartConfiguration = {
           // tickMarkLength: 0,
         },
       },
-      raw: {
+      burst: {
         min: 0,
         axis: "y",
         display: false,
@@ -265,37 +276,82 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
     labels.push(i);
   }
 
-  // const chartmaxval = Math.max(
-  //   Math.max(...result.chartData.wpm),
-  //   Math.max(...result.chartData.raw)
-  // );
+  // const bgcolor = await ThemeColors.get("bg");
+  const subcolor = await ThemeColors.get("sub");
+  const subaltcolor = await ThemeColors.get("subAlt");
+  const maincolor = await ThemeColors.get("main");
+  const errorcolor = await ThemeColors.get("error");
+  const textcolor = await ThemeColors.get("text");
+  const gridcolor = subaltcolor;
 
-  const smoothedRawData = smooth(result.chartData.burst, 1);
+  for (const scale of Object.values(chart.options.scales ?? {})) {
+    //@ts-expect-error tribe
+    scale.grid.color = gridcolor;
+    //@ts-expect-error tribe
+    scale.grid.tickColor = gridcolor;
+    //@ts-expect-error tribe
+    scale.grid.borderColor = gridcolor;
+    //@ts-expect-error tribe
+    scale.ticks.color = subcolor;
+    //@ts-expect-error tribe
+    // oxlint-disable-next-line no-unsafe-member-access
+    scale.title.color = subcolor;
+  }
 
-  chart.data.labels = labels;
+  const c = chart as unknown as typeof settings;
+
+  c.data.labels = labels;
   //@ts-expect-error tribe
-  chart.data.datasets[0].data = result.chartData.wpm;
+  c.data.datasets[0].data = result.chartData.wpm;
+
+  const valueWindow = Math.max(...result.chartData.burst) * 0.25;
+  const smoothedBurst = smoothWithValueWindow(
+    result.chartData.burst,
+    1,
+    valueWindow,
+  );
+
   //@ts-expect-error tribe
-  chart.data.datasets[1].data = smoothedRawData;
+  chart.data.datasets[1].data = smoothedBurst;
   //@ts-expect-error tribe
   chart.data.datasets[2].data = result.chartData.err;
 
-  // chart.options.scales["wpm"].ticks.max = Math.round(chartmaxval);
-  // chart.options.scales["raw"].ticks.max = Math.round(chartmaxval);
+  const wpm = chart.data.datasets[0] as ChartDataset;
+  const burst = chart.data.datasets[1] as ChartDataset;
+  const err = chart.data.datasets[2] as ChartDataset;
 
+  wpm.backgroundColor = "transparent";
   if (userId === tribeSocket.getId()) {
+    wpm.borderColor = maincolor;
     //@ts-expect-error tribe
-    chart.data.datasets[0].borderColor = await ThemeColors.get("main");
-    // chart.data.datasets[0].backgroundColor = await ThemeColors.get("main");
+    wpm.pointBackgroundColor = maincolor;
+    //@ts-expect-error tribe
+    wpm.pointBorderColor = maincolor;
   } else {
+    wpm.borderColor = textcolor;
     //@ts-expect-error tribe
-
-    chart.data.datasets[0].borderColor = await ThemeColors.get("text");
-    // chart.data.datasets[0].backgroundColor = await ThemeColors.get("text");
+    wpm.pointBackgroundColor = textcolor;
+    //@ts-expect-error tribe
+    wpm.pointBorderColor = textcolor;
   }
+
+  burst.backgroundColor = blendTwoHexColors(
+    subaltcolor,
+    subaltcolor + "00",
+    0.5,
+  );
+  burst.borderColor = subcolor;
   //@ts-expect-error tribe
-  chart.data.datasets[1].borderColor = await ThemeColors.get("sub");
-  // chart.data.datasets[1].backgroundColor = await ThemeColors.get("sub");
+  burst.pointBackgroundColor = subcolor;
+  //@ts-expect-error tribe
+  burst.pointBorderColor = subcolor;
+
+  err.backgroundColor = errorcolor;
+  err.borderColor = errorcolor;
+  //@ts-expect-error tribe
+  err.pointBackgroundColor = errorcolor;
+  //@ts-expect-error tribe
+  err.pointBorderColor = errorcolor;
 
   chart.update();
 }
