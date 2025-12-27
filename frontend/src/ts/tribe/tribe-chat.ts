@@ -113,6 +113,7 @@ export function reset(where: "both" | "lobby" | "result" = "both"): void {
 }
 
 export function fill(where: "both" | "lobby" | "result"): void {
+  reset(where);
   for (const message of chatHistory) {
     void displayMessage(
       message.isSystem,

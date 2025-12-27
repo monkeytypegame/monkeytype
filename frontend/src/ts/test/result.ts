@@ -1150,6 +1150,8 @@ export async function update(
   });
 
   TribeChat.scrollChat();
+  TribeChat.fill("lobby");
+
   const room = TribeState.getRoom();
   if (room?.users) {
     for (const userId of Object.keys(room.users)) {
