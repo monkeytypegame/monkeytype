@@ -10,7 +10,7 @@ const modal = new AnimatedModal({
   setup: async (modalEl): Promise<void> => {
     modalEl.querySelector("button.ads")?.addEventListener("click", async () => {
       Commandline.show(
-        { subgroupOverride: "enableAds" },
+        { subgroupOverride: "ads" },
         {
           modalChain: modal,
         },

@@ -106,7 +106,7 @@ export async function update(): Promise<void> {
 
   if (Config.mode !== "zen" && !usingPolyglot) {
     testModesNotice.appendHtml(
-      `<button class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+      `<button class="textButton" commands="language"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
         Config.language,
         Config.mode === "quote",
       )}</button>`,
@@ -158,7 +158,7 @@ export async function update(): Promise<void> {
     });
 
     testModesNotice.appendHtml(
-      `<button class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
+      `<button class="textButton" commands="paceCaret"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
           ? "average"
           : Config.paceCaret === "pb"
@@ -278,7 +278,7 @@ export async function update(): Promise<void> {
 
   if (Config.layout !== "default") {
     testModesNotice.appendHtml(
-      `<button class="textButton" commands="layouts"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
+      `<button class="textButton" commands="layout"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
         /_/g,
         " ",
       )}</button>`,
