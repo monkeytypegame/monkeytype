@@ -39,7 +39,7 @@ import * as Result from "../test/result";
 const defaultName = "Guest";
 let name = "Guest";
 
-export const expectedVersion = isDevEnvironment() ? "dev" : "25.12.1";
+export const expectedVersion = isDevEnvironment() ? "dev" : "25.12.2";
 
 function updateClientState(state: TribeTypes.ClientState): void {
   TribeState.setState(state);
