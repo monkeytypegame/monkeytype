@@ -1,7 +1,9 @@
 import * as Commandline from "../commandline/commandline";
 
-$("#keymap").on("click", ".r5 .layoutIndicator", async () => {
-  Commandline.show({
-    subgroupOverride: "keymapLayouts",
-  });
+document.getElementById("keymap")?.addEventListener("click", (e) => {
+  if ((e.target as Element).closest(".r5 .layoutIndicator")) {
+    Commandline.show({
+      subgroupOverride: "keymapLayouts",
+    });
+  }
 });
