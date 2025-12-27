@@ -270,6 +270,13 @@ $(
   tribeSocket.out.room.readyUpdate();
 });
 
+$(`.pageTest #tribeResultBottom .buttons .backToLobbyButton`).on(
+  "click",
+  (_e) => {
+    tribeSocket.out.room.backToLobby();
+  },
+);
+
 $(`.pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton,
 .pageTest #tribeResultBottom .buttons .autoReadyButton`).on("click", (e) => {
   TribeState.setAutoReady(!TribeState.getAutoReady());
