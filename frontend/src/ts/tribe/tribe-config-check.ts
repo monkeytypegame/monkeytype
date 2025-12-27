@@ -6,7 +6,12 @@ export function canChangeConfig(override: boolean): boolean {
   if (room === undefined) return true;
 
   if (getSelf()?.isLeader) {
-    if (room.state !== "LOBBY") return false;
+    if (
+      room.state !== "LOBBY" &&
+      room.state !== "READY_TO_CONTINUE" &&
+      room.state !== "SHOWING_RESULTS"
+    )
+      return false;
     //is leader, allow
     return true;
   } else {
