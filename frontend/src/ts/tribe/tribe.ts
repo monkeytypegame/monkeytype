@@ -293,7 +293,12 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Disconnected`);
   //@ts-expect-error tribe
-  TribePagePreloader.updateSubtext(`${details?.["description"]} (${reason})`);
+  const description = details?.["description"] as string | undefined;
+  let str = reason;
+  if (description !== undefined && description !== "") {
+    str = `${description} (${reason})`;
+  }
+  TribePagePreloader.updateSubtext(str);
   TribePagePreloader.showReconnectButton();
 
   void reset();
