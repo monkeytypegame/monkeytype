@@ -331,7 +331,9 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
 );
 
 $(document).on("keydown", (e) => {
-  if (TribeState.isInARoom()) {
+  if (!TribeState.isInARoom()) return;
+
+  if (TribeState.getRoomState() === TribeTypes.ROOM_STATE.LOBBY) {
     if (
       e.key === "/" &&
       !$(".pageTribe .lobby .chat .input input").is(":focus")
@@ -341,9 +343,9 @@ $(document).on("keydown", (e) => {
     }
   } else if (
     TestState.resultVisible &&
-    (TribeState.getRoom()?.state === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED ||
-      TribeState.getRoom()?.state === TribeTypes.ROOM_STATE.SHOWING_RESULTS ||
-      TribeState.getRoom()?.state === TribeTypes.ROOM_STATE.READY_TO_CONTINUE)
+    (TribeState.getRoomState() === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED ||
+      TribeState.getRoomState() === TribeTypes.ROOM_STATE.SHOWING_RESULTS ||
+      TribeState.getRoomState() === TribeTypes.ROOM_STATE.READY_TO_CONTINUE)
   ) {
     if (
       e.key === "/" &&
