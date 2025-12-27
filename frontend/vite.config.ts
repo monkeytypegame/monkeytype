@@ -30,9 +30,12 @@ import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 
 export default defineConfig(({ mode }): UserConfig => {
-  const env = loadEnv(mode, process.cwd(), "");
+  // Load .env.tribedev when mode is 'tribedev'
+  const envFile = mode === "tribedev" ? ".env.tribedev" : "";
+  const env = loadEnv(mode, process.cwd(), ["", envFile]);
+
   const useSentry = env["SENTRY"] !== undefined;
-  const isDevelopment = mode !== "production";
+  const isDevelopment = mode !== "production" && mode !== "tribedev";
 
   if (!isDevelopment) {
     if (env["RECAPTCHA_SITE_KEY"] === undefined) {
