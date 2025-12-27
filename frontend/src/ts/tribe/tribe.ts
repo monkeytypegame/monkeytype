@@ -113,6 +113,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     if (TribeState.getAutoReady()) {
       TribeSocket.out.room.readyUpdate();
     }
+    TribeButtons.update();
   } else if (state === TribeTypes.ROOM_STATE.READY_TO_CONTINUE) {
     TribePageLobby.enableNameVisibilityButtons();
     TribePageLobby.enableConfigButtons();
