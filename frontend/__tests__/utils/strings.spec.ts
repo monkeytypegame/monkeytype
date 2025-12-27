@@ -265,7 +265,7 @@ describe("string utils", () => {
     ] as const)(
       "should return %s for word '%s' (%s)",
       (expected: boolean, word: string, _description: string) => {
-        expect(Strings.__testing.hasRTLCharacters(word)).toBe(expected);
+        expect(Strings.__testing.hasRTLCharacters(word)[0]).toBe(expected);
       },
     );
   });
@@ -321,27 +321,27 @@ describe("string utils", () => {
         languageRTL: boolean,
         _description: string,
       ) => {
-        expect(Strings.isWordRightToLeft(word, languageRTL)).toBe(expected);
+        expect(Strings.isWordRightToLeft(word, languageRTL)[0]).toBe(expected);
       },
     );
 
     it("should return languageRTL for undefined word", () => {
-      expect(Strings.isWordRightToLeft(undefined, false)).toBe(false);
-      expect(Strings.isWordRightToLeft(undefined, true)).toBe(true);
+      expect(Strings.isWordRightToLeft(undefined, false)[0]).toBe(false);
+      expect(Strings.isWordRightToLeft(undefined, true)[0]).toBe(true);
     });
 
     // testing reverseDirection
     it("should return true for LTR word with reversed direction", () => {
-      expect(Strings.isWordRightToLeft("hello", false, true)).toBe(true);
-      expect(Strings.isWordRightToLeft("hello", true, true)).toBe(true);
+      expect(Strings.isWordRightToLeft("hello", false, true)[0]).toBe(true);
+      expect(Strings.isWordRightToLeft("hello", true, true)[0]).toBe(true);
     });
     it("should return false for RTL word with reversed direction", () => {
-      expect(Strings.isWordRightToLeft("مرحبا", true, true)).toBe(false);
-      expect(Strings.isWordRightToLeft("مرحبا", false, true)).toBe(false);
+      expect(Strings.isWordRightToLeft("مرحبا", true, true)[0]).toBe(false);
+      expect(Strings.isWordRightToLeft("مرحبا", false, true)[0]).toBe(false);
     });
     it("should return reverse of languageRTL for undefined word with reversed direction", () => {
-      expect(Strings.isWordRightToLeft(undefined, false, true)).toBe(true);
-      expect(Strings.isWordRightToLeft(undefined, true, true)).toBe(false);
+      expect(Strings.isWordRightToLeft(undefined, false, true)[0]).toBe(true);
+      expect(Strings.isWordRightToLeft(undefined, true, true)[0]).toBe(false);
     });
 
     describe("caching", () => {
@@ -364,8 +364,8 @@ describe("string utils", () => {
       it("should use cache for repeated calls", () => {
         // First call should cache the result (cache miss)
         const result1 = Strings.isWordRightToLeft("hello", false);
-        expect(result1).toBe(false);
-        expect(mapSetSpy).toHaveBeenCalledWith("hello", false);
+        expect(result1[0]).toBe(false);
+        expect(mapSetSpy).toHaveBeenCalledWith("hello", [false, 0]);
 
         // Reset spies to check second call
         mapGetSpy.mockClear();
@@ -373,7 +373,7 @@ describe("string utils", () => {
 
         // Second call should use cache (cache hit)
         const result2 = Strings.isWordRightToLeft("hello", false);
-        expect(result2).toBe(false);
+        expect(result2[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("hello");
         expect(mapSetSpy).not.toHaveBeenCalled(); // Should not set again
 
@@ -382,7 +382,7 @@ describe("string utils", () => {
         mapSetSpy.mockClear();
 
         const result3 = Strings.isWordRightToLeft("hello", true);
-        expect(result3).toBe(false); // Still false because "hello" is LTR regardless of language
+        expect(result3[0]).toBe(false); // Still false because "hello" is LTR regardless of language
         expect(mapGetSpy).toHaveBeenCalledWith("hello");
         expect(mapSetSpy).not.toHaveBeenCalled(); // Should not set again
       });
@@ -390,15 +390,15 @@ describe("string utils", () => {
       it("should cache based on core word without punctuation", () => {
         // First call should cache the result for core "hello"
         const result1 = Strings.isWordRightToLeft("hello", false);
-        expect(result1).toBe(false);
-        expect(mapSetSpy).toHaveBeenCalledWith("hello", false);
+        expect(result1[0]).toBe(false);
+        expect(mapSetSpy).toHaveBeenCalledWith("hello", [false, 0]);
 
         mapGetSpy.mockClear();
         mapSetSpy.mockClear();
 
         // These should all use the same cache entry since they have the same core
         const result2 = Strings.isWordRightToLeft("hello!", false);
-        expect(result2).toBe(false);
+        expect(result2[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("hello");
         expect(mapSetSpy).not.toHaveBeenCalled();
 
@@ -406,7 +406,7 @@ describe("string utils", () => {
         mapSetSpy.mockClear();
 
         const result3 = Strings.isWordRightToLeft("!hello", false);
-        expect(result3).toBe(false);
+        expect(result3[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("hello");
         expect(mapSetSpy).not.toHaveBeenCalled();
 
@@ -414,7 +414,7 @@ describe("string utils", () => {
         mapSetSpy.mockClear();
 
         const result4 = Strings.isWordRightToLeft("!hello!", false);
-        expect(result4).toBe(false);
+        expect(result4[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("hello");
         expect(mapSetSpy).not.toHaveBeenCalled();
       });
@@ -422,7 +422,7 @@ describe("string utils", () => {
       it("should handle cache clearing", () => {
         // Cache a result
         Strings.isWordRightToLeft("test", false);
-        expect(mapSetSpy).toHaveBeenCalledWith("test", false);
+        expect(mapSetSpy).toHaveBeenCalledWith("test", [false, 0]);
 
         // Clear cache
         Strings.clearWordDirectionCache();
@@ -434,23 +434,23 @@ describe("string utils", () => {
 
         // Should work normally after cache clear (cache miss again)
         const result = Strings.isWordRightToLeft("test", false);
-        expect(result).toBe(false);
-        expect(mapSetSpy).toHaveBeenCalledWith("test", false);
+        expect(result[0]).toBe(false);
+        expect(mapSetSpy).toHaveBeenCalledWith("test", [false, 0]);
       });
 
       it("should demonstrate cache miss vs cache hit behavior", () => {
         // Test cache miss - first time seeing this word
         const result1 = Strings.isWordRightToLeft("unique", false);
-        expect(result1).toBe(false);
+        expect(result1[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("unique");
-        expect(mapSetSpy).toHaveBeenCalledWith("unique", false);
+        expect(mapSetSpy).toHaveBeenCalledWith("unique", [false, 0]);
 
         mapGetSpy.mockClear();
         mapSetSpy.mockClear();
 
         // Test cache hit - same word again
         const result2 = Strings.isWordRightToLeft("unique", false);
-        expect(result2).toBe(false);
+        expect(result2[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("unique");
         expect(mapSetSpy).not.toHaveBeenCalled(); // No cache set on hit
 
@@ -459,9 +459,9 @@ describe("string utils", () => {
 
         // Test cache miss - different word
         const result3 = Strings.isWordRightToLeft("different", false);
-        expect(result3).toBe(false);
+        expect(result3[0]).toBe(false);
         expect(mapGetSpy).toHaveBeenCalledWith("different");
-        expect(mapSetSpy).toHaveBeenCalledWith("different", false);
+        expect(mapSetSpy).toHaveBeenCalledWith("different", [false, 0]);
       });
     });
   });
