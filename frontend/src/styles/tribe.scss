@@ -369,6 +369,7 @@
     .messages {
       height: 20rem;
       overflow-y: scroll;
+      margin-bottom: 1em;
       .systemMessage {
         color: var(--sub-color);
         margin-top: 0.25rem;
