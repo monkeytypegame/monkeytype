@@ -24,6 +24,7 @@ export function init(): void {
 
     const caretEl = createElementWithUtils("div", {
       classList: ["tribeCaret", "full-width"],
+      id: `tribeCaret-${socketId}`,
       dataset: { socketId: socketId },
     });
 
