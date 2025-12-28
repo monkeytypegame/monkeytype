@@ -6,6 +6,8 @@ import { createErrorMessage } from "../utils/misc";
 import tribeSocket from "./tribe-socket";
 import { blendTwoHexColors } from "../utils/colors";
 import { smoothWithValueWindow } from "../utils/arrays";
+import Config from "../config";
+import * as TestStats from "../test/test-stats";
 
 const charts: Record<string, Chart> = {};
 
@@ -298,23 +300,33 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
     scale.title.color = subcolor;
   }
 
+  const wpmToShow = [...result.chartData.wpm];
+  const burstToShow = [...result.chartData.burst];
+  const errToShow = [...result.chartData.err];
+
+  const valueWindow = Math.max(...burstToShow) * 0.25;
+  const smoothedBurst = smoothWithValueWindow(burstToShow, 1, valueWindow);
+
+  if (
+    Config.mode !== "time" &&
+    TestStats.lastSecondNotRound &&
+    result.testDuration % 1 < 0.5
+  ) {
+    labels.pop();
+    wpmToShow.pop();
+    errToShow.pop();
+  }
+
   const c = chart as unknown as typeof settings;
 
   c.data.labels = labels;
   //@ts-expect-error tribe
-  c.data.datasets[0].data = result.chartData.wpm;
-
-  const valueWindow = Math.max(...result.chartData.burst) * 0.25;
-  const smoothedBurst = smoothWithValueWindow(
-    result.chartData.burst,
-    1,
-    valueWindow,
-  );
+  c.data.datasets[0].data = wpmToShow;
 
   //@ts-expect-error tribe
   chart.data.datasets[1].data = smoothedBurst;
   //@ts-expect-error tribe
-  chart.data.datasets[2].data = result.chartData.err;
+  chart.data.datasets[2].data = errToShow;
 
   const wpm = chart.data.datasets[0] as ChartDataset;
   const burst = chart.data.datasets[1] as ChartDataset;
