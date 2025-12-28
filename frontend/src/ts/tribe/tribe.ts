@@ -722,7 +722,9 @@ TribeSocket.in.room.userResult((data) => {
     TribeResults.update("result", data.userId);
     TribeUserList.update("result");
     // setTimeout(async () => {
-    void TribeChartController.drawChart(data.userId);
+    void TribeChartController.drawChart(data.userId).then(() => {
+      void TribeChartController.updateChartMaxValues();
+    });
 
     // const s = TribeState.getRoom()?.state;
 
@@ -730,7 +732,6 @@ TribeSocket.in.room.userResult((data) => {
     //   s === TribeTypes.ROOM_STATE.SHOWING_RESULTS ||
     //   s === TribeTypes.ROOM_STATE.READY_TO_CONTINUE
     // ) {
-    void TribeChartController.updateChartMaxValues();
     //   }
     // }, 250);
   }

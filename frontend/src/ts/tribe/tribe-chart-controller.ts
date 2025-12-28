@@ -412,22 +412,31 @@ export async function drawAllCharts(): Promise<void> {
 export async function updateChartMaxValues(): Promise<void> {
   const room = TribeState.getRoom();
   if (!room) return;
-  let maxWpm = 0;
-  let maxRaw = 0;
 
+  let maxWpm = 0;
+  let maxBurst = 0;
   for (const userId of Object.keys(room.users)) {
-    const result = room.users[userId]?.result;
-    if (!result) continue;
-    const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
-    const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.burst));
-    if (maxUserWpm > maxWpm) {
-      maxWpm = maxUserWpm;
+    const wpmData = charts[userId]?.data.datasets[0]?.data as
+      | number[]
+      | undefined;
+    if (!wpmData) continue;
+    const maxWpmUser = Math.max(...wpmData);
+    if (maxWpmUser > maxWpm) {
+      maxWpm = maxWpmUser;
     }
-    if (maxUserRaw > maxRaw) {
-      maxRaw = maxUserRaw;
+    const burstData = charts[userId]?.data.datasets[1]?.data as
+      | number[]
+      | undefined;
+    if (!burstData) continue;
+    const maxBurstUser = Math.max(...burstData);
+    if (maxBurstUser > maxBurst) {
+      maxBurst = maxBurstUser;
     }
   }
-  const chartmaxval = Math.max(maxWpm, maxRaw);
+
+  const chartmaxval = Math.max(maxWpm, maxBurst);
+
+  console.log("Updating tribe mini chart max values to ", chartmaxval);
 
   const list = Object.keys(room.users);
   for (const userId of list) {
@@ -437,9 +446,9 @@ export async function updateChartMaxValues(): Promise<void> {
         scales["wpm"].max = Math.round(chartmaxval);
         scales["wpm"].min = 0;
       }
-      if (scales?.["raw"]) {
-        scales["raw"].max = Math.round(chartmaxval);
-        scales["raw"].min = 0;
+      if (scales?.["burst"]) {
+        scales["burst"].max = Math.round(chartmaxval);
+        scales["burst"].min = 0;
       }
 
       const result = room.users[userId]?.result;
