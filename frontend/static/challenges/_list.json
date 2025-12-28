@@ -617,7 +617,7 @@
     "display": "i KINda LikE HoW inEFFICIeNt QwErtY Is.",
     "autoRole": true,
     "type": "funbox",
-    "parameters": [["raNDOmcASe"], "time", 3600],
+    "parameters": [["rAnDoMcAsE"], "time", 3600],
     "requirements": {
       "wpm": {
         "min": 100
@@ -626,7 +626,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": ["raNDOmcASe"]
+        "exact": ["rAnDoMcAsE"]
       }
     }
   },

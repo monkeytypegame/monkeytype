@@ -113,13 +113,13 @@ const list: Record<FunboxName, FunboxMetadata> = {
     ],
     name: "arrows",
   },
-  raNDOmcASe: {
+  rAnDoMcAsE: {
     description: "i KINda LikE HoW inEFFICIeNt QwErtY Is.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
-    name: "raNDOmcASe",
+    name: "rAnDoMcAsE",
   },
   sPoNgEcAsE: {
     description: "aLtErNaTe ThE cApItAlIzAtIoN oF eVeRy LeTtEr.",

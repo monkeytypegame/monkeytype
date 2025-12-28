@@ -316,7 +316,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return retval;
     },
   },
-  raNDOmcASe: {
+  rAnDoMcAsE: {
     alterText(word: string): string {
       let randomCaseWord = "";
 
