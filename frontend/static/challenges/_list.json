@@ -613,11 +613,11 @@
     }
   },
   {
-    "name": "iKiNdAlIkEhOwInEfFiCiEnTqWeRtYiS",
-    "display": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is",
+    "name": "iKINdaLikEHoWinEFFICIeNtQwErtYIs.",
+    "display": "i KINda LikE HoW inEFFICIeNt QwErtY Is.",
     "autoRole": true,
     "type": "funbox",
-    "parameters": [["rAnDoMcAsE"], "time", 3600],
+    "parameters": [["raNDOmcASe"], "time", 3600],
     "requirements": {
       "wpm": {
         "min": 100
@@ -626,7 +626,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": ["rAnDoMcAsE"]
+        "exact": ["raNDOmcASe"]
       }
     }
   },

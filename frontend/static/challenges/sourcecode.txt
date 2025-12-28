@@ -23222,16 +23222,16 @@ async function getNextWord(wordset, language, wordsBound) {
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
 
-  if (Config.funbox === "rAnDoMcAsE") {
-    let randomcaseword = "";
-    for (let i = 0; i < randomWord.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += randomWord[i].toUpperCase();
+  if (Config.funbox === "raNDOmcASe") {
+    let randomCaseWord = "";
+    for (let letter of randomWord) {
+      if (Math.random() > 0.5) {
+        randomCaseWord += letter.toUpperCase();
       } else {
-        randomcaseword += randomWord[i];
+        randomCaseWord += letter;
       }
     }
-    randomWord = randomcaseword;
+    randomWord = randomCaseWord;
   } else if (Config.funbox === "capitals") {
     randomWord = Misc.capitalizeFirstLetter(randomWord);
   } else if (Config.funbox === "gibberish") {
