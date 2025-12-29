@@ -156,7 +156,8 @@ async function reset(): Promise<void> {
   $("#result #tribeResultBottom").addClass("hidden");
   TribeUserList.reset();
   TribeResults.reset();
-  TribeChat.reset();
+  TribeChat.reset("lobby");
+  TribeChat.reset("result");
   TribeBars.hide();
   TribePageLobby.reset();
   TribeBars.reset();
@@ -761,9 +762,6 @@ TribeSocket.in.room.readyTimerCountdown((data) => {
 TribeSocket.in.room.readyTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
-  if (TestState.isActive) {
-    TimerEvent.dispatch("fail", "out of time");
-  }
 });
 
 // TribeSocket.in.room.backToLobby(() => {
