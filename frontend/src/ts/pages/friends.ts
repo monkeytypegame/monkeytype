@@ -372,16 +372,16 @@ function formatPb(entry?: PersonalBest):
     `${result.wpm} wpm`,
   ];
 
-  if (entry.acc || entry.acc === 0) {
+  if (isSafeNumber(entry.acc)) {
     details.push(`${result.acc} acc`);
   }
-  if (entry.raw || entry.raw === 0) {
+  if (isSafeNumber(entry.raw)) {
     details.push(`${result.raw} raw`);
   }
-  if (entry.consistency || entry.consistency === 0) {
+  if (isSafeNumber(entry.consistency)) {
     details.push(`${result.con} con`);
   }
-  if (entry.timestamp) {
+  if (isSafeNumber(entry.timestamp)) {
     details.push(`${dateFormat(entry.timestamp, "dd MMM yyyy")}`);
   }
 
