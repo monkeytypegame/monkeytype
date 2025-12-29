@@ -349,65 +349,62 @@
         <a href="/login" router-link>Sign in</a>
         to save your result
       </div>
-      <div id="tribeResultBottom" class="hidden">
-        <div class="chat">
-          <div class="title">chat</div>
-          <div class="messages"></div>
-          <div class="input">
-            <div class="emojiSuggestion hidden"></div>
-            <input
-              type="text"
-              placeholder="Send a message (press / to focus)"
-            />
-          </div>
-          <div class="whoIsTyping"></div>
+    </div>
+    <div id="tribeResultBottom" class="hidden">
+      <div class="chat">
+        <div class="title">chat</div>
+        <div class="messages"></div>
+        <div class="input">
+          <div class="emojiSuggestion hidden"></div>
+          <input type="text" placeholder="Send a message (press / to focus)" />
         </div>
-        <div class="buttons">
-          <div class="button startTestButton">
-            <i class="fas fa-chevron-right"></i>
-            Next test
+        <div class="whoIsTyping"></div>
+      </div>
+      <div class="buttons">
+        <div class="button startTestButton">
+          <i class="fas fa-chevron-right"></i>
+          Next test
+        </div>
+        <div class="button backToLobbyButton">
+          <i class="fas fa-home"></i>
+          Back to lobby
+        </div>
+        <div class="readyButtonGroup">
+          <div class="button userReadyButton">
+            <i class="fas fa-check"></i>
+            Ready
           </div>
-          <div class="button backToLobbyButton">
-            <i class="fas fa-home"></i>
-            Back to lobby
-          </div>
-          <div class="readyButtonGroup">
-            <div class="button userReadyButton">
-              <i class="fas fa-check"></i>
-              Ready
-            </div>
-            <div
-              class="button autoReadyButton"
-              data-balloon-pos="left"
-              aria-label="Auto ready"
-            >
-              <i class="fas fa-fw fa-magic"></i>
-            </div>
-          </div>
-          <div class="button userAfkButton">
-            <i class="fas fa-mug-hot"></i>
-            Take a break
-          </div>
-          <div class="button leaveRoomButton">
-            <i class="fas fa-door-open"></i>
-            Leave room
+          <div
+            class="button autoReadyButton"
+            data-balloon-pos="left"
+            aria-label="Auto ready"
+          >
+            <i class="fas fa-fw fa-magic"></i>
           </div>
         </div>
-        <div class="userlist">
-          <div class="title">users</div>
-          <div class="list"></div>
+        <div class="button userAfkButton">
+          <i class="fas fa-mug-hot"></i>
+          Take a break
         </div>
-        <div class="inviteLink">
-          <div class="code">
-            <div class="title">room code</div>
-            <div
-              class="text"
-              aria-label="Click to copy"
-              data-balloon-pos="up"
-            ></div>
-          </div>
-          <div class="link"></div>
+        <div class="button leaveRoomButton">
+          <i class="fas fa-door-open"></i>
+          Leave room
         </div>
+      </div>
+      <div class="userlist">
+        <div class="title">users</div>
+        <div class="list"></div>
+      </div>
+      <div class="inviteLink">
+        <div class="code">
+          <div class="title">room code</div>
+          <div
+            class="text"
+            aria-label="Click to copy"
+            data-balloon-pos="up"
+          ></div>
+        </div>
+        <div class="link"></div>
       </div>
     </div>
     <div class="ssWatermark hidden">monkeytype.com</div>
