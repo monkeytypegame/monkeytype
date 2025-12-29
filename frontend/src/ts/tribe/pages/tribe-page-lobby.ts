@@ -14,7 +14,7 @@ export function reset(): void {
   $(".pageTribe .tribePage.lobby .inviteLink .link").text("");
   $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text("");
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text("");
-  TribeChat.reset();
+  TribeChat.reset("lobby");
 }
 
 export function disableConfigButtons(): void {
