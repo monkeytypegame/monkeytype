@@ -503,7 +503,6 @@
   #result {
     #tribeResultBottom {
       grid-area: tribeBottom;
-      margin-top: 1rem;
       display: grid;
       grid-template-areas:
         "chat buttons"
@@ -532,9 +531,10 @@
     #tribeResults {
       grid-area: tribeResults;
       display: grid;
-      gap: 1rem;
-      .top {
+      .timer {
         justify-self: center;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
       }
       table {
         thead {
