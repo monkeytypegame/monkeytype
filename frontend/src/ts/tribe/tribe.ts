@@ -100,9 +100,8 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     if (TestState.isActive) {
       TribeCountdown.update("");
       TribeCountdown.show(true);
-    } else {
-      TribeResults.updateTimerText("Time left for everyone to finish");
     }
+    TribeResults.updateTimerText("Time left for everyone to finish");
   } else if (state === TribeTypes.ROOM_STATE.RACE_AWAITING_RESULTS) {
     //
   } else if (state === TribeTypes.ROOM_STATE.SHOWING_RESULTS) {
