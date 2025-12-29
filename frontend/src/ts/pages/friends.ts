@@ -372,13 +372,13 @@ function formatPb(entry?: PersonalBest):
     `${result.wpm} wpm`,
   ];
 
-  if (entry.acc) {
+  if (entry.acc || entry.acc === 0) {
     details.push(`${result.acc} acc`);
   }
-  if (entry.raw) {
+  if (entry.raw || entry.raw === 0) {
     details.push(`${result.raw} raw`);
   }
-  if (entry.consistency) {
+  if (entry.consistency || entry.consistency === 0) {
     details.push(`${result.con} con`);
   }
   if (entry.timestamp) {
