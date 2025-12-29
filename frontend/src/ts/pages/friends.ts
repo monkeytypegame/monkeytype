@@ -181,10 +181,10 @@ function updatePendingConnections(): void {
         <td class="actions">
           <button class="accepted" aria-label="accept" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
-          </button> 
+          </button>
           <button class="rejected" aria-label="reject" data-balloon-pos="up">
             <i class="fas fa-times fa-fw"></i>
-          </button> 
+          </button>
           <button class="blocked" aria-label="block" data-balloon-pos="up">
             <i class="fas fa-shield-alt fa-fw"></i>
           </button>
@@ -304,7 +304,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           entry.streak?.maxLength,
           "longest streak",
         )}" data-balloon-pos="up">
-          ${formatStreak(entry.streak?.length)} 
+          ${formatStreak(entry.streak?.length)}
         </span></td>
         <td class="small"><span aria-label="${
           top15?.details
@@ -318,7 +318,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         }<div class="sub">${top60?.acc ?? "-"}</div></span></td>
   <td class="actions">
   ${actions}
-            
+
         </td>
       </tr>`;
 
@@ -367,14 +367,25 @@ function formatPb(entry?: PersonalBest):
     details: "",
   };
 
-  result.details = [
+  const details = [
     `${getLanguageDisplayString(entry.language)}`,
     `${result.wpm} wpm`,
-    `${result.acc} acc`,
-    `${result.raw} raw`,
-    `${result.con} con`,
-    `${dateFormat(entry.timestamp, "dd MMM yyyy")}`,
-  ].join("\n");
+  ];
+
+  if (entry.acc) {
+    details.push(`${result.acc} acc`);
+  }
+  if (entry.raw) {
+    details.push(`${result.raw} raw`);
+  }
+  if (entry.consistency) {
+    details.push(`${result.con} con`);
+  }
+  if (entry.timestamp) {
+    details.push(`${dateFormat(entry.timestamp, "dd MMM yyyy")}`);
+  }
+
+  result.details = details.join("\n");
 
   return result;
 }
