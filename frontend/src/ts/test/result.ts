@@ -1150,7 +1150,7 @@ export async function update(
   });
 
   TribeChat.scrollChat();
-  TribeChat.fill("lobby");
+  TribeChat.fill("result");
 
   const room = TribeState.getRoom();
   if (room?.users) {

@@ -99,20 +99,19 @@ export function updateSuggestionData(): void {
   resultChatSuggestions1.setData(dataToSet);
 }
 
-export function reset(where: "both" | "lobby" | "result" = "both"): void {
-  if (where === "both" || where === "lobby") {
+export function reset(where: "lobby" | "result"): void {
+  if (where === "lobby") {
     $(".pageTribe .lobby .chat .messages").empty();
     lobbyChatSuggestions1.destroy();
     lobbyChatSuggestions2.destroy();
-  }
-  if (where === "both" || where === "result") {
+  } else if (where === "result") {
     $(".pageTest #result #tribeResultBottom .chat .messages").empty();
     resultChatSuggestions1.destroy();
     resultChatSuggestions2.destroy();
   }
 }
 
-export function fill(where: "both" | "lobby" | "result"): void {
+export function fill(where: "lobby" | "result"): void {
   reset(where);
   for (const message of chatHistory) {
     void displayMessage(
@@ -244,14 +243,19 @@ export function appendMessage(
     chatHistory.splice(0, chatHistory.length - 100);
   }
 
-  void displayMessage(isSystem, socketId, message);
+  void displayMessage(
+    isSystem,
+    socketId,
+    message,
+    TestState.resultVisible ? "result" : "lobby",
+  );
 }
 
 export async function displayMessage(
   isSystem: boolean,
   socketId: string | undefined,
   message: string,
-  where: "both" | "lobby" | "result" = "both", //todo remove both
+  where: "lobby" | "result", //todo remove both
 ): Promise<void> {
   let cls = "message";
   let author = "";
@@ -280,12 +284,11 @@ export async function displayMessage(
     cls += " newAuthor";
   }
 
-  if (where === "both" || where === "lobby") {
+  if (where === "lobby") {
     $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
-  }
-  if (where === "both" || where === "result") {
+  } else if (where === "result") {
     $(".pageTest #result #tribeResultBottom .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
