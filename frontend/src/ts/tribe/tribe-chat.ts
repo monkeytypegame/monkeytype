@@ -345,6 +345,8 @@ $(document).on("keydown", (e) => {
   } else if (
     TestState.resultVisible &&
     (TribeState.getRoomState() === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED ||
+      TribeState.getRoomState() ===
+        TribeTypes.ROOM_STATE.RACE_AWAITING_RESULTS ||
       TribeState.getRoomState() === TribeTypes.ROOM_STATE.SHOWING_RESULTS ||
       TribeState.getRoomState() === TribeTypes.ROOM_STATE.READY_TO_CONTINUE)
   ) {
