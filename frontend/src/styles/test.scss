@@ -676,10 +676,10 @@
     align-items: center;
     grid-template-columns: auto 1fr;
     grid-template-areas:
-      "tribeResults tribeResults"
       "stats chart"
       "morestats morestats"
       "bottom bottom"
+      "tribeResults tribeResults"
       "tribeBottom tribeBottom";
     // "wordsHistory wordsHistory"
     // "buttons buttons"

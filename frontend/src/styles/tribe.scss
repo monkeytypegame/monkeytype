@@ -502,6 +502,7 @@
 .pageTest {
   #result {
     #tribeResultBottom {
+      grid-area: tribeBottom;
       margin-top: 1rem;
       display: grid;
       grid-template-areas:
