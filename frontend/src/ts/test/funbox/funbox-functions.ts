@@ -321,7 +321,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       let randomCaseWord = "";
 
       for (let letter of word) {
-        if (Math.random() > 0.5) {
+        if (Math.random() < 0.5) {
           randomCaseWord += letter.toUpperCase();
         } else {
           randomCaseWord += letter.toLowerCase();
