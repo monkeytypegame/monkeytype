@@ -1436,8 +1436,7 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let burstlist = [...TestInput.burstHistory];
 
-    burstlist = burstlist.filter((x) => x !== Infinity);
-    burstlist = burstlist.filter((x) => x < 500);
+    burstlist = burstlist.filter((x) => x < 500 || x === Infinity);
 
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     burstlist.forEach((burst, index) => {
@@ -1508,7 +1507,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       }
 
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
-        `<div>${string}</div>`,
+        `<div>${Misc.escapeHTML(string)}</div>`,
       );
     });
 
@@ -1974,7 +1973,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Format.typingSpeed(burst, { showDecimalPlaces: false })}
+          ${isNaN(burst) ? "∞" : Format.typingSpeed(burst, { showDecimalPlaces: false })}
           ${Config.typingSpeedUnit}
           </div>
           </div>`,
