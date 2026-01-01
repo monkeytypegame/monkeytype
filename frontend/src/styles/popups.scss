@@ -483,8 +483,8 @@ body.darkMode {
   }
 }
 
-#tribeBrowsePublicRoomsPopupWrapper {
-  #tribeBrowsePublicRoomsPopup {
+#tribeBrowsePublicRooms {
+  .modal {
     color: var(--sub-color);
     background: var(--bg-color);
     border-radius: var(--roundness);
