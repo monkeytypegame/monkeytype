@@ -408,14 +408,14 @@ export default class AnimatedModal<
           },
         });
       } else if (animationMode === "modalOnly") {
-        $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
+        this.wrapperEl.show().setStyle({ opacity: "1" });
 
         animate(this.modalEl, {
           ...modalAnimation,
           duration: modalAnimationDuration,
           onComplete: async () => {
             this.wrapperEl.native.close();
-            $(this.wrapperEl).addClass("hidden").css("opacity", "0");
+            this.wrapperEl.hide().setStyle({ opacity: "0" });
             Skeleton.remove(this.dialogId);
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
