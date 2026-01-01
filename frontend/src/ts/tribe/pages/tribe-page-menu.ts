@@ -1,4 +1,3 @@
-import * as Notifications from "../../elements/notifications";
 import tribeSocket from "../tribe-socket";
 import { getTribeConfig } from "../tribe-config";
 
@@ -79,22 +78,6 @@ export function getQ(): number[] {
     }
   });
   return ret;
-}
-
-export function joinRoomByCode(_code: string): void {
-  Notifications.add("todo", -1);
-  return;
-  // code = "room_" + code;
-  // socket.emit("mp_room_join", { roomId: code });
-  // $(".pageTribe .menu #joinByCode input").val("");
-
-  // $(".pageTribe .menu #joinByCode .customInput").html(`
-  //   <span class="byte">--</span>
-  //   /
-  //   <span class="byte">--</span>
-  //   /
-  //   <span class="byte">--</span>
-  // `);
 }
 
 $(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
