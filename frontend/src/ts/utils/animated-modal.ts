@@ -99,7 +99,7 @@ export default class AnimatedModal<
       );
     }
 
-    if (!(dialogElement instanceof HTMLDialogElement)) {
+    if (!(dialogElement.native instanceof HTMLDialogElement)) {
       throw new Error("Animated dialog must be an HTMLDialogElement");
     }
 
