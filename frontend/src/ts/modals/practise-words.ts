@@ -1,6 +1,7 @@
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
+import { ElementWithUtils } from "../utils/dom";
 
 type State = {
   missed: "off" | "words" | "biwords";
@@ -32,9 +33,7 @@ function updateUI(): void {
   }
 }
 
-async function setup(
-  modalEl: import("../utils/dom").ElementWithUtils<HTMLElement>,
-): Promise<void> {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
   for (const button of modalEl.qsa(".group[data-id='missed'] button")) {
     button.on("click", (e) => {
       state.missed = (e.target as HTMLButtonElement).value as

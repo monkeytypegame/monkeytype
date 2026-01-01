@@ -21,7 +21,7 @@ import {
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 import { configMetadata } from "../config-metadata";
 
 const state = {
@@ -412,9 +412,7 @@ function getConfigChanges(): Partial<ConfigType> {
   };
 }
 
-async function setup(
-  modalEl: import("../utils/dom").ElementWithUtils<HTMLElement>,
-): Promise<void> {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.on("submit", (e) => {
     e.preventDefault();
     void apply();

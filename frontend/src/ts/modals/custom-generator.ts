@@ -5,6 +5,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { ElementWithUtils } from "../utils/dom";
 
 type Preset = {
   display: string;
@@ -159,9 +160,7 @@ async function apply(set: boolean): Promise<void> {
   });
 }
 
-async function setup(
-  modalEl: import("../utils/dom").ElementWithUtils<HTMLElement>,
-): Promise<void> {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.qs(".setButton")?.on("click", () => {
     void apply(true);
   });
