@@ -81,7 +81,7 @@
           display: grid;
           grid-template-columns: 1fr 1fr 1fr 1fr;
           gap: 1rem;
-          .button {
+          button {
             display: grid;
             gap: 0.25rem;
             height: 100%;
@@ -97,7 +97,7 @@
             }
           }
         }
-        .button {
+        button {
           padding: 0.7rem 0.7rem;
         }
         .leaveMatchmakingButton {
@@ -116,7 +116,7 @@
           display: grid;
           grid-template-columns: 1fr 1fr 1fr;
           gap: 1rem;
-          .button {
+          button {
             height: 100%;
             padding: 1rem;
             display: grid;
@@ -138,7 +138,7 @@
         grid-auto-flow: column;
         grid-template-columns: 2fr 1fr;
         gap: 1rem;
-        .button {
+        button {
           padding: 0.7rem;
           i {
             margin: 0;

@@ -5,14 +5,14 @@ import { getTribeConfig } from "../tribe-config";
 export const queues = [false, false, false, false];
 
 export function disableButtons(): void {
-  $(".pageTribe .menu .matchmaking .buttons .button").addClass("disabled");
-  $(".pageTribe .menu .customRooms .button").addClass("disabled");
+  $(".pageTribe .menu .matchmaking .buttons button").addClass("disabled");
+  $(".pageTribe .menu .customRooms button").addClass("disabled");
   $(".pageTribe .menu .customRooms .customInput").addClass("disabled");
 }
 
 export function enableButtons(): void {
-  $(".pageTribe .menu .matchmaking .buttons .button").removeClass("disabled");
-  $(".pageTribe .menu .customRooms .button").removeClass("disabled");
+  $(".pageTribe .menu .matchmaking .buttons button").removeClass("disabled");
+  $(".pageTribe .menu .customRooms button").removeClass("disabled");
   $(".pageTribe .menu .customRooms .customInput").removeClass("disabled");
 }
 
@@ -41,7 +41,7 @@ function toggleQueue(queue: number): void {
 }
 
 function refreshQueueButtons(): void {
-  const buttons = $(".pageTribe .menu .matchmaking .buttons .button");
+  const buttons = $(".pageTribe .menu .matchmaking .buttons button");
 
   buttons.removeClass("active");
 
@@ -108,7 +108,7 @@ $(".pageTribe .menu .devRoom").on("click", (e) => {
   tribeSocket.out.dev?.room();
 });
 
-$(".pageTribe .menu .matchmaking .buttons .button").on("click", (e) => {
+$(".pageTribe .menu .matchmaking .buttons button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   const queue = $(e.currentTarget).attr("queue") as string;
   toggleQueue(parseInt(queue));
