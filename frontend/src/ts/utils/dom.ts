@@ -677,7 +677,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Select the element's content (for input and textarea elements)
    */
-  select(this: ElementWithUtils<ElementWithValue>): void {
+  select(this: ElementWithUtils<ElementWithSelectableValue>): void {
     if (this.hasSelectableValue()) {
       this.native.select();
     }

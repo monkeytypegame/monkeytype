@@ -239,15 +239,11 @@ function setExactMatchInput(disable: boolean): void {
 }
 
 function disableButtons(): void {
-  for (const button of modal.getModal().qsa("button")) {
-    button.setAttribute("disabled", "true");
-  }
+  modal.getModal().qsa("button").disable();
 }
 
 function enableButtons(): void {
-  for (const button of modal.getModal().qsa("button")) {
-    button.removeAttribute("disabled");
-  }
+  modal.getModal().qsa("button").enable();
 }
 
 async function setup(): Promise<void> {

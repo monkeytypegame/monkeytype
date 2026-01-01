@@ -500,7 +500,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       return;
     }
 
-    $(e.target as HTMLElement).toggleClass("active");
+    (e.currentTarget as HTMLElement)?.classList.toggle("active");
     searchForQuotes();
   });
   modalEl.qs(".goToQuoteApprove")?.on("click", (e) => {
