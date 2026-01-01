@@ -80,7 +80,7 @@ services:
 
   monkeytype-mongodb:
     container_name: monkeytype-mongodb
-    image: mongo:5.0.13
+    image: mongodb/mongodb-community-server:8.2.1-ubi8
     restart: on-failure
     volumes:
       - mongo-data:/data/db
