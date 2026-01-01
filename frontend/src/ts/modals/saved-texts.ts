@@ -7,10 +7,11 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
+import { qs, qsr } from "../utils/dom";
 
 async function fill(): Promise<void> {
   const names = CustomText.getCustomTextNames();
-  const listEl = $(`#savedTextsModal .list`).empty();
+  const listEl = qsr(`#savedTextsModal .list`).empty();
   let list = "";
   if (names.length === 0) {
     list += "<div>No saved custom texts found</div>";
@@ -24,10 +25,10 @@ async function fill(): Promise<void> {
       </div>`;
     }
   }
-  listEl.html(list);
+  listEl.setHtml(list);
 
   const longNames = CustomText.getCustomTextNames(true);
-  const longListEl = $(`#savedTextsModal .listLong`).empty();
+  const longListEl = qsr(`#savedTextsModal .listLong`).empty();
   let longList = "";
   if (longNames.length === 0) {
     longList += "<div>No saved long custom texts found</div>";
@@ -44,13 +45,13 @@ async function fill(): Promise<void> {
       </div>`;
     }
   }
-  longListEl.html(longList);
+  longListEl.setHtml(longList);
 
-  $("#savedTextsModal .list .savedText .button.delete").on("click", (e) => {
-    const name = $(e.target).closest(".savedText").data("name") as
-      | string
-      | undefined;
-    if (name === undefined) {
+  qs("#savedTextsModal .list .savedText .button.delete")?.on("click", (e) => {
+    const name = (e.target as HTMLElement)
+      .closest(".savedText")
+      ?.getAttribute("data-name");
+    if (name === null || name === undefined) {
       Notifications.add("Failed to show delete modal: no name found", -1);
       return;
     }
@@ -59,13 +60,13 @@ async function fill(): Promise<void> {
     });
   });
 
-  $("#savedTextsModal .listLong .savedLongText .button.delete").on(
+  qs("#savedTextsModal .listLong .savedLongText .button.delete")?.on(
     "click",
     (e) => {
-      const name = $(e.target).closest(".savedLongText").data("name") as
-        | string
-        | undefined;
-      if (name === undefined) {
+      const name = (e.target as HTMLElement)
+        .closest(".savedLongText")
+        ?.getAttribute("data-name");
+      if (name === null || name === undefined) {
         Notifications.add("Failed to show delete modal: no name found", -1);
         return;
       }
@@ -75,13 +76,13 @@ async function fill(): Promise<void> {
     },
   );
 
-  $("#savedTextsModal .listLong .savedLongText .button.resetProgress").on(
+  qs("#savedTextsModal .listLong .savedLongText .button.resetProgress")?.on(
     "click",
     (e) => {
-      const name = $(e.target).closest(".savedLongText").data("name") as
-        | string
-        | undefined;
-      if (name === undefined) {
+      const name = (e.target as HTMLElement)
+        .closest(".savedLongText")
+        ?.getAttribute("data-name");
+      if (name === null || name === undefined) {
         Notifications.add("Failed to show delete modal: no name found", -1);
         return;
       }
@@ -91,17 +92,17 @@ async function fill(): Promise<void> {
     },
   );
 
-  $("#savedTextsModal .list .savedText .button.name").on("click", (e) => {
-    const name = $(e.target).text();
+  qs("#savedTextsModal .list .savedText .button.name")?.on("click", (e) => {
+    const name = (e.target as HTMLElement).textContent;
     CustomTextState.setCustomTextName(name, false);
     const text = getSavedText(name, false);
     hide({ modalChainData: { text, long: false } });
   });
 
-  $("#savedTextsModal .listLong .savedLongText .button.name").on(
+  qs("#savedTextsModal .listLong .savedLongText .button.name")?.on(
     "click",
     (e) => {
-      const name = $(e.target).text();
+      const name = (e.target as HTMLElement)?.textContent;
       CustomTextState.setCustomTextName(name, true);
       const text = getSavedText(name, true);
       hide({ modalChainData: { text, long: true } });

@@ -85,10 +85,13 @@ function fillGroup(
   text: string | number,
   html = false,
 ): void {
+  const el = modal.getModal().querySelector(`.group.${groupClass} .val`);
+  if (!el) return;
+
   if (html) {
-    $(modal.getModal()).find(`.group.${groupClass} .val`).html(`${text}`);
+    el.innerHTML = `${text}`;
   } else {
-    $(modal.getModal()).find(`.group.${groupClass} .val`).text(text);
+    el.textContent = `${text}`;
   }
 }
 

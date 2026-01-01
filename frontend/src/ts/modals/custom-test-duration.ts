@@ -3,6 +3,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { qs, qsr } from "../utils/dom";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
@@ -53,7 +54,9 @@ function format(duration: number): string {
 }
 
 function previewDuration(): void {
-  const input = $("#customTestDurationModal input").val() as string;
+  const input = qsr<HTMLInputElement>(
+    "#customTestDurationModal input",
+  ).getValue() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
@@ -65,7 +68,7 @@ function previewDuration(): void {
     formattedDuration = format(duration);
   }
 
-  $("#customTestDurationModal .preview").text(formattedDuration);
+  qs("#customTestDurationModal .preview")?.setText(formattedDuration);
 }
 
 export function show(showOptions?: ShowOptions): void {
@@ -87,7 +90,11 @@ function hide(clearChain = false): void {
 }
 
 function apply(): void {
-  const val = parseInput($("#customTestDurationModal input").val() as string);
+  const val = parseInput(
+    qsr<HTMLInputElement>(
+      "#customTestDurationModal input",
+    ).getValue() as string,
+  );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     setConfig("time", val);
