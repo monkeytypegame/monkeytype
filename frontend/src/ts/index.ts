@@ -43,7 +43,6 @@ import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
-import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
