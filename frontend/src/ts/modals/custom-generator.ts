@@ -83,7 +83,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       _presetSelect = new SlimSelect({
         select: "#customGeneratorModal .presetInput",
         settings: {
-          contentLocation: modalEl,
+          contentLocation: modalEl.native,
         },
       });
     },
@@ -159,16 +159,18 @@ async function apply(set: boolean): Promise<void> {
   });
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".setButton")?.addEventListener("click", () => {
+async function setup(
+  modalEl: import("../utils/dom").ElementWithUtils<HTMLElement>,
+): Promise<void> {
+  modalEl.qs(".setButton")?.on("click", () => {
     void apply(true);
   });
 
-  modalEl.querySelector(".addButton")?.addEventListener("click", () => {
+  modalEl.qs(".addButton")?.on("click", () => {
     void apply(false);
   });
 
-  modalEl.querySelector(".generateButton")?.addEventListener("click", () => {
+  modalEl.qs(".generateButton")?.on("click", () => {
     applyPreset();
   });
 }

@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import * as TestLogic from "../test/test-logic";
 import Config, { setConfig, setQuoteLengthAll } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -77,10 +78,10 @@ export function show(): void {
 //   void modal.hide();
 // }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  const wordsGroupButtons = modalEl.querySelectorAll(".wordsGroup button");
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  const wordsGroupButtons = modalEl.qsa(".wordsGroup button");
   for (const button of wordsGroupButtons) {
-    button.addEventListener("click", (e) => {
+    button.on("click", (e) => {
       const target = e.currentTarget as HTMLElement;
       const wrd = target.getAttribute("data-words") as string;
 
@@ -97,9 +98,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
   }
 
-  const modeGroupButtons = modalEl.querySelectorAll(".modeGroup button");
+  const modeGroupButtons = modalEl.qsa(".modeGroup button");
   for (const button of modeGroupButtons) {
-    button.addEventListener("click", (e) => {
+    button.on("click", (e) => {
       const target = e.currentTarget as HTMLElement;
       const mode = target.getAttribute("data-mode");
       if (mode === Config.mode) return;
@@ -109,9 +110,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
   }
 
-  const timeGroupButtons = modalEl.querySelectorAll(".timeGroup button");
+  const timeGroupButtons = modalEl.qsa(".timeGroup button");
   for (const button of timeGroupButtons) {
-    button.addEventListener("click", (e) => {
+    button.on("click", (e) => {
       const target = e.currentTarget as HTMLElement;
       const time = target.getAttribute("data-time") as string;
 
@@ -128,9 +129,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
   }
 
-  const quoteGroupButtons = modalEl.querySelectorAll(".quoteGroup button");
+  const quoteGroupButtons = modalEl.qsa(".quoteGroup button");
   for (const button of quoteGroupButtons) {
-    button.addEventListener("click", (e) => {
+    button.on("click", (e) => {
       const target = e.currentTarget as HTMLElement;
       const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
 
@@ -161,33 +162,33 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
   }
 
-  modalEl.querySelector(".customChange")?.addEventListener("click", () => {
+  modalEl.qs(".customChange")?.on("click", () => {
     CustomTextPopup.show({
       modalChain: modal,
     });
   });
 
-  modalEl.querySelector(".punctuation")?.addEventListener("click", () => {
+  modalEl.qs(".punctuation")?.on("click", () => {
     setConfig("punctuation", !Config.punctuation);
     ManualRestart.set();
     TestLogic.restart();
   });
 
-  modalEl.querySelector(".numbers")?.addEventListener("click", () => {
+  modalEl.qs(".numbers")?.on("click", () => {
     setConfig("numbers", !Config.numbers);
     ManualRestart.set();
     TestLogic.restart();
   });
 
-  modalEl.querySelector(".shareButton")?.addEventListener("click", () => {
+  modalEl.qs(".shareButton")?.on("click", () => {
     ShareTestSettingsPopup.show({
       modalChain: modal,
     });
   });
 
-  const buttons = modalEl.querySelectorAll("button");
+  const buttons = modalEl.qsa("button");
   for (const button of buttons) {
-    button.addEventListener("click", () => {
+    button.on("click", () => {
       update();
     });
   }

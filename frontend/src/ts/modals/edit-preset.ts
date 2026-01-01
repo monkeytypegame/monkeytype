@@ -412,18 +412,20 @@ function getConfigChanges(): Partial<ConfigType> {
   };
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(
+  modalEl: import("../utils/dom").ElementWithUtils<HTMLElement>,
+): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     void apply();
   });
   PresetTypeSchema.options.forEach((presetType) => {
-    const presetOption = modalEl.querySelector(
+    const presetOption = modalEl.qs(
       `.presetType button[value="${presetType}"]`,
     );
     if (presetOption === null) return;
 
-    presetOption.addEventListener("click", () => {
+    presetOption.on("click", () => {
       state.presetType = presetType;
       updateUI();
     });

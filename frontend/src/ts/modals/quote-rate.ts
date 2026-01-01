@@ -6,6 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { ElementWithUtils } from "../utils/dom";
 
 let rating = 0;
 
@@ -208,26 +209,26 @@ async function submit(): Promise<void> {
   $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".submitButton")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs(".submitButton")?.on("click", () => {
     void submit();
   });
-  const starButtons = modalEl.querySelectorAll(".stars button.star");
+  const starButtons = modalEl.qsa(".stars button.star");
   for (const button of starButtons) {
-    button.addEventListener("click", (e) => {
+    button.on("click", (e) => {
       const ratingValue = parseInt(
         (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
       );
       rating = ratingValue;
       refreshStars();
     });
-    button.addEventListener("mouseenter", (e) => {
+    button.on("mouseenter", (e) => {
       const ratingHover = parseInt(
         (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
       );
       refreshStars(ratingHover);
     });
-    button.addEventListener("mouseleave", () => {
+    button.on("mouseleave", () => {
       refreshStars();
     });
   }

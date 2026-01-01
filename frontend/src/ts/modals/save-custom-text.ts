@@ -87,14 +87,16 @@ function save(): boolean {
   }
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(
+  modalEl: import("../utils/dom").ElementWithUtils<HTMLElement>,
+): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     if (validatedInput.getValidationResult().status === "success" && save()) {
       void modal.hide();
     }
   });
-  modalEl.querySelector(".isLongText")?.addEventListener("input", (e) => {
+  modalEl.qs(".isLongText")?.on("input", (e) => {
     validatedInput.triggerValidation();
   });
 }

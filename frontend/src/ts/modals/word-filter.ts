@@ -118,19 +118,19 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       languageSelect = new SlimSelect({
         select: "#wordFilterModal .languageInput",
         settings: {
-          contentLocation: modalEl,
+          contentLocation: modalEl.native,
         },
       });
       layoutSelect = new SlimSelect({
         select: "#wordFilterModal .layoutInput",
         settings: {
-          contentLocation: modal.getModal(),
+          contentLocation: modal.getModal().native,
         },
       });
       presetSelect = new SlimSelect({
         select: "#wordFilterModal .presetInput",
         settings: {
-          contentLocation: modal.getModal(),
+          contentLocation: modal.getModal().native,
         },
       });
       $("#wordFilterModal .loadingIndicator").removeClass("hidden");
@@ -239,13 +239,13 @@ function setExactMatchInput(disable: boolean): void {
 }
 
 function disableButtons(): void {
-  for (const button of modal.getModal().querySelectorAll("button")) {
+  for (const button of modal.getModal().qsa("button")) {
     button.setAttribute("disabled", "true");
   }
 }
 
 function enableButtons(): void {
-  for (const button of modal.getModal().querySelectorAll("button")) {
+  for (const button of modal.getModal().qsa("button")) {
     button.removeAttribute("disabled");
   }
 }

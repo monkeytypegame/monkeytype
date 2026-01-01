@@ -11,7 +11,7 @@ import {
   ValidationOptions,
   ValidationResult,
 } from "../elements/input-validation";
-import { qsr } from "./dom";
+import { ElementWithUtils, qsr } from "./dom";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -117,8 +117,8 @@ type SimpleModalOptions = {
 
 export class SimpleModal {
   parameters: string[];
-  wrapper: HTMLElement;
-  element: HTMLElement;
+  wrapper: ElementWithUtils<HTMLDialogElement>;
+  element: ElementWithUtils;
   modal: AnimatedModal;
   id: string;
   title: string;
@@ -155,11 +155,11 @@ export class SimpleModal {
     this.afterClickAway = options.afterClickAway;
   }
   reset(): void {
-    this.element.innerHTML = `
+    this.element.setHtml(`
     <div class="title"></div>
     <div class="inputs"></div>
     <div class="text"></div>
-    <button type="submit" class="submitButton"></button>`;
+    <button type="submit" class="submitButton"></button>`);
   }
 
   init(): void {
@@ -449,15 +449,13 @@ export class SimpleModal {
   }
 
   updateSubmitButtonState(): void {
-    const button = this.element.querySelector(
-      ".submitButton",
-    ) as HTMLButtonElement;
+    const button = this.element.qs<HTMLButtonElement>(".submitButton");
     if (button === null) return;
 
     if (this.hasMissingRequired() || this.hasValidationErrors()) {
-      button.disabled = true;
+      button.disable();
     } else {
-      button.disabled = false;
+      button.enable();
     }
   }
 }
@@ -474,7 +472,7 @@ let activePopup: SimpleModal | null = null;
 const modal = new AnimatedModal({
   dialogId: "simpleModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
+    modalEl.on("submit", (e) => {
       e.preventDefault();
       activePopup?.exec();
     });

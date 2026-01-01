@@ -28,7 +28,7 @@ export async function show(): Promise<void> {
       CaptchaController.reset("register");
 
       CaptchaController.render(
-        modal.querySelector(".g-recaptcha") as HTMLElement,
+        modal.qs(".g-recaptcha")?.native as HTMLElement,
         "register",
         (token) => {
           resolve(token);
