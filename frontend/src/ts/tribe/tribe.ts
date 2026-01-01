@@ -35,6 +35,7 @@ import { ColorName } from "../elements/theme-colors";
 import * as TribeAutoJoin from "./tribe-auto-join";
 import { authPromise } from "../firebase";
 import * as Result from "../test/result";
+import { SimpleModal } from "../utils/simple-modal";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -825,8 +826,45 @@ $(".pageTribe .tribePage.preloader .reconnectButton").on("click", () => {
   void init();
 });
 
+$(".pageTribe .menu .customRooms #enterRoomCode").on("click", (e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
+  enterRoomCodeModal.show([], {});
+});
+
 window.addEventListener("beforeunload", () => {
   if (TribeState.getState() !== TribeTypes.CLIENT_STATE.DISCONNECTED) {
     TribeSocket.disconnect();
   }
+});
+
+//here for now to avoid a circular dependency
+const enterRoomCodeModal = new SimpleModal({
+  id: "tribeRoomCodeModal",
+  title: "Enter room code",
+  buttonText: "join",
+  inputs: [
+    {
+      type: "text",
+      placeholder: "room code",
+      initVal: "",
+      validation: {
+        isValid: async (val: string) => {
+          if (/^[0-9a-fA-F]{6}$/.test(val)) {
+            return true;
+          } else {
+            return "Room code must be 6 characters long and contain only hexadecimal characters (0-9, a-f)";
+          }
+        },
+        debounceDelay: 0,
+      },
+    },
+  ],
+  execFn: async (_thisPopup, code) => {
+    joinRoom(code);
+    return {
+      status: 1,
+      message: "",
+      showNotification: false,
+    };
+  },
 });
