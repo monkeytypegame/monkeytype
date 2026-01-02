@@ -93,13 +93,15 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 
 function applyPreset(): void {
   const modalEl = modal.getModal();
-  const presetName = modalEl.qs<HTMLSelectElement>(".presetInput")?.getValue();
+  const presetName = modalEl.qs<HTMLSelectElement>(
+    ".presetInput",
+  )?.getValue();
 
   if (presetName !== undefined && presetName !== "" && presets[presetName]) {
     const preset = presets[presetName];
-    modalEl
-      .qsr<HTMLInputElement>(".characterInput")
-      .setValue(preset.characters.join(" "));
+    modalEl.qsr<HTMLInputElement>(".characterInput").setValue(
+      preset.characters.join(" "),
+    );
   }
 }
 
@@ -111,21 +113,27 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 
 function generateWords(): string[] {
   const modalEl = modal.getModal();
-  const characterInput = modalEl
-    .qs<HTMLInputElement>(".characterInput")
-    ?.getValue();
+  const characterInput = modalEl.qs<HTMLInputElement>(
+    ".characterInput",
+  )?.getValue();
 
   const minLength =
     parseInt(
-      modalEl.qs<HTMLInputElement>(".minLengthInput")?.getValue() as string,
+      modalEl.qs<HTMLInputElement>(
+        ".minLengthInput",
+      )?.getValue() as string,
     ) || 2;
   const maxLength =
     parseInt(
-      modalEl.qs<HTMLInputElement>(".maxLengthInput")?.getValue() as string,
+      modalEl.qs<HTMLInputElement>(
+        ".maxLengthInput",
+      )?.getValue() as string,
     ) || 5;
   const wordCount =
     parseInt(
-      modalEl.qs<HTMLInputElement>(".wordCountInput")?.getValue() as string,
+      modalEl.qs<HTMLInputElement>(
+        ".wordCountInput",
+      )?.getValue() as string,
     ) || 100;
 
   if (characterInput === undefined || characterInput.trim() === "") {

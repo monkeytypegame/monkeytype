@@ -55,7 +55,9 @@ function format(duration: number): string {
 
 function previewDuration(): void {
   const modalEl = modal.getModal();
-  const input = modalEl.qsr<HTMLInputElement>("input").getValue() as string;
+  const input = modalEl.qsr<HTMLInputElement>(
+    "input",
+  ).getValue() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
@@ -89,7 +91,9 @@ function hide(clearChain = false): void {
 
 function apply(): void {
   const val = parseInput(
-    modal.getModal().qsr<HTMLInputElement>("input").getValue() as string,
+    modal.getModal().qsr<HTMLInputElement>(
+      "input",
+    ).getValue() as string,
   );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {

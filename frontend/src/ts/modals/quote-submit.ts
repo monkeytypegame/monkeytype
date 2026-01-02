@@ -1,4 +1,4 @@
-import { ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";

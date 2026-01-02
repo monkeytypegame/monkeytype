@@ -22,7 +22,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
-import { qsr, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 

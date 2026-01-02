@@ -10,7 +10,7 @@ import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
 import { getInputElement } from "../input/input-element";
 import { disableSlowTimerFail } from "../test/test-timer";
-import { qsr, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 let mediaQueryDebugLevel = 0;
 

@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";

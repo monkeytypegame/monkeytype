@@ -26,17 +26,12 @@ export function show(): void {
       if (getSnapshot()?.streakHourOffset !== undefined) {
         modalEl.qs("input")?.remove();
         modalEl.qs(".preview")?.remove();
-        modalEl.qsa("button")?.remove();
+        modalEl.qs("button")?.remove();
         modalEl
           .qs(".text")
-          ?.setText(
-            `You have already set your streak hour offset to ${
-              getSnapshot()?.streakHourOffset ?? "?"
-            }. You can only set your streak hour offset once.`,
-          );
+          ?.setText("You have already set your streak hour offset.");
       } else {
-        state.offset = 0;
-        updateDisplay();
+        modalEl.qs<HTMLInputElement>("input")?.setValue("0");
         updatePreview();
       }
     },
@@ -44,7 +39,10 @@ export function show(): void {
 }
 
 function updatePreview(): void {
-  const inputValue = state.offset;
+  const inputValue = parseInt(
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
+    10,
+  );
 
   const preview = modal.getModal().qs(".preview");
 
@@ -65,19 +63,15 @@ function updatePreview(): void {
   `);
 }
 
-function updateDisplay(): void {
-  modal
-    .getModal()
-    .qs<HTMLInputElement>("input")
-    ?.setValue(state.offset.toFixed(1));
-}
-
 function hide(): void {
   void modal.hide();
 }
 
 async function apply(): Promise<void> {
-  const value = state.offset;
+  const value = parseInt(
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
+    10,
+  );
 
   if (isNaN(value)) {
     Notifications.add("Streak hour offset must be a number", 0);
@@ -127,19 +121,10 @@ function setStateToInput(): void {
 const modal = new AnimatedModal({
   dialogId: "streakHourOffsetModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.qs("input")?.on("focusout", () => {
-      setStateToInput();
-      updateDisplay();
+    modalEl.qs("input")?.on("input", () => {
       updatePreview();
     });
-    modalEl.qs("input")?.on("keyup", (e) => {
-      if (e.key === "Enter") {
-        setStateToInput();
-        updateDisplay();
-        updatePreview();
-      }
-    });
-    modalEl.qs(".submit")?.on("click", () => {
+    modalEl.qs("button")?.on("click", () => {
       void apply();
     });
     modalEl.qs(".decreaseOffset")?.on("click", () => {
