@@ -35,7 +35,7 @@ function updateUI(): void {
 
 async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.qsa(".group[data-id='missed'] button").on("click", (e) => {
-    state.missed = (e.target as HTMLButtonElement).value as
+    state.missed = (e.currentTarget as HTMLButtonElement).value as
       | "off"
       | "words"
       | "biwords";
@@ -43,7 +43,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
 
   modalEl.qsa(".group[data-id='slow'] button").on("click", (e) => {
-    state.slow = (e.target as HTMLButtonElement).value === "true";
+    state.slow = (e.currentTarget as HTMLButtonElement).value === "true";
     updateUI();
   });
 

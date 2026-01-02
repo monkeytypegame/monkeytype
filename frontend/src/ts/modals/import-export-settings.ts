@@ -34,7 +34,7 @@ const modal = new AnimatedModal({
   dialogId: "importExportSettingsModal",
   setup: async (modalEl): Promise<void> => {
     modalEl.qs("input")?.on("input", (e) => {
-      state.value = (e.target as HTMLInputElement).value;
+      state.value = (e.currentTarget as HTMLInputElement).value;
     });
     modalEl?.on("submit", async (e) => {
       e.preventDefault();
