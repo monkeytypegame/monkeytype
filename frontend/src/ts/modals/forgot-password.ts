@@ -38,13 +38,10 @@ async function submit(): Promise<void> {
     return;
   }
 
-  const email = modal
-    .getModal()
-    .qs<HTMLInputElement>("input")
-    ?.getValue()
-    ?.trim();
+  const email =
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue()?.trim() ?? "";
 
-  if (email === "" || email === null || email === undefined) {
+  if (email === "") {
     Notifications.add("Please enter your email address");
     CaptchaController.reset("forgotPasswordModal");
     return;
