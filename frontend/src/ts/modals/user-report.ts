@@ -46,7 +46,7 @@ export async function show(options: ShowOptions): Promise<void> {
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       CaptchaController.render(
-        modalEl.qs(".g-recaptcha")?.native as HTMLElement,
+        modalEl.qsr(".g-recaptcha").native,
         "userReportModal",
       );
 
