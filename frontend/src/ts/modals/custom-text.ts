@@ -408,49 +408,45 @@ function handleDelimiterChange(): void {
 async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.qs("#fileInput")?.on("change", handleFileOpen);
 
-  const buttons = modalEl.qsa(".group[data-id='mode'] button");
-  for (const button of buttons) {
-    button.on("click", (e) => {
-      state.customTextMode = (e.target as HTMLButtonElement).value as
-        | "simple"
-        | "repeat"
-        | "random";
-      if (state.customTextMode === "simple") {
-        const text = cleanUpText();
-        state.customTextLimits.word = `${text.length}`;
-        state.customTextLimits.time = "";
-        state.customTextLimits.section = "";
-      }
-      updateUI();
-    });
-  }
+  modalEl.qsa(".group[data-id='mode'] button").on("click", (e) => {
+    state.customTextMode = (e.target as HTMLButtonElement).value as
+      | "simple"
+      | "repeat"
+      | "random";
+    if (state.customTextMode === "simple") {
+      const text = cleanUpText();
+      state.customTextLimits.word = `${text.length}`;
+      state.customTextLimits.time = "";
+      state.customTextLimits.section = "";
+    }
+    updateUI();
+  });
 
-  for (const button of modalEl.qsa(".group[data-id='fancy'] button")) {
-    button.on("click", (e: MouseEvent) => {
-      state.removeFancyTypographyEnabled =
-        (e.target as HTMLButtonElement).value === "true";
-      updateUI();
-    });
-  }
+  modalEl.qsa(".group[data-id='fancy'] button").on("click", (e: MouseEvent) => {
+    state.removeFancyTypographyEnabled =
+      (e.target as HTMLButtonElement).value === "true";
+    updateUI();
+  });
 
-  for (const button of modalEl.qsa(".group[data-id='control'] button")) {
-    button.on("click", (e: MouseEvent) => {
+  modalEl
+    .qsa(".group[data-id='control'] button")
+    .on("click", (e: MouseEvent) => {
       state.replaceControlCharactersEnabled =
         (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
-  }
 
-  for (const button of modalEl.qsa(".group[data-id='zeroWidth'] button")) {
-    button.on("click", (e: MouseEvent) => {
+  modalEl
+    .qsa(".group[data-id='zeroWidth'] button")
+    .on("click", (e: MouseEvent) => {
       state.removeZeroWidthCharactersEnabled =
         (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
-  }
 
-  for (const button of modalEl.qsa(".group[data-id='delimiter'] button")) {
-    button.on("click", (e: MouseEvent) => {
+  modalEl
+    .qsa(".group[data-id='delimiter'] button")
+    .on("click", (e: MouseEvent) => {
       state.customTextPipeDelimiter =
         (e.target as HTMLButtonElement).value === "true";
       if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
@@ -465,17 +461,16 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       handleDelimiterChange();
       updateUI();
     });
-  }
 
-  for (const button of modalEl.qsa(".group[data-id='newlines'] button")) {
-    button.on("click", (e: MouseEvent) => {
+  modalEl
+    .qsa(".group[data-id='newlines'] button")
+    .on("click", (e: MouseEvent) => {
       state.replaceNewlines = (e.target as HTMLButtonElement).value as
         | "off"
         | "space"
         | "periodSpace";
       updateUI();
     });
-  }
 
   modalEl.qs(".group[data-id='limit'] input.words")?.on("input", (e) => {
     state.customTextLimits.word = (e.target as HTMLInputElement).value;
