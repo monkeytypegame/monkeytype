@@ -312,37 +312,46 @@ async function updateResults(searchText: string): Promise<void> {
   });
 
   const searchResults = modal.getModal().qsa(".searchResult");
-  for (const searchResult of searchResults) {
-    const quoteId = parseInt(searchResult.native.dataset["quoteId"] as string);
-    searchResult.qs(".textButton.favorite")?.on("click", (e) => {
-      e.stopPropagation();
-      if (quoteId === undefined || isNaN(quoteId)) {
-        Notifications.add(
-          "Could not toggle quote favorite: quote id is not a number",
-          -1,
-        );
-        return;
-      }
-      void toggleFavoriteForQuote(`${quoteId}`);
+  searchResults.qs(".textButton.favorite")?.on("click", (e) => {
+    e.stopPropagation();
+    const quoteId = parseInt(
+      (e.currentTarget as HTMLElement)?.closest<HTMLElement>(".searchResult")
+        ?.dataset?.["quoteId"] as string,
+    );
+    if (quoteId === undefined || isNaN(quoteId)) {
+      Notifications.add(
+        "Could not toggle quote favorite: quote id is not a number",
+        -1,
+      );
+      return;
+    }
+    void toggleFavoriteForQuote(`${quoteId}`);
+  });
+  searchResults.qs(".textButton.report")?.on("click", (e) => {
+    e.stopPropagation();
+    const quoteId = parseInt(
+      (e.currentTarget as HTMLElement)?.closest<HTMLElement>(".searchResult")
+        ?.dataset?.["quoteId"] as string,
+    );
+    if (quoteId === undefined || isNaN(quoteId)) {
+      Notifications.add(
+        "Could not open quote report modal: quote id is not a number",
+        -1,
+      );
+      return;
+    }
+    void QuoteReportModal.show(quoteId, {
+      modalChain: modal,
     });
-    searchResult.qs(".textButton.report")?.on("click", (e) => {
-      e.stopPropagation();
-      if (quoteId === undefined || isNaN(quoteId)) {
-        Notifications.add(
-          "Could not open quote report modal: quote id is not a number",
-          -1,
-        );
-        return;
-      }
-      void QuoteReportModal.show(quoteId, {
-        modalChain: modal,
-      });
-    });
-    searchResult.on("click", (e) => {
-      TestState.setSelectedQuoteId(quoteId);
-      apply(quoteId);
-    });
-  }
+  });
+  searchResults.on("click", (e) => {
+    const quoteId = parseInt(
+      (e.currentTarget as HTMLElement)?.closest<HTMLElement>(".searchResult")
+        ?.dataset?.["quoteId"] as string,
+    );
+    TestState.setSelectedQuoteId(quoteId);
+    apply(quoteId);
+  });
 }
 
 let lengthSelect: SlimSelect | undefined = undefined;
