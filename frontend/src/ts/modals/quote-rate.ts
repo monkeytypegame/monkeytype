@@ -213,25 +213,24 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.qs(".submitButton")?.on("click", () => {
     void submit();
   });
-  const starButtons = modalEl.qsa(".stars button.star");
-  for (const button of starButtons) {
-    button.on("click", (e) => {
-      const ratingValue = parseInt(
-        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
-      );
-      rating = ratingValue;
-      refreshStars();
-    });
-    button.on("mouseenter", (e) => {
-      const ratingHover = parseInt(
-        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
-      );
-      refreshStars(ratingHover);
-    });
-    button.on("mouseleave", () => {
-      refreshStars();
-    });
-  }
+
+  const stars = modalEl.qsa(".stars button.star");
+  stars.on("click", (e) => {
+    const ratingValue = parseInt(
+      (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
+    );
+    rating = ratingValue;
+    refreshStars();
+  });
+  stars.on("mouseenter", (e) => {
+    const ratingHover = parseInt(
+      (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
+    );
+    refreshStars(ratingHover);
+  });
+  stars.on("mouseleave", () => {
+    refreshStars();
+  });
 }
 
 const modal = new AnimatedModal({
