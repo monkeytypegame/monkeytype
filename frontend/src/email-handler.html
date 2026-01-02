@@ -393,7 +393,7 @@
            switch (mode) {
              case "resetPassword":
                // Display reset password handler and UI.
-               qs("#logo .text span").text("Reset Password");
+               qs("#logo .text span")?.setText("Reset Password");
                document.title = "Reset Password | Monkeytype";
                showResetPassword();
                break;
