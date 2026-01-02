@@ -215,6 +215,10 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
   }
 
+  /**
+   * Make element visible by scrolling the element's ancestor containers
+   */
+
   scrollIntoView(options: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
 
