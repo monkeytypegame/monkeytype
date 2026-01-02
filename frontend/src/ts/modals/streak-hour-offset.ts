@@ -20,13 +20,14 @@ export function show(): void {
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       if (getSnapshot()?.streakHourOffset !== undefined) {
-        modalEl.querySelector("input")?.remove();
-        modalEl.querySelector(".preview")?.remove();
-        modalEl.querySelector("button")?.remove();
-        (modalEl.querySelector(".text") as HTMLElement).textContent =
-          "You have already set your streak hour offset.";
+        modalEl.qs("input")?.remove();
+        modalEl.qs(".preview")?.remove();
+        modalEl.qs("button")?.remove();
+        modalEl
+          .qs(".text")
+          ?.setText("You have already set your streak hour offset.");
       } else {
-        (modalEl.querySelector("input") as HTMLInputElement).value = "0";
+        modalEl.qs<HTMLInputElement>("input")?.setValue("0");
         updatePreview();
       }
     },
@@ -35,11 +36,11 @@ export function show(): void {
 
 function updatePreview(): void {
   const inputValue = parseInt(
-    modal.getModal().querySelector("input")?.value as string,
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
     10,
   );
 
-  const preview = modal.getModal().querySelector(".preview") as HTMLElement;
+  const preview = modal.getModal().qs(".preview");
 
   const date = new Date();
   date.setUTCHours(0);
@@ -55,10 +56,10 @@ function updatePreview(): void {
 
   newDate.setHours(newDate.getHours() - -1 * inputValue); //idk why, but it only works when i subtract (so i have to negate inputValue)
 
-  preview.innerHTML = `
+  preview?.setHtml(`
     <div class="row"><div>Current local reset time:</div><div>${date.toLocaleTimeString()}</div></div>
     <div class="row"><div>New local reset time:</div><div>${newDate.toLocaleTimeString()}</div></div>
-  `;
+  `);
 }
 
 function hide(): void {
@@ -67,7 +68,7 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const value = parseInt(
-    modal.getModal().querySelector("input")?.value as string,
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
     10,
   );
 
@@ -101,10 +102,10 @@ async function apply(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "streakHourOffsetModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("input")?.addEventListener("input", () => {
+    modalEl.qs("input")?.on("input", () => {
       updatePreview();
     });
-    modalEl.querySelector("button")?.addEventListener("click", () => {
+    modalEl.qs("button")?.on("click", () => {
       void apply();
     });
   },
