@@ -301,8 +301,7 @@ export default class AnimatedModal<
           },
         });
       } else if (animationMode === "modalOnly") {
-        this.wrapperEl.setStyle({ opacity: "1" });
-        this.wrapperEl.show();
+        this.wrapperEl.show().setStyle({ opacity: "1" });
 
         this.modalEl.animate({
           ...modalAnimation,
