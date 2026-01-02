@@ -36,7 +36,7 @@ export function show(): void {
 
 function updatePreview(): void {
   const inputValue = parseInt(
-    modal.getModal().qs<HTMLInputElement>("input")?.getValue() as string,
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
     10,
   );
 
