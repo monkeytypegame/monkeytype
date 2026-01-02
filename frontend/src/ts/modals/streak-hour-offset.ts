@@ -68,7 +68,7 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const value = parseInt(
-    modal.getModal().qs<HTMLInputElement>("input")?.getValue() as string,
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
     10,
   );
 
