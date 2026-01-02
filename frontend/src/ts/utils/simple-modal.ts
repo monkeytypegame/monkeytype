@@ -15,6 +15,8 @@ import { ElementWithUtils, qsr } from "./dom";
 
 const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 
+const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
+
 type CommonInput<TType, TValue> = {
   type: TType;
   initVal?: TValue;
