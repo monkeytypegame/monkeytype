@@ -409,7 +409,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.qs("#fileInput")?.on("change", handleFileOpen);
 
   modalEl.qsa(".group[data-id='mode'] button").on("click", (e) => {
-    state.customTextMode = (e.target as HTMLButtonElement).value as
+    state.customTextMode = (e.currentTarget as HTMLButtonElement).value as
       | "simple"
       | "repeat"
       | "random";
@@ -424,7 +424,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
 
   modalEl.qsa(".group[data-id='fancy'] button").on("click", (e: MouseEvent) => {
     state.removeFancyTypographyEnabled =
-      (e.target as HTMLButtonElement).value === "true";
+      (e.currentTarget as HTMLButtonElement).value === "true";
     updateUI();
   });
 
@@ -432,7 +432,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     .qsa(".group[data-id='control'] button")
     .on("click", (e: MouseEvent) => {
       state.replaceControlCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true";
+        (e.currentTarget as HTMLButtonElement).value === "true";
       updateUI();
     });
 
@@ -440,7 +440,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     .qsa(".group[data-id='zeroWidth'] button")
     .on("click", (e: MouseEvent) => {
       state.removeZeroWidthCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true";
+        (e.currentTarget as HTMLButtonElement).value === "true";
       updateUI();
     });
 
@@ -448,7 +448,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     .qsa(".group[data-id='delimiter'] button")
     .on("click", (e: MouseEvent) => {
       state.customTextPipeDelimiter =
-        (e.target as HTMLButtonElement).value === "true";
+        (e.currentTarget as HTMLButtonElement).value === "true";
       if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
         state.customTextLimits.word = "";
       }
@@ -465,7 +465,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl
     .qsa(".group[data-id='newlines'] button")
     .on("click", (e: MouseEvent) => {
-      state.replaceNewlines = (e.target as HTMLButtonElement).value as
+      state.replaceNewlines = (e.currentTarget as HTMLButtonElement).value as
         | "off"
         | "space"
         | "periodSpace";
@@ -473,21 +473,23 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     });
 
   modalEl.qs(".group[data-id='limit'] input.words")?.on("input", (e) => {
-    state.customTextLimits.word = (e.target as HTMLInputElement).value;
+    state.customTextLimits.word = (e.currentTarget as HTMLInputElement).value;
     state.customTextLimits.time = "";
     state.customTextLimits.section = "";
     updateUI();
   });
 
   modalEl.qs(".group[data-id='limit'] input.time")?.on("input", (e) => {
-    state.customTextLimits.time = (e.target as HTMLInputElement).value;
+    state.customTextLimits.time = (e.currentTarget as HTMLInputElement).value;
     state.customTextLimits.word = "";
     state.customTextLimits.section = "";
     updateUI();
   });
 
   modalEl.qs(".group[data-id='limit'] input.sections")?.on("input", (e) => {
-    state.customTextLimits.section = (e.target as HTMLInputElement).value;
+    state.customTextLimits.section = (
+      e.currentTarget as HTMLInputElement
+    ).value;
     state.customTextLimits.word = "";
     state.customTextLimits.time = "";
     updateUI();
@@ -495,13 +497,13 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
 
   const textarea = modalEl.qs("textarea");
   textarea?.on("input", (e) => {
-    state.textarea = (e.target as HTMLTextAreaElement).value;
+    state.textarea = (e.currentTarget as HTMLTextAreaElement).value;
   });
   textarea?.on("keydown", (e) => {
     if (e.key !== "Tab") return;
     e.preventDefault();
 
-    const area = e.target as HTMLTextAreaElement;
+    const area = e.currentTarget as HTMLTextAreaElement;
     const start: number = area.selectionStart;
     const end: number = area.selectionEnd;
 
