@@ -9,8 +9,7 @@ export function show(showOptions?: ShowOptions): void {
     ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
-      (modalEl.querySelector("input") as HTMLInputElement).value =
-        `${Config.words}`;
+      modalEl.qs<HTMLInputElement>("input")?.setValue(`${Config.words}`);
     },
   });
 }
@@ -23,7 +22,7 @@ function hide(clearChain = false): void {
 
 function apply(): void {
   const val = parseInt(
-    modal.getModal().querySelector("input")?.value as string,
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
     10,
   );
 
@@ -53,7 +52,7 @@ function apply(): void {
 const modal = new AnimatedModal({
   dialogId: "customWordAmountModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
+    modalEl.on("submit", (e) => {
       e.preventDefault();
       apply();
     });

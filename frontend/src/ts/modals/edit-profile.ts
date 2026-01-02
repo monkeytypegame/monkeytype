@@ -240,7 +240,7 @@ function addValidation(
 const modal = new AnimatedModal({
   dialogId: "editProfileModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", async (e) => {
+    modalEl.on("submit", async (e) => {
       e.preventDefault();
       await updateProfile();
     });

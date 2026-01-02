@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import * as TestLogic from "../test/test-logic";
 import Config, { setConfig, setQuoteLengthAll } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -77,120 +78,105 @@ export function show(): void {
 //   void modal.hide();
 // }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  const wordsGroupButtons = modalEl.querySelectorAll(".wordsGroup button");
-  for (const button of wordsGroupButtons) {
-    button.addEventListener("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const wrd = target.getAttribute("data-words") as string;
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qsa(".wordsGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const wrd = target.getAttribute("data-words") as string;
 
-      if (wrd === "custom") {
-        CustomWordAmountPopup.show({
-          modalChain: modal,
-        });
-      } else if (wrd !== undefined) {
-        const wrdNum = parseInt(wrd);
-        setConfig("words", wrdNum);
-        ManualRestart.set();
-        TestLogic.restart();
-      }
-    });
-  }
-
-  const modeGroupButtons = modalEl.querySelectorAll(".modeGroup button");
-  for (const button of modeGroupButtons) {
-    button.addEventListener("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const mode = target.getAttribute("data-mode");
-      if (mode === Config.mode) return;
-      setConfig("mode", mode as Mode);
+    if (wrd === "custom") {
+      CustomWordAmountPopup.show({
+        modalChain: modal,
+      });
+    } else if (wrd !== undefined) {
+      const wrdNum = parseInt(wrd);
+      setConfig("words", wrdNum);
       ManualRestart.set();
       TestLogic.restart();
-    });
-  }
+    }
+  });
 
-  const timeGroupButtons = modalEl.querySelectorAll(".timeGroup button");
-  for (const button of timeGroupButtons) {
-    button.addEventListener("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const time = target.getAttribute("data-time") as string;
+  modalEl.qsa(".modeGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const mode = target.getAttribute("data-mode");
+    if (mode === Config.mode) return;
+    setConfig("mode", mode as Mode);
+    ManualRestart.set();
+    TestLogic.restart();
+  });
 
-      if (time === "custom") {
-        CustomTestDurationPopup.show({
-          modalChain: modal,
-        });
-      } else if (time !== undefined) {
-        const timeNum = parseInt(time);
-        setConfig("time", timeNum);
+  modalEl.qsa(".timeGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const time = target.getAttribute("data-time") as string;
+
+    if (time === "custom") {
+      CustomTestDurationPopup.show({
+        modalChain: modal,
+      });
+    } else if (time !== undefined) {
+      const timeNum = parseInt(time);
+      setConfig("time", timeNum);
+      ManualRestart.set();
+      TestLogic.restart();
+    }
+  });
+
+  modalEl.qsa(".quoteGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
+
+    if (lenAttr === "all") {
+      if (setQuoteLengthAll()) {
         ManualRestart.set();
         TestLogic.restart();
       }
-    });
-  }
+    } else if (lenAttr === "-2") {
+      void QuoteSearchModal.show({
+        modalChain: modal,
+      });
+    } else {
+      const len = parseInt(lenAttr, 10) as QuoteLength;
+      let arr: QuoteLengthConfig = [];
 
-  const quoteGroupButtons = modalEl.querySelectorAll(".quoteGroup button");
-  for (const button of quoteGroupButtons) {
-    button.addEventListener("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
-
-      if (lenAttr === "all") {
-        if (setQuoteLengthAll()) {
-          ManualRestart.set();
-          TestLogic.restart();
-        }
-      } else if (lenAttr === "-2") {
-        void QuoteSearchModal.show({
-          modalChain: modal,
-        });
+      if ((e as MouseEvent).shiftKey) {
+        arr = [...Config.quoteLength, len];
       } else {
-        const len = parseInt(lenAttr, 10) as QuoteLength;
-        let arr: QuoteLengthConfig = [];
-
-        if ((e as MouseEvent).shiftKey) {
-          arr = [...Config.quoteLength, len];
-        } else {
-          arr = [len];
-        }
-
-        if (setConfig("quoteLength", arr)) {
-          ManualRestart.set();
-          TestLogic.restart();
-        }
+        arr = [len];
       }
-    });
-  }
 
-  modalEl.querySelector(".customChange")?.addEventListener("click", () => {
+      if (setConfig("quoteLength", arr)) {
+        ManualRestart.set();
+        TestLogic.restart();
+      }
+    }
+  });
+
+  modalEl.qs(".customChange")?.on("click", () => {
     CustomTextPopup.show({
       modalChain: modal,
     });
   });
 
-  modalEl.querySelector(".punctuation")?.addEventListener("click", () => {
+  modalEl.qs(".punctuation")?.on("click", () => {
     setConfig("punctuation", !Config.punctuation);
     ManualRestart.set();
     TestLogic.restart();
   });
 
-  modalEl.querySelector(".numbers")?.addEventListener("click", () => {
+  modalEl.qs(".numbers")?.on("click", () => {
     setConfig("numbers", !Config.numbers);
     ManualRestart.set();
     TestLogic.restart();
   });
 
-  modalEl.querySelector(".shareButton")?.addEventListener("click", () => {
+  modalEl.qs(".shareButton")?.on("click", () => {
     ShareTestSettingsPopup.show({
       modalChain: modal,
     });
   });
 
-  const buttons = modalEl.querySelectorAll("button");
-  for (const button of buttons) {
-    button.addEventListener("click", () => {
-      update();
-    });
-  }
+  modalEl.qsa("button").on("click", () => {
+    update();
+  });
 }
 
 const modal = new AnimatedModal({

@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import Config from "../config";
 import { currentQuote } from "../test/test-words";
 import { getMode2 } from "../utils/misc";
@@ -77,20 +78,15 @@ export function show(showOptions?: ShowOptions): void {
   });
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl
-    .querySelector("textarea.url")
-    ?.addEventListener("click", async (e) => {
-      (e.target as HTMLTextAreaElement).select();
-    });
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("textarea.url")?.on("click", async (e) => {
+    (e.target as HTMLTextAreaElement).select();
+  });
 
-  const inputs = modalEl.querySelectorAll("label input");
-  for (const input of inputs) {
-    input.addEventListener("change", async () => {
-      updateURL();
-      updateSubgroups();
-    });
-  }
+  modalEl.qsa("label input").on("change", async () => {
+    updateURL();
+    updateSubgroups();
+  });
 }
 
 const modal = new AnimatedModal({
