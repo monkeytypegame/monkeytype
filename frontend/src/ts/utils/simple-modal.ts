@@ -396,14 +396,14 @@ export class SimpleModal {
     simpleModalEl.qsa("input").disable();
     simpleModalEl.qsa("button").disable();
     simpleModalEl.qsa("textarea").disable();
-    simpleModalEl.qsa(".checkbox").addClass("disabled");
+    simpleModalEl.qsa(".checkbox").disable();
   }
 
   enableInputs(): void {
     simpleModalEl.qsa("input").enable();
     simpleModalEl.qsa("button").enable();
     simpleModalEl.qsa("textarea").enable();
-    simpleModalEl.qsa(".checkbox").removeClass("disabled");
+    simpleModalEl.qsa(".checkbox").enable();
   }
 
   show(parameters: string[] = [], showOptions: ShowOptions): void {
