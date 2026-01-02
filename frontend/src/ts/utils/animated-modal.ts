@@ -183,7 +183,10 @@ export default class AnimatedModal<
   }
 
   focusFirstInput(setting: true | "focusAndSelect" | undefined): void {
-    const input = this.modalEl.qs<HTMLInputElement>("input:not(.hidden)");
+    const inputs = [
+      ...this.modalEl.qsa("input"),
+    ] as ElementWithUtils<HTMLInputElement>[];
+    const input = inputs.find((input) => !input.hasClass("hidden"));
     if (input !== undefined && input !== null) {
       if (setting === true) {
         input.focus();
