@@ -850,6 +850,16 @@ export class ElementsWithUtils<
     }
     return this;
   }
+
+  /**
+   * Set value of all input or textarea elements in the array
+   */
+  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
+    for (const item of this) {
+      item.setValue(value);
+    }
+    return this as unknown as this;
+  }
 }
 
 function checkUniqueSelector(
