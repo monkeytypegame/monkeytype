@@ -1,4 +1,4 @@
-import { animate, AnimationParams } from "animejs";
+import { AnimationParams } from "animejs";
 import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 import { ElementWithUtils, qs } from "./dom";
@@ -280,7 +280,7 @@ export default class AnimatedModal<
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {
-          animate(this.modalEl, {
+          this.modalEl.animate({
             ...modalAnimation,
             duration: animationMode === "none" ? 0 : modalAnimationDuration,
           });
@@ -288,7 +288,7 @@ export default class AnimatedModal<
           this.modalEl.setStyle({ opacity: "1" });
         }
 
-        animate(this.wrapperEl, {
+        this.wrapperEl.animate({
           ...wrapperAnimation,
           duration: animationMode === "none" ? 0 : wrapperAnimationDuration,
           onBegin: () => {
@@ -307,7 +307,7 @@ export default class AnimatedModal<
         this.wrapperEl.setStyle({ opacity: "1" });
         this.wrapperEl.show();
 
-        animate(this.modalEl, {
+        this.modalEl.animate({
           ...modalAnimation,
           duration: modalAnimationDuration,
           onComplete: async () => {
@@ -371,7 +371,7 @@ export default class AnimatedModal<
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {
-          animate(this.modalEl, {
+          this.modalEl.animate({
             ...modalAnimation,
             duration: animationMode === "none" ? 0 : modalAnimationDuration,
           });
@@ -379,7 +379,7 @@ export default class AnimatedModal<
           this.modalEl.setStyle({ opacity: "1" });
         }
 
-        animate(this.wrapperEl, {
+        this.wrapperEl.animate({
           ...wrapperAnimation,
           duration: animationMode === "none" ? 0 : wrapperAnimationDuration,
           onComplete: async () => {
@@ -410,7 +410,7 @@ export default class AnimatedModal<
       } else if (animationMode === "modalOnly") {
         this.wrapperEl.show().setStyle({ opacity: "1" });
 
-        animate(this.modalEl, {
+        this.modalEl.animate({
           ...modalAnimation,
           duration: modalAnimationDuration,
           onComplete: async () => {
