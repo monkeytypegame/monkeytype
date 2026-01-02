@@ -83,13 +83,10 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     (e.target as HTMLTextAreaElement).select();
   });
 
-  const inputs = modalEl.qsa("label input");
-  for (const input of inputs) {
-    input.on("change", async () => {
-      updateURL();
-      updateSubgroups();
-    });
-  }
+  modalEl.qsa("label input").on("change", async () => {
+    updateURL();
+    updateSubgroups();
+  });
 }
 
 const modal = new AnimatedModal({
