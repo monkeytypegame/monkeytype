@@ -79,88 +79,76 @@ export function show(): void {
 // }
 
 async function setup(modalEl: ElementWithUtils): Promise<void> {
-  const wordsGroupButtons = modalEl.qsa(".wordsGroup button");
-  for (const button of wordsGroupButtons) {
-    button.on("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const wrd = target.getAttribute("data-words") as string;
+  modalEl.qsa(".wordsGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const wrd = target.getAttribute("data-words") as string;
 
-      if (wrd === "custom") {
-        CustomWordAmountPopup.show({
-          modalChain: modal,
-        });
-      } else if (wrd !== undefined) {
-        const wrdNum = parseInt(wrd);
-        setConfig("words", wrdNum);
-        ManualRestart.set();
-        TestLogic.restart();
-      }
-    });
-  }
-
-  const modeGroupButtons = modalEl.qsa(".modeGroup button");
-  for (const button of modeGroupButtons) {
-    button.on("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const mode = target.getAttribute("data-mode");
-      if (mode === Config.mode) return;
-      setConfig("mode", mode as Mode);
+    if (wrd === "custom") {
+      CustomWordAmountPopup.show({
+        modalChain: modal,
+      });
+    } else if (wrd !== undefined) {
+      const wrdNum = parseInt(wrd);
+      setConfig("words", wrdNum);
       ManualRestart.set();
       TestLogic.restart();
-    });
-  }
+    }
+  });
 
-  const timeGroupButtons = modalEl.qsa(".timeGroup button");
-  for (const button of timeGroupButtons) {
-    button.on("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const time = target.getAttribute("data-time") as string;
+  modalEl.qsa(".modeGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const mode = target.getAttribute("data-mode");
+    if (mode === Config.mode) return;
+    setConfig("mode", mode as Mode);
+    ManualRestart.set();
+    TestLogic.restart();
+  });
 
-      if (time === "custom") {
-        CustomTestDurationPopup.show({
-          modalChain: modal,
-        });
-      } else if (time !== undefined) {
-        const timeNum = parseInt(time);
-        setConfig("time", timeNum);
+  modalEl.qsa(".timeGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const time = target.getAttribute("data-time") as string;
+
+    if (time === "custom") {
+      CustomTestDurationPopup.show({
+        modalChain: modal,
+      });
+    } else if (time !== undefined) {
+      const timeNum = parseInt(time);
+      setConfig("time", timeNum);
+      ManualRestart.set();
+      TestLogic.restart();
+    }
+  });
+
+  modalEl.qsa(".quoteGroup button").on("click", (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
+
+    if (lenAttr === "all") {
+      if (setQuoteLengthAll()) {
         ManualRestart.set();
         TestLogic.restart();
       }
-    });
-  }
+    } else if (lenAttr === "-2") {
+      void QuoteSearchModal.show({
+        modalChain: modal,
+      });
+    } else {
+      const len = parseInt(lenAttr, 10) as QuoteLength;
+      let arr: QuoteLengthConfig = [];
 
-  const quoteGroupButtons = modalEl.qsa(".quoteGroup button");
-  for (const button of quoteGroupButtons) {
-    button.on("click", (e) => {
-      const target = e.currentTarget as HTMLElement;
-      const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
-
-      if (lenAttr === "all") {
-        if (setQuoteLengthAll()) {
-          ManualRestart.set();
-          TestLogic.restart();
-        }
-      } else if (lenAttr === "-2") {
-        void QuoteSearchModal.show({
-          modalChain: modal,
-        });
+      if ((e as MouseEvent).shiftKey) {
+        arr = [...Config.quoteLength, len];
       } else {
-        const len = parseInt(lenAttr, 10) as QuoteLength;
-        let arr: QuoteLengthConfig = [];
-
-        if ((e as MouseEvent).shiftKey) {
-          arr = [...Config.quoteLength, len];
-        } else {
-          arr = [len];
-        }
-
-        if (setConfig("quoteLength", arr)) {
-          ManualRestart.set();
-          TestLogic.restart();
-        }
+        arr = [len];
       }
-    });
-  }
+
+      if (setConfig("quoteLength", arr)) {
+        ManualRestart.set();
+        TestLogic.restart();
+      }
+    }
+  });
 
   modalEl.qs(".customChange")?.on("click", () => {
     CustomTextPopup.show({
@@ -186,12 +174,9 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     });
   });
 
-  const buttons = modalEl.qsa("button");
-  for (const button of buttons) {
-    button.on("click", () => {
-      update();
-    });
-  }
+  modalEl.qsa("button").on("click", () => {
+    update();
+  });
 }
 
 const modal = new AnimatedModal({
