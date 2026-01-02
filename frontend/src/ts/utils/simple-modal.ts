@@ -166,7 +166,7 @@ export class SimpleModal {
 
   init(): void {
     this.reset();
-    this.element.qsa<HTMLInputElement>("input")?.setValue("");
+    this.element.qsa<HTMLInputElement>("input").setValue("");
     this.element.setAttribute("data-popup-id", this.id);
     this.element.qs(".title")?.setText(this.title);
     if (this.textAllowHtml) {
