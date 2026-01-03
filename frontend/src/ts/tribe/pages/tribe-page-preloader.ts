@@ -21,11 +21,15 @@ export function updateSubtext(text: string, html = false): void {
 }
 
 export function showReconnectButton(): void {
-  $(".pageTribe .tribePage.preloader .reconnectButton").removeClass(`hidden`);
+  $(".pageTribe .tribePage.preloader button.reconnectButton").removeClass(
+    `hidden`,
+  );
 }
 
 export function hideReconnectButton(): void {
-  $(".pageTribe .tribePage.preloader .reconnectButton").addClass(`hidden`);
+  $(".pageTribe .tribePage.preloader button.reconnectButton").addClass(
+    `hidden`,
+  );
 }
 
 export function reset(): void {

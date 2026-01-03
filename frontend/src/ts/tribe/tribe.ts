@@ -821,7 +821,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
   initRace();
 });
 
-$(".pageTribe .tribePage.preloader .reconnectButton").on("click", () => {
+$(".pageTribe .tribePage.preloader button.reconnectButton").on("click", () => {
   TribePagePreloader.hideReconnectButton();
   void init();
 });
