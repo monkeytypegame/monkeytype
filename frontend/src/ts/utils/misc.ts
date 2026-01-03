@@ -803,3 +803,5 @@ export function getTotalInlineMargin(element: HTMLElement): number {
     parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
   );
 }
+
+// DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
