@@ -1549,35 +1549,6 @@
       line-height: 4rem;
     }
   }
-  // #restartTestButton {
-  //   position: relative;
-  //   border-radius: var(--roundness);
-  //   padding: 1rem 2rem;
-  //   width: min-content;
-  //   width: -moz-min-content;
-  //   color: var(--sub-color);
-  //   transition: 0.25s;
-  //   cursor: pointer;
-  //   margin: 0 auto;
-  //   margin-top: 1rem;
-  //   &:hover,
-  //   &:focus {
-  //     color: var(--main-color);
-  //     outline: none;
-  //   }
-
-  //   &:focus {
-  //     background: var(--sub-color);
-  //   }
-  //   &.disabled {
-  //     opacity: 0.5;
-  //     cursor: default;
-  //     pointer-events: none;
-  //     &:hover {
-  //       color: var(--sub-color);
-  //     }
-  //   }
-  // }
 }
 
 main.focus .pageTest {
