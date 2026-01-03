@@ -12,7 +12,7 @@ export function hideLoading(): void {
 }
 
 export function updateQueueButtons(): void {
-  const buttons = $(".pageTribe .menu .matchmaking .buttons .button");
+  const buttons = $(".pageTribe .menu .matchmaking .buttons button");
   inQueueNumbers.forEach((num, index) => {
     $(buttons[index] as HTMLElement)
       .find(".subtext .waiting")
@@ -42,14 +42,14 @@ export function setInQueue(newQueNumArray: number[]): void {
 export function updateMenuButtons(
   races: TribeTypes.SystemStats["stats"]["1"],
 ): void {
-  let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
+  let buttons = $(".pageTribe .menu .matchmaking .buttons button");
   races.mm.forEach((num: number, index: number) => {
     $(buttons[index] as HTMLElement)
       .find(".subtext .races")
       .text(`Races: ${num}`);
   });
 
-  buttons = $(".pageTribe .menu .customRooms .buttons .button");
+  buttons = $(".pageTribe .menu .customRooms .buttons button");
   races.custom.forEach((num: number, index: number) => {
     $(buttons[index] as HTMLElement)
       .find(".subtext .rooms")
