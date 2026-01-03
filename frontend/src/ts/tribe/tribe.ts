@@ -14,7 +14,6 @@ import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
-import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 import * as TestState from "../test/test-state";
@@ -206,7 +205,8 @@ export function initRace(): void {
   if (everyoneReady) {
     TribeSocket.out.room.init();
   } else {
-    TribeStartRacePopup.show();
+    // TribeStartRacePopup.show();
+    startRaceModal.show([], {});
   }
 }
 
@@ -861,6 +861,21 @@ const enterRoomCodeModal = new SimpleModal({
   ],
   execFn: async (_thisPopup, code) => {
     joinRoom(code);
+    return {
+      status: 1,
+      message: "",
+      showNotification: false,
+    };
+  },
+});
+
+const startRaceModal = new SimpleModal({
+  id: "tribeStartRaceModal",
+  title: "Are you sure?",
+  buttonText: "Start",
+  text: "Not everyone is ready. Do you want to start the test without them?",
+  execFn: async (_thisPopup) => {
+    TribeSocket.out.room.init();
     return {
       status: 1,
       message: "",
