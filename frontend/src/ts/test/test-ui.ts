@@ -60,6 +60,7 @@ import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as TribeDelta from "../tribe/tribe-delta";
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeCarets from "../tribe/tribe-carets";
+import { qs } from "../utils/dom";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -647,12 +648,9 @@ export function updateWordsWrapperHeight(force = false): void {
     }
   }
 
-  const tribeCountdownEl = document.querySelector<HTMLElement>(
-    "#typingTest .tribeCountdown",
-  );
-  if (tribeCountdownEl) {
-    tribeCountdownEl.style.lineHeight = wordHeight * 3 + "px";
-  }
+  qs("#typingTest .tribeCountdown")?.setStyle({
+    lineHeight: wordHeight * 3 + "px",
+  });
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
