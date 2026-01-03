@@ -691,10 +691,6 @@
       margin-left: 0.5em;
     }
 
-    button {
-      padding: 1em 2em;
-    }
-
     .buttons {
       display: grid;
       grid-auto-flow: column;
@@ -817,6 +813,10 @@
 
     .bottom {
       grid-area: bottom;
+
+      button {
+        padding: 1em 2em;
+      }
     }
 
     .chart {
