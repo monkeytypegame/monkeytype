@@ -74,7 +74,6 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import tribeSocket from "../tribe/tribe-socket";
 import * as Time from "../states/time";
 
 let failReason = "";
@@ -1532,16 +1531,6 @@ $(".pageTest").on("click", "#restartTestButton", () => {
 
 $(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
 
-$(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.key === "Enter") {
-    if (TribeState.getRoom()) {
-      Tribe.initRace();
-    } else {
-      restart();
-    }
-  }
-});
-
 $(".pageTest").on("click", "#nextTestButton", () => {
   if (TribeState.getRoom()) {
     Tribe.initRace();
@@ -1551,15 +1540,10 @@ $(".pageTest").on("click", "#nextTestButton", () => {
   }
 });
 
-//todo: move this?
-$(document).on("keypress", "#readyButton", (event) => {
-  if (event.key === "Enter") {
-    tribeSocket.out.room.readyUpdate();
-  }
-});
-
 $(".pageTest").on("click", "#readyButton", () => {
-  tribeSocket.out.room.readyUpdate();
+  if (TribeState.getRoom()) {
+    Tribe.readyUp();
+  }
 });
 
 $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
