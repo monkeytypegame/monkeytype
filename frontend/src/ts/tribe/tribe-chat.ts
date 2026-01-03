@@ -117,38 +117,14 @@ export function reset(where: "lobby" | "result"): void {
 
 export function fill(where: "lobby" | "result"): void {
   reset(where);
-  for (const message of chatHistory) {
-    void displayMessage(
-      message.isSystem,
-      message.socketId,
-      message.message,
-      where,
-    );
+  for (let i = 0; i < chatHistory.length; i++) {
+    void displayMessage(i, where);
   }
 }
 
 function sendChattingUpdate(bool: boolean): void {
   tribeSocket.out.room.chattingUpdate(bool);
 }
-
-// no need since the messages will now be removed from the dom on page change
-// function limitChatMessages(): void {
-//   const messages1 = $(".pageTribe .lobby .chat .messages .message");
-//   const messages2 = $(
-//     ".pageTest #result #tribeResultBottom .chat .messages .message"
-//   );
-//   const limit = 100;
-
-//   //they should be in sync so it doesnt matter if i check one length
-//   if (messages1.length <= limit) return;
-
-//   const del = messages1.length - limit;
-
-//   for (let i = 0; i < del; i++) {
-//     $(messages1[i]).remove();
-//     $(messages2[i]).remove();
-//   }
-// }
 
 export function scrollChat(): void {
   const chatEl = $(".pageTribe .lobby .chat .messages")[0] as HTMLElement;
@@ -248,19 +224,21 @@ export function appendMessage(
   }
 
   void displayMessage(
-    isSystem,
-    socketId,
-    message,
+    chatHistory.length - 1,
     TestState.resultVisible ? "result" : "lobby",
   );
 }
 
 export async function displayMessage(
-  isSystem: boolean,
-  socketId: string | undefined,
-  message: string,
-  where: "lobby" | "result", //todo remove both
+  index: number,
+  where: "lobby" | "result",
 ): Promise<void> {
+  const entry = chatHistory[index];
+
+  if (!entry) return;
+
+  let { message, socketId, isSystem } = entry;
+
   let cls = "message";
   let author = "";
   const fromName =
@@ -276,15 +254,17 @@ export async function displayMessage(
   }
   message = await insertImageEmoji(message);
 
-  let previousAuthor = $(".pageTribe .lobby .chat .messages .message")
-    .last()
-    .find(".author")
-    .text();
-  previousAuthor = previousAuthor.substring(0, previousAuthor.length - 1);
+  const previousMessage = chatHistory[index - 1];
+  let isNewAuthor = true;
+  if (
+    previousMessage &&
+    (previousMessage.socketId === socketId ||
+      (previousMessage.isSystem && isSystem))
+  ) {
+    isNewAuthor = false;
+  }
 
-  if (previousAuthor === fromName) {
-    // author = author.replace(`class="author`, `class="author invisible`);
-  } else {
+  if (isNewAuthor) {
     cls += " newAuthor";
   }
 
