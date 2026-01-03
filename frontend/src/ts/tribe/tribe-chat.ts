@@ -3,9 +3,13 @@ import * as TribeState from "../tribe/tribe-state";
 import * as Misc from "../utils/misc";
 import * as TestState from "../test/test-state";
 import tribeSocket from "./tribe-socket";
-import { InputSuggestions } from "../elements/input-suggestions";
+import {
+  InputSuggestionEntry,
+  InputSuggestions,
+} from "../elements/input-suggestions";
 import { getEmojiList } from "../utils/json-data";
 import * as TribeTypes from "./types";
+import { qsr } from "../utils/dom";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
@@ -17,7 +21,7 @@ const chatHistory: {
 }[] = [];
 
 const lobbyChatSuggestions1 = new InputSuggestions(
-  $(".pageTribe .lobby .chat .input input"),
+  qsr(".pageTribe .lobby .chat .input input"),
   "@",
   "",
   3,
@@ -27,7 +31,7 @@ const lobbyChatSuggestions1 = new InputSuggestions(
 );
 
 const lobbyChatSuggestions2 = new InputSuggestions(
-  $(".pageTribe .lobby .chat .input input"),
+  qsr(".pageTribe .lobby .chat .input input"),
   ":",
   ":",
   3,
@@ -37,7 +41,7 @@ const lobbyChatSuggestions2 = new InputSuggestions(
 );
 
 const resultChatSuggestions1 = new InputSuggestions(
-  $(".pageTest #result #tribeResultBottom .chat .input input"),
+  qsr(".pageTest #result #tribeResultBottom .chat .input input"),
   "@",
   "",
   3,
@@ -47,7 +51,7 @@ const resultChatSuggestions1 = new InputSuggestions(
 );
 
 const resultChatSuggestions2 = new InputSuggestions(
-  $(".pageTest #result #tribeResultBottom .chat .input input"),
+  qsr(".pageTest #result #tribeResultBottom .chat .input input"),
   ":",
   ":",
   3,
@@ -66,7 +70,7 @@ export function isAnyChatSuggestionVisible(): boolean {
 }
 
 void getEmojiList().then((emojis) => {
-  const dataToSet: Record<string, TribeTypes.InputSuggestionEntry> = {};
+  const dataToSet: Record<string, InputSuggestionEntry> = {};
   for (const emoji of emojis) {
     if (emoji.type === "emoji") {
       dataToSet[emoji.from] = {
@@ -87,7 +91,7 @@ void getEmojiList().then((emojis) => {
 export function updateSuggestionData(): void {
   const users = TribeState.getRoom()?.users;
   if (!users) return;
-  const dataToSet: Record<string, TribeTypes.InputSuggestionEntry> = {};
+  const dataToSet: Record<string, InputSuggestionEntry> = {};
   for (const user of Object.values(users)) {
     if (user.id === tribeSocket.getId()) continue;
     dataToSet[user.name] = {

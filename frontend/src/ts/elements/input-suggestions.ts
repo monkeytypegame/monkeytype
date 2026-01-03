@@ -1,20 +1,27 @@
-import * as TribeTypes from "../tribe/types";
+import { ElementWithUtils } from "../utils/dom";
+
+export type InputSuggestionEntry = {
+  display: string;
+  imageIcon?: string;
+  faIcon?: string;
+  textIcon?: string;
+};
 
 export class InputSuggestions {
-  private inputElement: JQuery;
-  private suggestionsElement: JQuery | undefined;
+  private inputElement: ElementWithUtils<HTMLInputElement>;
+  private suggestionsElement: ElementWithUtils | undefined;
   private maxSuggestions: number;
   private selectedIndex: number | undefined;
   private prefix: string;
   private suffix: string;
-  private data: Record<string, TribeTypes.InputSuggestionEntry>;
+  private data: Record<string, InputSuggestionEntry>;
   private foundKeys: string[];
   private position: "top" | "bottom";
   private minInputForSuggestions: number;
   private applyWith: string[];
 
   constructor(
-    inputElement: JQuery,
+    inputElement: ElementWithUtils<HTMLInputElement>,
     prefix: string,
     suffix: string,
     maxSuggestions: number,
@@ -36,7 +43,7 @@ export class InputSuggestions {
 
   applyEventListeners(): void {
     this.inputElement.on("input", () => {
-      const inputVal = this.inputElement.val() as string;
+      const inputVal = this.inputElement.getValue() ?? "";
       const split = inputVal.split(" ");
       const last = split[split.length - 1] as string;
       const search = last.slice(this.prefix.length);
@@ -93,11 +100,11 @@ export class InputSuggestions {
     const suggestionsElement = document.createElement("div");
     suggestionsElement.classList.add("inputSuggestions");
     if (this.position === "top") {
-      this.inputElement[0]?.before(suggestionsElement);
+      this.inputElement.before(suggestionsElement);
     } else {
-      this.inputElement[0]?.after(suggestionsElement);
+      this.inputElement.after(suggestionsElement);
     }
-    this.suggestionsElement = $(suggestionsElement);
+    this.suggestionsElement = new ElementWithUtils(suggestionsElement);
     this.selectedIndex = 0;
 
     this.updateRoundCorners();
@@ -141,9 +148,8 @@ export class InputSuggestions {
     }
 
     for (const searchString of this.foundKeys) {
-      const suggestion = this.data[
-        searchString
-      ] as TribeTypes.InputSuggestionEntry;
+      const suggestion = this.data[searchString];
+      if (suggestion === undefined) continue;
       const el = `
       <div class="suggestion ${
         added === this.selectedIndex ? "selected" : ""
@@ -168,28 +174,28 @@ export class InputSuggestions {
       added++;
       if (added >= this.maxSuggestions) break;
     }
-    this.suggestionsElement.html(suggestions);
+    this.suggestionsElement.setHtml(suggestions);
     this.updatePosition();
   }
 
   updatePosition(): void {
     if (!this.suggestionsElement) return;
     if (this.position === "top") {
-      this.suggestionsElement.css({
-        left: this.inputElement[0]?.offsetLeft + "px",
-        width: this.inputElement[0]?.offsetWidth + "px",
+      this.suggestionsElement.setStyle({
+        left: this.inputElement.getOffsetLeft() + "px",
+        width: this.inputElement.getOffsetWidth() + "px",
         top:
-          (this.inputElement[0]?.offsetTop ?? 0) -
-          (this.suggestionsElement[0]?.offsetHeight ?? 0) +
+          (this.inputElement.getOffsetTop() ?? 0) -
+          (this.suggestionsElement.getOffsetHeight() ?? 0) +
           "px",
       });
     } else {
-      this.suggestionsElement.css({
-        left: this.inputElement[0]?.offsetLeft + "px",
-        width: this.inputElement[0]?.offsetWidth + "px",
+      this.suggestionsElement.setStyle({
+        left: this.inputElement.getOffsetLeft() + "px",
+        width: this.inputElement.getOffsetWidth() + "px",
         top:
-          (this.inputElement[0]?.offsetTop ?? 0) +
-          (this.inputElement[0]?.offsetHeight ?? 0) +
+          (this.inputElement.getOffsetTop() ?? 0) +
+          (this.inputElement.getOffsetHeight() ?? 0) +
           "px",
       });
     }
@@ -198,10 +204,10 @@ export class InputSuggestions {
   updateSelected(): void {
     if (!this.suggestionsElement) return;
     if (this.selectedIndex === undefined) return;
-    this.suggestionsElement.find(".suggestion").removeClass("selected");
+    this.suggestionsElement.qs(".suggestion")?.removeClass("selected");
     this.suggestionsElement
-      .find(`.suggestion[data-id="${this.selectedIndex}"]`)
-      .addClass("selected");
+      .qs(`.suggestion[data-id="${this.selectedIndex}"]`)
+      ?.addClass("selected");
   }
 
   destroy(): void {
@@ -212,7 +218,7 @@ export class InputSuggestions {
     this.updateRoundCorners();
   }
 
-  setData(data: Record<string, TribeTypes.InputSuggestionEntry>): void {
+  setData(data: Record<string, InputSuggestionEntry>): void {
     this.data = data;
   }
 
@@ -223,7 +229,7 @@ export class InputSuggestions {
     const toInsert = this.foundKeys[this.selectedIndex];
     if (toInsert === undefined) return;
 
-    const currentVal = this.inputElement.val() as string;
+    const currentVal = this.inputElement.getValue() ?? "";
     const split = currentVal.split(" ");
 
     //remove the last word
@@ -239,7 +245,7 @@ export class InputSuggestions {
     //join the array back into a string
     const newVal = split.join(" ");
 
-    this.inputElement.val(newVal + " ");
+    this.inputElement.setValue(newVal + " ");
     this.destroy();
   }
 
@@ -263,31 +269,31 @@ export class InputSuggestions {
     if (this.suggestionsElement) {
       //if suggestions are open, change the corners of the input depending on the position of the suggestions using border radius
       if (this.position === "top") {
-        this.inputElement.css({
-          "border-top-left-radius": "0",
-          "border-top-right-radius": "0",
+        this.inputElement.setStyle({
+          borderTopLeftRadius: "0",
+          borderTopRightRadius: "0",
         });
-        this.suggestionsElement.css({
-          "border-bottom-left-radius": "0",
-          "border-bottom-right-radius": "0",
+        this.suggestionsElement.setStyle({
+          borderBottomLeftRadius: "0",
+          borderBottomRightRadius: "0",
         });
       } else {
-        this.inputElement.css({
-          "border-bottom-left-radius": "0",
-          "border-bottom-right-radius": "0",
+        this.inputElement.setStyle({
+          borderBottomLeftRadius: "0",
+          borderBottomRightRadius: "0",
         });
-        this.suggestionsElement.css({
-          "border-top-left-radius": "0",
-          "border-top-right-radius": "0",
+        this.suggestionsElement.setStyle({
+          borderTopLeftRadius: "0",
+          borderTopRightRadius: "0",
         });
       }
     } else {
       //if suggestions are closed, reset the border radius
-      this.inputElement.css({
-        "border-top-left-radius": "",
-        "border-top-right-radius": "",
-        "border-bottom-left-radius": "",
-        "border-bottom-right-radius": "",
+      this.inputElement.setStyle({
+        borderTopLeftRadius: "",
+        borderTopRightRadius: "",
+        borderBottomLeftRadius: "",
+        borderBottomRightRadius: "",
       });
     }
   }
@@ -295,6 +301,6 @@ export class InputSuggestions {
   isVisible(): boolean {
     if (this.suggestionsElement === undefined) return false;
 
-    return this.suggestionsElement.is(":visible");
+    return this.suggestionsElement.isVisible();
   }
 }

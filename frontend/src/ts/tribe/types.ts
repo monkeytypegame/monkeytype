@@ -15,13 +15,6 @@ export type SystemStats = {
   ];
 };
 
-export type InputSuggestionEntry = {
-  display: string;
-  imageIcon?: string;
-  faIcon?: string;
-  textIcon?: string;
-};
-
 export type Result = {
   wpm: number;
   raw: number;

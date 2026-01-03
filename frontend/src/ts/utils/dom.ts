@@ -692,6 +692,30 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.select();
     }
   }
+
+  /**
+   * Insert element before this element
+   */
+  before(element: HTMLElement | ElementWithUtils): this {
+    if (element instanceof ElementWithUtils) {
+      this.native.before(element.native);
+    } else {
+      this.native.before(element);
+    }
+    return this;
+  }
+
+  /**
+   * Insert element after this element
+   */
+  after(element: HTMLElement | ElementWithUtils): this {
+    if (element instanceof ElementWithUtils) {
+      this.native.after(element.native);
+    } else {
+      this.native.after(element);
+    }
+    return this;
+  }
 }
 
 /**
