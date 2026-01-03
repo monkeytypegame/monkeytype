@@ -1131,7 +1131,21 @@ export async function update(
     TestUI.toggleResultWords(true);
   }
 
-  updateTribe();
+  updateTribeElements();
+
+  void TribeChat.fill("result").then(() => {
+    TribeChat.scrollChat();
+  });
+
+  const room = TribeState.getRoom();
+  if (room?.users) {
+    for (const userId of Object.keys(room.users)) {
+      if (userId === TribeState.getSelf()?.id) continue;
+      if (room.users[userId]?.isFinished) {
+        void TribeChartController.drawChart(userId);
+      }
+    }
+  }
 
   AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
@@ -1149,20 +1163,6 @@ export async function update(
     duration: Misc.applyReducedMotion(125),
   });
 
-  void TribeChat.fill("result").then(() => {
-    TribeChat.scrollChat();
-  });
-
-  const room = TribeState.getRoom();
-  if (room?.users) {
-    for (const userId of Object.keys(room.users)) {
-      if (userId === TribeState.getSelf()?.id) continue;
-      if (room.users[userId]?.isFinished) {
-        void TribeChartController.drawChart(userId);
-      }
-    }
-  }
-
   Misc.scrollToCenterOrTop(resultEl);
   void AdController.renderResult();
   TestUI.setResultCalculating(false);
@@ -1170,7 +1170,7 @@ export async function update(
   ChartController.result.resize();
 }
 
-export function updateTribe(): void {
+export function updateTribeElements(): void {
   if (TribeState.isInARoom()) {
     qs("#result #tribeResultBottom")?.show();
     qs("#result #restartTestButtonWithSameWordset")?.hide();

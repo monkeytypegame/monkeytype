@@ -279,7 +279,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   updateClientState(TribeTypes.CLIENT_STATE.DISCONNECTED);
   TribeDelta.hide();
   TribeCountdown.hide();
-  Result.updateTribe();
+  Result.updateTribeElements();
 
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
@@ -314,7 +314,7 @@ TribeSocket.in.system.connectFailed((err) => {
       customTitle: "Tribe",
     });
   }
-  Result.updateTribe();
+  Result.updateTribeElements();
   TribeState.setSocketId(undefined);
   TribeState.setRoom(undefined);
   TribeDelta.hide();
@@ -335,7 +335,7 @@ TribeSocket.in.system.connectError((err) => {
       customTitle: "Tribe",
     });
   }
-  Result.updateTribe();
+  Result.updateTribeElements();
   TribeDelta.hide();
   TribeCountdown.hide();
   TribeState.setSocketId(undefined);
