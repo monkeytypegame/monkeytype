@@ -647,7 +647,12 @@ export function updateWordsWrapperHeight(force = false): void {
     }
   }
 
-  $("#typingTest .tribeCountdown").css("line-height", wordHeight * 3 + "px");
+  const tribeCountdownEl = document.querySelector<HTMLElement>(
+    "#typingTest .tribeCountdown",
+  );
+  if (tribeCountdownEl) {
+    tribeCountdownEl.style.lineHeight = wordHeight * 3 + "px";
+  }
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
