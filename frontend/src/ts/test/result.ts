@@ -1149,8 +1149,9 @@ export async function update(
     duration: Misc.applyReducedMotion(125),
   });
 
-  TribeChat.scrollChat();
-  TribeChat.fill("result");
+  void TribeChat.fill("result").then(() => {
+    TribeChat.scrollChat();
+  });
 
   const room = TribeState.getRoom();
   if (room?.users) {

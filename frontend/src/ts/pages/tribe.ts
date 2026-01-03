@@ -24,10 +24,9 @@ export const page = new Page({
   },
   beforeShow: async () => {
     if (TribeState.isInARoom()) {
-      TribeChat.fill("lobby");
-      setTimeout(() => {
+      void TribeChat.fill("lobby").then(() => {
         TribeChat.scrollChat();
-      }, 50);
+      });
     }
   },
   afterShow: async () => {

@@ -115,10 +115,10 @@ export function reset(where: "lobby" | "result"): void {
   }
 }
 
-export function fill(where: "lobby" | "result"): void {
+export async function fill(where: "lobby" | "result"): Promise<void> {
   reset(where);
   for (let i = 0; i < chatHistory.length; i++) {
-    void displayMessage(i, where);
+    await displayMessage(i, where);
   }
 }
 
