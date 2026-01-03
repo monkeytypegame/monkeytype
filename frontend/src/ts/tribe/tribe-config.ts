@@ -1,19 +1,9 @@
 import Config, * as UpdateConfig from "../config";
-// import * as Funbox from "../test/funbox/funbox";
-// import * as Notifications from "./notifications";
-// import * as CustomText from "../test/custom-text";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
-// import { Difficulty, Mode } from "@monkeytype/schemas/shared";
-// import {
-//   FunboxName,
-//   QuoteLengthConfig,
-//   StopOnError,
-// } from "@monkeytype/schemas/configs";
-// import { Language } from "@monkeytype/schemas/languages";
 import { debounce } from "throttle-debounce";
 import { configMetadata } from "../config-metadata";
 import * as CustomText from "../test/custom-text";
