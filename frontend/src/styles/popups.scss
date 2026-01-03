@@ -602,30 +602,10 @@ body.darkMode {
   }
 }
 
-#tribeUserSettingsPopupWrapper {
-  #tribeUserSettingsPopup {
-    color: var(--sub-color);
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
+#tribeUserSettingsModal {
+  .buttons {
     display: grid;
     gap: 1rem;
-    width: 80vw;
-    max-width: 400px;
-    grid-template-rows: auto 1fr;
-
-    .title {
-      font-size: 1.5rem;
-    }
-
-    .buttons {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .text {
-      color: var(--text-color);
-    }
   }
 }
 

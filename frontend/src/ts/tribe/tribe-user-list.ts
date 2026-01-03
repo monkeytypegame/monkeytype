@@ -1,5 +1,5 @@
 import * as TribeState from "./tribe-state";
-import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
+import * as TribeUserSettingsPopup from "../modals/tribe-user-settings";
 import tribeSocket from "./tribe-socket";
 import { User } from "./types";
 import { getAvatarElement } from "../utils/discord-avatar";
