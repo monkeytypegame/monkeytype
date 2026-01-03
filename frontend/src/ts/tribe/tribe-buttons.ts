@@ -215,22 +215,6 @@ export function update(page?: string): void {
     ) {
       enableStartButton(page);
     }
-
-    // TODO REENABLE
-    // if (TribeState.get() === 5) {
-    //   let readyCount = 0;
-    //   Object.keys(TribeState.getRoom().users).forEach((userId) => {
-    //     if (TribeState.getRoom().users[userId].isLeader || room.users[userId].isAfk) return;
-    //     if (TribeState.getRoom().users[userId].isReady) {
-    //       readyCount++;
-    //     }
-    //   });
-    //   if (readyCount > 0) {
-    //     enableStartButton();
-    //   } else {
-    //     disableStartButton();
-    //   }
-    // }
   } else {
     updateAutoReadyButton(page);
     hideStartButton(page);
