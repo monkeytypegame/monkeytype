@@ -6,7 +6,7 @@ import GeorgeQueue from "../queues/george-queue";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
-import { formatSeconds, getOrdinalNumberString } from "../utils/misc";
+import { formatSeconds } from "../utils/misc";
 import LaterQueue, {
   type LaterTask,
   type LaterTaskContexts,
@@ -15,7 +15,11 @@ import LaterQueue, {
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { MonkeyMail } from "@monkeytype/schemas/users";
-import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
+import {
+  getOrdinalNumberString,
+  isSafeNumber,
+  mapRange,
+} from "@monkeytype/util/numbers";
 import { RewardBracket } from "@monkeytype/schemas/configuration";
 
 async function handleDailyLeaderboardResults(

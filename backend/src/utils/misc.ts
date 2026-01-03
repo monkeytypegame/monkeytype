@@ -127,15 +127,6 @@ export function sanitizeString(str: string | undefined): string | undefined {
     .replace(/\s{3,}/g, "  ");
 }
 
-const suffixes = ["th", "st", "nd", "rd"];
-
-export function getOrdinalNumberString(number: number): string {
-  const lastTwo = number % 100;
-  const suffix =
-    suffixes[(lastTwo - 20) % 10] ?? suffixes[lastTwo] ?? suffixes[0];
-  return `${number}${suffix}`;
-}
-
 type TimeUnit =
   | "second"
   | "minute"
