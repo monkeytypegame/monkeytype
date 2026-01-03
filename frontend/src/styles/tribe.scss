@@ -348,16 +348,13 @@
       font-size: 1rem;
     }
     .text {
+      padding: 0.1em 0.25em;
       font-size: 2rem;
       line-height: 2rem;
       color: var(--main-color);
-      cursor: pointer;
-      transition: 0.25s;
     }
     .link {
       font-size: 0.75rem;
-      transition: 0.25s;
-      cursor: pointer;
       &:hover {
         color: var(--text-color);
       }
