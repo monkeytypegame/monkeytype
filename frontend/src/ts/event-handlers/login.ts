@@ -1,7 +1,8 @@
 import * as ForgotPasswordModal from "../modals/forgot-password";
+import { qs } from "../utils/dom";
 
-const loginPage = document.querySelector("#pageLogin") as HTMLElement;
+const loginPage = qs("#pageLogin");
 
-$(loginPage).on("click", "#forgotPasswordButton", () => {
+loginPage?.onChild("click", "#forgotPasswordButton", () => {
   ForgotPasswordModal.show();
 });
