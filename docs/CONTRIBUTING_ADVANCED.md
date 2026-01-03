@@ -25,9 +25,8 @@ This contribution guide is for cases in which you need to test the functionality
 
 ### Git
 
-
 > [!WARNING]
-> **If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.** 
+> **If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.**
 
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy-to-understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
@@ -51,18 +50,15 @@ The account system will not let you create an account without a Firebase project
 
 1. Create a Firebase account if you already haven't done so.
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
-
    - The project name doesn't matter, but the name `monkeytype` would be preferred.
    - Google Analytics is not necessary.
 
 1. Enable Firebase Authentication
-
    - In the Firebase console, go to `Build > Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email, and save
 
 1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
-
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
@@ -70,7 +66,6 @@ The account system will not let you create an account without a Firebase project
 1. Run `pnpm add -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
 1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
-
    - Run `firebase projects:list` to find your firebase project ID.
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -109,8 +104,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Manual                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Manual                                                                                                                                                                                                                                                         | Docker (recommended)                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
@@ -134,15 +129,15 @@ npm run dev
 
 ### Backend only
 
-| Manual                      | Docker                         |
-| --------------------------- | ------------------------------ |
-| `npm run dev-be`            | `cd backend && npm run docker` |
+| Manual           | Docker                         |
+| ---------------- | ------------------------------ |
+| `npm run dev-be` | `cd backend && npm run docker` |
 
 ### Frontend only
 
-| Manual                       | Docker                          |
-| ---------------------------- | ------------------------------- |
-| `npm run dev-fe`             | `cd frontend && npm run docker` |
+| Manual           | Docker                          |
+| ---------------- | ------------------------------- |
+| `npm run dev-fe` | `cd frontend && npm run docker` |
 
 These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
