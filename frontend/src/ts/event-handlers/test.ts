@@ -58,13 +58,11 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
     const resultid =
       qs(".pageTest .tags .editTagsButton")?.getAttribute("data-result-id") ??
       "";
-    const activeTagIds = qs(".pageTest .tags .editTagsButton")?.getAttribute(
-      "data-active-tag-ids",
-    );
-    const tags =
-      activeTagIds === "" || activeTagIds === null || activeTagIds === undefined
-        ? []
-        : activeTagIds.split(",");
+    const activeTagIds =
+      qs(".pageTest .tags .editTagsButton")?.getAttribute(
+        "data-active-tag-ids",
+      ) ?? "";
+    const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     EditResultTagsModal.show(resultid, tags, "resultPage");
   }
 });
