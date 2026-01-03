@@ -2,8 +2,7 @@ import Socket from "../socket";
 import * as TribeTypes from "../../types";
 
 type GetPublicRoomsResponse = {
-  status?: string;
-  rooms?: TribeTypes.Room[];
+  rooms: TribeTypes.PublicRoomData[];
 };
 
 async function getPublicRooms(

@@ -99,6 +99,14 @@ export const CLIENT_STATE = {
 
 export type ClientState = (typeof CLIENT_STATE)[keyof typeof CLIENT_STATE];
 
+export type PublicRoomData = {
+  id: string;
+  size: number;
+  name: string;
+  state: RoomState;
+  config: RoomConfig;
+};
+
 export type Room = {
   id: string;
   state: RoomState;

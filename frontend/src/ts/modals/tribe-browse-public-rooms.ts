@@ -6,21 +6,21 @@ import TribeSocket from "../tribe/tribe-socket";
 import * as TribeType from "../tribe/types";
 import * as Tribe from "../tribe/tribe";
 
-function updateList(list: TribeType.Room[]): void {
-  // TODO: Confirm type from miodec
-
-  const el = $(modal.getModal());
+function updateList(list: TribeType.PublicRoomData[]): void {
+  const el = modal.getModal();
 
   if (list.length === 0) {
-    el.find(".error").removeClass("hidden");
-    el.find(".list").addClass("hidden");
+    el.qs(".error")?.show();
+    el.qs(".list")?.hide();
     return;
   }
-  el.find(".error").addClass("hidden");
-  el.find(".list").removeClass("hidden");
+  el.qs(".error")?.hide();
+  el.qs(".list")?.show();
+
+  let html = "";
   for (const room of list) {
-    const html = `
-    <div class="room" id="${room.id}">
+    html += `
+    <div class="room" data-roomid="${room.id}">
       <div class="name">
         <div class="title">name</div>
         <div class="value">${room.name}</div>
@@ -42,21 +42,15 @@ function updateList(list: TribeType.Room[]): void {
       </div>
     </div>
     `;
-    const roomEl = el.find(".list").append(html);
-    roomEl.on("click", () => {
-      Tribe.joinRoom(room.id, true);
-      void modal.hide();
-    });
   }
+  el.qs(".list")?.setHtml(html);
 }
 
 export function show(): void {
   Loader.show();
   void TribeSocket.out.room.getPublicRooms(0, "").then((r) => {
     Loader.hide();
-    if (r.status !== "Error" && r.rooms) {
-      updateList(r.rooms);
-    }
+    updateList(r.rooms);
   });
   void modal.show();
 }
@@ -64,9 +58,19 @@ export function show(): void {
 const modal = new AnimatedModal({
   dialogId: "tribeBrowsePublicRooms",
   cleanup: async () => {
-    const el = $(modal.getModal());
-    el.find(".search").val("");
-    el.find(".list").empty();
+    const el = modal.getModal();
+    el.qs<HTMLInputElement>(".search")?.setValue("");
+    el.qs(".list")?.empty();
+  },
+  setup: async (modalEl) => {
+    modalEl.onChild("click", ".room", (e) => {
+      if (!e.childTarget || !(e.childTarget instanceof HTMLElement)) return;
+      const roomId = e.childTarget.getAttribute("data-roomid") ?? "";
+      if (roomId !== "") {
+        Tribe.joinRoom(roomId, true);
+        void modal.hide();
+      }
+    });
   },
 });
 
