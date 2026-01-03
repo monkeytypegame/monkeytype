@@ -46,6 +46,7 @@ function revert(): void {
 
   if (TribeState.isInARoom()) {
     $(".pageTest #result .inviteLink").removeClass("hidden");
+    $(".pageTest #result #tribeResultBottom").removeClass("hidden");
   }
 }
 
@@ -94,6 +95,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   $(".pageTest #result .inviteLink").addClass("hidden");
+  $(".pageTest #result #tribeResultBottom").addClass("hidden");
   $("noscript").addClass("hidden");
   $("#nocss").addClass("hidden");
   $("#ad-result-wrapper").addClass("hidden");
