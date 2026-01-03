@@ -1270,8 +1270,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  await Promise.all([savingResultPromise, resultUpdatePromise]);
-
   void TribeResults.send({
     wpm: completedEvent.wpm,
     raw: completedEvent.rawWpm,
@@ -1282,6 +1280,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     chartData: tribeChartData,
     resolve: await testSavePromise,
   });
+
+  await Promise.all([savingResultPromise, resultUpdatePromise]);
 }
 
 type SaveResultResponse = {
