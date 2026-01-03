@@ -19,7 +19,7 @@ qs("footer #commandLineMobileButton")?.on("click", async () => {
 
 qs("footer #newVersionIndicator")?.on("click", (e) => {
   e.stopPropagation();
-  document.querySelector("#newVersionIndicator")?.classList.add("hidden");
+  qs("#newVersionIndicator")?.addClass("hidden");
 });
 
 qs("footer .currentVersion")?.on("click", (e) => {
