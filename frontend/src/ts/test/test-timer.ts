@@ -191,31 +191,6 @@ function checkIfTimeIsUp(): void {
   if (timerDebug) console.timeEnd("times up check");
 }
 
-// function sendTribeProgress(wpm: number, raw: number, acc: number): void {
-//   if (timerDebug) console.time("tribe progress");
-//   if (TribeState.getState() >= 10 && TribeState.getState() <= 21) {
-//     let progress = 0;
-//     if (Config.mode === "time") {
-//       progress = 100 - ((Time.get() + 1) / Config.time) * 100;
-//     } else {
-//       let outof = TestWords.words.length;
-//       if (Config.mode === "words") {
-//         outof = Config.words;
-//       }
-//       progress = Math.floor((TestWords.words.currentIndex / (outof - 1)) * 100);
-//     }
-//     TribeBars.sendUpdate(wpm, raw, acc, progress);
-//     if (
-//       Time.get() >= 3 &&
-//       TestInput.input.current === "" &&
-//       TestInput.input.getHistory().length === 0
-//     ) {
-//       TimerEvent.dispatch("finish");
-//     }
-//   }
-//   if (timerDebug) console.timeEnd("tribe progress");
-// }
-
 function playTimeWarning(): void {
   if (timerDebug) console.time("play timer warning");
 
