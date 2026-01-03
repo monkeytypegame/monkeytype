@@ -2,7 +2,6 @@ import SettingsGroup from "../elements/settings/settings-group";
 import Config, { setConfig, configLoadPromise } from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
-import * as tribe from "../utils/tribe";
 import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
@@ -46,6 +45,7 @@ import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
 import { configurationPromise } from "../ape/server-configuration";
+import { getTribeMode } from "../utils/tribe";
 
 let settingsInitialized = false;
 
@@ -247,7 +247,7 @@ async function initGroups(): Promise<void> {
 
 async function initAsyncGroups(): Promise<void> {
   await configurationPromise;
-  if (tribe.getTribeMode() === "enabled") {
+  if (getTribeMode() === "enabled") {
     groups["tribeDelta"] = new SettingsGroup("tribeDelta", "button");
     groups["tribeCarets"] = new SettingsGroup("tribeCarets", "button");
   }
