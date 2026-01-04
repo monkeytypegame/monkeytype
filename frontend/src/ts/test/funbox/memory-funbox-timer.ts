@@ -42,7 +42,7 @@ export function start(time: number): void {
     memoryTimer === 0 ? hide() : update(memoryTimer);
     if (memoryTimer <= 0) {
       reset();
-      $("#wordsWrapper").addClass("hidden");
+      document.getElementById("wordsWrapper")?.classList.add("hidden");
     }
   }, 1000);
 }

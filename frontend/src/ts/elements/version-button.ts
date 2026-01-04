@@ -2,15 +2,13 @@ import { isDevEnvironment } from "../utils/misc";
 import * as Version from "../states/version";
 
 function setText(text: string): void {
-  $("footer .currentVersion .text").text(text);
+  const el = document.querySelector("footer .currentVersion .text");
+  if (el) el.textContent = text;
 }
 
 function setIndicatorVisible(state: boolean): void {
-  if (state) {
-    $("#newVersionIndicator").removeClass("hidden");
-  } else {
-    $("#newVersionIndicator").addClass("hidden");
-  }
+  const indicator = document.getElementById("newVersionIndicator");
+  indicator?.classList.toggle("hidden", !state);
 }
 
 export async function update(): Promise<void> {
