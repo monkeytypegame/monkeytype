@@ -235,18 +235,14 @@
           // grid-auto-flow: column;
           justify-items: center;
           grid-template-columns: 1fr 1fr 1fr 1fr;
-          .group {
-            padding: 0.5rem;
+          // grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
+          button {
+            // padding: 0.5rem;
+            width: 100%;
             color: var(--text-color);
             .fas,
             .far {
-              margin-right: 0.5rem;
               color: var(--main-color);
-            }
-            &.disabled {
-              opacity: 0.5;
-              cursor: default;
-              pointer-events: none;
             }
           }
         }
