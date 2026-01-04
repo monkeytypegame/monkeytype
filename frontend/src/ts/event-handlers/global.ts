@@ -33,7 +33,10 @@ document.addEventListener("keydown", async (e) => {
     ) {
       //autofocus
       focusWords();
-      if (Config.showOutOfFocusWarning) {
+      if (
+        Config.showOutOfFocusWarning ||
+        (TribeState.isInARoom() && !TribeState.isRaceActive())
+      ) {
         e.preventDefault();
       }
     }
