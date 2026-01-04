@@ -1,7 +1,6 @@
 import * as Notifications from "../elements/notifications";
 import * as TribeState from "../tribe/tribe-state";
 import * as Misc from "../utils/misc";
-import * as TestState from "../test/test-state";
 import tribeSocket from "./tribe-socket";
 import {
   InputSuggestionEntry,
@@ -10,6 +9,7 @@ import {
 import { getEmojiList } from "../utils/json-data";
 import * as TribeTypes from "./types";
 import { qsr } from "../utils/dom";
+import * as ActivePage from "../states/active-page";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
@@ -225,7 +225,7 @@ export function appendMessage(
 
   void displayMessage(
     chatHistory.length - 1,
-    TestState.resultVisible ? "result" : "lobby",
+    ActivePage.get() === "test" ? "result" : "lobby",
   );
 }
 
@@ -330,7 +330,7 @@ $(document).on("keydown", (e) => {
       e.preventDefault();
     }
   } else if (
-    TestState.resultVisible &&
+    ActivePage.get() === "test" &&
     (TribeState.getRoomState() === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED ||
       TribeState.getRoomState() ===
         TribeTypes.ROOM_STATE.RACE_AWAITING_RESULTS ||
