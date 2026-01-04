@@ -774,6 +774,16 @@ export class ElementsWithUtils<
   }
 
   /**
+   * Set textContent of all elements in the array
+   */
+  setText(textString: string): this {
+    for (const item of this) {
+      item.setText(textString);
+    }
+    return this;
+  }
+
+  /**
    * Set the disabled attribute on all elements in the array
    */
   disable(): this {

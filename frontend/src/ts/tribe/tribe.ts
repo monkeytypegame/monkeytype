@@ -166,6 +166,7 @@ async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
   updateClientState(TribeTypes.CLIENT_STATE.IN_ROOM);
   updateRoomState(room.state);
   await TribePageLobby.init();
+  await TribeConfig.apply(room.config);
   void TribePages.change("lobby");
   TribeSound.play("join");
   TribeChat.updateSuggestionData();
