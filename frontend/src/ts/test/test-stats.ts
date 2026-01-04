@@ -217,9 +217,9 @@ export function setLastSecondNotRound(): void {
   lastSecondNotRound = true;
 }
 
-export function calculateBurst(): number {
+export function calculateBurst(endTime: number = performance.now()): number {
   const containsKorean = TestInput.input.getKoreanStatus();
-  const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
+  const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
   let wordLength: number;
   wordLength = !containsKorean
     ? TestInput.input.current.length
