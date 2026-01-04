@@ -1514,9 +1514,6 @@ $(".pageTest").on("click", "#testInitFailed button.restart", () => {
 });
 
 $(".pageTest").on("click", "#restartTestButton", () => {
-  if (TribeState.isInARoom()) {
-    return;
-  }
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
