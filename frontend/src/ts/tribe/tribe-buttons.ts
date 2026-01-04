@@ -90,22 +90,28 @@ export function update(): void {
 
   buttons.autoReady.setActive(TribeState.getAutoReady());
 
-  if (self.isAfk) {
-    buttons.afk.setActive(true);
+  if (self.isAfk || self.isReady) {
     buttons.ready.disable();
+  } else {
+    buttons.ready.enable();
+  }
+
+  if (self.isAfk) {
     buttons.autoReady.disable();
   } else {
-    buttons.afk.setActive(false);
-    buttons.ready.enable();
     buttons.autoReady.enable();
   }
 
   if (self.isReady) {
     buttons.afk.disable();
-    buttons.ready.disable();
   } else {
     buttons.afk.enable();
-    buttons.ready.enable();
+  }
+
+  if (self.isAfk) {
+    buttons.afk.setActive(true);
+  } else {
+    buttons.afk.setActive(false);
   }
 
   if (
