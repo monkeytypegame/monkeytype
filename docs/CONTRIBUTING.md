@@ -27,8 +27,7 @@ Below is a set of general guidelines for different types of changes.
 
 ### Pull Request Naming Guidelines
 
-We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch) and also include the author name at the end inside parenthesis.  Please follow the guidelines below when naming pull requests.
-
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch) and also include the author name at the end inside parenthesis. Please follow the guidelines below when naming pull requests.
 
 For types, we use the following:
 
@@ -62,7 +61,7 @@ Before submitting a theme make sure...
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
-If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md) 
+If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md)
 
 ### Language Guidelines
 
@@ -83,7 +82,6 @@ If you want to contribute languages but don't know how, check [LANGUAGES.md](/do
 - Please do not add extremely short quotes (less than 60 characters)
 - For quotes not in English, please include translations of quotes in the description of your pull request. This assists in the verification process to ensure the integrity of the quotes.
 - Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
-
 
 If you want to contribute quotes but don't know how, check [QUOTES.md](/docs/QUOTES.md)
 

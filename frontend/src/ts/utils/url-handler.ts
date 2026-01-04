@@ -31,6 +31,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "../observables/auth-event";
+import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -138,7 +139,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 const TestSettingsSchema = z.tuple([
   ModeSchema.nullable(),
   Mode2Schema.nullable(),
-  CustomText.CustomTextSettingsSchema.partial({
+  CustomTextSettingsSchema.partial({
     pipeDelimiter: true,
     limit: true,
     mode: true,
