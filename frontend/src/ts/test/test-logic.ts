@@ -167,17 +167,19 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
 
-  if (
-    TestState.testRestarting ||
-    TestUI.resultCalculating ||
-    (TribeState.isInARoom() && !options.tribeOverride)
-  ) {
+  if (TestState.testRestarting || TestUI.resultCalculating) {
+    options.event?.preventDefault();
+    return;
+  }
+
+  if (TribeState.isInARoom() && !options.tribeOverride) {
     options.event?.preventDefault();
     if (TestState.isActive) {
       fail("give up");
     }
     return;
   }
+
   if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") options.event?.preventDefault();
