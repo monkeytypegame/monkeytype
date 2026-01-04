@@ -57,6 +57,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     return;
   }
 
+  TribeButtons.update();
   $("#tribeStateDisplay").text(
     `${TribeState.getState()} - ${TribeState.getRoom()?.state}`,
   );
@@ -66,8 +67,6 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     TribeBars.hide("tribe");
     NavigationEvent.dispatch("/tribe");
   } else if (state === TribeTypes.ROOM_STATE.RACE_INIT) {
-    TribeButtons.disableStartButton("lobby");
-    TribeButtons.disableReadyButton("lobby");
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
     const self = TribeState.getSelf();
@@ -112,7 +111,6 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     if (TribeState.getAutoReady()) {
       TribeSocket.out.room.readyUpdate();
     }
-    TribeButtons.update();
   } else if (state === TribeTypes.ROOM_STATE.READY_TO_CONTINUE) {
     TribePageLobby.enableNameVisibilityButtons();
     TribePageLobby.enableConfigButtons();
@@ -587,7 +585,7 @@ TribeSocket.in.room.usersUpdate((data) => {
   }
   TribeUserList.update("lobby");
   TribeUserList.update("result");
-  TribeButtons.update("lobby");
+  TribeButtons.update();
   if (isChattingChanged) {
     TribeChat.updateIsTyping();
   }
