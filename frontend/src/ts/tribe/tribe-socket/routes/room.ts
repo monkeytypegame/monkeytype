@@ -178,7 +178,10 @@ function chatMessage(
 }
 
 function configChanged(
-  callback: (data: { config: TribeTypes.RoomConfig }) => void,
+  callback: (
+    data: { config: TribeTypes.RoomConfig },
+    callback: (response: boolean) => void,
+  ) => void,
 ): void {
   Socket.on("room_config_changed", callback);
 }

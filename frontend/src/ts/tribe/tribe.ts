@@ -510,7 +510,7 @@ TribeSocket.in.room.chatMessage((data) => {
 });
 
 // socket.on("room_config_changed", (e) => {
-TribeSocket.in.room.configChanged(async (data) => {
+TribeSocket.in.room.configChanged(async (data, callback) => {
   const room = TribeState.getRoom();
   if (!room) return;
   room.config = data.config;
@@ -521,9 +521,10 @@ TribeSocket.in.room.configChanged(async (data) => {
   // }
   await TribeConfig.apply(data.config);
   TribePageLobby.updateRoomConfig();
-  TribeButtons.update();
+  TribeButtons.enableStartButton();
   TribeConfig.setLoadingIndicator(false);
   TribeUserList.update();
+  callback(true);
 });
 
 // socket.on("room_init_race", (e) => {
