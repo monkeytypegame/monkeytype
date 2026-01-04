@@ -90,14 +90,6 @@ export function update(): void {
 
   buttons.autoReady.setActive(TribeState.getAutoReady());
 
-  if (self.isReady) {
-    buttons.afk.disable();
-    buttons.ready.disable();
-  } else {
-    buttons.afk.enable();
-    buttons.ready.enable();
-  }
-
   if (self.isAfk) {
     buttons.afk.setActive(true);
     buttons.ready.disable();
@@ -106,6 +98,14 @@ export function update(): void {
     buttons.afk.setActive(false);
     buttons.ready.enable();
     buttons.autoReady.enable();
+  }
+
+  if (self.isReady) {
+    buttons.afk.disable();
+    buttons.ready.disable();
+  } else {
+    buttons.afk.enable();
+    buttons.ready.enable();
   }
 
   if (
@@ -140,7 +140,6 @@ buttonsElements.qs(".backToLobbyButton")?.on("click", () => {
 
 buttonsElements.qs(".autoReadyButton")?.on("click", (e) => {
   TribeState.setAutoReady(!TribeState.getAutoReady());
-  update();
 
   const tribeRoomState = TribeState.getRoom()?.state;
   if (
@@ -153,4 +152,5 @@ buttonsElements.qs(".autoReadyButton")?.on("click", (e) => {
   ) {
     tribeSocket.out.room.readyUpdate();
   }
+  update();
 });
