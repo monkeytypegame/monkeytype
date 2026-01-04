@@ -1188,7 +1188,7 @@ export function updateTribeElements(): void {
 
     TribeResults.update("result");
     TribeUserList.update("result");
-    TribeButtons.update("result");
+    TribeButtons.update();
   } else {
     qs("#result #tribeResultBottom")?.hide();
     qs("#result #readyButton")?.hide();

@@ -448,7 +448,7 @@ export async function init(): Promise<void> {
   );
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text(link);
   TribeUserList.update("lobby");
-  TribeButtons.update("lobby");
+  TribeButtons.update();
   updateVisibility();
   updateRoomName();
   updateRoomConfig();
