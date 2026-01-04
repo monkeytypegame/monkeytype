@@ -310,14 +310,14 @@ export function updateTimerText(text: string): void {
 
 export function updateTimer(value: string): void {
   if (!timerVisible) showTimer();
-  $(".pageTest #result #tribeResults .top").text(
+  $(".pageTest #result #tribeResults .timer").text(
     timerText + ": " + value + "s",
   );
 }
 
 function showTimer(): void {
   timerVisible = true;
-  $(".pageTest #result #tribeResults .top")
+  $(".pageTest #result #tribeResults .timer")
     .removeClass("invisible")
     .css({ opacity: 0 })
     .animate({ opacity: 1 }, 125);
@@ -325,9 +325,9 @@ function showTimer(): void {
 
 export function hideTimer(): void {
   timerVisible = false;
-  $(".pageTest #result #tribeResults .top")
+  $(".pageTest #result #tribeResults .timer")
     .css({ opacity: 1 })
     .animate({ opacity: 0 }, 125, () => {
-      $(".pageTest #result #tribeResults .top").addClass("invisible");
+      $(".pageTest #result #tribeResults .timer").addClass("invisible");
     });
 }
