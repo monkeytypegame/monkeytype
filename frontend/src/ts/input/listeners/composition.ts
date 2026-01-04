@@ -6,6 +6,9 @@ import { setLastInsertCompositionTextData } from "../state";
 import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
 import * as TestUI from "../../test/test-ui";
+import * as TestWords from "../../test/test-words";
+import * as TestInput from "../../test/test-input";
+import * as Strings from "../../utils/strings";
 
 const inputEl = getInputElement();
 
@@ -31,8 +34,22 @@ inputEl.addEventListener("compositionupdate", (event) => {
   });
 
   if (TestState.testRestarting || TestUI.resultCalculating) return;
-  CompositionState.setData(event.data);
-  CompositionDisplay.update(event.data);
+  const currentWord = TestWords.words.getCurrent();
+  const typedSoFar = TestInput.input.current;
+  const remainingChars =
+    Strings.splitIntoCharacters(currentWord).length -
+    Strings.splitIntoCharacters(typedSoFar).length;
+  // Prevent rendering more composition glyphs than the word has remaining letters,
+  // so IME preedit strings (e.g. romaji) don't push text to the next line.
+  const limitedCompositionData =
+    remainingChars > 0
+      ? Strings.splitIntoCharacters(event.data)
+          .slice(0, remainingChars)
+          .join("")
+      : "";
+
+  CompositionState.setData(limitedCompositionData);
+  CompositionDisplay.update(limitedCompositionData);
 });
 
 inputEl.addEventListener("compositionend", async (event) => {
