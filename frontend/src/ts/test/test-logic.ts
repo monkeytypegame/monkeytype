@@ -173,6 +173,9 @@ export function restart(options = {} as RestartOptions): void {
     (TribeState.isInARoom() && !options.tribeOverride)
   ) {
     options.event?.preventDefault();
+    if (TestState.isActive) {
+      fail("give up");
+    }
     return;
   }
   if (ActivePage.get() === "test") {
