@@ -915,7 +915,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // stats
   const stats = TestStats.calculateFinalStats();
-  if (stats.time % 1 !== 0 && Config.mode !== "time") {
+  if (
+    stats.time % 1 !== 0 &&
+    !(
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+    )
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
