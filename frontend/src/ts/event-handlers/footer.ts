@@ -42,7 +42,7 @@ qs("footer .currentVersion")?.on("click", (e) => {
 });
 
 qs("footer .right .current-theme")
-  ?.addEventListener("click", async (event) => {
+  ?.on("click", async (event) => {
     const e = event as MouseEvent;
     if (e.shiftKey) {
       if (Config.customTheme) {
