@@ -1436,12 +1436,12 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let burstlist = [...TestInput.burstHistory];
 
+    burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
+
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     burstlist.forEach((burst, index) => {
       burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
-
-    burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
 
     const themeColors = await ThemeColors.getAll();
 
