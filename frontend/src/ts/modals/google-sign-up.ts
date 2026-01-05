@@ -1,3 +1,4 @@
+import { ElementWithUtils, qsr } from "../utils/dom";
 import * as Notifications from "../elements/notifications";
 import {
   sendEmailVerification,
@@ -17,7 +18,6 @@ import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
-import { qsr } from "../utils/dom";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -170,8 +170,8 @@ new ValidatedHtmlInputElement(nameInputEl, {
   },
 });
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     void apply();
   });

@@ -5,7 +5,7 @@ import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Quote } from "@monkeytype/schemas/quotes";
 import { escapeHTML } from "../utils/misc";
-import { qsr, createElementWithUtils } from "../utils/dom";
+import { qsr, createElementWithUtils, ElementWithUtils } from "../utils/dom";
 
 let quotes: Quote[] = [];
 
@@ -223,9 +223,9 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   updateList();
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("button.refreshList")?.addEventListener("click", () => {
-    qsr("#quoteApproveModal .quotes").empty();
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("button.refreshList")?.on("click", () => {
+    $("#quoteApproveModal .quotes").empty();
     void getQuotes();
   });
 }

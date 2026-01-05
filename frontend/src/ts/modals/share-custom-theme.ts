@@ -15,8 +15,7 @@ const state: State = {
 export function show(): void {
   void modal.show({
     beforeAnimation: async (m) => {
-      (m.querySelector("input[type='checkbox']") as HTMLInputElement).checked =
-        false;
+      m.qs<HTMLInputElement>("input[type='checkbox']")?.setChecked(false);
       state.includeBackground = false;
     },
   });
@@ -67,7 +66,7 @@ async function copy(): Promise<void> {
       modalChain: modal,
       focusFirstInput: "focusAndSelect",
       beforeAnimation: async (m) => {
-        (m.querySelector("input") as HTMLInputElement).value = url;
+        m.qs<HTMLInputElement>("input")?.setValue(url);
       },
     });
   }
@@ -76,10 +75,10 @@ async function copy(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "shareCustomThemeModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("button")?.addEventListener("click", copy);
+    modalEl.qs("button")?.on("click", copy);
     modalEl
-      .querySelector("input[type='checkbox']")
-      ?.addEventListener("change", (e) => {
+      .qs<HTMLInputElement>("input[type='checkbox']")
+      ?.on("change", (e) => {
         state.includeBackground = (e.target as HTMLInputElement).checked;
       });
   },

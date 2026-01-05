@@ -6,7 +6,8 @@ import { compressToURI } from "lz-ts";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode, Mode2 } from "@monkeytype/schemas/shared";
-import { qsa, qsr } from "../utils/dom";
+import { qsa, qsr, ElementWithUtils } from "../utils/dom";
+import { CustomTextSettings } from "@monkeytype/schemas/results";
 
 function getCheckboxValue(checkbox: string): boolean {
   return qsr<HTMLInputElement>(
@@ -17,7 +18,7 @@ function getCheckboxValue(checkbox: string): boolean {
 type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
-  CustomText.CustomTextSettings | null,
+  CustomTextSettings | null,
   boolean | null,
   boolean | null,
   string | null,
@@ -78,20 +79,15 @@ export function show(showOptions?: ShowOptions): void {
   });
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl
-    .querySelector("textarea.url")
-    ?.addEventListener("click", async (e) => {
-      (e.target as HTMLTextAreaElement).select();
-    });
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("textarea.url")?.on("click", async (e) => {
+    (e.target as HTMLTextAreaElement).select();
+  });
 
-  const inputs = modalEl.querySelectorAll("label input");
-  for (const input of inputs) {
-    input.addEventListener("change", async () => {
-      updateURL();
-      updateSubgroups();
-    });
-  }
+  modalEl.qsa("label input").on("change", async () => {
+    updateURL();
+    updateSubgroups();
+  });
 }
 
 const modal = new AnimatedModal({

@@ -1,3 +1,4 @@
+import { ElementWithUtils, qsr } from "../utils/dom";
 import Ape from "../ape";
 import Config from "../config";
 import * as Loader from "../elements/loader";
@@ -9,7 +10,6 @@ import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
 import { QuoteReportReason } from "@monkeytype/schemas/quotes";
-import { qsr } from "../utils/dom";
 
 type State = {
   quoteToReport?: Quote;
@@ -137,8 +137,8 @@ async function submitReport(): Promise<void> {
   void hide(true);
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("button")?.addEventListener("click", async () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("button")?.on("click", async () => {
     await submitReport();
   });
 }

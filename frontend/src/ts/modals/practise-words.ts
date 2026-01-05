@@ -1,7 +1,7 @@
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
-import { qs } from "../utils/dom";
+import { qs, ElementWithUtils } from "../utils/dom";
 
 type State = {
   missed: "off" | "words" | "biwords";
@@ -33,33 +33,25 @@ function updateUI(): void {
   }
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='missed'] button",
-  )) {
-    button.addEventListener("click", (e) => {
-      state.missed = (e.target as HTMLButtonElement).value as
-        | "off"
-        | "words"
-        | "biwords";
-      updateUI();
-    });
-  }
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qsa(".group[data-id='missed'] button").on("click", (e) => {
+    state.missed = (e.currentTarget as HTMLButtonElement).value as
+      | "off"
+      | "words"
+      | "biwords";
+    updateUI();
+  });
 
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='slow'] button",
-  )) {
-    button.addEventListener("click", (e) => {
-      state.slow = (e.target as HTMLButtonElement).value === "true";
-      updateUI();
-    });
-  }
+  modalEl.qsa(".group[data-id='slow'] button").on("click", (e) => {
+    state.slow = (e.currentTarget as HTMLButtonElement).value === "true";
+    updateUI();
+  });
 
-  modalEl.querySelector(".start")?.addEventListener("click", () => {
+  modalEl.qs(".start")?.on("click", () => {
     apply();
   });
 
-  modalEl.addEventListener("submit", (e) => {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     apply();
   });

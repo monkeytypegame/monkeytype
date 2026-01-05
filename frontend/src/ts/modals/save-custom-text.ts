@@ -4,7 +4,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { z } from "zod";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 type IncomingData = {
   text: string[];
@@ -89,14 +89,14 @@ function save(): boolean {
   }
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     if (validatedInput.getValidationResult().status === "success" && save()) {
       void modal.hide();
     }
   });
-  modalEl.querySelector(".isLongText")?.addEventListener("input", (e) => {
+  modalEl.qs(".isLongText")?.on("input", (e) => {
     validatedInput.triggerValidation();
   });
 }

@@ -8,7 +8,7 @@ import { syncNotSignedInLastResult } from "../utils/results";
 import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
-  (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
+  modal.getModal().qs(".result")?.setHtml(`
   <div class="group wpm">
         <div class="sub">wpm</div>
         <div class="val">-</div>
@@ -32,7 +32,7 @@ function reset(): void {
       <div class="group testType">
         <div class="sub">test type</div>
         <div class="val">-</div>
-      </div>`;
+      </div>`);
 }
 
 function fillData(): void {
@@ -85,13 +85,13 @@ function fillGroup(
   text: string | number,
   html = false,
 ): void {
-  const el = modal.getModal().querySelector(`.group.${groupClass} .val`);
+  const el = modal.getModal().qs(`.group.${groupClass} .val`);
   if (!el) return;
 
   if (html) {
-    el.innerHTML = `${text}`;
+    el.setHtml(`${text}`);
   } else {
-    el.textContent = `${text}`;
+    el.setText(`${text}`);
   }
 }
 
@@ -127,16 +127,14 @@ AuthEvent.subscribe((event) => {
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",
   setup: async (modalEl): Promise<void> => {
-    modalEl
-      .querySelector("button.save")
-      ?.addEventListener("click", async () => {
-        const user = getAuthenticatedUser();
-        if (user !== null) {
-          void syncNotSignedInLastResult(user.uid);
-        }
-        hide();
-      });
-    modalEl.querySelector("button.discard")?.addEventListener("click", () => {
+    modalEl.qs("button.save")?.on("click", async () => {
+      const user = getAuthenticatedUser();
+      if (user !== null) {
+        void syncNotSignedInLastResult(user.uid);
+      }
+      hide();
+    });
+    modalEl.qs("button.discard")?.on("click", () => {
       TestLogic.clearNotSignedInResult();
       Notifications.add("Last test result discarded", 0);
       hide();
