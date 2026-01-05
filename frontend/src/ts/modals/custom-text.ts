@@ -219,7 +219,7 @@ async function beforeAnimation(
 
 async function afterAnimation(): Promise<void> {
   if (!state.challengeWarning && !state.longCustomTextWarning) {
-    qs(`${popup} textarea`)?.native.focus();
+    qs(`${popup} textarea`)?.focus();
   }
 }
 
