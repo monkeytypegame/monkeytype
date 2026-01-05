@@ -46,7 +46,7 @@ export async function show(options: ShowOptions): Promise<void> {
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       CaptchaController.render(
-        modalEl.querySelector(".g-recaptcha") as HTMLElement,
+        modalEl.qsr(".g-recaptcha").native,
         "userReportModal",
       );
 
@@ -54,16 +54,15 @@ export async function show(options: ShowOptions): Promise<void> {
       state.userUid = options.uid;
       state.lbOptOut = options.lbOptOut;
 
-      (modalEl.querySelector(".user") as HTMLElement).textContent = name;
-      (modalEl.querySelector(".reason") as HTMLSelectElement).value =
-        "Inappropriate name";
-      (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
+      modalEl.qs(".user")?.setText(name);
+      modalEl.qs<HTMLSelectElement>(".reason")?.setValue("Inappropriate name");
+      modalEl.qs<HTMLTextAreaElement>(".comment")?.setValue("");
 
       select = new SlimSelect({
-        select: modalEl.querySelector(".reason") as HTMLElement,
+        select: modalEl.qs(".reason")?.native as HTMLElement,
         settings: {
           showSearch: false,
-          contentLocation: modalEl,
+          contentLocation: modalEl.native,
         },
       });
     },
@@ -139,7 +138,7 @@ async function submitReport(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "userReportModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("button")?.addEventListener("click", () => {
+    modalEl.qs("button")?.on("click", () => {
       void submitReport();
     });
   },

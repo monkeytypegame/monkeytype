@@ -50,6 +50,14 @@ export type CompletedEventCustomText = z.infer<
   typeof CompletedEventCustomTextSchema
 >;
 
+export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
+  textLen: true,
+}).extend({
+  text: z.array(z.string()).min(1),
+});
+
+export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
+
 export const CharStatsSchema = z.tuple([
   z.number().int().nonnegative(),
   z.number().int().nonnegative(),
