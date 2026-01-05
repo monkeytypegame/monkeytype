@@ -135,10 +135,14 @@ function updateUI(): void {
 
   if (state.longCustomTextWarning) {
     qs(`${popup} .longCustomTextWarning`)?.show();
-    qs(`${popup} .randomWordsCheckbox input`)?.removeAttribute("checked");
-    qs(`${popup} .delimiterCheck input`)?.removeAttribute("checked");
-    qs(`${popup} .typographyCheck`)?.setAttribute("checked", "true");
-    qs(`${popup} .replaceNewlineWithSpace input`)?.removeAttribute("checked");
+    qs<HTMLInputElement>(`${popup} .randomWordsCheckbox input`)?.setChecked(
+      false,
+    );
+    qs<HTMLInputElement>(`${popup} .delimiterCheck input`)?.setChecked(false);
+    qs<HTMLInputElement>(`${popup} .typographyCheck`)?.setChecked(true);
+    qs<HTMLInputElement>(`${popup} .replaceNewlineWithSpace input`)?.setChecked(
+      false,
+    );
     qs(`${popup} .inputs`)?.addClass("disabled");
   } else {
     qs(`${popup} .longCustomTextWarning`)?.hide();
@@ -147,10 +151,14 @@ function updateUI(): void {
 
   if (state.challengeWarning) {
     qs(`${popup} .challengeWarning`)?.show();
-    qs(`${popup} .randomWordsCheckbox input`)?.removeAttribute("checked");
-    qs(`${popup} .delimiterCheck input`)?.removeAttribute("checked");
-    qs(`${popup} .typographyCheck`)?.setAttribute("checked", "true");
-    qs(`${popup} .replaceNewlineWithSpace input`)?.removeAttribute("checked");
+    qs<HTMLInputElement>(`${popup} .randomWordsCheckbox input`)?.setChecked(
+      false,
+    );
+    qs<HTMLInputElement>(`${popup} .delimiterCheck input`)?.setChecked(false);
+    qs<HTMLInputElement>(`${popup} .typographyCheck`)?.setChecked(true);
+    qs<HTMLInputElement>(`${popup} .replaceNewlineWithSpace input`)?.setChecked(
+      false,
+    );
     qs(`${popup} .inputs`)?.addClass("disabled");
   } else {
     qs(`${popup} .challengeWarning`)?.hide();
