@@ -293,9 +293,7 @@ export class Caret {
 
       // in zen mode, use the input content to determine word direction
       const wordTextForDirection =
-        Config.mode === "zen"
-          ? TestInput.input.current
-          : TestWords.words.get(options.wordIndex);
+        Config.mode === "zen" ? TestInput.input.current : wordText;
 
       // caret can be either on the left side of the target letter or the right
       // we stick to the left side unless we are on the last letter or beyond
@@ -412,7 +410,6 @@ export class Caret {
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
-
     const [baseWordIsRTL, isFullMatch] = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft,
@@ -426,7 +423,7 @@ export class Caret {
             options.letter.native.textContent ?? "",
             options.isLanguageRightToLeft,
             options.isDirectionReversed,
-          )
+          )[0]
         : baseWordIsRTL;
 
     //if the letter is not visible, use the closest visible letter
