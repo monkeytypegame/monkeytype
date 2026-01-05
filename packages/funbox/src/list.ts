@@ -114,7 +114,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "arrows",
   },
   rAnDoMcAsE: {
-    description: "i KINda LikE HoW inEFFICIeNt QwErtY Is.",
+    description: "raNdomIze ThE CApitaLizatIon Of EveRY LeTtEr.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
@@ -122,7 +122,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "rAnDoMcAsE",
   },
   sPoNgEcAsE: {
-    description: "aLtErNaTe ThE cApItAlIzAtIoN oF eVeRy LeTtEr.",
+    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
