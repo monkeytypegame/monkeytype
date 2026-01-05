@@ -10,7 +10,7 @@ import { Snapshot } from "../constants/default-snapshot";
 
 export function show(): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline :(", 0, {
+    Notifications.add("You are offline", 0, {
       duration: 2,
     });
     return;
@@ -24,7 +24,7 @@ export function show(): void {
         modalEl.querySelector(".preview")?.remove();
         modalEl.querySelector("button")?.remove();
         (modalEl.querySelector(".text") as HTMLElement).textContent =
-          "You have already set your streak time offset.";
+          "You have already set your streak hour offset.";
       } else {
         (modalEl.querySelector("input") as HTMLInputElement).value = "0";
         updatePreview();
