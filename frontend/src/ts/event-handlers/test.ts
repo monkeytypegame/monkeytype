@@ -15,6 +15,8 @@ import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
 
 const testPage = qs(".pageTest");
@@ -22,8 +24,8 @@ const testPage = qs(".pageTest");
 testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
   const target = event.childTarget as HTMLElement;
   const attr = target?.getAttribute("commands");
-  if (attr === null) return;
-  Commandline.show({ subgroupOverride: attr });
+  if (attr === undefined) return;
+  Commandline.show({ subgroupOverride: attr as ConfigKey | ListsObjectKeys });
 });
 
 testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {

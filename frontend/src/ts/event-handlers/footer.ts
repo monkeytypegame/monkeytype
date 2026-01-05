@@ -41,11 +41,28 @@ qs("footer .currentVersion")?.on("click", (e) => {
   }
 });
 
-qs("footer .right .current-theme")?.on("click", async (e: MouseEvent) => {
-  if (e.shiftKey) {
-    if (Config.customTheme) {
-      setConfig("customTheme", false);
-      return;
+qs("footer .right .current-theme")
+  ?.addEventListener("click", async (event) => {
+    const e = event as MouseEvent;
+    if (e.shiftKey) {
+      if (Config.customTheme) {
+        setConfig("customTheme", false);
+        return;
+      }
+      if (
+        isAuthenticated() &&
+        (DB.getSnapshot()?.customThemes?.length ?? 0) < 1
+      ) {
+        Notifications.add("No custom themes!", 0);
+        setConfig("customTheme", false);
+        return;
+      }
+      setConfig("customTheme", true);
+    } else {
+      const subgroup = Config.customTheme ? "customTheme" : "themes";
+      Commandline.show({
+        subgroupOverride: subgroup,
+      });
     }
     if (
       isAuthenticated() &&
