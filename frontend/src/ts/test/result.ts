@@ -1262,11 +1262,12 @@ export function updateTagsAfterEdit(
 
     // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
     $(`.pageTest #result .tags .bottom`).append(html);
-    $(`.pageTest #result .tags .top .editTagsButton`).attr(
-      "active-tag-ids",
-      tagIds.join(","),
-    );
   }
+
+  $(`.pageTest #result .tags .top .editTagsButton`).attr(
+    "data-active-tag-ids",
+    tagIds.join(","),
+  );
 }
 
 $(".pageTest #result .chart .chartLegend button").on("click", (event) => {
