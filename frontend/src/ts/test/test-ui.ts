@@ -1436,12 +1436,12 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let burstlist = [...TestInput.burstHistory];
 
-    burstlist = burstlist.filter((x) => x < 500 || x === Infinity);
-
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     burstlist.forEach((burst, index) => {
       burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
+
+    burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
 
     const themeColors = await ThemeColors.getAll();
 
@@ -1973,7 +1973,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${isNaN(burst) ? "∞" : Format.typingSpeed(burst, { showDecimalPlaces: false })}
+          ${isNaN(burst) || burst >= 1000 ? "Infinite" : Format.typingSpeed(burst, { showDecimalPlaces: false })}
           ${Config.typingSpeedUnit}
           </div>
           </div>`,
