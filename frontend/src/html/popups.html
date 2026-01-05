@@ -1060,9 +1060,17 @@
       <br />
       <span class="red">You can only do this once!</span>
     </div>
-    <input type="number" min="-11" max="12" value="0" step="0.5" />
+    <div class="group">
+      <button class="decreaseOffset">
+        <i class="fas fa-fw fa-chevron-left"></i>
+      </button>
+      <input type="number" min="-11" max="12" value="0" step="0.5" />
+      <button class="increaseOffset">
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </button>
+    </div>
     <div class="preview"></div>
-    <button>set</button>
+    <button class="submit">set</button>
   </div>
 </dialog>
 <dialog id="editResultTagsModal" class="modalWrapper hidden">

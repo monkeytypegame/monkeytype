@@ -8,6 +8,10 @@ import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";
 
+let state = {
+  offset: 0,
+};
+
 export function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -17,16 +21,21 @@ export function show(): void {
   }
 
   void modal.show({
-    focusFirstInput: true,
+    focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
       if (getSnapshot()?.streakHourOffset !== undefined) {
         modalEl.querySelector("input")?.remove();
         modalEl.querySelector(".preview")?.remove();
-        modalEl.querySelector("button")?.remove();
+        for (const el of modalEl.querySelectorAll("button")) {
+          el.remove();
+        }
         (modalEl.querySelector(".text") as HTMLElement).textContent =
-          "You have already set your streak hour offset.";
+          `You have already set your streak hour offset to ${
+            getSnapshot()?.streakHourOffset ?? "?"
+          }. You can only set your streak hour offset once.`;
       } else {
-        (modalEl.querySelector("input") as HTMLInputElement).value = "0";
+        state.offset = 0;
+        updateDisplay();
         updatePreview();
       }
     },
@@ -34,10 +43,7 @@ export function show(): void {
 }
 
 function updatePreview(): void {
-  const inputValue = parseFloat(
-    // parse float to support fractional stuff
-    modal.getModal().querySelector("input")?.value as string,
-  );
+  const inputValue = state.offset;
 
   const preview = modal.getModal().querySelector(".preview") as HTMLElement;
 
@@ -59,15 +65,19 @@ function updatePreview(): void {
   `;
 }
 
+function updateDisplay(): void {
+  const input = modal.getModal().querySelector("input");
+  if (input) {
+    input.value = state.offset.toFixed(1);
+  }
+}
+
 function hide(): void {
   void modal.hide();
 }
 
 async function apply(): Promise<void> {
-  const value = parseFloat(
-    // parse float again
-    modal.getModal().querySelector("input")?.value as string,
-  );
+  const value = state.offset;
 
   if (isNaN(value)) {
     Notifications.add("Streak hour offset must be a number", 0);
@@ -101,14 +111,48 @@ async function apply(): Promise<void> {
   }
 }
 
+function setStateToInput(): void {
+  const inputValue = parseFloat(
+    modal.getModal().querySelector("input")?.value as string,
+  );
+  if (!isNaN(inputValue)) {
+    state.offset = inputValue;
+    if (state.offset < -11) state.offset = -11;
+    if (state.offset > 12) state.offset = 12;
+  } else {
+    state.offset = 0;
+  }
+}
+
 const modal = new AnimatedModal({
   dialogId: "streakHourOffsetModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("input")?.addEventListener("input", () => {
+    modalEl.querySelector("input")?.addEventListener("focusout", () => {
+      setStateToInput();
+      updateDisplay();
       updatePreview();
     });
-    modalEl.querySelector("button")?.addEventListener("click", () => {
+    modalEl.querySelector("input")?.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        setStateToInput();
+        updateDisplay();
+        updatePreview();
+      }
+    });
+    modalEl.querySelector(".submit")?.addEventListener("click", () => {
       void apply();
+    });
+    modalEl.querySelector(".decreaseOffset")?.addEventListener("click", () => {
+      state.offset -= 0.5;
+      if (state.offset < -11) state.offset = -11;
+      updateDisplay();
+      updatePreview();
+    });
+    modalEl.querySelector(".increaseOffset")?.addEventListener("click", () => {
+      state.offset += 0.5;
+      if (state.offset > 12) state.offset = 12;
+      updateDisplay();
+      updatePreview();
     });
   },
 });
