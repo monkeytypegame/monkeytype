@@ -1906,6 +1906,9 @@ export function onTestFinish(): void {
   TimerProgress.hide();
   OutOfFocus.hide();
   Monkey.hide();
+  if (Config.playSoundOnClick === "16") {
+    void SoundController.playFartReverb();
+  }
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
