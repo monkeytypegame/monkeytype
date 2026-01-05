@@ -11,35 +11,38 @@ import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 import { qs } from "../utils/dom";
 
-qs("footer #commandLineMobileButton")?.on("click", async () => {
-  Commandline.show({
-    singleListOverride: false,
+qs("footer #commandLineMobileButton")
+  ?.on("click", async () => {
+    Commandline.show({
+      singleListOverride: false,
+    });
   });
-});
 
-qs("footer #newVersionIndicator")?.on("click", (e) => {
-  e.stopPropagation();
-  qs("#newVersionIndicator")?.hide();
-});
+qs("footer #newVersionIndicator")
+  ?.on("click", (e) => {
+    e.stopPropagation();
+    document.querySelector("#newVersionIndicator")?.classList.add("hidden");
+  });
 
-qs("footer .currentVersion")?.on("click", (e) => {
-  const event = e as MouseEvent;
-  if (event.shiftKey) {
-    alert(
-      JSON.stringify(
-        {
-          clientVersion: envConfig.clientVersion,
-          clientCompatibility: COMPATIBILITY_CHECK,
-          lastSeenServerCompatibility,
-        },
-        null,
-        2,
-      ),
-    );
-  } else {
-    VersionHistoryModal.show();
-  }
-});
+qs("footer .currentVersion")
+  ?.on("click", (e) => {
+    const event = e as MouseEvent;
+    if (event.shiftKey) {
+      alert(
+        JSON.stringify(
+          {
+            clientVersion: envConfig.clientVersion,
+            clientCompatibility: COMPATIBILITY_CHECK,
+            lastSeenServerCompatibility,
+          },
+          null,
+          2,
+        ),
+      );
+    } else {
+      VersionHistoryModal.show();
+    }
+  });
 
 qs("footer .right .current-theme")
   ?.on("click", async (event) => {
@@ -64,27 +67,14 @@ qs("footer .right .current-theme")
         subgroupOverride: subgroup,
       });
     }
-    if (
-      isAuthenticated() &&
-      (DB.getSnapshot()?.customThemes?.length ?? 0) < 1
-    ) {
-      Notifications.add("No custom themes!", 0);
-      setConfig("customTheme", false);
-      return;
-    }
-    setConfig("customTheme", true);
-  } else {
-    const subgroup = Config.customTheme ? "customThemesList" : "themes";
-    Commandline.show({
-      subgroupOverride: subgroup,
-    });
-  }
-});
+  });
 
-qs("footer #supportMeButton")?.on("click", () => {
-  SupportPopup.show();
-});
+qs("footer #supportMeButton")
+  ?.on("click", () => {
+    SupportPopup.show();
+  });
 
-qs("footer #contactPopupButton")?.on("click", () => {
-  ContactModal.show();
-});
+qs("footer #contactPopupButton")
+  ?.on("click", () => {
+    ContactModal.show();
+  });
