@@ -59,7 +59,7 @@ function hide(): void {
 }
 
 function appendButtons(): void {
-  const buttonsEl = modal.getModal().querySelector(".buttons");
+  const buttonsEl = modal.getModal().qs(".buttons");
 
   if (buttonsEl === null) {
     Notifications.add(
@@ -74,7 +74,7 @@ function appendButtons(): void {
     ...state.tags,
   ]);
 
-  buttonsEl.innerHTML = "";
+  buttonsEl.empty();
   for (const tagId of tagIds) {
     const tag = DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
     const button = document.createElement("button");
@@ -85,7 +85,7 @@ function appendButtons(): void {
       toggleTag(tagId);
       updateActiveButtons();
     });
-    buttonsEl.appendChild(button);
+    buttonsEl.append(button);
   }
 }
 
@@ -148,15 +148,13 @@ async function save(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "editResultTagsModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl
-      .querySelector("button.saveButton")
-      ?.addEventListener("click", (e) => {
-        if (areUnsortedArraysEqual(state.startingTags, state.tags)) {
-          hide();
-          return;
-        }
+    modalEl.qs("button.saveButton")?.on("click", (e) => {
+      if (areUnsortedArraysEqual(state.startingTags, state.tags)) {
         hide();
-        void save();
-      });
+        return;
+      }
+      hide();
+      void save();
+    });
   },
 });

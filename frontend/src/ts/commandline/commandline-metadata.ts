@@ -391,6 +391,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           "13": "wholetone",
           "14": "fist fight",
           "15": "rubber keys",
+          "16": "fart",
         };
         return map[value];
       },
