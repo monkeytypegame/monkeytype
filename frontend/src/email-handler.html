@@ -429,8 +429,7 @@
             `Fatal error: ${e.message}. If this issue persists, please report it.`,
           );
         }
-      },
-    );
+      });
 
     qs("header")?.on("click", () => {
       window.location = "/";
