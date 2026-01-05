@@ -7,6 +7,7 @@
   "endOfLine": "lf",
   "trailingComma": "all",
   "ignorePatterns": [
+    "pnpm-lock.yaml",
     "node_modules",
     ".turbo",
     "dist",

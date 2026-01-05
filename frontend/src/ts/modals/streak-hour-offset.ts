@@ -24,15 +24,16 @@ export function show(): void {
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
       if (getSnapshot()?.streakHourOffset !== undefined) {
-        modalEl.querySelector("input")?.remove();
-        modalEl.querySelector(".preview")?.remove();
-        for (const el of modalEl.querySelectorAll("button")) {
-          el.remove();
-        }
-        (modalEl.querySelector(".text") as HTMLElement).textContent =
-          `You have already set your streak hour offset to ${
-            getSnapshot()?.streakHourOffset ?? "?"
-          }. You can only set your streak hour offset once.`;
+        modalEl.qs("input")?.remove();
+        modalEl.qs(".preview")?.remove();
+        modalEl.qsa("button")?.remove();
+        modalEl
+          .qs(".text")
+          ?.setText(
+            `You have already set your streak hour offset to ${
+              getSnapshot()?.streakHourOffset ?? "?"
+            }. You can only set your streak hour offset once.`,
+          );
       } else {
         state.offset = 0;
         updateDisplay();
@@ -45,31 +46,30 @@ export function show(): void {
 function updatePreview(): void {
   const inputValue = state.offset;
 
-  const preview = modal.getModal().querySelector(".preview") as HTMLElement;
+  const preview = modal.getModal().qs(".preview");
 
   const date = new Date();
   date.setUTCHours(0, 0, 0, 0);
 
   const newDate = new Date();
-  newDate.setUTCHours(0, 0, 0, 0);
+  newDate.setUTCHours(0);
+  newDate.setUTCMinutes(0);
+  newDate.setUTCSeconds(0);
+  newDate.setUTCMilliseconds(0);
 
-  const hours = Math.floor(inputValue);
-  const minutes = (inputValue % 1) * 60;
+  newDate.setHours(newDate.getHours() - -1 * inputValue); //idk why, but it only works when i subtract (so i have to negate inputValue)
 
-  newDate.setUTCHours(newDate.getUTCHours() + hours);
-  newDate.setUTCMinutes(newDate.getUTCMinutes() + minutes);
-
-  preview.innerHTML = `
+  preview?.setHtml(`
     <div class="row"><div>Current local reset time:</div><div>${date.toLocaleTimeString()}</div></div>
     <div class="row"><div>New local reset time:</div><div>${newDate.toLocaleTimeString()}</div></div>
-  `;
+  `);
 }
 
 function updateDisplay(): void {
-  const input = modal.getModal().querySelector("input");
-  if (input) {
-    input.value = state.offset.toFixed(1);
-  }
+  modal
+    .getModal()
+    .qs<HTMLInputElement>("input")
+    ?.setValue(state.offset.toFixed(1));
 }
 
 function hide(): void {
@@ -113,7 +113,7 @@ async function apply(): Promise<void> {
 
 function setStateToInput(): void {
   const inputValue = parseFloat(
-    modal.getModal().querySelector("input")?.value as string,
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "0",
   );
   if (!isNaN(inputValue)) {
     state.offset = inputValue;
@@ -127,28 +127,28 @@ function setStateToInput(): void {
 const modal = new AnimatedModal({
   dialogId: "streakHourOffsetModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("input")?.addEventListener("focusout", () => {
+    modalEl.qs("input")?.on("focusout", () => {
       setStateToInput();
       updateDisplay();
       updatePreview();
     });
-    modalEl.querySelector("input")?.addEventListener("keyup", (e) => {
+    modalEl.qs("input")?.on("keyup", (e) => {
       if (e.key === "Enter") {
         setStateToInput();
         updateDisplay();
         updatePreview();
       }
     });
-    modalEl.querySelector(".submit")?.addEventListener("click", () => {
+    modalEl.qs(".submit")?.on("click", () => {
       void apply();
     });
-    modalEl.querySelector(".decreaseOffset")?.addEventListener("click", () => {
+    modalEl.qs(".decreaseOffset")?.on("click", () => {
       state.offset -= 0.5;
       if (state.offset < -11) state.offset = -11;
       updateDisplay();
       updatePreview();
     });
-    modalEl.querySelector(".increaseOffset")?.addEventListener("click", () => {
+    modalEl.qs(".increaseOffset")?.on("click", () => {
       state.offset += 0.5;
       if (state.offset > 12) state.offset = 12;
       updateDisplay();

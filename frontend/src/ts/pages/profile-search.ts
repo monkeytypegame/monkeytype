@@ -5,17 +5,17 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema, UserProfile } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
 import * as NavigationEvent from "../observables/navigation-event";
-import { qsr } from "../utils/dom";
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 let nameInputEl: ValidatedHtmlInputElement | null = null;
 let lastProfile: UserProfile | null = null;
 
 function enableButton(): void {
-  $('.page.pageProfileSearch button[type="submit"]').prop("disabled", false);
+  qs('.page.pageProfileSearch button[type="submit"]')?.enable();
 }
 
 function disableButton(): void {
-  $('.page.pageProfileSearch button[type="submit"]').prop("disabled", true);
+  qs('.page.pageProfileSearch button[type="submit"]')?.disable();
 }
 
 export const page = new Page({
@@ -57,11 +57,11 @@ export const page = new Page({
     disableButton();
   },
   afterShow: async (): Promise<void> => {
-    $(".page.pageProfileSearch input").trigger("focus");
+    qs(".page.pageProfileSearch input")?.dispatch("focus");
   },
 });
 
-$(".page.pageProfileSearch form").on("submit", (e) => {
+qs(".page.pageProfileSearch form")?.on("submit", (e) => {
   e.preventDefault();
   if (lastProfile === null) return;
   NavigationEvent.dispatch(`/profile/${lastProfile.name}`, {
@@ -69,6 +69,6 @@ $(".page.pageProfileSearch form").on("submit", (e) => {
   });
 });
 
-$(() => {
+onWindowLoad(() => {
   Skeleton.save("pageProfileSearch");
 });

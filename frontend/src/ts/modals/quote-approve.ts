@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -230,8 +231,8 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   updateList();
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("button.refreshList")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("button.refreshList")?.on("click", () => {
     $("#quoteApproveModal .quotes").empty();
     void getQuotes();
   });

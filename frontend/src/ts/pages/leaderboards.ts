@@ -44,7 +44,7 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
-import { qsr } from "../utils/dom";
+import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -169,32 +169,30 @@ function updateTitle(): void {
       : "";
 
   state.title = `${type} ${language} ${mode} ${friend}Leaderboard`;
-  $(".page.pageLeaderboards .bigtitle >.text").text(state.title);
+  qs(".page.pageLeaderboards .bigtitle >.text")?.setText(state.title);
 
-  $(".page.pageLeaderboards .bigtitle .subtext").addClass("hidden");
-  $(".page.pageLeaderboards .bigtitle button").addClass("hidden");
-  $(".page.pageLeaderboards .bigtitle .subtext .divider").addClass("hidden");
+  qs(".page.pageLeaderboards .bigtitle .subtext")?.hide();
+  qsa(".page.pageLeaderboards .bigtitle button")?.hide();
+  qs(".page.pageLeaderboards .bigtitle .subtext .divider")?.hide();
 
   if (state.type === "daily") {
-    $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
-    $(
+    qs(".page.pageLeaderboards .bigtitle .subtext")?.show();
+    qs(
       ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']",
-    ).removeClass("hidden");
-    $(".page.pageLeaderboards .bigtitle .subtext .divider").removeClass(
-      "hidden",
-    );
+    )?.show();
+    qs(".page.pageLeaderboards .bigtitle .subtext .divider")?.show();
 
     if (state.yesterday) {
-      $(
+      qs(
         ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']",
-      ).html(`
+      )?.setHtml(`
         <i class="fas fa-forward"></i>
             show today
         `);
     } else {
-      $(
+      qs(
         ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']",
-      ).html(`
+      )?.setHtml(`
         <i class="fas fa-backward"></i>
             show yesterday
         `);
@@ -211,23 +209,23 @@ function updateTitle(): void {
       utcToLocalDate(endOfDay(timestamp)),
     );
   } else if (state.type === "weekly") {
-    $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
-    $(
+    qs(".page.pageLeaderboards .bigtitle .subtext")?.show();
+    qs(
       ".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']",
-    ).removeClass("hidden");
-    $(".page.pageLeaderboards .bigtitle .subtext .divider").removeClass(
-      "hidden",
-    );
+    )?.show();
+    qs(".page.pageLeaderboards .bigtitle .subtext .divider")?.show();
 
     if (state.lastWeek) {
-      $(".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']")
-        .html(`
+      qs(
+        ".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']",
+      )?.setHtml(`
         <i class="fas fa-forward"></i>
             show this week
         `);
     } else {
-      $(".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']")
-        .html(`
+      qs(
+        ".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']",
+      )?.setHtml(`
         <i class="fas fa-backward"></i>
             show last week
         `);
@@ -391,43 +389,43 @@ async function requestData(update = false): Promise<void> {
 }
 
 function updateJumpButtons(): void {
-  const el = $(".page.pageLeaderboards .titleAndButtons .jumpButtons");
-  el.find("button").removeClass("active");
+  const el = qsa(".page.pageLeaderboards .titleAndButtons .jumpButtons");
+  el?.qsa("button")?.removeClass("active");
 
   const totalPages = Math.ceil(state.count / state.pageSize);
 
   if (totalPages <= 1) {
-    el.find("button").addClass("disabled");
+    el?.qsa("button")?.disable();
   } else {
-    el.find("button").removeClass("disabled");
+    el?.qsa("button")?.enable();
   }
 
   if (state.page === 0) {
-    el.find("button[data-action='previousPage']").addClass("disabled");
-    el.find("button[data-action='firstPage']").addClass("disabled");
+    el?.qs("button[data-action='previousPage']")?.disable();
+    el?.qs("button[data-action='firstPage']")?.disable();
   } else {
-    el.find("button[data-action='previousPage']").removeClass("disabled");
-    el.find("button[data-action='firstPage']").removeClass("disabled");
+    el?.qs("button[data-action='previousPage']")?.enable();
+    el?.qs("button[data-action='firstPage']")?.enable();
   }
 
   if (isAuthenticated()) {
-    const userButton = el.find("button[data-action='userPage']");
+    const userButton = el?.qs("button[data-action='userPage']");
     if (!state.userData) {
-      userButton.addClass("disabled");
+      userButton?.disable();
     } else {
       const userPage = Math.floor((state.userData.rank - 1) / state.pageSize);
       if (state.page === userPage) {
-        userButton.addClass("disabled");
+        userButton?.disable();
       } else {
-        userButton.removeClass("disabled");
+        userButton?.enable();
       }
     }
   }
 
   if (state.page >= totalPages - 1) {
-    el.find("button[data-action='nextPage']").addClass("disabled");
+    el?.qs("button[data-action='nextPage']")?.disable();
   } else {
-    el.find("button[data-action='nextPage']").removeClass("disabled");
+    el?.qs("button[data-action='nextPage']")?.enable();
   }
 }
 
@@ -554,43 +552,41 @@ function buildWeeklyTableRow(
 }
 
 function fillTable(): void {
-  const table = $(".page.pageLeaderboards table tbody");
-  table.empty();
+  const table = qs(".page.pageLeaderboards table tbody");
+  table?.empty();
 
   if (state.friendsOnly) {
-    table.parent().addClass("friendsOnly");
+    table?.getParent()?.addClass("friendsOnly");
   } else {
-    table.parent().removeClass("friendsOnly");
+    table?.getParent()?.removeClass("friendsOnly");
   }
 
-  $(".page.pageLeaderboards table thead").addClass("hidden");
+  qsa(".page.pageLeaderboards table thead")?.hide();
   if (state.type === "allTime" || state.type === "daily") {
-    $(".page.pageLeaderboards table thead.allTimeAndDaily").removeClass(
-      "hidden",
-    );
+    qs(".page.pageLeaderboards table thead.allTimeAndDaily")?.show();
   } else if (state.type === "weekly") {
-    $(".page.pageLeaderboards table thead.weekly").removeClass("hidden");
+    qs(".page.pageLeaderboards table thead.weekly")?.show();
   }
 
   if (state.data === null || state.data.length === 0) {
-    table.append(`<tr><td colspan="7" class="empty">No data</td></tr>`);
-    $(".page.pageLeaderboards table").removeClass("hidden");
+    table?.appendHtml(`<tr><td colspan="7" class="empty">No data</td></tr>`);
+    qs(".page.pageLeaderboards table")?.show();
     return;
   }
 
   if (state.type === "allTime" || state.type === "daily") {
     for (const entry of state.data) {
       const me = getAuthenticatedUser()?.uid === entry.uid;
-      table.append(buildTableRow(entry, me));
+      table?.append(buildTableRow(entry, me));
     }
   } else if (state.type === "weekly") {
     for (const entry of state.data) {
       const me = getAuthenticatedUser()?.uid === entry.uid;
-      table.append(buildWeeklyTableRow(entry, me));
+      table?.append(buildWeeklyTableRow(entry, me));
     }
   }
 
-  $(".page.pageLeaderboards table").removeClass("hidden");
+  qs(".page.pageLeaderboards table")?.show();
 }
 
 function getLbMemoryDifference(): number | null {
@@ -612,14 +608,14 @@ function getLbMemoryDifference(): number | null {
 
 function fillUser(): void {
   if (isAuthenticated() && DB.getSnapshot()?.lbOptOut === true) {
-    $(".page.pageLeaderboards .bigUser").html(
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(
       '<div class="warning">You have opted out of the leaderboards.</div>',
     );
     return;
   }
 
   if (isAuthenticated() && DB.getSnapshot()?.banned === true) {
-    $(".page.pageLeaderboards .bigUser").html(
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(
       '<div class="warning">Your account is banned</div>',
     );
     return;
@@ -633,7 +629,7 @@ function fillUser(): void {
     !isDevEnvironment() &&
     (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < minTimeTyping
   ) {
-    $(".page.pageLeaderboards .bigUser").html(
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(
       `<div class="warning">Your account must have ${formatDuration(
         intervalToDuration({ start: 0, end: minTimeTyping * 1000 }),
       )} typed to be placed on the leaderboard.</div>`,
@@ -651,14 +647,14 @@ function fillUser(): void {
       })})`;
     }
 
-    $(".page.pageLeaderboards .bigUser").html(
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(
       `<div class="warning">${str}</div>`,
     );
     return;
   }
 
   if (isAuthenticated() && state.userData === null) {
-    $(".page.pageLeaderboards .bigUser").html(
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(
       `<div class="warning">Not qualified</div>`,
     );
     return;
@@ -670,10 +666,8 @@ function fillUser(): void {
 
   if (state.type === "allTime" || state.type === "daily") {
     if (!state.userData || !state.count) {
-      $(".page.pageLeaderboards .bigUser").addClass("hidden");
-      $(".page.pageLeaderboards .tableAndUser > .divider").removeClass(
-        "hidden",
-      );
+      qs(".page.pageLeaderboards .bigUser")?.hide();
+      qs(".page.pageLeaderboards .tableAndUser > .divider")?.show();
       return;
     }
 
@@ -759,10 +753,10 @@ function fillUser(): void {
         </div>
         `;
 
-    $(".page.pageLeaderboards .bigUser").html(html);
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(html);
   } else if (state.type === "weekly") {
     if (!state.userData || !state.count) {
-      $(".page.pageLeaderboards .bigUser").addClass("hidden");
+      qs(".page.pageLeaderboards .bigUser")?.hide();
       return;
     }
 
@@ -843,43 +837,43 @@ function fillUser(): void {
         </div>
         `;
 
-    $(".page.pageLeaderboards .bigUser").html(html);
+    qs(".page.pageLeaderboards .bigUser")?.setHtml(html);
   }
-  $(".page.pageLeaderboards .bigUser").removeClass("hidden");
-  $(".page.pageLeaderboards .tableAndUser > .divider").addClass("hidden");
+  qs(".page.pageLeaderboards .bigUser")?.show();
+  qs(".page.pageLeaderboards .tableAndUser > .divider")?.hide();
 }
 
 function updateContent(): void {
-  $(".page.pageLeaderboards .loading").addClass("hidden");
-  $(".page.pageLeaderboards .updating").addClass("invisible");
-  $(".page.pageLeaderboards .error").addClass("hidden");
+  qsa(".page.pageLeaderboards .loading").hide();
+  qsa(".page.pageLeaderboards .updating").addClass("invisible");
+  qs(".page.pageLeaderboards .error")?.hide();
 
   if (state.error !== undefined) {
-    $(".page.pageLeaderboards .error").removeClass("hidden");
-    $(".page.pageLeaderboards .error p").text(state.error);
+    qs(".page.pageLeaderboards .error")?.show();
+    qs(".page.pageLeaderboards .error p")?.setText(state.error);
     enableButtons();
     return;
   }
 
   if (state.updating) {
     disableButtons();
-    $(".page.pageLeaderboards .updating").removeClass("invisible");
+    qsa(".page.pageLeaderboards .updating").removeClass("invisible");
     return;
   } else if (state.loading) {
     disableButtons();
-    $(".page.pageLeaderboards .bigUser").addClass("hidden");
-    $(".page.pageLeaderboards .titleAndButtons").addClass("hidden");
-    $(".page.pageLeaderboards .loading").removeClass("hidden");
-    $(".page.pageLeaderboards table").addClass("hidden");
+    qs(".page.pageLeaderboards .bigUser")?.hide();
+    qsa(".page.pageLeaderboards .titleAndButtons")?.hide();
+    qsa(".page.pageLeaderboards .loading").show();
+    qs(".page.pageLeaderboards table")?.hide();
     return;
   } else {
     enableButtons();
   }
 
   if (isAuthenticated()) {
-    $(".page.pageLeaderboards .needAuth").removeClass("hidden");
+    qsa(".page.pageLeaderboards .needAuth")?.show();
   } else {
-    $(".page.pageLeaderboards .needAuth").addClass("hidden");
+    qsa(".page.pageLeaderboards .needAuth")?.hide();
   }
 
   if (state.data === null) {
@@ -887,7 +881,7 @@ function updateContent(): void {
     return;
   }
 
-  $(".page.pageLeaderboards .titleAndButtons").removeClass("hidden");
+  qsa(".page.pageLeaderboards .titleAndButtons")?.show();
   updateJumpButtons();
   updateTimerVisibility();
   fillTable();
@@ -914,58 +908,56 @@ function updateSideButtons(): void {
 }
 
 function updateTypeButtons(): void {
-  const el = $(".page.pageLeaderboards .buttonGroup.typeButtons");
-  el.find("button").removeClass("active");
-  el.find(`button[data-type=${state.type}]`).addClass("active");
+  const el = qs(".page.pageLeaderboards .buttonGroup.typeButtons");
+  el?.qsa("button")?.removeClass("active");
+  el?.qs(`button[data-type=${state.type}]`)?.addClass("active");
 }
 
 function updateFriendsButtons(): void {
-  const friendsOnlyGroup = $(
+  const friendsOnlyGroup = qs(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons",
   );
   if (
     isAuthenticated() &&
     (ServerConfiguration.get()?.connections.enabled ?? false)
   ) {
-    friendsOnlyGroup.removeClass("hidden");
+    friendsOnlyGroup?.show();
   } else {
-    friendsOnlyGroup.addClass("hidden");
+    friendsOnlyGroup?.hide();
     state.friendsOnly = false;
     return;
   }
 
-  const everyoneButton = $(
+  const everyoneButton = qs(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .everyone",
   );
-  const friendsOnlyButton = $(
+  const friendsOnlyButton = qs(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly",
   );
   if (state.friendsOnly) {
-    friendsOnlyButton.addClass("active");
-    everyoneButton.removeClass("active");
+    friendsOnlyButton?.addClass("active");
+    everyoneButton?.removeClass("active");
   } else {
-    friendsOnlyButton.removeClass("active");
-    everyoneButton.addClass("active");
+    friendsOnlyButton?.removeClass("active");
+    everyoneButton?.addClass("active");
   }
 }
 
 function updateModeButtons(): void {
   if (state.type !== "allTime" && state.type !== "daily") {
-    $(".page.pageLeaderboards .buttonGroup.modeButtons").addClass("hidden");
+    qs(".page.pageLeaderboards .buttonGroup.modeButtons")?.hide();
     return;
   }
-  $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
+  qs(".page.pageLeaderboards .buttonGroup.modeButtons")?.show();
 
-  const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
-  el.find("button").removeClass("active");
-  el.find(
-    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`,
-  ).addClass("active");
+  const el = qs(".page.pageLeaderboards .buttonGroup.modeButtons");
+  el?.qsa("button")?.removeClass("active");
+  el?.qs(
+    `button[data-mode="${state.mode}"][data-mode2="${state.mode2}"]`,
+  )?.addClass("active");
 
   //hide all mode buttons
-  $(`.page.pageLeaderboards .buttonGroup.modeButtons button`).addClass(
-    "hidden",
-  );
+  qsa(`.page.pageLeaderboards .buttonGroup.modeButtons button`)?.hide();
 
   //show all valid ones
   for (const mode of Object.keys(validLeaderboards[state.type]) as Mode[]) {
@@ -973,37 +965,33 @@ function updateModeButtons(): void {
       // oxlint-disable-next-line no-non-null-assertion
       validLeaderboards[state.type][mode]!,
     )) {
-      $(
+      qs(
         `.page.pageLeaderboards .buttonGroup.modeButtons button[data-mode="${mode}"][data-mode2="${mode2}"]`,
-      ).removeClass("hidden");
+      )?.show();
     }
   }
 }
 
 function updateLanguageButtons(): void {
   if (state.type !== "daily") {
-    $(".page.pageLeaderboards .buttonGroup.languageButtons").addClass("hidden");
+    qs(".page.pageLeaderboards .buttonGroup.languageButtons")?.hide();
     return;
   }
-  $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
-    "hidden",
-  );
+  qs(".page.pageLeaderboards .buttonGroup.languageButtons")?.show();
 
-  const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
-  el.find("button").removeClass("active");
-  el.find(`button[data-language=${state.language}]`).addClass("active");
+  const el = qs(".page.pageLeaderboards .buttonGroup.languageButtons");
+  el?.qsa("button")?.removeClass("active");
+  el?.qs(`button[data-language=${state.language}]`)?.addClass("active");
 
   //hide all languages
-  $(`.page.pageLeaderboards .buttonGroup.languageButtons button`).addClass(
-    "hidden",
-  );
+  qsa(`.page.pageLeaderboards .buttonGroup.languageButtons button`)?.hide();
 
   //show all valid ones
   for (const lang of validLeaderboards[state.type][state.mode]?.[state.mode2] ??
     []) {
-    $(
+    qs(
       `.page.pageLeaderboards .buttonGroup.languageButtons button[data-language="${lang}"]`,
-    ).removeClass("hidden");
+    )?.show();
   }
 }
 
@@ -1013,7 +1001,7 @@ function updateTimerElement(): void {
   if (state.type === "daily") {
     const diff = differenceInSeconds(new Date(), endOfDay(new UTCDateMini()));
 
-    $(".page.pageLeaderboards .titleAndButtons .timer").text(
+    qs(".page.pageLeaderboards .titleAndButtons .timer")?.setText(
       "Next reset in: " + DateTime.secondsToString(diff, true),
     );
   } else if (state.type === "allTime") {
@@ -1021,13 +1009,13 @@ function updateTimerElement(): void {
     const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
     const secondsToNextUpdate = 60 - date.getSeconds();
     const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
-    $(".page.pageLeaderboards .titleAndButtons .timer").text(
+    qs(".page.pageLeaderboards .titleAndButtons .timer")?.setText(
       "Next update in: " + DateTime.secondsToString(totalSeconds, true),
     );
   } else if (state.type === "weekly") {
     const nextWeekTimestamp = endOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
     const totalSeconds = differenceInSeconds(new Date(), nextWeekTimestamp);
-    $(".page.pageLeaderboards .titleAndButtons .timer").text(
+    qs(".page.pageLeaderboards .titleAndButtons .timer")?.setText(
       "Next reset in: " +
         DateTime.secondsToString(totalSeconds, true, true, ":", true, true),
     );
@@ -1045,11 +1033,11 @@ function updateTimerVisibility(): void {
   }
 
   if (visible) {
-    $(".page.pageLeaderboards .titleAndButtons .timer").removeClass(
+    qs(".page.pageLeaderboards .titleAndButtons .timer")?.removeClass(
       "invisible",
     );
   } else {
-    $(".page.pageLeaderboards .titleAndButtons .timer").addClass("invisible");
+    qs(".page.pageLeaderboards .titleAndButtons .timer")?.addClass("invisible");
   }
 }
 
@@ -1063,7 +1051,7 @@ function startTimer(): void {
 function stopTimer(): void {
   clearInterval(updateTimer);
   updateTimer = undefined;
-  $(".page.pageLeaderboards .titleAndButtons .timer").text("-");
+  qs(".page.pageLeaderboards .titleAndButtons .timer")?.setText("-");
 }
 
 function convertRuleOption(rule: string): string[] {
@@ -1183,7 +1171,7 @@ async function appendModeAndLanguageButtons(): Promise<void> {
     </button>`,
     );
   });
-  $(".modeButtons").html(
+  qs(".modeButtons")?.setHtml(
     `<div class="divider"></div>` + mode2Buttons.join("\n"),
   );
 
@@ -1203,17 +1191,17 @@ async function appendModeAndLanguageButtons(): Promise<void> {
           ${lang}
         </button>`,
   );
-  $(".languageButtons").html(
+  qs(".languageButtons")?.setHtml(
     `<div class="divider"></div>` + languageButtons.join("\n"),
   );
 }
 
 function disableButtons(): void {
-  $(".page.pageLeaderboards button").prop("disabled", true);
+  qsa(".page.pageLeaderboards button")?.disable();
 }
 
 function enableButtons(): void {
-  $(".page.pageLeaderboards button").prop("disabled", false);
+  qsa(".page.pageLeaderboards button")?.enable();
 }
 
 export function goToPage(pageId: number): void {
@@ -1373,9 +1361,9 @@ function updateTimeText(
     " - \n" +
     format(localEnd, localDateFormat);
 
-  const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
-  text.text(`${dateString}`);
-  text.attr("aria-label", localDateString);
+  const text = qs(".page.pageLeaderboards .bigtitle .subtext > .text");
+  text?.setText(`${dateString}`);
+  text?.setAttribute("aria-label", localDateString);
 }
 
 function formatRank(rank: number | undefined): string {
@@ -1385,23 +1373,26 @@ function formatRank(rank: number | undefined): string {
   return rank.toString();
 }
 
-$(".page.pageLeaderboards .jumpButtons button").on("click", function () {
-  const action = $(this).data("action") as Action;
+qsa(".page.pageLeaderboards .jumpButtons button")?.on("click", function () {
+  const action = this.getAttribute("data-action") as Action;
   if (action !== "goToPage") {
     handleJumpButton(action);
   }
 });
 
-$(".page.pageLeaderboards .bigtitle button").on("click", function () {
-  const action = $(this).data("action") as string;
+qsa(".page.pageLeaderboards .bigtitle button")?.on("click", function () {
+  const action = this.getAttribute("data-action") as string;
   handleYesterdayLastWeekButton(action);
 });
 
-$(".page.pageLeaderboards .buttonGroup.typeButtons").on(
+qs(".page.pageLeaderboards .buttonGroup.typeButtons")?.onChild(
   "click",
   "button",
   function () {
-    const type = $(this).data("type") as "allTime" | "weekly" | "daily";
+    const type = this.getAttribute("data-type") as
+      | "allTime"
+      | "weekly"
+      | "daily";
     if (state.type === type) return;
     state.type = type;
     if (state.type === "daily") {
@@ -1422,16 +1413,17 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
   },
 );
 
-$(".page.pageLeaderboards .buttonGroup.modeButtons").on(
+qs(".page.pageLeaderboards .buttonGroup.modeButtons")?.onChild(
   "click",
   "button",
   function () {
-    const mode = $(this).attr("data-mode") as Mode;
-    const mode2 = $(this).attr("data-mode2");
+    const mode = this.getAttribute("data-mode") as Mode;
+    const mode2 = this.getAttribute("data-mode2");
 
     if (
       mode !== undefined &&
       mode2 !== undefined &&
+      mode2 !== null &&
       (state.type === "allTime" || state.type === "daily")
     ) {
       if (state.mode === mode && state.mode2 === mode2) return;
@@ -1451,11 +1443,11 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
   },
 );
 
-$(".page.pageLeaderboards .buttonGroup.languageButtons").on(
+qs(".page.pageLeaderboards .buttonGroup.languageButtons")?.onChild(
   "click",
   "button",
   function () {
-    const language = $(this).attr("data-language") as Language;
+    const language = this.getAttribute("data-language") as Language;
 
     if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
@@ -1474,7 +1466,7 @@ $(".page.pageLeaderboards .buttonGroup.languageButtons").on(
   },
 );
 
-$(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons").on(
+qs(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons")?.onChild(
   "click",
   "button",
   () => {
@@ -1493,13 +1485,19 @@ export const page = new PageWithUrlParams({
   element: qsr(".page.pageLeaderboards"),
   path: "/leaderboards",
   urlParamsSchema: UrlParameterSchema,
+  loadingOptions: {
+    style: "spinner",
+    loadingMode: () => "sync",
+    loadingPromise: async () => {
+      await ServerConfiguration.configurationPromise;
+    },
+  },
 
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
     stopTimer();
   },
   beforeShow: async (options): Promise<void> => {
-    await ServerConfiguration.configurationPromise;
     Skeleton.append("pageLeaderboards", "main");
     await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();
@@ -1517,7 +1515,7 @@ export const page = new PageWithUrlParams({
   },
 });
 
-$(async () => {
+onWindowLoad(async () => {
   Skeleton.save("pageLeaderboards");
 });
 

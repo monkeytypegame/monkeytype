@@ -1,47 +1,46 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { promiseAnimate } from "../utils/misc";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
-const pageEl = $(".page.pageLoading");
-const barEl = pageEl.find(".bar");
-const errorEl = pageEl.find(".error");
-const spinnerEl = pageEl.find(".spinner");
-const textEl = pageEl.find(".text");
+const pageEl = qs(".page.pageLoading");
+const barEl = pageEl?.qs(".bar");
+const errorEl = pageEl?.qs(".error");
+const spinnerEl = pageEl?.qs(".spinner");
+const textEl = pageEl?.qs(".text");
 
 export async function updateBar(
   percentage: number,
   duration: number,
 ): Promise<void> {
-  await promiseAnimate(barEl[0]?.querySelector(".fill") as HTMLElement, {
+  await barEl?.qs(".fill")?.promiseAnimate({
     width: percentage + "%",
     duration,
   });
 }
 
 export function updateText(text: string): void {
-  textEl.removeClass("hidden").html(text);
+  textEl?.show()?.setHtml(text);
 }
 
 export function showSpinner(): void {
-  barEl.addClass("hidden");
-  errorEl.addClass("hidden");
-  spinnerEl.removeClass("hidden");
-  textEl.addClass("hidden");
+  barEl?.hide();
+  errorEl?.hide();
+  spinnerEl?.show();
+  textEl?.hide();
 }
 
 export function showError(): void {
-  barEl.addClass("hidden");
-  spinnerEl.addClass("hidden");
-  errorEl.removeClass("hidden");
-  textEl.addClass("hidden");
+  barEl?.hide();
+  spinnerEl?.hide();
+  errorEl?.show();
+  textEl?.hide();
 }
 
 export async function showBar(): Promise<void> {
-  barEl.removeClass("hidden");
-  errorEl.addClass("hidden");
-  spinnerEl.addClass("hidden");
-  textEl.addClass("hidden");
+  barEl?.show();
+  errorEl?.hide();
+  spinnerEl?.hide();
+  textEl?.hide();
 }
 
 export const page = new Page({

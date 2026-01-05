@@ -11,7 +11,9 @@ import {
   ValidationOptions,
   ValidationResult,
 } from "../elements/input-validation";
-import { qsr } from "./dom";
+import { ElementWithUtils, qsr } from "./dom";
+
+const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -117,8 +119,8 @@ type SimpleModalOptions = {
 
 export class SimpleModal {
   parameters: string[];
-  wrapper: HTMLElement;
-  element: HTMLElement;
+  wrapper: ElementWithUtils<HTMLDialogElement>;
+  element: ElementWithUtils;
   modal: AnimatedModal;
   id: string;
   title: string;
@@ -155,58 +157,54 @@ export class SimpleModal {
     this.afterClickAway = options.afterClickAway;
   }
   reset(): void {
-    this.element.innerHTML = `
+    this.element.setHtml(`
     <div class="title"></div>
     <div class="inputs"></div>
     <div class="text"></div>
-    <button type="submit" class="submitButton"></button>`;
+    <button type="submit" class="submitButton"></button>`);
   }
 
   init(): void {
-    const el = $(this.element);
-    el.find("input").val("");
     this.reset();
-    el.attr("data-popup-id", this.id);
-    el.find(".title").text(this.title);
+    this.element.setAttribute("data-popup-id", this.id);
+    this.element.qs(".title")?.setText(this.title);
     if (this.textAllowHtml) {
-      el.find(".text").html(this.text ?? "");
+      this.element.qs(".text")?.setHtml(this.text ?? "");
     } else {
-      el.find(".text").text(this.text ?? "");
+      this.element.qs(".text")?.setText(this.text ?? "");
     }
 
     this.initInputs();
 
     if (this.buttonText === "") {
-      el.find(".submitButton").remove();
+      this.element.qs(".submitButton")?.remove();
     } else {
-      el.find(".submitButton").text(this.buttonText);
+      this.element.qs(".submitButton")?.setText(this.buttonText);
       this.updateSubmitButtonState();
     }
 
     if ((this.text ?? "") === "") {
-      el.find(".text").addClass("hidden");
+      this.element.qs(".text")?.hide();
     } else {
-      el.find(".text").removeClass("hidden");
+      this.element.qs(".text")?.show();
     }
   }
 
   initInputs(): void {
-    const el = $(this.element);
-
     const allInputsHidden = this.inputs.every((i) => i.hidden);
     if (allInputsHidden || this.inputs.length === 0) {
-      el.find(".inputs").addClass("hidden");
+      this.element.qs(".inputs")?.hide();
       return;
     }
 
-    const inputs = el.find(".inputs");
-    if (this.showLabels) inputs.addClass("withLabel");
+    const inputsEl = this.element.qs(".inputs");
+    if (this.showLabels) inputsEl?.addClass("withLabel");
 
     this.inputs.forEach((input, index) => {
       const id = `${this.id}_${index}`;
 
       if (this.showLabels && !input.hidden) {
-        inputs.append(`<label for="${id}">${input.label ?? ""}</label>`);
+        inputsEl?.appendHtml(`<label for="${id}">${input.label ?? ""}</label>`);
       }
 
       const tagname = input.type === "textarea" ? "textarea" : "input";
@@ -229,7 +227,7 @@ export class SimpleModal {
       }
 
       if (input.type === "textarea") {
-        inputs.append(
+        inputsEl?.appendHtml(
           buildTag({
             tagname,
             classes,
@@ -253,9 +251,9 @@ export class SimpleModal {
         } else {
           html = `<div>${html}</div>`;
         }
-        inputs.append(html);
+        inputsEl?.appendHtml(html);
       } else if (input.type === "range") {
-        inputs.append(`
+        inputsEl?.appendHtml(`
           <div>
             ${buildTag({
               tagname,
@@ -317,7 +315,7 @@ export class SimpleModal {
             break;
           }
         }
-        inputs.append(buildTag({ tagname, classes, attributes }));
+        inputsEl?.appendHtml(buildTag({ tagname, classes, attributes }));
       }
       const element = qsr<HTMLInputElement>("#" + attributes["id"]);
 
@@ -358,7 +356,7 @@ export class SimpleModal {
       }
     });
 
-    el.find(".inputs").removeClass("hidden");
+    this.element.qs(".inputs")?.show();
   }
 
   exec(): void {
@@ -389,25 +387,23 @@ export class SimpleModal {
         });
       } else {
         this.enableInputs();
-        $($("#simpleModal").find("input")[0] as HTMLInputElement).trigger(
-          "focus",
-        );
+        simpleModalEl.qsa("input")[0]?.focus();
       }
     });
   }
 
   disableInputs(): void {
-    $("#simpleModal input").prop("disabled", true);
-    $("#simpleModal button").prop("disabled", true);
-    $("#simpleModal textarea").prop("disabled", true);
-    $("#simpleModal .checkbox").addClass("disabled");
+    simpleModalEl.qsa("input").disable();
+    simpleModalEl.qsa("button").disable();
+    simpleModalEl.qsa("textarea").disable();
+    simpleModalEl.qsa(".checkbox").addClass("disabled");
   }
 
   enableInputs(): void {
-    $("#simpleModal input").prop("disabled", false);
-    $("#simpleModal button").prop("disabled", false);
-    $("#simpleModal textarea").prop("disabled", false);
-    $("#simpleModal .checkbox").removeClass("disabled");
+    simpleModalEl.qsa("input").enable();
+    simpleModalEl.qsa("button").enable();
+    simpleModalEl.qsa("textarea").enable();
+    simpleModalEl.qsa(".checkbox").removeClass("disabled");
   }
 
   show(parameters: string[] = [], showOptions: ShowOptions): void {
@@ -449,15 +445,13 @@ export class SimpleModal {
   }
 
   updateSubmitButtonState(): void {
-    const button = this.element.querySelector(
-      ".submitButton",
-    ) as HTMLButtonElement;
+    const button = this.element.qs<HTMLButtonElement>(".submitButton");
     if (button === null) return;
 
     if (this.hasMissingRequired() || this.hasValidationErrors()) {
-      button.disabled = true;
+      button.disable();
     } else {
-      button.disabled = false;
+      button.enable();
     }
   }
 }
@@ -474,7 +468,7 @@ let activePopup: SimpleModal | null = null;
 const modal = new AnimatedModal({
   dialogId: "simpleModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
+    modalEl.on("submit", (e) => {
       e.preventDefault();
       activePopup?.exec();
     });

@@ -105,11 +105,20 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
-export type DomUtilsEvent<T extends Event = Event> = Omit<T, "currentTarget">;
+type ElementWithSelectableValue = HTMLInputElement | HTMLTextAreaElement;
 
-type DomUtilsEventListenerOrEventListenerObject =
-  | { (evt: DomUtilsEvent): void }
-  | { handleEvent(object: DomUtilsEvent): void };
+//TODO: after the migration from jQuery to dom-utils we might want to add currentTarget back to the event object, if we have a use-case for it.
+// For now we remove it because currentTarget is not the same element when using dom-utils intead of jQuery to get compile errors.
+export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
+  /**
+   * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
+   */
+  childTarget: EventTarget | null;
+};
+
+type OnChildEventListenerOrEventListenerObject =
+  | { (evt: OnChildEvent): void }
+  | { handleEvent(object: OnChildEvent): void };
 
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
@@ -201,6 +210,20 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if element is visible
+   */
+
+  isVisible(): boolean {
+    return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
+  }
+
+  scrollIntoView(options: ScrollIntoViewOptions): this {
+    this.native.scrollIntoView(options);
+
+    return this;
+  }
+
+  /**
    * Add a class to the element
    */
   addClass(className: string | string[]): this {
@@ -244,56 +267,84 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: DomUtilsEvent<HTMLElementEventMap[K]>) => void,
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
   ): this;
-  on(event: string, handler: DomUtilsEventListenerOrEventListenerObject): this;
+  on(event: string, handler: EventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
     handler:
-      | DomUtilsEventListenerOrEventListenerObject
-      | ((this: T, ev: DomUtilsEvent) => void),
+      | EventListenerOrEventListenerObject
+      | ((this: T, ev: Event) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(
       event,
-      handler as DomUtilsEventListenerOrEventListenerObject,
+      handler as EventListenerOrEventListenerObject,
     );
     return this;
   }
 
   /**
-   * Attach an event listener to child elements matching the query.
+   * Attach an event listener to child elements matching the selector.
    * Useful for dynamically added elements.
+   *
+   * The handler is not called when the event occurs directly on the bound element, but only for descendants (inner elements)
+   * that match the selector. Bubbles the event from the event target up to the element where the handler is attached
+   * (i.e., innermost to outermost element) and runs the handler for any elements along that path matching the selector.
    */
   onChild<K extends keyof HTMLElementEventMap>(
     event: K,
-    query: string,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
     handler: (
       this: HTMLElement,
-      ev: DomUtilsEvent<HTMLElementEventMap[K]>,
+      ev: OnChildEvent<HTMLElementEventMap[K]>,
     ) => void,
   ): this;
   onChild(
     event: string,
-    query: string,
-    handler: DomUtilsEventListenerOrEventListenerObject,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
+    handler: OnChildEventListenerOrEventListenerObject,
   ): this;
   onChild(
     event: keyof HTMLElementEventMap | string,
-    query: string,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
     handler:
-      | DomUtilsEventListenerOrEventListenerObject
-      | ((this: HTMLElement, ev: DomUtilsEvent) => void),
+      | OnChildEventListenerOrEventListenerObject
+      | ((this: HTMLElement, ev: OnChildEvent) => void),
   ): this {
-    // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
-      if (target !== null && target.matches(query)) {
+      if (target === null) return; //ignore event
+
+      let childTarget = target.closest(selector);
+      //bubble up until no match found or the parent element is reached
+      while (
+        childTarget !== null &&
+        childTarget !== this.native && //stop on parent
+        this.native.contains(childTarget) //stop above parent
+      ) {
         if (typeof handler === "function") {
-          handler.call(target, e);
+          handler.call(
+            childTarget as HTMLElement,
+            Object.assign(e, { childTarget }),
+          );
         } else {
-          handler.handleEvent(e);
+          handler.handleEvent(Object.assign(e, { childTarget }));
         }
+
+        childTarget =
+          childTarget.parentElement !== null
+            ? childTarget.parentElement.closest(selector)
+            : null;
       }
     });
     return this;
@@ -472,6 +523,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     );
   }
 
+  private hasSelectableValue(): this is ElementWithUtils<ElementWithSelectableValue> {
+    return (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement
+    );
+  }
+
   /**
    * Set value of input or textarea to a string.
    */
@@ -494,6 +552,28 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Set checked state of input element
+   * @param checked The checked state to set
+   */
+  setChecked(this: ElementWithUtils<HTMLInputElement>, checked: boolean): this {
+    if (this.native instanceof HTMLInputElement) {
+      this.native.checked = checked;
+    }
+    return this as unknown as this;
+  }
+
+  /**
+   * Get checked state of input element
+   * @returns The checked state of the element, or undefined if the element is not an input.
+   */
+  getChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
+    if (this.native instanceof HTMLInputElement) {
+      return this.native.checked;
+    }
+    return undefined;
+  }
+
+  /**
    * Get the parent element
    */
   getParent<U extends HTMLElement = HTMLElement>(): ElementWithUtils<U> | null {
@@ -501,6 +581,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       return new ElementWithUtils(this.native.parentElement as U);
     }
     return null;
+  }
+
+  /**
+   * Get the first parent that matches a selector
+   */
+
+  closestParent(selector: string): ElementWithUtils | null {
+    const closestParent = this.native.parentElement?.closest(
+      selector,
+    ) as HTMLElement;
+    return closestParent !== null ? new ElementWithUtils(closestParent) : null;
+  }
+
+  /**
+   * Check if element matches a selector
+   */
+
+  matches(selector: string): boolean {
+    return this.native.matches(selector);
   }
 
   /**
@@ -566,6 +665,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         },
       });
     });
+  }
+
+  /**
+   * Focus the element
+   */
+  focus(): void {
+    this.native.focus();
+  }
+
+  /**
+   * Select the element's content (for input and textarea elements)
+   */
+  select(this: ElementWithUtils<ElementWithSelectableValue>): void {
+    if (this.hasSelectableValue()) {
+      this.native.select();
+    }
   }
 }
 
@@ -676,25 +791,56 @@ export class ElementsWithUtils<
   }
 
   /**
+   * Query all elements in the array for a child element matching the selector
+   */
+  qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const found = item.native.querySelector<U>(selector);
+      if (found) allElements.push(new ElementWithUtils<U>(found));
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
+   * Query all elements in the array for all child elements matching the selector
+   */
+  qsa<U extends HTMLElement = HTMLElement>(
+    selector: string,
+  ): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const elements = Array.from(item.native.querySelectorAll<U>(selector));
+      for (const el of elements) {
+        if (el !== null) allElements.push(new ElementWithUtils<U>(el));
+      }
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
    * Attach an event listener to all elements in the array
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: DomUtilsEvent<HTMLElementEventMap[K]>) => void,
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
   ): this;
-  on(event: string, handler: DomUtilsEventListenerOrEventListenerObject): this;
+  on(event: string, handler: EventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
     handler:
-      | DomUtilsEventListenerOrEventListenerObject
-      | ((this: T, ev: DomUtilsEvent) => void),
+      | EventListenerOrEventListenerObject
+      | ((this: T, ev: Event) => void),
   ): this {
     for (const item of this) {
       item.on(event, handler);
     }
     return this;
   }
-
   /**
    * Set attribute value on all elements in the array
    */
