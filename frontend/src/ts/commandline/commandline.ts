@@ -586,12 +586,12 @@ function handleInputSubmit(): void {
     //validation ongoing, ignore the submit
     return;
   } else if (inputModeParams.validation?.status === "failed") {
-    modal.getModal().classList.add("hasError");
+    modal.getModal().addClass("hasError");
     if (shakeTimeout !== null) {
       clearTimeout(shakeTimeout);
     }
     shakeTimeout = setTimeout(() => {
-      modal.getModal().classList.remove("hasError");
+      modal.getModal().removeClass("hasError");
     }, 500);
     return;
   }
@@ -743,45 +743,39 @@ async function decrementActiveIndex(): Promise<void> {
 }
 
 function showWarning(message: string): void {
-  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
-  const warningTextEl = modal
-    .getModal()
-    .querySelector<HTMLElement>(".warning .text");
+  const warningEl = modal.getModal().qs(".warning");
+  const warningTextEl = modal.getModal().qs(".warning .text");
   if (warningEl === null || warningTextEl === null) {
     throw new Error("Commandline warning element not found");
   }
-  warningEl.classList.remove("hidden");
-  warningTextEl.textContent = message;
+  warningEl.show();
+  warningTextEl.setText(message);
 }
 
 const showCheckingIcon = debounce(200, async () => {
-  const checkingiconEl = modal
-    .getModal()
-    .querySelector<HTMLElement>(".checkingicon");
+  const checkingiconEl = modal.getModal().qs(".checkingicon");
   if (checkingiconEl === null) {
     throw new Error("Commandline checking icon element not found");
   }
-  checkingiconEl.classList.remove("hidden");
+  checkingiconEl.show();
 });
 
 function hideCheckingIcon(): void {
   showCheckingIcon.cancel({ upcomingOnly: true });
 
-  const checkingiconEl = modal
-    .getModal()
-    .querySelector<HTMLElement>(".checkingicon");
+  const checkingiconEl = modal.getModal().qs(".checkingicon");
   if (checkingiconEl === null) {
     throw new Error("Commandline checking icon element not found");
   }
-  checkingiconEl.classList.add("hidden");
+  checkingiconEl.hide();
 }
 
 function hideWarning(): void {
-  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  const warningEl = modal.getModal().qs(".warning");
   if (warningEl === null) {
     throw new Error("Commandline warning element not found");
   }
-  warningEl.classList.add("hidden");
+  warningEl.hide();
 }
 
 function updateValidationResult(
@@ -833,9 +827,9 @@ const modal = new AnimatedModal({
     focusFirstInput: true,
   },
   setup: async (modalEl): Promise<void> => {
-    const input = modalEl.querySelector("input") as HTMLInputElement;
+    const input = modalEl.qsr("input");
 
-    input.addEventListener(
+    input.on(
       "input",
       debounce(50, async (e) => {
         inputValue = ((e as InputEvent).target as HTMLInputElement).value;
@@ -855,7 +849,7 @@ const modal = new AnimatedModal({
       }),
     );
 
-    input.addEventListener("keydown", async (e) => {
+    input.on("keydown", async (e) => {
       mouseMode = false;
       if (
         e.key === "ArrowUp" ||
@@ -911,7 +905,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    input.addEventListener("input", async (e) => {
+    input.on("input", async (e) => {
       if (
         inputModeParams === null ||
         inputModeParams.command === null ||
@@ -930,7 +924,7 @@ const modal = new AnimatedModal({
       await handler(e);
     });
 
-    modalEl.addEventListener("mousemove", (_e) => {
+    modalEl.on("mousemove", (_e) => {
       mouseMode = true;
     });
 

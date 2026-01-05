@@ -13,12 +13,9 @@ type PBWithMode2 = {
 function update(mode: Mode): void {
   const modalEl = modal.getModal();
 
-  (modalEl.querySelector("table tbody") as HTMLElement).innerHTML = "";
-  (modalEl.querySelector("table thead tr td") as HTMLElement).textContent =
-    mode;
-  (
-    modalEl.querySelector("table thead tr td span.unit") as HTMLElement
-  ).textContent = Config.typingSpeedUnit;
+  modalEl.qs("table tbody")?.empty();
+  modalEl.qs("table thead tr td")?.setText(mode);
+  modalEl.qs("table thead tr td span.unit")?.setText(Config.typingSpeedUnit);
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -53,8 +50,7 @@ function update(mode: Mode): void {
         format(date, "HH:mm") +
         "</div>";
     }
-    modalEl.querySelector("table tbody")?.insertAdjacentHTML(
-      `beforeend`,
+    modalEl.qs("table tbody")?.appendHtml(
       `
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>

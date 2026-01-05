@@ -1636,6 +1636,20 @@ body.darkMode {
     .red {
       color: var(--error-color);
     }
+    .group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      justify-items: center;
+      align-items: center;
+      font-size: 2em;
+      button {
+        width: 100%;
+      }
+      input {
+        text-align: center;
+      }
+    }
     .preview {
       & > div:first-child {
         margin-bottom: 1rem;
