@@ -50,7 +50,7 @@
   .settingsGroup {
     display: grid;
     gap: 2rem;
-    overflow: visible;
+    overflow: hidden;
     &.quickNav {
       justify-content: center;
       .links {
@@ -74,6 +74,10 @@
         }
       }
     }
+  }
+
+  .settingsGroup:has(.section.themes) {
+    overflow: visible;
   }
 
   .section {
