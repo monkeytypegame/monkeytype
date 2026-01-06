@@ -199,7 +199,9 @@
         .then((resp) => {
           // Email address has been verified.
 
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-check"></i>`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-check"></i>`,
+          );
           qs("main .preloader .text")?.setText(
             `Your email address has been verified`,
           );
@@ -207,7 +209,9 @@
         })
         .catch((error) => {
           console.error(error);
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-times"></i>`,
+          );
           qs("main .preloader .text")?.setText(
             `Fatal error: ${error.message}. If this issue persists, please report it.`,
           );
@@ -234,8 +238,12 @@
         .then((email) => {
           var accountEmail = email;
 
-          var newPassword = qs<HTMLInputElement>("main .resetPassword .pwd")?.getValue();
-          var newPasswordConfirm = qs<HTMLInputElement>("main .resetPassword .pwd-confirm")?.getValue();
+          var newPassword =
+            qs < HTMLInputElement > "main .resetPassword .pwd"?.getValue();
+          var newPasswordConfirm =
+            qs <
+            HTMLInputElement >
+            "main .resetPassword .pwd-confirm"?.getValue();
 
           if (newPassword !== newPasswordConfirm) {
             alert("Passwords do not match");
@@ -258,8 +266,12 @@
               qs("main .preloader .icon")?.setHtml(
                 `<i class="fas fa-fw fa-check"></i>`,
               );
-              qs("main .preloader .text")?.setText(`Your password has been changed`);
-              qs("main .preloader .subText")?.setText(`You can now close this tab`);
+              qs("main .preloader .text")?.setText(
+                `Your password has been changed`,
+              );
+              qs("main .preloader .subText")?.setText(
+                `You can now close this tab`,
+              );
 
               signInWithEmailAndPassword(Auth, accountEmail, newPassword);
             })
@@ -277,7 +289,9 @@
         })
         .catch((error) => {
           console.error(error);
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-times"></i>`,
+          );
           qs("main .preloader .text")?.setText(
             `Fatal error: ${error.message}. If this issue persists, please report it.`,
           );
@@ -303,8 +317,12 @@
           return applyActionCode(Auth, actionCode);
         })
         .then(() => {
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-check"></i>`);
-          qs("main .preloader .text")?.setText(`Your account email was reverted.`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-check"></i>`,
+          );
+          qs("main .preloader .text")?.setText(
+            `Your account email was reverted.`,
+          );
           qs("main .preloader .subText")?.setText(``);
 
           qs("main .preloader")?.appendHtml(`
@@ -325,7 +343,9 @@
         })
         .catch((error) => {
           console.error(error);
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-times"></i>`,
+          );
           qs("main .preloader .text")?.setText(error.message);
         });
     }
@@ -333,13 +353,17 @@
     function sendPasswordReset(email) {
       sendPasswordResetEmail(Auth, email)
         .then(() => {
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-check"></i>`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-check"></i>`,
+          );
           qs("main .preloader .text")?.setText(`Password reset email sent`);
           qs("main .preloader .subText")?.setText(`Please check your inbox`);
         })
         .catch((error) => {
           console.error(error);
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-times"></i>`,
+          );
           qs("main .preloader .text")?.setText(error.message);
         });
     }
@@ -354,82 +378,86 @@
     }
 
     onDOMReady(() => {
-        try {
-          // Get the action to complete.
-          var mode = getParameterByName("mode");
-          // Get the one-time code from the query parameter.
-          var actionCode = getParameterByName("oobCode");
-          // (Optional) Get the continue URL from the query parameter if available.
-          var continueUrl = getParameterByName("continueUrl");
-          // (Optional) Get the language code if available.
-          var lang = getParameterByName("lang") || "en";
+      try {
+        // Get the action to complete.
+        var mode = getParameterByName("mode");
+        // Get the one-time code from the query parameter.
+        var actionCode = getParameterByName("oobCode");
+        // (Optional) Get the continue URL from the query parameter if available.
+        var continueUrl = getParameterByName("continueUrl");
+        // (Optional) Get the language code if available.
+        var lang = getParameterByName("lang") || "en";
 
-          // Configure the Firebase SDK.
-          // // This is the minimum configuration required for the API to be used.
-          // var config = {
-          //   'apiKey': "YOU_API_KEY" // Copy this key from the web initialization
-          //                           // snippet found in the Firebase console.
-          // };
-          // var app = firebase.initializeApp(config);
-          // var auth = firebase.auth();
+        // Configure the Firebase SDK.
+        // // This is the minimum configuration required for the API to be used.
+        // var config = {
+        //   'apiKey': "YOU_API_KEY" // Copy this key from the web initialization
+        //                           // snippet found in the Firebase console.
+        // };
+        // var app = firebase.initializeApp(config);
+        // var auth = firebase.auth();
 
-          if (!mode) {
-            qs("main .preloader .icon")?.setHtml(
-              `<i class="fas fa-fw fa-times"></i>`,
-            );
-            qs("main .preloader .text")?.setText(`Mode parameter not found`);
-            return;
-          }
-
-          if (!actionCode) {
-            qs("main .preloader .icon")?.setHtml(
-              `<i class="fas fa-fw fa-times"></i>`,
-            );
-            qs("main .preloader .text")?.setText(`Action code parameter not found`);
-            return;
-          }
-
-          // Handle the user management action.
-          switch (mode) {
-            case "resetPassword":
-              // Display reset password handler and UI.
-              qs("#logo .text span")?.setText("Reset Password");
-              document.title = "Reset Password | Monkeytype";
-              showResetPassword();
-              break;
-            case "recoverEmail":
-              // Display email recovery handler and UI.
-              handleRecoverEmail(actionCode);
-              break;
-            case "verifyEmail":
-              qs("#logo .text span")?.setText("Verify Email");
-              document.title = "Verify Email | Monkeytype";
-              // Display email verification handler and UI.
-              handleVerifyEmail(actionCode, continueUrl);
-              break;
-            default:
-              qs("main .preloader .icon")?.setHtml(
-                `<i class="fas fa-fw fa-times"></i>`,
-              );
-              qs("main .preloader .text")?.setText(`Invalid mode`);
-              console.error("no mode found");
-            // Error: invalid mode.
-          }
-
-          qs("main .resetPassword .button")?.on("click", () => {
-            handleResetPassword(actionCode, continueUrl);
-          });
-
-          qs("main .resetPassword input")?.on("keypress", (e) => {
-            if (e.key === "Enter") handleResetPassword(actionCode, continueUrl);
-          });
-        } catch (e) {
-          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
-          qs("main .preloader .text")?.setText(
-            `Fatal error: ${e.message}. If this issue persists, please report it.`,
+        if (!mode) {
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-times"></i>`,
           );
+          qs("main .preloader .text")?.setText(`Mode parameter not found`);
+          return;
         }
-      });
+
+        if (!actionCode) {
+          qs("main .preloader .icon")?.setHtml(
+            `<i class="fas fa-fw fa-times"></i>`,
+          );
+          qs("main .preloader .text")?.setText(
+            `Action code parameter not found`,
+          );
+          return;
+        }
+
+        // Handle the user management action.
+        switch (mode) {
+          case "resetPassword":
+            // Display reset password handler and UI.
+            qs("#logo .text span")?.setText("Reset Password");
+            document.title = "Reset Password | Monkeytype";
+            showResetPassword();
+            break;
+          case "recoverEmail":
+            // Display email recovery handler and UI.
+            handleRecoverEmail(actionCode);
+            break;
+          case "verifyEmail":
+            qs("#logo .text span")?.setText("Verify Email");
+            document.title = "Verify Email | Monkeytype";
+            // Display email verification handler and UI.
+            handleVerifyEmail(actionCode, continueUrl);
+            break;
+          default:
+            qs("main .preloader .icon")?.setHtml(
+              `<i class="fas fa-fw fa-times"></i>`,
+            );
+            qs("main .preloader .text")?.setText(`Invalid mode`);
+            console.error("no mode found");
+          // Error: invalid mode.
+        }
+
+        qs("main .resetPassword .button")?.on("click", () => {
+          handleResetPassword(actionCode, continueUrl);
+        });
+
+        qs("main .resetPassword input")?.on("keypress", (e) => {
+          if (e.key === "Enter") handleResetPassword(actionCode, continueUrl);
+        });
+      } catch (e) {
+        qs("main .preloader .icon")?.setHtml(
+          `<i class="fas fa-fw fa-times"></i>`,
+        );
+        qs("main .preloader .text")?.setText(
+          `Fatal error: ${e.message}. If this issue persists, please report it.`,
+        );
+      }
+    });
 
     qs("header")?.on("click", () => {
       window.location = "/";
