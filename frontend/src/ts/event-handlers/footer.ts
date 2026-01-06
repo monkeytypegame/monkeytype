@@ -65,7 +65,7 @@ document
       }
       setConfig("customTheme", true);
     } else {
-      const subgroup = Config.customTheme ? "customThemesList" : "themes";
+      const subgroup = Config.customTheme ? "customTheme" : "themes";
       Commandline.show({
         subgroupOverride: subgroup,
       });
