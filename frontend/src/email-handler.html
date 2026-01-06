@@ -167,7 +167,6 @@
     </div>
   </body>
   <script type="module">
-    import $ from "jquery";
     import {
       applyActionCode,
       verifyPasswordResetCode,
@@ -179,6 +178,7 @@
     } from "firebase/auth";
     import { initializeApp } from "firebase/app";
     import { firebaseConfig } from "./ts/constants/firebase-config";
+    import { qs, onDOMReady } from "./ts/utils/dom";
 
     const app = initializeApp(firebaseConfig);
     const Auth = getAuth(app);
@@ -199,16 +199,16 @@
         .then((resp) => {
           // Email address has been verified.
 
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
-          $("main .preloader .text").text(
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-check"></i>`);
+          qs("main .preloader .text")?.setText(
             `Your email address has been verified`,
           );
-          $("main .preloader .subText").text(`You can now close this tab`);
+          qs("main .preloader .subText")?.setText(`You can now close this tab`);
         })
         .catch((error) => {
           console.error(error);
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .text")?.setText(
             `Fatal error: ${error.message}. If this issue persists, please report it.`,
           );
           // Code is invalid or expired. Ask the user to verify their email address
@@ -217,14 +217,14 @@
     }
 
     function showResetPassword() {
-      $("main .preloader").addClass("hidden");
-      $("main .resetPassword").removeClass("hidden");
-      $("main .resetPassword input").trigger("focus");
+      qs("main .preloader")?.hide();
+      qs("main .resetPassword")?.show();
+      qs("main .resetPassword input")?.focus();
     }
 
     function hideResetPassword() {
-      $("main .preloader").removeClass("hidden");
-      $("main .resetPassword").addClass("hidden");
+      qs("main .preloader")?.show();
+      qs("main .resetPassword")?.hide();
     }
 
     function handleResetPassword(actionCode, continueUrl) {
@@ -234,8 +234,8 @@
         .then((email) => {
           var accountEmail = email;
 
-          var newPassword = $("main .resetPassword .pwd").val();
-          var newPasswordConfirm = $("main .resetPassword .pwd-confirm").val();
+          var newPassword = qs<HTMLInputElement>("main .resetPassword .pwd")?.getValue();
+          var newPasswordConfirm = qs<HTMLInputElement>("main .resetPassword .pwd-confirm")?.getValue();
 
           if (newPassword !== newPasswordConfirm) {
             alert("Passwords do not match");
@@ -255,20 +255,20 @@
           confirmPasswordReset(Auth, actionCode, newPassword)
             .then((resp) => {
               // Password reset has been confirmed and new password updated.
-              $("main .preloader .icon").html(
+              qs("main .preloader .icon")?.setHtml(
                 `<i class="fas fa-fw fa-check"></i>`,
               );
-              $("main .preloader .text").text(`Your password has been changed`);
-              $("main .preloader .subText").text(`You can now close this tab`);
+              qs("main .preloader .text")?.setText(`Your password has been changed`);
+              qs("main .preloader .subText")?.setText(`You can now close this tab`);
 
               signInWithEmailAndPassword(Auth, accountEmail, newPassword);
             })
             .catch((error) => {
               console.error(error);
-              $("main .preloader .icon").html(
+              qs("main .preloader .icon")?.setHtml(
                 `<i class="fas fa-fw fa-times"></i>`,
               );
-              $("main .preloader .text").text(
+              qs("main .preloader .text")?.setText(
                 `Fatal error: ${error.message}. If this issue persists, please report it.`,
               );
               // Error occurred during confirmation. The code might have expired or the
@@ -277,12 +277,12 @@
         })
         .catch((error) => {
           console.error(error);
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .text")?.setText(
             `Fatal error: ${error.message}. If this issue persists, please report it.`,
           );
 
-          // $("main .preloader .subText").text(error);
+          // qs("main .preloader .subText")?.setText(error);
 
           // Invalid or expired action code. Ask user to try to reset the password
           // again.
@@ -303,15 +303,15 @@
           return applyActionCode(Auth, actionCode);
         })
         .then(() => {
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
-          $("main .preloader .text").text(`Your account email was reverted.`);
-          $("main .preloader .subText").text(``);
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-check"></i>`);
+          qs("main .preloader .text")?.setText(`Your account email was reverted.`);
+          qs("main .preloader .subText")?.setText(``);
 
-          $("main .preloader").append(`
+          qs("main .preloader")?.appendHtml(`
           <br>
           In case you believe your account was compromised, please request a password reset email:
           `);
-          $("main .preloader").append(`
+          qs("main .preloader")?.appendHtml(`
           <br>
           <div class="button" onclick="sendPasswordReset('${restoredEmail}')">Send Password Reset Email</div>
           `);
@@ -325,22 +325,22 @@
         })
         .catch((error) => {
           console.error(error);
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(error.message);
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .text")?.setText(error.message);
         });
     }
 
     function sendPasswordReset(email) {
       sendPasswordResetEmail(Auth, email)
         .then(() => {
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
-          $("main .preloader .text").text(`Password reset email sent`);
-          $("main .preloader .subText").text(`Please check your inbox`);
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-check"></i>`);
+          qs("main .preloader .text")?.setText(`Password reset email sent`);
+          qs("main .preloader .subText")?.setText(`Please check your inbox`);
         })
         .catch((error) => {
           console.error(error);
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(error.message);
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .text")?.setText(error.message);
         });
     }
 
@@ -353,9 +353,7 @@
       return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
+    onDOMReady(() => {
         try {
           // Get the action to complete.
           var mode = getParameterByName("mode");
@@ -376,18 +374,18 @@
           // var auth = firebase.auth();
 
           if (!mode) {
-            $("main .preloader .icon").html(
+            qs("main .preloader .icon")?.setHtml(
               `<i class="fas fa-fw fa-times"></i>`,
             );
-            $("main .preloader .text").text(`Mode parameter not found`);
+            qs("main .preloader .text")?.setText(`Mode parameter not found`);
             return;
           }
 
           if (!actionCode) {
-            $("main .preloader .icon").html(
+            qs("main .preloader .icon")?.setHtml(
               `<i class="fas fa-fw fa-times"></i>`,
             );
-            $("main .preloader .text").text(`Action code parameter not found`);
+            qs("main .preloader .text")?.setText(`Action code parameter not found`);
             return;
           }
 
@@ -395,7 +393,7 @@
           switch (mode) {
             case "resetPassword":
               // Display reset password handler and UI.
-              $("#logo .text span").text("Reset Password");
+              qs("#logo .text span")?.setText("Reset Password");
               document.title = "Reset Password | Monkeytype";
               showResetPassword();
               break;
@@ -404,38 +402,36 @@
               handleRecoverEmail(actionCode);
               break;
             case "verifyEmail":
-              $("#logo .text span").text("Verify Email");
+              qs("#logo .text span")?.setText("Verify Email");
               document.title = "Verify Email | Monkeytype";
               // Display email verification handler and UI.
               handleVerifyEmail(actionCode, continueUrl);
               break;
             default:
-              $("main .preloader .icon").html(
+              qs("main .preloader .icon")?.setHtml(
                 `<i class="fas fa-fw fa-times"></i>`,
               );
-              $("main .preloader .text").text(`Invalid mode`);
+              qs("main .preloader .text")?.setText(`Invalid mode`);
               console.error("no mode found");
             // Error: invalid mode.
           }
 
-          $("main .resetPassword .button").on("click", () => {
+          qs("main .resetPassword .button")?.on("click", () => {
             handleResetPassword(actionCode, continueUrl);
           });
 
-          $("main .resetPassword input").on("keypress", (e) => {
+          qs("main .resetPassword input")?.on("keypress", (e) => {
             if (e.key === "Enter") handleResetPassword(actionCode, continueUrl);
           });
         } catch (e) {
-          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(
+          qs("main .preloader .icon")?.setHtml(`<i class="fas fa-fw fa-times"></i>`);
+          qs("main .preloader .text")?.setText(
             `Fatal error: ${e.message}. If this issue persists, please report it.`,
           );
         }
-      },
-      false,
-    );
+      });
 
-    document.querySelector("header").addEventListener("click", () => {
+    qs("header")?.on("click", () => {
       window.location = "/";
     });
   </script>
