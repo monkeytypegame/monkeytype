@@ -15,11 +15,13 @@ import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import { ListsObjectKeys } from "../commandline/lists";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
   if (attr === undefined) return;
-  Commandline.show({ subgroupOverride: attr });
+  Commandline.show({ subgroupOverride: attr as ConfigKey | ListsObjectKeys });
 });
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
