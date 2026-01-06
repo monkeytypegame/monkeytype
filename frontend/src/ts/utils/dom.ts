@@ -105,6 +105,8 @@ type ElementWithValue =
   | HTMLTextAreaElement
   | HTMLSelectElement;
 
+type ElementWithSelectableValue = HTMLInputElement | HTMLTextAreaElement;
+
 //TODO: after the migration from jQuery to dom-utils we might want to add currentTarget back to the event object, if we have a use-case for it.
 // For now we remove it because currentTarget is not the same element when using dom-utils intead of jQuery to get compile errors.
 export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
@@ -210,11 +212,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Check if element is visible
    */
-
   isVisible(): boolean {
     return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
   }
 
+  /**
+   * Make element visible by scrolling the element's ancestor containers
+   */
   scrollIntoView(options: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
 
@@ -521,6 +525,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     );
   }
 
+  private hasSelectableValue(): this is ElementWithUtils<ElementWithSelectableValue> {
+    return (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement
+    );
+  }
+
   /**
    * Set value of input or textarea to a string.
    */
@@ -538,6 +549,28 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
     if (this.hasValue()) {
       return this.native.value;
+    }
+    return undefined;
+  }
+
+  /**
+   * Set checked state of input element
+   * @param checked The checked state to set
+   */
+  setChecked(this: ElementWithUtils<HTMLInputElement>, checked: boolean): this {
+    if (this.native instanceof HTMLInputElement) {
+      this.native.checked = checked;
+    }
+    return this as unknown as this;
+  }
+
+  /**
+   * Get checked state of input element
+   * @returns The checked state of the element, or undefined if the element is not an input.
+   */
+  getChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
+    if (this.native instanceof HTMLInputElement) {
+      return this.native.checked;
     }
     return undefined;
   }
@@ -634,6 +667,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         },
       });
     });
+  }
+
+  /**
+   * Focus the element
+   */
+  focus(): void {
+    this.native.focus();
+  }
+
+  /**
+   * Select the element's content (for input and textarea elements)
+   */
+  select(this: ElementWithUtils<ElementWithSelectableValue>): void {
+    if (this.hasSelectableValue()) {
+      this.native.select();
+    }
   }
 }
 

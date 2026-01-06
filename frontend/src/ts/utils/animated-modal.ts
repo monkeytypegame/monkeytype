@@ -1,6 +1,7 @@
-import { animate, AnimationParams } from "animejs";
+import { AnimationParams } from "animejs";
 import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
+import { ElementWithUtils, qs } from "./dom";
 
 type CustomWrapperAndModalAnimations = {
   wrapper?: AnimationParams & {
@@ -16,7 +17,10 @@ type ConstructorCustomAnimations = {
   hide?: CustomWrapperAndModalAnimations;
 };
 
-type Animation<T> = (modal: HTMLElement, modalChainData?: T) => Promise<void>;
+type Animation<T> = (
+  modal: ElementWithUtils,
+  modalChainData?: T,
+) => Promise<void>;
 
 type ShowHideOptions<T> = {
   animationMode?: "none" | "both" | "modalOnly";
@@ -45,7 +49,7 @@ type ConstructorParams<T> = {
   showOptionsWhenInChain?: ShowOptions<T>;
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
-  setup?: (modal: HTMLElement) => Promise<void>;
+  setup?: (modal: ElementWithUtils) => Promise<void>;
   cleanup?: () => Promise<void>;
 };
 
@@ -56,8 +60,8 @@ export default class AnimatedModal<
   IncomingModalChainData = unknown,
   OutgoingModalChainData = unknown,
 > {
-  private wrapperEl: HTMLDialogElement;
-  private modalEl: HTMLElement;
+  private wrapperEl: ElementWithUtils<HTMLDialogElement>;
+  private modalEl: ElementWithUtils;
   private dialogId: string;
   private open = false;
   private setupRan = false;
@@ -71,7 +75,7 @@ export default class AnimatedModal<
 
   private customEscapeHandler: ((e: KeyboardEvent) => void) | undefined;
   private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
-  private setup: ((modal: HTMLElement) => Promise<void>) | undefined;
+  private setup: ((modal: ElementWithUtils) => Promise<void>) | undefined;
   private cleanup: (() => Promise<void>) | undefined;
 
   constructor(constructorParams: ConstructorParams<IncomingModalChainData>) {
@@ -84,10 +88,10 @@ export default class AnimatedModal<
       Skeleton.append(constructorParams.dialogId, this.skeletonAppendParent);
     }
 
-    const dialogElement = document.getElementById(constructorParams.dialogId);
-    const modalElement = document.querySelector(
-      `#${constructorParams.dialogId} > .modal`,
-    ) as HTMLElement;
+    const dialogElement = qs<HTMLDialogElement>(
+      "#" + constructorParams.dialogId,
+    );
+    const modalElement = qs(`#${constructorParams.dialogId} > .modal`);
 
     if (dialogElement === null) {
       throw new Error(
@@ -95,7 +99,7 @@ export default class AnimatedModal<
       );
     }
 
-    if (!(dialogElement instanceof HTMLDialogElement)) {
+    if (!(dialogElement.native instanceof HTMLDialogElement)) {
       throw new Error("Animated dialog must be an HTMLDialogElement");
     }
 
@@ -133,7 +137,7 @@ export default class AnimatedModal<
   }
 
   async runSetup(): Promise<void> {
-    this.wrapperEl.addEventListener("keydown", async (e) => {
+    this.wrapperEl.on("keydown", async (e) => {
       if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
         e.preventDefault();
         e.stopPropagation();
@@ -146,8 +150,8 @@ export default class AnimatedModal<
       }
     });
 
-    this.wrapperEl.addEventListener("mousedown", async (e) => {
-      if (e.target === this.wrapperEl) {
+    this.wrapperEl.on("mousedown", async (e) => {
+      if (e.target === this.wrapperEl.native) {
         if (this.customWrapperClickHandler !== undefined) {
           this.customWrapperClickHandler(e);
           void this.cleanup?.();
@@ -166,11 +170,11 @@ export default class AnimatedModal<
     return this.dialogId;
   }
 
-  getWrapper(): HTMLDialogElement {
+  getWrapper(): ElementWithUtils<HTMLDialogElement> {
     return this.wrapperEl;
   }
 
-  getModal(): HTMLElement {
+  getModal(): ElementWithUtils {
     return this.modalEl;
   }
 
@@ -179,8 +183,7 @@ export default class AnimatedModal<
   }
 
   focusFirstInput(setting: true | "focusAndSelect" | undefined): void {
-    const inputs = [...this.modalEl.querySelectorAll("input")];
-    const input = inputs.find((input) => !input.classList.contains("hidden"));
+    const input = this.modalEl.qsa<HTMLInputElement>("input:not(.hidden)")[0];
     if (input !== undefined && input !== null) {
       if (setting === true) {
         input.focus();
@@ -238,7 +241,7 @@ export default class AnimatedModal<
       if (options?.mode === "dialog") {
         this.wrapperEl.show();
       } else if (options?.mode === "modal" || options?.mode === undefined) {
-        this.wrapperEl.showModal();
+        this.wrapperEl.native.showModal();
       }
 
       await options?.beforeAnimation?.(this.modalEl, options?.modalChainData);
@@ -274,19 +277,19 @@ export default class AnimatedModal<
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {
-          animate(this.modalEl, {
+          this.modalEl.animate({
             ...modalAnimation,
             duration: animationMode === "none" ? 0 : modalAnimationDuration,
           });
         } else {
-          this.modalEl.style.opacity = "1";
+          this.modalEl.setStyle({ opacity: "1" });
         }
 
-        animate(this.wrapperEl, {
+        this.wrapperEl.animate({
           ...wrapperAnimation,
           duration: animationMode === "none" ? 0 : wrapperAnimationDuration,
           onBegin: () => {
-            this.wrapperEl.classList.remove("hidden");
+            this.wrapperEl.show();
           },
           onComplete: async () => {
             this.focusFirstInput(options?.focusFirstInput);
@@ -298,9 +301,9 @@ export default class AnimatedModal<
           },
         });
       } else if (animationMode === "modalOnly") {
-        $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
+        this.wrapperEl.show().setStyle({ opacity: "1" });
 
-        animate(this.modalEl, {
+        this.modalEl.animate({
           ...modalAnimation,
           duration: modalAnimationDuration,
           onComplete: async () => {
@@ -364,20 +367,20 @@ export default class AnimatedModal<
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {
-          animate(this.modalEl, {
+          this.modalEl.animate({
             ...modalAnimation,
             duration: animationMode === "none" ? 0 : modalAnimationDuration,
           });
         } else {
-          this.modalEl.style.opacity = "1";
+          this.modalEl.setStyle({ opacity: "1" });
         }
 
-        animate(this.wrapperEl, {
+        this.wrapperEl.animate({
           ...wrapperAnimation,
           duration: animationMode === "none" ? 0 : wrapperAnimationDuration,
           onComplete: async () => {
-            this.wrapperEl.close();
-            this.wrapperEl.classList.add("hidden");
+            this.wrapperEl.native.close();
+            this.wrapperEl.hide();
             Skeleton.remove(this.dialogId);
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
@@ -401,14 +404,14 @@ export default class AnimatedModal<
           },
         });
       } else if (animationMode === "modalOnly") {
-        $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
+        this.wrapperEl.show().setStyle({ opacity: "1" });
 
-        animate(this.modalEl, {
+        this.modalEl.animate({
           ...modalAnimation,
           duration: modalAnimationDuration,
           onComplete: async () => {
-            this.wrapperEl.close();
-            $(this.wrapperEl).addClass("hidden").css("opacity", "0");
+            this.wrapperEl.native.close();
+            this.wrapperEl.hide().setStyle({ opacity: "0" });
             Skeleton.remove(this.dialogId);
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
@@ -436,8 +439,8 @@ export default class AnimatedModal<
   }
 
   destroy(): void {
-    this.wrapperEl.close();
-    this.wrapperEl.classList.add("hidden");
+    this.wrapperEl.native.close();
+    this.wrapperEl.hide();
     void this.cleanup?.();
     Skeleton.remove(this.dialogId);
     this.open = false;
