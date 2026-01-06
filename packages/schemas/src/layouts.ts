@@ -203,6 +203,7 @@ export const LayoutNameSchema = z.enum(
     "inqwerted",
     "rain",
     "night",
+    "night_stic",
     "whix2",
     "haruka",
     "kuntum",
