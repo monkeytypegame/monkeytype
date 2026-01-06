@@ -50,7 +50,7 @@
   .settingsGroup {
     display: grid;
     gap: 2rem;
-    overflow: hidden;
+    overflow: visible;
     &.quickNav {
       justify-content: center;
       .links {
