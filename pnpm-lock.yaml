@@ -224,7 +224,7 @@ importers:
         version: 10.0.0
       '@vitest/coverage-v8':
         specifier: 4.0.15
-        version: 4.0.15(vitest@4.0.15(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
+        version: 4.0.15(vitest@4.0.15(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
@@ -12548,6 +12548,23 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.18.0
       eslint-visitor-keys: 3.4.3
+
+  '@vitest/coverage-v8@4.0.15(vitest@4.0.15(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))':
+    dependencies:
+      '@bcoe/v8-coverage': 1.0.2
+      '@vitest/utils': 4.0.15
+      ast-v8-to-istanbul: 0.3.8
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.2.0
+      magicast: 0.5.1
+      obug: 2.1.1
+      std-env: 3.10.0
+      tinyrainbow: 3.0.3
+      vitest: 4.0.15(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
+    transitivePeerDependencies:
+      - supports-color
 
   '@vitest/coverage-v8@4.0.15(vitest@4.0.15(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))':
     dependencies:
