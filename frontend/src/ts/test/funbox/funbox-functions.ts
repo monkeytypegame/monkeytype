@@ -318,18 +318,32 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   rAnDoMcAsE: {
     alterText(word: string): string {
-      let randomcaseword = word[0] as string;
-      for (let i = 1; i < word.length; i++) {
-        if (
-          randomcaseword[i - 1] ===
-          (randomcaseword[i - 1] as string).toUpperCase()
-        ) {
-          randomcaseword += (word[i] as string).toLowerCase();
+      let randomCaseWord = "";
+
+      for (let letter of word) {
+        if (Math.random() < 0.5) {
+          randomCaseWord += letter.toUpperCase();
         } else {
-          randomcaseword += (word[i] as string).toUpperCase();
+          randomCaseWord += letter.toLowerCase();
         }
       }
-      return randomcaseword;
+
+      return randomCaseWord;
+    },
+  },
+  sPoNgEcAsE: {
+    alterText(word: string): string {
+      let spongeCaseWord = "";
+
+      for (let i = 0; i < word.length; i++) {
+        if (i % 2 === 0) {
+          spongeCaseWord += word[i]?.toLowerCase();
+        } else {
+          spongeCaseWord += word[i]?.toUpperCase();
+        }
+      }
+
+      return spongeCaseWord;
     },
   },
   rot13: {

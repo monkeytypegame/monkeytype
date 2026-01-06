@@ -700,6 +700,9 @@ export async function replace(
     ).join("-");
   } else {
     const cleanedWord = word.replace(/^[\W]+|[\W]+$/g, "").toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(replacementRules, cleanedWord)) {
+      return word;
+    }
     const rule = replacementRules[cleanedWord];
 
     if (rule === undefined) return word;

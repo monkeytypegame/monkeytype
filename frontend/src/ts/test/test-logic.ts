@@ -904,7 +904,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
-    const burst = TestStats.calculateBurst();
+    const burst = TestStats.calculateBurst(now);
     TestInput.pushBurstToHistory(burst);
   }
 
@@ -915,7 +915,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // stats
   const stats = TestStats.calculateFinalStats();
-  if (stats.time % 1 !== 0 && Config.mode !== "time") {
+  if (
+    stats.time % 1 !== 0 &&
+    !(
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+    )
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
