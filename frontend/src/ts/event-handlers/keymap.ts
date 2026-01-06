@@ -1,6 +1,7 @@
 import * as Commandline from "../commandline/commandline";
+import { qs } from "../utils/dom";
 
-$("#keymap").on("click", ".r5 .layoutIndicator", async () => {
+qs("#keymap")?.onChild("click", ".r5 .layoutIndicator", async () => {
   Commandline.show({
     subgroupOverride: "keymapLayout",
   });
