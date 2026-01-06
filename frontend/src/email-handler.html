@@ -238,12 +238,10 @@
         .then((email) => {
           var accountEmail = email;
 
-          var newPassword =
-            qs < HTMLInputElement > "main .resetPassword .pwd"?.getValue();
-          var newPasswordConfirm =
-            qs <
-            HTMLInputElement >
-            "main .resetPassword .pwd-confirm"?.getValue();
+          var newPassword = qs("main .resetPassword .pwd")?.getValue();
+          var newPasswordConfirm = qs(
+            "main .resetPassword .pwd-confirm",
+          )?.getValue();
 
           if (newPassword !== newPasswordConfirm) {
             alert("Passwords do not match");
