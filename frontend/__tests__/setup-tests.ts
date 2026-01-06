@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import $ from "jquery";
-import { ElementWithUtils } from "../src/ts/utils/dom";
+import { ElementsWithUtils, ElementWithUtils } from "../src/ts/utils/dom";
 
 //@ts-expect-error add to global
 global["$"] = $;
@@ -20,7 +20,7 @@ vi.mock("../src/ts/firebase", () => ({
   isAuthenticated: () => false,
 }));
 
-vi.mock("../src/ts/utils/dom", () => {
+vi.mock("../src/ts/utils/dom", async (importOriginal) => {
   const createMockElement = (): ElementWithUtils => {
     return {
       disable: vi.fn().mockReturnThis(),
@@ -45,9 +45,9 @@ vi.mock("../src/ts/utils/dom", () => {
       setStyle: vi.fn().mockReturnThis(),
       getStyle: vi.fn().mockReturnValue({}),
       isFocused: vi.fn().mockReturnValue(false),
-      qs: vi.fn().mockReturnValue(null),
+      qs: vi.fn().mockImplementation(() => createMockElement()),
       qsr: vi.fn().mockImplementation(() => createMockElement()),
-      qsa: vi.fn().mockReturnValue([]),
+      qsa: vi.fn().mockImplementation(() => new ElementsWithUtils()),
       empty: vi.fn().mockReturnThis(),
       appendHtml: vi.fn().mockReturnThis(),
       append: vi.fn().mockReturnThis(),
@@ -71,10 +71,14 @@ vi.mock("../src/ts/utils/dom", () => {
     };
   };
 
+  const actual = await importOriginal();
+
   return {
+    //@ts-expect-error - mocking private method
+    ...actual,
     qsr: vi.fn().mockImplementation(() => createMockElement()),
     qs: vi.fn().mockImplementation(() => createMockElement()),
-    qsa: vi.fn().mockReturnValue([]),
+    qsa: vi.fn().mockImplementation(() => new ElementsWithUtils()),
   };
 });
 

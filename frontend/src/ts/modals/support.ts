@@ -8,9 +8,9 @@ export function show(): void {
 const modal = new AnimatedModal({
   dialogId: "supportModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("button.ads")?.addEventListener("click", async () => {
+    modalEl.qs("button.ads")?.on("click", async () => {
       Commandline.show(
-        { subgroupOverride: "enableAds" },
+        { subgroupOverride: "ads" },
         {
           modalChain: modal,
         },

@@ -15,55 +15,65 @@ import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import { ListsObjectKeys } from "../commandline/lists";
+import { qs } from "../utils/dom";
 
-$(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
-  const attr = $(event.currentTarget).attr("commands");
+const testPage = qs(".pageTest");
+
+testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
+  const target = event.childTarget as HTMLElement;
+  const attr = target?.getAttribute("commands");
   if (attr === undefined) return;
-  Commandline.show({ subgroupOverride: attr });
+  Commandline.show({ subgroupOverride: attr as ConfigKey | ListsObjectKeys });
 });
 
-$(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
-  const attr = $(event.currentTarget).attr("commandId");
-  if (attr === undefined) return;
+testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
+  const target = event.childTarget as HTMLElement;
+  const attr = target?.getAttribute("commandId");
+  if (attr === null) return;
   Commandline.show({ commandOverride: attr });
 });
 
-$(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
-  const wrd = $(e.currentTarget).attr("wordCount");
+testPage?.onChild("click", "#testConfig .wordCount .textButton", (event) => {
+  const target = event.childTarget as HTMLElement;
+  const wrd = target?.getAttribute("wordCount");
   if (wrd === "custom") {
     CustomWordAmount.show();
   }
 });
 
-$(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
-  const time = $(e.currentTarget).attr("timeconfig");
+testPage?.onChild("click", "#testConfig .time .textButton", (event) => {
+  const target = event.childTarget as HTMLElement;
+  const time = target?.getAttribute("timeconfig");
   if (time === "custom") {
     CustomTestDurationModal.show();
   }
 });
 
-$(".pageTest").on("click", "#testConfig .shareButton", (e) => {
+testPage?.onChild("click", "#testConfig .shareButton", () => {
   ShareTestSettingsPopup.show();
 });
 
-$(".pageTest").on("click", ".tags .editTagsButton", () => {
+testPage?.onChild("click", ".tags .editTagsButton", () => {
   if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
-    const resultid = $(".pageTest .tags .editTagsButton").attr(
-      "data-result-id",
-    ) as string;
-    const activeTagIds = $(".pageTest .tags .editTagsButton").attr(
-      "data-active-tag-ids",
-    ) as string;
+    const resultid =
+      qs(".pageTest .tags .editTagsButton")?.getAttribute("data-result-id") ??
+      "";
+    const activeTagIds =
+      qs(".pageTest .tags .editTagsButton")?.getAttribute(
+        "data-active-tag-ids",
+      ) ?? "";
     const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     EditResultTagsModal.show(resultid, tags, "resultPage");
   }
 });
 
-$(".pageTest").on("click", "#mobileTestConfigButton", () => {
+testPage?.onChild("click", "#mobileTestConfigButton", () => {
   MobileTestConfigModal.show();
 });
 
-$(".pageTest #rateQuoteButton").on("click", async () => {
+qs(".pageTest #rateQuoteButton")?.on("click", async () => {
   if (TestWords.currentQuote === null) {
     Notifications.add("Failed to show quote rating popup: no quote", -1);
     return;
@@ -71,7 +81,7 @@ $(".pageTest #rateQuoteButton").on("click", async () => {
   QuoteRateModal.show(TestWords.currentQuote);
 });
 
-$(".pageTest #reportQuoteButton").on("click", async () => {
+qs(".pageTest #reportQuoteButton")?.on("click", async () => {
   if (TestWords.currentQuote === null) {
     Notifications.add("Failed to show quote report popup: no quote", -1);
     return;
@@ -79,18 +89,19 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
   void QuoteReportModal.show(TestWords.currentQuote?.id);
 });
 
-$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+testPage?.onChild("click", "#testConfig .quoteLength .textButton", (event) => {
+  const target = event.childTarget as HTMLElement;
+  const len = parseInt(target?.getAttribute("quoteLength") ?? "0");
   if (len === -2) {
     void QuoteSearchModal.show();
   }
 });
 
-$(".pageTest").on("click", "#testConfig .customText .textButton", () => {
+testPage?.onChild("click", "#testConfig .customText .textButton", () => {
   CustomTextModal.show();
 });
 
-$(".pageTest").on("click", "#practiseWordsButton", () => {
+testPage?.onChild("click", "#practiseWordsButton", () => {
   if (Config.mode === "zen") {
     Notifications.add("Practice words is unsupported in zen mode", 0);
     return;
@@ -98,7 +109,7 @@ $(".pageTest").on("click", "#practiseWordsButton", () => {
   PractiseWordsModal.show();
 });
 
-$(".pageTest #dailyLeaderboardRank").on("click", async () => {
+qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {
   void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,

@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -166,7 +167,7 @@ function updateUI(): void {
 }
 
 async function beforeAnimation(
-  modalEl: HTMLElement,
+  modalEl: ElementWithUtils,
   modalChainData?: IncomingData,
 ): Promise<void> {
   state.customTextMode = CustomText.getMode();
@@ -404,64 +405,50 @@ function handleDelimiterChange(): void {
   state.textarea = newtext;
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("#fileInput")?.on("change", handleFileOpen);
+
+  modalEl.qsa(".group[data-id='mode'] button").on("click", (e) => {
+    state.customTextMode = (e.currentTarget as HTMLButtonElement).value as
+      | "simple"
+      | "repeat"
+      | "random";
+    if (state.customTextMode === "simple") {
+      const text = cleanUpText();
+      state.customTextLimits.word = `${text.length}`;
+      state.customTextLimits.time = "";
+      state.customTextLimits.section = "";
+    }
+    updateUI();
+  });
+
+  modalEl.qsa(".group[data-id='fancy'] button").on("click", (e: MouseEvent) => {
+    state.removeFancyTypographyEnabled =
+      (e.currentTarget as HTMLButtonElement).value === "true";
+    updateUI();
+  });
+
   modalEl
-    .querySelector("#fileInput")
-    ?.addEventListener("change", handleFileOpen);
-
-  const buttons = modalEl.querySelectorAll(".group[data-id='mode'] button");
-  for (const button of buttons) {
-    button.addEventListener("click", (e) => {
-      state.customTextMode = (e.target as HTMLButtonElement).value as
-        | "simple"
-        | "repeat"
-        | "random";
-      if (state.customTextMode === "simple") {
-        const text = cleanUpText();
-        state.customTextLimits.word = `${text.length}`;
-        state.customTextLimits.time = "";
-        state.customTextLimits.section = "";
-      }
-      updateUI();
-    });
-  }
-
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='fancy'] button",
-  )) {
-    button.addEventListener("click", (e) => {
-      state.removeFancyTypographyEnabled =
-        (e.target as HTMLButtonElement).value === "true";
-      updateUI();
-    });
-  }
-
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='control'] button",
-  )) {
-    button.addEventListener("click", (e) => {
+    .qsa(".group[data-id='control'] button")
+    .on("click", (e: MouseEvent) => {
       state.replaceControlCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true";
+        (e.currentTarget as HTMLButtonElement).value === "true";
       updateUI();
     });
-  }
 
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='zeroWidth'] button",
-  )) {
-    button.addEventListener("click", (e) => {
+  modalEl
+    .qsa(".group[data-id='zeroWidth'] button")
+    .on("click", (e: MouseEvent) => {
       state.removeZeroWidthCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true";
+        (e.currentTarget as HTMLButtonElement).value === "true";
       updateUI();
     });
-  }
 
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='delimiter'] button",
-  )) {
-    button.addEventListener("click", (e) => {
+  modalEl
+    .qsa(".group[data-id='delimiter'] button")
+    .on("click", (e: MouseEvent) => {
       state.customTextPipeDelimiter =
-        (e.target as HTMLButtonElement).value === "true";
+        (e.currentTarget as HTMLButtonElement).value === "true";
       if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
         state.customTextLimits.word = "";
       }
@@ -474,56 +461,49 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       handleDelimiterChange();
       updateUI();
     });
-  }
 
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='newlines'] button",
-  )) {
-    button.addEventListener("click", (e) => {
-      state.replaceNewlines = (e.target as HTMLButtonElement).value as
+  modalEl
+    .qsa(".group[data-id='newlines'] button")
+    .on("click", (e: MouseEvent) => {
+      state.replaceNewlines = (e.currentTarget as HTMLButtonElement).value as
         | "off"
         | "space"
         | "periodSpace";
       updateUI();
     });
-  }
 
-  modalEl
-    .querySelector(".group[data-id='limit'] input.words")
-    ?.addEventListener("input", (e) => {
-      state.customTextLimits.word = (e.target as HTMLInputElement).value;
-      state.customTextLimits.time = "";
-      state.customTextLimits.section = "";
-      updateUI();
-    });
-
-  modalEl
-    .querySelector(".group[data-id='limit'] input.time")
-    ?.addEventListener("input", (e) => {
-      state.customTextLimits.time = (e.target as HTMLInputElement).value;
-      state.customTextLimits.word = "";
-      state.customTextLimits.section = "";
-      updateUI();
-    });
-
-  modalEl
-    .querySelector(".group[data-id='limit'] input.sections")
-    ?.addEventListener("input", (e) => {
-      state.customTextLimits.section = (e.target as HTMLInputElement).value;
-      state.customTextLimits.word = "";
-      state.customTextLimits.time = "";
-      updateUI();
-    });
-
-  const textarea = modalEl.querySelector("textarea");
-  textarea?.addEventListener("input", (e) => {
-    state.textarea = (e.target as HTMLTextAreaElement).value;
+  modalEl.qs(".group[data-id='limit'] input.words")?.on("input", (e) => {
+    state.customTextLimits.word = (e.currentTarget as HTMLInputElement).value;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
+    updateUI();
   });
-  textarea?.addEventListener("keydown", (e) => {
+
+  modalEl.qs(".group[data-id='limit'] input.time")?.on("input", (e) => {
+    state.customTextLimits.time = (e.currentTarget as HTMLInputElement).value;
+    state.customTextLimits.word = "";
+    state.customTextLimits.section = "";
+    updateUI();
+  });
+
+  modalEl.qs(".group[data-id='limit'] input.sections")?.on("input", (e) => {
+    state.customTextLimits.section = (
+      e.currentTarget as HTMLInputElement
+    ).value;
+    state.customTextLimits.word = "";
+    state.customTextLimits.time = "";
+    updateUI();
+  });
+
+  const textarea = modalEl.qs("textarea");
+  textarea?.on("input", (e) => {
+    state.textarea = (e.currentTarget as HTMLTextAreaElement).value;
+  });
+  textarea?.on("keydown", (e) => {
     if (e.key !== "Tab") return;
     e.preventDefault();
 
-    const area = e.target as HTMLTextAreaElement;
+    const area = e.currentTarget as HTMLTextAreaElement;
     const start: number = area.selectionStart;
     const end: number = area.selectionEnd;
 
@@ -536,7 +516,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
 
     state.textarea = area.value;
   });
-  textarea?.addEventListener("keypress", (e) => {
+  textarea?.on("keypress", (e) => {
     if (state.longCustomTextWarning || state.challengeWarning) {
       e.preventDefault();
       return;
@@ -555,43 +535,35 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       });
     }
   });
-  modalEl.querySelector(".button.apply")?.addEventListener("click", () => {
+  modalEl.qs(".button.apply")?.on("click", () => {
     apply();
   });
-  modalEl.querySelector(".button.wordfilter")?.addEventListener("click", () => {
+  modalEl.qs(".button.wordfilter")?.on("click", () => {
     void WordFilterPopup.show({
       modalChain: modal as AnimatedModal,
     });
   });
-  modalEl
-    .querySelector(".button.customGenerator")
-    ?.addEventListener("click", () => {
-      void CustomGeneratorPopup.show({
-        modalChain: modal as AnimatedModal,
-      });
+  modalEl.qs(".button.customGenerator")?.on("click", () => {
+    void CustomGeneratorPopup.show({
+      modalChain: modal as AnimatedModal,
     });
-  modalEl
-    .querySelector(".button.showSavedTexts")
-    ?.addEventListener("click", () => {
-      void SavedTextsPopup.show({
-        modalChain: modal as AnimatedModal,
-      });
+  });
+  modalEl.qs(".button.showSavedTexts")?.on("click", () => {
+    void SavedTextsPopup.show({
+      modalChain: modal as AnimatedModal,
     });
-  modalEl
-    .querySelector(".button.saveCustomText")
-    ?.addEventListener("click", () => {
-      void SaveCustomTextPopup.show({
-        modalChain: modal as AnimatedModal,
-        modalChainData: { text: cleanUpText() },
-      });
+  });
+  modalEl.qs(".button.saveCustomText")?.on("click", () => {
+    void SaveCustomTextPopup.show({
+      modalChain: modal as AnimatedModal,
+      modalChainData: { text: cleanUpText() },
     });
-  modalEl
-    .querySelector(".longCustomTextWarning")
-    ?.addEventListener("click", () => {
-      state.longCustomTextWarning = false;
-      updateUI();
-    });
-  modalEl.querySelector(".challengeWarning")?.addEventListener("click", () => {
+  });
+  modalEl.qs(".longCustomTextWarning")?.on("click", () => {
+    state.longCustomTextWarning = false;
+    updateUI();
+  });
+  modalEl.qs(".challengeWarning")?.on("click", () => {
     state.challengeWarning = false;
     updateUI();
   });
