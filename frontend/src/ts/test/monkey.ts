@@ -3,17 +3,17 @@ import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
-import { animate } from "animejs";
+import { qs } from "../utils/dom";
 
-const monkeyEl = document.querySelector("#monkey") as HTMLElement;
-const monkeyFastEl = document.querySelector("#monkey .fast") as HTMLElement;
+const monkeyEl = qs("#monkey");
+const monkeyFastEl = qs("#monkey .fast");
 
 ConfigEvent.subscribe(({ key }) => {
   if (key === "monkey" && TestState.isActive) {
     if (Config.monkey) {
-      monkeyEl.classList.remove("hidden");
+      monkeyEl?.show();
     } else {
-      monkeyEl.classList.add("hidden");
+      monkeyEl?.hide();
     }
   }
 });
@@ -31,17 +31,17 @@ const middleKeysState = { left: false, right: false, last: "right" };
 // 11 both hands down
 
 const elements = {
-  "00": monkeyEl.querySelector(".up"),
-  "01": monkeyEl.querySelector(".right"),
-  "10": monkeyEl.querySelector(".left"),
-  "11": monkeyEl.querySelector(".both"),
+  "00": monkeyEl?.qs(".up"),
+  "01": monkeyEl?.qs(".right"),
+  "10": monkeyEl?.qs(".left"),
+  "11": monkeyEl?.qs(".both"),
 };
 
 const elementsFast = {
-  "00": monkeyFastEl.querySelector(".up"),
-  "01": monkeyFastEl.querySelector(".right"),
-  "10": monkeyFastEl.querySelector(".left"),
-  "11": monkeyFastEl.querySelector(".both"),
+  "00": monkeyFastEl?.qs(".up"),
+  "01": monkeyFastEl?.qs(".right"),
+  "10": monkeyFastEl?.qs(".left"),
+  "11": monkeyFastEl?.qs(".both"),
 };
 
 function toBit(b: boolean): "1" | "0" {
@@ -50,34 +50,34 @@ function toBit(b: boolean): "1" | "0" {
 
 function update(): void {
   if (!Config.monkey) return;
-  if (!monkeyEl?.classList.contains("hidden")) {
+  if (!monkeyEl?.hasClass("hidden")) {
     (Object.keys(elements) as (keyof typeof elements)[]).forEach((key) => {
-      elements[key]?.classList.add("hidden");
+      elements[key]?.hide();
     });
     (Object.keys(elementsFast) as (keyof typeof elements)[]).forEach((key) => {
-      elementsFast[key]?.classList.add("hidden");
+      elementsFast[key]?.hide();
     });
 
     const id: keyof typeof elements = `${toBit(left)}${toBit(right)}`;
 
-    elements[id]?.classList.remove("hidden");
-    elementsFast[id]?.classList.remove("hidden");
+    elements[id]?.show();
+    elementsFast[id]?.show();
   }
 }
 
 export function updateFastOpacity(num: number): void {
   if (!Config.monkey) return;
   const opacity = mapRange(num, 130, 180, 0, 1);
-  animate(monkeyFastEl, {
+  monkeyFastEl?.animate({
     opacity: opacity,
     duration: 1000,
   });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
-  monkeyEl.style.animationDuration = animDuration + "s";
+  monkeyEl?.setStyle({ animationDuration: animDuration + "s" });
 }
 
-export function type(event: JQuery.KeyDownEvent | KeyboardEvent): void {
+export function type(event: KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
@@ -115,7 +115,7 @@ export function type(event: JQuery.KeyDownEvent | KeyboardEvent): void {
   update();
 }
 
-export function stop(event: JQuery.KeyUpEvent | KeyboardEvent): void {
+export function stop(event: KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
@@ -144,28 +144,28 @@ export function stop(event: JQuery.KeyUpEvent | KeyboardEvent): void {
 
 export function show(): void {
   if (!Config.monkey) return;
-  monkeyEl.classList.remove("hidden");
-  animate(monkeyEl, {
+  monkeyEl?.show();
+  monkeyEl?.animate({
     opacity: [0, 1],
     duration: 125,
   });
 }
 
 export function hide(): void {
-  animate(monkeyEl, {
+  monkeyEl?.animate({
     opacity: [1, 0],
     duration: 125,
     onComplete: () => {
-      monkeyEl.classList.add("hidden");
-      monkeyEl.style.animationDuration = "0s";
-      monkeyFastEl.style.opacity = "0";
+      monkeyEl?.hide();
+      monkeyEl?.setStyle({ animationDuration: "0s" });
+      monkeyFastEl?.setStyle({ opacity: "0" });
     },
   });
 }
 
 export function instantHide(): void {
-  monkeyEl.classList.add("hidden");
-  monkeyEl.style.opacity = "0";
-  monkeyEl.style.animationDuration = "0s";
-  monkeyFastEl.style.opacity = "0";
+  monkeyEl?.hide();
+  monkeyEl?.setStyle({ opacity: "0" });
+  monkeyEl?.setStyle({ animationDuration: "0s" });
+  monkeyFastEl?.setStyle({ opacity: "0" });
 }

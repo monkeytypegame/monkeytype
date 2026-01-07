@@ -219,7 +219,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Make element visible by scrolling the element's ancestor containers
    */
-  scrollIntoView(options: ScrollIntoViewOptions): this {
+  scrollIntoView(options?: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
 
     return this;
@@ -672,8 +672,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Focus the element
    */
-  focus(): void {
-    this.native.focus();
+  focus(options?: FocusOptions): void {
+    this.native.focus(options);
   }
 
   /**
