@@ -1,6 +1,6 @@
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
-import Config from "../config";
+import Config, { setConfig } from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
@@ -1192,6 +1192,10 @@ function updateResultChartDataVisibility(update = false): void {
   for (const button of buttons) {
     const id = $(button).data("id") as string;
 
+    if (id === "scale") {
+      continue;
+    }
+
     if (
       id !== "raw" &&
       id !== "burst" &&
@@ -1199,7 +1203,7 @@ function updateResultChartDataVisibility(update = false): void {
       id !== "pbLine" &&
       id !== "tagPbLine"
     ) {
-      return;
+      continue;
     }
 
     $(button).toggleClass("active", vis[id]);
@@ -1273,6 +1277,11 @@ export function updateTagsAfterEdit(
 $(".pageTest #result .chart .chartLegend button").on("click", (event) => {
   const $target = $(event.target);
   const id = $target.data("id") as string;
+
+  if (id === "scale") {
+    setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
+    return;
+  }
 
   if (
     id !== "raw" &&
