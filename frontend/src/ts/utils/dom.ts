@@ -700,11 +700,20 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   async slideUp(duration = 250): Promise<void> {
     this.show().setStyle({ overflow: "hidden" });
     const height = this.getOffsetHeight();
+    const marginTop = this.getStyle().marginTop;
+    const marginBottom = this.getStyle().marginBottom;
     await this.promiseAnimate({
       height: [height, 0],
+      marginTop: [marginTop, 0],
+      marginBottom: [marginBottom, 0],
       duration,
       onComplete: () => {
-        this.setStyle({ height: "", overflow: "" }).hide();
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        }).hide();
       },
     });
   }
