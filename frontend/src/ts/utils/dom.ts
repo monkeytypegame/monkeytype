@@ -210,6 +210,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if the element has the "hidden" class
+   */
+  isHidden(): boolean {
+    return this.hasClass("hidden");
+  }
+
+  /**
    * Check if element is visible
    */
   isVisible(): boolean {
@@ -666,6 +673,38 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
           resolve();
         },
       });
+    });
+  }
+
+  /**
+   * Animate the element sliding down (expanding height from 0 to full height)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideDown(duration = 250): Promise<void> {
+    this.show().setStyle({ height: "", overflow: "hidden" });
+    const height = this.getOffsetHeight();
+    await this.promiseAnimate({
+      height: [0, height],
+      duration,
+      onComplete: () => {
+        this.setStyle({ height: "", overflow: "" });
+      },
+    });
+  }
+
+  /**
+   * Animate the element sliding up (collapsing height from full height to 0)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideUp(duration = 250): Promise<void> {
+    this.show().setStyle({ overflow: "hidden" });
+    const height = this.getOffsetHeight();
+    await this.promiseAnimate({
+      height: [height, 0],
+      duration,
+      onComplete: () => {
+        this.setStyle({ height: "", overflow: "" }).hide();
+      },
     });
   }
 

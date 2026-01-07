@@ -753,30 +753,14 @@ function toggleSettingsGroup(groupName: string): void {
 
   const groupEl = qs(`.pageSettings .settingsGroup.${groupName}`);
   if (!groupEl?.hasClass("slideup")) {
-    groupEl?.setStyle({ overflow: "hidden" })?.animate({
-      height: 0,
-      duration: 250,
-      onComplete: () => {
-        groupEl
-          ?.hide()
-          .setStyle({ height: "", overflow: "" })
-          .addClass("slideup");
-      },
-    });
+    void groupEl?.slideUp(250);
+    groupEl?.addClass("slideup");
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
       "rotateIcon",
     );
   } else {
-    groupEl?.show();
-    groupEl?.setStyle({ height: "", overflow: "hidden" });
-    const height = groupEl.getOffsetHeight();
-    groupEl?.animate({
-      height: [0, height],
-      duration: 250,
-      onComplete: () => {
-        groupEl?.setStyle({ height: "", overflow: "" }).removeClass("slideup");
-      },
-    });
+    void groupEl?.slideDown(250);
+    groupEl?.removeClass("slideup");
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon",
     );
