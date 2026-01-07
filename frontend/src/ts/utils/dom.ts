@@ -210,6 +210,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if the element has the "hidden" class
+   */
+  isHidden(): boolean {
+    return this.hasClass("hidden");
+  }
+
+  /**
    * Check if element is visible
    */
   isVisible(): boolean {
@@ -666,6 +673,88 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
           resolve();
         },
       });
+    });
+  }
+
+  /**
+   * Animate the element sliding down (expanding height from 0 to full height)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideDown(duration = 250): Promise<void> {
+    this.show().setStyle({
+      height: "",
+      overflow: "hidden",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    this.setStyle({
+      height: "0px",
+      marginTop: "0px",
+      marginBottom: "0px",
+      paddingTop: "0px",
+      paddingBottom: "0px",
+    });
+    await this.promiseAnimate({
+      height: [0, height],
+      marginTop: [0, marginTop],
+      marginBottom: [0, marginBottom],
+      paddingTop: [0, paddingTop],
+      paddingBottom: [0, paddingBottom],
+      duration,
+      onComplete: () => {
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        });
+      },
+    });
+  }
+
+  /**
+   * Animate the element sliding up (collapsing height from full height to 0)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideUp(
+    duration = 250,
+    options?: {
+      hide?: boolean;
+    },
+  ): Promise<void> {
+    this.show().setStyle({
+      overflow: "hidden",
+      height: "",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    await this.promiseAnimate({
+      height: [height, 0],
+      marginTop: [marginTop, 0],
+      marginBottom: [marginBottom, 0],
+      paddingTop: [paddingTop, 0],
+      paddingBottom: [paddingBottom, 0],
+      duration,
+      onComplete: () => {
+        if (options?.hide ?? true) {
+          this.hide().setStyle({
+            height: "",
+            overflow: "",
+            marginTop: "",
+            marginBottom: "",
+            paddingTop: "",
+            paddingBottom: "",
+          });
+        }
+      },
     });
   }
 
