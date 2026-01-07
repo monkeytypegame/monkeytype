@@ -32,7 +32,6 @@ const toggleButton = document.getElementById("playpauseReplayButton")
   ?.children[0];
 
 const replayEl = qsr(".pageTest #resultReplay");
-const watchReplayButtonEl = qsr(".pageTest #watchReplayButton");
 
 function replayGetWordsList(wordsListFromScript: string[]): void {
   wordsList = wordsListFromScript;
@@ -195,11 +194,7 @@ function toggleReplayDisplay(): void {
     initializeReplayPrompt();
     loadOldReplay();
     //show
-    if (!watchReplayButtonEl.hasClass("loaded")) {
-      void replayEl.slideDown(250);
-    } else {
-      void replayEl.slideDown(250);
-    }
+    void replayEl.slideDown(250);
   } else {
     //hide
     if (
