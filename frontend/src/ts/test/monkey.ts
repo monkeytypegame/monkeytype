@@ -31,17 +31,17 @@ const middleKeysState = { left: false, right: false, last: "right" };
 // 11 both hands down
 
 const elements = {
-  "00": monkeyEl?.qs(".up"),
-  "01": monkeyEl?.qs(".right"),
-  "10": monkeyEl?.qs(".left"),
-  "11": monkeyEl?.qs(".both"),
+  "00": monkeyEl?.qsa(".up"),
+  "01": monkeyEl?.qsa(".right"),
+  "10": monkeyEl?.qsa(".left"),
+  "11": monkeyEl?.qsa(".both"),
 };
 
 const elementsFast = {
-  "00": monkeyFastEl?.qs(".up"),
-  "01": monkeyFastEl?.qs(".right"),
-  "10": monkeyFastEl?.qs(".left"),
-  "11": monkeyFastEl?.qs(".both"),
+  "00": monkeyFastEl?.qsa(".up"),
+  "01": monkeyFastEl?.qsa(".right"),
+  "10": monkeyFastEl?.qsa(".left"),
+  "11": monkeyFastEl?.qsa(".both"),
 };
 
 function toBit(b: boolean): "1" | "0" {
