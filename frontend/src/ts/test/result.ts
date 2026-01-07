@@ -1152,7 +1152,7 @@ function updateMinMaxChartValues(): void {
 
   let maxAnnotation: null | number = null;
   for (const annotation of resultAnnotation) {
-    if (annotation.display === undefined) continue;
+    if ((annotation.display ?? false) === false) continue;
     if (annotation.value === undefined) continue;
     // values.push(annotation.value as number);
     if (
