@@ -753,7 +753,9 @@ function toggleSettingsGroup(groupName: string): void {
 
   const groupEl = qs(`.pageSettings .settingsGroup.${groupName}`);
   if (!groupEl?.hasClass("slideup")) {
-    void groupEl?.slideUp(250);
+    void groupEl?.slideUp(250, {
+      hide: false,
+    });
     groupEl?.addClass("slideup");
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
       "rotateIcon",
