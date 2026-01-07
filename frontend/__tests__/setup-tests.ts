@@ -65,6 +65,8 @@ vi.mock("../src/ts/utils/dom", async (importOriginal) => {
       getOffsetLeft: vi.fn().mockReturnValue(0),
       animate: vi.fn().mockResolvedValue(null),
       promiseAnimate: vi.fn().mockResolvedValue(null),
+      slideUp: vi.fn().mockResolvedValue(null),
+      slideDown: vi.fn().mockResolvedValue(null),
       native: document.createElement("div"),
       // @ts-expect-error - mocking private method
       hasValue: vi.fn().mockReturnValue(false),
