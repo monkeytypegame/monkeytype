@@ -654,8 +654,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Get the element's children
    */
-  getChildren(): HTMLCollection {
-    return this.native.children;
+  getChildren(): ElementsWithUtils {
+    const children = Array.from(this.native.children);
+    const convertedChildren = new ElementsWithUtils(
+      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
+    );
+    return convertedChildren;
   }
 
   /**
@@ -856,6 +860,17 @@ export class ElementsWithUtils<
       item.show();
     }
     return this;
+  }
+
+  /**
+   * Get the index of element in the array
+   */
+  getElementIndex(element: HTMLElement): number {
+    console.warn(this.length);
+    for (let i = 0; i < this.length; i++) {
+      if (this[i]?.native === element) return i;
+    }
+    return -1;
   }
 
   /**

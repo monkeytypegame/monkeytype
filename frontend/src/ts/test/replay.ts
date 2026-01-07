@@ -314,12 +314,14 @@ qs("#replayWords")?.onChild("click", "letter", (event) => {
   pauseReplay();
   const replayWords = qs("#replayWords");
 
-  const words = [...(replayWords?.getChildren() ?? [])];
-  targetWordPos = words.indexOf(
-    (event.childTarget as HTMLElement).parentNode as HTMLElement,
-  );
-  const letters = [...(words[targetWordPos] as HTMLElement).children];
-  targetCurPos = letters.indexOf(event.childTarget as HTMLElement);
+  const words = replayWords?.getChildren();
+  targetWordPos =
+    words?.getElementIndex(
+      (event.childTarget as HTMLElement).parentNode as HTMLElement,
+    ) ?? 0;
+  const letters = words?.[targetWordPos]?.getChildren();
+  targetCurPos =
+    letters?.getElementIndex(event.childTarget as HTMLElement) ?? 0;
 
   initializeReplayPrompt();
   loadOldReplay();
