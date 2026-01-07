@@ -30,7 +30,7 @@ import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
-import { qsr } from "../utils/dom";
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
@@ -58,7 +58,7 @@ export async function addFriend(receiverName: string): Promise<true | string> {
     const snapshot = DB.getSnapshot();
     if (snapshot !== undefined) {
       const receiverUid = getReceiverUid(result.body.data);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // oxlint-disable-next-line no-unsafe-member-access
       snapshot.connections[receiverUid] = result.body.data.status;
       updatePendingConnections();
     }
@@ -155,12 +155,12 @@ async function fetchPendingConnections(): Promise<void> {
 }
 
 function updatePendingConnections(): void {
-  $(".pageFriends .pendingRequests").addClass("hidden");
+  qs(".pageFriends .pendingRequests")?.hide();
 
   if (pendingRequests === undefined || pendingRequests.length === 0) {
-    $(".pageFriends .pendingRequests").addClass("hidden");
+    qs(".pageFriends .pendingRequests")?.hide();
   } else {
-    $(".pageFriends .pendingRequests").removeClass("hidden");
+    qs(".pageFriends .pendingRequests")?.show();
 
     const html = pendingRequests
       .map(
@@ -181,10 +181,10 @@ function updatePendingConnections(): void {
         <td class="actions">
           <button class="accepted" aria-label="accept" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
-          </button> 
+          </button>
           <button class="rejected" aria-label="reject" data-balloon-pos="up">
             <i class="fas fa-times fa-fw"></i>
-          </button> 
+          </button>
           <button class="blocked" aria-label="block" data-balloon-pos="up">
             <i class="fas fa-shield-alt fa-fw"></i>
           </button>
@@ -193,7 +193,7 @@ function updatePendingConnections(): void {
       )
       .join("\n");
 
-    $(".pageFriends .pendingRequests tbody").html(html);
+    qs(".pageFriends .pendingRequests tbody")?.setHtml(html);
   }
 }
 
@@ -208,17 +208,17 @@ async function fetchFriends(): Promise<void> {
 }
 
 function updateFriends(): void {
-  $(".pageFriends .friends .nodata").addClass("hidden");
-  $(".pageFriends .friends table").addClass("hidden");
+  qs(".pageFriends .friends .nodata")?.hide();
+  qs(".pageFriends .friends table")?.hide();
 
-  $(".pageFriends .friends .error").addClass("hidden");
+  qs(".pageFriends .friends .error")?.hide();
 
   if (friendsList === undefined || friendsList.length === 0) {
-    $(".pageFriends .friends table").addClass("hidden");
-    $(".pageFriends .friends .nodata").removeClass("hidden");
+    qs(".pageFriends .friends table")?.hide();
+    qs(".pageFriends .friends .nodata")?.show();
   } else {
-    $(".pageFriends .friends table").removeClass("hidden");
-    $(".pageFriends .friends .nodata").addClass("hidden");
+    qs(".pageFriends .friends table")?.show();
+    qs(".pageFriends .friends .nodata")?.hide();
 
     if (friendsTable === undefined) {
       friendsTable = new SortedTable<Friend>({
@@ -304,7 +304,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           entry.streak?.maxLength,
           "longest streak",
         )}" data-balloon-pos="up">
-          ${formatStreak(entry.streak?.length)} 
+          ${formatStreak(entry.streak?.length)}
         </span></td>
         <td class="small"><span aria-label="${
           top15?.details
@@ -318,7 +318,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         }<div class="sub">${top60?.acc ?? "-"}</div></span></td>
   <td class="actions">
   ${actions}
-            
+
         </td>
       </tr>`;
 
@@ -367,14 +367,25 @@ function formatPb(entry?: PersonalBest):
     details: "",
   };
 
-  result.details = [
+  const details = [
     `${getLanguageDisplayString(entry.language)}`,
     `${result.wpm} wpm`,
-    `${result.acc} acc`,
-    `${result.raw} raw`,
-    `${result.con} con`,
-    `${dateFormat(entry.timestamp, "dd MMM yyyy")}`,
-  ].join("\n");
+  ];
+
+  if (isSafeNumber(entry.acc)) {
+    details.push(`${result.acc} acc`);
+  }
+  if (isSafeNumber(entry.raw)) {
+    details.push(`${result.raw} raw`);
+  }
+  if (isSafeNumber(entry.consistency)) {
+    details.push(`${result.con} con`);
+  }
+  if (isSafeNumber(entry.timestamp)) {
+    details.push(`${dateFormat(entry.timestamp, "dd MMM yyyy")}`);
+  }
+
+  result.details = details.join("\n");
 
   return result;
 }
@@ -386,19 +397,20 @@ function formatStreak(length?: number, prefix?: string): string {
     : "-";
 }
 
-$(".pageFriends button.friendAdd").on("click", () => {
+qs(".pageFriends button.friendAdd")?.on("click", () => {
   addFriendModal.show(undefined, {});
 });
 
 // need to set the listener for action buttons on the table because the table content is getting replaced
-$(".pageFriends .pendingRequests table").on("click", async (e) => {
-  const action = Array.from(e.target.classList).find((it) =>
+qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
+  const target = e.target as HTMLElement;
+  const action = Array.from(target.classList).find((it) =>
     ["accepted", "rejected", "blocked"].includes(it),
   ) as "accepted" | "rejected" | "blocked";
 
   if (action === undefined) return;
 
-  const row = e.target.closest("tr") as HTMLElement;
+  const row = target.closest("tr") as HTMLElement;
   const id = row.dataset["id"];
   if (id === undefined) {
     throw new Error("Cannot find id of target.");
@@ -435,7 +447,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       }
 
       if (action === "rejected") {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
         delete snapshot.connections[receiverUid];
       } else {
         snapshot.connections[receiverUid] = action;
@@ -462,14 +474,15 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
   }
 });
 // need to set the listener for action buttons on the table because the table content is getting replaced
-$(".pageFriends .friends table").on("click", async (e) => {
-  const action = Array.from(e.target.classList).find((it) =>
+qs(".pageFriends .friends table")?.on("click", async (e) => {
+  const target = e.target as HTMLElement;
+  const action = Array.from(target.classList).find((it) =>
     ["remove"].includes(it),
   );
 
   if (action === undefined) return;
 
-  const row = e.target.closest("tr") as HTMLElement;
+  const row = target.closest("tr") as HTMLElement;
   const connectionId = row.dataset["connectionId"];
   if (connectionId === undefined) {
     throw new Error("Cannot find id of target.");
@@ -551,7 +564,7 @@ export const page = new Page<undefined>({
   },
 });
 
-$(() => {
+onWindowLoad(() => {
   Skeleton.save("pageFriends");
 });
 

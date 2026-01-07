@@ -297,13 +297,16 @@ export class Caret {
       // we also clamp the letterIndex to be within the range of actual letters
       // anything beyond just goes to the edge of the word
       let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-      if (
-        options.letterIndex >= letters.length ||
-        (Config.blindMode && options.letterIndex >= wordText.length)
-      ) {
+      if (options.letterIndex >= letters.length) {
         side = "afterLetter";
-        options.letterIndex = letters.length - 1;
+
+        if (Config.blindMode || Config.hideExtraLetters) {
+          options.letterIndex = wordText?.length - 1;
+        } else {
+          options.letterIndex = letters.length - 1;
+        }
       }
+
       if (options.letterIndex < 0) {
         options.letterIndex = 0;
       }
@@ -402,7 +405,7 @@ export class Caret {
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
-    const isWordRTL = isWordRightToLeft(
+    const [isWordRTL, isFullMatch] = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
@@ -447,8 +450,12 @@ export class Caret {
     let left = 0;
     let top = 0;
 
+    const tapeOffset =
+      wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
+      if (isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {
@@ -472,8 +479,7 @@ export class Caret {
         left += options.letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
           left += options.word.getOffsetWidth();
@@ -483,8 +489,7 @@ export class Caret {
           left += width * -1;
         }
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
         } else {
           left += options.letter.getOffsetLeft();
           left += options.word.getOffsetLeft();
@@ -505,15 +510,13 @@ export class Caret {
         left += options.letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
         }
       } else if (Config.tapeMode === "letter") {
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left +=
-            wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+          left += tapeOffset;
         } else {
           left += options.letter.getOffsetLeft();
           left += options.word.getOffsetLeft();

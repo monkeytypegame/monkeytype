@@ -1636,6 +1636,20 @@ body.darkMode {
     .red {
       color: var(--error-color);
     }
+    .group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      justify-items: center;
+      align-items: center;
+      font-size: 2em;
+      button {
+        width: 100%;
+      }
+      input {
+        text-align: center;
+      }
+    }
     .preview {
       & > div:first-child {
         margin-bottom: 1rem;
@@ -1863,14 +1877,16 @@ body.darkMode {
       }
     }
     .notificationHistory .list .item {
-      grid-template-areas: "indicator title" "indicator body";
-      grid-template-columns: 0.25rem calc(100% - 0.25rem);
+      grid-template-areas: "indicator title buttons" "indicator body buttons";
       .title {
         font-size: 0.75rem;
         color: var(--sub-color);
       }
       .body {
         opacity: 1;
+      }
+      .highlight {
+        color: var(--main-color) !important;
       }
     }
     .accountAlerts {

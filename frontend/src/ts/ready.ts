@@ -10,9 +10,9 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
-import { onDocumentReady, qs } from "./utils/dom";
+import { onDOMReady, qs } from "./utils/dom";
 
-onDocumentReady(async () => {
+onDOMReady(async () => {
   await configLoadPromise;
   await authPromise;
 
@@ -49,7 +49,7 @@ onDocumentReady(async () => {
   MonkeyPower.init();
 
   // untyped, need to ignore
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // oxlint-disable-next-line no-unsafe-call
   new Konami("https://keymash.io/");
 
   if (Misc.isDevEnvironment()) {

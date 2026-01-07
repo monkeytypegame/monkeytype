@@ -12,23 +12,12 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
-import * as SoundController from "../controllers/sound-controller";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
-import * as Focus from "./focus";
 import * as Funbox from "./funbox/funbox";
-import * as Keymap from "../elements/keymap";
-import * as ThemeController from "../controllers/theme-controller";
-import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
-import * as LiveSpeed from "./live-speed";
-import * as LiveAcc from "./live-acc";
-import * as LiveBurst from "./live-burst";
-import * as TimerProgress from "./timer-progress";
-
 import * as TestTimer from "./test-timer";
-import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
@@ -36,28 +25,21 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-import * as MonkeyPower from "../elements/monkey-power";
+
 import * as ActivePage from "../states/active-page";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
-import * as ModesNotice from "../elements/modes-notice";
 import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
-import * as Last10Average from "../elements/last-10-average";
-import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
-import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import * as ArabicLazyMode from "../states/arabic-lazy-mode";
+import * as LazyModeState from "../states/remember-lazy-mode";
 import Format from "../utils/format";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -84,11 +66,9 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
-import {
-  getInputElement,
-  isInputElementFocused,
-  setInputElementValue,
-} from "../input/input-element";
+import { setInputElementValue } from "../input/input-element";
+import { debounce } from "throttle-debounce";
+import * as Time from "../states/time";
 
 let failReason = "";
 
@@ -121,6 +101,7 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
+  Time.set(0);
   TestTimer.clear();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
@@ -138,7 +119,7 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
-  TestUI.afterTestStart();
+  TestUI.onTestStart();
   return true;
 }
 
@@ -281,43 +262,33 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
-  TimerProgress.hide();
   Replay.pauseReplay();
   TestState.setBailedOut(false);
   Caret.resetPosition();
   PaceCaret.reset();
-  Monkey.hide();
   TestInput.input.setKoreanStatus(false);
-  LayoutfluidFunboxTimer.hide();
-  MemoryFunboxTimer.reset();
   QuoteRateModal.clearQuoteStats();
-  TestUI.reset();
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  void SoundController.clearAllSounds();
-
-  if (TestState.resultVisible) {
-    if (Config.randomTheme !== "off") {
-      void ThemeController.randomizeTheme();
-    }
-    void XPBar.skipBreakdown();
-  }
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
   }
 
+  // TestUI.beforeTestRestart();
+
+  let source: "testPage" | "resultPage";
   let el: HTMLElement;
   if (TestState.resultVisible) {
     //results are being displayed
     el = document.querySelector("#result") as HTMLElement;
+    source = "resultPage";
   } else {
     //words are being displayed
     el = document.querySelector("#typingTest") as HTMLElement;
+    source = "testPage";
   }
+
   TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
@@ -325,17 +296,7 @@ export function restart(options = {} as RestartOptions): void {
     opacity: 0,
     duration: animationTime,
     onComplete: async () => {
-      $("#result").addClass("hidden");
-      $("#typingTest").css("opacity", 0).removeClass("hidden");
-      getInputElement().style.left = "0";
       setInputElementValue("");
-
-      Focus.set(false);
-      if (ActivePage.get() === "test") {
-        AdController.updateFooterAndVerticalAds(false);
-      }
-      TestConfig.show();
-      AdController.destroyResult();
 
       await Funbox.rememberSettings();
 
@@ -364,18 +325,7 @@ export function restart(options = {} as RestartOptions): void {
         fb.functions.restart();
       }
 
-      if (Config.showAverage !== "off") {
-        void Last10Average.update().then(() => {
-          void ModesNotice.update();
-        });
-      } else {
-        void ModesNotice.update();
-      }
-
-      if (isInputElementFocused()) OutOfFocus.hide();
-      TestUI.focusWords(true);
-
-      TestUI.onTestRestart();
+      TestUI.onTestRestart(source);
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
       animate(typingTestEl, {
@@ -385,23 +335,15 @@ export function restart(options = {} as RestartOptions): void {
         },
         duration: animationTime,
         onComplete: () => {
-          TimerProgress.reset();
-          LiveSpeed.reset();
-          LiveAcc.reset();
-          LiveBurst.reset();
-          TestUI.updatePremid();
           ManualRestart.reset();
           TestState.setTestRestarting(false);
         },
       });
     },
   });
-
-  ResultWordHighlight.destroy();
 }
 
 let lastInitError: Error | null = null;
-let rememberLazyMode: boolean;
 let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
@@ -418,18 +360,9 @@ async function init(): Promise<boolean> {
     TestInitFailed.show();
     TestState.setTestRestarting(false);
     TestState.setTestInitSuccess(false);
-    Focus.set(false);
-    // Notifications.add(
-    //   "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
-    //   -1,
-    //   {
-    //     important: true,
-    //   }
-    // );
     return false;
   }
 
-  MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
@@ -489,39 +422,43 @@ async function init(): Promise<boolean> {
       .some((lang) => !lang.noLazyMode);
 
     if (Config.lazyMode && !anySupportsLazyMode) {
-      rememberLazyMode = true;
-      Notifications.add(
-        "None of the selected polyglot languages support lazy mode.",
-        0,
-        {
-          important: true,
-        },
-      );
+      LazyModeState.setRemember(true);
+      if (!showedLazyModeNotification) {
+        Notifications.add(
+          "None of the selected polyglot languages support lazy mode.",
+          0,
+          {
+            important: true,
+          },
+        );
+        showedLazyModeNotification = true;
+      }
       setConfig("lazyMode", false);
-    } else if (rememberLazyMode && anySupportsLazyMode) {
-      setConfig("lazyMode", true, {
-        nosave: true,
-      });
+    } else if (LazyModeState.getRemember() && anySupportsLazyMode) {
+      setConfig("lazyMode", true);
+      LazyModeState.setRemember(false);
+      showedLazyModeNotification = false;
     }
   } else {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
-      rememberLazyMode = true;
-      showedLazyModeNotification = true;
-      Notifications.add("This language does not support lazy mode.", 0, {
-        important: true,
-      });
-
+      LazyModeState.setRemember(true);
+      if (!showedLazyModeNotification) {
+        Notifications.add("This language does not support lazy mode.", 0, {
+          important: true,
+        });
+        showedLazyModeNotification = true;
+      }
       setConfig("lazyMode", false);
-    } else if (rememberLazyMode && !language.noLazyMode) {
-      setConfig("lazyMode", true, {
-        nosave: true,
-      });
+    } else if (LazyModeState.getRemember() && allowLazyMode) {
+      setConfig("lazyMode", true);
+      LazyModeState.setRemember(false);
+      showedLazyModeNotification = false;
     }
   }
 
   if (!Config.lazyMode && !language.noLazyMode) {
-    rememberLazyMode = false;
+    LazyModeState.setRemember(false);
   }
 
   if (Config.mode === "custom") {
@@ -581,8 +518,6 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  const beforeHasNumbers = TestWords.hasNumbers;
-
   let hasNumbers = false;
 
   for (const word of generatedWords) {
@@ -594,10 +529,6 @@ async function init(): Promise<boolean> {
   TestWords.setHasNumbers(hasNumbers);
   TestWords.setHasTab(wordsHaveTab);
   TestWords.setHasNewline(wordsHaveNewline);
-
-  if (beforeHasNumbers !== hasNumbers) {
-    void Keymap.refresh();
-  }
 
   if (
     generatedWords
@@ -621,7 +552,7 @@ async function init(): Promise<boolean> {
     void KeymapEvent.highlight(
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+        // oxlint-disable-next-line no-misused-spread
         [...TestWords.words.getCurrent()],
         0,
       ) as string,
@@ -631,13 +562,11 @@ async function init(): Promise<boolean> {
   TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  TestUI.setRightToLeft(isLanguageRTL);
   TestState.setIsLanguageRightToLeft(isLanguageRTL);
   TestState.setIsDirectionReversed(
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
     "Test initialized with section indexes",
@@ -780,8 +709,6 @@ export async function retrySavingResult(): Promise<void> {
 
   retrySaving.canRetry = false;
   $("#retrySavingResultButton").addClass("hidden");
-
-  AccountButton.loading(true);
 
   Notifications.add("Retrying to save...");
 
@@ -930,6 +857,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   TestUI.setResultCalculating(true);
   const now = performance.now();
+  TestTimer.clear();
   TestStats.setEnd(now);
 
   // fade out the test and show loading
@@ -942,6 +870,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   $(".pageTest #typingTest").addClass("hidden");
   $(".pageTest .loading").removeClass("hidden");
   await Misc.sleep(0); //allow ui update
+
+  TestUI.onTestFinish();
 
   if (TestState.isRepeated && Config.mode === "quote") {
     TestState.setRepeated(false);
@@ -971,19 +901,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  Caret.hide();
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
-  TimerProgress.hide();
-  OutOfFocus.hide();
-  TestTimer.clear();
-  Monkey.hide();
-  void ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
-    const burst = TestStats.calculateBurst();
+    const burst = TestStats.calculateBurst(now);
     TestInput.pushBurstToHistory(burst);
   }
 
@@ -994,7 +915,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // stats
   const stats = TestStats.calculateFinalStats();
-  if (stats.time % 1 !== 0 && Config.mode !== "time") {
+  if (
+    stats.time % 1 !== 0 &&
+    !(
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+    )
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
@@ -1061,6 +988,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
+  TestStats.setLastResult(structuredClone(completedEvent));
+
   ///////// completed event ready
 
   //afk check
@@ -1090,9 +1019,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
+    TestStats.setInvalid();
     dontSave = true;
   } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
+    TestStats.setInvalid();
     dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
@@ -1114,6 +1045,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
+    TestStats.setInvalid();
     tooShort = true;
     dontSave = true;
   } else if (
@@ -1174,7 +1106,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     ) {
       // They bailed out
 
-      const historyLength = TestInput.input.getHistory()?.length;
+      const history = TestInput.input.getHistory();
+      let historyLength = history?.length;
+      const wordIndex = historyLength - 1;
+
+      const lastWordInputLength = history[wordIndex]?.length ?? 0;
+
+      if (lastWordInputLength < TestWords.words.get(wordIndex).length) {
+        historyLength--;
+      }
+
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
@@ -1203,25 +1144,48 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
   Result.updateTodayTracker();
 
-  if (!isAuthenticated()) {
-    $(".pageTest #result #rateQuoteButton").addClass("hidden");
-    $(".pageTest #result #reportQuoteButton").addClass("hidden");
-    void AnalyticsController.log("testCompletedNoLogin");
-    if (!dontSave) notSignedInLastResult = completedEvent;
-    dontSave = true;
+  let savingResultPromise: ReturnType<typeof saveResult> =
+    Promise.resolve(null);
+  const user = getAuthenticatedUser();
+  if (user !== null) {
+    // logged in
+    if (dontSave) {
+      void AnalyticsController.log("testCompletedInvalid");
+    } else {
+      TestStats.resetIncomplete();
+
+      if (completedEvent.testDuration > 122) {
+        completedEvent.chartData = "toolong";
+        completedEvent.keySpacing = "toolong";
+        completedEvent.keyDuration = "toolong";
+      }
+
+      if (!completedEvent.bailedOut) {
+        const challenge = ChallengeContoller.verify(completedEvent);
+        if (challenge !== null) completedEvent.challenge = challenge;
+      }
+
+      completedEvent.uid = user.uid;
+      completedEvent.hash = objectHash(completedEvent);
+
+      savingResultPromise = saveResult(completedEvent, false);
+      void savingResultPromise.then((response) => {
+        if (response && response.status === 200) {
+          void AnalyticsController.log("testCompleted");
+        }
+      });
+    }
   } else {
-    $(".pageTest #result #reportQuoteButton").removeClass("hidden");
+    // logged out
+    void AnalyticsController.log("testCompletedNoLogin");
+    if (!dontSave) {
+      // if its valid save it for later
+      notSignedInLastResult = completedEvent;
+    }
+    dontSave = true;
   }
 
-  $("#result .stats .dailyLeaderboard").addClass("hidden");
-
-  TestStats.setLastResult(structuredClone(completedEvent));
-
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
-  }
-
-  await Result.update(
+  const resultUpdatePromise = Result.update(
     completedEvent,
     difficultyFailed,
     failReason,
@@ -1232,80 +1196,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  if (completedEvent.chartData !== "toolong") {
-    // @ts-expect-error TODO: check if this is needed
-    delete completedEvent.chartData.unsmoothedRaw;
-  }
-
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    completedEvent.keySpacing = "toolong";
-    completedEvent.keyDuration = "toolong";
-  }
-
-  if (
-    completedEvent.wpm === 0 &&
-    !difficultyFailed &&
-    completedEvent.testDuration >= 5
-  ) {
-    const roundedTime = Math.round(completedEvent.testDuration);
-
-    const messages = [
-      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
-      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
-      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
-      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
-      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
-      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
-      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
-      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
-      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
-      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
-    ];
-
-    Result.showConfetti();
-    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
-      customTitle: "Nice",
-      duration: 15,
-      important: true,
-    });
-  }
-
-  if (dontSave) {
-    void AnalyticsController.log("testCompletedInvalid");
-    return;
-  }
-
-  // because of the dont save check above, we know the user is signed in
-  // we check here again so that typescript doesnt complain
-  const user = getAuthenticatedUser();
-  if (!user) {
-    return;
-  }
-
-  // user is logged in
-  TestStats.resetIncomplete();
-
-  completedEvent.uid = user.uid;
-
-  Result.updateRateQuote(TestWords.currentQuote);
-
-  AccountButton.loading(true);
-
-  if (!completedEvent.bailedOut) {
-    const challenge = ChallengeContoller.verify(completedEvent);
-    if (challenge !== null) completedEvent.challenge = challenge;
-  }
-
-  completedEvent.hash = objectHash(completedEvent);
-
-  await saveResult(completedEvent, false);
+  await Promise.all([savingResultPromise, resultUpdatePromise]);
 }
 
 async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
-): Promise<void> {
+): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
+  AccountButton.loading(true);
+
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,
@@ -1313,7 +1212,7 @@ async function saveResult(
       important: true,
     });
     AccountButton.loading(false);
-    return;
+    return null;
   }
 
   if (!ConnectionState.get()) {
@@ -1328,7 +1227,7 @@ async function saveResult(
     if (!isRetrying) {
       retrySaving.completedEvent = completedEvent;
     }
-    return;
+    return null;
   }
 
   const response = await Ape.results.add({ body: { result: completedEvent } });
@@ -1355,8 +1254,8 @@ async function saveResult(
       response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    Notifications.add("Failed to save result: " + response.body.message, -1);
-    return;
+    Notifications.add("Failed to save result", -1, { response });
+    return response;
   }
 
   const data = response.body.data;
@@ -1396,8 +1295,6 @@ async function saveResult(
     }
     dataToSave.result = result;
   }
-
-  void AnalyticsController.log("testCompleted");
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
@@ -1447,6 +1344,7 @@ async function saveResult(
     Notifications.add("Result saved", 1, { important: true });
   }
   DB.saveLocalResult(dataToSave);
+  return response;
 }
 
 export function fail(reason: string): void {
@@ -1467,6 +1365,32 @@ export function fail(reason: string): void {
   const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
   TestStats.pushIncompleteTest(acc, tt);
 }
+
+const debouncedZipfCheck = debounce(250, async () => {
+  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
+  if (supports === "no") {
+    Notifications.add(
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language),
+      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
+      0,
+      {
+        duration: 7,
+      },
+    );
+  }
+  if (supports === "unknown") {
+    Notifications.add(
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language),
+      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
+      0,
+      {
+        duration: 7,
+      },
+    );
+  }
+});
 
 $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
@@ -1598,7 +1522,10 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   if (ActivePage.get() === "test") {
     if (key === "language") {
       //automatically enable lazy mode for arabic
-      if ((newValue as string)?.startsWith("arabic") && ArabicLazyMode.get()) {
+      if (
+        (newValue as string)?.startsWith("arabic") &&
+        LazyModeState.getArabicPref()
+      ) {
         setConfig("lazyMode", true, {
           nosave: true,
         });
@@ -1615,23 +1542,23 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
+            // oxlint-disable-next-line no-misused-spread
             [...TestWords.words.getCurrent()],
             0,
           ) as string,
         );
       }, 0);
     }
+    if (
+      (key === "language" || key === "funbox") &&
+      Config.funbox.includes("zipf")
+    ) {
+      debouncedZipfCheck();
+    }
   }
   if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
-      ArabicLazyMode.set(newValue);
-    }
-    if (newValue) {
-      if (!showedLazyModeNotification) {
-        rememberLazyMode = false;
-      }
-      showedLazyModeNotification = false;
+      LazyModeState.setArabicPref(newValue);
     }
   }
 });

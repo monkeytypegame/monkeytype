@@ -6,6 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { ElementWithUtils } from "../utils/dom";
 
 let rating = 0;
 
@@ -60,10 +61,7 @@ export async function getQuoteStats(
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to get quote ratings: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Failed to get quote ratings", -1, { response });
     return;
   }
 
@@ -156,10 +154,7 @@ async function submit(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to submit quote rating: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Failed to submit quote rating", -1, { response });
     return;
   }
 
@@ -214,29 +209,28 @@ async function submit(): Promise<void> {
   $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".submitButton")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs(".submitButton")?.on("click", () => {
     void submit();
   });
-  const starButtons = modalEl.querySelectorAll(".stars button.star");
-  for (const button of starButtons) {
-    button.addEventListener("click", (e) => {
-      const ratingValue = parseInt(
-        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
-      );
-      rating = ratingValue;
-      refreshStars();
-    });
-    button.addEventListener("mouseenter", (e) => {
-      const ratingHover = parseInt(
-        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
-      );
-      refreshStars(ratingHover);
-    });
-    button.addEventListener("mouseleave", () => {
-      refreshStars();
-    });
-  }
+
+  const stars = modalEl.qsa(".stars button.star");
+  stars.on("click", (e) => {
+    const ratingValue = parseInt(
+      (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
+    );
+    rating = ratingValue;
+    refreshStars();
+  });
+  stars.on("mouseenter", (e) => {
+    const ratingHover = parseInt(
+      (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
+    );
+    refreshStars(ratingHover);
+  });
+  stars.on("mouseleave", () => {
+    refreshStars();
+  });
 }
 
 const modal = new AnimatedModal({

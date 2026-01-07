@@ -1,12 +1,11 @@
 {
   "name": "@monkeytype/backend",
   "version": "1.14.3",
-  "license": "GPL-3.0",
   "private": true,
+  "license": "GPL-3.0",
   "scripts": {
-    "eslint": "eslint \"./src/**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint",
+    "lint": "oxlint . --type-aware --type-check && oxlint -c .oxlintrc-plugin.json",
+    "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
@@ -19,9 +18,6 @@
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up",
     "gen-docs": "tsx scripts/openapi.ts dist/static/api/openapi.json && redocly build-docs -o dist/static/api/internal.html internal@v2 && redocly bundle -o dist/static/api/public.json public-filter && redocly build-docs -o dist/static/api/public.html public@v2"
-  },
-  "engines": {
-    "node": "24.11.0 || 22.21.0"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -62,7 +58,6 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "@redocly/cli": "2.0.5",
@@ -82,17 +77,19 @@
     "@types/swagger-stats": "0.95.11",
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "10.0.0",
-    "@vitest/coverage-v8": "4.0.8",
+    "@vitest/coverage-v8": "4.0.15",
     "concurrently": "8.2.2",
-    "eslint": "8.57.1",
-    "eslint-watch": "8.0.0",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.29.0",
+    "oxlint": "1.38.0",
+    "oxlint-tsgolint": "0.10.1",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
-    "testcontainers": "11.4.0",
+    "testcontainers": "11.10.0",
     "tsx": "4.16.2",
     "typescript": "5.9.3",
-    "vitest": "4.0.8"
+    "vitest": "4.0.15"
+  },
+  "engines": {
+    "node": "24.11.0 || 22.21.0"
   }
 }

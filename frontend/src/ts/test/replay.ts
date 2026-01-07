@@ -2,6 +2,7 @@ import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
+import { qsr } from "../utils/dom";
 
 type ReplayAction =
   | "correctLetter"
@@ -29,6 +30,8 @@ let timeoutList: NodeJS.Timeout[] = [];
 let stopwatchList: NodeJS.Timeout[] = [];
 const toggleButton = document.getElementById("playpauseReplayButton")
   ?.children[0];
+
+const replayEl = qsr(".pageTest #resultReplay");
 
 function replayGetWordsList(wordsListFromScript: string[]): void {
   wordsList = wordsListFromScript;
@@ -187,24 +190,11 @@ function loadOldReplay(): number {
 }
 
 function toggleReplayDisplay(): void {
-  if ($("#resultReplay").stop(true, true).hasClass("hidden")) {
+  if (replayEl.isHidden()) {
     initializeReplayPrompt();
     loadOldReplay();
     //show
-    if (!$("#watchReplayButton").hasClass("loaded")) {
-      $("#words").html(
-        `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`,
-      );
-      $("#resultReplay")
-        .removeClass("hidden")
-        .css("display", "none")
-        .slideDown(250);
-    } else {
-      $("#resultReplay")
-        .removeClass("hidden")
-        .css("display", "none")
-        .slideDown(250);
-    }
+    void replayEl.slideDown(250);
   } else {
     //hide
     if (
@@ -213,9 +203,7 @@ function toggleReplayDisplay(): void {
     ) {
       pauseReplay();
     }
-    $("#resultReplay").slideUp(250, () => {
-      $("#resultReplay").addClass("hidden");
-    });
+    void replayEl.slideUp(250);
   }
 }
 

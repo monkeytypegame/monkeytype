@@ -5,6 +5,7 @@ import * as NotificationEvent from "../observables/notification-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { animate } from "animejs";
 import { qsr } from "../utils/dom";
+import { CommonResponsesType } from "@monkeytype/contracts/util/api";
 
 const notificationCenter = qsr("#notificationCenter");
 const notificationCenterHistory = notificationCenter.qsr(".history");
@@ -107,6 +108,7 @@ class Notification {
         visibleStickyNotifications++;
         updateClearAllButton();
       }
+
       notificationCenterHistory.prependHtml(`
         <div class="notif ${cls}" id=${this.id} style="opacity: 0;">
             <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
@@ -270,6 +272,8 @@ export type AddNotificationOptions = {
   customIcon?: string;
   closeCallback?: () => void;
   allowHTML?: boolean;
+  details?: object | string;
+  response?: CommonResponsesType;
 };
 
 export function add(
@@ -277,7 +281,24 @@ export function add(
   level = 0,
   options: AddNotificationOptions = {},
 ): void {
-  NotificationEvent.dispatch(message, level, options.customTitle);
+  let details = options.details;
+
+  if (options.response !== undefined) {
+    details = {
+      status: options.response.status,
+      additionalDetails: options.details,
+      validationErrors:
+        options.response.status === 422
+          ? options.response.body.validationErrors
+          : undefined,
+    };
+    message = message + ": " + options.response.body.message;
+  }
+
+  NotificationEvent.dispatch(message, level, {
+    customTitle: options.customTitle,
+    details,
+  });
 
   new Notification(
     "notification",

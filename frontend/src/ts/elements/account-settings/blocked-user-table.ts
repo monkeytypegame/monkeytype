@@ -24,10 +24,7 @@ async function getData(): Promise<boolean> {
 
   if (response.status !== 200) {
     blockedUsers = [];
-    Notifications.add(
-      "Error getting blocked users: " + response.body.message,
-      -1,
-    );
+    Notifications.add("Error getting blocked users", -1, { response });
     return false;
   }
 
@@ -99,7 +96,7 @@ element.on("click", "table button.delete", async (e) => {
         throw new Error("Cannot find uid of target.");
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+      // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
       delete snapshot.connections[uid];
       updateFriendRequestsIndicator();
     }

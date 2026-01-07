@@ -1,3 +1,4 @@
+import { ElementWithUtils, qsr } from "../utils/dom";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -9,7 +10,6 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
 import { Language } from "@monkeytype/schemas/languages";
 import { LanguageGroupNames } from "../constants/languages";
-import { qsr } from "../utils/dom";
 
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
@@ -44,7 +44,7 @@ async function submitQuote(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote: " + response.body.message, -1);
+    Notifications.add("Failed to submit quote", -1, { response });
     return;
   }
 
@@ -95,8 +95,8 @@ function hide(clearModalChain: boolean): void {
   });
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("button")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("button")?.on("click", () => {
     void submitQuote();
     hide(true);
   });

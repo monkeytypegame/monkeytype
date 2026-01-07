@@ -1,7 +1,10 @@
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CompletedEventCustomTextSchema } from "@monkeytype/schemas/results";
+import {
+  CustomTextSettings,
+  CustomTextSettingsSchema,
+} from "@monkeytype/schemas/results";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
@@ -23,14 +26,6 @@ const customTextLongLS = new LocalStorageWithSchema({
   schema: CustomTextLongObjectSchema,
   fallback: {},
 });
-
-export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
-  textLen: true,
-}).extend({
-  text: z.array(z.string()).min(1),
-});
-
-export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
 
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 
@@ -194,7 +189,7 @@ export function setCustomText(
 export function deleteCustomText(name: string, long: boolean): void {
   const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  // oxlint-disable-next-line no-dynamic-delete
   delete customText[name];
 
   if (long) {

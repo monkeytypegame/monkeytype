@@ -3,7 +3,11 @@ import AnimatedModal from "../utils/animated-modal";
 import { promiseWithResolvers } from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 
-let { promise, resolve } = promiseWithResolvers<string | undefined>();
+const {
+  promise,
+  resolve,
+  reset: resetPromise,
+} = promiseWithResolvers<string | undefined>();
 
 export { promise };
 
@@ -20,11 +24,11 @@ export async function show(): Promise<void> {
   await modal.show({
     mode: "dialog",
     beforeAnimation: async (modal) => {
-      ({ promise, resolve } = promiseWithResolvers<string | undefined>());
+      resetPromise();
       CaptchaController.reset("register");
 
       CaptchaController.render(
-        modal.querySelector(".g-recaptcha") as HTMLElement,
+        modal.qsr(".g-recaptcha").native,
         "register",
         (token) => {
           resolve(token);

@@ -60,7 +60,7 @@ export const ResultFiltersSchema = z.object({
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
 
-export const StreakHourOffsetSchema = z.number().int().min(-11).max(12);
+export const StreakHourOffsetSchema = z.number().min(-11).max(12).step(0.5);
 export type StreakHourOffset = z.infer<typeof StreakHourOffsetSchema>;
 
 export const UserStreakSchema = z

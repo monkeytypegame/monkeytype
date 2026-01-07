@@ -26,23 +26,21 @@ export function show(goToSettings?: boolean): void {
 }
 
 function showSettings(currentAcceptedCookies?: AcceptedCookies): void {
-  modal.getModal().querySelector(".main")?.classList.add("hidden");
-  modal.getModal().querySelector(".settings")?.classList.remove("hidden");
+  modal.getModal().qs(".main")?.hide();
+  modal.getModal().qs(".settings")?.show();
 
   if (currentAcceptedCookies) {
     if (currentAcceptedCookies.analytics) {
-      (
-        modal
-          .getModal()
-          .querySelector(".cookie.analytics input") as HTMLInputElement
-      ).checked = true;
+      modal
+        .getModal()
+        .qs<HTMLInputElement>(".cookie.analytics input")
+        ?.setChecked(true);
     }
     if (currentAcceptedCookies.sentry) {
-      (
-        modal
-          .getModal()
-          .querySelector(".cookie.sentry input") as HTMLInputElement
-      ).checked = true;
+      modal
+        .getModal()
+        .qs<HTMLInputElement>(".cookie.sentry input")
+        ?.setChecked(true);
     }
   }
 }
@@ -64,7 +62,7 @@ const modal = new AnimatedModal({
     //
   },
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector(".acceptAll")?.addEventListener("click", () => {
+    modalEl.qs(".acceptAll")?.on("click", () => {
       const accepted = {
         security: true,
         analytics: true,
@@ -73,7 +71,7 @@ const modal = new AnimatedModal({
       setAcceptedCookies(accepted);
       void hide();
     });
-    modalEl.querySelector(".rejectAll")?.addEventListener("click", () => {
+    modalEl.qs(".rejectAll")?.on("click", () => {
       const accepted = {
         security: true,
         analytics: false,
@@ -82,29 +80,27 @@ const modal = new AnimatedModal({
       setAcceptedCookies(accepted);
       void hide();
     });
-    modalEl.querySelector(".openSettings")?.addEventListener("click", () => {
+    modalEl.qs(".openSettings")?.on("click", () => {
       showSettings();
     });
-    modalEl
-      .querySelector(".cookie.ads .textButton")
-      ?.addEventListener("click", () => {
-        try {
-          AdController.showConsentPopup();
-        } catch (e) {
-          console.error("Failed to open ad consent UI");
-          Notifications.add(
-            "Failed to open Ad consent popup. Do you have an ad or cookie popup blocker enabled?",
-            -1,
-          );
-        }
-      });
-    modalEl.querySelector(".acceptSelected")?.addEventListener("click", () => {
-      const analyticsChecked = (
-        modalEl.querySelector(".cookie.analytics input") as HTMLInputElement
-      ).checked;
-      const sentryChecked = (
-        modalEl.querySelector(".cookie.sentry input") as HTMLInputElement
-      ).checked;
+    modalEl.qs(".cookie.ads .textButton")?.on("click", () => {
+      try {
+        AdController.showConsentPopup();
+      } catch (e) {
+        console.error("Failed to open ad consent UI");
+        Notifications.add(
+          "Failed to open Ad consent popup. Do you have an ad or cookie popup blocker enabled?",
+          -1,
+        );
+      }
+    });
+    modalEl.qs(".acceptSelected")?.on("click", () => {
+      const analyticsChecked =
+        modalEl.qs<HTMLInputElement>(".cookie.analytics input")?.getChecked() ??
+        false;
+      const sentryChecked =
+        modalEl.qs<HTMLInputElement>(".cookie.sentry input")?.getChecked() ??
+        false;
       const accepted = {
         security: true,
         analytics: analyticsChecked,

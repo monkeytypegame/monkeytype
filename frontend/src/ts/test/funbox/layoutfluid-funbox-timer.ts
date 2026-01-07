@@ -20,6 +20,10 @@ export function hide(): void {
   });
 }
 
+export function instantHide(): void {
+  timerEl.style.opacity = "0";
+}
+
 export function updateTime(sec: number, layout: string): void {
   timerEl.textContent = `${capitalizeFirstLetter(layout)} in: ${sec}s`;
 }

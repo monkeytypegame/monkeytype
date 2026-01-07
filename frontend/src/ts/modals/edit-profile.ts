@@ -180,7 +180,7 @@ async function updateProfile(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update profile: " + response.body.message, -1);
+    Notifications.add("Failed to update profile", -1, { response });
     return;
   }
 
@@ -240,7 +240,7 @@ function addValidation(
 const modal = new AnimatedModal({
   dialogId: "editProfileModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", async (e) => {
+    modalEl.on("submit", async (e) => {
       e.preventDefault();
       await updateProfile();
     });

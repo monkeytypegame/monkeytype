@@ -4,6 +4,7 @@ import {
   JSAnimation,
 } from "animejs";
 
+// Implementation
 /**
  * Query Selector
  *
@@ -13,6 +14,7 @@ import {
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string,
 ): ElementWithUtils<T> | null {
+  checkUniqueSelector(selector);
   const el = document.querySelector<T>(selector);
   return el ? new ElementWithUtils(el) : null;
 }
@@ -44,6 +46,7 @@ export function qsa<T extends HTMLElement = HTMLElement>(
 export function qsr<T extends HTMLElement = HTMLElement>(
   selector: string,
 ): ElementWithUtils<T> {
+  checkUniqueSelector(selector);
   const el = document.querySelector<T>(selector);
   if (el === null) {
     throw new Error(`Required element not found: ${selector}`);
@@ -52,14 +55,29 @@ export function qsr<T extends HTMLElement = HTMLElement>(
 }
 
 /**
- * Execute a callback function when the document is fully loaded.
+ * Execute a callback function when the DOM is fully loaded. If you need to wait
+ * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
  * If the document is already loaded, the callback is executed immediately.
  */
-export function onDocumentReady(callback: () => void): void {
+export function onDOMReady(callback: () => void): void {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", callback);
   } else {
     callback();
+  }
+}
+
+/**
+ * Execute a callback function when the window 'load' event fires, which occurs
+ * after the entire page (including all dependent resources such as images,
+ * stylesheets, and scripts) has fully loaded.
+ * If the window is already loaded, the callback is executed immediately.
+ */
+export function onWindowLoad(callback: () => void): void {
+  if (document.readyState === "complete") {
+    callback();
+  } else {
+    window.addEventListener("load", callback);
   }
 }
 
@@ -86,6 +104,21 @@ type ElementWithValue =
   | HTMLInputElement
   | HTMLTextAreaElement
   | HTMLSelectElement;
+
+type ElementWithSelectableValue = HTMLInputElement | HTMLTextAreaElement;
+
+//TODO: after the migration from jQuery to dom-utils we might want to add currentTarget back to the event object, if we have a use-case for it.
+// For now we remove it because currentTarget is not the same element when using dom-utils intead of jQuery to get compile errors.
+export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
+  /**
+   * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
+   */
+  childTarget: EventTarget | null;
+};
+
+type OnChildEventListenerOrEventListenerObject =
+  | { (evt: OnChildEvent): void }
+  | { handleEvent(object: OnChildEvent): void };
 
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
@@ -177,6 +210,29 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if the element has the "hidden" class
+   */
+  isHidden(): boolean {
+    return this.hasClass("hidden");
+  }
+
+  /**
+   * Check if element is visible
+   */
+  isVisible(): boolean {
+    return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
+  }
+
+  /**
+   * Make element visible by scrolling the element's ancestor containers
+   */
+  scrollIntoView(options: ScrollIntoViewOptions): this {
+    this.native.scrollIntoView(options);
+
+    return this;
+  }
+
+  /**
    * Add a class to the element
    */
   addClass(className: string | string[]): this {
@@ -238,35 +294,66 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Attach an event listener to child elements matching the query.
+   * Attach an event listener to child elements matching the selector.
    * Useful for dynamically added elements.
+   *
+   * The handler is not called when the event occurs directly on the bound element, but only for descendants (inner elements)
+   * that match the selector. Bubbles the event from the event target up to the element where the handler is attached
+   * (i.e., innermost to outermost element) and runs the handler for any elements along that path matching the selector.
    */
   onChild<K extends keyof HTMLElementEventMap>(
     event: K,
-    query: string,
-    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
+    handler: (
+      this: HTMLElement,
+      ev: OnChildEvent<HTMLElementEventMap[K]>,
+    ) => void,
   ): this;
   onChild(
     event: string,
-    query: string,
-    handler: EventListenerOrEventListenerObject,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
+    handler: OnChildEventListenerOrEventListenerObject,
   ): this;
   onChild(
     event: keyof HTMLElementEventMap | string,
-    query: string,
+    /**
+     * A selector string to filter the descendants of the selected elements that will call the handler.
+     */
+    selector: string,
     handler:
-      | EventListenerOrEventListenerObject
-      | ((this: HTMLElement, ev: Event) => void),
+      | OnChildEventListenerOrEventListenerObject
+      | ((this: HTMLElement, ev: OnChildEvent) => void),
   ): this {
-    // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
-      if (target !== null && target.matches(query)) {
+      if (target === null) return; //ignore event
+
+      let childTarget = target.closest(selector);
+      //bubble up until no match found or the parent element is reached
+      while (
+        childTarget !== null &&
+        childTarget !== this.native && //stop on parent
+        this.native.contains(childTarget) //stop above parent
+      ) {
         if (typeof handler === "function") {
-          handler.call(target, e);
+          handler.call(
+            childTarget as HTMLElement,
+            Object.assign(e, { childTarget }),
+          );
         } else {
-          handler.handleEvent(e);
+          handler.handleEvent(Object.assign(e, { childTarget }));
         }
+
+        childTarget =
+          childTarget.parentElement !== null
+            ? childTarget.parentElement.closest(selector)
+            : null;
       }
     });
     return this;
@@ -334,6 +421,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Query the element for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
+    checkUniqueSelector(selector, this);
     const found = this.native.querySelector<U>(selector);
     return found ? new ElementWithUtils(found) : null;
   }
@@ -357,6 +445,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @throws Error if the element is not found.
    */
   qsr<U extends HTMLElement>(selector: string): ElementWithUtils<U> {
+    checkUniqueSelector(selector, this);
     const found = this.native.querySelector<U>(selector);
     if (found === null) {
       throw new Error(`Required element not found: ${selector}`);
@@ -435,11 +524,26 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return new ElementWithUtils(wrapperElement as T);
   }
 
+  private hasValue(): this is ElementWithUtils<ElementWithValue> {
+    return (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement ||
+      this.native instanceof HTMLSelectElement
+    );
+  }
+
+  private hasSelectableValue(): this is ElementWithUtils<ElementWithSelectableValue> {
+    return (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement
+    );
+  }
+
   /**
    * Set value of input or textarea to a string.
    */
   setValue(this: ElementWithUtils<ElementWithValue>, value: string): this {
-    if (this.native instanceof HTMLInputElement) {
+    if (this.hasValue()) {
       this.native.value = value;
     }
     return this as unknown as this;
@@ -450,10 +554,32 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @returns The value of the element, or undefined if the element is not an input or textarea.
    */
   getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
-    if (!(this.native instanceof HTMLInputElement)) {
-      return undefined;
+    if (this.hasValue()) {
+      return this.native.value;
     }
-    return this.native.value;
+    return undefined;
+  }
+
+  /**
+   * Set checked state of input element
+   * @param checked The checked state to set
+   */
+  setChecked(this: ElementWithUtils<HTMLInputElement>, checked: boolean): this {
+    if (this.native instanceof HTMLInputElement) {
+      this.native.checked = checked;
+    }
+    return this as unknown as this;
+  }
+
+  /**
+   * Get checked state of input element
+   * @returns The checked state of the element, or undefined if the element is not an input.
+   */
+  getChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
+    if (this.native instanceof HTMLInputElement) {
+      return this.native.checked;
+    }
+    return undefined;
   }
 
   /**
@@ -464,6 +590,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       return new ElementWithUtils(this.native.parentElement as U);
     }
     return null;
+  }
+
+  /**
+   * Get the first parent that matches a selector
+   */
+
+  closestParent(selector: string): ElementWithUtils | null {
+    const closestParent = this.native.parentElement?.closest(
+      selector,
+    ) as HTMLElement;
+    return closestParent !== null ? new ElementWithUtils(closestParent) : null;
+  }
+
+  /**
+   * Check if element matches a selector
+   */
+
+  matches(selector: string): boolean {
+    return this.native.matches(selector);
   }
 
   /**
@@ -529,6 +674,104 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         },
       });
     });
+  }
+
+  /**
+   * Animate the element sliding down (expanding height from 0 to full height)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideDown(duration = 250): Promise<void> {
+    this.show().setStyle({
+      height: "",
+      overflow: "hidden",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    this.setStyle({
+      height: "0px",
+      marginTop: "0px",
+      marginBottom: "0px",
+      paddingTop: "0px",
+      paddingBottom: "0px",
+    });
+    await this.promiseAnimate({
+      height: [0, height],
+      marginTop: [0, marginTop],
+      marginBottom: [0, marginBottom],
+      paddingTop: [0, paddingTop],
+      paddingBottom: [0, paddingBottom],
+      duration,
+      onComplete: () => {
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        });
+      },
+    });
+  }
+
+  /**
+   * Animate the element sliding up (collapsing height from full height to 0)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideUp(
+    duration = 250,
+    options?: {
+      hide?: boolean;
+    },
+  ): Promise<void> {
+    this.show().setStyle({
+      overflow: "hidden",
+      height: "",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    await this.promiseAnimate({
+      height: [height, 0],
+      marginTop: [marginTop, 0],
+      marginBottom: [marginBottom, 0],
+      paddingTop: [paddingTop, 0],
+      paddingBottom: [paddingBottom, 0],
+      duration,
+      onComplete: () => {
+        if (options?.hide ?? true) {
+          this.hide().setStyle({
+            height: "",
+            overflow: "",
+            marginTop: "",
+            marginBottom: "",
+            paddingTop: "",
+            paddingBottom: "",
+          });
+        }
+      },
+    });
+  }
+
+  /**
+   * Focus the element
+   */
+  focus(): void {
+    this.native.focus();
+  }
+
+  /**
+   * Select the element's content (for input and textarea elements)
+   */
+  select(this: ElementWithUtils<ElementWithSelectableValue>): void {
+    if (this.hasSelectableValue()) {
+      this.native.select();
+    }
   }
 }
 
@@ -639,6 +882,38 @@ export class ElementsWithUtils<
   }
 
   /**
+   * Query all elements in the array for a child element matching the selector
+   */
+  qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const found = item.native.querySelector<U>(selector);
+      if (found) allElements.push(new ElementWithUtils<U>(found));
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
+   * Query all elements in the array for all child elements matching the selector
+   */
+  qsa<U extends HTMLElement = HTMLElement>(
+    selector: string,
+  ): ElementsWithUtils<U> {
+    const allElements: ElementWithUtils<U>[] = [];
+
+    for (const item of this) {
+      const elements = Array.from(item.native.querySelectorAll<U>(selector));
+      for (const el of elements) {
+        if (el !== null) allElements.push(new ElementWithUtils<U>(el));
+      }
+    }
+
+    return new ElementsWithUtils<U>(...allElements);
+  }
+
+  /**
    * Attach an event listener to all elements in the array
    */
   on<K extends keyof HTMLElementEventMap>(
@@ -657,7 +932,6 @@ export class ElementsWithUtils<
     }
     return this;
   }
-
   /**
    * Set attribute value on all elements in the array
    */
@@ -666,5 +940,35 @@ export class ElementsWithUtils<
       item.setAttribute(key, value);
     }
     return this;
+  }
+}
+
+function checkUniqueSelector(
+  selector: string,
+  parent?: ElementWithUtils,
+): void {
+  if (!import.meta.env.DEV) return;
+  const elements = parent ? parent.qsa(selector) : qsa(selector);
+  if (elements.length > 1) {
+    console.warn(
+      `Multiple elements found for selector "${selector}". Did you mean to use QSA? If not, try making the query more specific.`,
+      elements.native,
+    );
+    console.trace("Stack trace for qs/qsr call:");
+    if (document.querySelector("#domUtilsQsWarning") !== null) return;
+
+    const bannerCenter = document.querySelector("#bannerCenter");
+    const warning = document.createElement("div");
+    warning.classList.add("psa", "bad", "content-grid");
+    warning.id = "domUtilsQsWarning";
+    warning.innerHTML = `
+        <div class="container">
+          <div class="icon lefticon"><i class="fas fa-fw fa-exclamation-triangle"></i></div>
+          <div class="text">
+             "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details."
+          </div>
+        </div>
+      </div>`;
+    bannerCenter?.appendChild(warning);
   }
 }

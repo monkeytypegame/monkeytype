@@ -7,6 +7,7 @@ import { Result } from "@monkeytype/schemas/results";
 import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
+import { ElementWithUtils } from "./dom";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -176,7 +177,7 @@ type LastIndex = {
 } & string;
 
 // TODO INVESTIGATE IF THIS IS NEEDED
-// eslint-disable-next-line no-extend-native
+// oxlint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp,
 ): number {
@@ -187,8 +188,8 @@ type LastIndex = {
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
 export async function swapElements(
-  el1: HTMLElement,
-  el2: HTMLElement,
+  el1: ElementWithUtils | null,
+  el2: ElementWithUtils | null,
   totalDuration: number,
   callback = async function (): Promise<void> {
     return Promise.resolve();
@@ -203,38 +204,35 @@ export async function swapElements(
 
   totalDuration = applyReducedMotion(totalDuration);
   if (
-    (el1.classList.contains("hidden") && !el2.classList.contains("hidden")) ||
-    (!el1.classList.contains("hidden") && el2.classList.contains("hidden"))
+    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
+    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
   ) {
     //one of them is hidden and the other is visible
-    if (el1.classList.contains("hidden")) {
+    if (el1.hasClass("hidden")) {
       await middleCallback();
       await callback();
       return false;
     }
 
-    el1.classList.remove("hidden");
-    await promiseAnimate(el1, {
+    el1.show();
+    await el1.promiseAnimate({
       opacity: [1, 0],
       duration: totalDuration / 2,
     });
-    el1.classList.add("hidden");
+    el1.hide();
     await middleCallback();
-    el2.classList.remove("hidden");
-    await promiseAnimate(el2, {
+    el2.show();
+    await el2.promiseAnimate({
       opacity: [0, 1],
       duration: totalDuration / 2,
     });
     await callback();
-  } else if (
-    el1.classList.contains("hidden") &&
-    el2.classList.contains("hidden")
-  ) {
+  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
     await middleCallback();
 
-    el2.classList.remove("hidden");
-    await promiseAnimate(el2, {
+    el2.show();
+    await el2.promiseAnimate({
       opacity: [0, 1],
       duration: totalDuration / 2,
     });
@@ -599,19 +597,71 @@ export function applyReducedMotion(animationTime: number): number {
 /**
  * Creates a promise with resolvers.
  * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
+ * The returned promise reference stays constant even after reset() - it will always await the current internal promise.
+ * Note: Promise chains created via .then()/.catch()/.finally() will always follow the current internal promise state, even if created before reset().
  */
 export function promiseWithResolvers<T = void>(): {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
   promise: Promise<T>;
+  reset: () => void;
 } {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
+  let innerResolve!: (value: T) => void;
+  let innerReject!: (reason?: unknown) => void;
+  let currentPromise = new Promise<T>((res, rej) => {
+    innerResolve = res;
+    innerReject = rej;
   });
-  return { resolve, reject, promise };
+
+  /**
+   * This was fully AI generated to make the reset function work. Black magic, but its unit-tested and works.
+   */
+
+  const promiseLike = {
+    // oxlint-disable-next-line no-thenable promise-function-async require-await
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
+      onrejected?:
+        | ((reason: unknown) => TResult2 | PromiseLike<TResult2>)
+        | null,
+    ): Promise<TResult1 | TResult2> {
+      return currentPromise.then(onfulfilled, onrejected);
+    },
+    // oxlint-disable-next-line promise-function-async
+    catch<TResult = never>(
+      onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
+    ): Promise<T | TResult> {
+      return currentPromise.catch(onrejected);
+    },
+    // oxlint-disable-next-line promise-function-async
+    finally(onfinally?: (() => void) | null): Promise<T> {
+      return currentPromise.finally(onfinally);
+    },
+    [Symbol.toStringTag]: "Promise" as const,
+  };
+
+  const reset = (): void => {
+    currentPromise = new Promise<T>((res, rej) => {
+      innerResolve = res;
+      innerReject = rej;
+    });
+  };
+
+  // Wrapper functions that always call the current resolver/rejecter
+  const resolve = (value: T): void => {
+    innerResolve(value);
+  };
+
+  const reject = (reason?: unknown): void => {
+    innerReject(reason);
+  };
+
+  return {
+    resolve,
+    reject,
+    promise: promiseLike as Promise<T>,
+    reset,
+  };
 }
 
 /**
@@ -684,7 +734,7 @@ export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
   Required<Pick<T, K>>;
 
 function isPlatform(searchTerm: string | RegExp): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  // oxlint-disable-next-line no-deprecated
   const platform = navigator.platform;
   if (typeof searchTerm === "string") {
     return platform.includes(searchTerm);

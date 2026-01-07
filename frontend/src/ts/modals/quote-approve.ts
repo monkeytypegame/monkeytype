@@ -1,3 +1,4 @@
+import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -98,7 +99,7 @@ async function getQuotes(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to get new quotes: " + response.body.message, -1);
+    Notifications.add("Failed to get new quotes", -1, { response });
     return;
   }
 
@@ -160,7 +161,7 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    Notifications.add("Failed to approve quote: " + response.body.message, -1);
+    Notifications.add("Failed to approve quote", -1, { response });
     return;
   }
 
@@ -184,7 +185,7 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    Notifications.add("Failed to refuse quote: " + response.body.message, -1);
+    Notifications.add("Failed to refuse quote", -1, { response });
     return;
   }
 
@@ -218,7 +219,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    Notifications.add("Failed to approve quote: " + response.body.message, -1);
+    Notifications.add("Failed to approve quote", -1, { response });
     return;
   }
 
@@ -230,8 +231,8 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   updateList();
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("button.refreshList")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("button.refreshList")?.on("click", () => {
     $("#quoteApproveModal .quotes").empty();
     void getQuotes();
   });

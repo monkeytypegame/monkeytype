@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* oxlint-disable no-unsafe-call */
+/* oxlint-disable no-unsafe-member-access */
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
-import { animate } from "animejs";
+import { qs } from "../utils/dom";
 
 const wrapperId = "videoAdPopupWrapper";
 
@@ -35,13 +35,13 @@ export async function show(): Promise<void> {
   }
 
   if (!isPopupVisible(wrapperId)) {
-    const el = document.querySelector("#videoAdPopupWrapper") as HTMLElement;
+    const el = qs("#videoAdPopupWrapper");
 
-    animate(el, {
+    el?.animate({
       opacity: [0, 1],
       duration: 125,
       onBegin: () => {
-        el.classList.remove("hidden");
+        el.show();
       },
       onComplete: () => {
         //@ts-expect-error 3rd party ad code
@@ -53,12 +53,13 @@ export async function show(): Promise<void> {
 
 function hide(): void {
   if (isPopupVisible(wrapperId)) {
-    const el = document.querySelector("#videoAdPopupWrapper") as HTMLElement;
-    animate(el, {
+    const el = qs("#videoAdPopupWrapper");
+
+    el?.animate({
       opacity: [1, 0],
       duration: 125,
       onComplete: () => {
-        el.classList.add("hidden");
+        el.hide();
         Skeleton.remove(wrapperId);
       },
     });
@@ -80,7 +81,7 @@ export function egVideoListener(options: Record<string, string>): void {
   }
 }
 
-$(".pageTest #watchVideoAdButton").on("click", () => {
+qs(".pageTest #watchVideoAdButton")?.on("click", () => {
   void show();
 });
 

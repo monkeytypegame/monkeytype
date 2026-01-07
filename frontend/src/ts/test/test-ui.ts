@@ -8,13 +8,11 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
-import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
@@ -49,109 +47,28 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../states/slow-timer";
+import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
-
-const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
-  if (supports === "no") {
-    Notifications.add(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-      0,
-      {
-        duration: 7,
-      },
-    );
-  }
-  if (supports === "unknown") {
-    Notifications.add(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-      0,
-      {
-        duration: 7,
-      },
-    );
-  }
-});
+import * as AdController from "../controllers/ad-controller";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import * as Keymap from "../elements/keymap";
+import * as ThemeController from "../controllers/theme-controller";
+import * as XPBar from "../elements/xp-bar";
+import * as ModesNotice from "../elements/modes-notice";
+import * as Last10Average from "../elements/last-10-average";
+import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import { qsr } from "../utils/dom";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
   { rejectSkippedCalls: false },
 );
 
-ConfigEvent.subscribe(({ key, newValue, nosave }) => {
-  if (
-    (key === "language" || key === "funbox") &&
-    Config.funbox.includes("zipf")
-  ) {
-    debouncedZipfCheck();
-  }
-  if (key === "fontSize") {
-    $(
-      "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-    ).css("fontSize", newValue + "rem");
-    if (!nosave) {
-      OutOfFocus.hide();
-      updateWordWrapperClasses();
-    }
-  }
-  if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
-      key ?? "",
-    )
-  ) {
-    void updateHintsPositionDebounced();
-  }
-
-  if (key === "theme") void applyBurstHeatmap();
-
-  if (newValue === undefined) return;
-  if (key === "highlightMode") {
-    if (ActivePage.get() === "test") {
-      void updateWordLetters({
-        input: TestInput.input.current,
-        wordIndex: TestState.activeWordIndex,
-        compositionData: CompositionState.getData(),
-      });
-    }
-  }
-
-  if (
-    [
-      "highlightMode",
-      "blindMode",
-      "indicateTypos",
-      "tapeMode",
-      "hideExtraLetters",
-    ].includes(key)
-  ) {
-    updateWordWrapperClasses();
-  }
-
-  if (["tapeMode", "tapeMargin"].includes(key)) {
-    updateLiveStatsMargin();
-  }
-
-  if (key === "showAllLines") {
-    updateWordsWrapperHeight(true);
-    if (!newValue) {
-      void centerActiveLine();
-    }
-  }
-
-  if (typeof newValue !== "boolean") return;
-  if (key === "flipTestColors") flipColors(newValue);
-  if (key === "colorfulMode") colorful(newValue);
-  if (key === "burstHeatmap") void applyBurstHeatmap();
-});
-
 const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
 const wordsWrapperEl = document.querySelector(
   ".pageTest #wordsWrapper",
 ) as HTMLElement;
+const resultWordsHistoryEl = qsr(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
 export let activeWordHeight = 0;
@@ -161,11 +78,6 @@ export let resultCalculating = false;
 
 export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
-}
-
-export function reset(): void {
-  currentTestLine = 0;
-  cancelPendingAnimationFramesStartingWith("test-ui");
 }
 
 export function focusWords(force = false): void {
@@ -223,18 +135,17 @@ export function updateActiveElement(
 
     let previousActiveWordTop: number | null = null;
     if (initial === undefined) {
-      const previousActiveWord = wordsEl.querySelector(
-        ".active",
-      ) as HTMLElement;
-      if (direction === "forward") {
-        previousActiveWord.classList.add("typed");
-      } else if (direction === "back") {
-        if (Config.mode === "zen") {
-          previousActiveWord.remove();
+      const previousActiveWord = wordsEl.querySelector<HTMLElement>(".active");
+      // in zen mode, because of the animation frame, previousActiveWord will be removed at this point, so check for null
+      if (previousActiveWord !== null) {
+        if (direction === "forward") {
+          previousActiveWord.classList.add("typed");
+        } else if (direction === "back") {
+          //
         }
+        previousActiveWord.classList.remove("active");
+        previousActiveWordTop = previousActiveWord.offsetTop;
       }
-      previousActiveWord.classList.remove("active");
-      previousActiveWordTop = previousActiveWord.offsetTop;
     }
 
     const newActiveWord = getActiveWordElement();
@@ -308,7 +219,7 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  const isWordRightToLeft = Strings.isWordRightToLeft(
+  const [isWordRightToLeft, _isFullMatch] = Strings.isWordRightToLeft(
     TestWords.words.getCurrent(),
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,
@@ -475,6 +386,9 @@ function buildWordHTML(word: string, wordIndex: number): string {
 }
 
 function updateWordWrapperClasses(): void {
+  // outoffocus applies transition, need to remove it
+  OutOfFocus.hide();
+
   if (Config.tapeMode !== "off") {
     wordsEl.classList.add("tape");
     wordsWrapperEl.classList.add("tape");
@@ -507,6 +421,32 @@ function updateWordWrapperClasses(): void {
     wordsWrapperEl.classList.remove("hideExtraLetters");
   }
 
+  if (Config.flipTestColors) {
+    wordsEl.classList.add("flipped");
+  } else {
+    wordsEl.classList.remove("flipped");
+  }
+
+  if (Config.colorfulMode) {
+    wordsEl.classList.add("colorfulMode");
+  } else {
+    wordsEl.classList.remove("colorfulMode");
+  }
+
+  $(
+    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
+  ).css("fontSize", Config.fontSize + "rem");
+
+  if (TestState.isLanguageRightToLeft) {
+    wordsEl.classList.add("rightToLeftTest");
+    $("#resultWordsHistory .words").addClass("rightToLeftTest");
+    $("#resultReplay .words").addClass("rightToLeftTest");
+  } else {
+    wordsEl.classList.remove("rightToLeftTest");
+    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+    $("#resultReplay .words").removeClass("rightToLeftTest");
+  }
+
   const existing =
     wordsEl?.className
       .split(/\s+/)
@@ -514,18 +454,24 @@ function updateWordWrapperClasses(): void {
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
   }
-
   wordsEl.className = existing.join(" ");
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
+  if (!Config.showAllLines) {
+    void centerActiveLine();
+  }
   updateWordsMargin();
   updateWordsInputPosition();
   void updateHintsPositionDebounced();
   Caret.updatePosition();
+
+  if (!isInputElementFocused()) {
+    OutOfFocus.show();
+  }
 }
 
-export function showWords(): void {
+function showWords(): void {
   wordsEl.innerHTML = "";
 
   if (Config.mode === "zen") {
@@ -749,22 +695,6 @@ export function addWord(
   //     });
   //   }
   // });
-}
-
-export function flipColors(tf: boolean): void {
-  if (tf) {
-    wordsEl.classList.add("flipped");
-  } else {
-    wordsEl.classList.remove("flipped");
-  }
-}
-
-export function colorful(tc: boolean): void {
-  if (tc) {
-    wordsEl.classList.add("colorfulMode");
-  } else {
-    wordsEl.classList.remove("colorfulMode");
-  }
 }
 
 // because of the requestAnimationFrame, multiple calls to updateWordLetters
@@ -1031,9 +961,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     .slice(0, activeWordIndex)
     .filter((child) => child.classList.contains("afterNewline")).length;
   // the second `.afterNewline` after active word is visible during line jump
-  let lastVisibleAfterNewline = afterNewLineEls[
-    newLinesBeforeActiveWord + 1
-  ] as HTMLElement | undefined;
+  let lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord + 1] as
+    | HTMLElement
+    | undefined;
   if (lastVisibleAfterNewline) {
     lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
   } else {
@@ -1292,18 +1222,6 @@ export async function lineJump(
   return;
 }
 
-export function setRightToLeft(isEnabled: boolean): void {
-  if (isEnabled) {
-    wordsEl.classList.add("rightToLeftTest");
-    $("#resultWordsHistory .words").addClass("rightToLeftTest");
-    $("#resultReplay .words").addClass("rightToLeftTest");
-  } else {
-    wordsEl.classList.remove("rightToLeftTest");
-    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
-    $("#resultReplay .words").removeClass("rightToLeftTest");
-  }
-}
-
 export function setLigatures(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
     wordsEl.classList.add("withLigatures");
@@ -1475,42 +1393,18 @@ async function loadWordsHistory(): Promise<boolean> {
   return true;
 }
 
-export function toggleResultWords(noAnimation = false): void {
-  if (TestState.resultVisible) {
-    ResultWordHighlight.updateToggleWordsHistoryTime();
-    if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
-      //show
+export async function toggleResultWords(noAnimation = false): Promise<void> {
+  if (!TestState.resultVisible) return;
+  ResultWordHighlight.updateToggleWordsHistoryTime();
 
-      if ($("#resultWordsHistory .words .word").length === 0) {
-        void loadWordsHistory().then(() => {
-          if (Config.burstHeatmap) {
-            void applyBurstHeatmap();
-          }
-          $("#resultWordsHistory")
-            .removeClass("hidden")
-            .css("display", "none")
-            .slideDown(noAnimation ? 0 : 250, () => {
-              if (Config.burstHeatmap) {
-                void applyBurstHeatmap();
-              }
-            });
-        });
-      } else {
-        if (Config.burstHeatmap) {
-          void applyBurstHeatmap();
-        }
-        $("#resultWordsHistory")
-          .removeClass("hidden")
-          .css("display", "none")
-          .slideDown(noAnimation ? 0 : 250);
-      }
-    } else {
-      //hide
-
-      $("#resultWordsHistory").slideUp(250, () => {
-        $("#resultWordsHistory").addClass("hidden");
-      });
+  if (resultWordsHistoryEl.isHidden()) {
+    if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
+      await loadWordsHistory();
     }
+    void resultWordsHistoryEl.slideDown(noAnimation ? 0 : 250);
+    void applyBurstHeatmap();
+  } else {
+    void resultWordsHistoryEl.slideUp(noAnimation ? 0 : 250);
   }
 }
 
@@ -1520,8 +1414,7 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let burstlist = [...TestInput.burstHistory];
 
-    burstlist = burstlist.filter((x) => x !== Infinity);
-    burstlist = burstlist.filter((x) => x < 500);
+    burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
 
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     burstlist.forEach((burst, index) => {
@@ -1592,7 +1485,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       }
 
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
-        `<div>${string}</div>`,
+        `<div>${Misc.escapeHTML(string)}</div>`,
       );
     });
 
@@ -1729,6 +1622,14 @@ function updateLiveStatsColor(value: TimerColor): void {
     $("#liveStatsTextTop").addClass("timerText");
     $("#liveStatsTextBottom").addClass("timerText");
     $("#liveStatsMini").addClass("timerText");
+  }
+}
+
+function showHideTestRestartButton(showHide: boolean): void {
+  if (showHide) {
+    $(".pageTest #restartTestButton").removeClass("hidden");
+  } else {
+    $(".pageTest #restartTestButton").addClass("hidden");
   }
 }
 
@@ -1889,27 +1790,26 @@ export async function afterTestWordChange(
     //
   } else if (direction === "back") {
     if (Config.mode === "zen") {
-      const wordsChildren = [...(wordsEl.children ?? [])] as HTMLElement[];
-
+      // because we need to delete newline, beforenewline and afternewline elements which dont have wordindex attributes
+      // we need to do this loop thingy and delete all elements after the active word
       let deleteElements = false;
-      for (const child of wordsChildren) {
-        if (
-          !deleteElements &&
-          parseInt(child.getAttribute("data-wordindex") ?? "-1", 10) ===
-            TestState.activeWordIndex
-        ) {
-          deleteElements = true;
-          continue;
-        }
+      for (const child of wordsEl.children) {
         if (deleteElements) {
           child.remove();
+          continue;
+        }
+        const attr = child.getAttribute("data-wordindex");
+        if (attr === null) continue;
+        const wordIndex = parseInt(attr, 10);
+        if (wordIndex === TestState.activeWordIndex) {
+          deleteElements = true;
         }
       }
     }
   }
 }
 
-export function afterTestStart(): void {
+export function onTestStart(): void {
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
@@ -1919,12 +1819,70 @@ export function afterTestStart(): void {
   TimerProgress.update();
 }
 
-export function onTestRestart(): void {
+export function onTestRestart(source: "testPage" | "resultPage"): void {
+  $("#result").addClass("hidden");
+  $("#typingTest").css("opacity", 0).removeClass("hidden");
+  getInputElement().style.left = "0";
+  TestConfig.show();
+  Focus.set(false);
+  LiveSpeed.instantHide();
+  LiveSpeed.reset();
+  LiveBurst.instantHide();
+  LiveBurst.reset();
+  LiveAcc.instantHide();
+  LiveAcc.reset();
+  TimerProgress.instantHide();
+  TimerProgress.reset();
+  Monkey.instantHide();
+  LayoutfluidFunboxTimer.instantHide();
+  updatePremid();
+  focusWords(true);
+  void Keymap.refresh();
+  ResultWordHighlight.destroy();
+  MonkeyPower.reset();
+  MemoryFunboxTimer.reset();
+
+  if (Config.showAverage !== "off") {
+    void Last10Average.update().then(() => {
+      void ModesNotice.update();
+    });
+  } else {
+    void ModesNotice.update();
+  }
+
+  if (source === "resultPage") {
+    if (Config.randomTheme !== "off") {
+      void ThemeController.randomizeTheme();
+    }
+    void XPBar.skipBreakdown();
+  }
+
+  currentTestLine = 0;
+  if (ActivePage.get() === "test") {
+    AdController.updateFooterAndVerticalAds(false);
+  }
+  AdController.destroyResult();
   if (Config.compositionDisplay === "below") {
     CompositionDisplay.update(" ");
     CompositionDisplay.show();
   } else {
     CompositionDisplay.hide();
+  }
+  void SoundController.clearAllSounds();
+  cancelPendingAnimationFramesStartingWith("test-ui");
+  showWords();
+}
+
+export function onTestFinish(): void {
+  Caret.hide();
+  LiveSpeed.hide();
+  LiveAcc.hide();
+  LiveBurst.hide();
+  TimerProgress.hide();
+  OutOfFocus.hide();
+  Monkey.hide();
+  if (Config.playSoundOnClick === "16") {
+    void SoundController.playFartReverb();
   }
 }
 
@@ -1996,7 +1954,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Format.typingSpeed(burst, { showDecimalPlaces: false })}
+          ${isNaN(burst) || burst >= 1000 ? "Infinite" : Format.typingSpeed(burst, { showDecimalPlaces: false })}
           ${Config.typingSpeedUnit}
           </div>
           </div>`,
@@ -2018,14 +1976,14 @@ $("#wordsInput").on("focus", (e) => {
 });
 
 $("#wordsInput").on("focusout", () => {
-  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
+  if (!isInputElementFocused()) {
     OutOfFocus.show();
   }
   Caret.hide();
 });
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {
-  toggleResultWords();
+  void toggleResultWords();
 });
 
 $("#wordsWrapper").on("click", () => {
@@ -2056,14 +2014,7 @@ ConfigEvent.subscribe(({ key, newValue, metadata }) => {
   }
 
   if (key === "quickRestart") {
-    if (newValue === "off") {
-      $(".pageTest #restartTestButton").removeClass("hidden");
-    } else {
-      $(".pageTest #restartTestButton").addClass("hidden");
-    }
-  }
-  if (key === "maxLineWidth") {
-    updateWordsWidth();
+    showHideTestRestartButton(newValue === "off");
   }
   if (key === "timerOpacity") {
     updateLiveStatsOpacity(newValue);
@@ -2081,5 +2032,44 @@ ConfigEvent.subscribe(({ key, newValue, metadata }) => {
     } else {
       CompositionDisplay.hide();
     }
+  }
+  if (
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      key ?? "",
+    )
+  ) {
+    void updateHintsPositionDebounced();
+  }
+  if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
+    void applyBurstHeatmap();
+  }
+  if (key === "highlightMode") {
+    if (ActivePage.get() === "test") {
+      void updateWordLetters({
+        input: TestInput.input.current,
+        wordIndex: TestState.activeWordIndex,
+        compositionData: CompositionState.getData(),
+      });
+    }
+  }
+  if (
+    [
+      "highlightMode",
+      "blindMode",
+      "indicateTypos",
+      "tapeMode",
+      "hideExtraLetters",
+      "flipTestColors",
+      "colorfulMode",
+      "showAllLines",
+      "fontSize",
+      "maxLineWidth",
+      "tapeMargin",
+    ].includes(key)
+  ) {
+    updateWordWrapperClasses();
+  }
+  if (["tapeMode", "tapeMargin"].includes(key)) {
+    updateLiveStatsMargin();
   }
 });

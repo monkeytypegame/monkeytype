@@ -116,12 +116,12 @@ export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
   functionName: F,
 ): FunboxWithFunction<F>[] {
   return getActiveFunboxes().filter(
-    (fb) => fb.functions?.[functionName],
+    (fb) => fb.functions?.[functionName] !== undefined,
   ) as FunboxWithFunction<F>[];
 }
 
 /**
- * Check if there is an active funbox implemenging the given function
+ * Check if there is an active funbox implementing the given function
  * @param functionName function name
  * @returns
  */
