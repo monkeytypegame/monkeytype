@@ -863,17 +863,6 @@ export class ElementsWithUtils<
   }
 
   /**
-   * Get the index of element in the array
-   */
-  getElementIndex(element: HTMLElement): number {
-    console.warn(this.length);
-    for (let i = 0; i < this.length; i++) {
-      if (this[i]?.native === element) return i;
-    }
-    return -1;
-  }
-
-  /**
    * Set multiple style properties on all elements in the array.
    * An empty object clears all styles.
    */
