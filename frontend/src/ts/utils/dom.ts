@@ -210,6 +210,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if the element has the "hidden" class
+   */
+  isHidden(): boolean {
+    return this.hasClass("hidden");
+  }
+
+  /**
    * Check if element is visible
    */
   isVisible(): boolean {
@@ -666,6 +673,69 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
           resolve();
         },
       });
+    });
+  }
+
+  /**
+   * Animate the element sliding down (expanding height from 0 to full height)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideDown(duration = 250): Promise<void> {
+    this.show().setStyle({
+      height: "",
+      overflow: "hidden",
+      marginTop: "",
+      marginBottom: "",
+    });
+    const height = this.getOffsetHeight();
+    const computed = getComputedStyle(this.native);
+    const marginTop = computed.marginTop;
+    const marginBottom = computed.marginBottom;
+    this.setStyle({ height: "0px", marginTop: "0px", marginBottom: "0px" });
+    await this.promiseAnimate({
+      height: [0, height],
+      marginTop: [0, marginTop],
+      marginBottom: [0, marginBottom],
+      duration,
+      onComplete: () => {
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        });
+      },
+    });
+  }
+
+  /**
+   * Animate the element sliding up (collapsing height from full height to 0)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideUp(duration = 250): Promise<void> {
+    this.show().setStyle({
+      overflow: "hidden",
+      height: "",
+      marginTop: "",
+      marginBottom: "",
+    });
+    const height = this.getOffsetHeight();
+    const computed = getComputedStyle(this.native);
+    const marginTop = computed.marginTop;
+    const marginBottom = computed.marginBottom;
+    await this.promiseAnimate({
+      height: [height, 0],
+      marginTop: [marginTop, 0],
+      marginBottom: [marginBottom, 0],
+      duration,
+      onComplete: () => {
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        }).hide();
+      },
     });
   }
 
