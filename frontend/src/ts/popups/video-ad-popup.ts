@@ -4,7 +4,6 @@ import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
-import { animate } from "animejs";
 import { qs } from "../utils/dom";
 
 const wrapperId = "videoAdPopupWrapper";
@@ -38,19 +37,17 @@ export async function show(): Promise<void> {
   if (!isPopupVisible(wrapperId)) {
     const el = qs("#videoAdPopupWrapper");
 
-    if (el) {
-      animate(el.native, {
-        opacity: [0, 1],
-        duration: 125,
-        onBegin: () => {
-          el.show();
-        },
-        onComplete: () => {
-          //@ts-expect-error 3rd party ad code
-          window.dataLayer.push({ event: "EG_Video" });
-        },
-      });
-    }
+    el?.animate({
+      opacity: [0, 1],
+      duration: 125,
+      onBegin: () => {
+        el.show();
+      },
+      onComplete: () => {
+        //@ts-expect-error 3rd party ad code
+        window.dataLayer.push({ event: "EG_Video" });
+      },
+    });
   }
 }
 
@@ -58,16 +55,14 @@ function hide(): void {
   if (isPopupVisible(wrapperId)) {
     const el = qs("#videoAdPopupWrapper");
 
-    if (el) {
-      animate(el.native, {
-        opacity: [1, 0],
-        duration: 125,
-        onComplete: () => {
-          el.hide();
-          Skeleton.remove(wrapperId);
-        },
-      });
-    }
+    el?.animate({
+      opacity: [1, 0],
+      duration: 125,
+      onComplete: () => {
+        el.hide();
+        Skeleton.remove(wrapperId);
+      },
+    });
   }
 }
 
