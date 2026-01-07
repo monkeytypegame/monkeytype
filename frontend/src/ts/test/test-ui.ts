@@ -57,6 +57,7 @@ import * as XPBar from "../elements/xp-bar";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import { qsr } from "../utils/dom";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -67,6 +68,7 @@ const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
 const wordsWrapperEl = document.querySelector(
   ".pageTest #wordsWrapper",
 ) as HTMLElement;
+const resultWordsHistoryEl = qsr(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
 export let activeWordHeight = 0;
@@ -1391,42 +1393,18 @@ async function loadWordsHistory(): Promise<boolean> {
   return true;
 }
 
-export function toggleResultWords(noAnimation = false): void {
-  if (TestState.resultVisible) {
-    ResultWordHighlight.updateToggleWordsHistoryTime();
-    if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
-      //show
+export async function toggleResultWords(noAnimation = false): Promise<void> {
+  if (!TestState.resultVisible) return;
+  ResultWordHighlight.updateToggleWordsHistoryTime();
 
-      if ($("#resultWordsHistory .words .word").length === 0) {
-        void loadWordsHistory().then(() => {
-          if (Config.burstHeatmap) {
-            void applyBurstHeatmap();
-          }
-          $("#resultWordsHistory")
-            .removeClass("hidden")
-            .css("display", "none")
-            .slideDown(noAnimation ? 0 : 250, () => {
-              if (Config.burstHeatmap) {
-                void applyBurstHeatmap();
-              }
-            });
-        });
-      } else {
-        if (Config.burstHeatmap) {
-          void applyBurstHeatmap();
-        }
-        $("#resultWordsHistory")
-          .removeClass("hidden")
-          .css("display", "none")
-          .slideDown(noAnimation ? 0 : 250);
-      }
-    } else {
-      //hide
-
-      $("#resultWordsHistory").slideUp(250, () => {
-        $("#resultWordsHistory").addClass("hidden");
-      });
+  if (resultWordsHistoryEl.isHidden()) {
+    if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
+      await loadWordsHistory();
     }
+    void resultWordsHistoryEl.slideDown(noAnimation ? 0 : 250);
+    void applyBurstHeatmap();
+  } else {
+    void resultWordsHistoryEl.slideUp(noAnimation ? 0 : 250);
   }
 }
 
@@ -2005,7 +1983,7 @@ $("#wordsInput").on("focusout", () => {
 });
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {
-  toggleResultWords();
+  void toggleResultWords();
 });
 
 $("#wordsWrapper").on("click", () => {
