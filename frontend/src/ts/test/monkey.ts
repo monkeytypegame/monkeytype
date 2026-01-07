@@ -30,38 +30,28 @@ const middleKeysState = { left: false, right: false, last: "right" };
 // 10 left hand down
 // 11 both hands down
 
-const elements = {
-  "00": monkeyEl?.qsa(".up"),
-  "01": monkeyEl?.qsa(".right"),
-  "10": monkeyEl?.qsa(".left"),
-  "11": monkeyEl?.qsa(".both"),
-};
-
-const elementsFast = {
-  "00": monkeyFastEl?.qsa(".up"),
-  "01": monkeyFastEl?.qsa(".right"),
-  "10": monkeyFastEl?.qsa(".left"),
-  "11": monkeyFastEl?.qsa(".both"),
-};
-
-function toBit(b: boolean): "1" | "0" {
-  return b ? "1" : "0";
-}
+const upEls = monkeyEl?.qsa(".up");
+const rightEls = monkeyEl?.qsa(".right");
+const leftEls = monkeyEl?.qsa(".left");
+const bothEls = monkeyEl?.qsa(".both");
 
 function update(): void {
   if (!Config.monkey) return;
   if (!monkeyEl?.hasClass("hidden")) {
-    (Object.keys(elements) as (keyof typeof elements)[]).forEach((key) => {
-      elements[key]?.hide();
-    });
-    (Object.keys(elementsFast) as (keyof typeof elements)[]).forEach((key) => {
-      elementsFast[key]?.hide();
-    });
+    upEls?.hide();
+    rightEls?.hide();
+    leftEls?.hide();
+    bothEls?.hide();
 
-    const id: keyof typeof elements = `${toBit(left)}${toBit(right)}`;
-
-    elements[id]?.show();
-    elementsFast[id]?.show();
+    if (left && right) {
+      bothEls?.show();
+    } else if (right) {
+      rightEls?.show();
+    } else if (left) {
+      leftEls?.show();
+    } else {
+      upEls?.show();
+    }
   }
 }
 
