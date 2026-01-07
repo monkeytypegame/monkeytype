@@ -688,8 +688,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       marginBottom: "",
     });
     const height = this.getOffsetHeight();
-    const marginTop = this.getStyle().marginTop;
-    const marginBottom = this.getStyle().marginBottom;
+    const computed = getComputedStyle(this.native);
+    const marginTop = computed.marginTop;
+    const marginBottom = computed.marginBottom;
     this.setStyle({ height: "0px", marginTop: "0px", marginBottom: "0px" });
     await this.promiseAnimate({
       height: [0, height],
@@ -712,10 +713,16 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @param duration The duration of the animation in milliseconds (default: 250ms)
    */
   async slideUp(duration = 250): Promise<void> {
-    this.show().setStyle({ overflow: "hidden" });
+    this.show().setStyle({
+      overflow: "hidden",
+      height: "",
+      marginTop: "",
+      marginBottom: "",
+    });
     const height = this.getOffsetHeight();
-    const marginTop = this.getStyle().marginTop;
-    const marginBottom = this.getStyle().marginBottom;
+    const computed = getComputedStyle(this.native);
+    const marginTop = computed.marginTop;
+    const marginBottom = computed.marginBottom;
     await this.promiseAnimate({
       height: [height, 0],
       marginTop: [marginTop, 0],
