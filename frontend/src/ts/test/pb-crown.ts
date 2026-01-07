@@ -36,10 +36,10 @@ export function show(): void {
 
 export function update(type: CrownType): void {
   currentType = type;
-  const el = qs("#result .stats .wpm .crown");
-  el?.removeClass("ineligible");
-  el?.removeClass("pending");
-  el?.removeClass("error");
-  el?.removeClass("warning");
-  el?.addClass(type);
+  qs("#result .stats .wpm .crown")
+    ?.removeClass("ineligible")
+    ?.removeClass("pending")
+    ?.removeClass("error")
+    ?.removeClass("warning")
+    ?.addClass(type);
 }
