@@ -697,16 +697,24 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       overflow: "hidden",
       marginTop: "",
       marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
     });
-    const height = this.getOffsetHeight();
-    const computed = getComputedStyle(this.native);
-    const marginTop = computed.marginTop;
-    const marginBottom = computed.marginBottom;
-    this.setStyle({ height: "0px", marginTop: "0px", marginBottom: "0px" });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    this.setStyle({
+      height: "0px",
+      marginTop: "0px",
+      marginBottom: "0px",
+      paddingTop: "0px",
+      paddingBottom: "0px",
+    });
     await this.promiseAnimate({
       height: [0, height],
       marginTop: [0, marginTop],
       marginBottom: [0, marginBottom],
+      paddingTop: [0, paddingTop],
+      paddingBottom: [0, paddingBottom],
       duration,
       onComplete: () => {
         this.setStyle({
@@ -723,29 +731,40 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Animate the element sliding up (collapsing height from full height to 0)
    * @param duration The duration of the animation in milliseconds (default: 250ms)
    */
-  async slideUp(duration = 250): Promise<void> {
+  async slideUp(
+    duration = 250,
+    options?: {
+      hide?: boolean;
+    },
+  ): Promise<void> {
     this.show().setStyle({
       overflow: "hidden",
       height: "",
       marginTop: "",
       marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
     });
-    const height = this.getOffsetHeight();
-    const computed = getComputedStyle(this.native);
-    const marginTop = computed.marginTop;
-    const marginBottom = computed.marginBottom;
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
     await this.promiseAnimate({
       height: [height, 0],
       marginTop: [marginTop, 0],
       marginBottom: [marginBottom, 0],
+      paddingTop: [paddingTop, 0],
+      paddingBottom: [paddingBottom, 0],
       duration,
       onComplete: () => {
-        this.setStyle({
-          height: "",
-          overflow: "",
-          marginTop: "",
-          marginBottom: "",
-        }).hide();
+        if (options?.hide ?? true) {
+          this.hide().setStyle({
+            height: "",
+            overflow: "",
+            marginTop: "",
+            marginBottom: "",
+            paddingTop: "",
+            paddingBottom: "",
+          });
+        }
       },
     });
   }
