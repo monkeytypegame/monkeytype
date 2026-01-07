@@ -2,7 +2,7 @@ import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 type ReplayAction =
   | "correctLetter"
@@ -231,7 +231,7 @@ function addReplayEvent(action: ReplayAction, value?: number | string): void {
 function updateStatsString(time: number): void {
   const wpm = TestInput.wpmHistory[time - 1] ?? 0;
   const statsString = `${wpm}wpm\t${time}s`;
-  $("#replayStats").text(statsString);
+  qs("#replayStats")?.setText(statsString);
 }
 
 function playReplay(): void {
@@ -301,7 +301,7 @@ function getReplayExport(): string {
   });
 }
 
-$(".pageTest #playpauseReplayButton").on("click", () => {
+qs(".pageTest #playpauseReplayButton")?.on("click", () => {
   if (toggleButton?.className === "fas fa-play") {
     playReplay();
   } else if (toggleButton?.className === "fas fa-pause") {
@@ -309,23 +309,23 @@ $(".pageTest #playpauseReplayButton").on("click", () => {
   }
 });
 
-$("#replayWords").on("click", "letter", (event) => {
+qs("#replayWords")?.onChild("click", "letter", (event) => {
   //allows user to click on the place they want to start their replay at
   pauseReplay();
-  const replayWords = document.querySelector("#replayWords");
+  const replayWords = qs("#replayWords");
 
-  const words = [...(replayWords?.children ?? [])];
+  const words = [...(replayWords?.getChildren() ?? [])];
   targetWordPos = words.indexOf(
-    (event.target as HTMLElement).parentNode as HTMLElement,
+    (event.childTarget as HTMLElement).parentNode as HTMLElement,
   );
   const letters = [...(words[targetWordPos] as HTMLElement).children];
-  targetCurPos = letters.indexOf(event.target as HTMLElement);
+  targetCurPos = letters.indexOf(event.childTarget as HTMLElement);
 
   initializeReplayPrompt();
   loadOldReplay();
 });
 
-$(".pageTest").on("click", "#watchReplayButton", () => {
+qs(".pageTest")?.onChild("click", "#watchReplayButton", () => {
   toggleReplayDisplay();
 });
 
