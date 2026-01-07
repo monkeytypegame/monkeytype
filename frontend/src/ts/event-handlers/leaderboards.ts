@@ -1,11 +1,8 @@
 import { showPopup } from "../modals/simple-modals";
+import { qs } from "../utils/dom";
 
-const lb = document.getElementById("pageLeaderboards");
+const lb = qs("#pageLeaderboards");
 
-for (const button of lb?.querySelectorAll(
-  ".jumpButtons button[data-action='goToPage']",
-) ?? []) {
-  button?.addEventListener("click", () => {
-    showPopup("lbGoToPage");
-  });
-}
+lb?.qsa(".jumpButtons button[data-action='goToPage']").on("click", () => {
+  showPopup("lbGoToPage");
+});

@@ -1121,7 +1121,7 @@ export async function update(
   );
 
   if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
-    TestUI.toggleResultWords(true);
+    void TestUI.toggleResultWords(true);
   }
   AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();

@@ -1,6 +1,6 @@
 {
   "name": "monkeytype",
-  "version": "25.49.0",
+  "version": "26.2.0",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
@@ -65,9 +65,9 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxfmt": "0.21.0",
-    "oxlint": "1.36.0",
-    "oxlint-tsgolint": "0.10.0",
+    "oxfmt": "0.23.0",
+    "oxlint": "1.38.0",
+    "oxlint-tsgolint": "0.10.1",
     "prettier": "3.7.1",
     "turbo": "2.5.6",
     "vitest": "4.0.15"

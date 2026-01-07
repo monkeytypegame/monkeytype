@@ -57,7 +57,7 @@ export const page = new Page({
     disableButton();
   },
   afterShow: async (): Promise<void> => {
-    qs(".page.pageProfileSearch input")?.dispatch("focus");
+    qs(".page.pageProfileSearch input")?.focus();
   },
 });
 
