@@ -652,6 +652,13 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's children
+   */
+  getChildren(): HTMLCollection {
+    return this.native.children;
+  }
+
+  /**
    * Animate the element using Anime.js
    * @param animationParams The Anime.js animation parameters
    * @returns The JSAnimation instance created by Anime.js
