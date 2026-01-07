@@ -22,14 +22,6 @@ let left = false;
 let right = false;
 const middleKeysState = { left: false, right: false, last: "right" };
 
-// 0 hand up
-// 1 hand down
-
-// 00 both hands up
-// 01 right hand down
-// 10 left hand down
-// 11 both hands down
-
 const upEls = monkeyEl?.qsa(".up");
 const rightEls = monkeyEl?.qsa(".right");
 const leftEls = monkeyEl?.qsa(".left");
