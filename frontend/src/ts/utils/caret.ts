@@ -405,10 +405,13 @@ export class Caret {
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
-    // in zen mode we need to check per-letter
-    const isZen = Config.mode === "zen";
+    // in zen, custom or polyglot mode we may need per-letter
+    const perLetter =
+      Config.mode === "zen" ||
+      Config.mode === "custom" ||
+      Config.funbox.includes("polyglot");
     const [isWordRTL, isFullMatch] = isWordRightToLeft(
-      isZen ? (options.letter.native.textContent ?? "") : options.wordText,
+      perLetter ? (options.letter.native.textContent ?? "") : options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
     );
@@ -457,7 +460,7 @@ export class Caret {
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
-      if (!isZen && isFullMatch) options.word.addClass("wordRtl");
+      if (!perLetter && isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {
