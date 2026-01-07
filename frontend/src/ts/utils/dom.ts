@@ -683,6 +683,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   async slideDown(duration = 250): Promise<void> {
     this.show().setStyle({ height: "", overflow: "hidden" });
     const height = this.getOffsetHeight();
+    this.setStyle({ height: "0px" });
     await this.promiseAnimate({
       height: [0, height],
       duration,
