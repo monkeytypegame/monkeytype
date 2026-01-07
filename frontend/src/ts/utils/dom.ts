@@ -681,14 +681,28 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * @param duration The duration of the animation in milliseconds (default: 250ms)
    */
   async slideDown(duration = 250): Promise<void> {
-    this.show().setStyle({ height: "", overflow: "hidden" });
+    this.show().setStyle({
+      height: "",
+      overflow: "hidden",
+      marginTop: "",
+      marginBottom: "",
+    });
     const height = this.getOffsetHeight();
-    this.setStyle({ height: "0px" });
+    const marginTop = this.getStyle().marginTop;
+    const marginBottom = this.getStyle().marginBottom;
+    this.setStyle({ height: "0px", marginTop: "0px", marginBottom: "0px" });
     await this.promiseAnimate({
       height: [0, height],
+      marginTop: [0, marginTop],
+      marginBottom: [0, marginBottom],
       duration,
       onComplete: () => {
-        this.setStyle({ height: "", overflow: "" });
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        });
       },
     });
   }
