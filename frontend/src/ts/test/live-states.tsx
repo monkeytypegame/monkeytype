@@ -17,12 +17,7 @@ const [statsVisible, setStatsVisible] = createSignal({
   withAnimation: true,
 });
 
-export {
-  setLiveStatWpm,
-  setLiveStatAcc,
-  setLiveStatBurst,
-  setStatsVisible as setWpmVisible,
-};
+export { setLiveStatWpm, setLiveStatAcc, setLiveStatBurst, setStatsVisible };
 
 const liveWpmText = createMemo(() =>
   getLiveSpeedStyle() === "text" ? getWpm() : "",

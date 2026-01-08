@@ -59,7 +59,7 @@ import {
   setLiveStatAcc,
   setLiveStatBurst,
   setLiveStatWpm,
-  setWpmVisible,
+  setStatsVisible,
 } from "./live-states";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
@@ -1821,7 +1821,7 @@ export function onTestStart(): void {
   Monkey.show();
   TimerProgress.show();
   TimerProgress.update();
-  setWpmVisible({
+  setStatsVisible({
     value: true,
     withAnimation: true,
   });
@@ -1833,7 +1833,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
-  setWpmVisible({
+  setStatsVisible({
     value: false,
     withAnimation: false,
   });
