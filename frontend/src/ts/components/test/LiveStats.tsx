@@ -53,7 +53,7 @@ export function LiveStatsMini(props: {
     <>
       <Stat
         class="speed"
-        value={() => (getLiveSpeedStyle() === "mini" ? props.wpm() : "")}
+        value={props.wpm}
         visibilityOptions={getStatsVisible(
           () => getLiveSpeedStyle() === "mini",
         )}
