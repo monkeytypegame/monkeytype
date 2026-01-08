@@ -11,7 +11,7 @@ import {
 } from "../../hooks/useVisibilityAnimation";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 
-export function Stat(props: {
+function Stat(props: {
   value: Accessor<string>;
   visibilityOptions: Accessor<VisibilityAnimationOptions>;
   class?: string;
