@@ -8,6 +8,7 @@ import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
 import { ElementWithUtils } from "./dom";
+import * as Accessibility from "./accessibility";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -581,17 +582,13 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
 }
 
-export function prefersReducedMotion(): boolean {
-  return matchMedia?.("(prefers-reduced-motion)")?.matches;
-}
-
 /**
  * Reduce the animation time based on the browser preference `prefers-reduced-motion`.
  * @param animationTime
  * @returns `0` if user prefers reduced-motion, else the given animationTime
  */
 export function applyReducedMotion(animationTime: number): number {
-  return prefersReducedMotion() ? 0 : animationTime;
+  return Accessibility.applyReducedMotion(animationTime);
 }
 
 /**

@@ -1,6 +1,6 @@
 import { Accessor, createEffect } from "solid-js";
 import { ElementWithUtils } from "../utils/dom";
-import { applyReducedMotion } from "../utils/misc";
+import { applyReducedMotion } from "../utils/accessibility";
 
 export type VisibilityAnimationOptions = {
   visible: boolean;
