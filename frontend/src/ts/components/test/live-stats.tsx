@@ -1,14 +1,14 @@
 import { createSignal } from "solid-js";
-import { qsr } from "../utils/dom";
-import { LiveCounter } from "./live-counter";
+import { qsr } from "../../utils/dom";
+import { LiveCounter } from "../../test/live-counter";
 import { render } from "solid-js/web";
 import {
   getLiveAccStyle,
   getLiveBurstStyle,
   getLiveSpeedStyle,
-} from "../signals/config";
-import { isFocused } from "./focus";
-import { VisibilityAnimationOptions } from "../hooks/useVisibilityAnimation";
+} from "../../signals/config";
+import { isFocused } from "../../test/focus";
+import { VisibilityAnimationOptions } from "../../hooks/useVisibilityAnimation";
 
 const [getWpm, setLiveStatWpm] = createSignal("0");
 const [getAcc, setLiveStatAcc] = createSignal("100%");

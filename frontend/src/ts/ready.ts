@@ -11,7 +11,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs } from "./utils/dom";
-import { mountLiveCounters } from "./test/live-states";
+import { mountLiveCounters } from "./components/test/live-stats";
 
 onDOMReady(async () => {
   await configLoadPromise;

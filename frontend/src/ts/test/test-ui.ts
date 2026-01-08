@@ -60,7 +60,7 @@ import {
   setLiveStatBurst,
   setLiveStatWpm,
   setStatsVisible,
-} from "./live-states";
+} from "../components/test/live-stats";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
