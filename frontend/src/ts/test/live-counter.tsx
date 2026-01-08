@@ -20,10 +20,7 @@ export function LiveCounter(props: {
   });
 
   return (
-    <div
-      ref={(el) => (ref = new ElementWithUtils(el))}
-      class={`${props.class}`}
-    >
+    <div ref={(el) => (ref = new ElementWithUtils(el))} class={props.class}>
       {props.value()}
     </div>
   );
