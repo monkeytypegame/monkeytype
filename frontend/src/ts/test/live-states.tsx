@@ -19,25 +19,6 @@ const [statsVisible, setStatsVisible] = createSignal({
 
 export { setLiveStatWpm, setLiveStatAcc, setLiveStatBurst, setStatsVisible };
 
-const liveWpmText = createMemo(() =>
-  getLiveSpeedStyle() === "text" ? getWpm() : "",
-);
-const liveWpmMini = createMemo(() =>
-  getLiveSpeedStyle() === "mini" ? getWpm() : "",
-);
-const liveAccText = createMemo(() =>
-  getLiveAccStyle() === "text" ? getAcc() : "",
-);
-const liveAccMini = createMemo(() =>
-  getLiveAccStyle() === "mini" ? getAcc() : "",
-);
-const liveBurstText = createMemo(() =>
-  getLiveBurstStyle() === "text" ? getBurst() : "",
-);
-const liveBurstMini = createMemo(() =>
-  getLiveBurstStyle() === "mini" ? getBurst() : "",
-);
-
 export function mountLiveCounters(): void {
   const textWrapper = qsr("#liveStatsTextBottom");
   render(
@@ -45,17 +26,17 @@ export function mountLiveCounters(): void {
       <>
         <LiveCounter
           class="liveSpeed"
-          value={liveWpmText}
+          value={() => (getLiveSpeedStyle() === "text" ? getWpm() : "")}
           visible={statsVisible}
         />
         <LiveCounter
           class="liveAcc"
-          value={liveAccText}
+          value={() => (getLiveAccStyle() === "text" ? getAcc() : "")}
           visible={statsVisible}
         />
         <LiveCounter
           class="liveBurst"
-          value={liveBurstText}
+          value={() => (getLiveBurstStyle() === "text" ? getBurst() : "")}
           visible={statsVisible}
         />
       </>
@@ -67,11 +48,19 @@ export function mountLiveCounters(): void {
   render(
     () => (
       <>
-        <LiveCounter class="speed" value={liveWpmMini} visible={statsVisible} />
-        <LiveCounter class="acc" value={liveAccMini} visible={statsVisible} />
+        <LiveCounter
+          class="speed"
+          value={() => (getLiveSpeedStyle() === "mini" ? getWpm() : "")}
+          visible={statsVisible}
+        />
+        <LiveCounter
+          class="acc"
+          value={() => (getLiveAccStyle() === "mini" ? getAcc() : "")}
+          visible={statsVisible}
+        />
         <LiveCounter
           class="burst"
-          value={liveBurstMini}
+          value={() => (getLiveBurstStyle() === "mini" ? getBurst() : "")}
           visible={statsVisible}
         />
       </>
