@@ -55,11 +55,11 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import { setStatsVisible } from "../components/test/LiveStats";
 import {
   setLiveStatAcc,
   setLiveStatBurst,
   setLiveStatWpm,
+  setStatsVisible,
 } from "../signals/test";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(

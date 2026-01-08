@@ -10,6 +10,7 @@ import {
   VisibilityAnimationOptions,
 } from "../../hooks/useVisibilityAnimation";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { statsVisible } from "../../signals/test";
 
 function Stat(props: {
   value: Accessor<string>;
@@ -27,12 +28,6 @@ function Stat(props: {
   );
 }
 
-const [statsVisible, setStatsVisible] =
-  createSignal<VisibilityAnimationOptions>({
-    visible: false,
-    animate: true,
-  });
-
 const getStatsVisible = (
   visible: Accessor<boolean>,
 ): Accessor<VisibilityAnimationOptions> => {
@@ -41,8 +36,6 @@ const getStatsVisible = (
     animate: statsVisible().animate,
   });
 };
-
-export { setStatsVisible };
 
 export function LiveStatsMini(props: {
   wpm: Accessor<string>;
