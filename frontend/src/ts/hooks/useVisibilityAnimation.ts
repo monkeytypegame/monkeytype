@@ -1,17 +1,21 @@
 import { Accessor, createEffect } from "solid-js";
 import { ElementWithUtils } from "../utils/dom";
 
-export function useVisibilityAnimation(options: {
-  element: Accessor<ElementWithUtils<HTMLDivElement> | undefined>;
-  visible: Accessor<boolean>;
-  animate?: Accessor<boolean>;
-}): void {
-  const { element, visible, animate = () => true } = options;
+export type VisibilityAnimationOptions = {
+  visible: boolean;
+  animate?: boolean;
+};
+
+export function useVisibilityAnimation(
+  element: Accessor<ElementWithUtils<HTMLDivElement> | undefined>,
+  options: Accessor<VisibilityAnimationOptions>,
+): void {
   createEffect(() => {
     const el = element();
+    const opt = options();
     if (!el) return;
-    if (visible()) {
-      if (animate()) {
+    if (opt.visible) {
+      if (opt.animate) {
         el.animate({
           opacity: [0, 1],
           duration: 125,
@@ -20,7 +24,7 @@ export function useVisibilityAnimation(options: {
         el.setStyle({ opacity: "1" });
       }
     } else {
-      if (animate()) {
+      if (opt.animate) {
         el.animate({
           opacity: [1, 0],
           duration: 125,

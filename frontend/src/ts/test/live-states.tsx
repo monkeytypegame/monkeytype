@@ -8,6 +8,7 @@ import {
   getLiveSpeedStyle,
 } from "../signals/config";
 import { isFocused } from "./focus";
+import { VisibilityAnimationOptions } from "../hooks/useVisibilityAnimation";
 
 const [getWpm, setLiveStatWpm] = createSignal("0");
 const [getAcc, setLiveStatAcc] = createSignal("100%");
@@ -18,10 +19,10 @@ const [statsVisible, setStatsVisible] = createSignal({
   withAnimation: true,
 });
 
-const getStatsVisible = () => {
+const getStatsVisible = (): VisibilityAnimationOptions => {
   return {
-    value: statsVisible().value && isFocused(),
-    withAnimation: statsVisible().withAnimation,
+    visible: statsVisible().value && isFocused(),
+    animate: statsVisible().withAnimation,
   };
 };
 
@@ -35,17 +36,17 @@ export function mountLiveCounters(): void {
         <LiveCounter
           class="liveSpeed"
           value={() => (getLiveSpeedStyle() === "text" ? getWpm() : "")}
-          visible={getStatsVisible}
+          visibilityOptions={getStatsVisible}
         />
         <LiveCounter
           class="liveAcc"
           value={() => (getLiveAccStyle() === "text" ? getAcc() : "")}
-          visible={getStatsVisible}
+          visibilityOptions={getStatsVisible}
         />
         <LiveCounter
           class="liveBurst"
           value={() => (getLiveBurstStyle() === "text" ? getBurst() : "")}
-          visible={getStatsVisible}
+          visibilityOptions={getStatsVisible}
         />
       </>
     ),
@@ -59,17 +60,17 @@ export function mountLiveCounters(): void {
         <LiveCounter
           class="speed"
           value={() => (getLiveSpeedStyle() === "mini" ? getWpm() : "")}
-          visible={getStatsVisible}
+          visibilityOptions={getStatsVisible}
         />
         <LiveCounter
           class="acc"
           value={() => (getLiveAccStyle() === "mini" ? getAcc() : "")}
-          visible={getStatsVisible}
+          visibilityOptions={getStatsVisible}
         />
         <LiveCounter
           class="burst"
           value={() => (getLiveBurstStyle() === "mini" ? getBurst() : "")}
-          visible={getStatsVisible}
+          visibilityOptions={getStatsVisible}
         />
       </>
     ),
