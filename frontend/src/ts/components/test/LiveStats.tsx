@@ -1,4 +1,4 @@
-import { Accessor, createSignal, JSXElement } from "solid-js";
+import { Accessor, JSXElement } from "solid-js";
 import {
   getLiveAccStyle,
   getLiveBurstStyle,
@@ -37,61 +37,33 @@ const getStatsVisible = (
   });
 };
 
-export function LiveStatsMini(props: {
+export function LiveStats(props: {
+  mode: "mini" | "text";
   wpm: Accessor<string>;
   acc: Accessor<string>;
   burst: Accessor<string>;
 }): JSXElement {
+  const isVisible = (
+    config: Accessor<string>,
+  ): Accessor<VisibilityAnimationOptions> =>
+    getStatsVisible(() => config() === props.mode);
+
   return (
     <>
       <Stat
         class="speed"
         value={props.wpm}
-        visibilityOptions={getStatsVisible(
-          () => getLiveSpeedStyle() === "mini",
-        )}
+        visibilityOptions={isVisible(getLiveSpeedStyle)}
       />
       <Stat
         class="acc"
         value={props.acc}
-        visibilityOptions={getStatsVisible(() => getLiveAccStyle() === "mini")}
+        visibilityOptions={isVisible(getLiveAccStyle)}
       />
       <Stat
         class="burst"
         value={props.burst}
-        visibilityOptions={getStatsVisible(
-          () => getLiveBurstStyle() === "mini",
-        )}
-      />
-    </>
-  );
-}
-
-export function LiveStats(props: {
-  wpm: Accessor<string>;
-  acc: Accessor<string>;
-  burst: Accessor<string>;
-}): JSXElement {
-  return (
-    <>
-      <Stat
-        class="liveSpeed"
-        value={props.wpm}
-        visibilityOptions={getStatsVisible(
-          () => getLiveSpeedStyle() === "text",
-        )}
-      />
-      <Stat
-        class="liveAcc"
-        value={props.acc}
-        visibilityOptions={getStatsVisible(() => getLiveAccStyle() === "text")}
-      />
-      <Stat
-        class="liveBurst"
-        value={props.burst}
-        visibilityOptions={getStatsVisible(
-          () => getLiveBurstStyle() === "text",
-        )}
+        visibilityOptions={isVisible(getLiveBurstStyle)}
       />
     </>
   );
