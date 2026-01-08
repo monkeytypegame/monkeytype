@@ -40,7 +40,7 @@ const getStatsVisible = (): VisibilityAnimationOptions => {
   };
 };
 
-export { setStatsVisible as setStatsVisible };
+export { setStatsVisible };
 
 export function LiveStatsMini(props: {
   wpm: Accessor<string>;
