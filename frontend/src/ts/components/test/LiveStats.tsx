@@ -33,11 +33,13 @@ const [statsVisible, setStatsVisible] =
     animate: true,
   });
 
-const getStatsVisible = (): VisibilityAnimationOptions => {
-  return {
-    visible: statsVisible().visible && isFocused(),
+const getStatsVisible = (
+  visible: Accessor<boolean>,
+): Accessor<VisibilityAnimationOptions> => {
+  return () => ({
+    visible: statsVisible().visible && isFocused() && visible(),
     animate: statsVisible().animate,
-  };
+  });
 };
 
 export { setStatsVisible };
@@ -52,17 +54,21 @@ export function LiveStatsMini(props: {
       <Stat
         class="speed"
         value={() => (getLiveSpeedStyle() === "mini" ? props.wpm() : "")}
-        visibilityOptions={getStatsVisible}
+        visibilityOptions={getStatsVisible(
+          () => getLiveSpeedStyle() === "mini",
+        )}
       />
       <Stat
         class="acc"
-        value={() => (getLiveAccStyle() === "mini" ? props.acc() : "")}
-        visibilityOptions={getStatsVisible}
+        value={props.acc}
+        visibilityOptions={getStatsVisible(() => getLiveAccStyle() === "mini")}
       />
       <Stat
         class="burst"
-        value={() => (getLiveBurstStyle() === "mini" ? props.burst() : "")}
-        visibilityOptions={getStatsVisible}
+        value={props.burst}
+        visibilityOptions={getStatsVisible(
+          () => getLiveBurstStyle() === "mini",
+        )}
       />
     </>
   );
@@ -77,18 +83,22 @@ export function LiveStats(props: {
     <>
       <Stat
         class="liveSpeed"
-        value={() => (getLiveSpeedStyle() === "text" ? props.wpm() : "")}
-        visibilityOptions={getStatsVisible}
+        value={props.wpm}
+        visibilityOptions={getStatsVisible(
+          () => getLiveSpeedStyle() === "text",
+        )}
       />
       <Stat
         class="liveAcc"
-        value={() => (getLiveAccStyle() === "text" ? props.acc() : "")}
-        visibilityOptions={getStatsVisible}
+        value={props.acc}
+        visibilityOptions={getStatsVisible(() => getLiveAccStyle() === "text")}
       />
       <Stat
         class="liveBurst"
-        value={() => (getLiveBurstStyle() === "text" ? props.burst() : "")}
-        visibilityOptions={getStatsVisible}
+        value={props.burst}
+        visibilityOptions={getStatsVisible(
+          () => getLiveBurstStyle() === "text",
+        )}
       />
     </>
   );

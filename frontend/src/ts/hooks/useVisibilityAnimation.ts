@@ -18,21 +18,27 @@ export function useVisibilityAnimation(
     if (!el) return;
     if (opt.visible) {
       if (opt.animate) {
+        el.show();
         el.animate({
           opacity: [0, 1],
           duration: applyReducedMotion(125),
         });
       } else {
         el.setStyle({ opacity: "1" });
+        el.show();
       }
     } else {
       if (opt.animate) {
         el.animate({
           opacity: [1, 0],
           duration: applyReducedMotion(125),
+          onComplete: () => {
+            el.hide();
+          },
         });
       } else {
         el.setStyle({ opacity: "0" });
+        el.hide();
       }
     }
   });
