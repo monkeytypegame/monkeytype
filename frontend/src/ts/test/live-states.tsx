@@ -12,12 +12,17 @@ const [getWpm, setLiveStatWpm] = createSignal("0");
 const [getAcc, setLiveStatAcc] = createSignal("100%");
 const [getBurst, setLiveStatBurst] = createSignal("0");
 
-const [wpmVisible, setWpmVisible] = createSignal({
+const [statsVisible, setStatsVisible] = createSignal({
   value: false,
   withAnimation: true,
 });
 
-export { setLiveStatWpm, setLiveStatAcc, setLiveStatBurst, setWpmVisible };
+export {
+  setLiveStatWpm,
+  setLiveStatAcc,
+  setLiveStatBurst,
+  setStatsVisible as setWpmVisible,
+};
 
 const liveWpmText = createMemo(() =>
   getLiveSpeedStyle() === "text" ? getWpm() : "",
@@ -42,11 +47,23 @@ export function mountLiveCounters(): void {
   const textWrapper = qsr("#liveStatsTextBottom");
   render(
     () => (
-      <div class="wrapper">
-        {/* <LiveCounter class="liveSpeed" value={liveWpmText} />
-        <LiveCounter class="liveAcc" value={liveAccText} />
-        <LiveCounter class="liveBurst" value={liveBurstText} /> */}
-      </div>
+      <>
+        <LiveCounter
+          class="liveSpeed"
+          value={liveWpmText}
+          visible={statsVisible}
+        />
+        <LiveCounter
+          class="liveAcc"
+          value={liveAccText}
+          visible={statsVisible}
+        />
+        <LiveCounter
+          class="liveBurst"
+          value={liveBurstText}
+          visible={statsVisible}
+        />
+      </>
     ),
     textWrapper.native,
   );
@@ -54,11 +71,15 @@ export function mountLiveCounters(): void {
   const miniWrapper = qsr("#liveStatsMini");
   render(
     () => (
-      <div>
-        <LiveCounter class="speed" value={liveWpmMini} visible={wpmVisible} />
-        {/* <LiveCounter class="acc" value={liveAccMini} />
-        <LiveCounter class="burst" value={liveBurstMini} /> */}
-      </div>
+      <>
+        <LiveCounter class="speed" value={liveWpmMini} visible={statsVisible} />
+        <LiveCounter class="acc" value={liveAccMini} visible={statsVisible} />
+        <LiveCounter
+          class="burst"
+          value={liveBurstMini}
+          visible={statsVisible}
+        />
+      </>
     ),
     miniWrapper.native,
   );

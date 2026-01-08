@@ -1838,8 +1838,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     withAnimation: false,
   });
   setLiveStatWpm("0");
-  setLiveStatBurst("");
-  setLiveStatAcc("");
+  setLiveStatBurst("0");
+  setLiveStatAcc("100%");
   TimerProgress.instantHide();
   TimerProgress.reset();
   Monkey.instantHide();
