@@ -58,7 +58,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import { setWpm } from "./live-states";
+import { setWpm } from "../signals/live-states";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,

@@ -21,7 +21,7 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { setWpm } from "./live-states";
+import { setWpm } from "../signals/live-states";
 import Format from "../utils/format";
 
 let lastLoop = 0;
