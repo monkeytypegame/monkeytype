@@ -14,15 +14,16 @@ const [getWpm, setLiveStatWpm] = createSignal("0");
 const [getAcc, setLiveStatAcc] = createSignal("100%");
 const [getBurst, setLiveStatBurst] = createSignal("0");
 
-const [statsVisible, setStatsVisible] = createSignal({
-  value: false,
-  withAnimation: true,
-});
+const [statsVisible, setStatsVisible] =
+  createSignal<VisibilityAnimationOptions>({
+    visible: false,
+    animate: true,
+  });
 
 const getStatsVisible = (): VisibilityAnimationOptions => {
   return {
-    visible: statsVisible().value && isFocused(),
-    animate: statsVisible().withAnimation,
+    visible: statsVisible().visible && isFocused(),
+    animate: statsVisible().animate,
   };
 };
 

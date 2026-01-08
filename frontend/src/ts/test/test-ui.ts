@@ -1822,8 +1822,8 @@ export function onTestStart(): void {
   TimerProgress.show();
   TimerProgress.update();
   setStatsVisible({
-    value: true,
-    withAnimation: true,
+    visible: true,
+    animate: true,
   });
 }
 
@@ -1834,8 +1834,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   TestConfig.show();
   Focus.set(false);
   setStatsVisible({
-    value: false,
-    withAnimation: false,
+    visible: false,
+    animate: false,
   });
   setLiveStatWpm("0");
   setLiveStatBurst("0");
