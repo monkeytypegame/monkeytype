@@ -9,8 +9,9 @@ export type VisibilityAnimationOptions = {
 
 export function useVisibilityAnimation(
   element: Accessor<ElementWithUtils<HTMLDivElement> | undefined>,
-  options: Accessor<VisibilityAnimationOptions>,
+  options?: Accessor<VisibilityAnimationOptions>,
 ): void {
+  if (!options) return;
   createEffect(() => {
     const el = element();
     const opt = options();

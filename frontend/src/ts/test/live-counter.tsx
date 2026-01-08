@@ -7,7 +7,7 @@ import { useRefWithUtils } from "../hooks/useRefWithUtils";
 
 export function LiveCounter(props: {
   value: Accessor<string>;
-  visibilityOptions: Accessor<VisibilityAnimationOptions>;
+  visibilityOptions?: Accessor<VisibilityAnimationOptions>;
   class?: string;
 }): JSXElement {
   const [ref, element] = useRefWithUtils<HTMLDivElement>();
