@@ -1,6 +1,9 @@
 import type { Assertion, AsymmetricMatchersContaining } from "vitest";
 import { TestActivityDay } from "../src/ts/elements/test-activity-calendar";
 
+/// <reference types="vitest" />
+import "@testing-library/jest-dom";
+
 interface ActivityDayMatchers<R = TestActivityDay> {
   toBeDate: (date: string) => ActivityDayMatchers<R>;
   toHaveTests: (tests: number) => ActivityDayMatchers<R>;

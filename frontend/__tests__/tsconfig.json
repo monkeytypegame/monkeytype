@@ -10,7 +10,8 @@
   "files": ["vitest.d.ts"],
   "include": [
     "./**/*.spec.ts",
-    "./**/*.jsdom-spec.{ts,tsx}",
+    "./**/*.jsdom-spec.ts",
+    "./**/*.jsdom-spec.tsx",
     "./setup-tests.ts"
   ]
 }
