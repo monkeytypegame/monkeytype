@@ -15,3 +15,13 @@ export function mountLiveCounters(): void {
     qsr("#liveSpeedCounter").native,
   );
 }
+
+export function mountAccountPage(): () => void {
+  const speedStyleDispose = render(
+    () => <LiveCounter value={getLiveSpeedStyle} />,
+    qsr("#accountSpeedStyle").native,
+  );
+  return () => {
+    speedStyleDispose();
+  };
+}
