@@ -1,20 +1,18 @@
-import { createEffect } from "solid-js";
+import { Accessor, createEffect } from "solid-js";
 import { ElementWithUtils } from "./dom";
 import { applyReducedMotion } from "./misc";
-import { isFocused } from "../test/focus";
 import { VisibleDirectiveProps } from "../types/solid-directives";
 
 export function visible(
   el: HTMLElement,
-  accessorWrapper: () => VisibleDirectiveProps,
+  accessorWrapper: Accessor<VisibleDirectiveProps>,
 ): void {
   const divUtil = new ElementWithUtils(el);
 
   createEffect(() => {
-    const focused = isFocused();
     const state = accessorWrapper()();
 
-    if (state.value && focused) {
+    if (state.value) {
       if (state.withAnimation) {
         divUtil.animate({
           opacity: [0, 1],
