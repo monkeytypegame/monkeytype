@@ -11,13 +11,13 @@ export function LiveCounter(props: {
   }>;
   class?: string;
 }): JSXElement {
-  let divUtil: ElementWithUtils<HTMLDivElement> | undefined;
+  let ref: ElementWithUtils<HTMLDivElement> | undefined;
 
-  useVisibilityAnimation(() => divUtil, props.visible, isFocused);
+  useVisibilityAnimation(() => ref, props.visible, isFocused);
 
   return (
     <div
-      ref={(el) => (divUtil = new ElementWithUtils(el))}
+      ref={(el) => (ref = new ElementWithUtils(el))}
       class={`${props.class}`}
     >
       {props.value()}
