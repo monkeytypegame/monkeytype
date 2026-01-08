@@ -55,12 +55,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import {
-  setAcc,
-  setBurst,
-  setTestRunning,
-  setWpm,
-} from "../signals/live-states";
+import { setAcc, setBurst, setWpm } from "../signals/live-states";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -88,7 +83,7 @@ export function focusWords(force = false): void {
     blurInputElement();
   }
   focusInputElement(true);
-  if (TestState.isActive) {
+  if (TestState.isActive()) {
     keepWordsInputInTheCenter(true);
   } else {
     const typingTest = document.querySelector<HTMLElement>("#typingTest");
@@ -1818,7 +1813,6 @@ export function onTestStart(): void {
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
-  setTestRunning(true);
   TimerProgress.update();
 }
 
@@ -1875,7 +1869,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 export function onTestFinish(): void {
   Caret.hide();
-  setTestRunning(false);
   TimerProgress.hide();
   OutOfFocus.hide();
   Monkey.hide();

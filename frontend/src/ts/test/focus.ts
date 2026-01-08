@@ -2,16 +2,20 @@ import * as Caret from "./caret";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { setFocus } from "../signals/live-states";
+import { createSignal } from "solid-js";
 
 const unfocusPx = 3;
-let state = false;
+let [state, setState] = createSignal(false);
 
 let cacheReady = false;
 let cache: {
   focus?: HTMLElement[];
   cursor?: HTMLElement[];
 } = {};
+
+export function isFocused(): boolean {
+  return state();
+}
 
 function initializeCache(): void {
   if (cacheReady) return;
@@ -43,8 +47,8 @@ export function set(value: boolean, withCursor = false): void {
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
 
-    if (value && !state) {
-      state = true;
+    if (value && !state()) {
+      setState(true);
 
       // batch DOM operations for better performance
       if (cache.focus) {
@@ -60,8 +64,8 @@ export function set(value: boolean, withCursor = false): void {
 
       Caret.stopAnimation();
       TimerProgress.show();
-    } else if (!value && state) {
-      state = false;
+    } else if (!value && state()) {
+      setState(false);
 
       if (cache.focus) {
         for (const el of cache.focus) {
@@ -77,14 +81,12 @@ export function set(value: boolean, withCursor = false): void {
       Caret.startAnimation();
       TimerProgress.hide();
     }
-
-    setFocus(state);
   });
 }
 
 $(document).on("mousemove", function (event) {
   if (PageTransition.get()) return;
-  if (!state) return;
+  if (!state()) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

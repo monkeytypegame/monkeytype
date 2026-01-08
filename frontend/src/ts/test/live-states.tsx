@@ -2,20 +2,16 @@ import { createMemo } from "solid-js";
 import { qsr } from "../utils/dom";
 import { LiveCounter } from "./live-counter";
 import { render } from "solid-js/web";
-import {
-  getAcc,
-  getBurst,
-  getFocus,
-  getTestRunning,
-  getWpm,
-} from "../signals/live-states";
+import { getAcc, getBurst, getWpm } from "../signals/live-states";
 import {
   getLiveAccStyle,
   getLiveBurstStyle,
   getLiveSpeedStyle,
 } from "../signals/config";
+import { isActive } from "./test-state";
+import { isFocused } from "./focus";
 
-const isTestRunning = createMemo(() => getTestRunning() && getFocus());
+const isTestRunning = createMemo(() => isActive() && isFocused());
 
 const liveWpmText = createMemo(() =>
   isTestRunning() && getLiveSpeedStyle() === "text" ? getWpm() : "",

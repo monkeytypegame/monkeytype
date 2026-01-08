@@ -308,7 +308,7 @@ async function _startOld(): Promise<void> {
     const drift = Math.abs(interval - delay);
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      if (!TestState.isActive) {
+      if (!TestState.isActive()) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

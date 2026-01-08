@@ -7,7 +7,7 @@ import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 
 export function onBeforeDelete(event: InputEvent): void {
-  if (!TestState.isActive) {
+  if (!TestState.isActive()) {
     event.preventDefault();
     return;
   }

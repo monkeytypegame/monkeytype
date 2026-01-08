@@ -42,7 +42,7 @@ function init(): void {
   }
 
   setInterval(() => {
-    if (TestState.isActive) {
+    if (TestState.isActive()) {
       return;
     }
     if (choice === "eg") {

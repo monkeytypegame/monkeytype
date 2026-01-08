@@ -39,7 +39,7 @@ const throttledHandleState = debounce(5000, () => {
       )?.dispatch("click");
     }
     bannerAlreadyClosed = false;
-  } else if (!TestState.isActive) {
+  } else if (!TestState.isActive()) {
     showOfflineBanner();
   }
 });

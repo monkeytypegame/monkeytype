@@ -20,7 +20,7 @@ const textEl = document.querySelector(
 const miniEl = document.querySelector("#liveStatsMini .time") as HTMLElement;
 
 export function show(): void {
-  if (!TestState.isActive) return;
+  if (!TestState.isActive()) return;
   requestDebouncedAnimationFrame("timer-progress.show", () => {
     if (Config.mode !== "zen" && Config.timerStyle === "bar") {
       animate(barOpacityEl, {
@@ -255,7 +255,7 @@ export function update(): void {
 }
 
 export function updateStyle(): void {
-  if (!TestState.isActive) return;
+  if (!TestState.isActive()) return;
   hide();
   update();
   if (Config.timerStyle === "off") return;

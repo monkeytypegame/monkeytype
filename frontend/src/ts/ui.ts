@@ -81,7 +81,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestState.isActive) {
+    if (TestState.isActive()) {
       event.preventDefault();
       // Included for legacy support, e.g. Chrome/Edge < 119
       // oxlint-disable-next-line no-deprecated

@@ -133,7 +133,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
   if (
     currentSettings === null ||
-    !TestState.isActive ||
+    !TestState.isActive() ||
     TestState.resultVisible
   ) {
     return;

@@ -79,7 +79,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
 }
 
 function isConfigChangeBlocked(): boolean {
-  if (TestState.isActive && config.funbox.includes("no_quit")) {
+  if (TestState.isActive() && config.funbox.includes("no_quit")) {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
@@ -112,7 +112,7 @@ export function setConfig<T extends keyof Config>(
 
   if (
     metadata.changeRequiresRestart &&
-    TestState.isActive &&
+    TestState.isActive() &&
     config.funbox.includes("no_quit")
   ) {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {

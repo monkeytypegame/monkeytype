@@ -151,7 +151,7 @@ export function restart(options = {} as RestartOptions): void {
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   const noQuit = isFunboxActive("no_quit");
-  if (TestState.isActive && noQuit) {
+  if (TestState.isActive() && noQuit) {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
@@ -196,7 +196,7 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
-  if (TestState.isActive) {
+  if (TestState.isActive()) {
     if (TestState.isRepeated) {
       options.withSameWordset = true;
     }
@@ -221,7 +221,7 @@ export function restart(options = {} as RestartOptions): void {
     TestWords.currentQuote !== null &&
     Config.language.startsWith(TestWords.currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
-    (TestState.isActive || failReason !== "")
+    (TestState.isActive() || failReason !== "")
   ) {
     options.withSameWordset = true;
   }
@@ -854,7 +854,7 @@ function buildCompletedEvent(
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  if (!TestState.isActive) return;
+  if (!TestState.isActive()) return;
   TestUI.setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear();
@@ -1404,7 +1404,7 @@ $(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
-    TestState.isActive &&
+    TestState.isActive() &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
