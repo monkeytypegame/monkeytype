@@ -1,7 +1,6 @@
 import { Accessor, JSXElement } from "solid-js";
-import { ElementWithUtils } from "../utils/dom";
-import { isFocused } from "./focus";
 import { useVisibilityAnimation } from "../hooks/useVisibilityAnimation";
+import { useRefWithUtils } from "../hooks/useRefWithUtils";
 
 export function LiveCounter(props: {
   value: Accessor<string>;
@@ -11,16 +10,16 @@ export function LiveCounter(props: {
   }>;
   class?: string;
 }): JSXElement {
-  let ref: ElementWithUtils<HTMLDivElement> | undefined;
+  const [ref, element] = useRefWithUtils<HTMLDivElement>();
 
   useVisibilityAnimation({
-    element: () => ref,
-    visible: () => props.visible().value && isFocused(),
+    element,
+    visible: () => props.visible().value,
     animate: () => props.visible().withAnimation,
   });
 
   return (
-    <div ref={(el) => (ref = new ElementWithUtils(el))} class={props.class}>
+    <div ref={ref} class={props.class}>
       {props.value()}
     </div>
   );

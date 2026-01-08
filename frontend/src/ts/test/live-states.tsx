@@ -7,6 +7,7 @@ import {
   getLiveBurstStyle,
   getLiveSpeedStyle,
 } from "../signals/config";
+import { isFocused } from "./focus";
 
 const [getWpm, setLiveStatWpm] = createSignal("0");
 const [getAcc, setLiveStatAcc] = createSignal("100%");
@@ -16,6 +17,13 @@ const [statsVisible, setStatsVisible] = createSignal({
   value: false,
   withAnimation: true,
 });
+
+const getStatsVisible = () => {
+  return {
+    value: statsVisible().value && isFocused(),
+    withAnimation: statsVisible().withAnimation,
+  };
+};
 
 export { setLiveStatWpm, setLiveStatAcc, setLiveStatBurst, setStatsVisible };
 
@@ -27,17 +35,17 @@ export function mountLiveCounters(): void {
         <LiveCounter
           class="liveSpeed"
           value={() => (getLiveSpeedStyle() === "text" ? getWpm() : "")}
-          visible={statsVisible}
+          visible={getStatsVisible}
         />
         <LiveCounter
           class="liveAcc"
           value={() => (getLiveAccStyle() === "text" ? getAcc() : "")}
-          visible={statsVisible}
+          visible={getStatsVisible}
         />
         <LiveCounter
           class="liveBurst"
           value={() => (getLiveBurstStyle() === "text" ? getBurst() : "")}
-          visible={statsVisible}
+          visible={getStatsVisible}
         />
       </>
     ),
@@ -51,17 +59,17 @@ export function mountLiveCounters(): void {
         <LiveCounter
           class="speed"
           value={() => (getLiveSpeedStyle() === "mini" ? getWpm() : "")}
-          visible={statsVisible}
+          visible={getStatsVisible}
         />
         <LiveCounter
           class="acc"
           value={() => (getLiveAccStyle() === "mini" ? getAcc() : "")}
-          visible={statsVisible}
+          visible={getStatsVisible}
         />
         <LiveCounter
           class="burst"
           value={() => (getLiveBurstStyle() === "mini" ? getBurst() : "")}
-          visible={statsVisible}
+          visible={getStatsVisible}
         />
       </>
     ),
