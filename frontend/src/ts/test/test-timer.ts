@@ -22,6 +22,7 @@ import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { setWpm } from "./live-states";
+import Format from "../utils/format";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -237,7 +238,11 @@ function timerStep(): void {
   // already using raf
   TimerProgress.update();
   LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
-  setWpm(Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm);
+  setWpm(
+    Format.typingSpeed(Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm, {
+      showDecimalPlaces: false,
+    }),
+  );
 
   //logic
   if (Config.playTimeWarning !== "off") playTimeWarning();
