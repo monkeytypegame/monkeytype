@@ -10,6 +10,7 @@ export function LiveCounter(props: {
   }>;
   class?: string;
 }): JSXElement {
+  // oxlint-disable-next-line no-unassigned-vars
   let divRef: HTMLDivElement | undefined;
 
   createEffect(() => {
