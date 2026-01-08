@@ -1,5 +1,6 @@
 import { Accessor, createEffect } from "solid-js";
 import { ElementWithUtils } from "../utils/dom";
+import { applyReducedMotion } from "../utils/misc";
 
 export type VisibilityAnimationOptions = {
   visible: boolean;
@@ -18,7 +19,7 @@ export function useVisibilityAnimation(
       if (opt.animate) {
         el.animate({
           opacity: [0, 1],
-          duration: 125,
+          duration: applyReducedMotion(125),
         });
       } else {
         el.setStyle({ opacity: "1" });
@@ -27,7 +28,7 @@ export function useVisibilityAnimation(
       if (opt.animate) {
         el.animate({
           opacity: [1, 0],
-          duration: 125,
+          duration: applyReducedMotion(125),
         });
       } else {
         el.setStyle({ opacity: "0" });
