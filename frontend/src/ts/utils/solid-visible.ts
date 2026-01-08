@@ -6,15 +6,16 @@ import { VisibleDirectiveProps } from "../types/solid-directives";
 
 export function visible(
   el: HTMLElement,
-  isVisible: VisibleDirectiveProps,
+  accessorWrapper: () => VisibleDirectiveProps,
 ): void {
   const divUtil = new ElementWithUtils(el);
 
   createEffect(() => {
-    const visibleState = isVisible();
-    const focusState = isFocused();
-    if (visibleState.value && focusState) {
-      if (visibleState.withAnimation) {
+    const focused = isFocused();
+    const state = accessorWrapper()();
+
+    if (state.value && focused) {
+      if (state.withAnimation) {
         divUtil.animate({
           opacity: [0, 1],
           duration: applyReducedMotion(1250),
@@ -23,7 +24,7 @@ export function visible(
         divUtil.setStyle({ opacity: "1" });
       }
     } else {
-      if (visibleState.withAnimation) {
+      if (state.withAnimation) {
         divUtil.animate({
           opacity: [1, 0],
           duration: applyReducedMotion(1250),
