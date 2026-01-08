@@ -1,6 +1,7 @@
-import { Accessor, createEffect, JSXElement, onMount } from "solid-js";
+import { Accessor, JSXElement } from "solid-js";
 import { ElementWithUtils } from "../utils/dom";
 import { isFocused } from "./focus";
+import { useVisibilityAnimation } from "../hooks/useVisibilityAnimation";
 
 export function LiveCounter(props: {
   value: Accessor<string>;
@@ -10,43 +11,15 @@ export function LiveCounter(props: {
   }>;
   class?: string;
 }): JSXElement {
-  // oxlint-disable-next-line no-unassigned-vars
-  let divRef: HTMLDivElement | undefined;
   let divUtil: ElementWithUtils<HTMLDivElement> | undefined;
 
-  onMount(() => {
-    if (divRef) {
-      divUtil = new ElementWithUtils(divRef);
-    }
-  });
-
-  createEffect(() => {
-    if (divUtil === undefined) return;
-    const visibleState = props.visible();
-    const focusState = isFocused();
-    if (visibleState.value && focusState) {
-      if (visibleState.withAnimation) {
-        divUtil.animate({
-          opacity: [0, 1],
-          duration: 125,
-        });
-      } else {
-        divUtil.setStyle({ opacity: "1" });
-      }
-    } else {
-      if (visibleState.withAnimation) {
-        divUtil.animate({
-          opacity: [1, 0],
-          duration: 125,
-        });
-      } else {
-        divUtil.setStyle({ opacity: "0" });
-      }
-    }
-  });
+  useVisibilityAnimation(() => divUtil, props.visible, isFocused);
 
   return (
-    <div ref={divRef} class={`${props.class}`}>
+    <div
+      ref={(el) => (divUtil = new ElementWithUtils(el))}
+      class={`${props.class}`}
+    >
       {props.value()}
     </div>
   );
