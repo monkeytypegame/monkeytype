@@ -1,4 +1,4 @@
-import { createMemo, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { qsr } from "../utils/dom";
 import { LiveCounter } from "./live-counter";
 import { render } from "solid-js/web";
