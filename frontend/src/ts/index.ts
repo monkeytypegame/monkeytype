@@ -48,6 +48,7 @@ import "./utils/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
+import { mountComponents } from "./components/mount";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -107,3 +108,5 @@ if (isDevEnvironment()) {
     module.appendButton();
   });
 }
+
+mountComponents();

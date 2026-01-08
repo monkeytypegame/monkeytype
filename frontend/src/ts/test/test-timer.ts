@@ -21,7 +21,7 @@ import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import Format from "../utils/format";
-import { setLiveStatWpm } from "../components/test/live-stats";
+import { setLiveStatWpm } from "../signals/test";
 
 let lastLoop = 0;
 const newTimer = createTimer({
