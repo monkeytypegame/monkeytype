@@ -55,7 +55,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import { setAcc, setBurst, setWpm } from "../signals/live-states";
+import { setAcc, setBurst } from "../signals/live-states";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1822,9 +1822,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
-  setWpm("");
-  setBurst("");
-  setAcc("");
   TimerProgress.instantHide();
   TimerProgress.reset();
   Monkey.instantHide();
