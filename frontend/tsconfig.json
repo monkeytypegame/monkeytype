@@ -24,5 +24,5 @@
     "vite-plugins/**/*.ts",
     "vite.config.ts"
   ],
-  "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "build", "setup-tests.ts", "./__tests__/**/*.*"]
 }

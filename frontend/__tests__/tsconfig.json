@@ -3,8 +3,14 @@
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "module": "ESNext",
-    "noEmit": true
+    "noEmit": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   },
   "files": ["vitest.d.ts"],
-  "include": ["./**/*.spec.ts", "./**/*.jsdom-spec.ts", "./setup-tests.ts"]
+  "include": [
+    "./**/*.spec.ts",
+    "./**/*.jsdom-spec.{ts,tsx}",
+    "./setup-tests.ts"
+  ]
 }
