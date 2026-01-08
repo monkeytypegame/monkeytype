@@ -61,14 +61,3 @@ export function mountLiveCounters(): void {
     miniWrapper.native,
   );
 }
-
-export function mountAccountPage(): () => void {
-  const wrapper = qsr("#accountSpeedStyle").setText("");
-  const speedStyleDispose = render(
-    () => <LiveCounter value={getLiveSpeedStyle} />,
-    wrapper.native,
-  );
-  return () => {
-    speedStyleDispose();
-  };
-}

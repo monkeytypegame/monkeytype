@@ -36,7 +36,6 @@ import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
 import { qs, qsa, qsr, onWindowLoad, ElementWithUtils } from "../utils/dom";
-import { mountAccountPage } from "../test/live-states";
 let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
@@ -50,8 +49,6 @@ let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
 let testActivityEl: HTMLElement | null;
 let historyTable: SortedTableWithLimit<SnapshotResult<Mode>>;
-
-let accountDispose: () => void;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -1245,12 +1242,10 @@ export const page = new Page<undefined>({
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAccount");
-    accountDispose?.();
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     const snapshot = DB.getSnapshot();
-    accountDispose = mountAccountPage();
     await ResultFilters.appendDropdowns(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
