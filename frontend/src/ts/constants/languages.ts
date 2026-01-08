@@ -368,6 +368,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_cuda",
   ],
   viossa: ["viossa", "viossa_njutro"],
+  dhivehi: ["dhivehi"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;

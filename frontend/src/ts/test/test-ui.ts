@@ -445,6 +445,17 @@ function updateWordWrapperClasses(): void {
     $("#resultReplay .words").removeClass("rightToLeftTest");
   }
 
+  // Add special handling for Thaana (Dhivehi) script
+  if (Config.language.startsWith("dhivehi")) {
+    wordsEl.classList.add("thaanaTest");
+    $("#resultWordsHistory .words").addClass("thaanaTest");
+    $("#resultReplay .words").addClass("thaanaTest");
+  } else {
+    wordsEl.classList.remove("thaanaTest");
+    $("#resultWordsHistory .words").removeClass("thaanaTest");
+    $("#resultReplay .words").removeClass("thaanaTest");
+  }
+
   const existing =
     wordsEl?.className
       .split(/\s+/)
@@ -747,8 +758,14 @@ export async function updateWordLetters({
 
         const inputChars = Strings.splitIntoCharacters(input);
         const currentWordChars = Strings.splitIntoCharacters(currentWord);
+
         for (let i = 0; i < inputChars.length; i++) {
-          const charCorrect = currentWordChars[i] === inputChars[i];
+          const inputChar = inputChars[i] ?? "";
+          const targetChar = currentWordChars[i] ?? "";
+
+          const charCorrect =
+            inputChar === targetChar ||
+            Strings.isCharacterMatchForDisplay(inputChar, targetChar);
 
           let currentLetter = currentWordChars[i] as string;
           let tabChar = "";
