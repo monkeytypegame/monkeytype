@@ -1,11 +1,12 @@
 import { Accessor, createEffect } from "solid-js";
 import { ElementWithUtils } from "../utils/dom";
 
-export function useVisibilityAnimation(
-  element: Accessor<ElementWithUtils<HTMLDivElement> | undefined>,
-  visible: Accessor<boolean>,
-  animate: Accessor<boolean> = () => true,
-): void {
+export function useVisibilityAnimation(options: {
+  element: Accessor<ElementWithUtils<HTMLDivElement> | undefined>;
+  visible: Accessor<boolean>;
+  animate?: Accessor<boolean>;
+}): void {
+  const { element, visible, animate = () => true } = options;
   createEffect(() => {
     const el = element();
     if (!el) return;

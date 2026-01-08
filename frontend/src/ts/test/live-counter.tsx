@@ -13,11 +13,11 @@ export function LiveCounter(props: {
 }): JSXElement {
   let ref: ElementWithUtils<HTMLDivElement> | undefined;
 
-  useVisibilityAnimation(
-    () => ref,
-    () => props.visible().value && isFocused(),
-    () => props.visible().withAnimation,
-  );
+  useVisibilityAnimation({
+    element: () => ref,
+    visible: () => props.visible().value && isFocused(),
+    animate: () => props.visible().withAnimation,
+  });
 
   return (
     <div
