@@ -27,7 +27,7 @@ export function Stat(props: {
   );
 }
 
-const [miniStatsVisible, setMiniStatsVisible] =
+const [statsVisible, setStatsVisible] =
   createSignal<VisibilityAnimationOptions>({
     visible: false,
     animate: true,
@@ -35,12 +35,12 @@ const [miniStatsVisible, setMiniStatsVisible] =
 
 const getStatsVisible = (): VisibilityAnimationOptions => {
   return {
-    visible: miniStatsVisible().visible && isFocused(),
-    animate: miniStatsVisible().animate,
+    visible: statsVisible().visible && isFocused(),
+    animate: statsVisible().animate,
   };
 };
 
-export { setMiniStatsVisible as setStatsVisible };
+export { setStatsVisible as setStatsVisible };
 
 export function LiveStatsMini(props: {
   wpm: Accessor<string>;
