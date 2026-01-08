@@ -21,6 +21,7 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { setWpm } from "./live-states";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -236,6 +237,7 @@ function timerStep(): void {
   // already using raf
   TimerProgress.update();
   LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+  setWpm(Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm);
 
   //logic
   if (Config.playTimeWarning !== "off") playTimeWarning();

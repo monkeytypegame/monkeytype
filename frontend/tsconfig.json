@@ -13,10 +13,13 @@
         "./src/ts/types/virtual-language-hashes.d.ts"
       ],
       "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"]
-    }
+    },
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   },
   "include": [
     "./src/**/*.ts",
+    "./src/**/*.tsx",
     "./scripts/**/*.ts",
     "vite-plugins/**/*.ts",
     "vite.config.ts"

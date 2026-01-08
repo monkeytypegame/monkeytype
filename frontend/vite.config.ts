@@ -28,6 +28,7 @@ import replace from "vite-plugin-filter-replace";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
+import solid from "vite-plugin-solid";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -88,6 +89,7 @@ function getPlugins({
     }),
     jqueryInject(),
     injectHTML(),
+    solid(),
   ];
 
   const devPlugins: PluginOption[] = [Inspect()];
