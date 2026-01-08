@@ -3,23 +3,14 @@ import { ElementWithUtils } from "../utils/dom";
 
 export function useVisibilityAnimation(
   element: () => ElementWithUtils<HTMLDivElement> | undefined,
-  visible: Accessor<{
-    value: boolean;
-    withAnimation: boolean;
-  }>,
-  additionalCondition?: Accessor<boolean>,
+  visible: Accessor<boolean>,
+  animate: Accessor<boolean> = () => true,
 ): void {
   createEffect(() => {
     const el = element();
     if (!el) return;
-
-    const visibleState = visible();
-    const shouldShow = additionalCondition
-      ? visibleState.value && additionalCondition()
-      : visibleState.value;
-
-    if (shouldShow) {
-      if (visibleState.withAnimation) {
+    if (visible()) {
+      if (animate()) {
         el.animate({
           opacity: [0, 1],
           duration: 125,
@@ -28,7 +19,7 @@ export function useVisibilityAnimation(
         el.setStyle({ opacity: "1" });
       }
     } else {
-      if (visibleState.withAnimation) {
+      if (animate()) {
         el.animate({
           opacity: [1, 0],
           duration: 125,
