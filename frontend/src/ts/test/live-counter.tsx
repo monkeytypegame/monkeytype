@@ -1,5 +1,5 @@
-import { Accessor, createEffect, JSXElement } from "solid-js";
-import { animate } from "animejs";
+import { Accessor, createEffect, JSXElement, onMount } from "solid-js";
+import { ElementWithUtils } from "../utils/dom";
 import { isFocused } from "./focus";
 
 export function LiveCounter(props: {
@@ -12,28 +12,35 @@ export function LiveCounter(props: {
 }): JSXElement {
   // oxlint-disable-next-line no-unassigned-vars
   let divRef: HTMLDivElement | undefined;
+  let divUtil: ElementWithUtils<HTMLDivElement> | undefined;
+
+  onMount(() => {
+    if (divRef) {
+      divUtil = new ElementWithUtils(divRef);
+    }
+  });
 
   createEffect(() => {
-    if (divRef === undefined) return;
+    if (divUtil === undefined) return;
     const visibleState = props.visible();
     const focusState = isFocused();
     if (visibleState.value && focusState) {
       if (visibleState.withAnimation) {
-        animate(divRef, {
+        divUtil.animate({
           opacity: [0, 1],
           duration: 125,
         });
       } else {
-        divRef.style.opacity = "1";
+        divUtil.setStyle({ opacity: "1" });
       }
     } else {
       if (visibleState.withAnimation) {
-        animate(divRef, {
+        divUtil.animate({
           opacity: [1, 0],
           duration: 125,
         });
       } else {
-        divRef.style.opacity = "0";
+        divUtil.setStyle({ opacity: "0" });
       }
     }
   });
