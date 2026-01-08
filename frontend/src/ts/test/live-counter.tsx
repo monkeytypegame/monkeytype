@@ -1,7 +1,12 @@
 import { Accessor, JSXElement } from "solid-js";
 
 export function LiveCounter(props: {
-  value: Accessor<number | string>;
+  value: Accessor<string>;
+  class?: string;
 }): JSXElement {
-  return <div>{props.value()}</div>;
+  return (
+    <div class={`${props.class}`} classList={{ hidden: props.value() === "" }}>
+      {props.value()}
+    </div>
+  );
 }

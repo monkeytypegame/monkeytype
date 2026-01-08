@@ -32,11 +32,8 @@ import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
-import * as LiveBurst from "./live-burst";
-import * as LiveSpeed from "./live-speed";
 import * as Monkey from "./monkey";
 import { animate } from "animejs";
 import {
@@ -58,7 +55,12 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import { setWpm } from "../signals/live-states";
+import {
+  setAcc,
+  setBurst,
+  setTestRunning,
+  setWpm,
+} from "../signals/live-states";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1681,7 +1683,9 @@ function afterAnyTestInput(
   }
 
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (!isNaN(acc)) LiveAcc.update(acc);
+  if (!isNaN(acc)) {
+    setAcc(Format.percentage(Config.blindMode ? 100 : acc));
+  }
 
   if (Config.mode !== "time") {
     TimerProgress.update();
@@ -1785,7 +1789,7 @@ export async function afterTestWordChange(
 
   const lastBurst = TestInput.burstHistory[TestInput.burstHistory.length - 1];
   if (Numbers.isSafeNumber(lastBurst)) {
-    void LiveBurst.update(Math.round(lastBurst));
+    setBurst(Format.typingSpeed(lastBurst, { showDecimalPlaces: false }));
   }
   if (direction === "forward") {
     //
@@ -1814,9 +1818,7 @@ export function onTestStart(): void {
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
+  setTestRunning(true);
   TimerProgress.update();
 }
 
@@ -1826,13 +1828,9 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
-  LiveSpeed.instantHide();
-  LiveSpeed.reset();
-  setWpm("0");
-  LiveBurst.instantHide();
-  LiveBurst.reset();
-  LiveAcc.instantHide();
-  LiveAcc.reset();
+  setWpm("");
+  setBurst("");
+  setAcc("");
   TimerProgress.instantHide();
   TimerProgress.reset();
   Monkey.instantHide();
@@ -1877,9 +1875,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 export function onTestFinish(): void {
   Caret.hide();
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
+  setTestRunning(false);
   TimerProgress.hide();
   OutOfFocus.hide();
   Monkey.hide();

@@ -4,7 +4,6 @@
 import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
-import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as Monkey from "./monkey";
@@ -237,7 +236,6 @@ function timerStep(): void {
 
   // already using raf
   TimerProgress.update();
-  LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
   setWpm(
     Format.typingSpeed(Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm, {
       showDecimalPlaces: false,
