@@ -55,7 +55,12 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import { setAcc, setBurst } from "../signals/live-states";
+import {
+  setLiveStatAcc,
+  setLiveStatBurst,
+  setLiveStatWpm,
+  setWpmVisible,
+} from "./live-states";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1679,7 +1684,7 @@ function afterAnyTestInput(
 
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) {
-    setAcc(Format.percentage(Config.blindMode ? 100 : acc));
+    setLiveStatAcc(Format.percentage(Config.blindMode ? 100 : acc));
   }
 
   if (Config.mode !== "time") {
@@ -1784,7 +1789,9 @@ export async function afterTestWordChange(
 
   const lastBurst = TestInput.burstHistory[TestInput.burstHistory.length - 1];
   if (Numbers.isSafeNumber(lastBurst)) {
-    setBurst(Format.typingSpeed(lastBurst, { showDecimalPlaces: false }));
+    setLiveStatBurst(
+      Format.typingSpeed(lastBurst, { showDecimalPlaces: false }),
+    );
   }
   if (direction === "forward") {
     //
@@ -1814,6 +1821,10 @@ export function onTestStart(): void {
   Monkey.show();
   TimerProgress.show();
   TimerProgress.update();
+  setWpmVisible({
+    value: true,
+    withAnimation: true,
+  });
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
@@ -1822,6 +1833,13 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
+  setWpmVisible({
+    value: false,
+    withAnimation: false,
+  });
+  setLiveStatWpm("0");
+  setLiveStatBurst("");
+  setLiveStatAcc("");
   TimerProgress.instantHide();
   TimerProgress.reset();
   Monkey.instantHide();
