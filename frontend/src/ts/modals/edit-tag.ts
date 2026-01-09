@@ -5,6 +5,11 @@ import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../utils/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
+import { SnapshotUserTag } from "../constants/default-snapshot";
+
+function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
+  return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+}
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
@@ -89,9 +94,7 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const matchingTag = DB.getSnapshot()?.tags.find(
-        (tag) => tag._id === tagId,
-      );
+      const matchingTag = getTagFromSnapshot(tagId);
 
       if (matchingTag !== undefined) {
         matchingTag.name = tagName;
@@ -154,9 +157,7 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const matchingTag = DB.getSnapshot()?.tags.find(
-        (tag) => tag._id === tagId,
-      );
+      const matchingTag = getTagFromSnapshot(tagId);
 
       if (matchingTag !== undefined) {
         matchingTag.personalBests = {
