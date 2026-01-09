@@ -89,12 +89,15 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.getSnapshot()?.tags?.forEach((tag) => {
-        if (tag._id === tagId) {
-          tag.name = tagName;
-          tag.display = propTagName;
-        }
-      });
+      const matchingTag = DB.getSnapshot()?.tags.find(
+        (tag) => tag._id === tagId,
+      );
+
+      if (matchingTag !== undefined) {
+        matchingTag.name = tagName;
+        matchingTag.display = propTagName;
+      }
+
       void Settings.update();
 
       return { status: 1, message: `Tag updated` };
