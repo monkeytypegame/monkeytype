@@ -16,6 +16,7 @@ export function useVisibilityAnimation(
     const el = element();
     const opt = options();
     if (!el) return;
+    el.setAttribute("data-visible", opt.visible ? "true" : "false");
     if (opt.visible) {
       if (opt.animate) {
         el.show();

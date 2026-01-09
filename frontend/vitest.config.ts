@@ -31,7 +31,7 @@ export const projects: UserWorkspaceConfig[] = [
       setupFiles: ["__tests__/setup-jsdom.ts"],
       globals: true,
     },
-    plugins,
+    plugins: [solidPlugin()],
   },
 ];
 export default defineConfig({

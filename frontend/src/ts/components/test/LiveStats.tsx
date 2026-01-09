@@ -45,8 +45,9 @@ export function LiveStats(props: {
 }): JSXElement {
   const isVisible = (
     config: Accessor<string>,
-  ): Accessor<VisibilityAnimationOptions> =>
-    getStatsVisible(() => config() === props.mode);
+  ): Accessor<VisibilityAnimationOptions> => {
+    return getStatsVisible(() => config() === props.mode);
+  };
 
   return (
     <>

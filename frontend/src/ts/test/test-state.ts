@@ -4,7 +4,7 @@ import { createSignal } from "solid-js";
 
 export let isRepeated = false;
 export let isPaceRepeat = false;
-export let [isActive, setActive] = createSignal(false);
+export const [isActive, setActive] = createSignal(false);
 export let activeChallenge: null | Challenge = null;
 export let savingEnabled = true;
 export let bailedOut = false;
