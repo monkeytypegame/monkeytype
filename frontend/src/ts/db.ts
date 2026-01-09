@@ -899,7 +899,7 @@ export async function updateLocalTagPB<M extends Mode>(
   };
 
   getSnapshot()?.results?.forEach((result) => {
-    if (result.tags.includes(tagId)) {
+    if (result.tags.includes(tagId) && result.wpm > pb.wpm) {
       if (
         result.mode === mode &&
         result.mode2 === mode2 &&
