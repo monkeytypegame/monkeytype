@@ -129,7 +129,6 @@ const actionModals: Record<Action, SimpleModal> = {
       const snapshot = DB.getSnapshot();
       if (snapshot?.tags) {
         snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
-        DB.setSnapshot(snapshot);
       }
 
       void Settings.update();
