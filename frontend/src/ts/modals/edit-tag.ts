@@ -126,11 +126,12 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
-        if (tag._id === tagId) {
-          DB.getSnapshot()?.tags?.splice(index, 1);
-        }
-      });
+      const snapshot = DB.getSnapshot();
+      if (snapshot?.tags) {
+        snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
+        DB.setSnapshot(snapshot);
+      }
+
       void Settings.update();
       return { status: 1, message: `Tag removed` };
     },
