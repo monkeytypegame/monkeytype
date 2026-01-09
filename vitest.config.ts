@@ -30,7 +30,7 @@ function convertTests(
         ? `${name}-${root}`
         : { ...name, label: `${name.label}-${root}` };
 
-    const final = {
+    return {
       ...it,
       test: {
         ...test,
@@ -38,13 +38,11 @@ function convertTests(
         name: updatedName,
       },
     } as UserWorkspaceConfig;
-
-    return final;
   });
 }
 
 /**
- * Tests for solidJs need the solid plugin to run on config level and on test level. idk why.
+ * Tests for solidJs need the solid plugin to run on config level and on test level. idk why
  */
 function copySolidPlugin(config: UserWorkspaceConfig): void {
   if (!config.plugins) return;
