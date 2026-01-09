@@ -1,23 +1,12 @@
 import { createSignal } from "solid-js";
 import * as ConfigEvent from "../observables/config-event";
 import config from "../config";
+import { Config } from "@monkeytype/schemas/configs";
 
-const [getLiveSpeedStyle, setLiveSpeedStyle] = createSignal(
-  config.liveSpeedStyle,
-);
-const [getLiveAccStyle, setLiveAccStyle] = createSignal(config.liveSpeedStyle);
-const [getLiveBurstStyle, setLiveBurstStyle] = createSignal(
-  config.liveSpeedStyle,
-);
+const [getConfigSignal, setConfigSignal] = createSignal<Config>(config);
 
-export { getLiveSpeedStyle, getLiveAccStyle, getLiveBurstStyle };
+export { getConfigSignal };
 
-ConfigEvent.subscribe(({ key, newValue }) => {
-  if (key === "liveSpeedStyle") {
-    setLiveSpeedStyle(newValue);
-  } else if (key === "liveAccStyle") {
-    setLiveAccStyle(newValue);
-  } else if (key === "liveBurstStyle") {
-    setLiveBurstStyle(newValue);
-  }
+ConfigEvent.subscribe(() => {
+  setConfigSignal(structuredClone(config));
 });

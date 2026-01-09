@@ -3,7 +3,6 @@
 
 import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
-import * as TimerProgress from "./timer-progress";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as Monkey from "./monkey";
@@ -21,7 +20,7 @@ import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import Format from "../utils/format";
-import { setLiveStatWpm } from "../signals/test";
+import { setLiveStatWpm, updateProgressSignal } from "../signals/test";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -235,7 +234,7 @@ function timerStep(): void {
   });
 
   // already using raf
-  TimerProgress.update();
+  updateProgressSignal();
   setLiveStatWpm(
     Format.typingSpeed(Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm, {
       showDecimalPlaces: false,

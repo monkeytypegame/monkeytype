@@ -124,7 +124,6 @@
     display: grid;
     font-size: 10rem;
 
-    opacity: 0;
     width: 0;
     height: 0;
     justify-self: center;
@@ -163,8 +162,8 @@
     }
   }
 
-  #liveStatsTextBottom.timerMain,
-  #liveStatsTextTop.timerMain {
+  #liveStatsTextBottom .colorMain,
+  #liveStatsTextTop .colorMain {
     color: var(--main-color);
   }
 
@@ -172,8 +171,8 @@
     background: var(--main-color);
   }
 
-  #liveStatsTextBottom.timerSub,
-  #liveStatsTextTop.timerSub {
+  #liveStatsTextBottom .colorSub,
+  #liveStatsTextTop .colorSub {
     color: var(--sub-color);
   }
 
@@ -181,8 +180,8 @@
     background: var(--sub-color);
   }
 
-  #liveStatsTextBottom.timerText,
-  #liveStatsTextTop.timerText {
+  #liveStatsTextBottom .colorText,
+  #liveStatsTextTop .colorText {
     color: var(--text-color);
   }
 
@@ -1474,68 +1473,36 @@
     }
   }
   #liveStatsMini {
-    width: 0;
-    justify-content: start;
-    height: 0;
-    margin-left: 0.25em;
-    display: flex;
-    margin-top: -1.25em;
-    color: black;
+    .wrapper {
+      width: 0;
+      justify-content: start;
+      height: 0;
+      display: flex;
+      margin-top: -1.25em;
+      color: black;
 
-    div {
-      font-size: 1em;
-      line-height: 1em;
-    }
+      div {
+        font-size: 1em;
+        line-height: 1em;
+      }
 
-    .time,
-    .speed,
-    .acc {
-      margin-right: 0.5em;
-    }
+      .time,
+      .speed,
+      .acc {
+        margin-right: 0.5em;
+      }
 
-    .time,
-    .speed,
-    .acc,
-    .burst {
-      //opacity: 0;
-    }
+      &.colorMain {
+        color: var(--main-color);
+      }
 
-    &.timerMain {
-      color: var(--main-color);
-    }
+      &.colorSub {
+        color: var(--sub-color);
+      }
 
-    &.timerSub {
-      color: var(--sub-color);
-    }
-
-    &.timerText {
-      color: var(--text-color);
-    }
-
-    &.size125 {
-      margin-top: -1.75rem;
-      font-size: 1.25rem;
-      line-height: 1.25rem;
-    }
-    &.size15 {
-      margin-top: -2rem;
-      font-size: 1.5rem;
-      line-height: 1.5rem;
-    }
-    &.size2 {
-      margin-top: -2.5rem;
-      font-size: 2rem;
-      line-height: 2rem;
-    }
-    &.size3 {
-      margin-top: -3.5rem;
-      font-size: 3rem;
-      line-height: 3rem;
-    }
-    &.size4 {
-      margin-top: -4.5rem;
-      font-size: 4rem;
-      line-height: 4rem;
+      &.colorText {
+        color: var(--text-color);
+      }
     }
   }
 }

@@ -16,7 +16,6 @@ import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
-import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import {
   findSingleActiveFunboxWithFunction,
@@ -33,7 +32,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Focus from "../test/focus";
-import * as TimerProgress from "../test/timer-progress";
 import * as Monkey from "./monkey";
 import { animate } from "animejs";
 import {
@@ -56,10 +54,12 @@ import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
 import {
+  setLiveProgress,
   setLiveStatAcc,
   setLiveStatBurst,
   setLiveStatWpm,
   setStatsVisible,
+  updateProgressSignal,
 } from "../signals/test";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
@@ -1586,48 +1586,6 @@ function updateLiveStatsMargin(): void {
   }
 }
 
-function updateLiveStatsOpacity(value: TimerOpacity): void {
-  $("#barTimerProgress").css("opacity", parseFloat(value as string));
-  $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
-  $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
-  $("#liveStatsMini").css("opacity", parseFloat(value as string));
-}
-
-function updateLiveStatsColor(value: TimerColor): void {
-  $("#barTimerProgress").removeClass("timerSub");
-  $("#barTimerProgress").removeClass("timerText");
-  $("#barTimerProgress").removeClass("timerMain");
-
-  $("#liveStatsTextTop").removeClass("timerSub");
-  $("#liveStatsTextTop").removeClass("timerText");
-  $("#liveStatsTextTop").removeClass("timerMain");
-
-  $("#liveStatsTextBottom").removeClass("timerSub");
-  $("#liveStatsTextBottom").removeClass("timerText");
-  $("#liveStatsTextBottom").removeClass("timerMain");
-
-  $("#liveStatsMini").removeClass("timerSub");
-  $("#liveStatsMini").removeClass("timerText");
-  $("#liveStatsMini").removeClass("timerMain");
-
-  if (value === "main") {
-    $("#barTimerProgress").addClass("timerMain");
-    $("#liveStatsTextTop").addClass("timerMain");
-    $("#liveStatsTextBottom").addClass("timerMain");
-    $("#liveStatsMini").addClass("timerMain");
-  } else if (value === "sub") {
-    $("#barTimerProgress").addClass("timerSub");
-    $("#liveStatsTextTop").addClass("timerSub");
-    $("#liveStatsTextBottom").addClass("timerSub");
-    $("#liveStatsMini").addClass("timerSub");
-  } else if (value === "text") {
-    $("#barTimerProgress").addClass("timerText");
-    $("#liveStatsTextTop").addClass("timerText");
-    $("#liveStatsTextBottom").addClass("timerText");
-    $("#liveStatsMini").addClass("timerText");
-  }
-}
-
 function showHideTestRestartButton(showHide: boolean): void {
   if (showHide) {
     $(".pageTest #restartTestButton").removeClass("hidden");
@@ -1688,7 +1646,8 @@ function afterAnyTestInput(
   }
 
   if (Config.mode !== "time") {
-    TimerProgress.update();
+    // TimerProgress.update();
+    updateProgressSignal();
   }
 
   if (Config.keymapMode === "next") {
@@ -1819,8 +1778,7 @@ export async function afterTestWordChange(
 export function onTestStart(): void {
   Focus.set(true);
   Monkey.show();
-  TimerProgress.show();
-  TimerProgress.update();
+  updateProgressSignal();
   setStatsVisible({
     visible: true,
     animate: true,
@@ -1837,11 +1795,10 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     visible: false,
     animate: false,
   });
+  setLiveProgress("0");
   setLiveStatWpm("0");
   setLiveStatBurst("0");
   setLiveStatAcc("100%");
-  TimerProgress.instantHide();
-  TimerProgress.reset();
   Monkey.instantHide();
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
@@ -1884,12 +1841,15 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 export function onTestFinish(): void {
   Caret.hide();
-  TimerProgress.hide();
   OutOfFocus.hide();
   Monkey.hide();
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
   }
+  setStatsVisible({
+    visible: false,
+    animate: true,
+  });
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1999,12 +1959,6 @@ $("#wordsWrapper").on("click", () => {
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
-  }
-  if (key === "timerOpacity") {
-    updateLiveStatsOpacity(newValue);
-  }
-  if (key === "timerColor") {
-    updateLiveStatsColor(newValue);
   }
   if (key === "showOutOfFocusWarning" && !newValue) {
     OutOfFocus.hide();

@@ -1,5 +1,4 @@
 import * as Caret from "./caret";
-import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { createSignal } from "solid-js";
@@ -63,7 +62,6 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.stopAnimation();
-      TimerProgress.show();
     } else if (!value && state()) {
       setState(false);
 
@@ -79,7 +77,6 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.startAnimation();
-      TimerProgress.hide();
     }
   });
 }
