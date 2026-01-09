@@ -36,7 +36,6 @@ import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
 import { qs, qsa, qsr, onWindowLoad, ElementWithUtils } from "../utils/dom";
-
 let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
@@ -564,7 +563,7 @@ async function fillContent(): Promise<void> {
         histogramChartData.push(0);
       }
     }
-    (histogramChartData[bucket] as number)++;
+    (histogramChartData[bucket] as number) += 1;
 
     let tt = 0;
     if (

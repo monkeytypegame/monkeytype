@@ -19,7 +19,7 @@ inputEl.addEventListener("compositionstart", (event) => {
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
-  if (!TestState.isActive) {
+  if (!TestState.isActive()) {
     TestLogic.startTest(performance.now());
   }
 });

@@ -1,5 +1,5 @@
 import * as ActivePage from "../states/active-page";
-import { prefersReducedMotion } from "../utils/misc";
+import { prefersReducedMotion } from "../utils/accessibility";
 import { qsr } from "../utils/dom";
 
 let visible = false;

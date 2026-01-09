@@ -160,7 +160,7 @@ export function calculateWpmAndRaw(
   raw: number;
 } {
   const testSeconds = calculateTestSeconds(
-    TestState.isActive ? performance.now() : end,
+    TestState.isActive() ? performance.now() : end,
   );
   const chars = countChars(final);
   const wpm = Numbers.roundTo2(
@@ -256,7 +256,7 @@ function getInputWords(): string[] {
 
   let inputWords = [...TestInput.input.getHistory()];
 
-  if (TestState.isActive) {
+  if (TestState.isActive()) {
     inputWords.push(TestInput.input.current);
   }
 
@@ -276,7 +276,7 @@ function getTargetWords(): string[] {
       : TestWords.words.list),
   ];
 
-  if (TestState.isActive) {
+  if (TestState.isActive()) {
     targetWords.push(
       Config.mode === "zen"
         ? TestInput.input.current

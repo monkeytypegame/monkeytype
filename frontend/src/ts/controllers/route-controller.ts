@@ -176,7 +176,7 @@ export async function navigate(
   }
 
   const noQuit = isFunboxActive("no_quit");
-  if (TestState.isActive && noQuit) {
+  if (TestState.isActive() && noQuit) {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });

@@ -1,9 +1,10 @@
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { promiseWithResolvers } from "../utils/misc";
+import { createSignal } from "solid-js";
 
 export let isRepeated = false;
 export let isPaceRepeat = false;
-export let isActive = false;
+export const [isActive, setActive] = createSignal(false);
 export let activeChallenge: null | Challenge = null;
 export let savingEnabled = true;
 export let bailedOut = false;
@@ -21,10 +22,6 @@ export function setRepeated(tf: boolean): void {
 
 export function setPaceRepeat(tf: boolean): void {
   isPaceRepeat = tf;
-}
-
-export function setActive(tf: boolean): void {
-  isActive = tf;
 }
 
 export function setActiveChallenge(val: null | Challenge): void {

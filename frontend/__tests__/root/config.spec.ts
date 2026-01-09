@@ -53,7 +53,7 @@ describe("Config", () => {
       mocks.forEach((it) => it.mockClear());
 
       vi.mock("../../src/ts/test/test-state", () => ({
-        isActive: true,
+        isActive: () => true,
       }));
 
       isConfigValueValidMock.mockReturnValue(true);

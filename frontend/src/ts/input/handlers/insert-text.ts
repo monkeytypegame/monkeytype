@@ -113,7 +113,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const data = normalizedData ?? options.data;
 
   // start if needed
-  if (!TestState.isActive) {
+  if (!TestState.isActive()) {
     TestLogic.startTest(now);
   }
 

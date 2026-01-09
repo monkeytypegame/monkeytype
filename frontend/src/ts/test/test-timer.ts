@@ -3,8 +3,6 @@
 
 import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
-import * as TimerProgress from "./timer-progress";
-import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as Monkey from "./monkey";
@@ -21,6 +19,8 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import Format from "../utils/format";
+import { setLiveStatWpm, updateProgressSignal } from "../signals/test";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -234,8 +234,12 @@ function timerStep(): void {
   });
 
   // already using raf
-  TimerProgress.update();
-  LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+  updateProgressSignal();
+  setLiveStatWpm(
+    Format.typingSpeed(Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm, {
+      showDecimalPlaces: false,
+    }),
+  );
 
   //logic
   if (Config.playTimeWarning !== "off") playTimeWarning();
@@ -303,7 +307,7 @@ async function _startOld(): Promise<void> {
     const drift = Math.abs(interval - delay);
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      if (!TestState.isActive) {
+      if (!TestState.isActive()) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;
