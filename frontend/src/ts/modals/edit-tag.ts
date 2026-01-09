@@ -151,6 +151,18 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
+      DB.getSnapshot()?.tags?.forEach((tag) => {
+        if (tag._id === tagId) {
+          tag.personalBests = {
+            time: {},
+            words: {},
+            quote: {},
+            zen: {},
+            custom: {},
+          };
+        }
+      });
+
       void Settings.update();
       return { status: 1, message: `Tag PB cleared` };
     },
