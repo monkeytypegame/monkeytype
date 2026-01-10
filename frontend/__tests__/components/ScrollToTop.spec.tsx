@@ -12,6 +12,7 @@ describe("ScrollToTop", () => {
   beforeEach(() => {
     getActivePageMock.mockClear().mockReturnValue("account");
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });
+    hideScrollToTop();
   });
 
   function renderElement(): {
@@ -54,7 +55,8 @@ describe("ScrollToTop", () => {
 
   it("stays invisible on test page regardless of scroll", () => {
     getActivePageMock.mockReturnValue("test");
-    const { button } = renderElement();
+    const { container } = render(() => <ScrollToTop />);
+    const button = container.querySelector(".button");
 
     scrollTo(150);
 
