@@ -61,7 +61,9 @@
     "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
+    "@solidjs/testing-library": "0.8.10",
     "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/user-event": "14.6.1",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
@@ -80,6 +82,7 @@
     "firebase-tools": "13.15.1",
     "fontawesome-subset": "4.4.0",
     "happy-dom": "20.0.10",
+    "jsdom": "27.4.0",
     "madge": "8.0.0",
     "magic-string": "0.30.17",
     "normalize.css": "8.0.1",
@@ -87,6 +90,7 @@
     "oxlint-tsgolint": "0.10.1",
     "postcss": "8.4.31",
     "sass": "1.70.0",
+    "solid-js": "1.9.10",
     "subset-font": "2.3.0",
     "tsx": "4.16.2",
     "typescript": "5.9.3",
@@ -98,6 +102,7 @@
     "vite-plugin-inspect": "11.3.3",
     "vite-plugin-minify": "2.1.0",
     "vite-plugin-pwa": "1.1.0",
+    "vite-plugin-solid": "2.11.10",
     "vitest": "4.0.15"
   },
   "lint-staged": {
