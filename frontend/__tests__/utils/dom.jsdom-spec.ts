@@ -27,7 +27,7 @@ describe("dom", () => {
       }
 
       beforeEach(() => {
-        handler.mockReset();
+        handler.mockClear();
 
         document.body.innerHTML = "";
         const root = document.createElement("div");
@@ -151,7 +151,7 @@ describe("dom", () => {
         );
 
         //WHEN click on mid1 handler is only called one time
-        handler.mockReset();
+        handler.mockClear();
         clickTarget = screen.getByTestId("mid1");
         await userEvent.click(clickTarget);
 
