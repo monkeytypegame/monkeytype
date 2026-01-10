@@ -1,4 +1,3 @@
-import { ElementWithUtils } from "../utils/dom";
 import Config from "../config";
 import { currentQuote } from "../test/test-words";
 import { getMode2 } from "../utils/misc";
@@ -7,12 +6,13 @@ import { compressToURI } from "lz-ts";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode, Mode2 } from "@monkeytype/schemas/shared";
+import { qsa, qsr, ElementWithUtils } from "../utils/dom";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 
 function getCheckboxValue(checkbox: string): boolean {
-  return $(`#shareTestSettingsModal label.${checkbox} input`).prop(
-    "checked",
-  ) as boolean;
+  return qsr<HTMLInputElement>(
+    `#shareTestSettingsModal label.${checkbox} input`,
+  ).isChecked() as boolean;
 }
 
 type SharedTestSettings = [
@@ -56,16 +56,16 @@ function updateURL(): void {
 }
 
 function updateShareModal(url: string): void {
-  const $modal = $(`#shareTestSettingsModal`);
-  $modal.find("textarea.url").val(url);
-  $modal.find(".tooLongWarning").toggleClass("hidden", url.length <= 2000);
+  const $modal = qsr(`#shareTestSettingsModal`);
+  $modal.qsr<HTMLTextAreaElement>("textarea.url").setValue(url);
+  $modal.qsr(".tooLongWarning").toggleClass("hidden", url.length <= 2000);
 }
 
 function updateSubgroups(): void {
   if (getCheckboxValue("mode")) {
-    $(`#shareTestSettingsModal .subgroup`).removeClass("hidden");
+    qsa(`#shareTestSettingsModal .subgroup`).show();
   } else {
-    $(`#shareTestSettingsModal .subgroup`).addClass("hidden");
+    qsa(`#shareTestSettingsModal .subgroup`).hide();
   }
 }
 
