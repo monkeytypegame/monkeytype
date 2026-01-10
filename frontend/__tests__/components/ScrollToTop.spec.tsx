@@ -8,13 +8,32 @@ import {
 import * as ActivePage from "../../src/ts/states/active-page";
 
 describe("ScrollToTop", () => {
+  const getActivePageMock = vi.spyOn(ActivePage, "get");
   beforeEach(() => {
-    vi.spyOn(ActivePage, "get").mockReturnValue("account");
+    getActivePageMock.mockClear().mockReturnValue("account");
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  function renderElement(): {
+    container: HTMLElement;
+    button: HTMLButtonElement;
+  } {
+    const { container } = render(() => <ScrollToTop />);
+
+    return {
+      // oxlint-disable-next-line no-non-null-assertion
+      container: container.children[0]! as HTMLElement,
+      // oxlint-disable-next-line no-non-null-assertion
+      button: container.querySelector("div.button")!,
+    };
+  }
+
+  it("renders with correct classes and structure", () => {
+    const { container, button } = renderElement();
+
+    expect(container).toHaveClass("content-grid", "ScrollToTop");
+    expect(button).toHaveClass("breakout", "button");
+    expect(button).toContainHTML(`<i class="fas fa-angle-double-up"></i>`);
   });
 
   it("renders invisible when scrollY is 0", () => {
@@ -28,19 +47,16 @@ describe("ScrollToTop", () => {
     const { container } = render(() => <ScrollToTop />);
     const button = container.querySelector(".button");
 
-    Object.defineProperty(window, "scrollY", { value: 150, writable: true });
-    window.dispatchEvent(new Event("scroll"));
+    scrollTo(150);
 
     expect(button).not.toHaveClass("invisible");
   });
 
   it("stays invisible on test page regardless of scroll", () => {
-    vi.spyOn(ActivePage, "get").mockReturnValue("test");
-    const { container } = render(() => <ScrollToTop />);
-    const button = container.querySelector(".button");
+    getActivePageMock.mockReturnValue("test");
+    const { button } = renderElement();
 
-    Object.defineProperty(window, "scrollY", { value: 150, writable: true });
-    window.dispatchEvent(new Event("scroll"));
+    scrollTo(150);
 
     expect(button).toHaveClass("invisible");
   });
@@ -48,12 +64,8 @@ describe("ScrollToTop", () => {
   it("scrolls to top and hides button on click", async () => {
     const scrollToSpy = vi.fn();
     window.scrollTo = scrollToSpy;
-
-    const { container } = render(() => <ScrollToTop />);
-    const button = container.querySelector(".button") as HTMLElement;
-
-    Object.defineProperty(window, "scrollY", { value: 150, writable: true });
-    window.dispatchEvent(new Event("scroll"));
+    const { button } = renderElement();
+    scrollTo(150);
 
     await userEvent.click(button);
 
@@ -65,11 +77,8 @@ describe("ScrollToTop", () => {
   });
 
   it("hides button when hideScrollToTop is called", () => {
-    const { container } = render(() => <ScrollToTop />);
-    const button = container.querySelector(".button");
-
-    Object.defineProperty(window, "scrollY", { value: 150, writable: true });
-    window.dispatchEvent(new Event("scroll"));
+    const { button } = renderElement();
+    scrollTo(150);
 
     hideScrollToTop();
 
@@ -87,4 +96,9 @@ describe("ScrollToTop", () => {
       expect.any(Function),
     );
   });
+
+  function scrollTo(value: number): void {
+    Object.defineProperty(window, "scrollY", { value, writable: true });
+    window.dispatchEvent(new Event("scroll"));
+  }
 });
