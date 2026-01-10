@@ -34,7 +34,7 @@ import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import {
   PaginationQuery,
   FriendsOnlyQuery,
@@ -1520,7 +1520,7 @@ onWindowLoad(async () => {
 });
 
 ConfigEvent.subscribe(({ key }) => {
-  if (ActivePage.get() === "leaderboards" && key === "typingSpeedUnit") {
+  if (getActivePage() === "leaderboards" && key === "typingSpeedUnit") {
     updateContent();
     fillUser();
   }
