@@ -9,7 +9,7 @@ export function hideScrollToTop(): void {
 }
 
 export function ScrollToTop(): JSXElement {
-  const handleScroll = () => {
+  const handleScroll = (): void => {
     const page = ActivePage.get();
     if (page === "test") return;
 
