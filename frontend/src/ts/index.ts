@@ -30,7 +30,6 @@ import "./input/listeners";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
-import "./elements/scroll-to-top";
 import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
@@ -48,6 +47,7 @@ import "./utils/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
+import { mountComponents } from "./components/mount";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -107,3 +107,5 @@ if (isDevEnvironment()) {
     module.appendButton();
   });
 }
+
+mountComponents();
