@@ -46,3 +46,9 @@ export function ScrollToTop(): JSXElement {
     </div>
   );
 }
+
+export const __testing = {
+  resetState: (): void => {
+    setVisible(false);
+  },
+};

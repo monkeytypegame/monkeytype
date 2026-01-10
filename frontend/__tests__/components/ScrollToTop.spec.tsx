@@ -3,6 +3,7 @@ import { render } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
 import {
   ScrollToTop,
+  __testing,
   hideScrollToTop,
 } from "../../src/ts/components/ScrollToTop";
 import * as ActivePage from "../../src/ts/states/active-page";
@@ -12,7 +13,7 @@ describe("ScrollToTop", () => {
   beforeEach(() => {
     getActivePageMock.mockClear().mockReturnValue("account");
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });
-    hideScrollToTop();
+    __testing.resetState();
   });
 
   function renderElement(): {
