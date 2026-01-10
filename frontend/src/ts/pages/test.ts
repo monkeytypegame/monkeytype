@@ -7,9 +7,9 @@ import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TestConfig from "../test/test-config";
-import * as ScrollToTop from "../elements/scroll-to-top";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
+import { hideScrollToTop } from "../components/ScrollToTop";
 
 export const page = new Page({
   id: "test",
@@ -36,6 +36,6 @@ export const page = new Page({
     });
     void TestConfig.instantUpdate();
     void Keymap.refresh();
-    ScrollToTop.hide();
+    hideScrollToTop();
   },
 });
