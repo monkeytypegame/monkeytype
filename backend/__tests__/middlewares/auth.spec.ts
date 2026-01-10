@@ -249,7 +249,7 @@ describe("middlewares/auth", () => {
       await expect(() =>
         authenticate({ headers: { authorization: "Uid 123" } }),
       ).rejects.toMatchMonkeyError(
-        new MonkeyError(401, "Baerer type uid is not supported"),
+        new MonkeyError(401, "Bearer type uid is not supported"),
       );
     });
     it("should fail without authentication", async () => {
