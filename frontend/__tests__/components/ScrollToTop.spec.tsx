@@ -39,16 +39,13 @@ describe("ScrollToTop", () => {
   });
 
   it("renders invisible when scrollY is 0", () => {
-    const { container } = render(() => <ScrollToTop />);
-    const button = container.querySelector(".button");
+    const { button } = renderElement();
 
     expect(button).toHaveClass("invisible");
   });
 
   it("becomes visible when scrollY > 100", () => {
-    const { container } = render(() => <ScrollToTop />);
-    const button = container.querySelector(".button");
-
+    const { button } = renderElement();
     scrollTo(150);
 
     expect(button).not.toHaveClass("invisible");
@@ -56,9 +53,7 @@ describe("ScrollToTop", () => {
 
   it("stays invisible on test page regardless of scroll", () => {
     getActivePageMock.mockReturnValue("test");
-    const { container } = render(() => <ScrollToTop />);
-    const button = container.querySelector(".button");
-
+    const { button } = renderElement();
     scrollTo(150);
 
     expect(button).toHaveClass("invisible");
