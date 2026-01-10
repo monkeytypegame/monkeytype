@@ -4,23 +4,4 @@
     "../packages/oxlint-config/index.jsonc"
     // "@monkeytype/oxlint-config"
   ]
-  // "overrides": [
-  //   {
-  //     "plugins": [
-  //       "typescript",
-  //       "unicorn",
-  //       "oxc",
-  //       "import",
-  //       "node",
-  //       "promise",
-  //       "react"
-  //     ],
-  //     "files": ["src/**/*.tsx"],
-  //     "rules": {
-  //       "react/react-in-jsx-scope": "off",
-  //       "react/button-has-type": "error",
-  //       "react/jsx-no-duplicate-props": "error"
-  //     }
-  //   }
-  // ]
 }
