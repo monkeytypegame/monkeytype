@@ -76,7 +76,7 @@
     "*": [
       "oxfmt --no-error-on-unmatched-pattern"
     ],
-    "*.{ts,js}": [
+    "*.{ts,tsx,js}": [
       "oxlint --type-aware --type-check"
     ]
   },
