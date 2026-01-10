@@ -1,6 +1,6 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 import * as ActivePage from "../states/active-page";
-import styles from "./ScrollToTop.module.scss";
+import "./ScrollToTop.scss";
 
 const [visible, setVisible] = createSignal(false);
 
@@ -27,9 +27,9 @@ export function ScrollToTop(): JSXElement {
   });
 
   return (
-    <div class={`content-grid ${styles["container"]}`}>
+    <div class={`content-grid ScrollToTop`}>
       <div
-        class={`breakout ${styles["button"]}`}
+        class={`breakout button`}
         classList={{
           invisible: !visible(),
         }}
