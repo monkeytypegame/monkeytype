@@ -21,6 +21,10 @@
     border-radius: 99rem;
     outline: 0.5rem solid var(--bg-color);
 
+    .fas {
+      line-height: 1;
+    }
+
     cursor: pointer;
     color: var(--sub-color);
     transition: 0.25s;
