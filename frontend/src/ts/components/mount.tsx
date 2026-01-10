@@ -8,5 +8,5 @@ export function mountComponents(): void {
   if (isDevEnvironment()) {
     render(() => <SolidTest />, qsr("#solidTest").native);
   }
-  render(ScrollToTop, qsr("body").native);
+  render(() => <ScrollToTop />, qsr("body").native);
 }

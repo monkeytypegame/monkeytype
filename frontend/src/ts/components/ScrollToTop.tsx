@@ -2,12 +2,13 @@ import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 import * as ActivePage from "../states/active-page";
 import styles from "./ScrollToTop.module.scss";
 
+const [visible, setVisible] = createSignal(false);
+
 export function hideScrollToTop(): void {
-  // setVisible(false);
+  setVisible(false);
 }
 
 export function ScrollToTop(): JSXElement {
-  const [visible, setVisible] = createSignal(false);
   const handleScroll = () => {
     const page = ActivePage.get();
     if (page === "test") return;
@@ -18,6 +19,7 @@ export function ScrollToTop(): JSXElement {
 
   onMount(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
   });
 
   onCleanup(() => {
@@ -35,7 +37,7 @@ export function ScrollToTop(): JSXElement {
           setVisible(false);
           window.scrollTo({
             top: 0,
-            behavior: "instant",
+            behavior: "smooth",
           });
         }}
       >
