@@ -1,17 +1,13 @@
-import { JSXElement, createSignal, createResource, For } from "solid-js";
+import { JSXElement, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../utils/json-data";
 import { AnimatedModal } from "./AnimatedModal";
 import "./VersionHistoryModal.scss";
 import AsyncContent from "./AsyncContent";
-
-const [isOpen, setIsOpen] = createSignal(false);
-
-export function show(): void {
-  setIsOpen(true);
-}
+import { hideModal, isModalOpen } from "../stores/modals";
 
 export function VersionHistoryModal(): JSXElement {
+  const isOpen = (): boolean => isModalOpen("VersionHistory");
   const [releases] = createResource(isOpen, async (open) => {
     if (!open) return null;
     const releases = await getReleasesFromGitHub();
@@ -48,7 +44,7 @@ export function VersionHistoryModal(): JSXElement {
     <AnimatedModal
       id="VersionHistoryModal"
       isOpen={isOpen()}
-      onClose={() => setIsOpen(false)}
+      onClose={() => hideModal("VersionHistory")}
     >
       <AsyncContent
         resource={releases}

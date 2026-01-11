@@ -3,8 +3,8 @@ import { isDevEnvironment } from "../utils/misc";
 import { envConfig } from "virtual:env-config";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
-import * as VersionHistoryModal from "./VersionHistoryModal";
 import { getVersion } from "../signals/core";
+import { showModal } from "../stores/modals";
 
 export function VersionButton(): JSXElement {
   const [indicatorVisible, setIndicatorVisible] = createSignal(true);
@@ -29,7 +29,7 @@ export function VersionButton(): JSXElement {
         ),
       );
     } else {
-      VersionHistoryModal.show();
+      showModal("VersionHistory");
       setIndicatorVisible(false);
     }
   };
