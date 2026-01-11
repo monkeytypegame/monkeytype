@@ -1,7 +1,20 @@
 import { render } from "solid-js/web";
-import { qsr } from "../utils/dom";
+import { qs } from "../utils/dom";
 import { ScrollToTop } from "./ScrollToTop";
+import { VersionButton } from "../elements/VersionButton";
+import { VersionHistoryModal } from "../modals/VersionHistoryModal";
 
 export function mountComponents(): void {
-  render(() => <ScrollToTop />, qsr("body").native);
+  const body = document.body;
+  render(() => <ScrollToTop />, body);
+  render(() => <VersionHistoryModal />, body);
+
+  const versionButtonContainer = qs("footer .currentVersion");
+  if (versionButtonContainer) {
+    render(
+      () => <VersionButton />,
+      versionButtonContainer.native.parentElement as HTMLElement,
+    );
+    versionButtonContainer.native.remove();
+  }
 }

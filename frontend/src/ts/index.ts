@@ -37,8 +37,8 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
-import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
+import * as Version from "./states/version";
 import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
@@ -70,7 +70,7 @@ Object.defineProperty(window, "Math", {
 
 applyEngineSettings();
 void loadFromLocalStorage();
-void VersionButton.update();
+void Version.initialize();
 Focus.set(true, true);
 void init(onAuthStateChanged);
 

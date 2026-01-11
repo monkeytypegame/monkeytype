@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "../utils/json-data";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
@@ -10,8 +11,8 @@ const memoryLS = new LocalStorageWithSchema({
   fallback: "",
 });
 
-let version: null | string = null;
-let isVersionNew: null | boolean = null;
+const [version, setVersion] = createSignal<string>("");
+const [isVersionNew, setIsVersionNew] = createSignal<boolean>(false);
 
 function setMemory(v: string): void {
   memoryLS.set(v);
@@ -21,7 +22,14 @@ function getMemory(): string {
   return memoryLS.get();
 }
 
-async function check(): Promise<void> {
+function purgeCaches(): void {
+  if (!("caches" in window)) return;
+  void caches.keys().then(function (names) {
+    for (const name of names) void caches.delete(name);
+  });
+}
+
+async function fetchVersion(): Promise<void> {
   const { data: currentVersion, error } = await tryCatch(
     getLatestReleaseFromGitHub(),
   );
@@ -37,32 +45,32 @@ async function check(): Promise<void> {
 
   const memoryVersion = getMemory();
 
-  version = currentVersion;
-  isVersionNew =
-    memoryVersion === "" ? false : memoryVersion !== currentVersion;
+  setVersion(currentVersion);
+  setIsVersionNew(
+    memoryVersion === "" ? false : memoryVersion !== currentVersion,
+  );
 
-  if (isVersionNew || memoryVersion === "") {
+  if (isVersionNew() || memoryVersion === "") {
     setMemory(currentVersion);
     purgeCaches();
   }
 }
 
-function purgeCaches(): void {
-  if (!("caches" in window)) return;
-  void caches.keys().then(function (names) {
-    for (const name of names) void caches.delete(name);
-  });
+export function get(): string {
+  return version();
 }
 
-export async function get(): Promise<{
-  version: string;
-  isNew: boolean;
-}> {
-  if (version === null || isVersionNew === null) {
-    await check();
-  }
-  return {
-    version: version as string,
-    isNew: isVersionNew as boolean,
-  };
+export function isNew(): boolean {
+  return isVersionNew();
 }
+
+export async function initialize(): Promise<void> {
+  await fetchVersion();
+}
+
+export const __testing = {
+  resetState: (): void => {
+    setVersion("");
+    setIsVersionNew(false);
+  },
+};
