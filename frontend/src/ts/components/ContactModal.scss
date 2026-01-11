@@ -1,3 +1,5 @@
+@use "../../styles/media.scss" as *;
+
 #ContactModal {
   .modal {
     overflow-y: scroll;
@@ -40,6 +42,23 @@
           grid-area: icon;
           font-size: 2rem;
           line-height: 2rem;
+        }
+      }
+    }
+  }
+
+  @include respond-to(purple) {
+    & {
+      .modal {
+        .buttons {
+          grid-template-columns: 1fr;
+          .button {
+            padding: 0.5rem 1rem;
+            .icon,
+            .text {
+              font-size: 1rem;
+            }
+          }
         }
       }
     }

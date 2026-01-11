@@ -1,9 +1,9 @@
-import * as SupportPopup from "../modals/support";
-import * as ContactModal from "../modals/contact";
+import * as SupportModal from "../components/SupportModal";
+import * as ContactModal from "../components/ContactModal";
 import { qs } from "../utils/dom";
 
 qs("#pageAbout #supportMeAboutButton")?.on("click", () => {
-  SupportPopup.show();
+  SupportModal.show();
 });
 
 qs("#pageAbout #contactPopupButton2")?.on("click", () => {

@@ -6,12 +6,14 @@ import { VersionHistoryModal } from "./VersionHistoryModal";
 import { JSXElement } from "solid-js";
 import { Footer } from "./Footer";
 import { ContactModal } from "./ContactModal";
+import { SupportModal } from "./SupportModal";
 
 const components = [
   VersionButton,
   ScrollToTop,
   VersionHistoryModal,
   ContactModal,
+  SupportModal,
   Footer,
 ];
 

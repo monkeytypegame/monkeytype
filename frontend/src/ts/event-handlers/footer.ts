@@ -3,8 +3,6 @@ import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Commandline from "../commandline/commandline";
-import * as SupportPopup from "../modals/support";
-import * as ContactModal from "../modals/contact";
 import { qs } from "../utils/dom";
 
 qs("footer #commandLineMobileButton")?.on("click", async () => {
@@ -35,12 +33,4 @@ qs("footer .right .current-theme")?.on("click", async (event) => {
       subgroupOverride: subgroup,
     });
   }
-});
-
-qs("footer #supportMeButton")?.on("click", () => {
-  SupportPopup.show();
-});
-
-qs("footer #contactPopupButton")?.on("click", () => {
-  ContactModal.show();
 });

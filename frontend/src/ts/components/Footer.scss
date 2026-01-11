@@ -1,3 +1,5 @@
+@use "../../styles/media.scss" as *;
+
 footer {
   position: relative;
   text-align: center;
@@ -110,6 +112,33 @@ footer {
     #commandLineMobileButton {
       opacity: 0 !important;
       pointer-events: none !important;
+    }
+  }
+
+  @include respond-to(green) {
+    & {
+      .leftright {
+        .left {
+          display: grid;
+          grid-template-columns: repeat(4, auto);
+        }
+        .right {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+
+  @include respond-to(purple) {
+    & {
+      .leftright {
+        grid-template-columns: 1fr 1fr;
+        .left {
+          width: unset;
+          grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+        }
+      }
     }
   }
 }

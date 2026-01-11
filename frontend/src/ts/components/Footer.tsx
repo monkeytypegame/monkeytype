@@ -2,13 +2,16 @@ import { JSXElement } from "solid-js";
 import { VersionButton } from "../elements/VersionButton";
 import { TextButton } from "./TextButton";
 import * as ContactModal from "./ContactModal";
+import * as SupportModal from "./SupportModal";
+import "./Footer.scss";
 
 export function Footer(): JSXElement {
   return (
-    <footer class="jsx">
+    <footer>
       <div id="commandLineMobileButton">
         <i class="fas fa-terminal"></i>
       </div>
+
       <div class="keyTips">
         <kbd>tab</kbd>
         and
@@ -18,16 +21,16 @@ export function Footer(): JSXElement {
         or
         <kbd>esc</kbd>- Command Line
       </div>
+
       <div class="leftright">
         <div class="left">
           <TextButton icon="fa-envelope" onClick={() => ContactModal.show()}>
             <div class="text">contract</div>
           </TextButton>
 
-          <button id="supportMeButton" class="textButton" type="button">
-            <i class="fas fa-fw fa-donate"></i>
+          <TextButton icon="fa-donate" onClick={() => SupportModal.show()}>
             <div class="text">support</div>
-          </button>
+          </TextButton>
 
           <a
             href="https://github.com/monkeytypegame/monkeytype"
