@@ -5,6 +5,11 @@ import { AnimatedModal } from "../../src/ts/components/AnimatedModal";
 describe("AnimatedModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock dialog methods that don't exist in jsdom
+    HTMLDialogElement.prototype.showModal = vi.fn();
+    HTMLDialogElement.prototype.show = vi.fn();
+    HTMLDialogElement.prototype.close = vi.fn();
   });
 
   function renderModal(props: {
