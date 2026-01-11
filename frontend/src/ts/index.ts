@@ -38,7 +38,7 @@ import "./test/tts";
 import "./elements/fps-counter";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as Focus from "./test/focus";
-import { fetchLatestVersion } from "./states/version";
+import { fetchLatestVersion } from "./utils/version";
 import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";

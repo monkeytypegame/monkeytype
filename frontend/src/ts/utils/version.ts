@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { getLatestReleaseFromGitHub } from "../utils/json-data";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { getLatestReleaseFromGitHub } from "./json-data";
+import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { createErrorMessage } from "../utils/misc";
+import { createErrorMessage } from "./misc";
 import { setVersion } from "../signals/core";
 
 const memoryLS = new LocalStorageWithSchema({
