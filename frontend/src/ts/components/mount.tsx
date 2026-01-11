@@ -4,29 +4,21 @@ import { ScrollToTop } from "./ScrollToTop";
 import { VersionButton } from "../elements/VersionButton";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 import { JSXElement } from "solid-js";
+import { Footer } from "./Footer";
+import { ContactModal } from "./ContactModal";
 
-const components = [VersionButton, ScrollToTop, VersionHistoryModal];
+const components = [
+  VersionButton,
+  ScrollToTop,
+  VersionHistoryModal,
+  ContactModal,
+  Footer,
+];
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
   qsa(name).forEach((mountPoint) => {
-    const parent = mountPoint.getParent()?.native;
-
-    if (parent === null || parent === undefined) {
-      throw new Error(
-        `Cannot mount component: mount point's parent is not in the DOM.`,
-      );
-    }
-
     render(() => component(), mountPoint.native);
-
-    const children = mountPoint.native.children;
-
-    //replace mount point with its children
-    for (let i = children.length - 1; i >= 0; i--) {
-      parent.insertBefore(children[i] as Element, mountPoint.native);
-    }
-
-    mountPoint.remove();
+    mountPoint.native.replaceWith(...mountPoint.native.children);
   });
 }
 
