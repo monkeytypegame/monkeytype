@@ -1,5 +1,5 @@
 import { render } from "solid-js/web";
-import { qsr } from "../utils/dom";
+import { qsa } from "../utils/dom";
 import { ScrollToTop } from "./ScrollToTop";
 import { VersionButton } from "../elements/VersionButton";
 import { VersionHistoryModal } from "./VersionHistoryModal";
@@ -8,25 +8,26 @@ import { JSXElement } from "solid-js";
 const components = [VersionButton, ScrollToTop, VersionHistoryModal];
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
-  const mountPoint = qsr(name);
-  const parent = mountPoint.getParent()?.native;
+  qsa(name).forEach((mountPoint) => {
+    const parent = mountPoint.getParent()?.native;
 
-  if (parent === null || parent === undefined) {
-    throw new Error(
-      `Cannot mount component: mount point's parent is not in the DOM.`,
-    );
-  }
+    if (parent === null || parent === undefined) {
+      throw new Error(
+        `Cannot mount component: mount point's parent is not in the DOM.`,
+      );
+    }
 
-  render(() => component(), mountPoint.native);
+    render(() => component(), mountPoint.native);
 
-  const children = mountPoint.native.children;
+    const children = mountPoint.native.children;
 
-  //replace mount point with its children
-  for (let i = children.length - 1; i >= 0; i--) {
-    parent.insertBefore(children[i] as Element, mountPoint.native);
-  }
+    //replace mount point with its children
+    for (let i = children.length - 1; i >= 0; i--) {
+      parent.insertBefore(children[i] as Element, mountPoint.native);
+    }
 
-  mountPoint.remove();
+    mountPoint.remove();
+  });
 }
 
 export function mountComponents(): void {
