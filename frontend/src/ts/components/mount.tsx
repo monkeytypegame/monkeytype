@@ -7,8 +7,8 @@ import { JSXElement } from "solid-js";
 
 const componentsWithMountpoint = [VersionButton, ScrollToTop];
 
-const components = {
-  "#popups": [<VersionHistoryModal />],
+const componentsWithParent = {
+  "#popups": [VersionHistoryModal],
 };
 
 function mountToMountpoint(name: string, component: JSXElement): void {
@@ -33,15 +33,24 @@ function mountToMountpoint(name: string, component: JSXElement): void {
   mountPoint.remove();
 }
 
+function mountAsChildren(
+  parentQuery: string,
+  components: (() => JSXElement)[],
+): void {
+  const parent = qsr(parentQuery);
+  for (const component of components) {
+    render(() => component(), parent.native);
+  }
+}
+
 export function mountComponents(): void {
   for (const component of componentsWithMountpoint) {
     const name = component.name.replace("[solid-refresh]", "");
     mountToMountpoint(name, component());
   }
-  for (const [selector, componentList] of Object.entries(components)) {
-    const container = qsr(selector);
-    for (const component of componentList) {
-      render(() => component, container.native);
-    }
+  for (const [selector, componentList] of Object.entries(
+    componentsWithParent,
+  )) {
+    mountAsChildren(selector, componentList);
   }
 }
