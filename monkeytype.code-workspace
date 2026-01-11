@@ -58,6 +58,12 @@
     "[typescript]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
     "vitest.maximumConfigs": 10,
     "oxc.typeAware": true,
     "typescript.format.enable": false,

@@ -1,6 +1,6 @@
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
-import Config from "../config";
+import Config, { setConfig } from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
@@ -51,6 +51,7 @@ import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 
 let result: CompletedEvent;
+let minChartVal: number;
 let maxChartVal: number;
 
 let useSmoothedBurst = true;
@@ -63,7 +64,7 @@ export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
   Notifications.add(useSmoothedBurst ? "on" : "off", 1);
   if (TestState.resultVisible) {
-    void updateGraph().then(() => {
+    void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
   }
@@ -73,7 +74,7 @@ export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
   Notifications.add(useFakeChartData ? "on" : "off", 1);
   if (TestState.resultVisible) {
-    void updateGraph().then(() => {
+    void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
   }
@@ -81,7 +82,7 @@ export function toggleUserFakeChartData(): void {
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
-async function updateGraph(): Promise<void> {
+async function updateChartData(): Promise<void> {
   if (result.chartData === "toolong") return;
 
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
@@ -131,29 +132,6 @@ async function updateGraph(): Promise<void> {
     chartData2.pop();
   }
 
-  maxChartVal = Math.max(
-    ...[
-      Math.max(...chartData1),
-      Math.max(...chartData2),
-      Math.max(...chartData3),
-    ],
-  );
-
-  let minChartVal = 0;
-
-  if (!Config.startGraphsAtZero) {
-    minChartVal = Math.min(
-      ...[
-        Math.min(...chartData1),
-        Math.min(...chartData2),
-        Math.min(...chartData3),
-      ],
-    );
-
-    // Round down to nearest multiple of 10
-    minChartVal = Math.floor(minChartVal / 10) * 10;
-  }
-
   const subcolor = await ThemeColors.get("sub");
 
   if (Config.funbox.length > 0) {
@@ -198,16 +176,10 @@ async function updateGraph(): Promise<void> {
 
   ChartController.result.getDataset("wpm").data = chartData1;
   ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
-  ChartController.result.getScale("wpm").min = minChartVal;
-  ChartController.result.getScale("wpm").max = maxChartVal;
 
   ChartController.result.getDataset("raw").data = chartData2;
-  ChartController.result.getScale("raw").min = minChartVal;
-  ChartController.result.getScale("raw").max = maxChartVal;
 
   ChartController.result.getDataset("burst").data = chartData3;
-  ChartController.result.getScale("burst").min = minChartVal;
-  ChartController.result.getScale("burst").max = maxChartVal;
 
   ChartController.result.getDataset("error").data = result.chartData.err;
   ChartController.result.getScale("error").max = Math.max(
@@ -303,7 +275,7 @@ function applyFakeChartData(): void {
   ChartController.result.getScale("error").max = Math.max(...fakeChartData.err);
 }
 
-export async function updateGraphPBLine(): Promise<void> {
+export async function updateChartPBLine(): Promise<void> {
   const themecolors = await ThemeColors.getAll();
   const localPb = await DB.getLocalPB(
     result.mode,
@@ -347,17 +319,6 @@ export async function updateGraphPBLine(): Promise<void> {
       display: true,
     },
   });
-  const lpbRange = typingSpeedUnit.fromWpm(20);
-  if (
-    maxChartVal >= parseFloat(chartlpb) - lpbRange &&
-    maxChartVal <= parseFloat(chartlpb) + lpbRange
-  ) {
-    maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
-  }
-
-  ChartController.result.getScale("wpm").max = maxChartVal;
-  ChartController.result.getScale("raw").max = maxChartVal;
-  ChartController.result.getScale("burst").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -1028,10 +989,12 @@ export async function update(
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);
   await updateCrown(dontSave);
-  await updateGraph();
-  await updateGraphPBLine();
-  await updateTags(dontSave);
+  await updateChartData();
   updateResultChartDataVisibility();
+  updateMinMaxChartValues();
+  await updateChartPBLine();
+  applyMinMaxChartValues();
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
@@ -1173,7 +1136,73 @@ const resultChartDataVisibility = new LocalStorageWithSchema({
   },
 });
 
-function updateResultChartDataVisibility(update = false): void {
+function updateMinMaxChartValues(): void {
+  const values = [];
+
+  const datasets = {
+    wpm: ChartController.result.getDataset("wpm"),
+    burst: ChartController.result.getDataset("burst"),
+    raw: ChartController.result.getDataset("raw"),
+  };
+
+  if (!datasets.wpm.hidden) {
+    values.push(...datasets.wpm.data);
+  }
+  if (!datasets.burst.hidden) {
+    values.push(...datasets.burst.data);
+  }
+  if (!datasets.raw.hidden) {
+    values.push(...datasets.raw.data);
+  }
+
+  maxChartVal = Math.max(...values);
+
+  let maxAnnotation: null | number = null;
+  for (const annotation of resultAnnotation) {
+    if ((annotation.display ?? false) === false) continue;
+    if (annotation.value === undefined) continue;
+    // values.push(annotation.value as number);
+    if (
+      maxAnnotation === null ||
+      parseFloat(annotation.value as string) > maxAnnotation
+    ) {
+      maxAnnotation = parseFloat(annotation.value as string);
+    }
+  }
+
+  if (maxAnnotation !== null) {
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+    const lpbRange = typingSpeedUnit.fromWpm(20);
+    if (
+      maxChartVal >= maxAnnotation - lpbRange &&
+      maxChartVal <= maxAnnotation + lpbRange
+    ) {
+      maxChartVal = Math.round(maxAnnotation + lpbRange);
+    }
+  }
+
+  maxChartVal = Math.ceil(maxChartVal / 10) * 10;
+
+  minChartVal = 0;
+
+  if (!Config.startGraphsAtZero) {
+    minChartVal = Math.min(...values);
+
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
+  }
+}
+
+function applyMinMaxChartValues(): void {
+  ChartController.result.getScale("wpm").min = minChartVal;
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").min = minChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+}
+
+function updateResultChartDataVisibility(): void {
   const vis = resultChartDataVisibility.get();
   ChartController.result.getDataset("raw").hidden = !vis.raw;
   ChartController.result.getDataset("burst").hidden = !vis.burst;
@@ -1187,8 +1216,6 @@ function updateResultChartDataVisibility(update = false): void {
     }
   }
 
-  if (update) ChartController.result.update();
-
   const buttons = qsa(".pageTest #result .chart .chartLegend button");
 
   // Check if there are any tag PB annotations
@@ -1199,6 +1226,10 @@ function updateResultChartDataVisibility(update = false): void {
   for (const button of buttons) {
     const id = button?.getAttribute("data-id") as string;
 
+    if (id === "scale") {
+      continue;
+    }
+
     if (
       id !== "raw" &&
       id !== "burst" &&
@@ -1206,7 +1237,7 @@ function updateResultChartDataVisibility(update = false): void {
       id !== "pbLine" &&
       id !== "tagPbLine"
     ) {
-      return;
+      continue;
     }
 
     $(button).toggleClass("active", vis[id]);
@@ -1277,9 +1308,14 @@ export function updateTagsAfterEdit(
   );
 }
 
-$(".pageTest #result .chart .chartLegend button").on("click", (event) => {
+$(".pageTest #result .chart .chartLegend button").on("click", async (event) => {
   const $target = $(event.target);
   const id = $target.data("id") as string;
+
+  if (id === "scale") {
+    setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
+    return;
+  }
 
   if (
     id !== "raw" &&
@@ -1294,7 +1330,11 @@ $(".pageTest #result .chart .chartLegend button").on("click", (event) => {
   vis[id] = !vis[id];
   resultChartDataVisibility.set(vis);
 
-  updateResultChartDataVisibility(true);
+  updateResultChartDataVisibility();
+  updateMinMaxChartValues();
+  applyMinMaxChartValues();
+  void ChartController.result.updateColors();
+  ChartController.result.update();
 });
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
@@ -1354,8 +1394,11 @@ ConfigEvent.subscribe(async ({ key }) => {
     resultAnnotation = [];
 
     updateWpmAndAcc();
-    await updateGraph();
-    await updateGraphPBLine();
+    await updateChartData();
+    await updateChartPBLine();
+    updateResultChartDataVisibility();
+    updateMinMaxChartValues();
+    applyMinMaxChartValues();
     void TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)

@@ -1,26 +1,8 @@
 import { vi } from "vitest";
-import $ from "jquery";
-import { ElementsWithUtils, ElementWithUtils } from "../src/ts/utils/dom";
+import { ElementsWithUtils, ElementWithUtils } from "../../src/ts/utils/dom";
 
-//@ts-expect-error add to global
-global["$"] = $;
-//@ts-expect-error add to global
-global["jQuery"] = $;
-
-vi.mock("../src/ts/constants/env-config", () => ({
-  envConfig: {
-    backendUrl: "invalid",
-    isDevelopment: true,
-  },
-}));
-
-vi.mock("../src/ts/firebase", () => ({
-  app: undefined,
-  Auth: undefined,
-  isAuthenticated: () => false,
-}));
-
-vi.mock("../src/ts/utils/dom", async (importOriginal) => {
+// Mock dom-utils to always return a mock element
+vi.mock("../../src/ts/utils/dom", async (importOriginal) => {
   const createMockElement = (): ElementWithUtils => {
     return {
       disable: vi.fn().mockReturnThis(),

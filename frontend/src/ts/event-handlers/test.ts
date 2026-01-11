@@ -24,7 +24,7 @@ const testPage = qs(".pageTest");
 testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
   const target = event.childTarget as HTMLElement;
   const attr = target?.getAttribute("commands");
-  if (attr === undefined) return;
+  if (attr === null) return;
   Commandline.show({ subgroupOverride: attr as ConfigKey | ListsObjectKeys });
 });
 

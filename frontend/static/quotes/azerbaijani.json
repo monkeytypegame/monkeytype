@@ -1,0 +1,155 @@
+{
+  "language": "azerbaijani",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Tanrı hər bir insanın qəlbində olmalıdır,... O olmayanda isə... Bütün qalan şeylər fanidir.",
+      "source": "Çingiz Abdullayev, Mavi Mələklər",
+      "length": 91,
+      "id": 1
+    },
+    {
+      "text": "Həyatda təsadüf deyilən bir şey yoxdur. Qarşına çıxan yollardan hansısa birini özün seçirsən. Bu zaman ya hansı yolu seçəcəyin barədə kifayət qədər düşünüb daşınırsan, ya da bəxtinə güvənərək gözüyumulu addım atırsan.",
+      "source": "Elxan Elatlı, On Dördüncü Adım",
+      "length": 217,
+      "id": 2
+    },
+    {
+      "text": "Nadana nəyisə izah etməyə çalışmaqla aşsüzənə su doldurmağa çalışmaq arasında heç bir fərq yoxdur.",
+      "source": "Elxan Elatlı, Alternativ Əməliyyat",
+      "length": 98,
+      "id": 3
+    },
+    {
+      "text": "Qəribədi, çox qəribədi adam sağ olanda çəkdirdiyi şəkil başqa bir görkəm daşıyır, ölən kimi elə bil şəkil də başqa formaya keçir. Onların gözlərinin içinə diqqətlə baxsan, iç dünyalarına daxil olmaq mümkündür. Şəkillər elə bil səndən nəsə soruşmaq istəyirlər. Arxanca baxırlar, baxırlar... Elə bil gəlmək istəyirlər səninlə. Gələ bilmirlər...",
+      "source": "Kəramət Böyükçöl, Çöl",
+      "length": 342,
+      "id": 4
+    },
+    {
+      "text": "Ölülər rahat idi. Əsl dirilməli olanlar \"yaşayanlar\" idi.",
+      "source": "Cəlil Məmmədquluzadə, Ölülər",
+      "length": 57,
+      "id": 5
+    },
+    {
+      "text": "Qadınlarda elə bir hal olur ki, heç kəs onları incitməsə də, heç bir bədbəxtlik üz verməsə də, bəzən onlar incimək və bədbəxt olmaq ehtiyacını hiss edirlər.",
+      "source": "Fyodor Dostoyevski, Alçaldılmış və Təhqir Edilmiş İnsanlar",
+      "length": 156,
+      "id": 6
+    },
+    {
+      "text": "Mən indi bir şeyi anladım: bu mənalı və harmonik həyatda yalnız mənasız həyat sürənlər yamaqdırlar. Həyata, ömrünə və həqiqi dəyərlərə sahib olan insan bu həyatda yamaq deyil, elə həyatın özüdür.",
+      "source": "Rövşən Abdullaoğlu, Relslər Üzərində Uzanmış Adam",
+      "length": 195,
+      "id": 7
+    },
+    {
+      "text": "Həyətdə gün çıxıb; sən ki, o günü görməyəcəksən, nəyə lazımdır onun işığı? Çöldə otlar göyərib, ağaclar çiçək açıb; amma nəyə lazımdır sənsiz o çiçəklər, o çəmənlər?",
+      "source": "Cəlil Məmmədquluzadə, Ölülər",
+      "length": 165,
+      "id": 8
+    },
+    {
+      "text": "Siz bir kişiyə təhsil versəniz, yalnız bir nəfərə təhsil vermiş olarsınız. Bir qadına təhsil vermiş olsanız, bir ailəyə təhsil vermiş olarsınız.",
+      "source": "H.Z. Tağıyev",
+      "length": 144,
+      "id": 9
+    },
+    {
+      "text": "Ölüm nədir? Bu, ilk baxışda adi, sadə sualdır, ancaq özündə bir çox qeyri-adilikləri, mürəkkəblikləri ehtiva edir. Ən adi və ən məlum olanı odur ki, insan heç bir səbəb olmadan, heç bir xəstəlik-filan keçirmədən, qocalaraq ölməlidir. Yəni bioloji varlıq olaraq insan doğulur, böyüyür, qocalır və ölür. Ölüm - qocalığın sonuncu olaraq bədənin bütün orqanlarının və beyinin işləməsini dayandırır... Amma gəlin görək, əksəriyyət ölümə bu təbii yolla gələ bilirmi? Gələ bilmir. Ölümə bu cür gəlmək üçün bütün həyatını təbii axarda keçirməlisən, stressiz, depressiyasız, başqalarının zərəri və xətəri, kənar mühitin, təbiətin təsiri olmadan yaşamalısan... Hirslənmədən, kədərlənmədən, əzab və sıxıntı çəkmədən, ağrımadan, ağlamadan ömür sürməlisən...",
+      "source": "Varis, Əzilmiş Fotoşəkillər",
+      "length": 745,
+      "id": 10
+    },
+    {
+      "text": "Elə adamlar var ki, pisə rast gəlməyincə, onun əzablarını çəkməyincə yaxşının qədrini bilməzlər. Bunların içərisində pisin üzünü bircə dəfə görməklə bütün ömrü boyu bərk-bərk yaxşının ətəyindən tutanlar, ona qəlbən pərəstiş edənlər olur. Lakin elələri də olur ki, pisin pisliyini, yaxşının yaxşılığını çox tez unudur, gah bundan, gah ondan yapışaraq öz həyatını da, başqalarının həyatını da korlayıb durur.",
+      "source": "Mirzə İbrahimov, Böyük Dayaq",
+      "length": 406,
+      "id": 11
+    },
+    {
+      "text": "İnsan keçirdiyi dəqiqələrin şirinliyini həsrət zamanlarında başa düşür, mənim Saram.",
+      "source": "Mirzə İbrahimov, Sevgi Məktubları",
+      "length": 84,
+      "id": 12
+    },
+    {
+      "text": "Öpürəm səni, mənim ümidim.\nSənin Mirzən.",
+      "source": "Mirzə İbrahimov, Sevgi Məktubları",
+      "length": 40,
+      "id": 13
+    },
+    {
+      "text": "Qəlbimdəki yara için-için sızlasa da, üstü köz bağlayır.",
+      "source": "İlyas Əfəndiyev, Söyüdlü Arx",
+      "length": 56,
+      "id": 14
+    },
+    {
+      "text": "Bir də qapqara, uzun, sıx kirpikləri - o kirpikləri elə qaldırdı ki, elə bil qədim bir kitabın ağır səhifəsini açır və o kirpiklər Təhminənin sifətinin tən yarısına kölgə salırdı. Bir dəfə Zaur içmişdi, dedi ki, sən kirpiklərini qaldıranda elə bil bəşəriyyət tarixində yeni bir səhifə açılır...",
+      "source": "Anar, Beşmərtəbəli evin altıncı mərtəbəsi",
+      "length": 294,
+      "id": 15
+    },
+    {
+      "text": "İyirmi ildən artıq xilafətə qarşı kəskin və cəsur azadlıq mübarizəsi aparmış bir xalqı şən və qayğısız ömür sürən başıpozuq bir kütlə kimi qələmə vermək mümkün deyil.",
+      "source": "Ziya Bünyadov",
+      "length": 166,
+      "id": 16
+    },
+    {
+      "text": "Mən tam dərk etmişəm ki, cəsurluq - qorxunun olmaması deyil, ona qalib gəlməkdir. Cəsur insan qorxusuz deyil, qorxuyla mübarizə aparandır.",
+      "source": "Nelson Mandela",
+      "length": 138,
+      "id": 17
+    },
+    {
+      "text": "Xalqın ümumi idealı ilə bağlı olan, onun həyatına işıq saçan hər bir yazı tərzi, hər bir janr xeyirlidir.",
+      "source": "İlyas Əfəndiyev",
+      "length": 105,
+      "id": 18
+    },
+    {
+      "text": "Əsarətçilərin yad dili yerli xalqa rəsmi olaraq yeritməsi mümkündür, hətta öa ana dilində danışan əhalinin tərkibi nə qədər qarışıq olsa belə, mümkündür. Məsələn, Rusiya imperiyasında rus dilinin, Hindistanda ingilis dilinin, Əlcəzairdə fransız dilinin, İranda fars dilinin rəsmi olaraq xalqa qəbul etdirilməsi kimi. Məcbur edilir ki, bu pərçim olunmuş dildən iclaslarda və mediada, kitab səhifələrində, tədris vəsaitlərində istifadə edilsin. Ancaq xalqın dilinə atalar sözlərini və zərb-məsəlləri, laylaları və ağıları, mərasim və sevgi mahnılarını, nağıl və əfsanələri, bütöv bir epik düzümü zorla necə qəbul etdirmək olar? Onlar əbədidir, əzəlidir və heç bir xalq digər xalqa ana dilinin folklor ahəngini zorla qəbul etdirə bilməz.",
+      "source": "Anar",
+      "length": 734,
+      "id": 19
+    },
+    {
+      "text": "İnsan nə qədər mürəkkəb olursa-olsun, axırda özünü çox sadə şəkildə ifadə edir.",
+      "source": "Anar",
+      "length": 79,
+      "id": 20
+    },
+    {
+      "text": "Məsəl var, naçalnik, deyərlər, adamın adı çıxınca canı çıxsa yaxşıdı - oğru İmaşa iş verən kimdi, onunla işləmək istəyən kimdi?",
+      "source": "İmaş, Arxadan vurulan zərbə (film)",
+      "length": 127,
+      "id": 21
+    },
+    {
+      "text": "Bədbəxtlik yoxsulluqdan da pisdir, cənab! İnsanın artıq gedəcək yeri olmadıqda bunun nə demək olduğunu bilirsinizmi? Çünki, əziz bəy, hər bir insanın çətinliyə düşəndə döyəcək bir qapısı olmalıdır, elə deyilmi? Döyməyə qapınız yoxdursa; bədbəxtlik içindəsən...",
+      "source": "Fyodor Dostoyevski, Cinayət və Cəza",
+      "length": 260,
+      "id": 22
+    },
+    {
+      "text": "Qeyri-adi bir hadisə haqqında eşidən insanlar onu qeyri-mümkün fərziyyələrlə izah etməyə başlayırlar. Əvvəlcə ən sadə izahı nəzərdən keçirin: bunun hamısı cəfəngiyyatdır.",
+      "source": "Lev Landau",
+      "length": 170,
+      "id": 23
+    },
+    {
+      "text": "Gəlin mənim süpürgəmdü. Harada qoydum, orada da qalmaludu.",
+      "source": "Cənnət, Qayınana (film)",
+      "length": 58,
+      "id": 24
+    }
+  ]
+}
