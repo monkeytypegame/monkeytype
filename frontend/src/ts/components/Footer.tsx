@@ -20,16 +20,15 @@ export function Footer(): JSXElement {
       </div>
       <div class="leftright">
         <div class="left">
-          <TextButton
-            icon="fa-envelope"
-            text="contact"
-            onClick={() => ContactModal.show()}
-          />
+          <TextButton icon="fa-envelope" onClick={() => ContactModal.show()}>
+            <div class="text">contract</div>
+          </TextButton>
 
           <button id="supportMeButton" class="textButton" type="button">
             <i class="fas fa-fw fa-donate"></i>
             <div class="text">support</div>
           </button>
+
           <a
             href="https://github.com/monkeytypegame/monkeytype"
             class="textButton"
