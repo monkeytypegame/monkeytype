@@ -1,48 +1,14 @@
-import {
-  JSXElement,
-  createSignal,
-  createResource,
-  For,
-  Suspense,
-  ErrorBoundary,
-  Resource,
-} from "solid-js";
+import { JSXElement, createSignal, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../utils/json-data";
-import { createErrorMessage } from "../utils/misc";
 import { AnimatedModal } from "../components/AnimatedModal";
 import "./VersionHistoryModal.scss";
+import AsyncContent from "../components/AsyncContent";
 
 const [isOpen, setIsOpen] = createSignal(false);
 
 export function show(): void {
   setIsOpen(true);
-}
-
-function AsyncContent<T>(props: {
-  resource: Resource<T>;
-  errorMessage?: string;
-  children: (data: T) => JSXElement;
-}): JSXElement {
-  return (
-    <ErrorBoundary
-      fallback={(err) => (
-        <div class="error">
-          {createErrorMessage(err, props.errorMessage ?? "An error occurred")}
-        </div>
-      )}
-    >
-      <Suspense
-        fallback={
-          <div class="preloader">
-            <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-          </div>
-        }
-      >
-        {props.children(props.resource() as T)}
-      </Suspense>
-    </ErrorBoundary>
-  );
 }
 
 export function VersionHistoryModal(): JSXElement {
