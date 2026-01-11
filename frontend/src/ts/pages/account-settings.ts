@@ -13,6 +13,7 @@ import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -212,4 +213,64 @@ export const page = new PageWithUrlParams({
 
 onWindowLoad(() => {
   Skeleton.save("pageAccountSettings");
+});
+
+$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
+  showPopup("unlinkDiscord");
+});
+
+$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
+  showPopup("removeGoogleAuth");
+});
+
+$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
+  showPopup("removeGithubAuth");
+});
+
+$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
+  showPopup("removePasswordAuth");
+});
+
+$("#resetSettingsButton").on("click", () => {
+  showPopup("resetSettings");
+});
+
+$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
+  showPopup("revokeAllTokens");
+});
+
+$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
+  showPopup("resetPersonalBests");
+});
+
+$(".pageAccountSettings").on("click", "#updateAccountName", () => {
+  showPopup("updateName");
+});
+
+$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
+  showPopup("updateName");
+});
+
+$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
+  showPopup("addPasswordAuth");
+});
+
+$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
+  showPopup("updateEmail");
+});
+
+$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
+  showPopup("updatePassword");
+});
+
+$(".pageAccountSettings").on("click", "#deleteAccount", () => {
+  showPopup("deleteAccount");
+});
+
+$(".pageAccountSettings").on("click", "#resetAccount", () => {
+  showPopup("resetAccount");
+});
+
+$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
+  showPopup("optOutOfLeaderboards");
 });

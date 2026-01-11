@@ -44,6 +44,7 @@ import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 let settingsInitialized = false;
 
@@ -1033,3 +1034,33 @@ export const page = new PageWithUrlParams({
 onWindowLoad(async () => {
   Skeleton.save("pageSettings");
 });
+
+$(".pageSettings").on(
+  "click",
+  ".section.themes .customTheme .delButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    showPopup("deleteCustomTheme", [customThemeId]);
+  },
+);
+
+$(".pageSettings").on(
+  "click",
+  ".section.themes .customTheme .editButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
+  },
+);
+
+$(".pageSettings").on(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont");
+  },
+);
