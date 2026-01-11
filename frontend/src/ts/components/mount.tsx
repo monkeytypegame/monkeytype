@@ -12,7 +12,7 @@ const components = {
 };
 
 function mountToMountpoint(name: string, component: JSXElement): void {
-  const mountPoint = qsr(`mountpoint#${name}`);
+  const mountPoint = qsr(name);
   const parent = mountPoint.getParent()?.native;
 
   if (parent === null || parent === undefined) {
