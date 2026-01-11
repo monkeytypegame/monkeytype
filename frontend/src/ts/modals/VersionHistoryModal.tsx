@@ -46,10 +46,9 @@ export function VersionHistoryModal(): JSXElement {
 
   return (
     <AnimatedModal
-      id="versionHistoryModal"
+      id="VersionHistoryModal"
       isOpen={isOpen()}
       onClose={() => setIsOpen(false)}
-      class="VersionHistoryModal"
     >
       <Show
         when={!releases.loading && releases.error === undefined}
