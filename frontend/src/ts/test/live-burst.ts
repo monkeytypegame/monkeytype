@@ -3,26 +3,24 @@ import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../utils/format";
 import { applyReducedMotion } from "../utils/misc";
-import { animate } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { qs } from "../utils/dom";
 
-const textEl = document.querySelector(
-  "#liveStatsTextBottom .liveBurst",
-) as HTMLElement;
-const miniEl = document.querySelector("#liveStatsMini .burst") as HTMLElement;
+const textEl = qs("#liveStatsTextBottom .liveBurst");
+const miniEl = qs("#liveStatsMini .burst");
 
 export function reset(): void {
   requestDebouncedAnimationFrame("live-burst.reset", () => {
-    textEl.innerHTML = "0";
-    miniEl.innerHTML = "0";
+    textEl?.setHtml("0");
+    miniEl?.setHtml("0");
   });
 }
 
 export async function update(burst: number): Promise<void> {
   requestDebouncedAnimationFrame("live-burst.update", () => {
     const burstText = Format.typingSpeed(burst, { showDecimalPlaces: false });
-    miniEl.innerHTML = burstText;
-    textEl.innerHTML = burstText;
+    miniEl?.setHtml(burstText);
+    textEl?.setHtml(burstText);
   });
 }
 
@@ -34,14 +32,14 @@ export function show(): void {
   if (state) return;
   requestDebouncedAnimationFrame("live-burst.show", () => {
     if (Config.liveBurstStyle === "mini") {
-      miniEl.classList.remove("hidden");
-      animate(miniEl, {
+      miniEl?.show();
+      miniEl?.animate({
         opacity: [0, 1],
         duration: applyReducedMotion(125),
       });
     } else {
-      textEl.classList.remove("hidden");
-      animate(textEl, {
+      textEl?.show();
+      textEl?.animate({
         opacity: [0, 1],
         duration: applyReducedMotion(125),
       });
@@ -53,18 +51,18 @@ export function show(): void {
 export function hide(): void {
   if (!state) return;
   requestDebouncedAnimationFrame("live-burst.hide", () => {
-    animate(textEl, {
+    textEl?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
       onComplete: () => {
-        textEl.classList.add("hidden");
+        textEl?.hide();
       },
     });
-    animate(miniEl, {
+    miniEl?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
       onComplete: () => {
-        miniEl.classList.add("hidden");
+        miniEl?.hide();
       },
     });
     state = false;
@@ -74,10 +72,10 @@ export function hide(): void {
 export function instantHide(): void {
   if (!state) return;
 
-  textEl.classList.add("hidden");
-  textEl.style.opacity = "0";
-  miniEl.classList.add("hidden");
-  miniEl.style.opacity = "0";
+  textEl?.hide();
+  textEl?.setStyle({ opacity: "0" });
+  miniEl?.hide();
+  miniEl?.setStyle({ opacity: "0" });
 
   state = false;
 }

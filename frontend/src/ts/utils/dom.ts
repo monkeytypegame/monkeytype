@@ -226,8 +226,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Make element visible by scrolling the element's ancestor containers
    */
-  scrollIntoView(options: ScrollIntoViewOptions): this {
-    this.native.scrollIntoView(options);
+  scrollIntoView(options?: ScrollIntoViewOptions): this {
+    this.native.scrollIntoView(options ?? {});
 
     return this;
   }
@@ -652,6 +652,17 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's children
+   */
+  getChildren(): ElementsWithUtils {
+    const children = Array.from(this.native.children);
+    const convertedChildren = new ElementsWithUtils(
+      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
+    );
+    return convertedChildren;
+  }
+
+  /**
    * Animate the element using Anime.js
    * @param animationParams The Anime.js animation parameters
    * @returns The JSAnimation instance created by Anime.js
@@ -761,8 +772,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Focus the element
    */
-  focus(): void {
-    this.native.focus();
+  focus(options?: FocusOptions): void {
+    this.native.focus(options ?? {});
   }
 
   /**
