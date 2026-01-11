@@ -38,7 +38,7 @@ import "./test/tts";
 import "./elements/fps-counter";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as Focus from "./test/focus";
-import * as Version from "./states/version";
+import { fetchLatestVersion } from "./states/version";
 import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
@@ -70,7 +70,7 @@ Object.defineProperty(window, "Math", {
 
 applyEngineSettings();
 void loadFromLocalStorage();
-void Version.initialize();
+void fetchLatestVersion();
 Focus.set(true, true);
 void init(onAuthStateChanged);
 

@@ -11,14 +11,6 @@ const memoryLS = new LocalStorageWithSchema({
   fallback: "",
 });
 
-function setMemory(v: string): void {
-  memoryLS.set(v);
-}
-
-function getMemory(): string {
-  return memoryLS.get();
-}
-
 function purgeCaches(): void {
   if (!("caches" in window)) return;
   void caches.keys().then(function (names) {
@@ -26,7 +18,7 @@ function purgeCaches(): void {
   });
 }
 
-async function fetchVersion(): Promise<void> {
+export async function fetchLatestVersion(): Promise<void> {
   const { data: currentVersion, error } = await tryCatch(
     getLatestReleaseFromGitHub(),
   );
@@ -40,7 +32,7 @@ async function fetchVersion(): Promise<void> {
     return;
   }
 
-  const memoryVersion = getMemory();
+  const memoryVersion = memoryLS.get();
   const isNew = memoryVersion === "" ? false : memoryVersion !== currentVersion;
 
   setVersion({
@@ -49,11 +41,7 @@ async function fetchVersion(): Promise<void> {
   });
 
   if (isNew || memoryVersion === "") {
-    setMemory(currentVersion);
+    memoryLS.set(currentVersion);
     purgeCaches();
   }
-}
-
-export async function initialize(): Promise<void> {
-  await fetchVersion();
 }
