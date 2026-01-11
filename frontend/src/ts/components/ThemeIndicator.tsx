@@ -1,8 +1,5 @@
 import { JSXElement, Show } from "solid-js";
-import {
-  getThemeIndicator,
-  ThemeIndicator as Indicator,
-} from "../signals/core";
+import { getThemeIndicator } from "../signals/core";
 import Config, { setConfig } from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
@@ -11,8 +8,6 @@ import * as Commandline from "../commandline/commandline";
 import "./ThemeIndicator.scss";
 
 export function ThemeIndicator(): JSXElement {
-  const indicator = (): Indicator => getThemeIndicator();
-
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
       if (Config.customTheme) {
@@ -45,12 +40,12 @@ export function ThemeIndicator(): JSXElement {
       onClick={handleClick}
     >
       <div class="icon">
-        <Show when={indicator().isFavorite}>
+        <Show when={getThemeIndicator().isFavorite}>
           <i class="fas fa-star favIndicator"></i>
         </Show>
         <i class="fas fa-fw fa-palette"></i>
       </div>
-      <div class="text">{indicator().text}</div>
+      <div class="text">{getThemeIndicator().text}</div>
     </button>
   );
 }

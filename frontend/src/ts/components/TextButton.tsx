@@ -1,4 +1,4 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 export function TextButton(props: {
   icon?: string;
@@ -13,9 +13,11 @@ export function TextButton(props: {
         textButton: props.class === undefined,
         [props.class ?? ""]: props.class !== undefined,
       }}
-      onClick={props.onClick}
+      onClick={() => props.onClick?.()}
     >
-      {props.icon !== undefined && <i class={`fas fa-fw ${props.icon}`} />}
+      <Show when={props.icon !== undefined}>
+        <i class={`fas fa-fw ${props.icon}`}></i>
+      </Show>
       {props.children}
     </button>
   );
