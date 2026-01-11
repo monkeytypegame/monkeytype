@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 
-type ModalId = "VersionHistory";
+type ModalId = "VersionHistory" | "Contact" | "Support";
 
 const [openModals, setOpenModals] = createStore<
   Partial<Record<ModalId, boolean>>

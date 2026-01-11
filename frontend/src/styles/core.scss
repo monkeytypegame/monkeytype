@@ -195,7 +195,8 @@ body {
   opacity: 0;
 }
 
-key {
+key,
+kbd {
   color: var(--bg-color);
   background-color: var(--sub-color);
   /* font-weight: bold; */

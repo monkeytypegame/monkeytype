@@ -1,0 +1,88 @@
+@use "../../styles/media.scss" as *;
+
+#SupportModal {
+  .modal {
+    max-width: 900px;
+    width: 100%;
+    // height: 400px;
+    overflow-y: scroll;
+    max-height: 100%;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    display: grid;
+    gap: 1rem;
+
+    .text {
+      color: var(--text-color);
+    }
+
+    .subtext {
+      color: var(--sub-color);
+      font-size: 0.75rem;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 1rem;
+
+      button,
+      .button {
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 1rem 0;
+        display: grid;
+        gap: 1rem;
+        text-decoration: none;
+        .text {
+          transition: 0.25s;
+        }
+        &:hover .text {
+          color: var(--bg-color);
+        }
+        .icon {
+          font-size: 3rem;
+          line-height: 3rem;
+        }
+      }
+    }
+  }
+
+  @include media-query(green) {
+    & {
+      .modal {
+        .buttons {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    }
+  }
+
+  @include media-query(purple) {
+    & {
+      .modal {
+        .buttons {
+          grid-template-columns: 1fr;
+          button,
+          a.button {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            justify-content: start;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 0;
+            .icon {
+              font-size: 1.5rem;
+              margin-left: 1.5rem;
+            }
+            .text {
+              text-align: left;
+              font-size: 1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

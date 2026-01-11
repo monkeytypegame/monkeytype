@@ -1,3 +1,5 @@
+@use "../../styles/media.scss" as *;
+
 footer {
   position: relative;
   text-align: center;
@@ -112,5 +114,38 @@ footer {
       opacity: 0 !important;
       pointer-events: none !important;
     }
+  }
+
+  @include media-query(green) {
+    & {
+      .leftright {
+        .left {
+          display: grid;
+          grid-template-columns: repeat(4, auto);
+        }
+        .right {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+
+  @include media-query(purple) {
+    & {
+      .leftright {
+        grid-template-columns: 1fr 1fr;
+        .left {
+          width: unset;
+          grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+        }
+      }
+    }
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #commandLineMobileButton {
+    display: block !important;
   }
 }
