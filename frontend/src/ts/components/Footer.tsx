@@ -4,6 +4,7 @@ import { TextButton } from "./TextButton";
 import { showModal } from "../stores/modals";
 import * as CommandLine from "../commandline/commandline";
 import "./Footer.scss";
+import { ThemeIndicator } from "./ThemeIndicator";
 
 export function Footer(): JSXElement {
   return (
@@ -97,18 +98,7 @@ export function Footer(): JSXElement {
           </a>
         </div>
         <div class="right">
-          <button
-            type="button"
-            class="current-theme textButton"
-            aria-label="Shift-click to toggle custom theme"
-            data-balloon-pos="left"
-          >
-            <div class="icon">
-              <i class="fas fa-star favIndicator"></i>
-              <i class="fas fa-fw fa-palette"></i>
-            </div>
-            <div class="text">serika dark</div>
-          </button>
+          <ThemeIndicator />
           <VersionButton />
         </div>
       </div>
