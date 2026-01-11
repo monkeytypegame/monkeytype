@@ -2,7 +2,7 @@ import { render } from "solid-js/web";
 import { qs, qsr } from "../utils/dom";
 import { ScrollToTop } from "./ScrollToTop";
 import { VersionButton } from "../elements/VersionButton";
-import { VersionHistoryModal } from "../modals/VersionHistoryModal";
+import { VersionHistoryModal } from "./VersionHistoryModal";
 
 export function mountComponents(): void {
   const body = document.body;

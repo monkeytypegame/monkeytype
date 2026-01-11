@@ -1,9 +1,9 @@
 import { JSXElement, createSignal, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../utils/json-data";
-import { AnimatedModal } from "../components/AnimatedModal";
+import { AnimatedModal } from "./AnimatedModal";
 import "./VersionHistoryModal.scss";
-import AsyncContent from "../components/AsyncContent";
+import AsyncContent from "./AsyncContent";
 
 const [isOpen, setIsOpen] = createSignal(false);
 
