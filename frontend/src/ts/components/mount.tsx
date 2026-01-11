@@ -2,18 +2,14 @@ import { render } from "solid-js/web";
 import { qsa } from "../utils/dom";
 import { ScrollToTop } from "./ScrollToTop";
 import { VersionButton } from "./VersionButton";
-import { VersionHistoryModal } from "./VersionHistoryModal";
 import { JSXElement } from "solid-js";
-import { SupportModal } from "./SupportModal";
-import { ContactModal } from "./ContactModal";
 import { Footer } from "./Footer";
+import { Modals } from "./Modals";
 
 const components: Record<string, () => JSXElement> = {
   VersionButton: VersionButton,
   ScrollToTop: ScrollToTop,
-  VersionHistoryModal: VersionHistoryModal,
-  ContactModal: ContactModal,
-  SupportModal: SupportModal,
+  Modals: Modals,
   Footer: Footer,
 };
 

@@ -1,16 +1,10 @@
 import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
-import { hideModal, isModalOpen } from "../stores/modals";
 import "./ContactModal.scss";
 
 export function ContactModal(): JSXElement {
-  const isOpen = (): boolean => isModalOpen("Contact");
   return (
-    <AnimatedModal
-      id="ContactModal"
-      isOpen={isOpen()}
-      onClose={() => hideModal("Contact")}
-    >
+    <AnimatedModal id="Contact">
       <div class="title">Contact</div>
       <div class="text">
         Feel free to send an email to contact@monkeytype.com. For business

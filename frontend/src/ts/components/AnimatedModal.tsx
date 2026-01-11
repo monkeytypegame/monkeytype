@@ -2,6 +2,11 @@ import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
 import { applyReducedMotion } from "../utils/misc";
 import { useModalChain } from "./ModalChainContext";
 import { useRefWithUtils } from "../hooks/useRefWithUtils";
+import {
+  isModalOpen,
+  hideModal as stateHideModal,
+  ModalId,
+} from "../stores/modals";
 
 type AnimationParams = {
   opacity?: number | [number, number];
@@ -15,9 +20,7 @@ type AnimationConfig = {
 };
 
 type AnimatedModalProps = ParentProps<{
-  id: string;
-  isOpen: boolean;
-  onClose: () => void;
+  id: ModalId;
   mode?: "modal" | "dialog";
   animationMode?: "none" | "both" | "modalOnly";
   customAnimations?: {
@@ -51,11 +54,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   // oxlint-disable-next-line solid/reactivity
   const modalChain = props.useChain ? useModalChain() : undefined;
 
+  const isOpen = (): boolean => isModalOpen(props.id);
+
   // Register this modal in the chain
   createEffect(() => {
-    if (props.useChain && modalChain && props.isOpen) {
+    if (props.useChain && modalChain && isOpen()) {
       modalChain.pushModal({
-        id: props.id,
+        id: props.id as string,
         show: showModal,
         hide: hideModal,
         showOptions: props.showOptionsWhenReturning,
@@ -65,7 +70,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   // Handle open/close with animations
   createEffect(() => {
-    if (props.isOpen) {
+    if (isOpen()) {
       void showModal();
     } else {
       void hideModal();
@@ -243,7 +248,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       }
     }
 
-    props.onClose();
+    stateHideModal(props.id);
   }
 
   async function handleAfterShow(): Promise<void> {
@@ -266,7 +271,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   }
 
   const handleKeyDown = (e: KeyboardEvent): void => {
-    if (e.key === "Escape" && props.isOpen) {
+    if (e.key === "Escape" && isOpen()) {
       e.preventDefault();
       e.stopPropagation();
       if (props.onEscape) {
@@ -299,7 +304,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   return (
     <dialog
-      id={props.id}
+      id={`${props.id as string}Modal`}
       ref={dialogRef}
       class={`modalWrapper hidden ${props.class ?? ""}`}
       onKeyDown={handleKeyDown}

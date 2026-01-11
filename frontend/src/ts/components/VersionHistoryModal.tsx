@@ -4,7 +4,7 @@ import { getReleasesFromGitHub } from "../utils/json-data";
 import { AnimatedModal } from "./AnimatedModal";
 import "./VersionHistoryModal.scss";
 import AsyncContent from "./AsyncContent";
-import { hideModal, isModalOpen } from "../stores/modals";
+import { isModalOpen } from "../stores/modals";
 
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
@@ -41,11 +41,7 @@ export function VersionHistoryModal(): JSXElement {
   });
 
   return (
-    <AnimatedModal
-      id="VersionHistoryModal"
-      isOpen={isOpen()}
-      onClose={() => hideModal("VersionHistory")}
-    >
+    <AnimatedModal id="VersionHistory">
       <AsyncContent
         resource={releases}
         errorMessage="Failed to load version history"

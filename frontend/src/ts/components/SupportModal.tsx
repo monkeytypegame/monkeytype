@@ -2,16 +2,10 @@ import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
 import "./SupportModal.scss";
 import * as Commandline from "../commandline/commandline";
-import { hideModal, isModalOpen } from "../stores/modals";
 
 export function SupportModal(): JSXElement {
-  const isOpen = (): boolean => isModalOpen("Support");
   return (
-    <AnimatedModal
-      id="SupportModal"
-      isOpen={isOpen()}
-      onClose={() => hideModal("Support")}
-    >
+    <AnimatedModal id="Support">
       <div class="title">Support Monkeytype</div>
       <div class="text">
         Thank you so much for thinking about supporting this project. It would
