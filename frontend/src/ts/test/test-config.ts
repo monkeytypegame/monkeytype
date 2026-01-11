@@ -2,7 +2,7 @@ import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { applyReducedMotion, promiseAnimate } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";
@@ -334,7 +334,7 @@ ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
   // once the full config is loaded, we can apply everything once
   if (ignoreConfigEvent) return;
 
-  if (ActivePage.get() !== "test") return;
+  if (getActivePage() !== "test") return;
   if (key === "mode") {
     void update(previousValue, newValue);
   } else if (

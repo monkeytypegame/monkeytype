@@ -4,7 +4,7 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
@@ -17,7 +17,7 @@ document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
-  const pageTestActive: boolean = ActivePage.get() === "test";
+  const pageTestActive: boolean = getActivePage() === "test";
   if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
@@ -73,8 +73,8 @@ document.addEventListener("keydown", (e) => {
         Config.quickRestart === "enter" &&
         !isInteractiveElement)
     ) {
-      // e.preventDefault();
-      if (ActivePage.get() === "test") {
+      e.preventDefault();
+      if (getActivePage() === "test") {
         if (e.shiftKey) {
           ManualRestart.set();
         }

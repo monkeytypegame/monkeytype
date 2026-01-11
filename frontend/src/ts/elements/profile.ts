@@ -7,7 +7,7 @@ import * as Levels from "../utils/levels";
 import * as DateTime from "@monkeytype/util/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
@@ -457,7 +457,7 @@ export function updateFriendRequestButton(): void {
   }
 }
 const throttledEvent = throttle(1000, () => {
-  const activePage = ActivePage.get();
+  const activePage = getActivePage();
   if (activePage && ["account", "profile"].includes(activePage)) {
     updateNameFontSize(activePage as ProfileViewPaths);
   }
