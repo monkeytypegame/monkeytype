@@ -5,7 +5,11 @@ import { VersionButton } from "./VersionButton";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 import { JSXElement } from "solid-js";
 
-const components = [VersionButton, ScrollToTop, VersionHistoryModal];
+const components: Record<string, () => JSXElement> = {
+  VersionButton: VersionButton,
+  ScrollToTop: ScrollToTop,
+  VersionHistoryModal: VersionHistoryModal,
+};
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
   for (const mountPoint of qsa(name)) {
@@ -15,8 +19,7 @@ function mountToMountpoint(name: string, component: () => JSXElement): void {
 }
 
 export function mountComponents(): void {
-  for (const component of components) {
-    const name = component.name.replace("[solid-refresh]", "");
-    mountToMountpoint(name, component);
+  for (const [query, component] of Object.entries(components)) {
+    mountToMountpoint(query, component);
   }
 }
