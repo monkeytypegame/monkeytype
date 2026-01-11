@@ -7,7 +7,7 @@ import { JSXElement } from "solid-js";
 
 const components = [VersionButton, ScrollToTop, VersionHistoryModal];
 
-function mountToMountpoint(name: string, component: JSXElement): void {
+function mountToMountpoint(name: string, component: () => JSXElement): void {
   const mountPoint = qsr(name);
   const parent = mountPoint.getParent()?.native;
 
@@ -17,7 +17,7 @@ function mountToMountpoint(name: string, component: JSXElement): void {
     );
   }
 
-  render(() => component, mountPoint.native);
+  render(() => component(), mountPoint.native);
 
   const children = mountPoint.native.children;
 
@@ -32,6 +32,6 @@ function mountToMountpoint(name: string, component: JSXElement): void {
 export function mountComponents(): void {
   for (const component of components) {
     const name = component.name.replace("[solid-refresh]", "");
-    mountToMountpoint(name, component());
+    mountToMountpoint(name, component);
   }
 }
