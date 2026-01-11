@@ -1,4 +1,4 @@
-import { JSXElement, createEffect, onCleanup, ParentProps, on } from "solid-js";
+import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
 import { applyReducedMotion } from "../utils/misc";
 import { useModalChain } from "./ModalChainContext";
 import { useRefWithUtils } from "../hooks/useRefWithUtils";
@@ -63,18 +63,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   });
 
   // Handle open/close with animations
-  createEffect(
-    on(
-      () => props.isOpen,
-      () => {
-        if (props.isOpen) {
-          void showModal();
-        } else {
-          void hideModal();
-        }
-      },
-    ),
-  );
+  createEffect(() => {
+    if (props.isOpen) {
+      void showModal();
+    } else {
+      void hideModal();
+    }
+  });
 
   async function showModal(): Promise<void> {
     if (dialogEl() === undefined || modalEl() === undefined) return;
