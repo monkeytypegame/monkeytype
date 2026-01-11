@@ -1,18 +1,15 @@
-import { createSignal } from "solid-js";
 import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "../utils/json-data";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { createErrorMessage } from "../utils/misc";
+import { setVersion } from "../signals/core";
 
 const memoryLS = new LocalStorageWithSchema({
   key: "lastSeenVersion",
   schema: z.string(),
   fallback: "",
 });
-
-const [version, setVersion] = createSignal<string>("");
-const [isVersionNew, setIsVersionNew] = createSignal<boolean>(false);
 
 function setMemory(v: string): void {
   memoryLS.set(v);
@@ -44,33 +41,19 @@ async function fetchVersion(): Promise<void> {
   }
 
   const memoryVersion = getMemory();
+  const isNew = memoryVersion === "" ? false : memoryVersion !== currentVersion;
 
-  setVersion(currentVersion);
-  setIsVersionNew(
-    memoryVersion === "" ? false : memoryVersion !== currentVersion,
-  );
+  setVersion({
+    text: currentVersion,
+    isNew: isNew,
+  });
 
-  if (isVersionNew() || memoryVersion === "") {
+  if (isNew || memoryVersion === "") {
     setMemory(currentVersion);
     purgeCaches();
   }
 }
 
-export function get(): string {
-  return version();
-}
-
-export function isNew(): boolean {
-  return isVersionNew();
-}
-
 export async function initialize(): Promise<void> {
   await fetchVersion();
 }
-
-export const __testing = {
-  resetState: (): void => {
-    setVersion("");
-    setIsVersionNew(false);
-  },
-};

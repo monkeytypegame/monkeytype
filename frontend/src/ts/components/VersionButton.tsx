@@ -1,10 +1,10 @@
 import { JSXElement, Show, createSignal } from "solid-js";
 import { isDevEnvironment } from "../utils/misc";
-import * as Version from "../states/version";
 import { envConfig } from "virtual:env-config";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 import * as VersionHistoryModal from "./VersionHistoryModal";
+import { getVersion } from "../signals/core";
 
 export function VersionButton(): JSXElement {
   const [indicatorVisible, setIndicatorVisible] = createSignal(true);
@@ -12,7 +12,7 @@ export function VersionButton(): JSXElement {
     if (isDevEnvironment()) {
       return "localhost";
     }
-    return Version.get();
+    return getVersion().text;
   };
 
   const handleClick = (e: MouseEvent): void => {
@@ -47,7 +47,9 @@ export function VersionButton(): JSXElement {
     >
       <i class="fas fa-fw fa-code-branch"></i>
       <div class="text">{getVersionText()}</div>
-      <Show when={!isDevEnvironment() && Version.isNew() && indicatorVisible()}>
+      <Show
+        when={!isDevEnvironment() && getVersion().isNew && indicatorVisible()}
+      >
         <div id="newVersionIndicator" onClick={handleIndicatorClick}>
           new
         </div>
