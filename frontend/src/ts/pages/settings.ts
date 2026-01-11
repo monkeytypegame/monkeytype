@@ -11,7 +11,7 @@ import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -591,7 +591,7 @@ export async function update(
     eventKey?: ConfigEvent.ConfigEventKey;
   } = {},
 ): Promise<void> {
-  if (ActivePage.get() !== "settings") {
+  if (getActivePage() !== "settings") {
     return;
   }
 
@@ -993,7 +993,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled) return;
-  if (ActivePage.get() === "settings" && key !== "theme") {
+  if (getActivePage() === "settings" && key !== "theme") {
     void (key === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey: key }));

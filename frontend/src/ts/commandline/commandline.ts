@@ -7,7 +7,7 @@ import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
@@ -185,7 +185,7 @@ function hide(clearModalChain = false): void {
     afterAnimation: async () => {
       hideWarning();
       addCommandlineBackground();
-      if (ActivePage.get() !== "test") {
+      if (getActivePage() !== "test") {
         (document.activeElement as HTMLElement | undefined)?.blur();
       }
       isAnimating = false;
