@@ -4,7 +4,7 @@ import * as Version from "../states/version";
 import { envConfig } from "virtual:env-config";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
-import * as VersionHistoryModal from "../components/VersionHistoryModal";
+import * as VersionHistoryModal from "./VersionHistoryModal";
 
 export function VersionButton(): JSXElement {
   const [indicatorVisible, setIndicatorVisible] = createSignal(true);

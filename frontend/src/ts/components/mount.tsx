@@ -1,7 +1,7 @@
 import { render } from "solid-js/web";
 import { qsa } from "../utils/dom";
 import { ScrollToTop } from "./ScrollToTop";
-import { VersionButton } from "../elements/VersionButton";
+import { VersionButton } from "./VersionButton";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 import { JSXElement } from "solid-js";
 
