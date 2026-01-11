@@ -25,8 +25,7 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -163,7 +162,7 @@ export function restart(options = {} as RestartOptions): void {
     options.event?.preventDefault();
     return;
   }
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
@@ -386,7 +385,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     await Funbox.activate();
   }
 
@@ -1512,14 +1511,14 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
 });
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
-  if (ActivePage.get() === "test") restart();
+  if (getActivePage() === "test") restart();
   // Result.showConfetti();
 });
 
 // ===============================
 
 ConfigEvent.subscribe(({ key, newValue, nosave }) => {
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

@@ -1,19 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
-import {
-  ScrollToTop,
-  __testing,
-  hideScrollToTop,
-} from "../../src/ts/components/ScrollToTop";
-import * as ActivePage from "../../src/ts/states/active-page";
+import { ScrollToTop } from "../../src/ts/components/ScrollToTop";
+import * as CoreSignals from "../../src/ts/signals/core";
 
 describe("ScrollToTop", () => {
-  const getActivePageMock = vi.spyOn(ActivePage, "get");
+  const getActivePageMock = vi.spyOn(CoreSignals, "getActivePage");
   beforeEach(() => {
     getActivePageMock.mockClear().mockReturnValue("account");
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });
-    __testing.resetState();
   });
 
   function renderElement(): {
@@ -44,18 +39,34 @@ describe("ScrollToTop", () => {
     expect(button).toHaveClass("invisible");
   });
 
-  it("becomes visible when scrollY > 100", () => {
+  it("becomes visible when scrollY > 100 on non-test pages", () => {
     const { button } = renderElement();
     scrollTo(150);
 
     expect(button).not.toHaveClass("invisible");
   });
 
-  it("stays invisible on test page regardless of scroll", () => {
+  it("stays invisible on test page at scroll 0", () => {
+    getActivePageMock.mockReturnValue("test");
+    const { button } = renderElement();
+
+    expect(button).toHaveClass("invisible");
+  });
+
+  it("stays invisible on test page even with scroll > 100", () => {
     getActivePageMock.mockReturnValue("test");
     const { button } = renderElement();
     scrollTo(150);
 
+    expect(button).toHaveClass("invisible");
+  });
+
+  it("becomes invisible when scroll < 100 on non-test pages", () => {
+    const { button } = renderElement();
+    scrollTo(150);
+    expect(button).not.toHaveClass("invisible");
+
+    scrollTo(50);
     expect(button).toHaveClass("invisible");
   });
 
@@ -71,15 +82,6 @@ describe("ScrollToTop", () => {
       top: 0,
       behavior: "smooth",
     });
-    expect(button).toHaveClass("invisible");
-  });
-
-  it("hides button when hideScrollToTop is called", () => {
-    const { button } = renderElement();
-    scrollTo(150);
-
-    hideScrollToTop();
-
     expect(button).toHaveClass("invisible");
   });
 

@@ -1,6 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as ActivePage from "../states/active-page";
+import { getActivePage, setActivePage } from "../signals/core";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
@@ -174,7 +174,7 @@ export async function change(
     return false;
   }
 
-  if (!options.force && ActivePage.get() === pageName) {
+  if (!options.force && getActivePage() === pageName) {
     console.debug(`change page ${pageName} stoped, page already active`);
     return false;
   } else {
@@ -196,7 +196,7 @@ export async function change(
     leaderboards: PageLeaderboards.page,
   };
 
-  const previousPage = pages[ActivePage.get()];
+  const previousPage = pages[getActivePage()];
   const nextPage = pages[pageName];
   const totalDuration = Misc.applyReducedMotion(250);
 
@@ -246,7 +246,7 @@ export async function change(
     }
 
     pages.loading.element.addClass("active");
-    ActivePage.set(pages.loading.id);
+    setActivePage(pages.loading.id);
     Focus.set(false);
     PageLoading.showError();
     PageLoading.updateText(
@@ -260,7 +260,7 @@ export async function change(
 
   //between
   updateTitle(nextPage);
-  ActivePage.set(nextPage.id);
+  setActivePage(nextPage.id);
   updateOpenGraphUrl();
   Focus.set(false);
 

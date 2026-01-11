@@ -14,7 +14,7 @@ import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import Format from "../utils/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
@@ -293,7 +293,7 @@ async function joinOverlappingHints(
 
 async function updateHintsPosition(): Promise<void> {
   if (
-    ActivePage.get() !== "test" ||
+    getActivePage() !== "test" ||
     TestState.resultVisible ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
@@ -501,7 +501,7 @@ export function appendEmptyWordElement(
 }
 
 export function updateWordsInputPosition(): void {
-  if (ActivePage.get() !== "test") return;
+  if (getActivePage() !== "test") return;
   const isTestRightToLeft = TestState.isDirectionReversed
     ? !TestState.isLanguageRightToLeft
     : TestState.isLanguageRightToLeft;
@@ -581,7 +581,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const outOfFocusEl = document.querySelector(
     ".outOfFocusWarning",
@@ -913,7 +913,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
 
@@ -1858,7 +1858,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
@@ -2022,7 +2022,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     void applyBurstHeatmap();
   }
   if (key === "highlightMode") {
-    if (ActivePage.get() === "test") {
+    if (getActivePage() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
         wordIndex: TestState.activeWordIndex,

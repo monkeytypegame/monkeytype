@@ -20,7 +20,7 @@ import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
@@ -1206,7 +1206,7 @@ qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
 });
 
 ConfigEvent.subscribe(({ key }) => {
-  if (ActivePage.get() === "account" && key === "typingSpeedUnit") {
+  if (getActivePage() === "account" && key === "typingSpeedUnit") {
     void update();
   }
 });
