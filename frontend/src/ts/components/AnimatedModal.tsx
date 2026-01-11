@@ -48,6 +48,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [dialogRef, dialogEl] = useRefWithUtils<HTMLDialogElement>();
   const [modalRef, modalEl] = useRefWithUtils<HTMLDivElement>();
+  // oxlint-disable-next-line solid/reactivity
   const modalChain = props.useChain ? useModalChain() : undefined;
 
   // Register this modal in the chain

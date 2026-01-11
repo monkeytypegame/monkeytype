@@ -73,6 +73,7 @@ function ReleaseItem(props: {
     <div class="release">
       <div class="title">{props.name}</div>
       <div class="date">{props.publishedAt}</div>
+      {/* oxlint-disable-next-line solid/reactivity */}
       <div class="body" ref={setBodyHTML}></div>
     </div>
   );
