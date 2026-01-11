@@ -48,9 +48,9 @@ document.addEventListener("keydown", (e) => {
       e.shiftKey) ||
     (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
   ) {
-    e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
     if (!popupVisible) {
+      e.preventDefault();
       Commandline.show();
     }
   }
@@ -73,7 +73,7 @@ document.addEventListener("keydown", (e) => {
         Config.quickRestart === "enter" &&
         !isInteractiveElement)
     ) {
-      e.preventDefault();
+      // e.preventDefault();
       if (ActivePage.get() === "test") {
         if (e.shiftKey) {
           ManualRestart.set();

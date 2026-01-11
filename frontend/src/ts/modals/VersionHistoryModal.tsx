@@ -2,6 +2,7 @@ import { JSXElement, createSignal, createResource, Show, For } from "solid-js";
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../utils/json-data";
 import { createErrorMessage } from "../utils/misc";
+import { AnimatedModal } from "../components/AnimatedModal";
 import "./VersionHistoryModal.scss";
 
 const [isOpen, setIsOpen] = createSignal(false);
@@ -14,7 +15,7 @@ export function VersionHistoryModal(): JSXElement {
   const [releases] = createResource(isOpen, async (open) => {
     if (!open) return null;
     const releases = await getReleasesFromGitHub();
-    let data = [];
+    const data = [];
     for (const release of releases) {
       if (release.draft || release.prerelease) continue;
 
@@ -31,7 +32,7 @@ export function VersionHistoryModal(): JSXElement {
       //replace links with a tags
       body = body.replace(
         /\[(.*?)\]\((.*?)\)/g,
-        '<a href="$2" target="_blank">$1</a>',
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
       );
 
       data.push({
@@ -44,41 +45,50 @@ export function VersionHistoryModal(): JSXElement {
   });
 
   return (
-    <dialog class="modalWrapper VersionHistoryModal" open={isOpen()}>
-      <div class="modal">
-        <Show
-          when={!releases.loading && releases.error === undefined}
-          fallback={
-            <Show
-              when={releases.loading}
-              fallback={
-                <div class="releases error">
-                  {createErrorMessage(
-                    releases.error,
-                    "Failed to fetch version history",
-                  )}
-                </div>
-              }
-            >
-              <div class="preloader">
-                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    <AnimatedModal
+      id="versionHistoryModal"
+      isOpen={isOpen()}
+      onClose={() => setIsOpen(false)}
+      class="VersionHistoryModal"
+    >
+      <Show
+        when={!releases.loading && releases.error === undefined}
+        fallback={
+          <Show
+            when={releases.loading}
+            fallback={
+              <div class="releases error">
+                {createErrorMessage(
+                  releases.error,
+                  "Failed to fetch version history",
+                )}
               </div>
-            </Show>
-          }
-        >
-          <div class="releases">
-            <For each={releases()}>
-              {(release) => (
+            }
+          >
+            <div class="preloader">
+              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+            </div>
+          </Show>
+        }
+      >
+        <div class="releases">
+          <For each={releases()}>
+            {(release) => {
+              const setBodyHTML = (el: HTMLDivElement): void => {
+                el.innerHTML = release.body;
+              };
+
+              return (
                 <div class="release">
                   <div class="title">{release.name}</div>
                   <div class="date">{release.publishedAt}</div>
-                  <div class="body">{release.body}</div>
+                  <div class="body" ref={setBodyHTML} />
                 </div>
-              )}
-            </For>
-          </div>
-        </Show>
-      </div>
-    </dialog>
+              );
+            }}
+          </For>
+        </div>
+      </Show>
+    </AnimatedModal>
   );
 }
