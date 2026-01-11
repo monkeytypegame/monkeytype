@@ -133,7 +133,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       void Settings.update();
 
-      await DB.updateTagAfterDelete(tagId);
+      await DB.deleteLocalTag(tagId);
       return { status: 1, message: `Tag removed` };
     },
   }),
