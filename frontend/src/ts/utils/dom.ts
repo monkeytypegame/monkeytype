@@ -941,17 +941,6 @@ export class ElementsWithUtils<
     }
     return this;
   }
-
-  override forEach(
-    callbackfn: (
-      value: ElementWithUtils<T>,
-      index: number,
-      array: ElementWithUtils<T>[],
-    ) => void,
-    thisArg?: unknown,
-  ): void {
-    super.forEach(callbackfn, thisArg);
-  }
 }
 
 function checkUniqueSelector(

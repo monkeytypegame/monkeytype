@@ -8,26 +8,10 @@ import { JSXElement } from "solid-js";
 const components = [VersionButton, ScrollToTop, VersionHistoryModal];
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
-  qsa(name).forEach((mountPoint) => {
-    const parent = mountPoint.getParent()?.native;
-
-    if (parent === null || parent === undefined) {
-      throw new Error(
-        `Cannot mount component: mount point's parent is not in the DOM.`,
-      );
-    }
-
+  for (const mountPoint of qsa(name)) {
     render(() => component(), mountPoint.native);
-
-    const children = mountPoint.native.children;
-
-    //replace mount point with its children
-    for (let i = children.length - 1; i >= 0; i--) {
-      parent.insertBefore(children[i] as Element, mountPoint.native);
-    }
-
-    mountPoint.remove();
-  });
+    mountPoint.native.replaceWith(...mountPoint.native.children);
+  }
 }
 
 export function mountComponents(): void {
