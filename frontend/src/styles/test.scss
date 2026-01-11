@@ -108,6 +108,7 @@
     justify-content: flex-end;
     gap: 0 1em;
     flex-wrap: wrap;
+    white-space: nowrap;
 
     .fas {
       margin-left: 0.33em;
@@ -761,6 +762,13 @@
         margin-bottom: 0.25rem;
         display: flex;
         align-items: center;
+
+        // for "input history" wrapping in screenshot for small screens
+        flex-wrap: wrap;
+
+        > span {
+          white-space: nowrap;
+        }
       }
       .words {
         display: flex;
@@ -800,7 +808,7 @@
         }
         &.withLigatures {
           .word {
-            overflow-wrap: anywhere;
+            //overflow-wrap: anywhere;
             padding-bottom: 2px; // compensate for letter border
 
             .hints {
@@ -1005,6 +1013,7 @@
           font-size: 1rem;
           line-height: 1rem;
           margin-bottom: 0.25rem;
+          white-space: nowrap;
         }
 
         .bottom {
