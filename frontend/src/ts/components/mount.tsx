@@ -5,11 +5,7 @@ import { VersionButton } from "../elements/VersionButton";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 import { JSXElement } from "solid-js";
 
-const componentsWithMountpoint = [VersionButton, ScrollToTop];
-
-const componentsWithParent = {
-  "#popups": [VersionHistoryModal],
-};
+const components = [VersionButton, ScrollToTop, VersionHistoryModal];
 
 function mountToMountpoint(name: string, component: JSXElement): void {
   const mountPoint = qsr(name);
@@ -33,24 +29,9 @@ function mountToMountpoint(name: string, component: JSXElement): void {
   mountPoint.remove();
 }
 
-function mountAsChildren(
-  parentQuery: string,
-  components: (() => JSXElement)[],
-): void {
-  const parent = qsr(parentQuery);
-  for (const component of components) {
-    render(() => component(), parent.native);
-  }
-}
-
 export function mountComponents(): void {
-  for (const component of componentsWithMountpoint) {
+  for (const component of components) {
     const name = component.name.replace("[solid-refresh]", "");
     mountToMountpoint(name, component());
-  }
-  for (const [selector, componentList] of Object.entries(
-    componentsWithParent,
-  )) {
-    mountAsChildren(selector, componentList);
   }
 }
