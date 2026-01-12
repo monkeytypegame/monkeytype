@@ -2,6 +2,7 @@ import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
 import "./SupportModal.scss";
 import * as Commandline from "../commandline/commandline";
+import { showModal } from "../stores/modals";
 
 export function SupportModal(): JSXElement {
   return (
@@ -27,6 +28,9 @@ export function SupportModal(): JSXElement {
             <i class="fas fa-fw fa-ad"></i>
           </div>
           <div class="text">Enable Ads</div>
+        </button>
+        <button type="button" onClick={() => showModal("Contact")}>
+          show contact
         </button>
         <a
           class="button"
