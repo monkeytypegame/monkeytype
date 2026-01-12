@@ -1,6 +1,7 @@
 import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
 import "./ContactModal.scss";
+import { hideCurrentModalAndClearChain } from "../stores/modals";
 
 export function ContactModal(): JSXElement {
   return (
@@ -16,6 +17,9 @@ export function ContactModal(): JSXElement {
         email, update name or clear personal bests - you can do that in the
         settings page.
       </div>
+      <button type="button" onClick={() => hideCurrentModalAndClearChain()}>
+        hide and clear chain
+      </button>
       <div class="buttons">
         <a
           class="button"

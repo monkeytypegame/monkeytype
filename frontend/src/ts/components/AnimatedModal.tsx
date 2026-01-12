@@ -2,9 +2,10 @@ import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
 import { applyReducedMotion } from "../utils/misc";
 import { useRefWithUtils } from "../hooks/useRefWithUtils";
 import {
-  hideModal as stateHideModal,
+  hideModal as storeHideModal,
   ModalId,
   isModalOpen,
+  isModalChained,
 } from "../stores/modals";
 
 type AnimationParams = {
@@ -49,10 +50,12 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   // Handle open/close with animations
   createEffect(() => {
+    const isChained = isModalChained(props.id);
+
     if (visibility()) {
-      void showModal(false);
+      void showModal(isChained);
     } else {
-      void hideModal(false);
+      void hideModal(isChained);
     }
   });
 
@@ -199,7 +202,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   async function handleAfterHide(): Promise<void> {
     await props.afterHide?.();
-    stateHideModal(props.id);
+    storeHideModal(props.id);
   }
 
   async function handleAfterShow(): Promise<void> {
@@ -228,7 +231,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       if (props.onEscape) {
         props.onEscape(e);
       } else {
-        void hideModal(false);
+        storeHideModal(props.id);
       }
     }
   };
@@ -238,7 +241,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       if (props.onBackdropClick) {
         props.onBackdropClick(e);
       } else {
-        void hideModal(false);
+        storeHideModal(props.id);
       }
     }
   };
