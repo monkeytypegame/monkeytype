@@ -2,13 +2,12 @@
 
 footer {
   position: relative;
-  text-align: center;
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  // margin: -0.5em;
 
   .keyTips {
+    text-align: center;
     transition: 0.125s;
     margin-bottom: 2em;
     line-height: 2;
@@ -35,17 +34,10 @@ footer {
 
   .leftright {
     margin: -0.5em;
-    -webkit-user-select: none;
-    user-select: none;
-    display: grid;
-    grid-template-columns: 1fr max-content;
+    display: flex;
+    justify-content: space-between;
     gap: 2rem;
-    .textButton {
-      text-decoration: none;
-      font-size: 0.75rem;
-      line-height: 1rem;
-      padding: 0.25em 0.5em;
-    }
+
     .left {
       text-align: left;
       display: flex;
@@ -58,15 +50,6 @@ footer {
       justify-self: right;
       width: max-content;
       height: max-content;
-    }
-    .left .textButton,
-    .right .textButton {
-      display: grid;
-      grid-auto-flow: column;
-      gap: 0.25rem;
-      align-items: baseline;
-      width: -moz-available;
-      width: max-content;
     }
   }
 
