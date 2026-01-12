@@ -3,12 +3,9 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
-import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
-import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
-import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
-
-import { qs, qsr, onWindowLoad } from "../utils/dom";
+import { SpeedHistogram } from "@monkeytype/schemas/public";
+import { qsr, onWindowLoad } from "../utils/dom";
 
 function reset(): void {
   ChartController.globalSpeedHistogram.getDataset("count").data = [];
@@ -16,7 +13,6 @@ function reset(): void {
 }
 
 let speedHistogramResponseData: SpeedHistogram | null;
-let typingStatsResponseData: TypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
@@ -30,61 +26,10 @@ function updateStatsAndHistogram(): void {
     ChartController.globalSpeedHistogram.getDataset("count").data =
       bucketedSpeedStats.data;
   }
-  if (typingStatsResponseData) {
-    const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
-
-    const timeTypingDuration = intervalToDuration({
-      start: 0,
-      end: secondsRounded * 1000,
-    });
-
-    qs(".pageAbout #totalTimeTypingStat .val")?.setText(
-      timeTypingDuration.years?.toString() ?? "",
-    );
-    qs(".pageAbout #totalTimeTypingStat .valSmall")?.setText("years");
-    qs(".pageAbout #totalTimeTypingStat")?.setAttribute(
-      "aria-label",
-      numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours",
-    );
-
-    const startedWithMagnitude = getNumberWithMagnitude(
-      typingStatsResponseData.testsStarted,
-    );
-
-    qs(".pageAbout #totalStartedTestsStat .val")?.setText(
-      startedWithMagnitude.rounded < 10
-        ? startedWithMagnitude.roundedTo2.toString()
-        : startedWithMagnitude.rounded.toString(),
-    );
-    qs(".pageAbout #totalStartedTestsStat .valSmall")?.setText(
-      startedWithMagnitude.orderOfMagnitude,
-    );
-    qs(".pageAbout #totalStartedTestsStat")?.setAttribute(
-      "aria-label",
-      numberWithSpaces(typingStatsResponseData.testsStarted) + " tests",
-    );
-
-    const completedWIthMagnitude = getNumberWithMagnitude(
-      typingStatsResponseData.testsCompleted,
-    );
-
-    qs(".pageAbout #totalCompletedTestsStat .val")?.setText(
-      completedWIthMagnitude.rounded < 10
-        ? completedWIthMagnitude.roundedTo2.toString()
-        : completedWIthMagnitude.rounded.toString(),
-    );
-    qs(".pageAbout #totalCompletedTestsStat .valSmall")?.setText(
-      completedWIthMagnitude.orderOfMagnitude,
-    );
-    qs(".pageAbout #totalCompletedTestsStat")?.setAttribute(
-      "aria-label",
-      numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests",
-    );
-  }
 }
 
 async function getStatsAndHistogramData(): Promise<void> {
-  if (speedHistogramResponseData && typingStatsResponseData) {
+  if (speedHistogramResponseData) {
     return;
   }
 
@@ -105,15 +50,6 @@ async function getStatsAndHistogramData(): Promise<void> {
   } else {
     Notifications.add(
       `Failed to get global speed stats for histogram: ${speedStats.body.message}`,
-      -1,
-    );
-  }
-  const typingStats = await Ape.public.getTypingStats();
-  if (typingStats.status === 200) {
-    typingStatsResponseData = typingStats.body.data;
-  } else {
-    Notifications.add(
-      `Failed to get global typing stats: ${speedStats.body.message}`,
       -1,
     );
   }
