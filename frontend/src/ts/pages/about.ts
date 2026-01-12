@@ -7,24 +7,24 @@ import * as Skeleton from "../utils/skeleton";
 import { SpeedHistogram } from "@monkeytype/schemas/public";
 import { qsr, onWindowLoad } from "../utils/dom";
 
+let globalSpeedHistogram: ChartController.GlobalSpeedHistogram;
+
 function reset(): void {
-  ChartController.globalSpeedHistogram.getDataset("count").data = [];
-  void ChartController.globalSpeedHistogram.updateColors();
+  globalSpeedHistogram.getDataset("count").data = [];
+  void globalSpeedHistogram.updateColors();
 }
 
 let speedHistogramResponseData: SpeedHistogram | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
-    void ChartController.globalSpeedHistogram.updateColors();
+    void globalSpeedHistogram.updateColors();
     const bucketedSpeedStats = getHistogramDataBucketed(
       speedHistogramResponseData,
     );
-    ChartController.globalSpeedHistogram.data.labels =
-      bucketedSpeedStats.labels;
+    globalSpeedHistogram.data.labels = bucketedSpeedStats.labels;
 
-    ChartController.globalSpeedHistogram.getDataset("count").data =
-      bucketedSpeedStats.data;
+    globalSpeedHistogram.getDataset("count").data = bucketedSpeedStats.data;
   }
 }
 
@@ -91,9 +91,10 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
+const pageElement = qsr(".page.pageAbout");
 export const page = new Page({
   id: "about",
-  element: qsr(".page.pageAbout"),
+  element: pageElement,
   path: "/about",
   afterHide: async (): Promise<void> => {
     reset();
@@ -101,6 +102,7 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAbout", "main");
+    globalSpeedHistogram = ChartController.getGlobalSpeedHistogram();
     void fill();
   },
 });

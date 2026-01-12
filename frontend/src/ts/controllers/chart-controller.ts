@@ -68,7 +68,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
-import { qs } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -883,16 +883,23 @@ export const accountHistogram = new ChartWithUpdateColors<
   },
 );
 
-export const globalSpeedHistogram = new ChartWithUpdateColors<
+export type GlobalSpeedHistogram = ChartWithUpdateColors<
   "bar",
   ActivityChartDataPoint[],
   string,
   "count"
->(
-  document.querySelector(
-    ".pageAbout #publicStatsHistogramChart",
-  ) as HTMLCanvasElement,
-  {
+>;
+
+let globalSpeedHistogram: GlobalSpeedHistogram | undefined = undefined;
+export function getGlobalSpeedHistogram(): GlobalSpeedHistogram {
+  if (globalSpeedHistogram) return globalSpeedHistogram;
+
+  globalSpeedHistogram = new ChartWithUpdateColors<
+    "bar",
+    ActivityChartDataPoint[],
+    string,
+    "count"
+  >(qsr(".pageAbout #publicStatsHistogramChart").native as HTMLCanvasElement, {
     type: "bar",
     data: {
       labels: [],
@@ -949,8 +956,9 @@ export const globalSpeedHistogram = new ChartWithUpdateColors<
         },
       },
     },
-  },
-);
+  });
+  return globalSpeedHistogram;
+}
 
 export const miniResult = new ChartWithUpdateColors<
   "line" | "scatter",
@@ -1427,7 +1435,7 @@ export function updateAllChartColors(): void {
   void result.updateColors();
   void accountHistory.updateColors();
   void accountHistogram.updateColors();
-  void globalSpeedHistogram.updateColors();
+  void globalSpeedHistogram?.updateColors();
   void accountActivity.updateColors();
   void miniResult.updateColors();
 }
