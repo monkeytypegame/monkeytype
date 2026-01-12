@@ -68,9 +68,9 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
-import { qs, qsr } from "../utils/dom";
+import { qs } from "../utils/dom";
 
-class ChartWithUpdateColors<
+export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown,
@@ -883,83 +883,6 @@ export const accountHistogram = new ChartWithUpdateColors<
   },
 );
 
-export type GlobalSpeedHistogram = ChartWithUpdateColors<
-  "bar",
-  ActivityChartDataPoint[],
-  string,
-  "count"
->;
-
-let globalSpeedHistogram: GlobalSpeedHistogram | undefined = undefined;
-export function getGlobalSpeedHistogram(): GlobalSpeedHistogram {
-  if (globalSpeedHistogram) return globalSpeedHistogram;
-
-  globalSpeedHistogram = new ChartWithUpdateColors<
-    "bar",
-    ActivityChartDataPoint[],
-    string,
-    "count"
-  >(qsr(".pageAbout #publicStatsHistogramChart").native as HTMLCanvasElement, {
-    type: "bar",
-    data: {
-      labels: [],
-      datasets: [
-        {
-          yAxisID: "count",
-          label: "Users",
-          data: [],
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      hover: {
-        mode: "nearest",
-        intersect: false,
-      },
-      scales: {
-        x: {
-          axis: "x",
-          bounds: "ticks",
-          display: true,
-          title: {
-            display: false,
-            text: "Bucket",
-          },
-          offset: true,
-        },
-        count: {
-          axis: "y",
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-            stepSize: 10,
-          },
-          display: true,
-          title: {
-            display: true,
-            text: "Users",
-          },
-        },
-      },
-      plugins: {
-        annotation: {
-          annotations: [],
-        },
-        tooltip: {
-          animation: { duration: 250 },
-          intersect: false,
-          mode: "index",
-        },
-      },
-    },
-  });
-  return globalSpeedHistogram;
-}
-
 export const miniResult = new ChartWithUpdateColors<
   "line" | "scatter",
   number[],
@@ -1435,7 +1358,6 @@ export function updateAllChartColors(): void {
   void result.updateColors();
   void accountHistory.updateColors();
   void accountHistogram.updateColors();
-  void globalSpeedHistogram?.updateColors();
   void accountActivity.updateColors();
   void miniResult.updateColors();
 }

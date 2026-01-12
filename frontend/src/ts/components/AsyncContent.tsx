@@ -2,7 +2,7 @@ import { ErrorBoundary, JSXElement, Resource, Show, Suspense } from "solid-js";
 import { createErrorMessage } from "../utils/misc";
 
 export default function AsyncContent<T>(props: {
-  resource: Resource<T | undefined>;
+  resource: Resource<T | null | undefined>;
   errorMessage?: string;
   children: (data: T) => JSXElement;
 }): JSXElement {
@@ -22,7 +22,9 @@ export default function AsyncContent<T>(props: {
           </div>
         }
       >
-        <Show when={props.resource() !== undefined}>
+        <Show
+          when={props.resource() !== null && props.resource() !== undefined}
+        >
           {props.children(props.resource() as T)}
         </Show>
       </Suspense>

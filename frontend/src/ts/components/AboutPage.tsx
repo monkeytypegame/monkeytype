@@ -1,4 +1,4 @@
-import { createResource, For, JSXElement } from "solid-js";
+import { createResource, For, JSXElement, Show } from "solid-js";
 import "./AboutPage.scss";
 import { TextButton } from "./TextButton";
 import { showModal } from "../stores/modals";
@@ -8,61 +8,27 @@ import { getContributorsList, getSupportersList } from "../utils/json-data";
 import Ape from "../ape";
 import { intervalToDuration } from "date-fns";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
+import { ChartJs } from "./ChartJs";
 
 export function AboutPage(): JSXElement {
   const pageOpen = (): boolean => getActivePage() === "about";
   const [contributors] = createResource(pageOpen, async (open) =>
-    open ? await getContributorsList() : null,
+    open ? await getContributorsList() : undefined,
   );
   const [supporters] = createResource(pageOpen, async (open) =>
-    open ? await getSupportersList() : null,
+    open ? await getSupportersList() : undefined,
   );
 
-  const [typingStats] = createResource(pageOpen, async (open) => {
-    if (!open) return undefined;
-    const response = await Ape.public.getTypingStats();
+  const [typingStats] = createResource(pageOpen, async (open) =>
+    open ? await fetchTypingStats() : undefined,
+  );
 
-    if (response.status !== 200) {
-      throw new Error(response.body.message);
-    }
-    const data = response.body.data;
+  const [speedHistogram] = createResource(pageOpen, async (open) =>
+    open ? await fetchSpeedHistogram() : undefined,
+  );
 
-    const typingSecondsRounded = Math.round(data.timeTyping);
-    const typingDuration = intervalToDuration({
-      start: 0,
-      end: typingSecondsRounded * 1000,
-    });
-    const startedWithMagnitude = getNumberWithMagnitude(data.testsStarted);
-    const completedWithMagnitude = getNumberWithMagnitude(data.testsCompleted);
-
-    const result = {
-      timeTyping: {
-        label:
-          numberWithSpaces(Math.round(typingSecondsRounded / 3600)) + " hours",
-        text: typingDuration.years?.toString() ?? "",
-        subText: "years",
-      },
-      testsStarted: {
-        label: numberWithSpaces(data.testsStarted) + " tests",
-        text:
-          startedWithMagnitude.rounded < 10
-            ? startedWithMagnitude.roundedTo2.toString()
-            : startedWithMagnitude.rounded.toString(),
-        subText: startedWithMagnitude.orderOfMagnitude,
-      },
-      testsCompleted: {
-        label: numberWithSpaces(data.testsCompleted) + " tests",
-        text:
-          completedWithMagnitude.rounded < 10
-            ? completedWithMagnitude.roundedTo2.toString()
-            : completedWithMagnitude.rounded.toString(),
-        subText: completedWithMagnitude.orderOfMagnitude,
-      },
-    };
-    return result;
-  });
   return (
-    <>
+    <Show when={pageOpen}>
       <div class="created">
         Created with love by Miodec.
         <br />
@@ -110,7 +76,71 @@ export function AboutPage(): JSXElement {
         </AsyncContent>
         <div>
           <div class="chart" style={{ height: "200px" }}>
-            <canvas id="publicStatsHistogramChart"></canvas>
+            <AsyncContent
+              resource={speedHistogram}
+              errorMessage="Failed to get global speed stats for histogram"
+            >
+              {(data) => (
+                <ChartJs
+                  type="bar"
+                  data={{
+                    labels: data.labels,
+                    datasets: [
+                      {
+                        yAxisID: "count",
+                        label: "Users",
+                        data: data.data,
+                      },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    hover: {
+                      mode: "nearest",
+                      intersect: false,
+                    },
+                    scales: {
+                      x: {
+                        axis: "x",
+                        bounds: "ticks",
+                        display: true,
+                        title: {
+                          display: false,
+                          text: "Bucket",
+                        },
+                        offset: true,
+                      },
+                      count: {
+                        axis: "y",
+                        beginAtZero: true,
+                        min: 0,
+                        ticks: {
+                          autoSkip: true,
+                          autoSkipPadding: 20,
+                          stepSize: 10,
+                        },
+                        display: true,
+                        title: {
+                          display: true,
+                          text: "Users",
+                        },
+                      },
+                    },
+                    plugins: {
+                      annotation: {
+                        annotations: [],
+                      },
+                      tooltip: {
+                        animation: { duration: 250 },
+                        intersect: false,
+                        mode: "index",
+                      },
+                    },
+                  }}
+                />
+              )}
+            </AsyncContent>
           </div>
           <p class="small">distribution of time 60 leaderboard results (wpm)</p>
         </div>
@@ -393,6 +423,102 @@ export function AboutPage(): JSXElement {
           )}
         </AsyncContent>
       </div>
-    </>
+    </Show>
   );
+}
+
+type GroupDisplay = {
+  label: string;
+  text: string;
+  subText: string;
+};
+
+async function fetchTypingStats(): Promise<{
+  timeTyping: GroupDisplay;
+  testsStarted: GroupDisplay;
+  testsCompleted: GroupDisplay;
+}> {
+  const response = await Ape.public.getTypingStats();
+
+  if (response.status !== 200) {
+    throw new Error(response.body.message);
+  }
+  const data = response.body.data;
+
+  const typingSecondsRounded = Math.round(data.timeTyping);
+  const typingDuration = intervalToDuration({
+    start: 0,
+    end: typingSecondsRounded * 1000,
+  });
+  const startedWithMagnitude = getNumberWithMagnitude(data.testsStarted);
+  const completedWithMagnitude = getNumberWithMagnitude(data.testsCompleted);
+
+  const result = {
+    timeTyping: {
+      label:
+        numberWithSpaces(Math.round(typingSecondsRounded / 3600)) + " hours",
+      text: typingDuration.years?.toString() ?? "",
+      subText: "years",
+    },
+    testsStarted: {
+      label: numberWithSpaces(data.testsStarted) + " tests",
+      text:
+        startedWithMagnitude.rounded < 10
+          ? startedWithMagnitude.roundedTo2.toString()
+          : startedWithMagnitude.rounded.toString(),
+      subText: startedWithMagnitude.orderOfMagnitude,
+    },
+    testsCompleted: {
+      label: numberWithSpaces(data.testsCompleted) + " tests",
+      text:
+        completedWithMagnitude.rounded < 10
+          ? completedWithMagnitude.roundedTo2.toString()
+          : completedWithMagnitude.rounded.toString(),
+      subText: completedWithMagnitude.orderOfMagnitude,
+    },
+  };
+  return result;
+}
+
+async function fetchSpeedHistogram(): Promise<{
+  labels: string[];
+  data: { x: number; y: number }[];
+}> {
+  const response = await Ape.public.getSpeedHistogram({
+    query: {
+      language: "english",
+      mode: "time",
+      mode2: "60",
+    },
+  });
+
+  if (response.status !== 200) {
+    throw new Error(response.body.message);
+  }
+
+  const data = response.body.data;
+
+  const histogramChartDataBucketed: { x: number; y: number }[] = [];
+  const labels: string[] = [];
+
+  const keys = Object.keys(data).sort(
+    (a, b) => parseInt(a, 10) - parseInt(b, 10),
+  );
+  // for (let i = 0; i < keys.length; i++) {
+  for (const [i, key] of keys.entries()) {
+    const nextKey = keys[i + 1];
+    const bucket = parseInt(key, 10);
+    histogramChartDataBucketed.push({
+      x: bucket,
+      y: data[bucket] as number,
+    });
+    labels.push(`${bucket} - ${bucket + 9}`);
+    if (nextKey !== undefined && bucket + 10 !== parseInt(nextKey, 10)) {
+      for (let j = bucket + 10; j < parseInt(nextKey, 10); j += 10) {
+        histogramChartDataBucketed.push({ x: j, y: 0 });
+        labels.push(`${j} - ${j + 9}`);
+      }
+    }
+  }
+  return { data: histogramChartDataBucketed, labels };
 }
