@@ -14,7 +14,7 @@ import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
-import { setThemeIndicator, ThemeIndicator } from "../signals/core";
+import { setThemeIndicator } from "../signals/core";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -198,31 +198,21 @@ async function apply(
 }
 
 function updateFooterIndicator(nameOverride?: string): void {
-  const result: ThemeIndicator = { text: "", isFavorite: false };
   //text
   let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
-  result.text = str;
 
   //fav icon
   const currentTheme = nameOverride ?? randomTheme ?? Config.theme;
-  result.isFavorite =
+  const isFavorite =
     !Config.customTheme &&
     currentTheme !== null &&
     Config.favThemes.includes(currentTheme as ThemeName);
 
-  /*
-  if (isFavorite) {
-    favIcon.style.display = "block";
-  } else {
-    favIcon.style.display = "none";
-  }
-    */
-
-  setThemeIndicator(result);
+  setThemeIndicator({ text: str, isFavorite });
 }
 
 type PreviewState = {
