@@ -35,7 +35,7 @@ export function Footer(): JSXElement {
       <div class="leftright">
         <div class="left">
           <TextButton icon="fa-envelope" onClick={() => showModal("Contact")}>
-            <div class="text">contract</div>
+            <div class="text">contact</div>
           </TextButton>
 
           <TextButton icon="fa-donate" onClick={() => showModal("Support")}>
@@ -106,4 +106,8 @@ export function Footer(): JSXElement {
       </div>
     </footer>
   );
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept();
 }
