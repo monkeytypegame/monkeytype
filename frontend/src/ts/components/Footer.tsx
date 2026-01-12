@@ -5,10 +5,12 @@ import { showModal } from "../stores/modals";
 import * as CommandLine from "../commandline/commandline";
 import "./Footer.scss";
 import { ThemeIndicator } from "./ThemeIndicator";
+import { ScrollToTop } from "./ScrollToTop";
 
 export function Footer(): JSXElement {
   return (
     <footer>
+      <ScrollToTop />
       <div
         id="commandLineMobileButton"
         onClick={() =>
