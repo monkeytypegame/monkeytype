@@ -21,6 +21,7 @@ export function AboutPage(): JSXElement {
   const [typingStats] = createResource(pageOpen, async (open) => {
     if (!open) return undefined;
     const response = await Ape.public.getTypingStats();
+    console.log("####", { response });
     if (response.status !== 200) {
       throw new Error(response.body.message);
     }

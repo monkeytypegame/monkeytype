@@ -6,13 +6,14 @@ export default function AsyncContent<T>(props: {
   errorMessage?: string;
   children: (data: T) => JSXElement;
 }): JSXElement {
+  const handleError = (err: unknown): string => {
+    console.error(err);
+    return createErrorMessage(err, props.errorMessage ?? "An error occurred");
+  };
+
   return (
     <ErrorBoundary
-      fallback={(err) => (
-        <div class="error">
-          {createErrorMessage(err, props.errorMessage ?? "An error occurred")}
-        </div>
-      )}
+      fallback={(err) => <div class="error">{handleError(err)}</div>}
     >
       <Suspense
         fallback={
