@@ -54,16 +54,45 @@ export function qsr<T extends HTMLElement = HTMLElement>(
   return new ElementWithUtils(el);
 }
 
+let readyList: (() => void)[] | undefined;
+let isReady = false;
+
+function bindReady(): void {
+  if (readyList !== undefined) return;
+  readyList = [];
+
+  // If DOM is already ready
+  if (document.readyState !== "loading") {
+    setTimeout(handleReady, 1);
+    return;
+  }
+
+  document.addEventListener("DOMContentLoaded", handleReady);
+  window.addEventListener("load", handleReady);
+}
+
+function handleReady(): void {
+  if (isReady) return;
+
+  isReady = true;
+  document.removeEventListener("DOMContentLoaded", handleReady);
+  document.removeEventListener("load", handleReady);
+
+  readyList?.forEach((it) => it());
+  readyList = undefined;
+}
+
 /**
  * Execute a callback function when the DOM is fully loaded. If you need to wait
  * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
  * If the document is already loaded, the callback is executed immediately.
  */
 export function onDOMReady(callback: () => void): void {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", callback);
-  } else {
+  bindReady();
+  if (isReady) {
     callback();
+  } else {
+    readyList?.push(callback);
   }
 }
 
