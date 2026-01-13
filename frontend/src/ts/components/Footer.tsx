@@ -2,7 +2,7 @@ import { JSXElement } from "solid-js";
 import { VersionButton } from "./VersionButton";
 import { Button } from "./Button";
 import { showModal } from "../stores/modals";
-import * as CommandLine from "../commandline/commandline";
+// import * as CommandLine from "../commandline/commandline";
 import "./Footer.scss";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { ScrollToTop } from "./ScrollToTop";
@@ -14,11 +14,9 @@ export function Footer(): JSXElement {
       <ScrollToTop />
       <div
         id="commandLineMobileButton"
-        onClick={() =>
-          CommandLine.show({
-            singleListOverride: false,
-          })
-        }
+        onClick={() => {
+          showModal("Commandline");
+        }}
       >
         <i class="fas fa-terminal"></i>
       </div>

@@ -21,6 +21,13 @@ import {
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { ConfigKey } from "@monkeytype/schemas/configs";
+import { createEffect } from "solid-js";
+import {
+  getModalVisibility,
+  hideModal as storeHideModal,
+  hideModalAndClearChain as storeClearChain,
+  isModalOpen,
+} from "../stores/modals";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -180,17 +187,29 @@ function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
   isAnimating = true;
-  void modal.hide({
-    clearModalChain,
-    afterAnimation: async () => {
-      hideWarning();
-      addCommandlineBackground();
-      if (getActivePage() !== "test") {
-        (document.activeElement as HTMLElement | undefined)?.blur();
-      }
-      isAnimating = false;
-    },
-  });
+
+  // If managed by store, notify the store
+  if (isModalOpen("Commandline")) {
+    if (clearModalChain) {
+      storeClearChain("Commandline");
+    } else {
+      storeHideModal("Commandline");
+    }
+    // Cleanup will happen in the effect when visibility changes
+  } else {
+    // Old modal system, hide directly
+    void modal.hide({
+      clearModalChain,
+      afterAnimation: async () => {
+        hideWarning();
+        addCommandlineBackground();
+        if (getActivePage() !== "test") {
+          (document.activeElement as HTMLElement | undefined)?.blur();
+        }
+        isAnimating = false;
+      },
+    });
+  }
 }
 
 async function goBackOrHide(): Promise<void> {
@@ -817,12 +836,7 @@ function createValidationHandler(command: Command): void {
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
-  customEscapeHandler: (): void => {
-    //
-  },
-  customWrapperClickHandler: (): void => {
-    hide();
-  },
+  storeId: "Commandline",
   showOptionsWhenInChain: {
     focusFirstInput: true,
   },
@@ -960,4 +974,44 @@ const modal = new AnimatedModal({
       await runActiveCommand();
     });
   },
+});
+
+let lastVisibility: { visible: boolean; chained: boolean } | null = null;
+
+createEffect(() => {
+  const visibility = getModalVisibility("Commandline");
+  const isVisible = visibility?.visible ?? false;
+  const wasVisible = lastVisibility?.visible ?? false;
+
+  // Show when visibility changes from false to true
+  if (isVisible && !wasVisible) {
+    show();
+  }
+  // Hide when visibility changes from true to false (triggered by store)
+  else if (!isVisible && wasVisible) {
+    // Only trigger hide if modal is actually open
+    if (modal.isOpen()) {
+      clearFontPreview();
+      void ThemeController.clearPreview();
+      // The store already updated, just trigger the animation
+      void modal.hide({
+        clearModalChain: !visibility?.chained,
+        afterAnimation: async () => {
+          hideWarning();
+          addCommandlineBackground();
+          if (getActivePage() !== "test") {
+            (document.activeElement as HTMLElement | undefined)?.blur();
+          }
+          isAnimating = false;
+
+          // After animation completes, notify store to show pending modal
+          if (visibility?.chained) {
+            storeHideModal("Commandline");
+          }
+        },
+      });
+    }
+  }
+
+  lastVisibility = visibility ? { ...visibility } : null;
 });

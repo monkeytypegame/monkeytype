@@ -1,7 +1,6 @@
 import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
 import "./SupportModal.scss";
-import * as Commandline from "../commandline/commandline";
 import { showModal } from "../stores/modals";
 
 export function SupportModal(): JSXElement {
@@ -17,12 +16,7 @@ export function SupportModal(): JSXElement {
         <button
           class="ads"
           type="button"
-          onClick={() =>
-            Commandline.show(
-              { subgroupOverride: "ads" },
-              //TODO mio{          modalChain: modal,        }
-            )
-          }
+          onClick={() => showModal("Commandline")}
         >
           <div class="icon">
             <i class="fas fa-fw fa-ad"></i>
