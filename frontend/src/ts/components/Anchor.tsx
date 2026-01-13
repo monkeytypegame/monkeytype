@@ -1,24 +1,27 @@
 import { JSXElement, Show } from "solid-js";
 
-export function TextButton(props: {
+export function Anchor(props: {
   text?: string;
   icon?: string;
   class?: string;
-  onClick?: () => void;
+  type: "text" | "button";
+  href: string;
   children?: JSXElement;
 }): JSXElement {
   return (
-    <button
+    <a
       type="button"
       classList={{
-        textButton: props.class === undefined,
+        [props.type === "text" ? "textButton" : "button"]: true,
         [props.class ?? ""]: props.class !== undefined,
       }}
-      onClick={() => props.onClick?.()}
+      href={props.href}
+      target="_blank"
+      rel="noreferrer noopener"
     >
       <Show when={props.icon !== undefined}>
         <i
-          class={`fas ${props.icon}`}
+          class={props.icon}
           classList={{
             "fa-fw": props.text === undefined,
           }}
@@ -26,6 +29,6 @@ export function TextButton(props: {
       </Show>
       <Show when={props.text !== undefined}>{props.text}</Show>
       {props.children}
-    </button>
+    </a>
   );
 }

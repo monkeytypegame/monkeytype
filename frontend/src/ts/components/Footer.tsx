@@ -1,11 +1,12 @@
 import { JSXElement } from "solid-js";
 import { VersionButton } from "./VersionButton";
-import { TextButton } from "./TextButton";
+import { Button } from "./Button";
 import { showModal } from "../stores/modals";
 import * as CommandLine from "../commandline/commandline";
 import "./Footer.scss";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { ScrollToTop } from "./ScrollToTop";
+import { Anchor } from "./Anchor";
 
 export function Footer(): JSXElement {
   return (
@@ -31,72 +32,54 @@ export function Footer(): JSXElement {
 
       <div class="leftright">
         <div class="left">
-          <TextButton
+          <Button
+            type="text"
             text="contact"
-            icon="fa-envelope"
+            icon="fas fa-envelope"
             onClick={() => showModal("Contact")}
           />
-          <TextButton
-            icon="fa-donate"
+          <Button
+            type="text"
+            icon="fas fa-donate"
             text="support"
             onClick={() => showModal("Support")}
           />
-          <a
+          <Anchor
+            type="text"
+            icon="fas fa-code"
+            text="github"
             href="https://github.com/monkeytypegame/monkeytype"
-            class="textButton"
-            type="button"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <i class="fas fa-fw fa-code"></i>
-            <div class="text">github</div>
-          </a>
-          <a
+          />
+          <Anchor
+            type="text"
+            icon="fab fa-discord"
+            text="discord"
             href="https://www.discord.gg/monkeytype"
-            class="textButton discordLink"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <i class="fab fa-fw fa-discord"></i>
-            <div class="text">discord</div>
-          </a>
-          <a
+          />
+          <Anchor
+            type="text"
+            icon="fab fa-twitter"
+            text="twitter"
             href="https://x.com/monkeytype"
-            class="textButton"
-            type="button"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <i class="fab fa-fw fa-twitter"></i>
-            <div class="text">twitter</div>
-          </a>
-          <a
+          />
+          <Anchor
+            type="text"
+            icon="fas fa-file-contract"
+            text="terms"
             href="/terms-of-service.html"
-            class="textButton"
-            type="button"
-            target="_blank"
-          >
-            <i class="fas fa-fw fa-file-contract"></i>
-            <div class="text">terms</div>
-          </a>
-          <a
+          />
+          <Anchor
             href="/security-policy.html"
-            class="textButton"
-            type="button"
-            target="_blank"
-          >
-            <i class="fas fa-fw fa-shield-alt"></i>
-            <div class="text">security</div>
-          </a>
-          <a
+            type="text"
+            text="security"
+            icon="fas fa-shield-alt"
+          />
+          <Anchor
             href="/privacy-policy.html"
-            class="textButton"
-            type="button"
-            target="_blank"
-          >
-            <i class="fas fa-fw fa-lock"></i>
-            <div class="text">privacy</div>
-          </a>
+            type="text"
+            text="privacy"
+            icon="fas fa-lock"
+          />
         </div>
         <div class="right">
           <ThemeIndicator />
