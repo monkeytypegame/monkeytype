@@ -2,7 +2,7 @@ import { debounce } from "throttle-debounce";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
-import { qs, onWindowLoad } from "../utils/dom";
+import { qs, onDOMReady } from "../utils/dom";
 
 let state = navigator.onLine;
 
@@ -49,7 +49,7 @@ ConnectionEvent.subscribe((newState) => {
   throttledHandleState();
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   state = navigator.onLine;
   if (!state) {
     showOfflineBanner();

@@ -5,7 +5,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema, UserProfile } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
 import * as NavigationEvent from "../observables/navigation-event";
-import { qs, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsr, onDOMReady } from "../utils/dom";
 
 let nameInputEl: ValidatedHtmlInputElement | null = null;
 let lastProfile: UserProfile | null = null;
@@ -69,6 +69,6 @@ qs(".page.pageProfileSearch form")?.on("submit", (e) => {
   });
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageProfileSearch");
 });

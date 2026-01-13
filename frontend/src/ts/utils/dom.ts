@@ -68,20 +68,6 @@ export function onDOMReady(callback: () => void): void {
 }
 
 /**
- * Execute a callback function when the window 'load' event fires, which occurs
- * after the entire page (including all dependent resources such as images,
- * stylesheets, and scripts) has fully loaded.
- * If the window is already loaded, the callback is executed immediately.
- */
-export function onWindowLoad(callback: () => void): void {
-  if (document.readyState === "complete") {
-    callback();
-  } else {
-    window.addEventListener("load", callback);
-  }
-}
-
-/**
  * Creates an ElementWithUtils wrapping a newly created element.
  * @param tagName The tag name of the element to create.
  * @param options Optional options to set on the element.

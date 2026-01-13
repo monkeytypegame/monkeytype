@@ -12,7 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -210,6 +210,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccountSettings");
 });

@@ -44,7 +44,7 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -1515,7 +1515,7 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageLeaderboards");
 });
 
