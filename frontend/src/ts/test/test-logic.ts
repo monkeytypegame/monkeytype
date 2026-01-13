@@ -1159,7 +1159,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       }
 
       completedEvent.uid = user.uid;
-      completedEvent.hash = objectHash(completedEvent);
 
       savingResultPromise = saveResult(completedEvent, false);
       void savingResultPromise.then((response) => {
@@ -1230,6 +1229,11 @@ async function saveResult(
     result.keySpacing = "toolong";
     result.keyDuration = "toolong";
   }
+  //@ts-expect-error just in case this is repeated and already has a hash
+  delete result.hash;
+  result.hash = objectHash(result);
+
+  console.trace();
 
   const response = await Ape.results.add({ body: { result } });
 
