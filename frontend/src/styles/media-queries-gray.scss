@@ -1,5 +1,4 @@
 //this is very overkill for the modern world so dont worry too much about this width
-
 @use "./media.scss" as *;
 
 @include media-query(gray) {
