@@ -9,7 +9,6 @@ import Ape from "../ape";
 import { intervalToDuration } from "date-fns";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { ChartJs } from "./ChartJs";
-import AsyncContent2 from "./AsyncContent2";
 
 export function AboutPage(): JSXElement {
   const pageOpen = (): boolean => getActivePage() === "about";
@@ -39,7 +38,8 @@ export function AboutPage(): JSXElement {
         Launched on 15th of May, 2020.
       </div>
       <div class="section histogramChart">
-        <AsyncContent2
+        <AsyncContent
+          alwaysShowContent
           resource={typingStats}
           errorMessage="Failed to get global typing stats"
         >
@@ -76,10 +76,11 @@ export function AboutPage(): JSXElement {
               </div>
             </div>
           )}
-        </AsyncContent2>
+        </AsyncContent>
         <div>
           <div class="chart" style={{ height: "200px" }}>
-            <AsyncContent2
+            <AsyncContent
+              alwaysShowContent
               resource={speedHistogram}
               errorMessage="Failed to get global speed stats for histogram"
             >
@@ -143,7 +144,7 @@ export function AboutPage(): JSXElement {
                   }}
                 />
               )}
-            </AsyncContent2>
+            </AsyncContent>
           </div>
           <p class="small">distribution of time 60 leaderboard results (wpm)</p>
         </div>
