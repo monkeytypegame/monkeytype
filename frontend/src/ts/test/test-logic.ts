@@ -1153,12 +1153,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     } else {
       TestStats.resetIncomplete();
 
-      if (completedEvent.testDuration > 122) {
-        completedEvent.chartData = "toolong";
-        completedEvent.keySpacing = "toolong";
-        completedEvent.keyDuration = "toolong";
-      }
-
       if (!completedEvent.bailedOut) {
         const challenge = ChallengeContoller.verify(completedEvent);
         if (challenge !== null) completedEvent.challenge = challenge;
@@ -1229,7 +1223,15 @@ async function saveResult(
     return null;
   }
 
-  const response = await Ape.results.add({ body: { result: completedEvent } });
+  const result = structuredClone(completedEvent);
+
+  if (result.testDuration > 122) {
+    result.chartData = "toolong";
+    result.keySpacing = "toolong";
+    result.keyDuration = "toolong";
+  }
+
+  const response = await Ape.results.add({ body: { result } });
 
   AccountButton.loading(false);
 
@@ -1239,10 +1241,10 @@ async function saveResult(
       retrySaving.canRetry = true;
       $("#retrySavingResultButton").removeClass("hidden");
       if (!isRetrying) {
-        retrySaving.completedEvent = completedEvent;
+        retrySaving.completedEvent = result;
       }
     }
-    console.log("Error saving result", completedEvent);
+    console.log("Error saving result", result);
     if (response.body.message === "Old key data format") {
       response.body.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
@@ -1264,7 +1266,7 @@ async function saveResult(
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  const dataToSave: DB.SaveLocalResultData = {};
+  const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
@@ -1274,38 +1276,38 @@ async function saveResult(
       data.xp,
       TestState.resultVisible ? data.xpBreakdown : undefined,
     );
-    dataToSave.xp = data.xp;
+    localDataToSave.xp = data.xp;
   }
 
   if (data.streak !== undefined) {
-    dataToSave.streak = data.streak;
+    localDataToSave.streak = data.streak;
   }
 
   if (data.insertedId !== undefined) {
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
-    const result = structuredClone(
-      completedEvent,
+    const snapshotResult = structuredClone(
+      result,
     ) as unknown as SnapshotResult<Mode>;
-    result._id = data.insertedId;
+    snapshotResult._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
-      result.isPb = true;
+      snapshotResult.isPb = true;
     }
-    dataToSave.result = result;
+    localDataToSave.result = snapshotResult;
   }
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
     const localPb = await DB.getLocalPB(
-      completedEvent.mode,
-      completedEvent.mode2,
-      completedEvent.punctuation,
-      completedEvent.numbers,
-      completedEvent.language,
-      completedEvent.difficulty,
-      completedEvent.lazyMode,
-      getFunbox(completedEvent.funbox),
+      result.mode,
+      result.mode2,
+      result.punctuation,
+      result.numbers,
+      result.language,
+      result.difficulty,
+      result.lazyMode,
+      getFunbox(result.funbox),
     );
 
     if (localPb !== undefined) {
@@ -1313,7 +1315,7 @@ async function saveResult(
     }
     Result.showCrown("normal");
 
-    dataToSave.isPb = true;
+    localDataToSave.isPb = true;
   } else {
     Result.showErrorCrownIfNeeded();
   }
@@ -1342,7 +1344,7 @@ async function saveResult(
   if (isRetrying) {
     Notifications.add("Result saved", 1, { important: true });
   }
-  DB.saveLocalResult(dataToSave);
+  DB.saveLocalResult(localDataToSave);
   return response;
 }
 
