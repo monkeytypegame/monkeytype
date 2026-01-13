@@ -5,7 +5,7 @@ export function Button(props: {
   icon?: string;
   fixedWidthIcon?: boolean;
   class?: string;
-  type: "text" | "button";
+  type?: "text" | "button";
   onClick?: () => void;
   children?: JSXElement;
 }): JSXElement {
@@ -13,14 +13,14 @@ export function Button(props: {
     <button
       type="button"
       classList={{
-        [props.type === "text" ? "textButton" : "button"]: true,
+        [(props.type ?? "button") === "text" ? "textButton" : ""]: true,
         [props.class ?? ""]: props.class !== undefined,
       }}
       onClick={() => props.onClick?.()}
     >
       <Show when={props.icon !== undefined}>
         <i
-          class={props.icon}
+          class={`icon ${props.icon}`}
           classList={{
             "fa-fw": props.text === undefined || props.fixedWidthIcon === true,
           }}

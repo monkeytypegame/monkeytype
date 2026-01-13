@@ -3,6 +3,8 @@ import { AnimatedModal } from "./AnimatedModal";
 import "./SupportModal.scss";
 import { showModal } from "../stores/modals";
 import { setCommandlineSubgroup } from "../signals/core";
+import { Button } from "./Button";
+import { Anchor } from "./Anchor";
 
 export function SupportModal(): JSXElement {
   return (
@@ -14,55 +16,37 @@ export function SupportModal(): JSXElement {
         <i class="fas fa-heart"></i>
       </div>
       <div class="buttons">
-        <button
-          class="ads"
+        <Button
           type="button"
           onClick={() => {
             setCommandlineSubgroup("ads");
             showModal("Commandline");
           }}
-        >
-          <div class="icon">
-            <i class="fas fa-fw fa-ad"></i>
-          </div>
-          <div class="text">Enable Ads</div>
-        </button>
-        <button type="button" onClick={() => showModal("Contact")}>
-          show contact
-        </button>
-        <a
-          class="button"
+          icon="fas fa-ad"
+          text="Enable Ads"
+          fixedWidthIcon
+        />
+        <Anchor
+          type="button"
           href="https://ko-fi.com/monkeytype"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <div class="icon">
-            <i class="fas fa-fw fa-donate"></i>
-          </div>
-          <div class="text">Donate</div>
-        </a>
-        <a
-          class="button"
+          icon="fas fa-donate"
+          text="Donate"
+          fixedWidthIcon
+        />
+        <Anchor
+          type="button"
           href="https://www.patreon.com/monkeytype"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <div class="icon">
-            <i class="fab fa-fw fa-patreon"></i>
-          </div>
-          <div class="text">Join Patreon</div>
-        </a>
-        <a
-          class="button"
+          icon="fab fa-patreon"
+          text="Join Patreon"
+          fixedWidthIcon
+        />
+        <Anchor
+          type="button"
           href="https://monkeytype.store"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <div class="icon">
-            <i class="fas fa-fw fa-tshirt"></i>
-          </div>
-          <div class="text">Buy Merch</div>
-        </a>
+          icon="fas fa-tshirt"
+          text="Buy Merch"
+          fixedWidthIcon
+        />
       </div>
     </AnimatedModal>
   );

@@ -5,7 +5,7 @@ export function Anchor(props: {
   icon?: string;
   fixedWidthIcon?: boolean;
   class?: string;
-  type: "text" | "button";
+  type?: "text" | "button";
   href: string;
   children?: JSXElement;
 }): JSXElement {
@@ -13,7 +13,7 @@ export function Anchor(props: {
     <a
       type="button"
       classList={{
-        [props.type === "text" ? "textButton" : "button"]: true,
+        [(props.type ?? "text") === "text" ? "textButton" : "button"]: true,
         [props.class ?? ""]: props.class !== undefined,
       }}
       href={props.href}
@@ -22,7 +22,7 @@ export function Anchor(props: {
     >
       <Show when={props.icon !== undefined}>
         <i
-          class={props.icon}
+          class={`icon ${props.icon}`}
           classList={{
             "fa-fw": props.text === undefined || props.fixedWidthIcon === true,
           }}
