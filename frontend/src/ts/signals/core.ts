@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { PageName } from "../pages/page";
+import { ListsObjectKeys } from "../commandline/lists";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
@@ -17,3 +18,6 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
   text: "unknown",
   isFavorite: false,
 });
+
+export const [getCommandlineSubgroup, setCommandlineSubgroup] =
+  createSignal<ListsObjectKeys | null>(null);

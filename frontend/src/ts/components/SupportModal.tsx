@@ -2,6 +2,7 @@ import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
 import "./SupportModal.scss";
 import { showModal } from "../stores/modals";
+import { setCommandlineSubgroup } from "../signals/core";
 
 export function SupportModal(): JSXElement {
   return (
@@ -16,7 +17,10 @@ export function SupportModal(): JSXElement {
         <button
           class="ads"
           type="button"
-          onClick={() => showModal("Commandline")}
+          onClick={() => {
+            setCommandlineSubgroup("ads");
+            showModal("Commandline");
+          }}
         >
           <div class="icon">
             <i class="fas fa-fw fa-ad"></i>

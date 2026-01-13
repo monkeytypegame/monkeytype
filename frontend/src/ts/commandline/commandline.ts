@@ -7,7 +7,11 @@ import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
-import { getActivePage } from "../signals/core";
+import {
+  getActivePage,
+  getCommandlineSubgroup,
+  setCommandlineSubgroup,
+} from "../signals/core";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
@@ -105,27 +109,30 @@ export function show(
         value: null,
         icon: null,
       };
-      if (settings?.subgroupOverride !== undefined) {
-        if (typeof settings.subgroupOverride === "string") {
-          const exists = CommandlineLists.doesListExist(
-            settings.subgroupOverride,
-          );
+      const subgroupSignal = getCommandlineSubgroup();
+
+      const overrideStringOrGroup =
+        settings?.subgroupOverride ?? subgroupSignal ?? null;
+
+      if (overrideStringOrGroup !== undefined) {
+        if (typeof overrideStringOrGroup === "string") {
+          const exists = CommandlineLists.doesListExist(overrideStringOrGroup);
           if (exists) {
             Loader.show();
             subgroupOverride = await CommandlineLists.getList(
-              settings.subgroupOverride,
+              overrideStringOrGroup,
             );
             Loader.hide();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
             Notifications.add(
-              `Command list ${settings.subgroupOverride} not found`,
+              `Command list ${overrideStringOrGroup} not found`,
               0,
             );
           }
         } else {
-          subgroupOverride = settings.subgroupOverride;
+          subgroupOverride = overrideStringOrGroup;
         }
         usingSingleList = false;
       } else {
@@ -207,6 +214,8 @@ function hide(clearModalChain = false): void {
           (document.activeElement as HTMLElement | undefined)?.blur();
         }
         isAnimating = false;
+        subgroupOverride = null;
+        setCommandlineSubgroup(null);
       },
     });
   }
@@ -1003,6 +1012,8 @@ createEffect(() => {
             (document.activeElement as HTMLElement | undefined)?.blur();
           }
           isAnimating = false;
+          subgroupOverride = null;
+          setCommandlineSubgroup(null);
 
           // After animation completes, notify store to show pending modal
           if (visibility?.chained) {
