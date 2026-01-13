@@ -9,6 +9,7 @@ import Ape from "../ape";
 import { intervalToDuration } from "date-fns";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { ChartJs } from "./ChartJs";
+import AsyncContent2 from "./AsyncContent2";
 
 export function AboutPage(): JSXElement {
   const pageOpen = (): boolean => getActivePage() === "about";
@@ -38,7 +39,7 @@ export function AboutPage(): JSXElement {
         Launched on 15th of May, 2020.
       </div>
       <div class="section histogramChart">
-        <AsyncContent
+        <AsyncContent2
           resource={typingStats}
           errorMessage="Failed to get global typing stats"
         >
@@ -46,37 +47,39 @@ export function AboutPage(): JSXElement {
             <div class="triplegroup">
               <div
                 class="group"
-                aria-label={data.testsStarted.label}
+                aria-label={data?.testsStarted.label}
                 data-balloon-pos="up"
               >
                 <div class="label">total tests started</div>
-                <div class="val">{data.testsStarted.text}</div>
-                <div class="valSmall">{data.testsStarted.subText}</div>
+                <div class="val">{data?.testsStarted.text ?? "-"}</div>
+                <div class="valSmall">{data?.testsStarted.subText ?? "-"}</div>
               </div>
               <div
                 class="group"
-                aria-label={data.timeTyping.label}
+                aria-label={data?.timeTyping.label}
                 data-balloon-pos="up"
               >
                 <div class="label">total typing time</div>
-                <div class="val">{data.timeTyping.text}</div>
-                <div class="valSmall">{data.timeTyping.subText}</div>
+                <div class="val">{data?.timeTyping.text ?? "-"}</div>
+                <div class="valSmall">{data?.timeTyping.subText ?? "-"}</div>
               </div>
               <div
                 class="group"
-                aria-label={data.testsCompleted.label}
+                aria-label={data?.testsCompleted.label}
                 data-balloon-pos="up"
               >
                 <div class="label">total tests started</div>
-                <div class="val">{data.testsCompleted.text}</div>
-                <div class="valSmall">{data.testsCompleted.subText}</div>
+                <div class="val">{data?.testsCompleted.text ?? "-"}</div>
+                <div class="valSmall">
+                  {data?.testsCompleted.subText ?? "-"}
+                </div>
               </div>
             </div>
           )}
-        </AsyncContent>
+        </AsyncContent2>
         <div>
           <div class="chart" style={{ height: "200px" }}>
-            <AsyncContent
+            <AsyncContent2
               resource={speedHistogram}
               errorMessage="Failed to get global speed stats for histogram"
             >
@@ -84,12 +87,12 @@ export function AboutPage(): JSXElement {
                 <ChartJs
                   type="bar"
                   data={{
-                    labels: data.labels,
+                    labels: data?.labels ?? [],
                     datasets: [
                       {
                         yAxisID: "count",
                         label: "Users",
-                        data: data.data,
+                        data: data?.data ?? [],
                       },
                     ],
                   }}
@@ -140,7 +143,7 @@ export function AboutPage(): JSXElement {
                   }}
                 />
               )}
-            </AsyncContent>
+            </AsyncContent2>
           </div>
           <p class="small">distribution of time 60 leaderboard results (wpm)</p>
         </div>
@@ -480,10 +483,13 @@ async function fetchTypingStats(): Promise<{
   return result;
 }
 
-async function fetchSpeedHistogram(): Promise<{
-  labels: string[];
-  data: { x: number; y: number }[];
-}> {
+async function fetchSpeedHistogram(): Promise<
+  | {
+      labels: string[];
+      data: { x: number; y: number }[];
+    }
+  | undefined
+> {
   const response = await Ape.public.getSpeedHistogram({
     query: {
       language: "english",
