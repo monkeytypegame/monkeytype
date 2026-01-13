@@ -55,7 +55,7 @@ function updateKeytips(): void {
         ? "<kbd>tab</kbd> + <kbd>enter</kbd>"
         : `<kbd>${Config.quickRestart}</kbd>`
     } - restart test<br>
-    <kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd>+<kbd>shift</kbd>+<kbd>p</kbd> - command line`);
+    <kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> - command line`);
 }
 
 if (isDevEnvironment()) {

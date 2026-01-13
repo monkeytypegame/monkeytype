@@ -198,14 +198,13 @@ body {
 kbd {
   color: var(--bg-color);
   background-color: var(--sub-color);
-  /* font-weight: bold; */
-  padding: 0.1rem 0.3rem;
-  margin: 0rem 0rem;
-  border-radius: 0.1rem;
-  display: inline-block;
-  font-size: 0.7rem;
-  line-height: 0.7rem;
-  margin: 0 0.5em;
+
+  // color: var(--text-color);
+  // background: var(--sub-alt-color);
+
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-size: 0.75em;
 }
 
 .pageLoading {
