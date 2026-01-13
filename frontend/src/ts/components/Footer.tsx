@@ -31,14 +31,16 @@ export function Footer(): JSXElement {
 
       <div class="leftright">
         <div class="left">
-          <TextButton icon="fa-envelope" onClick={() => showModal("Contact")}>
-            <div class="text">contact</div>
-          </TextButton>
-
-          <TextButton icon="fa-donate" onClick={() => showModal("Support")}>
-            <div class="text">support</div>
-          </TextButton>
-
+          <TextButton
+            text="contact"
+            icon="fa-envelope"
+            onClick={() => showModal("Contact")}
+          />
+          <TextButton
+            icon="fa-donate"
+            text="support"
+            onClick={() => showModal("Support")}
+          />
           <a
             href="https://github.com/monkeytypegame/monkeytype"
             class="textButton"
