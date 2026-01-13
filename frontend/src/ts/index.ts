@@ -72,14 +72,15 @@ applyEngineSettings();
 void loadFromLocalStorage();
 void fetchLatestVersion();
 Focus.set(true, true);
-void init(onAuthStateChanged);
-
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
   CookiesModal.show();
-} else {
-  Cookies.activateWhatsAccepted();
 }
+void init(onAuthStateChanged).then(() => {
+  if (accepted !== null) {
+    Cookies.activateWhatsAccepted();
+  }
+});
 
 addToGlobal({
   snapshot: DB.getSnapshot,
