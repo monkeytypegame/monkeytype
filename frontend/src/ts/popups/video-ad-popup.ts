@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
-import { qs } from "../utils/dom";
+import { onDOMReady, qs } from "../utils/dom";
 
 const wrapperId = "videoAdPopupWrapper";
 
@@ -85,4 +85,6 @@ qs(".pageTest #watchVideoAdButton")?.on("click", () => {
   void show();
 });
 
-Skeleton.save(wrapperId);
+onDOMReady(() => {
+  Skeleton.save(wrapperId);
+});

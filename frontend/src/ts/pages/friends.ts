@@ -30,7 +30,7 @@ import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsr, onDOMReady } from "../utils/dom";
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
@@ -564,7 +564,7 @@ export const page = new Page<undefined>({
   },
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageFriends");
 });
 
