@@ -476,6 +476,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["alterText"],
     name: "rot13",
   },
+  BANANA: {
+    description: "Bapple *nom*",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: [],
+    frontendFunctions: ["banana"],
+    name: "Banana!",
+  },
   no_quit: {
     description: "You can't restart the test.",
     canGetPb: true,
