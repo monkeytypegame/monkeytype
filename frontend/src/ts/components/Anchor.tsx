@@ -3,6 +3,7 @@ import { JSXElement, Show } from "solid-js";
 export function Anchor(props: {
   text?: string;
   icon?: string;
+  fixedWidthIcon?: boolean;
   class?: string;
   type: "text" | "button";
   href: string;
@@ -23,7 +24,7 @@ export function Anchor(props: {
         <i
           class={props.icon}
           classList={{
-            "fa-fw": props.text === undefined,
+            "fa-fw": props.text === undefined || props.fixedWidthIcon === true,
           }}
         ></i>
       </Show>

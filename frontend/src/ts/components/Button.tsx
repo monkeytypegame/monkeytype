@@ -3,6 +3,7 @@ import { JSXElement, Show } from "solid-js";
 export function Button(props: {
   text?: string;
   icon?: string;
+  fixedWidthIcon?: boolean;
   class?: string;
   type: "text" | "button";
   onClick?: () => void;
@@ -19,9 +20,9 @@ export function Button(props: {
     >
       <Show when={props.icon !== undefined}>
         <i
-          class={`fas ${props.icon}`}
+          class={props.icon}
           classList={{
-            "fa-fw": props.text === undefined,
+            "fa-fw": props.text === undefined || props.fixedWidthIcon === true,
           }}
         ></i>
       </Show>

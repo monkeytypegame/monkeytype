@@ -36,36 +36,42 @@ export function Footer(): JSXElement {
             type="text"
             text="contact"
             icon="fas fa-envelope"
+            fixedWidthIcon
             onClick={() => showModal("Contact")}
           />
           <Button
             type="text"
-            icon="fas fa-donate"
             text="support"
+            icon="fas fa-donate"
+            fixedWidthIcon
             onClick={() => showModal("Support")}
           />
           <Anchor
             type="text"
-            icon="fas fa-code"
             text="github"
+            icon="fas fa-code"
+            fixedWidthIcon
             href="https://github.com/monkeytypegame/monkeytype"
           />
           <Anchor
             type="text"
-            icon="fab fa-discord"
             text="discord"
+            icon="fab fa-discord"
+            fixedWidthIcon
             href="https://www.discord.gg/monkeytype"
           />
           <Anchor
             type="text"
-            icon="fab fa-twitter"
             text="twitter"
+            icon="fab fa-twitter"
+            fixedWidthIcon
             href="https://x.com/monkeytype"
           />
           <Anchor
             type="text"
-            icon="fas fa-file-contract"
             text="terms"
+            icon="fas fa-file-contract"
+            fixedWidthIcon
             href="/terms-of-service.html"
           />
           <Anchor
@@ -73,12 +79,14 @@ export function Footer(): JSXElement {
             type="text"
             text="security"
             icon="fas fa-shield-alt"
+            fixedWidthIcon
           />
           <Anchor
             href="/privacy-policy.html"
             type="text"
             text="privacy"
             icon="fas fa-lock"
+            fixedWidthIcon
           />
         </div>
         <div class="right">
