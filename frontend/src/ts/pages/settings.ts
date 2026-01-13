@@ -722,7 +722,7 @@ export async function update(
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&

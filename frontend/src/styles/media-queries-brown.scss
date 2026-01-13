@@ -1,5 +1,7 @@
 //this is very overkill for the modern world so dont worry too much about this width
-@media only screen and (max-width: 425px) {
+@use "./media.scss" as *;
+
+@include media-query(brown) {
   #mediaQueryDebug {
     background: #8d6e63;
     &::before {

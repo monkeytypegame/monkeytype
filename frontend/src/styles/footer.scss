@@ -72,6 +72,7 @@ footer {
     display: flex;
     #newVersionIndicator {
       margin: 0;
+      padding: 0 0.25em;
       font-size: unset;
       background-color: var(--main-color);
       border-radius: calc(var(--roundness) / 2);
