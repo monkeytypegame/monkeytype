@@ -27,7 +27,6 @@ import "./test/caps-warning";
 import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
-import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
 import * as Account from "./pages/account";
@@ -48,6 +47,7 @@ import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
+import "./ready";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
