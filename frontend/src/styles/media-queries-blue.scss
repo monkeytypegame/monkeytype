@@ -1,4 +1,6 @@
-@media only screen and (max-width: calc(768px + 5rem)) {
+@use "./media.scss" as *;
+
+@include media-query(blue) {
   #mediaQueryDebug {
     background: #29b6f6;
     &::before {
