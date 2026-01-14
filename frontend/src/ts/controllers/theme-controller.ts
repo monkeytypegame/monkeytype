@@ -14,6 +14,7 @@ import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
+import { setThemeIndicator } from "../signals/core";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -197,46 +198,21 @@ async function apply(
 }
 
 function updateFooterIndicator(nameOverride?: string): void {
-  const indicator = document.querySelector<HTMLElement>(
-    "footer .right .current-theme",
-  );
-  const text = indicator?.querySelector<HTMLElement>(".text");
-  const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
-
-  if (
-    !(indicator instanceof HTMLElement) ||
-    !(text instanceof HTMLElement) ||
-    !(favIcon instanceof HTMLElement)
-  ) {
-    return;
-  }
-
   //text
   let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
-  text.innerText = str;
 
   //fav icon
-  const isCustom = Config.customTheme;
-  // hide the favorite icon completely for custom themes
-  if (isCustom) {
-    favIcon.style.display = "none";
-    return;
-  }
-  favIcon.style.display = "";
   const currentTheme = nameOverride ?? randomTheme ?? Config.theme;
   const isFavorite =
+    !Config.customTheme &&
     currentTheme !== null &&
     Config.favThemes.includes(currentTheme as ThemeName);
 
-  if (isFavorite) {
-    favIcon.style.display = "block";
-  } else {
-    favIcon.style.display = "none";
-  }
+  setThemeIndicator({ text: str, isFavorite });
 }
 
 type PreviewState = {

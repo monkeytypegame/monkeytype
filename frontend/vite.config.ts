@@ -85,7 +85,7 @@ function getPlugins({
     oxlintChecker({
       debounceDelay: 125,
       typeAware: true,
-      overlay: true,
+      overlay: isDevelopment,
     }),
     jqueryInject(),
     injectHTML(),

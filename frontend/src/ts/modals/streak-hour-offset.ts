@@ -45,7 +45,6 @@ export function show(): void {
 
 function updatePreview(): void {
   const inputValue = state.offset;
-
   const preview = modal.getModal().qs(".preview");
 
   const date = new Date();
@@ -58,6 +57,7 @@ function updatePreview(): void {
   newDate.setUTCMilliseconds(0);
 
   newDate.setHours(newDate.getHours() - -1 * inputValue); //idk why, but it only works when i subtract (so i have to negate inputValue)
+  newDate.setMinutes(newDate.getMinutes() - -1 * ((inputValue % 1) * 60));
 
   preview?.setHtml(`
     <div class="row"><div>Current local reset time:</div><div>${date.toLocaleTimeString()}</div></div>

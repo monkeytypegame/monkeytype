@@ -3,5 +3,13 @@
   "extends": [
     "../packages/oxlint-config/index.jsonc"
     // "@monkeytype/oxlint-config"
+  ],
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"],
+      "rules": {
+        "import/no-cycle": "off" //todo: fix cycles and turn this on
+      }
+    }
   ]
 }

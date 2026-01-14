@@ -45,6 +45,7 @@ export const projects: UserWorkspaceConfig[] = [
       setupFiles: [
         "__tests__/__harness__/setup-jquery.ts",
         "__tests__/__harness__/setup-jsx.ts",
+        "__tests__/__harness__/mock-dom.ts",
       ],
       globals: true,
     },

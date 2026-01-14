@@ -20,7 +20,7 @@ import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
@@ -35,7 +35,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
-import { qs, qsa, qsr, onWindowLoad, ElementWithUtils } from "../utils/dom";
+import { qs, qsa, qsr, ElementWithUtils, onDOMReady } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1206,7 +1206,7 @@ qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
 });
 
 ConfigEvent.subscribe(({ key }) => {
-  if (ActivePage.get() === "account" && key === "typingSpeedUnit") {
+  if (getActivePage() === "account" && key === "typingSpeedUnit") {
     void update();
   }
 });
@@ -1284,6 +1284,6 @@ export const page = new Page<undefined>({
   },
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccount");
 });

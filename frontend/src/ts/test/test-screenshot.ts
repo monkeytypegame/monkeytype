@@ -6,7 +6,7 @@ import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import * as ThemeColors from "../elements/theme-colors";
 import { format } from "date-fns/format";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
@@ -364,7 +364,7 @@ $(".pageTest").on("click", "#saveScreenshotButton", (event) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (!(TestState.resultVisible && ActivePage.get() === "test")) return;
+  if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   $("#result #saveScreenshotButton i")
     .removeClass("far fa-image")
@@ -372,7 +372,7 @@ $(document).on("keydown", (event) => {
 });
 
 $(document).on("keyup", (event) => {
-  if (!(TestState.resultVisible && ActivePage.get() === "test")) return;
+  if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   $("#result #saveScreenshotButton i")
     .removeClass("fas fa-download")

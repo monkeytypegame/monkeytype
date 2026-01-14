@@ -6,7 +6,7 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
 import * as ShiftTracker from "../test/shift-tracker";
@@ -398,7 +398,7 @@ export async function refresh(): Promise<void> {
       : Config.layout;
 
   if (Config.keymapMode === "off") return;
-  if (ActivePage.get() !== "test") return;
+  if (getActivePage() !== "test") return;
   if (!layoutName) return;
   try {
     let layoutNameDisplayString = layoutName;

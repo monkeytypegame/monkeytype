@@ -1,6 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { qsr } from "../utils/dom";
+import { onDOMReady, qsr } from "../utils/dom";
 
 export const page = new Page({
   id: "404",
@@ -14,4 +14,6 @@ export const page = new Page({
   },
 });
 
-Skeleton.save("page404");
+onDOMReady(() => {
+  Skeleton.save("page404");
+});

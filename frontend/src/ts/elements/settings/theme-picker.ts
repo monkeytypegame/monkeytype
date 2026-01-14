@@ -9,7 +9,7 @@ import * as Loader from "../loader";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
-import * as ActivePage from "../../states/active-page";
+import { getActivePage } from "../../signals/core";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
@@ -487,10 +487,10 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
 });
 
 ConfigEvent.subscribe(({ key }) => {
-  if (key === "theme" && ActivePage.get() === "settings") {
+  if (key === "theme" && getActivePage() === "settings") {
     updateActiveButton();
   }
-  if (key === "favThemes" && ActivePage.get() === "settings") {
+  if (key === "favThemes" && getActivePage() === "settings") {
     void fillPresetButtons();
   }
 });

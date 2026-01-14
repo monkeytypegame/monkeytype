@@ -38,32 +38,10 @@
       "**/.firebase/**": true,
       "**/.turbo/**": true,
     },
-    "oxc.fmt.experimental": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.automaticallyOpenTestResults": "neverOpen",
-    "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "[html]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "[scss]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "[javascript]": {
-      "editor.defaultFormatter": "oxc.oxc-vscode",
-    },
-    "[typescript]": {
-      "editor.defaultFormatter": "oxc.oxc-vscode",
-    },
-    "[typescriptreact]": {
-      "editor.defaultFormatter": "oxc.oxc-vscode",
-    },
-    "[javascriptreact]": {
-      "editor.defaultFormatter": "oxc.oxc-vscode",
-    },
     "vitest.maximumConfigs": 10,
     "oxc.typeAware": true,
     "typescript.format.enable": false,

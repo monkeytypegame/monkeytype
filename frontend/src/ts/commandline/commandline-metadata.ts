@@ -9,7 +9,7 @@ import { areUnsortedArraysEqual } from "../utils/arrays";
 import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { Validation } from "../elements/input-validation";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
@@ -278,7 +278,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       inputValueConvert: (val) =>
         val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
       afterExec: () => {
-        if (ActivePage.get() === "test") {
+        if (getActivePage() === "test") {
           TestLogic.restart();
         }
       },

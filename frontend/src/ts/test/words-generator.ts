@@ -899,16 +899,20 @@ export async function getNextWord(
   }
 
   const usingFunboxWithGetWord = isFunboxActiveWithFunction("getWord");
+  const randomWordLanguage =
+    (currentWordset instanceof PolyglotWordset
+      ? currentWordset.wordsWithLanguage.get(randomWord)
+      : Config.language) ?? Config.language; // Fall back to Config language if per-word language is unavailable
 
   if (
     Config.mode !== "custom" &&
     Config.mode !== "quote" &&
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
-    !Config.language.startsWith("german") &&
-    !Config.language.startsWith("swiss_german") &&
-    !Config.language.startsWith("code") &&
-    !Config.language.startsWith("klingon") &&
+    !randomWordLanguage.startsWith("german") &&
+    !randomWordLanguage.startsWith("swiss_german") &&
+    !randomWordLanguage.startsWith("code") &&
+    !randomWordLanguage.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection &&
     !usingFunboxWithGetWord
   ) {
