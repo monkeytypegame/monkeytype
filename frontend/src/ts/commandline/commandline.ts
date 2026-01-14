@@ -846,6 +846,12 @@ function createValidationHandler(command: Command): void {
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   storeId: "Commandline",
+  customEscapeHandler: (): void => {
+    //
+  },
+  customWrapperClickHandler: (): void => {
+    hide();
+  },
   showOptionsWhenInChain: {
     focusFirstInput: true,
   },
