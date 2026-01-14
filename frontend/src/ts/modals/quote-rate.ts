@@ -6,7 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
-import { ElementWithUtils } from "../utils/dom";
+import { qs, ElementWithUtils } from "../utils/dom";
 
 let rating = 0;
 

@@ -1,4 +1,3 @@
-import { ElementWithUtils } from "../utils/dom";
 import * as TestLogic from "../test/test-logic";
 import Config, { setConfig, setQuoteLengthAll } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
