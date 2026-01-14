@@ -20,10 +20,10 @@ export function Footer(): JSXElement {
       </div>
 
       <div class="keyTips">
-        <kbd>tab</kbd> and <kbd>enter</kbd> - restart Test
+        <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
         <br />
         <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
-        - command Line
+        - command line
       </div>
 
       <div class="leftright">
