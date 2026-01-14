@@ -69,6 +69,7 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
+import { ThemeColors as ThemeColorsType } from "../signals/theme";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -84,9 +85,9 @@ export class ChartWithUpdateColors<
     super(item, config);
   }
 
-  async updateColors(): Promise<void> {
+  async updateColors(colors?: ThemeColorsType): Promise<void> {
     //@ts-expect-error it's too difficult to figure out these types, but this works
-    await updateColors(this);
+    await updateColors(this, colors);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
@@ -1116,13 +1117,16 @@ async function updateColors<
     | ActivityChartDataPoint[]
     | number[],
   TLabel = string,
->(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
-  const bgcolor = await ThemeColors.get("bg");
-  const subcolor = await ThemeColors.get("sub");
-  const subaltcolor = await ThemeColors.get("subAlt");
-  const maincolor = await ThemeColors.get("main");
-  const errorcolor = await ThemeColors.get("error");
-  const textcolor = await ThemeColors.get("text");
+>(
+  chart: ChartWithUpdateColors<TType, TData, TLabel>,
+  colors?: ThemeColorsType,
+): Promise<void> {
+  const bgcolor = colors?.bg ?? (await ThemeColors.get("bg"));
+  const subcolor = colors?.sub ?? (await ThemeColors.get("sub"));
+  const subaltcolor = colors?.subAlt ?? (await ThemeColors.get("subAlt"));
+  const maincolor = colors?.main ?? (await ThemeColors.get("main"));
+  const errorcolor = colors?.error ?? (await ThemeColors.get("error"));
+  const textcolor = colors?.text ?? (await ThemeColors.get("text"));
   const gridcolor = subaltcolor;
 
   for (const scaleKey of typedKeys(chart.scales)) {
