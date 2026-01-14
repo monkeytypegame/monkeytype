@@ -25,7 +25,7 @@ export default function AsyncContent<T>(
     } catch (err) {
       const message = createErrorMessage(
         err,
-        props.errorMessage ?? "An error occured",
+        props.errorMessage ?? "An error occurred",
       );
       console.error("AsyncContent error:", message);
       Notifications.add(message, -1);
