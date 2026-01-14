@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-const defaultTheme = {
+const defaultTheme: ThemeColors = {
   bg: "#323437",
   main: "#e2b714",
   caret: "#e2b714",
