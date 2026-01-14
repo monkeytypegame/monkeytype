@@ -379,7 +379,7 @@ export function AboutPage(): JSXElement {
         </div>
       </Show>
       <div></div>
-      <div class="section">
+      <div class="section" data-section="supporters">
         <div id="supporters_title" class="bigtitle">
           <i class="fas fa-hand-holding-usd"></i>
           top supporters
@@ -396,7 +396,7 @@ export function AboutPage(): JSXElement {
         </AsyncContent>
       </div>
       <div></div>
-      <div class="section">
+      <div class="section" data-section="contributors">
         <div id="contributors_title" class="bigtitle">
           <i class="fas fa-code-branch"></i>
           contributors

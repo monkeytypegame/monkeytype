@@ -25,6 +25,15 @@
       }
     }
 
+    &[data-section="supporters"],
+    &[data-section="contributors"] {
+      .preloader {
+        font-size: 2em;
+        color: var(--main-color);
+        text-align: center;
+      }
+    }
+
     .bigtitle {
       font-size: 2em;
       color: var(--sub-color);
