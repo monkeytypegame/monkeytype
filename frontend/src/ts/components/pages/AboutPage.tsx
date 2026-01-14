@@ -1,16 +1,16 @@
 import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
 import "./AboutPage.scss";
-import { Button } from "./Button";
-import { showModal } from "../stores/modals";
-import AsyncContent from "./AsyncContent";
-import { getActivePage } from "../signals/core";
-import { getAds } from "../signals/config";
-import { getContributorsList, getSupportersList } from "../utils/json-data";
-import Ape from "../ape";
+import { Button } from "../common/Button";
+import { showModal } from "../../stores/modals";
+import AsyncContent from "../common/AsyncContent";
+import { getActivePage } from "../../signals/core";
+import { getAds } from "../../signals/config";
+import { getContributorsList, getSupportersList } from "../../utils/json-data";
+import Ape from "../../ape";
 import { intervalToDuration } from "date-fns";
-import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
-import { ChartJs } from "./ChartJs";
-import { getThemeColors } from "../signals/theme";
+import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
+import { ChartJs } from "../common/ChartJs";
+import { getThemeColors } from "../../signals/theme";
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";

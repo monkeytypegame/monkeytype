@@ -2,9 +2,9 @@ import { render } from "solid-js/web";
 import { qsa } from "../utils/dom";
 
 import { JSXElement } from "solid-js";
-import { Footer } from "./Footer";
-import { Modals } from "./Modals";
-import { AboutPage } from "./AboutPage";
+import { Footer } from "./layout/footer/Footer";
+import { Modals } from "./modals/Modals";
+import { AboutPage } from "./pages/AboutPage";
 
 const components: Record<string, () => JSXElement> = {
   Footer: () => <Footer />,

@@ -1,9 +1,9 @@
 import { JSXElement } from "solid-js";
-import { AnimatedModal } from "./AnimatedModal";
+import { AnimatedModal } from "../common/AnimatedModal";
 import "./SupportModal.scss";
-import { showModal } from "../stores/modals";
-import { setCommandlineSubgroup } from "../signals/core";
-import { Button } from "./Button";
+import { showModal } from "../../stores/modals";
+import { setCommandlineSubgroup } from "../../signals/core";
+import { Button } from "../common/Button";
 
 export function SupportModal(): JSXElement {
   return (

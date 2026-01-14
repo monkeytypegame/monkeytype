@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, cleanup } from "@solidjs/testing-library";
-import { Button } from "../../src/ts/components/Button";
+import { Button } from "../../src/ts/components/common/Button";
 
 describe("Button component", () => {
   afterEach(() => {

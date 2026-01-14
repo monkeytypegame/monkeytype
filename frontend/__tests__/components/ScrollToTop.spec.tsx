@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
-import { ScrollToTop } from "../../src/ts/components/ScrollToTop";
+import { ScrollToTop } from "../../src/ts/components/layout/footer/ScrollToTop";
 import * as CoreSignals from "../../src/ts/signals/core";
 
 describe("ScrollToTop", () => {

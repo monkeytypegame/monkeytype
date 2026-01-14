@@ -6,9 +6,9 @@ import {
   ChartOptions,
   DefaultDataPoint,
 } from "chart.js";
-import { useRefWithUtils } from "../hooks/useRefWithUtils";
-import { ChartWithUpdateColors } from "../controllers/chart-controller";
-import { getThemeColors } from "../signals/theme";
+import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { ChartWithUpdateColors } from "../../controllers/chart-controller";
+import { getThemeColors } from "../../signals/theme";
 
 type ChartJSProps<
   T extends ChartType = ChartType,

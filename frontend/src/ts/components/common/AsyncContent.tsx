@@ -1,6 +1,6 @@
 import { ErrorBoundary, JSXElement, Resource, Show, Suspense } from "solid-js";
-import { createErrorMessage } from "../utils/misc";
-import * as Notifications from "../elements/notifications";
+import { createErrorMessage } from "../../utils/misc";
+import * as Notifications from "../../elements/notifications";
 import { Conditional } from "./Conditional";
 
 export default function AsyncContent<T>(

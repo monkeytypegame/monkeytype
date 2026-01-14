@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
-import { AnimatedModal } from "./AnimatedModal";
+import { AnimatedModal } from "../common/AnimatedModal";
 import "./ContactModal.scss";
-import { Button } from "./Button";
+import { Button } from "../common/Button";
 
 export function ContactModal(): JSXElement {
   return (
