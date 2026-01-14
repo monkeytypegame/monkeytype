@@ -11,24 +11,24 @@ import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { ChartJs } from "./ChartJs";
 
 export function AboutPage(): JSXElement {
-  const pageOpen = (): boolean => getActivePage() === "about";
-  const [contributors] = createResource(pageOpen, async (open) =>
+  const isOpen = (): boolean => getActivePage() === "about";
+  const [contributors] = createResource(isOpen, async (open) =>
     open ? await getContributorsList() : undefined,
   );
-  const [supporters] = createResource(pageOpen, async (open) =>
+  const [supporters] = createResource(isOpen, async (open) =>
     open ? await getSupportersList() : undefined,
   );
 
-  const [typingStats] = createResource(pageOpen, async (open) =>
+  const [typingStats] = createResource(isOpen, async (open) =>
     open ? await fetchTypingStats() : undefined,
   );
 
-  const [speedHistogram] = createResource(pageOpen, async (open) =>
+  const [speedHistogram] = createResource(isOpen, async (open) =>
     open ? await fetchSpeedHistogram() : undefined,
   );
 
   return (
-    <Show when={pageOpen}>
+    <Show when={isOpen}>
       <div class="created">
         Created with love by Miodec.
         <br />
