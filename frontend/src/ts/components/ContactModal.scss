@@ -2,9 +2,6 @@
 
 #ContactModal {
   .modal {
-    overflow-y: scroll;
-    display: grid;
-    gap: 1rem;
     max-width: 900px;
 
     .text {
@@ -16,38 +13,22 @@
     .buttons {
       display: grid;
       gap: 1rem;
-      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(22em, 1fr));
 
-      .button {
-        padding: 1rem;
-        gap: 1rem;
-        display: grid;
-        grid-template-areas: "icon textgroup";
-        grid-template-columns: auto 1fr;
-        text-align: left;
-        align-items: center;
-        font-size: 1.5rem;
-        line-height: 2rem;
-        transition: 0.125s;
-
-        .icon {
-          grid-area: icon;
-          font-size: 2rem;
-          line-height: 2rem;
-        }
+      @include media-query(purple) {
+        grid-template-columns: 1fr;
       }
-    }
-  }
 
-  @include media-query(purple) {
-    & {
-      .modal {
-        .buttons {
-          grid-template-columns: 1fr;
-          .button {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-          }
+      a {
+        text-align: left;
+        padding: 1em;
+        gap: 1em;
+        place-content: center start;
+        place-items: center center;
+        font-size: 1.5em;
+
+        @include media-query(purple) {
+          font-size: 1em;
         }
       }
     }
