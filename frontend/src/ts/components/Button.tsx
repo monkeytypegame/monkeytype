@@ -48,7 +48,6 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       if={"href" in props}
       then={
         <a
-          type="button"
           classList={getClassList()}
           href={props.href}
           target="_blank"
