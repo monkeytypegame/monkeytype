@@ -1,6 +1,7 @@
 import { ErrorBoundary, JSXElement, Resource, Show, Suspense } from "solid-js";
 import { createErrorMessage } from "../utils/misc";
 import * as Notifications from "../elements/notifications";
+import { Conditional } from "./Conditional";
 
 export default function AsyncContent<T>(
   props: {
@@ -37,9 +38,9 @@ export default function AsyncContent<T>(
   };
 
   return (
-    <Show
-      when={!props.alwaysShowContent}
-      fallback={(() => {
+    <Conditional
+      if={props.alwaysShowContent === true}
+      then={(() => {
         const p = props as {
           showLoader?: true;
           children: (data: T | undefined) => JSXElement;
@@ -55,24 +56,25 @@ export default function AsyncContent<T>(
           </>
         );
       })()}
-    >
-      <ErrorBoundary
-        fallback={(err) => <div class="error">{handleError(err)}</div>}
-      >
-        <Suspense
-          fallback={
-            <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-            </div>
-          }
+      else={
+        <ErrorBoundary
+          fallback={(err) => <div class="error">{handleError(err)}</div>}
         >
-          <Show
-            when={props.resource() !== null && props.resource() !== undefined}
+          <Suspense
+            fallback={
+              <div class="preloader">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+            }
           >
-            {props.children(props.resource() as T)}
-          </Show>
-        </Suspense>
-      </ErrorBoundary>
-    </Show>
+            <Show
+              when={props.resource() !== null && props.resource() !== undefined}
+            >
+              {props.children(props.resource() as T)}
+            </Show>
+          </Suspense>
+        </ErrorBoundary>
+      }
+    />
   );
 }
