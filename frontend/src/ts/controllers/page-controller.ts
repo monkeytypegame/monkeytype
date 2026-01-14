@@ -4,7 +4,6 @@ import { getActivePage, setActivePage } from "../signals/core";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
@@ -17,13 +16,29 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions } from "../pages/page";
-import { qsa } from "../utils/dom";
+import { onWindowLoad, qsa, qsr } from "../utils/dom";
+import * as Skeleton from "../utils/skeleton";
 
 type ChangeOptions = {
   force?: boolean;
   params?: Record<string, string>;
   data?: unknown;
   loadingOptions?: LoadingOptions;
+};
+
+const pages = {
+  loading: PageLoading.page,
+  test: PageTest.page,
+  settings: Settings.page,
+  about: solidPage("about", "/about"),
+  account: Account.page,
+  login: PageLogin.page,
+  profile: PageProfile.page,
+  profileSearch: PageProfileSearch.page,
+  friends: Friends.page,
+  404: Page404.page,
+  accountSettings: PageAccountSettings.page,
+  leaderboards: PageLeaderboards.page,
 };
 
 function updateOpenGraphUrl(): void {
@@ -181,21 +196,6 @@ export async function change(
     console.log(`changing page ${pageName}`);
   }
 
-  const pages = {
-    loading: PageLoading.page,
-    test: PageTest.page,
-    settings: Settings.page,
-    about: PageAbout.page,
-    account: Account.page,
-    login: PageLogin.page,
-    profile: PageProfile.page,
-    profileSearch: PageProfileSearch.page,
-    friends: Friends.page,
-    404: Page404.page,
-    accountSettings: PageAccountSettings.page,
-    leaderboards: PageLeaderboards.page,
-  };
-
   const previousPage = pages[getActivePage()];
   const nextPage = pages[pageName];
   const totalDuration = Misc.applyReducedMotion(250);
@@ -293,4 +293,20 @@ export async function change(
   PageTransition.set(false);
   void AdController.reinstate();
   return true;
+}
+
+function solidPage(id: PageName, path: string): Page<undefined> {
+  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
+  onWindowLoad(() => Skeleton.save(internalId));
+  return new Page({
+    id,
+    path,
+    element: qsr(`#${internalId}`),
+    beforeShow: async () => {
+      Skeleton.append(internalId, "main");
+    },
+    afterHide: async () => {
+      Skeleton.remove(internalId);
+    },
+  });
 }

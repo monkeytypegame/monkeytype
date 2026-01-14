@@ -26,7 +26,6 @@ import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
 import "./controllers/route-controller";
-import "./pages/about";
 import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
