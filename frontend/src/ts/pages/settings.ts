@@ -43,7 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -722,7 +722,7 @@ export async function update(
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&
@@ -1030,6 +1030,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageSettings");
 });

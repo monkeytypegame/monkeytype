@@ -52,10 +52,10 @@ function updateKeytips(): void {
   qs("footer .keyTips")?.setHtml(`
     ${
       Config.quickRestart === "off"
-        ? "<key>tab</key> + <key>enter</key>"
-        : `<key>${Config.quickRestart}</key>`
+        ? "<kbd>tab</kbd> + <kbd>enter</kbd>"
+        : `<kbd>${Config.quickRestart}</kbd>`
     } - restart test<br>
-    <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
+    <kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> - command line`);
 }
 
 if (isDevEnvironment()) {

@@ -23,7 +23,7 @@
   border-bottom: solid 2px var(--error-color);
 }
 
-key {
+kbd {
   color: var(--sub-color);
   background-color: var(--main-color);
 }
