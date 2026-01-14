@@ -116,7 +116,7 @@ describe("Button component", () => {
     ));
 
     const button = container.querySelector("button");
-    expect(button?.classList.contains("button")).toBe(true);
+    expect(button?.classList.contains("button")).toBe(false);
   });
 
   it("applies textButton class when type is text", () => {

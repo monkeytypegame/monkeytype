@@ -21,6 +21,9 @@ type AnchorProps = BaseProps & {
 };
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
+  const isAnchor = "href" in props;
+  const buttonClass = isAnchor ? "button" : "";
+
   const content = (
     <>
       <Show when={props.icon !== undefined}>
@@ -38,18 +41,14 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   const getClassList = (): Record<string, boolean> => {
     return {
-      [(props.type ?? "button") === "text"
-        ? "textButton"
-        : "href" in props
-          ? "button"
-          : ""]: true,
+      [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
       [props.class ?? ""]: props.class !== undefined,
     };
   };
 
   return (
     <Conditional
-      if={"href" in props}
+      if={isAnchor}
       then={
         <a
           classList={getClassList()}
