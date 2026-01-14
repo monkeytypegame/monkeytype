@@ -69,7 +69,7 @@ export function AboutPage(): JSXElement {
                 aria-label={data?.testsCompleted.label}
                 data-balloon-pos="up"
               >
-                <div class="label">total tests started</div>
+                <div class="label">total tests completed</div>
                 <div class="val">{data?.testsCompleted.text ?? "-"}</div>
                 <div class="valSmall">
                   {data?.testsCompleted.subText ?? "-"}
@@ -284,10 +284,8 @@ export function AboutPage(): JSXElement {
           <Button
             icon="fas fa-donate"
             onClick={() => showModal("Support")}
-            class=""
-          >
-            <div class="text">support</div>
-          </Button>
+            text="support"
+          />
         </div>
       </div>
       <div></div>
@@ -497,7 +495,6 @@ async function fetchSpeedHistogram(): Promise<
   const keys = Object.keys(data).sort(
     (a, b) => parseInt(a, 10) - parseInt(b, 10),
   );
-  // for (let i = 0; i < keys.length; i++) {
   for (const [i, key] of keys.entries()) {
     const nextKey = keys[i + 1];
     const bucket = parseInt(key, 10);
