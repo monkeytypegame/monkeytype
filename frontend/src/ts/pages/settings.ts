@@ -11,7 +11,7 @@ import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -43,7 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
 
 let settingsInitialized = false;
@@ -592,7 +592,7 @@ export async function update(
     eventKey?: ConfigEvent.ConfigEventKey;
   } = {},
 ): Promise<void> {
-  if (ActivePage.get() !== "settings") {
+  if (getActivePage() !== "settings") {
     return;
   }
 
@@ -723,7 +723,7 @@ export async function update(
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&
@@ -994,7 +994,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled) return;
-  if (ActivePage.get() === "settings" && key !== "theme") {
+  if (getActivePage() === "settings" && key !== "theme") {
     void (key === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey: key }));
@@ -1031,7 +1031,7 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageSettings");
 });
 

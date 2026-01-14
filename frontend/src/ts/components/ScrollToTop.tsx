@@ -1,17 +1,12 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import "./ScrollToTop.scss";
 
-const [visible, setVisible] = createSignal(false);
-
-export function hideScrollToTop(): void {
-  setVisible(false);
-}
-
 export function ScrollToTop(): JSXElement {
+  const [visible, setVisible] = createSignal(false);
+
   const handleScroll = (): void => {
-    const page = ActivePage.get();
-    if (page === "test") return;
+    if (getActivePage() === "test") return;
 
     const scroll = window.scrollY;
     setVisible(scroll > 100);
@@ -31,7 +26,7 @@ export function ScrollToTop(): JSXElement {
       <div
         class={`breakout button`}
         classList={{
-          invisible: !visible(),
+          invisible: getActivePage() === "test" || !visible(),
         }}
         onClick={() => {
           setVisible(false);
@@ -46,9 +41,3 @@ export function ScrollToTop(): JSXElement {
     </div>
   );
 }
-
-export const __testing = {
-  resetState: (): void => {
-    setVisible(false);
-  },
-};

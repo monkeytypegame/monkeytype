@@ -1,0 +1,17 @@
+.currentVersion {
+  display: flex;
+  #newVersionIndicator {
+    margin: 0;
+    padding: 0 0.25em;
+    font-size: unset;
+    background-color: var(--main-color);
+    border-radius: calc(var(--roundness) / 2);
+    color: var(--bg-color);
+    text-align: center;
+    cursor: pointer;
+    transition: 0.125s;
+    &.focus {
+      opacity: 0 !important;
+    }
+  }
+}

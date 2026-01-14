@@ -9,7 +9,6 @@ import * as Keymap from "../elements/keymap";
 import * as TestConfig from "../test/test-config";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
-import { hideScrollToTop } from "../components/ScrollToTop";
 
 export const page = new Page({
   id: "test",
@@ -36,6 +35,5 @@ export const page = new Page({
     });
     void TestConfig.instantUpdate();
     void Keymap.refresh();
-    hideScrollToTop();
   },
 });

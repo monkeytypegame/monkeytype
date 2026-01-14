@@ -34,7 +34,7 @@ import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import {
   PaginationQuery,
   FriendsOnlyQuery,
@@ -44,7 +44,7 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -1515,12 +1515,12 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageLeaderboards");
 });
 
 ConfigEvent.subscribe(({ key }) => {
-  if (ActivePage.get() === "leaderboards" && key === "typingSpeedUnit") {
+  if (getActivePage() === "leaderboards" && key === "typingSpeedUnit") {
     updateContent();
     fillUser();
   }

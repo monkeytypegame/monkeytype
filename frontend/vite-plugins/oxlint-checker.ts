@@ -220,8 +220,8 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
   return {
     name: "vite-plugin-oxlint-checker",
 
-    config(_, { command }) {
-      isProduction = command === "build";
+    config(_, { mode }) {
+      isProduction = mode === "production";
     },
 
     configureServer(devServer: ViteDevServer) {
@@ -245,7 +245,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
     },
 
     transformIndexHtml() {
-      if (!overlay) {
+      if (isProduction || !overlay) {
         return [];
       }
 

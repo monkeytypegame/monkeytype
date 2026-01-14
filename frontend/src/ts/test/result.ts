@@ -82,7 +82,13 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  if (result.chartData === "toolong") return;
+  if (result.chartData === "toolong") {
+    ChartController.result.getDataset("wpm").data = [];
+    ChartController.result.getDataset("raw").data = [];
+    ChartController.result.getDataset("burst").data = [];
+    ChartController.result.getDataset("error").data = [];
+    return;
+  }
 
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   ChartController.result.getScale("wpm").title.text =

@@ -25,8 +25,7 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -163,7 +162,7 @@ export function restart(options = {} as RestartOptions): void {
     options.event?.preventDefault();
     return;
   }
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
@@ -386,7 +385,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     await Funbox.activate();
   }
 
@@ -1154,19 +1153,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     } else {
       TestStats.resetIncomplete();
 
-      if (completedEvent.testDuration > 122) {
-        completedEvent.chartData = "toolong";
-        completedEvent.keySpacing = "toolong";
-        completedEvent.keyDuration = "toolong";
-      }
-
       if (!completedEvent.bailedOut) {
         const challenge = ChallengeContoller.verify(completedEvent);
         if (challenge !== null) completedEvent.challenge = challenge;
       }
 
       completedEvent.uid = user.uid;
-      completedEvent.hash = objectHash(completedEvent);
 
       savingResultPromise = saveResult(completedEvent, false);
       void savingResultPromise.then((response) => {
@@ -1230,7 +1222,20 @@ async function saveResult(
     return null;
   }
 
-  const response = await Ape.results.add({ body: { result: completedEvent } });
+  const result = structuredClone(completedEvent);
+
+  if (result.testDuration > 122) {
+    result.chartData = "toolong";
+    result.keySpacing = "toolong";
+    result.keyDuration = "toolong";
+  }
+  //@ts-expect-error just in case this is repeated and already has a hash
+  delete result.hash;
+  result.hash = objectHash(result);
+
+  console.trace();
+
+  const response = await Ape.results.add({ body: { result } });
 
   AccountButton.loading(false);
 
@@ -1240,10 +1245,10 @@ async function saveResult(
       retrySaving.canRetry = true;
       $("#retrySavingResultButton").removeClass("hidden");
       if (!isRetrying) {
-        retrySaving.completedEvent = completedEvent;
+        retrySaving.completedEvent = result;
       }
     }
-    console.log("Error saving result", completedEvent);
+    console.log("Error saving result", result);
     if (response.body.message === "Old key data format") {
       response.body.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
@@ -1265,7 +1270,7 @@ async function saveResult(
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  const dataToSave: DB.SaveLocalResultData = {};
+  const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
@@ -1275,38 +1280,38 @@ async function saveResult(
       data.xp,
       TestState.resultVisible ? data.xpBreakdown : undefined,
     );
-    dataToSave.xp = data.xp;
+    localDataToSave.xp = data.xp;
   }
 
   if (data.streak !== undefined) {
-    dataToSave.streak = data.streak;
+    localDataToSave.streak = data.streak;
   }
 
   if (data.insertedId !== undefined) {
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
-    const result = structuredClone(
-      completedEvent,
+    const snapshotResult = structuredClone(
+      result,
     ) as unknown as SnapshotResult<Mode>;
-    result._id = data.insertedId;
+    snapshotResult._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
-      result.isPb = true;
+      snapshotResult.isPb = true;
     }
-    dataToSave.result = result;
+    localDataToSave.result = snapshotResult;
   }
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
     const localPb = await DB.getLocalPB(
-      completedEvent.mode,
-      completedEvent.mode2,
-      completedEvent.punctuation,
-      completedEvent.numbers,
-      completedEvent.language,
-      completedEvent.difficulty,
-      completedEvent.lazyMode,
-      getFunbox(completedEvent.funbox),
+      result.mode,
+      result.mode2,
+      result.punctuation,
+      result.numbers,
+      result.language,
+      result.difficulty,
+      result.lazyMode,
+      getFunbox(result.funbox),
     );
 
     if (localPb !== undefined) {
@@ -1314,7 +1319,7 @@ async function saveResult(
     }
     Result.showCrown("normal");
 
-    dataToSave.isPb = true;
+    localDataToSave.isPb = true;
   } else {
     Result.showErrorCrownIfNeeded();
   }
@@ -1343,7 +1348,7 @@ async function saveResult(
   if (isRetrying) {
     Notifications.add("Result saved", 1, { important: true });
   }
-  DB.saveLocalResult(dataToSave);
+  DB.saveLocalResult(localDataToSave);
   return response;
 }
 
@@ -1512,14 +1517,14 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
 });
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
-  if (ActivePage.get() === "test") restart();
+  if (getActivePage() === "test") restart();
   // Result.showConfetti();
 });
 
 // ===============================
 
 ConfigEvent.subscribe(({ key, newValue, nosave }) => {
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (
