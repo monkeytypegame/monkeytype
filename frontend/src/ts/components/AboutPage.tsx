@@ -380,39 +380,35 @@ export function AboutPage(): JSXElement {
       </Show>
       <div></div>
       <div class="section">
+        <div id="supporters_title" class="bigtitle">
+          <i class="fas fa-hand-holding-usd"></i>
+          top supporters
+        </div>
         <AsyncContent
           resource={supporters}
           errorMessage="Failed to get supporters"
         >
           {(data) => (
-            <>
-              <div id="supporters_title" class="bigtitle">
-                <i class="fas fa-hand-holding-usd"></i>
-                top supporters
-              </div>
-              <div class="supporters">
-                <For each={data}>{(name) => <div>{name}</div>}</For>
-              </div>
-            </>
+            <div class="supporters">
+              <For each={data}>{(name) => <div>{name}</div>}</For>
+            </div>
           )}
         </AsyncContent>
       </div>
       <div></div>
       <div class="section">
+        <div id="contributors_title" class="bigtitle">
+          <i class="fas fa-code-branch"></i>
+          contributors
+        </div>
         <AsyncContent
           resource={contributors}
           errorMessage="Failed to get contributors"
         >
           {(data) => (
-            <>
-              <div id="contributors_title" class="bigtitle">
-                <i class="fas fa-code-branch"></i>
-                contributors
-              </div>
-              <div class="contributors">
-                <For each={data}>{(name) => <div>{name}</div>}</For>
-              </div>
-            </>
+            <div class="contributors">
+              <For each={data}>{(name) => <div>{name}</div>}</For>
+            </div>
           )}
         </AsyncContent>
       </div>
