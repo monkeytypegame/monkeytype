@@ -84,7 +84,8 @@ async function apply(): Promise<void> {
     return;
   }
 
-  if (value < -11 || value > 12 || (value % 1 !== 0 && value % 1 !== 0.5)) {
+  // Check if value is whole number or ends in .5 (multiply by 2 to check if result is integer)
+  if (value < -11 || value > 12 || (value * 2) % 1 !== 0) {
     Notifications.add(
       "Streak offset must be between -11 and 12. Times ending in .5 can be used for 30-minute increments.",
       0,
