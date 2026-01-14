@@ -2,7 +2,6 @@
 
 footer {
   position: relative;
-  line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
 
@@ -71,17 +70,18 @@ footer {
 
   &.focus {
     .keyTips {
-      opacity: 0 !important;
+      opacity: 0;
     }
-    .textButton {
-      opacity: 0 !important;
+    button,
+    a {
+      opacity: 0;
     }
     #newVersionIndicator {
-      opacity: 0 !important;
+      opacity: 0;
     }
     #commandLineMobileButton {
-      opacity: 0 !important;
-      pointer-events: none !important;
+      opacity: 0;
+      pointer-events: none;
     }
   }
 
