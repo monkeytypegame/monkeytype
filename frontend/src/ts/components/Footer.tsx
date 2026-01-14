@@ -2,11 +2,9 @@ import { JSXElement } from "solid-js";
 import { VersionButton } from "./VersionButton";
 import { Button } from "./Button";
 import { showModal } from "../stores/modals";
-// import * as CommandLine from "../commandline/commandline";
 import "./Footer.scss";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { ScrollToTop } from "./ScrollToTop";
-import { Anchor } from "./Anchor";
 
 export function Footer(): JSXElement {
   return (
@@ -44,42 +42,42 @@ export function Footer(): JSXElement {
             fixedWidthIcon
             onClick={() => showModal("Support")}
           />
-          <Anchor
+          <Button
             type="text"
             text="github"
             icon="fas fa-code"
             fixedWidthIcon
             href="https://github.com/monkeytypegame/monkeytype"
           />
-          <Anchor
+          <Button
             type="text"
             text="discord"
             icon="fab fa-discord"
             fixedWidthIcon
             href="https://www.discord.gg/monkeytype"
           />
-          <Anchor
+          <Button
             type="text"
             text="twitter"
             icon="fab fa-twitter"
             fixedWidthIcon
             href="https://x.com/monkeytype"
           />
-          <Anchor
+          <Button
             type="text"
             text="terms"
             icon="fas fa-file-contract"
             fixedWidthIcon
             href="/terms-of-service.html"
           />
-          <Anchor
+          <Button
             href="/security-policy.html"
             type="text"
             text="security"
             icon="fas fa-shield-alt"
             fixedWidthIcon
           />
-          <Anchor
+          <Button
             href="/privacy-policy.html"
             type="text"
             text="privacy"

@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 import { AnimatedModal } from "./AnimatedModal";
 import "./ContactModal.scss";
-import { Anchor } from "./Anchor";
+import { Button } from "./Button";
 
 export function ContactModal(): JSXElement {
   return (
@@ -18,42 +18,42 @@ export function ContactModal(): JSXElement {
         settings page.
       </div>
       <div class="buttons">
-        <Anchor
+        <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Question] "
           fixedWidthIcon
           icon="fas fa-question-circle"
           text="Question"
         />
-        <Anchor
+        <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Feedback] "
           fixedWidthIcon
           icon="fas fa-comment-dots"
           text="Feedback"
         />
-        <Anchor
+        <Button
           type="button"
           href="mailto:support@monkeytype.com?subject=[Bug] "
           fixedWidthIcon
           icon="fas fa-bug"
           text="Bug Report"
         />
-        <Anchor
+        <Button
           type="button"
           href="mailto:support@monkeytype.com?subject=[Account] "
           fixedWidthIcon
           icon="fas fa-user-circle"
           text="Account Help"
         />
-        <Anchor
+        <Button
           type="button"
           href="mailto:jack@monkeytype.com?subject=[Business] "
           fixedWidthIcon
           icon="fas fa-briefcase"
           text="Business Inquiry"
         />
-        <Anchor
+        <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Other] "
           fixedWidthIcon

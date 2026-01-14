@@ -4,7 +4,6 @@ import "./SupportModal.scss";
 import { showModal } from "../stores/modals";
 import { setCommandlineSubgroup } from "../signals/core";
 import { Button } from "./Button";
-import { Anchor } from "./Anchor";
 
 export function SupportModal(): JSXElement {
   return (
@@ -26,21 +25,21 @@ export function SupportModal(): JSXElement {
           text="Enable Ads"
           fixedWidthIcon
         />
-        <Anchor
+        <Button
           type="button"
           href="https://ko-fi.com/monkeytype"
           icon="fas fa-donate"
           text="Donate"
           fixedWidthIcon
         />
-        <Anchor
+        <Button
           type="button"
           href="https://www.patreon.com/monkeytype"
           icon="fab fa-patreon"
           text="Join Patreon"
           fixedWidthIcon
         />
-        <Anchor
+        <Button
           type="button"
           href="https://monkeytype.store"
           icon="fas fa-tshirt"

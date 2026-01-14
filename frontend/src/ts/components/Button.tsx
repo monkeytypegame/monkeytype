@@ -1,23 +1,28 @@
 import { JSXElement, Show } from "solid-js";
+import { Conditional } from "./Conditional";
 
-export function Button(props: {
+type BaseProps = {
   text?: string;
   icon?: string;
   fixedWidthIcon?: boolean;
   class?: string;
   type?: "text" | "button";
-  onClick?: () => void;
   children?: JSXElement;
-}): JSXElement {
-  return (
-    <button
-      type="button"
-      classList={{
-        [(props.type ?? "button") === "text" ? "textButton" : ""]: true,
-        [props.class ?? ""]: props.class !== undefined,
-      }}
-      onClick={() => props.onClick?.()}
-    >
+};
+
+type ButtonProps = BaseProps & {
+  onClick: () => void;
+  href?: never;
+};
+
+type AnchorProps = BaseProps & {
+  href: string;
+  onClick?: never;
+};
+
+export function Button(props: ButtonProps | AnchorProps): JSXElement {
+  const content = (
+    <>
       <Show when={props.icon !== undefined}>
         <i
           class={`icon ${props.icon}`}
@@ -28,6 +33,39 @@ export function Button(props: {
       </Show>
       <Show when={props.text !== undefined}>{props.text}</Show>
       {props.children}
-    </button>
+    </>
+  );
+
+  const getClassList = (): Record<string, boolean> => {
+    return {
+      [(props.type ?? "button") === "text" ? "textButton" : "button"]: true,
+      [props.class ?? ""]: props.class !== undefined,
+    };
+  };
+
+  return (
+    <Conditional
+      if={"href" in props}
+      then={
+        <a
+          type="button"
+          classList={getClassList()}
+          href={props.href}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {content}
+        </a>
+      }
+      else={
+        <button
+          type="button"
+          classList={getClassList()}
+          onClick={() => props.onClick?.()}
+        >
+          {content}
+        </button>
+      }
+    />
   );
 }
