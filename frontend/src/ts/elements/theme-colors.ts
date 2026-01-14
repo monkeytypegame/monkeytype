@@ -2,7 +2,6 @@ import {
   ColorName,
   getThemeColors,
   setThemeColors,
-  resetThemeColors,
   ThemeColors,
 } from "../signals/theme";
 
@@ -12,10 +11,6 @@ export async function get(color: ColorName): Promise<string> {
 
 export async function getAll(): Promise<ThemeColors> {
   return getThemeColors();
-}
-
-export function reset(): void {
-  resetThemeColors();
 }
 
 export function update(): void {
