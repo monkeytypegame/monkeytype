@@ -12,10 +12,6 @@
     display: grid;
     gap: 1rem;
 
-    .text {
-      color: var(--text-color);
-    }
-
     .subtext {
       color: var(--sub-color);
       font-size: 0.75rem;
@@ -35,12 +31,7 @@
         display: grid;
         gap: 1rem;
         text-decoration: none;
-        .text {
-          transition: 0.25s;
-        }
-        &:hover .text {
-          color: var(--bg-color);
-        }
+        transition: 0.25s;
         .icon {
           font-size: 3rem;
           line-height: 3rem;
@@ -72,13 +63,11 @@
             align-items: center;
             gap: 1.5rem;
             padding: 0;
+            text-align: left;
+            font-size: 1rem;
             .icon {
               font-size: 1.5rem;
               margin-left: 1.5rem;
-            }
-            .text {
-              text-align: left;
-              font-size: 1rem;
             }
           }
         }
