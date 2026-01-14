@@ -85,28 +85,29 @@ const presets: Record<string, FilterPreset> = {
 };
 
 async function initSelectOptions(): Promise<void> {
-  qsr("#wordFilterModal .languageInput").empty();
-  qsr("#wordFilterModal .layoutInput").empty();
-  qsr("wordFilterModal .presetInput").empty();
+  const modalEl = modal.getModal();
+  modalEl.qsr(".languageInput").empty();
+  modalEl.qsr(".layoutInput").empty();
+  modalEl.qsr(".presetInput").empty();
 
   LanguageList.forEach((language) => {
     const prettyLang = language.replace(/_/gi, " ");
-    qsr("#wordFilterModal .languageInput").appendHtml(`
+    modalEl.qsr(".languageInput").appendHtml(`
         <option value=${language}>${prettyLang}</option>
       `);
   });
 
   for (const layout of LayoutsList) {
     const prettyLayout = layout.replace(/_/gi, " ");
-    qsr("#wordFilterModal .layoutInput").appendHtml(`
+    modalEl.qsr(".layoutInput").appendHtml(`
       <option value=${layout}>${prettyLayout}</option>
     `);
   }
 
   for (const [presetId, preset] of Object.entries(presets)) {
-    qsr("#wordFilterModal .presetInput").appendHtml(
-      `<option value=${presetId}>${preset.display}</option>`,
-    );
+    modalEl
+      .qsr(".presetInput")
+      .appendHtml(`<option value=${presetId}>${preset.display}</option>`);
   }
 }
 
@@ -136,7 +137,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
           contentLocation: modal.getModal().native,
         },
       });
-      qsr("#wordFilterModal .loadingIndicator").removeClass("hidden");
+      modalEl.qs(".loadingIndicator")?.show();
       enableButtons();
     },
   });
@@ -149,10 +150,11 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 async function filter(language: Language): Promise<string[]> {
+  const modalEl = modal.getModal();
   const exactMatchOnly = exactMatchCheckbox?.isChecked() as boolean;
-  let filterin = qsr<HTMLInputElement>(
-    "#wordFilterModal .wordIncludeInput",
-  ).getValue() as string;
+  let filterin = modalEl
+    .qsr<HTMLInputElement>(".wordIncludeInput")
+    .getValue() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
   let regincl;
@@ -163,9 +165,9 @@ async function filter(language: Language): Promise<string[]> {
     regincl = new RegExp(filterin, "i");
   }
 
-  let filterout = qsr<HTMLInputElement>(
-    "#wordFilterModal .wordExcludeInput",
-  ).getValue() as string;
+  let filterout = modalEl
+    .qsr<HTMLInputElement>(".wordExcludeInput")
+    .getValue() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
   const regexcl = new RegExp(filterout, "i");
@@ -182,12 +184,12 @@ async function filter(language: Language): Promise<string[]> {
     return [];
   }
 
-  const maxLengthInput = qsr<HTMLInputElement>(
-    "#wordFilterModal .wordMaxInput",
-  ).getValue() as string;
-  const minLengthInput = qsr<HTMLInputElement>(
-    "#wordFilterModal .wordMinInput",
-  ).getValue() as string;
+  const maxLengthInput = modalEl
+    .qsr<HTMLInputElement>(".wordMaxInput")
+    .getValue() as string;
+  const minLengthInput = modalEl
+    .qsr<HTMLInputElement>(".wordMinInput")
+    .getValue() as string;
   let maxLength;
   let minLength;
   if (maxLengthInput === "") {
@@ -215,9 +217,10 @@ async function filter(language: Language): Promise<string[]> {
 }
 
 async function apply(set: boolean): Promise<void> {
-  const language = qsr<HTMLSelectElement>(
-    "#wordFilterModal .languageInput",
-  ).getValue() as Language;
+  const language = modal
+    .getModal()
+    .qsr<HTMLSelectElement>(".languageInput")
+    .getValue() as Language;
   const filteredWords = await filter(language);
 
   if (filteredWords.length === 0) {
@@ -239,9 +242,9 @@ async function apply(set: boolean): Promise<void> {
 }
 
 function setExactMatchInput(disable: boolean): void {
-  const wordExcludeInputEl = qsr<HTMLInputElement>(
-    "#wordFilterModal #wordExcludeInput",
-  );
+  const wordExcludeInputEl = modal
+    .getModal()
+    .qsr<HTMLInputElement>("#wordExcludeInput");
 
   if (disable) {
     wordExcludeInputEl.setValue("");
@@ -250,11 +253,7 @@ function setExactMatchInput(disable: boolean): void {
     wordExcludeInputEl.enable();
   }
 
-  if (disable) {
-    exactMatchCheckbox?.removeAttribute("checked");
-  } else {
-    exactMatchCheckbox?.setAttribute("checked", "true");
-  }
+  exactMatchCheckbox?.setChecked(disable);
 }
 
 function disableButtons(): void {
@@ -268,13 +267,15 @@ function enableButtons(): void {
 async function setup(): Promise<void> {
   await initSelectOptions();
 
-  qsr("#wordFilterModal button.generateButton").on("click", async () => {
-    const presetName = qsr<HTMLSelectElement>(
-      "#wordFilterModal .presetInput",
-    ).getValue() as string;
-    const layoutName = qsr<HTMLSelectElement>(
-      "#wordFilterModal .layoutInput",
-    ).getValue() as string;
+  const modalEl = modal.getModal();
+
+  modalEl.qsr("button.generateButton").on("click", async () => {
+    const presetName = modalEl
+      .qsr<HTMLSelectElement>(".presetInput")
+      .getValue() as string;
+    const layoutName = modalEl
+      .qsr<HTMLSelectElement>(".layoutInput")
+      .getValue() as string;
 
     const presetToApply = presets[presetName];
 
@@ -311,16 +312,16 @@ async function setup(): Promise<void> {
     setExactMatchInput(exactMatchCheckbox.isChecked() as boolean);
   });
 
-  qsr("#wordFilterModal button.addButton").on("click", () => {
-    qsr("#wordFilterModal .loadingIndicator").show();
+  modalEl.qsr("button.addButton").on("click", () => {
+    modalEl.qs(".loadingIndicator")?.show();
     disableButtons();
     setTimeout(() => {
       void apply(false);
     }, 0);
   });
 
-  qsr("#wordFilterModal button.setButton").on("click", () => {
-    qsr("#wordFilterModal .loadingIndicator").show();
+  modalEl.qsr("button.setButton").on("click", () => {
+    modalEl.qs(".loadingIndicator")?.show();
     disableButtons();
     setTimeout(() => {
       void apply(true);

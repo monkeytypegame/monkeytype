@@ -3,7 +3,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { qs, qsr, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
@@ -54,9 +54,8 @@ function format(duration: number): string {
 }
 
 function previewDuration(): void {
-  const input = qsr<HTMLInputElement>(
-    "#customTestDurationModal input",
-  ).getValue() as string;
+  const modalEl = modal.getModal();
+  const input = modalEl.qsr<HTMLInputElement>("input").getValue() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
@@ -68,7 +67,7 @@ function previewDuration(): void {
     formattedDuration = format(duration);
   }
 
-  qs("#customTestDurationModal .preview")?.setText(formattedDuration);
+  modalEl.qs(".preview")?.setText(formattedDuration);
 }
 
 export function show(showOptions?: ShowOptions): void {
@@ -90,9 +89,7 @@ function hide(clearChain = false): void {
 
 function apply(): void {
   const val = parseInput(
-    qsr<HTMLInputElement>(
-      "#customTestDurationModal input",
-    ).getValue() as string,
+    modal.getModal().qsr<HTMLInputElement>("input").getValue() as string,
   );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {

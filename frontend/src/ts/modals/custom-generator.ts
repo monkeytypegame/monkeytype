@@ -5,7 +5,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
-import { qs, qsr, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 type Preset = {
   display: string;
@@ -92,15 +92,14 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 }
 
 function applyPreset(): void {
-  const presetName = qs<HTMLSelectElement>(
-    "#customGeneratorModal .presetInput",
-  )?.getValue();
+  const modalEl = modal.getModal();
+  const presetName = modalEl.qs<HTMLSelectElement>(".presetInput")?.getValue();
 
   if (presetName !== undefined && presetName !== "" && presets[presetName]) {
     const preset = presets[presetName];
-    qsr<HTMLInputElement>("#customGeneratorModal .characterInput").setValue(
-      preset.characters.join(" "),
-    );
+    modalEl
+      .qsr<HTMLInputElement>(".characterInput")
+      .setValue(preset.characters.join(" "));
   }
 }
 
@@ -111,27 +110,22 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 function generateWords(): string[] {
-  const characterInput = qs<HTMLInputElement>(
-    "#customGeneratorModal .characterInput",
-  )?.getValue();
+  const modalEl = modal.getModal();
+  const characterInput = modalEl
+    .qs<HTMLInputElement>(".characterInput")
+    ?.getValue();
 
   const minLength =
     parseInt(
-      qs<HTMLInputElement>(
-        "#customGeneratorModal .minLengthInput",
-      )?.getValue() as string,
+      modalEl.qs<HTMLInputElement>(".minLengthInput")?.getValue() as string,
     ) || 2;
   const maxLength =
     parseInt(
-      qs<HTMLInputElement>(
-        "#customGeneratorModal .maxLengthInput",
-      )?.getValue() as string,
+      modalEl.qs<HTMLInputElement>(".maxLengthInput")?.getValue() as string,
     ) || 5;
   const wordCount =
     parseInt(
-      qs<HTMLInputElement>(
-        "#customGeneratorModal .wordCountInput",
-      )?.getValue() as string,
+      modalEl.qs<HTMLInputElement>(".wordCountInput")?.getValue() as string,
     ) || 100;
 
   if (characterInput === undefined || characterInput.trim() === "") {

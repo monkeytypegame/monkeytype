@@ -68,7 +68,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter(qsr("#userReportModal .comment"), 250);
+  new CharacterCounter(modal.getModal().qsr(".comment"), 250);
 }
 
 async function hide(): Promise<void> {

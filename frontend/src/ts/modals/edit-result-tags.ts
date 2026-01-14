@@ -7,7 +7,6 @@ import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
-import { qsa } from "../utils/dom";
 
 type State = {
   resultId: string;
@@ -91,7 +90,8 @@ function appendButtons(): void {
 }
 
 function updateActiveButtons(): void {
-  for (const button of qsa("#editResultTagsModal .modal .buttons button")) {
+  const buttons = modal.getModal().qsa(".buttons button");
+  for (const button of buttons) {
     const tagid: string = button.getAttribute("data-tag-id") ?? "";
     if (state.tags.includes(tagid)) {
       button.addClass("active");

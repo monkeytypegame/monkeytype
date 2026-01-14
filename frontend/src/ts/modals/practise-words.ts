@@ -1,7 +1,7 @@
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
-import { qs, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 type State = {
   missed: "off" | "words" | "biwords";
@@ -13,23 +13,22 @@ const state: State = {
   slow: false,
 };
 
-const practiseModal = "#practiseWordsModal .modal";
-
 function updateUI(): void {
-  qs(`${practiseModal} .group[data-id="missed"] button`)?.removeClass("active");
-  qs(
-    `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`,
-  )?.addClass("active");
+  const modalEl = modal.getModal();
+  modalEl.qs(`.group[data-id="missed"] button`)?.removeClass("active");
+  modalEl
+    .qs(`.group[data-id="missed"] button[value="${state.missed}"]`)
+    ?.addClass("active");
 
-  qs(`${practiseModal} .group[data-id="slow"] button`)?.removeClass("active");
-  qs(
-    `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`,
-  )?.addClass("active");
+  modalEl.qs(`.group[data-id="slow"] button`)?.removeClass("active");
+  modalEl
+    .qs(`.group[data-id="slow"] button[value="${state.slow}"]`)
+    ?.addClass("active");
 
   if (state.missed === "off" && !state.slow) {
-    qs(`${practiseModal} .start`)?.disable();
+    modalEl.qs(`.start`)?.disable();
   } else {
-    qs(`${practiseModal} .start`)?.enable();
+    modalEl.qs(`.start`)?.enable();
   }
 }
 

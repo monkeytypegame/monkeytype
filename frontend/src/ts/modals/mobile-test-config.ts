@@ -10,11 +10,11 @@ import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as ShareTestSettingsPopup from "./share-test-settings";
-import { qsr, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 function update(): void {
-  const el = qsr("#mobileTestConfigModal");
-  el.qs("button")?.removeClass("active");
+  const el = modal.getModal();
+  el.qsa("button").removeClass("active");
 
   el.qs(`.modeGroup button[data-mode='${Config.mode}']`)?.addClass("active");
   el.qs(".timeGroup")?.hide();

@@ -6,17 +6,15 @@ import { qsr } from "../utils/dom";
 
 export function show(): void {
   void modal.show({
-    beforeAnimation: async () => {
-      qsr("#versionHistoryModal .modal").setHtml(`
+    beforeAnimation: async (modalEl) => {
+      modalEl.setHtml(`
     <div class="preloader">
       <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-    </div
+    </div>
   `);
       getReleasesFromGitHub()
         .then((releases) => {
-          qsr("#versionHistoryModal .modal").setHtml(
-            `<div class="releases"></div`,
-          );
+          modalEl.setHtml(`<div class="releases"></div>`);
           releases.forEach((release) => {
             if (!release.draft && !release.prerelease) {
               let body = release.body;
@@ -35,7 +33,7 @@ export function show(): void {
                 '<a href="$2" target="_blank">$1</a>',
               );
 
-              qsr("#versionHistoryModal .modal .releases").appendHtml(`
+              modalEl.qsr(".releases").appendHtml(`
         <div class="release">
           <div class="title">${release.name}</div>
           <div class="date">${format(
@@ -50,11 +48,9 @@ export function show(): void {
         })
         .catch((e: unknown) => {
           const msg = createErrorMessage(e, "Failed to fetch version history");
-          qsr("#versionHistoryModal .modal").setHtml(
-            `<div class="releases">${msg}</div`,
-          );
+          modalEl.setHtml(`<div class="releases">${msg}</div>`);
         });
-      qsr("#newVersionIndicator").addClass("hidden");
+      qsr("#newVersionIndicator").hide();
     },
   });
 }

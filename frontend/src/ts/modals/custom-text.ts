@@ -13,9 +13,7 @@ import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CustomTextMode } from "@monkeytype/schemas/util";
-import { qs, qsa, ElementWithUtils } from "../utils/dom";
-
-const popup = "#customTextModal .modal";
+import { qs, ElementWithUtils } from "../utils/dom";
 
 type State = {
   textarea: string;
@@ -55,114 +53,127 @@ const state: State = {
 };
 
 function updateUI(): void {
-  qsa(`${popup} .inputs .group[data-id="mode"] button`)?.removeClass("active");
-  qs(
-    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`,
-  )?.addClass("active");
+  const modalEl = modal.getModal();
+  modalEl.qsa(`.inputs .group[data-id="mode"] button`)?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`,
+    )
+    ?.addClass("active");
 
-  qs(`${popup} .inputs .group[data-id="limit"] input.words`)?.hide();
-  qs(`${popup} .inputs .group[data-id="limit"] input.sections`)?.hide();
+  modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.hide();
+  modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.hide();
 
-  qs<HTMLInputElement>(
-    `${popup} .inputs .group[data-id="limit"] input.words`,
-  )?.setValue(state.customTextLimits.word);
-  qs<HTMLInputElement>(
-    `${popup} .inputs .group[data-id="limit"] input.time`,
-  )?.setValue(state.customTextLimits.time);
-  qs<HTMLInputElement>(
-    `${popup} .inputs .group[data-id="limit"] input.sections`,
-  )?.setValue(state.customTextLimits.section);
+  modalEl
+    .qs<HTMLInputElement>(`.inputs .group[data-id="limit"] input.words`)
+    ?.setValue(state.customTextLimits.word);
+  modalEl
+    .qs<HTMLInputElement>(`.inputs .group[data-id="limit"] input.time`)
+    ?.setValue(state.customTextLimits.time);
+  modalEl
+    .qs<HTMLInputElement>(`.inputs .group[data-id="limit"] input.sections`)
+    ?.setValue(state.customTextLimits.section);
   if (state.customTextLimits.word !== "") {
-    qs(`${popup} .inputs .group[data-id="limit"] input.words`)?.show();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.show();
   }
   if (state.customTextLimits.section !== "") {
-    qs(`${popup} .inputs .group[data-id="limit"] input.sections`)?.show();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.show();
   }
 
   if (state.customTextPipeDelimiter) {
-    qsa(`${popup} .inputs .group[data-id="limit"] input.sections`)?.show();
-    qsa(`${popup} .inputs .group[data-id="limit"] input.words`)?.hide();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.show();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.hide();
   } else {
-    qsa(`${popup} .inputs .group[data-id="limit"] input.words`)?.show();
-    qsa(`${popup} .inputs .group[data-id="limit"] input.sections`)?.hide();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.show();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.hide();
   }
 
   if (state.customTextMode === "simple") {
-    qs(`${popup} .inputs .group[data-id="limit"]`)?.addClass("disabled");
-    qsa<HTMLInputElement>(
-      `${popup} .inputs .group[data-id="limit"] input`,
-    )?.setValue("");
-    qsa(`${popup} .inputs .group[data-id="limit"] input`)?.disable();
+    modalEl.qs(`.inputs .group[data-id="limit"]`)?.addClass("disabled");
+    modalEl
+      .qsa<HTMLInputElement>(`.inputs .group[data-id="limit"] input`)
+      ?.setValue("");
+    modalEl.qsa(`.inputs .group[data-id="limit"] input`)?.disable();
   } else {
-    qs(`${popup} .inputs .group[data-id="limit"]`)?.removeClass("disabled");
-    qsa(`${popup} .inputs .group[data-id="limit"] input`)?.enable();
+    modalEl.qs(`.inputs .group[data-id="limit"]`)?.removeClass("disabled");
+    modalEl.qsa(`.inputs .group[data-id="limit"] input`)?.enable();
   }
 
-  qsa(`${popup} .inputs .group[data-id="fancy"] button`)?.removeClass("active");
-  qs(
-    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`,
-  )?.addClass("active");
+  modalEl.qsa(`.inputs .group[data-id="fancy"] button`)?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`,
+    )
+    ?.addClass("active");
 
-  qsa(`${popup} .inputs .group[data-id="control"] button`)?.removeClass(
-    "active",
-  );
-  qs(
-    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`,
-  )?.addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="control"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`,
+    )
+    ?.addClass("active");
 
-  qsa(`${popup} .inputs .group[data-id="zeroWidth"] button`)?.removeClass(
-    "active",
-  );
-  qs(
-    `${popup} .inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`,
-  )?.addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="zeroWidth"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`,
+    )
+    ?.addClass("active");
 
-  qsa(`${popup} .inputs .group[data-id="delimiter"] button`)?.removeClass(
-    "active",
-  );
-  qs(
-    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`,
-  )?.addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="delimiter"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`,
+    )
+    ?.addClass("active");
 
-  qsa(`${popup} .inputs .group[data-id="newlines"] button`)?.removeClass(
-    "active",
-  );
-  qs(
-    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`,
-  )?.addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="newlines"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`,
+    )
+    ?.addClass("active");
 
-  qs<HTMLTextAreaElement>(`${popup} textarea`)?.setValue(state.textarea);
+  modalEl.qs<HTMLTextAreaElement>(`textarea`)?.setValue(state.textarea);
 
   if (state.longCustomTextWarning) {
-    qs(`${popup} .longCustomTextWarning`)?.show();
-    qs<HTMLInputElement>(`${popup} .randomWordsCheckbox input`)?.setChecked(
-      false,
-    );
-    qs<HTMLInputElement>(`${popup} .delimiterCheck input`)?.setChecked(false);
-    qs<HTMLInputElement>(`${popup} .typographyCheck`)?.setChecked(true);
-    qs<HTMLInputElement>(`${popup} .replaceNewlineWithSpace input`)?.setChecked(
-      false,
-    );
-    qs(`${popup} .inputs`)?.addClass("disabled");
+    modalEl.qs(`.longCustomTextWarning`)?.show();
+    modalEl
+      .qs<HTMLInputElement>(`.randomWordsCheckbox input`)
+      ?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.delimiterCheck input`)?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.typographyCheck`)?.setChecked(true);
+    modalEl
+      .qs<HTMLInputElement>(`.replaceNewlineWithSpace input`)
+      ?.setChecked(false);
+    modalEl.qs(`.inputs`)?.addClass("disabled");
   } else {
-    qs(`${popup} .longCustomTextWarning`)?.hide();
-    qs(`${popup} .inputs`)?.removeClass("disabled");
+    modalEl.qs(`.longCustomTextWarning`)?.hide();
+    modalEl.qs(`.inputs`)?.removeClass("disabled");
   }
 
   if (state.challengeWarning) {
-    qs(`${popup} .challengeWarning`)?.show();
-    qs<HTMLInputElement>(`${popup} .randomWordsCheckbox input`)?.setChecked(
-      false,
-    );
-    qs<HTMLInputElement>(`${popup} .delimiterCheck input`)?.setChecked(false);
-    qs<HTMLInputElement>(`${popup} .typographyCheck`)?.setChecked(true);
-    qs<HTMLInputElement>(`${popup} .replaceNewlineWithSpace input`)?.setChecked(
-      false,
-    );
-    qs(`${popup} .inputs`)?.addClass("disabled");
+    modalEl.qs(`.challengeWarning`)?.show();
+    modalEl
+      .qs<HTMLInputElement>(`.randomWordsCheckbox input`)
+      ?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.delimiterCheck input`)?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.typographyCheck`)?.setChecked(true);
+    modalEl
+      .qs<HTMLInputElement>(`.replaceNewlineWithSpace input`)
+      ?.setChecked(false);
+    modalEl.qs(`.inputs`)?.addClass("disabled");
   } else {
-    qs(`${popup} .challengeWarning`)?.hide();
-    qs(`${popup} .inputs`)?.removeClass("disabled");
+    modalEl.qs(`.challengeWarning`)?.hide();
+    modalEl.qs(`.inputs`)?.removeClass("disabled");
   }
 }
 
@@ -219,7 +230,7 @@ async function beforeAnimation(
 
 async function afterAnimation(): Promise<void> {
   if (!state.challengeWarning && !state.longCustomTextWarning) {
-    qs(`${popup} textarea`)?.focus();
+    modal.getModal().qs(`textarea`)?.focus();
   }
 }
 
@@ -522,7 +533,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       return;
     }
     if (e.code === "Enter" && e.ctrlKey) {
-      qs(`${popup} .button.apply`)?.dispatch("click");
+      modal.getModal().qs(`.button.apply`)?.dispatch("click");
     }
     if (
       CustomTextState.isCustomTextLong() &&

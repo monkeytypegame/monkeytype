@@ -22,7 +22,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
-import { qs, qsr, ElementWithUtils } from "../utils/dom";
+import { qsr, ElementWithUtils } from "../utils/dom";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
@@ -53,9 +53,9 @@ function getSearchService<T>(
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
-  const quoteLengthDropdown = qs<HTMLSelectElement>(
-    "#quoteSearchModal .quoteLengthFilter",
-  );
+  const quoteLengthDropdown = modal
+    .getModal()
+    .qs<HTMLSelectElement>(".quoteLengthFilter");
   const selectedOptions = quoteLengthDropdown
     ? Array.from(quoteLengthDropdown.native.selectedOptions)
     : [];
@@ -300,16 +300,17 @@ async function updateResults(searchText: string): Promise<void> {
   }
 
   if (quotesToShow.length === 0) {
-    qsr("#quoteSearchModal  .pageInfo").setHtml("No search results");
+    modal.getModal().qsr(".pageInfo").setHtml("No search results");
     return;
   }
 
   const startIndex = (currentPageNumber - 1) * pageSize;
   const endIndex = Math.min(currentPageNumber * pageSize, quotesToShow.length);
 
-  qsr("#quoteSearchModal  .pageInfo").setHtml(
-    `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`,
-  );
+  modal
+    .getModal()
+    .qsr(".pageInfo")
+    .setHtml(`${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`);
 
   quotesToShow.slice(startIndex, endIndex).forEach((quote) => {
     const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
@@ -365,13 +366,13 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       if (!isAuthenticated()) {
-        qsr("#quoteSearchModal .goToQuoteSubmit").hide();
-        qsr("#quoteSearchModal .toggleFavorites").hide();
+        modalEl.qsr(".goToQuoteSubmit").hide();
+        modalEl.qsr(".toggleFavorites").hide();
       } else {
-        qsr("#quoteSearchModal .goToQuoteSubmit").show();
-        qsr("#quoteSearchModal .toggleFavorites").show();
+        modalEl.qsr(".goToQuoteSubmit").show();
+        modalEl.qsr(".toggleFavorites").show();
       }
 
       const quoteMod = DB.getSnapshot()?.quoteMod;
@@ -380,9 +381,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         (quoteMod === true || (quoteMod as string) !== "");
 
       if (isQuoteMod) {
-        qsr("#quoteSearchModal .goToQuoteApprove").show();
+        modalEl.qsr(".goToQuoteApprove").show();
       } else {
-        qsr("#quoteSearchModal .goToQuoteApprove").hide();
+        modalEl.qsr(".goToQuoteApprove").hide();
       }
 
       lengthSelect = new SlimSelect({
@@ -470,9 +471,9 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-  const $button = qsr(
-    `#quoteSearchModal .searchResult[data-quote-id=${quoteId}] .textButton.favorite i`,
-  );
+  const $button = modal
+    .getModal()
+    .qsr(`.searchResult[data-quote-id=${quoteId}] .textButton.favorite i`);
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 

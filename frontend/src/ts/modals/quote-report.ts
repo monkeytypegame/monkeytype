@@ -36,9 +36,9 @@ export async function show(
   void modal.show({
     mode: "dialog",
     ...showOptions,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       CaptchaController.render(
-        document.querySelector("#quoteReportModal .g-recaptcha") as HTMLElement,
+        modalEl.qsr(".g-recaptcha").native,
         "quoteReportModal",
       );
 
@@ -50,13 +50,9 @@ export async function show(
         return quote.id === quoteId;
       });
 
-      qsr("#quoteReportModal .quote").setText(
-        state.quoteToReport?.text as string,
-      );
-      qsr<HTMLSelectElement>("#quoteReportModal .reason").setValue(
-        "Grammatical error",
-      );
-      qsr<HTMLTextAreaElement>("#quoteReportModal .comment").setValue("");
+      modalEl.qsr(".quote").setText(state.quoteToReport?.text as string);
+      modalEl.qsr<HTMLSelectElement>(".reason").setValue("Grammatical error");
+      modalEl.qsr<HTMLTextAreaElement>(".comment").setValue("");
 
       state.reasonSelect = new SlimSelect({
         select: "#quoteReportModal .reason",
@@ -65,7 +61,7 @@ export async function show(
         },
       });
 
-      new CharacterCounter(qsr("#quoteReportModal .comment"), 250);
+      new CharacterCounter(modalEl.qsr(".comment"), 250);
     },
   });
 }

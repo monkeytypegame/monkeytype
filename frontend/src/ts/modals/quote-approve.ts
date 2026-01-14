@@ -10,7 +10,8 @@ import { qsr, createElementWithUtils, ElementWithUtils } from "../utils/dom";
 let quotes: Quote[] = [];
 
 function updateList(): void {
-  qsr("#quoteApproveModal .quotes").empty();
+  const modalEl = modal.getModal();
+  modalEl.qsr(".quotes").empty();
   quotes.forEach((quote, index) => {
     const quoteEl = createElementWithUtils("div");
     quoteEl.setHtml(`
@@ -40,16 +41,16 @@ function updateList(): void {
       </div>
     `);
 
-    qsr("#quoteApproveModal .quotes").append(quoteEl);
+    modalEl.qsr(".quotes").append(quoteEl);
     quoteEl.qsr(".source").on("input", () => {
-      qsr(`#quoteApproveModal .quote[data-id="${index}"] .undo`).enable();
-      qsr(`#quoteApproveModal .quote[data-id="${index}"] .approve`).hide();
-      qsr(`#quoteApproveModal .quote[data-id="${index}"] .edit`).show();
+      modalEl.qsr(`.quote[data-id="${index}"] .undo`).enable();
+      modalEl.qsr(`.quote[data-id="${index}"] .approve`).hide();
+      modalEl.qsr(`.quote[data-id="${index}"] .edit`).show();
     });
     quoteEl.qsr(".text").on("input", () => {
-      qsr(`#quoteApproveModal .quote[data-id="${index}"] .undo`).enable();
-      qsr(`#quoteApproveModal .quote[data-id="${index}"] .approve`).hide();
-      qsr(`#quoteApproveModal .quote[data-id="${index}"] .edit`).show();
+      modalEl.qsr(`.quote[data-id="${index}"] .undo`).enable();
+      modalEl.qsr(`.quote[data-id="${index}"] .approve`).hide();
+      modalEl.qsr(`.quote[data-id="${index}"] .edit`).show();
       updateQuoteLength(index);
     });
     quoteEl.qsr(".undo").on("click", () => {

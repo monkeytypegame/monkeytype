@@ -31,17 +31,19 @@ const validatedInput = new ValidatedHtmlInputElement(
           "Name can only contain letters, numbers, spaces, underscores and hyphens",
       }),
     isValid: async (value) => {
-      const checkbox = qsr<HTMLInputElement>(
-        "#saveCustomTextModal .isLongText",
-      ).isChecked() as boolean;
+      const checkbox = modal
+        .getModal()
+        .qsr<HTMLInputElement>(".isLongText")
+        .isChecked() as boolean;
       const names = CustomText.getCustomTextNames(checkbox);
       return !names.includes(value) ? true : "Duplicate name";
     },
     callback: (result) => {
+      const modalEl = modal.getModal();
       if (result.status === "success") {
-        qsr("#saveCustomTextModal button.save").enable();
+        modalEl.qsr("button.save").enable();
       } else {
-        qsr("#saveCustomTextModal button.save").disable();
+        modalEl.qsr("button.save").disable();
       }
     },
   },
@@ -53,20 +55,19 @@ export async function show(options: ShowOptions<IncomingData>): Promise<void> {
     ...options,
     beforeAnimation: async (modalEl, modalChainData) => {
       state.textToSave = modalChainData?.text ?? [];
-      qsr<HTMLInputElement>("#saveCustomTextModal .textName").setValue("");
-      qsr("#saveCustomTextModal .isLongText").removeAttribute("checked");
-      qsr("#saveCustomTextModal button.save").disable();
+      modalEl.qsr<HTMLInputElement>(".textName").setValue("");
+      modalEl.qsr<HTMLInputElement>(".isLongText").setChecked(false);
+      modalEl.qsr("button.save").disable();
     },
   });
 }
 
 function save(): boolean {
-  const name = qsr<HTMLInputElement>(
-    "#saveCustomTextModal .textName",
-  ).getValue() as string;
-  const checkbox = qsr<HTMLInputElement>(
-    "#saveCustomTextModal .isLongText",
-  ).isChecked() as boolean;
+  const modalEl = modal.getModal();
+  const name = modalEl.qsr<HTMLInputElement>(".textName").getValue() as string;
+  const checkbox = modalEl
+    .qsr<HTMLInputElement>(".isLongText")
+    .isChecked() as boolean;
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);
