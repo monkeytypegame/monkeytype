@@ -93,7 +93,3 @@ export function Footer(): JSXElement {
     </footer>
   );
 }
-
-if (import.meta.hot) {
-  import.meta.hot.accept();
-}
