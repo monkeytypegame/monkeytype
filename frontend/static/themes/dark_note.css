@@ -20,6 +20,7 @@
   --current-color: var(--main-color);
 }
 
+button:not(.accountButtonAndMenu *),
 .button:not(.accountButtonAndMenu *),
 #testConfig .row {
   --roundness: 5em; /* overwriting default roundness to make it softer */
