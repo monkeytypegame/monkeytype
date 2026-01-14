@@ -42,6 +42,8 @@ type InputModeParams = {
   validation?: ValidationResult;
 };
 
+const MODAL_STORE_ID = "Commandline";
+
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
@@ -196,11 +198,11 @@ function hide(clearModalChain = false): void {
   isAnimating = true;
 
   // If managed by store, notify the store
-  if (isModalOpen("Commandline")) {
+  if (isModalOpen(MODAL_STORE_ID)) {
     if (clearModalChain) {
-      storeClearChain("Commandline");
+      storeClearChain(MODAL_STORE_ID);
     } else {
-      storeHideModal("Commandline");
+      storeHideModal(MODAL_STORE_ID);
     }
     // Cleanup will happen in the effect when visibility changes
   } else {
@@ -845,7 +847,7 @@ function createValidationHandler(command: Command): void {
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
-  storeId: "Commandline",
+  storeId: MODAL_STORE_ID,
   customEscapeHandler: (): void => {
     //
   },
@@ -994,7 +996,7 @@ const modal = new AnimatedModal({
 let lastVisibility: { visible: boolean; chained: boolean } | null = null;
 
 createEffect(() => {
-  const visibility = getModalVisibility("Commandline");
+  const visibility = getModalVisibility(MODAL_STORE_ID);
   const isVisible = visibility?.visible ?? false;
   const wasVisible = lastVisibility?.visible ?? false;
 
@@ -1023,7 +1025,7 @@ createEffect(() => {
 
           // After animation completes, notify store to show pending modal
           if (visibility?.chained) {
-            storeHideModal("Commandline");
+            storeHideModal(MODAL_STORE_ID);
           }
         },
       });
