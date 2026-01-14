@@ -7,7 +7,6 @@ import {
 } from "../signals/theme";
 
 export async function get(color: ColorName): Promise<string> {
-  if (!getThemeColors()[color]) update();
   return getThemeColors()[color];
 }
 
