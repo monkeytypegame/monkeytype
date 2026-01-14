@@ -45,6 +45,8 @@ challengesPromise
     );
   });
 
+const adsCommands = buildCommands("ads");
+
 export const commands: CommandsSubgroup = {
   title: "",
   list: [
@@ -212,7 +214,7 @@ export const commands: CommandsSubgroup = {
     ),
 
     //danger zone
-    ...buildCommands("ads"),
+    ...adsCommands,
 
     //other
     ...LoadChallengeCommands,
@@ -375,6 +377,7 @@ const lists = {
   funbox: FunboxCommands[0]?.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
+  ads: adsCommands[0]?.subgroup,
 };
 
 const subgroupByConfigKey = Object.fromEntries(

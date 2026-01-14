@@ -9,3 +9,15 @@ export const [getVersion, setVersion] = createSignal<{
   text: "",
   isNew: false,
 });
+
+export const [getThemeIndicator, setThemeIndicator] = createSignal<{
+  text: string;
+  isFavorite: boolean;
+}>({
+  text: "unknown",
+  isFavorite: false,
+});
+
+export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
+  "ads" | null
+>(null);

@@ -1,14 +1,13 @@
 import { render } from "solid-js/web";
 import { qsa } from "../utils/dom";
-import { ScrollToTop } from "./ScrollToTop";
-import { VersionButton } from "./VersionButton";
-import { VersionHistoryModal } from "./VersionHistoryModal";
+
 import { JSXElement } from "solid-js";
+import { Footer } from "./Footer";
+import { Modals } from "./Modals";
 
 const components: Record<string, () => JSXElement> = {
-  VersionButton: VersionButton,
-  ScrollToTop: ScrollToTop,
-  VersionHistoryModal: VersionHistoryModal,
+  Footer: () => <Footer />,
+  Modals: () => <Modals />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

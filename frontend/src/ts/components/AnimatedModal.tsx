@@ -1,7 +1,12 @@
 import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
 import { applyReducedMotion } from "../utils/misc";
-import { useModalChain } from "./ModalChainContext";
 import { useRefWithUtils } from "../hooks/useRefWithUtils";
+import {
+  hideModal as storeHideModal,
+  ModalId,
+  isModalOpen,
+  isModalChained,
+} from "../stores/modals";
 
 type AnimationParams = {
   opacity?: number | [number, number];
@@ -15,9 +20,7 @@ type AnimationConfig = {
 };
 
 type AnimatedModalProps = ParentProps<{
-  id: string;
-  isOpen: boolean;
-  onClose: () => void;
+  id: ModalId;
   mode?: "modal" | "dialog";
   animationMode?: "none" | "both" | "modalOnly";
   customAnimations?: {
@@ -32,12 +35,6 @@ type AnimatedModalProps = ParentProps<{
   onEscape?: (e: KeyboardEvent) => void;
   onBackdropClick?: (e: MouseEvent) => void;
 
-  // Chain-related props
-  useChain?: boolean;
-  modalChain?: string;
-  clearChainOnClose?: boolean;
-  showOptionsWhenReturning?: Record<string, unknown>;
-
   class?: string;
 }>;
 
@@ -48,44 +45,24 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [dialogRef, dialogEl] = useRefWithUtils<HTMLDialogElement>();
   const [modalRef, modalEl] = useRefWithUtils<HTMLDivElement>();
-  // oxlint-disable-next-line solid/reactivity
-  const modalChain = props.useChain ? useModalChain() : undefined;
 
-  // Register this modal in the chain
-  createEffect(() => {
-    if (props.useChain && modalChain && props.isOpen) {
-      modalChain.pushModal({
-        id: props.id,
-        show: showModal,
-        hide: hideModal,
-        showOptions: props.showOptionsWhenReturning,
-      });
-    }
-  });
+  const visibility = (): boolean => isModalOpen(props.id);
 
   // Handle open/close with animations
   createEffect(() => {
-    if (props.isOpen) {
-      void showModal();
+    const isChained = isModalChained(props.id);
+
+    if (visibility()) {
+      void showModal(isChained);
     } else {
-      void hideModal();
+      void hideModal(isChained);
     }
   });
 
-  async function showModal(): Promise<void> {
+  async function showModal(isChained: boolean): Promise<void> {
     if (dialogEl() === undefined || modalEl() === undefined) return;
 
     await props.beforeShow?.();
-
-    // If chaining from another modal, hide it first
-    const previousModal = modalChain?.getPreviousModal();
-    const isChained =
-      props.modalChain !== undefined ||
-      (previousModal && previousModal.id !== props.id);
-
-    if (isChained && previousModal) {
-      await previousModal.hide();
-    }
 
     // Open the dialog
     dialogEl()?.removeClass("hidden");
@@ -167,21 +144,19 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     }
   }
 
-  async function hideModal(): Promise<void> {
+  async function hideModal(isChained: boolean): Promise<void> {
     // Guard: only hide if visible and not already animating
     if (dialogEl() === undefined || modalEl() === undefined) return;
 
     await props.beforeHide?.();
 
-    const hasChain = modalChain && modalChain.getChainLength() > 0;
-
     const modalAnimDuration = applyReducedMotion(
       (props.customAnimations?.hide?.modal?.duration ??
         DEFAULT_ANIMATION_DURATION) *
-        (hasChain ? MODAL_ONLY_ANIMATION_MULTIPLIER : 1),
+        (isChained ? MODAL_ONLY_ANIMATION_MULTIPLIER : 1),
     );
 
-    const animMode = hasChain ? "modalOnly" : (props.animationMode ?? "both");
+    const animMode = isChained ? "modalOnly" : (props.animationMode ?? "both");
 
     if (animMode === "both" || animMode === "none") {
       const wrapperDuration = applyReducedMotion(
@@ -227,23 +202,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   async function handleAfterHide(): Promise<void> {
     await props.afterHide?.();
-
-    // Clear chain if requested
-    if (props.clearChainOnClose && modalChain) {
-      modalChain.clearChain();
-    }
-
-    // Show previous modal in chain
-    const shouldShowPrevious = modalChain && modalChain.getChainLength() > 0;
-    if (shouldShowPrevious) {
-      const previous = modalChain.popModal();
-      if (previous && previous.id !== props.id) {
-        await previous.show();
-        return; // Don't call onClose when chaining
-      }
-    }
-
-    props.onClose();
+    storeHideModal(props.id);
   }
 
   async function handleAfterShow(): Promise<void> {
@@ -266,13 +225,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   }
 
   const handleKeyDown = (e: KeyboardEvent): void => {
-    if (e.key === "Escape" && props.isOpen) {
+    if (e.key === "Escape" && visibility()) {
       e.preventDefault();
       e.stopPropagation();
       if (props.onEscape) {
         props.onEscape(e);
       } else {
-        void hideModal();
+        storeHideModal(props.id);
       }
     }
   };
@@ -282,7 +241,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       if (props.onBackdropClick) {
         props.onBackdropClick(e);
       } else {
-        void hideModal();
+        storeHideModal(props.id);
       }
     }
   };
@@ -291,15 +250,11 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     if (dialogEl()?.native.open) {
       dialogEl()?.native.close();
     }
-    // Remove from chain to prevent stale references
-    if (modalChain) {
-      modalChain.popModal();
-    }
   });
 
   return (
     <dialog
-      id={props.id}
+      id={`${props.id as string}Modal`}
       ref={dialogRef}
       class={`modalWrapper hidden ${props.class ?? ""}`}
       onKeyDown={handleKeyDown}

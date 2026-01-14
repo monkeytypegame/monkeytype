@@ -217,18 +217,6 @@
       grid-template-areas: "title title" "t15 t60";
     }
   }
-  footer {
-    .leftright {
-      .left {
-        display: grid;
-        grid-template-columns: repeat(4, auto);
-      }
-      .right {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-    }
-  }
   #customTextModal {
     .modal {
       grid-template-areas:
@@ -239,13 +227,6 @@
         "ok ok";
       grid-template-columns: 1fr 1fr;
       .inputs {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  }
-  #supportModal {
-    .modal {
-      .buttons {
         grid-template-columns: 1fr 1fr;
       }
     }
