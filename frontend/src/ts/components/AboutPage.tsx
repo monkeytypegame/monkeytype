@@ -3,7 +3,7 @@ import "./AboutPage.scss";
 import { Button } from "./Button";
 import { showModal } from "../stores/modals";
 import AsyncContent from "./AsyncContent";
-import { getActivePage } from "../signals/core";
+import { getActivePage, getAds } from "../signals/core";
 import { getContributorsList, getSupportersList } from "../utils/json-data";
 import Ape from "../ape";
 import { intervalToDuration } from "date-fns";
@@ -229,18 +229,20 @@ export function AboutPage(): JSXElement {
           </dd>
         </dl>
       </div>
-      <div id="ad-about-1-wrapper" class="ad full-width advertisement ad-h">
-        <div class="icon">
-          <i class="fas fa-ad"></i>
+      <Show when={getAds() === "sellout"}>
+        <div id="ad-about-1-wrapper" class="ad full-width advertisement ad-h">
+          <div class="icon">
+            <i class="fas fa-ad"></i>
+          </div>
+          <div id="ad-about-1"></div>
         </div>
-        <div id="ad-about-1"></div>
-      </div>
-      <div id="ad-about-1-small-wrapper" class="ad advertisement ad-h-s">
-        <div class="icon small">
-          <i class="fas fa-ad"></i>
+        <div id="ad-about-1-small-wrapper" class="ad advertisement ad-h-s">
+          <div class="icon small">
+            <i class="fas fa-ad"></i>
+          </div>
+          <div id="ad-about-1-small"></div>
         </div>
-        <div id="ad-about-1-small"></div>
-      </div>
+      </Show>
       <div class="section">
         <div class="title">
           <i class="fas fa-chart-area"></i>
@@ -358,18 +360,20 @@ export function AboutPage(): JSXElement {
           themes and more
         </p>
       </div>
-      <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">
-        <div class="icon">
-          <i class="fas fa-ad"></i>
+      <Show when={getAds() === "sellout"}>
+        <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">
+          <div class="icon">
+            <i class="fas fa-ad"></i>
+          </div>
+          <div id="ad-about-2"></div>
         </div>
-        <div id="ad-about-2"></div>
-      </div>
-      <div id="ad-about-2-small-wrapper" class="ad advertisement ad-h-s">
-        <div class="icon small">
-          <i class="fas fa-ad"></i>
+        <div id="ad-about-2-small-wrapper" class="ad advertisement ad-h-s">
+          <div class="icon small">
+            <i class="fas fa-ad"></i>
+          </div>
+          <div id="ad-about-2-small"></div>
         </div>
-        <div id="ad-about-2-small"></div>
-      </div>
+      </Show>
       <div></div>
       <div class="section">
         <AsyncContent
