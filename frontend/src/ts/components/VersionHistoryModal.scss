@@ -1,0 +1,66 @@
+#VersionHistoryModal {
+  .modal {
+    overflow-y: scroll;
+    max-width: 1200px;
+
+    hr {
+      background: var(--sub-alt-color);
+      height: 0.25rem;
+      border: none;
+      border-radius: var(--roundness);
+      margin: 1rem 0;
+    }
+
+    h3 {
+      color: var(--sub-color);
+      font-size: 1.25rem;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .preloader {
+      color: var(--main-color);
+      display: grid;
+      place-content: center center;
+      font-size: 2rem;
+    }
+
+    .tip {
+      text-align: center;
+      color: var(--sub-color);
+    }
+
+    .releases {
+      display: grid;
+      gap: 4rem;
+
+      .release {
+        display: grid;
+        grid-template-areas:
+          "title date"
+          "body body";
+
+        .title {
+          grid-area: title;
+          font-size: 2rem;
+          color: var(--sub-color);
+        }
+
+        .date {
+          grid-area: date;
+          text-align: right;
+          color: var(--sub-color);
+          align-self: center;
+        }
+
+        .body {
+          grid-area: body;
+          color: var(--text-color);
+        }
+
+        &:last-child {
+          margin-bottom: 2rem;
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";
@@ -12,7 +12,7 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -147,7 +147,7 @@ function updateAccountSections(): void {
 }
 
 export function updateUI(): void {
-  if (ActivePage.get() !== "accountSettings") return;
+  if (getActivePage() !== "accountSettings") return;
   updateAuthenticationSections();
   updateIntegrationSections();
   updateAccountSections();
@@ -210,6 +210,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccountSettings");
 });

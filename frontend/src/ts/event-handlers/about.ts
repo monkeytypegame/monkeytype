@@ -1,14 +1,10 @@
-import * as SupportPopup from "../modals/support";
-import * as ContactModal from "../modals/contact";
+import { showModal } from "../stores/modals";
+import { qs } from "../utils/dom";
 
-document
-  .querySelector("#pageAbout #supportMeAboutButton")
-  ?.addEventListener("click", () => {
-    SupportPopup.show();
-  });
+qs("#pageAbout #supportMeAboutButton")?.on("click", () => {
+  showModal("Support");
+});
 
-document
-  .querySelector("#pageAbout #contactPopupButton2")
-  ?.addEventListener("click", () => {
-    ContactModal.show();
-  });
+qs("#pageAbout #contactPopupButton2")?.on("click", () => {
+  showModal("Contact");
+});

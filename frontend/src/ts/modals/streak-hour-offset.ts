@@ -8,6 +8,10 @@ import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";
 
+let state = {
+  offset: 0,
+};
+
 export function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -35,11 +39,7 @@ export function show(): void {
 }
 
 function updatePreview(): void {
-  const inputValue = parseInt(
-    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
-    10,
-  );
-
+  const inputValue = state.offset;
   const preview = modal.getModal().qs(".preview");
 
   const date = new Date();
@@ -55,6 +55,7 @@ function updatePreview(): void {
   newDate.setUTCMilliseconds(0);
 
   newDate.setHours(newDate.getHours() - -1 * inputValue); //idk why, but it only works when i subtract (so i have to negate inputValue)
+  newDate.setMinutes(newDate.getMinutes() - -1 * ((inputValue % 1) * 60));
 
   preview?.setHtml(`
     <div class="row"><div>Current local reset time:</div><div>${date.toLocaleTimeString()}</div></div>

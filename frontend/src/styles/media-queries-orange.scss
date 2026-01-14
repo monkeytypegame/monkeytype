@@ -1,4 +1,6 @@
-@media only screen and (max-width: calc(1536px + 5rem)) {
+@use "./media.scss" as *;
+
+@include media-query(orange) {
   #mediaQueryDebug {
     background: #ffa726;
     &::before {
@@ -9,7 +11,7 @@
     --content-max-width: 1280px;
   }
   .testActivity {
-    --box-size: 1.05em;
+    --gap-size: 0.2em;
     .daysFull {
       margin-right: 1rem;
     }

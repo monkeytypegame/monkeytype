@@ -135,7 +135,23 @@ async function save(): Promise<void> {
 
   DB.getSnapshot()?.results?.forEach((result) => {
     if (result._id === state.resultId) {
+      const tagsToUpdate = [
+        ...result.tags.filter((tag) => !state.tags.includes(tag)),
+        ...state.tags.filter((tag) => !result.tags.includes(tag)),
+      ];
       result.tags = state.tags;
+      tagsToUpdate.forEach((tag) => {
+        void DB.updateLocalTagPB(
+          tag,
+          result.mode,
+          result.mode2,
+          result.punctuation,
+          result.numbers,
+          result.language,
+          result.difficulty,
+          result.lazyMode,
+        );
+      });
     }
   });
 

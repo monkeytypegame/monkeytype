@@ -1,26 +1,8 @@
 import { vi } from "vitest";
-import $ from "jquery";
-import { ElementWithUtils } from "../src/ts/utils/dom";
+import { ElementsWithUtils, ElementWithUtils } from "../../src/ts/utils/dom";
 
-//@ts-expect-error add to global
-global["$"] = $;
-//@ts-expect-error add to global
-global["jQuery"] = $;
-
-vi.mock("../src/ts/constants/env-config", () => ({
-  envConfig: {
-    backendUrl: "invalid",
-    isDevelopment: true,
-  },
-}));
-
-vi.mock("../src/ts/firebase", () => ({
-  app: undefined,
-  Auth: undefined,
-  isAuthenticated: () => false,
-}));
-
-vi.mock("../src/ts/utils/dom", () => {
+// Mock dom-utils to always return a mock element
+vi.mock("../../src/ts/utils/dom", async (importOriginal) => {
   const createMockElement = (): ElementWithUtils => {
     return {
       disable: vi.fn().mockReturnThis(),
@@ -45,9 +27,9 @@ vi.mock("../src/ts/utils/dom", () => {
       setStyle: vi.fn().mockReturnThis(),
       getStyle: vi.fn().mockReturnValue({}),
       isFocused: vi.fn().mockReturnValue(false),
-      qs: vi.fn().mockReturnValue(null),
+      qs: vi.fn().mockImplementation(() => createMockElement()),
       qsr: vi.fn().mockImplementation(() => createMockElement()),
-      qsa: vi.fn().mockReturnValue([]),
+      qsa: vi.fn().mockImplementation(() => new ElementsWithUtils()),
       empty: vi.fn().mockReturnThis(),
       appendHtml: vi.fn().mockReturnThis(),
       append: vi.fn().mockReturnThis(),
@@ -65,16 +47,22 @@ vi.mock("../src/ts/utils/dom", () => {
       getOffsetLeft: vi.fn().mockReturnValue(0),
       animate: vi.fn().mockResolvedValue(null),
       promiseAnimate: vi.fn().mockResolvedValue(null),
+      slideUp: vi.fn().mockResolvedValue(null),
+      slideDown: vi.fn().mockResolvedValue(null),
       native: document.createElement("div"),
       // @ts-expect-error - mocking private method
       hasValue: vi.fn().mockReturnValue(false),
     };
   };
 
+  const actual = await importOriginal();
+
   return {
+    //@ts-expect-error - mocking private method
+    ...actual,
     qsr: vi.fn().mockImplementation(() => createMockElement()),
     qs: vi.fn().mockImplementation(() => createMockElement()),
-    qsa: vi.fn().mockReturnValue([]),
+    qsa: vi.fn().mockImplementation(() => new ElementsWithUtils()),
   };
 });
 

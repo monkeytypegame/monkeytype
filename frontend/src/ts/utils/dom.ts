@@ -4,7 +4,79 @@ import {
   JSAnimation,
 } from "animejs";
 
-// Implementation
+/**
+ * list of deferred callbacks to be executed once we reached ready state
+ */
+let readyList: (() => void)[] | undefined;
+let isReady = false;
+
+/**
+ * Execute a callback function when the DOM is fully loaded.
+ * Tries to mimic the ready function of jQuery https://github.com/jquery/jquery/blob/main/src/core/ready.js
+ * If the document is already loaded, the callback is executed in the next event loop
+ */
+export function onDOMReady(callback: () => void): void {
+  bindReady();
+  if (isReady) {
+    setTimeout(callback);
+  } else {
+    readyList?.push(callback);
+  }
+}
+
+/**
+ * initialize the readyList and bind the necessary events
+ */
+function bindReady(): void {
+  // do nothing if we are bound already
+  if (readyList !== undefined) return;
+
+  readyList = [];
+
+  if (document.readyState !== "loading") {
+    // DOM is already loaded handle ready in the next event loop
+    // Handle it asynchronously to allow scripts the opportunity to delay ready
+    setTimeout(handleReady);
+  } else {
+    // register a single event listener for both events.
+    document.addEventListener("DOMContentLoaded", handleReady);
+    //load  event is used as a fallback "that will always work" according to jQuery source code
+    window.addEventListener("load", handleReady);
+  }
+}
+
+/**
+ * call all deferred ready callbacks and cleanup the event listener
+ */
+function handleReady(): void {
+  //make sure we only run once
+  if (isReady) return;
+
+  isReady = true;
+
+  //cleanup event listeners that are no longer needed
+  document.removeEventListener("DOMContentLoaded", handleReady);
+  window.removeEventListener("load", handleReady);
+
+  //call deferred callbacks and empty the list
+  //flush the list in a loop in case callbacks were added during the execution
+  while (readyList && readyList.length) {
+    const callbacks = readyList;
+    readyList = [];
+    callbacks.forEach((it) => {
+      //jQuery lets the callbacks fail independently
+      try {
+        it();
+      } catch (e) {
+        setTimeout(() => {
+          throw e;
+        });
+      }
+    });
+  }
+  readyList = undefined;
+}
+
 /**
  * Query Selector
  *
@@ -52,33 +124,6 @@ export function qsr<T extends HTMLElement = HTMLElement>(
     throw new Error(`Required element not found: ${selector}`);
   }
   return new ElementWithUtils(el);
-}
-
-/**
- * Execute a callback function when the DOM is fully loaded. If you need to wait
- * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
- * If the document is already loaded, the callback is executed immediately.
- */
-export function onDOMReady(callback: () => void): void {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", callback);
-  } else {
-    callback();
-  }
-}
-
-/**
- * Execute a callback function when the window 'load' event fires, which occurs
- * after the entire page (including all dependent resources such as images,
- * stylesheets, and scripts) has fully loaded.
- * If the window is already loaded, the callback is executed immediately.
- */
-export function onWindowLoad(callback: () => void): void {
-  if (document.readyState === "complete") {
-    callback();
-  } else {
-    window.addEventListener("load", callback);
-  }
 }
 
 /**
@@ -210,13 +255,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if the element has the "hidden" class
+   */
+  isHidden(): boolean {
+    return this.hasClass("hidden");
+  }
+
+  /**
    * Check if element is visible
    */
-
   isVisible(): boolean {
     return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
   }
 
+  /**
+   * Make element visible by scrolling the element's ancestor containers
+   */
   scrollIntoView(options: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
 
@@ -668,6 +722,88 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Animate the element sliding down (expanding height from 0 to full height)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideDown(duration = 250): Promise<void> {
+    this.show().setStyle({
+      height: "",
+      overflow: "hidden",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    this.setStyle({
+      height: "0px",
+      marginTop: "0px",
+      marginBottom: "0px",
+      paddingTop: "0px",
+      paddingBottom: "0px",
+    });
+    await this.promiseAnimate({
+      height: [0, height],
+      marginTop: [0, marginTop],
+      marginBottom: [0, marginBottom],
+      paddingTop: [0, paddingTop],
+      paddingBottom: [0, paddingBottom],
+      duration,
+      onComplete: () => {
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        });
+      },
+    });
+  }
+
+  /**
+   * Animate the element sliding up (collapsing height from full height to 0)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideUp(
+    duration = 250,
+    options?: {
+      hide?: boolean;
+    },
+  ): Promise<void> {
+    this.show().setStyle({
+      overflow: "hidden",
+      height: "",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    await this.promiseAnimate({
+      height: [height, 0],
+      marginTop: [marginTop, 0],
+      marginBottom: [marginBottom, 0],
+      paddingTop: [paddingTop, 0],
+      paddingBottom: [paddingBottom, 0],
+      duration,
+      onComplete: () => {
+        if (options?.hide ?? true) {
+          this.hide().setStyle({
+            height: "",
+            overflow: "",
+            marginTop: "",
+            marginBottom: "",
+            paddingTop: "",
+            paddingBottom: "",
+          });
+        }
+      },
+    });
+  }
+
+  /**
    * Focus the element
    */
   focus(): void {
@@ -891,3 +1027,10 @@ function checkUniqueSelector(
     bannerCenter?.appendChild(warning);
   }
 }
+
+export const __testing = {
+  resetReady: () => {
+    isReady = false;
+    readyList = undefined;
+  },
+};
