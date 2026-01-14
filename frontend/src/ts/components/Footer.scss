@@ -103,6 +103,7 @@ footer {
   @include media-query(purple) {
     & {
       .leftright {
+        display: grid;
         grid-template-columns: 1fr 1fr;
         .left {
           width: unset;
