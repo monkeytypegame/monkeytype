@@ -20,12 +20,12 @@ const createThemeCommand = (theme: Theme): Command => {
     id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
     display: theme.name.replace(/_/g, " "),
     configValue: theme.name,
-    // customStyle: `color:${theme.mainColor};background:${theme.bgColor};`,
+    // customStyle: `color:${theme.main};background:${theme.bg};`,
     customData: {
-      mainColor: theme.mainColor,
-      bgColor: theme.bgColor,
-      subColor: theme.subColor,
-      textColor: theme.textColor,
+      main: theme.main,
+      bg: theme.bg,
+      sub: theme.sub,
+      text: theme.text,
       isFavorite: isFavorite(theme),
     },
     hover: (): void => {
