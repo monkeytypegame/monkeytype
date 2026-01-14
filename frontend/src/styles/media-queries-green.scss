@@ -232,7 +232,8 @@
     }
   }
   .testActivity {
-    --box-size: 0.7em;
+    --gap-size: 0.1em;
+    --font-size: 0.8em;
     .wrapper {
       grid-template-areas:
         "top top"
