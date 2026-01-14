@@ -60,7 +60,6 @@ Chart.defaults.elements.line.fill = "origin";
 import "chartjs-adapter-date-fns";
 import { format } from "date-fns/format";
 import Config from "../config";
-import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as DateTime from "../utils/date-and-time";
@@ -69,7 +68,10 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
-import { ThemeColors as ThemeColorsType } from "../signals/theme";
+import {
+  getThemeColors,
+  ThemeColors as ThemeColorsType,
+} from "../signals/theme";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -1121,13 +1123,9 @@ async function updateColors<
   chart: ChartWithUpdateColors<TType, TData, TLabel>,
   colors?: ThemeColorsType,
 ): Promise<void> {
-  const bgcolor = colors?.bg ?? (await ThemeColors.get("bg"));
-  const subcolor = colors?.sub ?? (await ThemeColors.get("sub"));
-  const subaltcolor = colors?.subAlt ?? (await ThemeColors.get("subAlt"));
-  const maincolor = colors?.main ?? (await ThemeColors.get("main"));
-  const errorcolor = colors?.error ?? (await ThemeColors.get("error"));
-  const textcolor = colors?.text ?? (await ThemeColors.get("text"));
-  const gridcolor = subaltcolor;
+  colors ??= getThemeColors();
+
+  const gridcolor = colors.subAlt;
 
   for (const scaleKey of typedKeys(chart.scales)) {
     //@ts-expect-error cant figure out this type but it works fine
@@ -1135,8 +1133,8 @@ async function updateColors<
     scale.grid.color = gridcolor;
     scale.grid.tickColor = gridcolor;
     scale.grid.borderColor = gridcolor;
-    scale.ticks.color = subcolor;
-    scale.title.color = subcolor;
+    scale.ticks.color = colors.sub;
+    scale.title.color = colors.sub;
   }
 
   if (chart.id === result.id) {
@@ -1144,31 +1142,31 @@ async function updateColors<
 
     const wpm = c.getDataset("wpm");
     wpm.backgroundColor = "transparent";
-    wpm.borderColor = maincolor;
-    wpm.pointBackgroundColor = maincolor;
-    wpm.pointBorderColor = maincolor;
+    wpm.borderColor = colors.main;
+    wpm.pointBackgroundColor = colors.main;
+    wpm.pointBorderColor = colors.main;
 
     const raw = c.getDataset("raw");
     raw.backgroundColor = "transparent";
-    raw.borderColor = maincolor + "99";
-    raw.pointBackgroundColor = maincolor + "99";
-    raw.pointBorderColor = maincolor + "99";
+    raw.borderColor = colors.main + "99";
+    raw.pointBackgroundColor = colors.main + "99";
+    raw.pointBorderColor = colors.main + "99";
 
     const error = c.getDataset("error");
-    error.backgroundColor = errorcolor;
-    error.borderColor = errorcolor;
-    error.pointBackgroundColor = errorcolor;
-    error.pointBorderColor = errorcolor;
+    error.backgroundColor = colors.error;
+    error.borderColor = colors.error;
+    error.pointBackgroundColor = colors.error;
+    error.pointBorderColor = colors.error;
 
     const burst = c.getDataset("burst");
     burst.backgroundColor = blendTwoHexColors(
-      subaltcolor,
-      subaltcolor + "00",
+      colors.subAlt,
+      colors.subAlt + "00",
       0.5,
     );
-    burst.borderColor = subcolor;
-    burst.pointBackgroundColor = subcolor;
-    burst.pointBorderColor = subcolor;
+    burst.borderColor = colors.sub;
+    burst.pointBackgroundColor = colors.sub;
+    burst.pointBorderColor = colors.sub;
 
     chart.update("resize");
     return;
@@ -1179,25 +1177,25 @@ async function updateColors<
 
     const wpm = c.getDataset("wpm");
     wpm.backgroundColor = "transparent";
-    wpm.borderColor = maincolor;
-    wpm.pointBackgroundColor = maincolor;
-    wpm.pointBorderColor = maincolor;
+    wpm.borderColor = colors.main;
+    wpm.pointBackgroundColor = colors.main;
+    wpm.pointBorderColor = colors.main;
 
     const error = c.getDataset("error");
-    error.backgroundColor = errorcolor;
-    error.borderColor = errorcolor;
-    error.pointBackgroundColor = errorcolor;
-    error.pointBorderColor = errorcolor;
+    error.backgroundColor = colors.error;
+    error.borderColor = colors.error;
+    error.pointBackgroundColor = colors.error;
+    error.pointBorderColor = colors.error;
 
     const burst = c.getDataset("burst");
     burst.backgroundColor = blendTwoHexColors(
-      subaltcolor,
-      subaltcolor + "00",
+      colors.subAlt,
+      colors.subAlt + "00",
       0.75,
     );
-    burst.borderColor = subcolor;
-    burst.pointBackgroundColor = subcolor;
-    burst.pointBorderColor = subcolor;
+    burst.borderColor = colors.sub;
+    burst.pointBackgroundColor = colors.sub;
+    burst.pointBorderColor = colors.sub;
 
     chart.update("resize");
     return;
@@ -1207,15 +1205,15 @@ async function updateColors<
   chart.data.datasets[0].borderColor = (ctx): string => {
     // oxlint-disable-next-line no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;
-    const color = isPb ? textcolor : maincolor;
+    const color = isPb ? colors.text : colors.main;
     return color;
   };
 
   if (chart.data.datasets[1]) {
-    chart.data.datasets[1].borderColor = subcolor;
+    chart.data.datasets[1].borderColor = colors.sub;
   }
   if (chart.data.datasets[2]) {
-    chart.data.datasets[2].borderColor = errorcolor;
+    chart.data.datasets[2].borderColor = colors.error;
   }
 
   const dataset0 = (
@@ -1227,16 +1225,16 @@ async function updateColors<
       dataset0.pointBackgroundColor = (ctx): string => {
         //@ts-expect-error not sure why raw comes out to unknown, but this works
         const isPb = ctx.raw?.isPb as boolean;
-        const color = isPb ? textcolor : maincolor;
+        const color = isPb ? colors.text : colors.main;
         return color;
       };
     } else if (chart.config.type === "bar") {
-      dataset0.backgroundColor = maincolor;
+      dataset0.backgroundColor = colors.main;
     }
   } else if (chart.data.datasets[0].type === "bar") {
-    chart.data.datasets[0].backgroundColor = maincolor;
+    chart.data.datasets[0].backgroundColor = colors.main;
   } else if (chart.data.datasets[0].type === "line") {
-    dataset0.pointBackgroundColor = maincolor;
+    dataset0.pointBackgroundColor = colors.main;
   }
 
   const dataset1 = chart.data.datasets[1] as ChartDataset<"line", TData>;
@@ -1244,19 +1242,19 @@ async function updateColors<
   if (dataset1 !== undefined) {
     if (dataset1.type === undefined) {
       if (chart.config.type === "line") {
-        dataset1.pointBackgroundColor = subcolor;
+        dataset1.pointBackgroundColor = colors.sub;
       } else if (chart.config.type === "bar") {
-        dataset1.backgroundColor = subcolor;
+        dataset1.backgroundColor = colors.sub;
       }
     } else if ((dataset1?.type as "bar" | "line") === "bar") {
-      dataset1.backgroundColor = subcolor;
+      dataset1.backgroundColor = colors.sub;
     } else if (dataset1.type === "line") {
-      dataset1.pointBackgroundColor = subcolor;
+      dataset1.pointBackgroundColor = colors.sub;
     }
   }
   if (chart.data.datasets.length === 2) {
     dataset1.borderColor = (): string => {
-      const color = subcolor;
+      const color = colors.sub;
       return color;
     };
   }
@@ -1265,18 +1263,18 @@ async function updateColors<
 
   if (chart.data.datasets.length === 7) {
     dataset2.borderColor = (): string => {
-      const color = subcolor;
+      const color = colors.sub;
       return color;
     };
     const avg10On = Config.accountChart[2] === "on";
     const avg100On = Config.accountChart[3] === "on";
 
-    const text02 = blendTwoHexColors(bgcolor, textcolor, 0.2);
-    const main02 = blendTwoHexColors(bgcolor, maincolor, 0.2);
-    const main04 = blendTwoHexColors(bgcolor, maincolor, 0.4);
+    const text02 = blendTwoHexColors(colors.bg, colors.text, 0.2);
+    const main02 = blendTwoHexColors(colors.bg, colors.main, 0.2);
+    const main04 = blendTwoHexColors(colors.bg, colors.main, 0.4);
 
-    const sub02 = blendTwoHexColors(bgcolor, subcolor, 0.2);
-    const sub04 = blendTwoHexColors(bgcolor, subcolor, 0.4);
+    const sub02 = blendTwoHexColors(colors.bg, colors.sub, 0.2);
+    const sub04 = blendTwoHexColors(colors.bg, colors.sub, 0.4);
 
     const [
       wpmDataset,
@@ -1306,28 +1304,28 @@ async function updateColors<
       accDataset.pointBackgroundColor = sub02;
       ao10wpmDataset.borderColor = main04;
       ao10accDataset.borderColor = sub04;
-      ao100wpmDataset.borderColor = maincolor;
-      ao100accDataset.borderColor = subcolor;
+      ao100wpmDataset.borderColor = colors.main;
+      ao100accDataset.borderColor = colors.sub;
     } else if ((avg10On && !avg100On) || (!avg10On && avg100On)) {
       pbDataset.borderColor = text02;
       wpmDataset.pointBackgroundColor = main04;
       accDataset.pointBackgroundColor = sub04;
-      ao10wpmDataset.borderColor = maincolor;
-      ao100wpmDataset.borderColor = maincolor;
-      ao10accDataset.borderColor = subcolor;
-      ao100accDataset.borderColor = subcolor;
+      ao10wpmDataset.borderColor = colors.main;
+      ao100wpmDataset.borderColor = colors.main;
+      ao10accDataset.borderColor = colors.sub;
+      ao100accDataset.borderColor = colors.sub;
     } else {
       pbDataset.borderColor = text02;
-      wpmDataset.pointBackgroundColor = maincolor;
-      accDataset.pointBackgroundColor = subcolor;
+      wpmDataset.pointBackgroundColor = colors.main;
+      accDataset.pointBackgroundColor = colors.sub;
     }
   }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
   Object.keys(chartScaleOptions.scales).forEach((scaleID) => {
     const axis = chartScaleOptions.scales[scaleID] as CartesianScaleOptions;
-    axis.ticks.color = subcolor;
-    axis.title.color = subcolor;
+    axis.ticks.color = colors.sub;
+    axis.title.color = colors.sub;
     axis.grid.color = gridcolor;
     axis.grid.tickColor = gridcolor;
     axis.grid.borderColor = gridcolor;
@@ -1336,7 +1334,7 @@ async function updateColors<
   try {
     (
       dataset0.trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
-    ).style = subcolor;
+    ).style = colors.sub;
   } catch {}
 
   (
@@ -1344,10 +1342,10 @@ async function updateColors<
       .annotations as AnnotationOptions<"line">[]
   ).forEach((annotation) => {
     if (annotation.id !== "funbox-label") {
-      annotation.borderColor = subcolor;
+      annotation.borderColor = colors.sub;
     }
-    (annotation.label as LabelOptions).backgroundColor = subcolor;
-    (annotation.label as LabelOptions).color = bgcolor;
+    (annotation.label as LabelOptions).backgroundColor = colors.sub;
+    (annotation.label as LabelOptions).color = colors.bg;
   });
 
   chart.update("none");

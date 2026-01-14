@@ -4,6 +4,7 @@ import { ThemeColors } from "../signals/theme";
 
 export type Theme = {
   name: ThemeName;
+  hasCss?: boolean;
 } & Pick<ThemeColors, "bg" | "main" | "sub" | "text"> &
   Partial<Omit<ThemeColors, "bg" | "main" | "sub" | "text">>;
 
@@ -85,6 +86,7 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     errorExtra: " #791717",
     colorfulError: " #da3333",
     colorfulErrorExtra: " #791717",
+    hasCss: true,
   },
   nautilus: {
     bg: "#132237",
@@ -101,8 +103,14 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   serika_dark: {
     bg: "#323437",
     main: "#e2b714",
+    caret: "#e2b714",
     sub: "#646669",
+    subAlt: "#2c2e31",
     text: "#d1d0c5",
+    error: "#ca4754",
+    errorExtra: "#7e2a33",
+    colorfulError: "#ca4754",
+    colorfulErrorExtra: "#7e2a33",
   },
   bushido: {
     bg: "#242933",
@@ -605,8 +613,14 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   darling: {
     bg: "#fec8cd",
     main: "#ffffff",
+    caret: "#ffffff",
     sub: "#a30000",
+    subAlt: "#f2babd",
     text: "#ffffff",
+    error: "#2e7dde",
+    errorExtra: "#2e7dde",
+    colorfulError: "#2e7dde",
+    colorfulErrorExtra: "#2e7dde",
   },
   repose_dark: {
     bg: "#2f3338",

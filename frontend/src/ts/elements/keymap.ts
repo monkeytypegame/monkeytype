@@ -1,5 +1,4 @@
 import Config from "../config";
-import * as ThemeColors from "./theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
@@ -18,6 +17,7 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { getThemeColors } from "../signals/theme";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -106,7 +106,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
     const elements = findKeyElements(key);
     if (elements === null || elements.length === 0) return;
 
-    const themecolors = await ThemeColors.getAll();
+    const themecolors = getThemeColors();
 
     try {
       let startingStyle = {

@@ -4,13 +4,13 @@ import * as Misc from "../utils/misc";
 import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
-import * as ThemeColors from "../elements/theme-colors";
 import { format } from "date-fns/format";
 import { getActivePage } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
+import { getThemeColors } from "../signals/theme";
 
 let revealReplay = false;
 let revertCookie = false;
@@ -135,7 +135,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
     // Target the HTML root to include .customBackground
     const fullCanvas = await domToCanvas(root, {
-      backgroundColor: await ThemeColors.get("bg"),
+      backgroundColor: getThemeColors().bg,
       // Sharp output
       scale: window.devicePixelRatio ?? 1,
       style: {

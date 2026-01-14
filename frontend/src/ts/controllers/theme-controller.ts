@@ -1,4 +1,3 @@
-import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
@@ -11,10 +10,15 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
-import { themes, ThemesList } from "../constants/themes";
+import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
 import { setThemeIndicator } from "../signals/core";
+import {
+  getThemeColors,
+  setThemeColors,
+  ThemeColors as ThemeColorsType,
+} from "../signals/theme";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -35,22 +39,20 @@ export const colorVars = [
 
 async function updateFavicon(): Promise<void> {
   setTimeout(async () => {
-    let maincolor, bgcolor;
-    bgcolor = await ThemeColors.get("bg");
-    maincolor = await ThemeColors.get("main");
+    let { main, bg } = getThemeColors();
     if (Misc.isDevEnvironment()) {
-      [maincolor, bgcolor] = [bgcolor, maincolor];
+      [main, bg] = [bg, main];
     }
-    if (bgcolor === maincolor) {
-      bgcolor = "#111";
-      maincolor = "#eee";
+    if (bg === main) {
+      bg = "#111";
+      main = "#eee";
     }
 
     const svgPre = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <style>
-    #bg{fill:${bgcolor};}
-    path{fill:${maincolor};}
+    #bg{fill:${bg};}
+    path{fill:${main};}
   </style>
   <g>
     <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
@@ -73,8 +75,10 @@ function clearCustomTheme(): void {
 }
 
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
-
-export async function loadStyle(name: string): Promise<void> {
+export async function loadStyle(
+  name: string,
+  props: { hasCss: boolean },
+): Promise<void> {
   return new Promise((resolve) => {
     function swapCurrentToNext(): void {
       console.debug("Theme controller swapping elements");
@@ -96,6 +100,15 @@ export async function loadStyle(name: string): Promise<void> {
         Loader.show();
       }, 100),
     );
+
+    const afterLoad = (): void => {
+      Loader.hide();
+      swapCurrentToNext();
+      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
+      loadStyleLoaderTimeouts = [];
+      qsa("#keymap .keymapKey")?.setStyle({});
+      resolve();
+    };
     qs("#nextTheme")?.remove();
     const headScript = document.querySelector("#currentTheme");
     const link = document.createElement("link");
@@ -104,39 +117,32 @@ export async function loadStyle(name: string): Promise<void> {
     link.id = "nextTheme";
     link.onload = (): void => {
       console.debug("Theme controller loaded style", name);
-      Loader.hide();
-      swapCurrentToNext();
-      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
-      loadStyleLoaderTimeouts = [];
-      qsa("#keymap .keymapKey")?.setStyle({});
-      resolve();
+      afterLoad();
     };
     link.onerror = (e): void => {
       console.debug("Theme controller failed to load style", name, e);
       console.error(`Failed to load theme ${name}`, e);
-      Loader.hide();
       Notifications.add("Failed to load theme", 0);
-      swapCurrentToNext();
-      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
-      loadStyleLoaderTimeouts = [];
-      qsa("#keymap .keymapKey")?.setStyle({});
-      resolve();
+      afterLoad();
     };
-    if (name === "custom") {
-      link.href = `/themes/serika_dark.css`;
-    } else {
+
+    if (name !== "custom") {
       link.href = `/themes/${name}.css`;
     }
 
-    if (headScript === null) {
-      console.debug("Theme controller appending link to the head", link);
-      document.head.appendChild(link);
+    if (props.hasCss) {
+      if (headScript === null) {
+        console.debug("Theme controller appending link to the head", link);
+        document.head.appendChild(link);
+      } else {
+        console.debug(
+          "Theme controller inserting link after current theme",
+          link,
+        );
+        headScript.after(link);
+      }
     } else {
-      console.debug(
-        "Theme controller inserting link after current theme",
-        link,
-      );
-      headScript.after(link);
+      afterLoad();
     }
   });
 }
@@ -147,6 +153,22 @@ export async function loadStyle(name: string): Promise<void> {
 //     ?.colors as string[];
 //   UpdateConfig.setConfig("customThemeColors", colors,nosave);
 // }
+
+function convertToTheme(colors: string[]): Theme {
+  return {
+    name: "Custom" as ThemeName,
+    bg: colors[0] as string,
+    main: colors[1] as string,
+    caret: colors[2] as string,
+    sub: colors[3] as string,
+    subAlt: colors[4] as string,
+    text: colors[5] as string,
+    error: colors[6] as string,
+    errorExtra: colors[7] as string,
+    colorfulError: colors[8] as string,
+    colorfulErrorExtra: colors[9] as string,
+  };
+}
 
 async function apply(
   themeName: string,
@@ -159,9 +181,24 @@ async function apply(
     customColorsOverride,
     isPreview,
   );
+  //TODO check for the new style to match the old one and skip loading. Problem exists on prod
+  const isCustom = themeName === "custom";
+  const name = isCustom ? "custom" : themeName;
 
-  const name = customColorsOverride ? "custom" : themeName;
+  const themeColors = isCustom
+    ? convertToTheme(customColorsOverride ?? Config.customThemeColors)
+    : themes[themeName as ThemeName];
 
+  console.debug("Theme controller apply", {
+    isCustom,
+    name,
+    themeColors,
+    customColorsOverride,
+    config: Config.customThemeColors,
+  });
+  setThemeColors(themeColors as ThemeColorsType);
+
+  /*
   if ((Config.customTheme && !isPreview) || customColorsOverride) {
     const colors = customColorsOverride ?? Config.customThemeColors;
 
@@ -169,26 +206,24 @@ async function apply(
       const colorVar = colorVars[i] as string;
       document.documentElement.style.setProperty(colorVar, colors[i] as string);
     }
-  }
+  }*/
 
   qsa("#keymap .keymapKey")?.setStyle({});
-  await loadStyle(name);
+  await loadStyle(name, { hasCss: themeColors.hasCss ?? false });
 
+  //TODO not needed?!
   if (name !== "custom") {
     clearCustomTheme();
   }
 
-  ThemeColors.update();
-
   // if (!isPreview) {
-  const colors = await ThemeColors.getAll();
   qsa("#keymap .keymapKey")?.setStyle({});
   ChartController.updateAllChartColors();
   void updateFavicon();
-  qs("#metaThemeColor")?.setAttribute("content", colors.bg);
+  qs("#metaThemeColor")?.setAttribute("content", themeColors.bg);
   updateFooterIndicator(isPreview ? themeName : undefined);
 
-  if (isColorDark(await ThemeColors.get("bg"))) {
+  if (isColorDark(themeColors.bg)) {
     qs("body")?.addClass("darkMode");
   } else {
     qs("body")?.removeClass("darkMode");

@@ -7,7 +7,6 @@ import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as ThemeColors from "../elements/theme-colors";
 import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
@@ -48,6 +47,7 @@ import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../states/connection";
 import { currentQuote } from "./test-words";
+import { getThemeColors } from "../signals/theme";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -137,7 +137,7 @@ async function updateChartData(): Promise<void> {
     chartData2.pop();
   }
 
-  const subcolor = await ThemeColors.get("sub");
+  const subcolor = getThemeColors().sub;
 
   if (Config.funbox.length > 0) {
     let content = "";
@@ -281,7 +281,7 @@ function applyFakeChartData(): void {
 }
 
 export async function updateChartPBLine(): Promise<void> {
-  const themecolors = await ThemeColors.getAll();
+  const themecolors = getThemeColors();
   const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
@@ -724,7 +724,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         );
         // console.log("new pb for tag " + tag.display);
       } else {
-        const themecolors = await ThemeColors.getAll();
+        const themecolors = getThemeColors();
         resultAnnotation.push({
           display: true,
           type: "line",
