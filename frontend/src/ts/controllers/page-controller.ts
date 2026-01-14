@@ -30,7 +30,7 @@ const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
   settings: Settings.page,
-  about: solidPage("about", "/about"),
+  about: solidPage("about"),
   account: Account.page,
   login: PageLogin.page,
   profile: PageProfile.page,
@@ -295,7 +295,8 @@ export async function change(
   return true;
 }
 
-function solidPage(id: PageName, path: string): Page<undefined> {
+function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
+  const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
   return new Page({
