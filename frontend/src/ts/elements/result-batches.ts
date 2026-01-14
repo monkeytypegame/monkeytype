@@ -1,8 +1,8 @@
 import * as DB from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
-import * as ThemeColors from "../elements/theme-colors";
 import { mapRange } from "@monkeytype/util/numbers";
+import { getThemeColors } from "../signals/theme";
 
 export function hide(): void {
   $(".pageAccount .resultBatches").addClass("hidden");
@@ -56,7 +56,7 @@ export async function update(): Promise<void> {
     `${results?.length} / ${completedTests} (${percentageDownloaded}%)`,
   );
 
-  const colors = await ThemeColors.getAll();
+  const colors = getThemeColors();
 
   bars.limit.fill.css({
     width: Math.min(percentageLimit, 100) + "%",

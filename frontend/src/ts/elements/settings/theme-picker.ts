@@ -3,7 +3,6 @@ import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
 import * as Notifications from "../notifications";
-import * as ThemeColors from "../theme-colors";
 import * as ChartController from "../../controllers/chart-controller";
 import * as Loader from "../loader";
 import * as DB from "../../db";
@@ -12,8 +11,9 @@ import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../signals/core";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
-import { ThemesListSorted } from "../../constants/themes";
+import { themes, ThemesListSorted } from "../../constants/themes";
 import { qs } from "../../utils/dom";
+import { getThemeColors } from "../../signals/theme";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -425,16 +425,16 @@ $(".pageSettings .section.themes .tabContainer .customTheme input.input")
 $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   // previewTheme(Config.theme);
   // $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
-  await ThemeController.loadStyle(Config.theme);
-
-  ThemeController.colorVars.forEach((e) => {
-    document.documentElement.style.setProperty(e, "");
+  const theme = themes[Config.theme];
+  await ThemeController.loadStyle(Config.theme, {
+    hasCss: theme.hasCss ?? false,
   });
 
   // setTimeout(async () => {
   ChartController.updateAllChartColors();
 
-  const themeColors = await ThemeColors.getAll();
+  //TODO check
+  const themeColors = getThemeColors();
 
   ThemeController.colorVars.forEach((colorName) => {
     let color;

@@ -54,6 +54,7 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   createEffect(() => {
     //react on theme changes
     const colors = getThemeColors();
+    console.log("#####", { colors });
     if (!chart) return;
 
     void chart.updateColors(colors);
