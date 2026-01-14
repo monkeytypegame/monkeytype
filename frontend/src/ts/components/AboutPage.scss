@@ -28,11 +28,13 @@
     &[data-section="supporters"],
     &[data-section="contributors"] {
       .preloader {
+        padding-block: 2em;
         font-size: 2em;
         color: var(--main-color);
         text-align: center;
       }
       .error {
+        padding-block: 2em;
         color: var(--sub-color);
         text-align: center;
       }
