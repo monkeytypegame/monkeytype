@@ -1,6 +1,6 @@
 import { createResource, For, JSXElement, Show } from "solid-js";
 import "./AboutPage.scss";
-import { TextButton } from "./TextButton";
+import { Button } from "./Button";
 import { showModal } from "../stores/modals";
 import AsyncContent from "./AsyncContent";
 import { getActivePage } from "../signals/core";
@@ -282,13 +282,13 @@ export function AboutPage(): JSXElement {
           possible without you and your continued support.
         </p>
         <div class="supportButtons">
-          <TextButton
+          <Button
             icon="fa-donate"
             onClick={() => showModal("Support")}
             class=""
           >
             <div class="text">support</div>
-          </TextButton>
+          </Button>
         </div>
       </div>
       <div></div>
@@ -302,13 +302,13 @@ export function AboutPage(): JSXElement {
           - here are the different ways you can contact me directly.
         </p>
         <div class="contactButtons">
-          <TextButton
+          <Button
             icon="fa-envelope"
             onClick={() => showModal("Contact")}
             class=""
           >
             <div class="text">mail</div>
-          </TextButton>
+          </Button>
           <a
             class="button"
             href="https://x.com/monkeytype"
