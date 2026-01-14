@@ -38,7 +38,11 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   const getClassList = (): Record<string, boolean> => {
     return {
-      [(props.type ?? "button") === "text" ? "textButton" : "button"]: true,
+      [(props.type ?? "button") === "text"
+        ? "textButton"
+        : "href" in props
+          ? "button"
+          : ""]: true,
       [props.class ?? ""]: props.class !== undefined,
     };
   };
