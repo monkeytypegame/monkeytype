@@ -55,6 +55,15 @@
       }
     }
 
+    .contactButtons {
+      @include media-query(green) {
+        grid-template-columns: 1fr 1fr;
+      }
+      @include media-query(purple) {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .supportButtons {
       grid-template-columns: 1fr;
     }
@@ -86,6 +95,9 @@
     gap: 1rem;
     justify-items: center;
     margin-top: 1rem;
+    @include media-query(blue) {
+      grid-template-columns: 1fr;
+    }
   }
   .group {
     display: flex;
@@ -130,31 +142,5 @@
   dd {
     grid-column: 2;
     margin: 0;
-  }
-
-  @include media-query(green) {
-    & {
-      .section {
-        .contactButtons {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-    }
-  }
-  @include media-query(purple) {
-    & {
-      .section {
-        .contactButtons {
-          grid-template-columns: 1fr;
-        }
-      }
-    }
-  }
-  @include media-query(blue) {
-    & {
-      .triplegroup {
-        grid-template-columns: 1fr;
-      }
-    }
   }
 }
