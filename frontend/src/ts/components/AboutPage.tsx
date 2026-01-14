@@ -32,7 +32,7 @@ export function AboutPage(): JSXElement {
       <div class="created">
         Created with love by Miodec.
         <br />
-        <a href="#supporters_title">Supported</a> and&nbsp;
+        <a href="#supporters_title">Supported</a> and{" "}
         <a href="#contributors_title">expanded</a> by many awesome people.
         <br />
         Launched on 15th of May, 2020.
@@ -188,9 +188,9 @@ export function AboutPage(): JSXElement {
         <p>
           You can use <kbd>tab</kbd> and <kbd>enter</kbd> (or just{" "}
           <kbd>tab</kbd> if you have quick tab mode enabled) to restart the
-          typing test. Open the command line by pressing <kbd>ctrl/cmd</kbd>+
-          <kbd>shift</kbd>+<kbd>p</kbd> or <kbd>esc</kbd> - there you can access
-          all the functionality you need without touching your mouse.
+          typing test. Open the command line by pressing <kbd>ctrl/cmd</kbd> +{" "}
+          <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd> - there you can
+          access all the functionality you need without touching your mouse.
         </p>
       </div>
       <div class="section">
@@ -202,25 +202,28 @@ export function AboutPage(): JSXElement {
         <dl>
           <dt>wpm</dt>
           <dd>
-            total number of characters in the correctly typed words (including
+            - total number of characters in the correctly typed words (including
             spaces), divided by 5 and normalised to 60 seconds.
           </dd>
 
           <dt>raw wpm</dt>
-          <dd>calculated just like wpm, but also includes incorrect words.</dd>
+          <dd>
+            {" "}
+            - calculated just like wpm, but also includes incorrect words.
+          </dd>
 
           <dt>acc</dt>
-          <dd>percentage of correctly pressed keys.</dd>
+          <dd> - percentage of correctly pressed keys.</dd>
 
           <dt>char</dt>
           <dd>
-            correct characters / incorrect characters. Calculated after the test
-            has ended.
+            - correct characters / incorrect characters. Calculated after the
+            test has ended.
           </dd>
 
           <dt>consistency</dt>
           <dd>
-            based on the variance of your raw wpm. Closer to 100% is better.
+            - based on the variance of your raw wpm. Closer to 100% is better.
             Calculated using the coefficient of variation of raw wpm and mapped
             onto a scale from 0 to 100.
           </dd>
@@ -318,7 +321,7 @@ export function AboutPage(): JSXElement {
         </div>
       </div>
       <div></div>
-      <div class="section">
+      <div class="section" data-section="credits">
         <div class="bigtitle">
           <i class="fas fa-users"></i>
           credits
@@ -329,7 +332,7 @@ export function AboutPage(): JSXElement {
             text="Montydrei"
             href="https://www.reddit.com/user/montydrei"
           />
-          &nbsp;for the name suggestion
+          for the name suggestion
         </p>
         <p>
           <Button
@@ -337,8 +340,8 @@ export function AboutPage(): JSXElement {
             text="Everyone"
             href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
           />
-          &nbsp;who provided valuable feedback on the original reddit post for
-          the prototype of this website
+          who provided valuable feedback on the original reddit post for the
+          prototype of this website
         </p>
         <p>
           <Button type="text" text="Supporters" href="#supporters_title" />
@@ -351,8 +354,8 @@ export function AboutPage(): JSXElement {
             text="Contributors"
             href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"
           />
-          &nbsp;on GitHub that have helped with implementing various features,
-          adding themes and more
+          on GitHub that have helped with implementing various features, adding
+          themes and more
         </p>
       </div>
       <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">

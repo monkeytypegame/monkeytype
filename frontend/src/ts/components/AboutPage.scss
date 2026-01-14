@@ -17,6 +17,14 @@
   .section {
     display: grid;
 
+    &[data-section="credits"] {
+      button,
+      a {
+        margin-left: -0.5em;
+        text-decoration: underline;
+      }
+    }
+
     .bigtitle {
       font-size: 2rem;
       color: var(--sub-color);
@@ -137,6 +145,7 @@
     grid-column: 1;
     margin: 0;
     padding-right: 0.5em;
+    padding-bottom: 0.25em;
   }
 
   dd {
