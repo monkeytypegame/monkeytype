@@ -11,7 +11,6 @@ export async function get(color: ColorName): Promise<string> {
 }
 
 export async function getAll(): Promise<ThemeColors> {
-  if (!getThemeColors().bg) update();
   return getThemeColors();
 }
 

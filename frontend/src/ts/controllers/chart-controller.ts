@@ -1358,7 +1358,6 @@ function setDefaultFontFamily(font: string): void {
 }
 
 export function updateAllChartColors(): void {
-  ThemeColors.update();
   void result.updateColors();
   void accountHistory.updateColors();
   void accountHistogram.updateColors();

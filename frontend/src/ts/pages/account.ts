@@ -215,7 +215,6 @@ let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
   console.log("updating account page");
-  ThemeColors.update();
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
