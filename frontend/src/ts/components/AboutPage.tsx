@@ -186,18 +186,11 @@ export function AboutPage(): JSXElement {
           keybinds
         </div>
         <p>
-          You can use
-          <kbd>tab</kbd>
-          and
-          <kbd>enter</kbd>
-          (or just
-          <kbd>tab</kbd>
-          if you have quick tab mode enabled) to restart the typing test. Open
-          the command line by pressing
-          <kbd>ctrl/cmd</kbd>+<kbd>shift</kbd>+<kbd>p</kbd>
-          or
-          <kbd>esc</kbd>- there you can access all the functionality you need
-          without touching your mouse.
+          You can use <kbd>tab</kbd> and <kbd>enter</kbd> (or just{" "}
+          <kbd>tab</kbd> if you have quick tab mode enabled) to restart the
+          typing test. Open the command line by pressing <kbd>ctrl/cmd</kbd>+
+          <kbd>shift</kbd>+<kbd>p</kbd> or <kbd>esc</kbd> - there you can access
+          all the functionality you need without touching your mouse.
         </p>
       </div>
       <div class="section">
@@ -283,7 +276,7 @@ export function AboutPage(): JSXElement {
         </p>
         <div class="supportButtons">
           <Button
-            icon="fa-donate"
+            icon="fas fa-donate"
             onClick={() => showModal("Support")}
             class=""
           >
@@ -303,39 +296,25 @@ export function AboutPage(): JSXElement {
         </p>
         <div class="contactButtons">
           <Button
-            icon="fa-envelope"
+            text="mail"
+            icon="fas fa-envelope"
             onClick={() => showModal("Contact")}
-            class=""
-          >
-            <div class="text">mail</div>
-          </Button>
-          <a
-            class="button"
+          />
+          <Button
+            text="twitter"
+            icon="fab fa-twitter"
             href="https://x.com/monkeytype"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <div class="fab fa-twitter"></div>
-            twitter
-          </a>
-          <a
-            class="button"
+          />
+          <Button
+            text="discord"
+            icon="fab fa-discord"
             href="https://discord.gg/monkeytype"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <div class="fab fa-discord"></div>
-            discord
-          </a>
-          <a
-            class="button"
+          />
+          <Button
+            text="github"
+            icon="fab fa-github"
             href="https://github.com/monkeytypegame/monkeytype"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <div class="fab fa-github"></div>
-            github
-          </a>
+          />
         </div>
       </div>
       <div></div>
@@ -345,38 +324,33 @@ export function AboutPage(): JSXElement {
           credits
         </div>
         <p>
-          <a
+          <Button
+            type="text"
+            text="Montydrei"
             href="https://www.reddit.com/user/montydrei"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Montydrei
-          </a>
+          />
           &nbsp;for the name suggestion
         </p>
         <p>
-          <a
+          <Button
+            type="text"
+            text="Everyone"
             href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Everyone
-          </a>
+          />
           &nbsp;who provided valuable feedback on the original reddit post for
           the prototype of this website
         </p>
         <p>
-          <a href="#supporters_title">Supporters</a> who helped financially by
-          donating, enabling optional ads or buying merch
+          <Button type="text" text="Supporters" href="#supporters_title" />
+          who helped financially by donating, enabling optional ads or buying
+          merch
         </p>
         <p>
-          <a
+          <Button
+            type="text"
+            text="Contributors"
             href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Contributors
-          </a>
+          />
           &nbsp;on GitHub that have helped with implementing various features,
           adding themes and more
         </p>
@@ -395,35 +369,39 @@ export function AboutPage(): JSXElement {
       </div>
       <div></div>
       <div class="section">
-        <div id="supporters_title" class="bigtitle">
-          <i class="fas fa-hand-holding-usd"></i>
-          top supporters
-        </div>
         <AsyncContent
           resource={supporters}
           errorMessage="Failed to get supporters"
         >
           {(data) => (
-            <div class="supporters">
-              <For each={data}>{(name) => <div>{name}</div>}</For>
-            </div>
+            <>
+              <div id="supporters_title" class="bigtitle">
+                <i class="fas fa-hand-holding-usd"></i>
+                {data.length} top supporters
+              </div>
+              <div class="supporters">
+                <For each={data}>{(name) => <div>{name}</div>}</For>
+              </div>
+            </>
           )}
         </AsyncContent>
       </div>
       <div></div>
       <div class="section">
-        <div id="contributors_title" class="bigtitle">
-          <i class="fas fa-code-branch"></i>
-          contributors
-        </div>
         <AsyncContent
           resource={contributors}
           errorMessage="Failed to get contributors"
         >
           {(data) => (
-            <div class="contributors">
-              <For each={data}>{(name) => <div>{name}</div>}</For>
-            </div>
+            <>
+              <div id="contributors_title" class="bigtitle">
+                <i class="fas fa-code-branch"></i>
+                {data.length} contributors
+              </div>
+              <div class="contributors">
+                <For each={data}>{(name) => <div>{name}</div>}</For>
+              </div>
+            </>
           )}
         </AsyncContent>
       </div>
