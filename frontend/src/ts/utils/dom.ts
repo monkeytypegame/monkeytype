@@ -54,43 +54,75 @@ export function qsr<T extends HTMLElement = HTMLElement>(
   return new ElementWithUtils(el);
 }
 
+/**
+ * list of deferred callbacks to be executed once we reached ready state
+ */
 let readyList: (() => void)[] | undefined;
 let isReady = false;
 
+/**
+ * initialize the readyList and bind the necessary events
+ */
 function bindReady(): void {
+  // do nothing if we are bound already
   if (readyList !== undefined) return;
+
   readyList = [];
 
-  // If DOM is already ready
   if (document.readyState !== "loading") {
-    setTimeout(handleReady, 1);
-    return;
+    // DOM is already loaded handle ready in the next event loop
+    // Handle it asynchronously to allow scripts the opportunity to delay ready
+    setTimeout(handleReady);
+  } else {
+    // register a single event listener for both events.
+    document.addEventListener("DOMContentLoaded", handleReady);
+    //load  event is used as a fallback "that will always work" according to jQuery source code
+    window.addEventListener("load", handleReady);
   }
-
-  document.addEventListener("DOMContentLoaded", handleReady);
-  window.addEventListener("load", handleReady);
 }
 
+/**
+ * call all deferred ready callbacks and cleanup the event listener
+ */
 function handleReady(): void {
+  //make sure we only run once
   if (isReady) return;
 
   isReady = true;
-  document.removeEventListener("DOMContentLoaded", handleReady);
-  document.removeEventListener("load", handleReady);
 
-  readyList?.forEach((it) => it());
+  //cleanup event listeners that are no longer needed
+  document.removeEventListener("DOMContentLoaded", handleReady);
+  window.removeEventListener("load", handleReady);
+
+  //call deferred callbacks and empty the list
+  //flush the list in a loop in case callbacks were added during the execution
+  while (readyList && readyList.length) {
+    const callbacks = readyList;
+    readyList = [];
+    callbacks.forEach((it) => {
+      //jQuery lets the callbacks fail independently
+      try {
+        it();
+      } catch (e) {
+        setTimeout(() => {
+          throw e;
+        });
+      }
+    });
+  }
   readyList = undefined;
 }
 
 /**
- * Execute a callback function when the DOM is fully loaded. If you need to wait
- * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
+ * Execute a callback function when the DOM is fully loaded.
+ * Tries to mimic the ready function of jQuery https://github.com/jquery/jquery/blob/main/src/core/ready.js
+ * If you need to wait for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
  * If the document is already loaded, the callback is executed immediately.
  */
 export function onDOMReady(callback: () => void): void {
   bindReady();
   if (isReady) {
-    callback();
+    setTimeout(callback);
   } else {
     readyList?.push(callback);
   }
@@ -987,3 +1019,10 @@ function checkUniqueSelector(
     bannerCenter?.appendChild(warning);
   }
 }
+
+export const __testing = {
+  resetReady: () => {
+    isReady = false;
+    readyList = undefined;
+  },
+};
