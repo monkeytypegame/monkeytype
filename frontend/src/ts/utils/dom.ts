@@ -10,56 +10,6 @@ import {
 let readyList: (() => void)[] | undefined;
 let isReady = false;
 
-// Implementation
-/**
- * Query Selector
- *
- * Query the document for a single element matching the selector.
- * @returns An ElementWithUtils wrapping the found element, null if not found.
- */
-export function qs<T extends HTMLElement = HTMLElement>(
-  selector: string,
-): ElementWithUtils<T> | null {
-  checkUniqueSelector(selector);
-  const el = document.querySelector<T>(selector);
-  return el ? new ElementWithUtils(el) : null;
-}
-
-/**
- * Query Selector All
- *
- * Query the document for all elements matching the selector.
- * @returns An ArrayWithUtils containing ElementWithUtils wrapping each found element.
- */
-export function qsa<T extends HTMLElement = HTMLElement>(
-  selector: string,
-): ElementsWithUtils<T> {
-  const elements = Array.from(document.querySelectorAll<T>(selector))
-    .filter((el) => el !== null)
-    .map((el) => new ElementWithUtils(el));
-  return new ElementsWithUtils<T>(...elements);
-}
-
-/**
- * Query Selector Required
- *
- * Query the document for a single element matching the selector.
- * Useful for elements that are guaranteed to exist,
- * as you don't need to handle the null case.
- * @returns An ElementWithUtils wrapping the found element.
- * @throws Error if the element is not found.
- */
-export function qsr<T extends HTMLElement = HTMLElement>(
-  selector: string,
-): ElementWithUtils<T> {
-  checkUniqueSelector(selector);
-  const el = document.querySelector<T>(selector);
-  if (el === null) {
-    throw new Error(`Required element not found: ${selector}`);
-  }
-  return new ElementWithUtils(el);
-}
-
 /**
  * Execute a callback function when the DOM is fully loaded.
  * Tries to mimic the ready function of jQuery https://github.com/jquery/jquery/blob/main/src/core/ready.js
@@ -125,6 +75,55 @@ function handleReady(): void {
     });
   }
   readyList = undefined;
+}
+
+/**
+ * Query Selector
+ *
+ * Query the document for a single element matching the selector.
+ * @returns An ElementWithUtils wrapping the found element, null if not found.
+ */
+export function qs<T extends HTMLElement = HTMLElement>(
+  selector: string,
+): ElementWithUtils<T> | null {
+  checkUniqueSelector(selector);
+  const el = document.querySelector<T>(selector);
+  return el ? new ElementWithUtils(el) : null;
+}
+
+/**
+ * Query Selector All
+ *
+ * Query the document for all elements matching the selector.
+ * @returns An ArrayWithUtils containing ElementWithUtils wrapping each found element.
+ */
+export function qsa<T extends HTMLElement = HTMLElement>(
+  selector: string,
+): ElementsWithUtils<T> {
+  const elements = Array.from(document.querySelectorAll<T>(selector))
+    .filter((el) => el !== null)
+    .map((el) => new ElementWithUtils(el));
+  return new ElementsWithUtils<T>(...elements);
+}
+
+/**
+ * Query Selector Required
+ *
+ * Query the document for a single element matching the selector.
+ * Useful for elements that are guaranteed to exist,
+ * as you don't need to handle the null case.
+ * @returns An ElementWithUtils wrapping the found element.
+ * @throws Error if the element is not found.
+ */
+export function qsr<T extends HTMLElement = HTMLElement>(
+  selector: string,
+): ElementWithUtils<T> {
+  checkUniqueSelector(selector);
+  const el = document.querySelector<T>(selector);
+  if (el === null) {
+    throw new Error(`Required element not found: ${selector}`);
+  }
+  return new ElementWithUtils(el);
 }
 
 /**
