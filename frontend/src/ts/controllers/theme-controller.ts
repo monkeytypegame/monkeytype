@@ -276,13 +276,9 @@ async function changeThemeList(): Promise<void> {
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
-    themesList = themes
-      .filter((t) => isColorLight(t.bgColor))
-      .map((t) => t.name);
+    themesList = themes.filter((t) => isColorLight(t.bg)).map((t) => t.name);
   } else if (Config.randomTheme === "dark") {
-    themesList = themes
-      .filter((t) => isColorDark(t.bgColor))
-      .map((t) => t.name);
+    themesList = themes.filter((t) => isColorDark(t.bg)).map((t) => t.name);
   } else if (Config.randomTheme === "on" || Config.randomTheme === "auto") {
     themesList = themes.map((t) => {
       return t.name;
@@ -314,7 +310,7 @@ export async function randomizeTheme(): Promise<void> {
       Arrays.shuffle(themesList);
       randomThemeIndex = 0;
     }
-  } while (!filter(nextTheme.bgColor));
+  } while (!filter(nextTheme.bg));
 
   let colorsOverride: string[] | undefined;
 

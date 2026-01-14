@@ -161,23 +161,17 @@ export async function fillPresetButtons(): Promise<void> {
         const activeTheme = activeThemeName === theme.name ? "active" : "";
         favThemesElHTML += `<div class="theme button ${activeTheme}" theme='${
           theme.name
-        }' style="background: ${theme.bgColor}; color: ${
-          theme.mainColor
-        };outline: 0 solid ${theme.mainColor};">
+        }' style="background: ${theme.bg}; color: ${
+          theme.main
+        };outline: 0 solid ${theme.main};">
           <div class="favButton active"><i class="fas fa-star"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="themeBubbles" style="background: ${
-            theme.bgColor
-          };outline: 0.25rem solid ${theme.bgColor};">
-            <div class="themeBubble" style="background: ${
-              theme.mainColor
-            }"></div>
-            <div class="themeBubble" style="background: ${
-              theme.subColor
-            }"></div>
-            <div class="themeBubble" style="background: ${
-              theme.textColor
-            }"></div>
+            theme.bg
+          };outline: 0.25rem solid ${theme.bg};">
+            <div class="themeBubble" style="background: ${theme.main}"></div>
+            <div class="themeBubble" style="background: ${theme.sub}"></div>
+            <div class="themeBubble" style="background: ${theme.text}"></div>
           </div>
           </div>
           `;
@@ -196,17 +190,17 @@ export async function fillPresetButtons(): Promise<void> {
     const activeTheme = activeThemeName === theme.name ? "active" : "";
     themesElHTML += `<div class="theme button ${activeTheme}" theme='${
       theme.name
-    }' style="background: ${theme.bgColor}; color: ${
-      theme.mainColor
-    };outline: 0 solid ${theme.mainColor};">
+    }' style="background: ${theme.bg}; color: ${
+      theme.main
+    };outline: 0 solid ${theme.main};">
       <div class="favButton"><i class="far fa-star"></i></div>
       <div class="text">${theme.name.replace(/_/g, " ")}</div>
       <div class="themeBubbles" style="background: ${
-        theme.bgColor
-      };outline: 0.25rem solid ${theme.bgColor};">
-        <div class="themeBubble" style="background: ${theme.mainColor}"></div>
-        <div class="themeBubble" style="background: ${theme.subColor}"></div>
-        <div class="themeBubble" style="background: ${theme.textColor}"></div>
+        theme.bg
+      };outline: 0.25rem solid ${theme.bg};">
+        <div class="themeBubble" style="background: ${theme.main}"></div>
+        <div class="themeBubble" style="background: ${theme.sub}"></div>
+        <div class="themeBubble" style="background: ${theme.text}"></div>
       </div>
       </div>
       `;

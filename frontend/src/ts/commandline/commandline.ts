@@ -531,16 +531,16 @@ async function showCommands(): Promise<void> {
         <i class="fas fa-star"></i>
       </div>
       <div class="themeBubbles" style="background: ${
-        command.customData["bgColor"]
-      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        command.customData["bg"]
+      };outline: 0.25rem solid ${command.customData["bg"]};">
         <div class="themeBubble" style="background: ${
-          command.customData["mainColor"]
+          command.customData["main"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["subColor"]
+          command.customData["sub"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["textColor"]
+          command.customData["text"]
         }"></div>
       </div>
       </div>`;
