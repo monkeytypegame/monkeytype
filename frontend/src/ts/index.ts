@@ -45,7 +45,6 @@ import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
 import "./ready";
-import "./signals/config-listener";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

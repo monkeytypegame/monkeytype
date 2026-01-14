@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
 import { PageName } from "../pages/page";
-import { Ads } from "@monkeytype/schemas/configs";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
@@ -22,5 +21,3 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
 export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
   "ads" | null
 >(null);
-
-export const [getAds, setAds] = createSignal<Ads>("off");

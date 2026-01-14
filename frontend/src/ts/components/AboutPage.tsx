@@ -3,7 +3,8 @@ import "./AboutPage.scss";
 import { Button } from "./Button";
 import { showModal } from "../stores/modals";
 import AsyncContent from "./AsyncContent";
-import { getActivePage, getAds } from "../signals/core";
+import { getActivePage } from "../signals/core";
+import { getAds } from "../signals/config";
 import { getContributorsList, getSupportersList } from "../utils/json-data";
 import Ape from "../ape";
 import { intervalToDuration } from "date-fns";
@@ -384,7 +385,7 @@ export function AboutPage(): JSXElement {
             <>
               <div id="supporters_title" class="bigtitle">
                 <i class="fas fa-hand-holding-usd"></i>
-                {data.length} top supporters
+                top supporters
               </div>
               <div class="supporters">
                 <For each={data}>{(name) => <div>{name}</div>}</For>
@@ -403,7 +404,7 @@ export function AboutPage(): JSXElement {
             <>
               <div id="contributors_title" class="bigtitle">
                 <i class="fas fa-code-branch"></i>
-                {data.length} contributors
+                contributors
               </div>
               <div class="contributors">
                 <For each={data}>{(name) => <div>{name}</div>}</For>
