@@ -19,49 +19,29 @@ const textEl = document.querySelector(
 ) as HTMLElement;
 const miniEl = document.querySelector("#liveStatsMini .time") as HTMLElement;
 
+function showElement(el: HTMLElement): void {
+  animate(el, {
+    opacity: [0, 1],
+    duration: applyReducedMotion(125),
+    onBegin: () => {
+      el.classList.remove("hidden");
+    },
+  });
+}
+
 export function show(): void {
   if (!TestState.isActive) return;
   requestDebouncedAnimationFrame("timer-progress.show", () => {
     if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-      animate(barOpacityEl, {
-        opacity: [0, 1],
-        duration: applyReducedMotion(125),
-        onBegin: () => {
-          barOpacityEl.classList.remove("hidden");
-        },
-      });
+      showElement(barOpacityEl);
     } else if (Config.timerStyle === "text") {
-      animate(textEl, {
-        opacity: [0, 1],
-        duration: applyReducedMotion(125),
-        onBegin: () => {
-          textEl.classList.remove("hidden");
-        },
-      });
+      showElement(textEl);
     } else if (Config.timerStyle === "flash_mini") {
-      animate(miniEl, {
-        opacity: [0, 1],
-        duration: applyReducedMotion(125),
-        onBegin: () => {
-          miniEl.classList.remove("hidden");
-        },
-      });
+      showElement(miniEl);
     } else if (Config.timerStyle === "flash_text") {
-      animate(textEl, {
-        opacity: [0, 1],
-        duration: applyReducedMotion(125),
-        onBegin: () => {
-          textEl.classList.remove("hidden");
-        },
-      });
+      showElement(textEl);
     } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
-      animate(miniEl, {
-        opacity: [0, 1],
-        duration: applyReducedMotion(125),
-        onBegin: () => {
-          miniEl.classList.remove("hidden");
-        },
-      });
+      showElement(miniEl);
     }
   });
 }
@@ -85,28 +65,34 @@ export function reset(): void {
   });
 }
 
+function hideElement(el: HTMLElement, hideOnComplete: boolean): void {
+  type AnimateOptions = {
+    opacity: number;
+    duration: number;
+    onComplete?: () => void;
+  };
+
+  const args: AnimateOptions = {
+    opacity: 0,
+    duration: applyReducedMotion(125),
+  };
+
+  if (hideOnComplete) {
+    args.onComplete = () => {
+      el.classList.add("hidden");
+    };
+  }
+
+  animate(el, {
+    ...args,
+  });
+}
+
 export function hide(): void {
   requestDebouncedAnimationFrame("timer-progress.hide", () => {
-    animate(barOpacityEl, {
-      opacity: 0,
-      duration: applyReducedMotion(125),
-    });
-
-    animate(miniEl, {
-      opacity: 0,
-      duration: applyReducedMotion(125),
-      onComplete: () => {
-        miniEl.classList.add("hidden");
-      },
-    });
-
-    animate(textEl, {
-      opacity: 0,
-      duration: applyReducedMotion(125),
-      onComplete: () => {
-        textEl.classList.add("hidden");
-      },
-    });
+    hideElement(barOpacityEl, false);
+    hideElement(miniEl, true);
+    hideElement(textEl, true);
   });
 }
 
@@ -128,6 +114,24 @@ function getCurrentCount(): number {
     );
   } else {
     return TestInput.input.getHistory().length;
+  }
+}
+
+function updateTimerInputLength(el: HTMLElement, wrapInDiv: boolean): void {
+  let historyLength = `${TestInput.input.getHistory().length}`;
+
+  if (wrapInDiv) {
+    historyLength = `<div>${historyLength}</div>`;
+  }
+
+  el.innerHTML = historyLength;
+}
+
+function updateTimer(el: HTMLElement, outof: number): void {
+  if (outof === 0) {
+    updateTimerInputLength(el, false);
+  } else {
+    el.innerHTML = `${getCurrentCount()}/${outof}`;
   }
 }
 
@@ -216,39 +220,19 @@ export function update(): void {
           duration: 250,
         });
       } else if (Config.timerStyle === "text") {
-        if (outof === 0) {
-          textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
-        } else {
-          textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
-        }
+        updateTimer(textEl, outof);
       } else if (Config.timerStyle === "flash_mini") {
-        if (outof === 0) {
-          miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
-        } else {
-          miniEl.innerHTML = `${getCurrentCount()}/${outof}`;
-        }
+        updateTimer(miniEl, outof);
       } else if (Config.timerStyle === "flash_text") {
-        if (outof === 0) {
-          textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
-        } else {
-          textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
-        }
+        updateTimer(textEl, outof);
       } else if (Config.timerStyle === "mini") {
-        if (outof === 0) {
-          miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
-        } else {
-          miniEl.innerHTML = `${getCurrentCount()}/${outof}`;
-        }
+        updateTimer(miniEl, outof);
       }
     } else if (Config.mode === "zen") {
-      if (Config.timerStyle === "text") {
-        textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
-      } else if (Config.timerStyle === "flash_mini") {
-        miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
-      } else if (Config.timerStyle === "flash_text") {
-        textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
+      if (Config.timerStyle === "text" || Config.timerStyle === "flash_text") {
+        updateTimerInputLength(textEl, true);
       } else {
-        miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
+        updateTimerInputLength(miniEl, false);
       }
     }
   });
