@@ -182,7 +182,7 @@ export const HighlightModeSchema = z.enum([
 ]);
 export type HighlightMode = z.infer<typeof HighlightModeSchema>;
 
-export const TypedWordsSchema = z.enum(["show", "hide", "dots"]);
+export const TypedWordsSchema = z.enum(["show", "hide", "fade", "dots"]);
 export type TypedWords = z.infer<typeof TypedWordsSchema>;
 
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);

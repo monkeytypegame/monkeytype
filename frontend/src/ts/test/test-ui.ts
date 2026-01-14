@@ -2028,7 +2028,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
     void applyBurstHeatmap();
   }
-  if (key === "highlightMode" || key === "typedWords") {
+  if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,

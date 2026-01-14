@@ -527,7 +527,15 @@
     }
   }
 
+  &.typed-words-fade {
+    .word.typed {
+      animation: fadeOut 250ms ease-in 1 forwards;
+    }
+  }
+
   &.typed-words-dots:not(.withLigatures) {
+    /* transform already typed letters into appropriately colored dots */
+
     .word letter {
       position: relative;
       &::after {
