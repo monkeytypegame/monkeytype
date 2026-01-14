@@ -29,7 +29,3 @@ export type ColorName = keyof ThemeColors;
 
 export const [getThemeColors, setThemeColors] =
   createSignal<ThemeColors>(defaultTheme);
-
-export function resetThemeColors(): void {
-  setThemeColors(defaultTheme);
-}
