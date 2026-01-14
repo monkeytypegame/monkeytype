@@ -4,6 +4,12 @@ import {
   JSAnimation,
 } from "animejs";
 
+/**
+ * list of deferred callbacks to be executed once we reached ready state
+ */
+let readyList: (() => void)[] | undefined;
+let isReady = false;
+
 // Implementation
 /**
  * Query Selector
@@ -55,10 +61,18 @@ export function qsr<T extends HTMLElement = HTMLElement>(
 }
 
 /**
- * list of deferred callbacks to be executed once we reached ready state
+ * Execute a callback function when the DOM is fully loaded.
+ * Tries to mimic the ready function of jQuery https://github.com/jquery/jquery/blob/main/src/core/ready.js
+ * If the document is already loaded, the callback is executed in the next event loop
  */
-let readyList: (() => void)[] | undefined;
-let isReady = false;
+export function onDOMReady(callback: () => void): void {
+  bindReady();
+  if (isReady) {
+    setTimeout(callback);
+  } else {
+    readyList?.push(callback);
+  }
+}
 
 /**
  * initialize the readyList and bind the necessary events
@@ -111,21 +125,6 @@ function handleReady(): void {
     });
   }
   readyList = undefined;
-}
-
-/**
- * Execute a callback function when the DOM is fully loaded.
- * Tries to mimic the ready function of jQuery https://github.com/jquery/jquery/blob/main/src/core/ready.js
- * If you need to wait for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
- * If the document is already loaded, the callback is executed immediately.
- */
-export function onDOMReady(callback: () => void): void {
-  bindReady();
-  if (isReady) {
-    setTimeout(callback);
-  } else {
-    readyList?.push(callback);
-  }
 }
 
 /**
