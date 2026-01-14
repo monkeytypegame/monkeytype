@@ -1,5 +1,3 @@
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
 import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
@@ -9,13 +7,10 @@ import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
 import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
-import { tryCatch } from "@monkeytype/util/trycatch";
-import { qs, qsr, onDOMReady } from "../utils/dom";
+
+import { qs, qsr, onWindowLoad } from "../utils/dom";
 
 function reset(): void {
-  qs(".pageAbout .contributors")?.empty();
-  qs(".pageAbout .supporters")?.empty();
-
   ChartController.globalSpeedHistogram.getDataset("count").data = [];
   void ChartController.globalSpeedHistogram.updateColors();
 }
@@ -125,47 +120,9 @@ async function getStatsAndHistogramData(): Promise<void> {
 }
 
 async function fill(): Promise<void> {
-  const { data: supporters, error: supportersError } = await tryCatch(
-    JSONData.getSupportersList(),
-  );
-  if (supportersError) {
-    Notifications.add(
-      Misc.createErrorMessage(supportersError, "Failed to get supporters"),
-      -1,
-    );
-  }
-
-  const { data: contributors, error: contributorsError } = await tryCatch(
-    JSONData.getContributorsList(),
-  );
-  if (contributorsError) {
-    Notifications.add(
-      Misc.createErrorMessage(contributorsError, "Failed to get contributors"),
-      -1,
-    );
-  }
-
   void getStatsAndHistogramData().then(() => {
     updateStatsAndHistogram();
   });
-
-  const supportersEl = document.querySelector(".pageAbout .supporters");
-  let supportersHTML = "";
-  for (const supporter of supporters ?? []) {
-    supportersHTML += `<div>${Misc.escapeHTML(supporter)}</div>`;
-  }
-  if (supportersEl) {
-    supportersEl.innerHTML = supportersHTML;
-  }
-
-  const contributorsEl = document.querySelector(".pageAbout .contributors");
-  let contributorsHTML = "";
-  for (const contributor of contributors ?? []) {
-    contributorsHTML += `<div>${Misc.escapeHTML(contributor)}</div>`;
-  }
-  if (contributorsEl) {
-    contributorsEl.innerHTML = contributorsHTML;
-  }
 }
 
 /** Convert histogram data to the format required to draw a bar chart. */

@@ -1,7 +1,6 @@
 import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/about";
 import "./event-handlers/settings";
 import "./event-handlers/account";
 import "./event-handlers/leaderboards";

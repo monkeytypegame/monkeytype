@@ -4,10 +4,12 @@ import { qsa } from "../utils/dom";
 import { JSXElement } from "solid-js";
 import { Footer } from "./Footer";
 import { Modals } from "./Modals";
+import { AboutPage } from "./AboutPage";
 
 const components: Record<string, () => JSXElement> = {
   Footer: () => <Footer />,
   Modals: () => <Modals />,
+  AboutPage: () => <AboutPage />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

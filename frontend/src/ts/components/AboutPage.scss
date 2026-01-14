@@ -1,6 +1,6 @@
+@use "../../styles/media.scss" as *;
+
 .pageAbout {
-  display: flex;
-  flex-direction: column;
   gap: 2rem;
 
   h2 {
@@ -111,5 +111,50 @@
   .chart {
     margin-top: 1rem;
     position: relative;
+  }
+
+  .ad {
+    margin: 0 auto;
+  }
+
+  dl {
+    display: contents;
+  }
+
+  dt {
+    grid-column: 1;
+    margin: 0;
+    padding-right: 0.5em;
+  }
+
+  dd {
+    grid-column: 2;
+    margin: 0;
+  }
+
+  @include media-query(green) {
+    & {
+      .section {
+        .contactButtons {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    }
+  }
+  @include media-query(purple) {
+    & {
+      .section {
+        .contactButtons {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+  @include media-query(blue) {
+    & {
+      .triplegroup {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 }

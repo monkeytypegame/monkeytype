@@ -1,0 +1,348 @@
+import { createResource, For, JSXElement } from "solid-js";
+import "./AboutPage.scss";
+import { TextButton } from "./TextButton";
+import { showModal } from "../stores/modals";
+import AsyncContent from "./AsyncContent";
+import { getActivePage } from "../signals/core";
+import { getContributorsList, getSupportersList } from "../utils/json-data";
+
+export function AboutPage(): JSXElement {
+  const [contributors] = createResource(
+    () => getActivePage() === "about",
+    async (open) => (open ? await getContributorsList() : null),
+  );
+  const [supporters] = createResource(
+    () => getActivePage() === "about",
+    async (open) => (open ? await getSupportersList() : null),
+  );
+  return (
+    <>
+      <div class="created">
+        Created with love by Miodec.
+        <br />
+        <a href="#supporters_title">Supported</a> and&nbsp;
+        <a href="#contributors_title">expanded</a> by many awesome people.
+        <br />
+        Launched on 15th of May, 2020.
+      </div>
+      <div class="section histogramChart">
+        <div class="triplegroup">
+          <div
+            class="group"
+            id="totalStartedTestsStat"
+            aria-label=""
+            data-balloon-pos="up"
+          >
+            <div class="label">total tests started</div>
+            <div class="val">-</div>
+            <div class="valSmall">-</div>
+          </div>
+          <div
+            class="group"
+            id="totalTimeTypingStat"
+            aria-label=""
+            data-balloon-pos="up"
+          >
+            <div class="label">total typing time</div>
+            <div class="val">-</div>
+            <div class="valSmall">-</div>
+          </div>
+          <div
+            class="group"
+            id="totalCompletedTestsStat"
+            aria-label=""
+            data-balloon-pos="up"
+          >
+            <div class="label">total tests completed</div>
+            <div class="val">-</div>
+            <div class="valSmall">-</div>
+          </div>
+        </div>
+        <div>
+          <div class="chart" style={{ height: "200px" }}>
+            <canvas id="publicStatsHistogramChart"></canvas>
+          </div>
+          <p class="small">distribution of time 60 leaderboard results (wpm)</p>
+        </div>
+      </div>
+      <div class="section">
+        <div class="bigtitle">
+          <i class="fas fa-info-circle"></i>
+          about
+        </div>
+        <h2>
+          Monkeytype is a minimalistic and customizable typing test. It features
+          many test modes, an account system to save your typing speed history,
+          and user-configurable features such as themes, sounds, a smooth caret,
+          and more. Monkeytype attempts to emulate the experience of natural
+          keyboard typing during a typing test, by unobtrusively presenting the
+          text prompts and displaying typed characters in-place, providing
+          straightforward, real-time feedback on typos, speed, and accuracy.
+          <br />
+          <br />
+          Test yourself in various modes, track your progress and improve your
+          speed.
+        </h2>
+      </div>
+      <div class="section">
+        <div class="title">
+          <i class="fas fa-align-left"></i>
+          word set
+        </div>
+        <p>
+          By default, this website uses the most common 200 words in the English
+          language to generate its tests. You can change to an expanded set
+          (1000 most common words) in the options, or change the language
+          entirely.
+        </p>
+      </div>
+      <div class="section">
+        <div class="title">
+          <i class="fas fa-keyboard"></i>
+          keybinds
+        </div>
+        <p>
+          You can use
+          <kbd>tab</kbd>
+          and
+          <kbd>enter</kbd>
+          (or just
+          <kbd>tab</kbd>
+          if you have quick tab mode enabled) to restart the typing test. Open
+          the command line by pressing
+          <kbd>ctrl/cmd</kbd>+<kbd>shift</kbd>+<kbd>p</kbd>
+          or
+          <kbd>esc</kbd>- there you can access all the functionality you need
+          without touching your mouse.
+        </p>
+      </div>
+      <div class="section">
+        <div class="title">
+          <i class="fas fa-list-ol"></i>
+          stats
+        </div>
+
+        <dl>
+          <dt>wpm</dt>
+          <dd>
+            total number of characters in the correctly typed words (including
+            spaces), divided by 5 and normalised to 60 seconds.
+          </dd>
+
+          <dt>raw wpm</dt>
+          <dd>calculated just like wpm, but also includes incorrect words.</dd>
+
+          <dt>acc</dt>
+          <dd>percentage of correctly pressed keys.</dd>
+
+          <dt>char</dt>
+          <dd>
+            correct characters / incorrect characters. Calculated after the test
+            has ended.
+          </dd>
+
+          <dt>consistency</dt>
+          <dd>
+            based on the variance of your raw wpm. Closer to 100% is better.
+            Calculated using the coefficient of variation of raw wpm and mapped
+            onto a scale from 0 to 100.
+          </dd>
+        </dl>
+      </div>
+      <div id="ad-about-1-wrapper" class="ad full-width advertisement ad-h">
+        <div class="icon">
+          <i class="fas fa-ad"></i>
+        </div>
+        <div id="ad-about-1"></div>
+      </div>
+      <div id="ad-about-1-small-wrapper" class="ad advertisement ad-h-s">
+        <div class="icon small">
+          <i class="fas fa-ad"></i>
+        </div>
+        <div id="ad-about-1-small"></div>
+      </div>
+      <div class="section">
+        <div class="title">
+          <i class="fas fa-chart-area"></i>
+          results screen
+        </div>
+        <p>
+          After completing a test you will be able to see your wpm, raw wpm,
+          accuracy, character stats, test length, leaderboards info and test
+          info (you can hover over some values to get floating point numbers).
+          You can also see a graph of your wpm and raw over the duration of the
+          test. Remember that the wpm line is a global average, while the raw
+          wpm line is a local, momentary value (meaning if you stop, the value
+          is 0).
+        </p>
+      </div>
+      <div class="section">
+        <div class="title">
+          <i class="fas fa-bug"></i>
+          bug report or feature request
+        </div>
+        <p>
+          If you encounter a bug, or have a feature request - join the Discord
+          server, send me an email, a direct message on Twitter or create an
+          issue on GitHub.
+        </p>
+      </div>
+      <div></div>
+      <div class="section">
+        <div class="bigtitle">
+          <i class="fas fa-life-ring"></i>
+          support
+        </div>
+        <p>
+          Thanks to everyone who has supported this project. It would not be
+          possible without you and your continued support.
+        </p>
+        <div class="supportButtons">
+          <TextButton
+            icon="fa-donate"
+            onClick={() => showModal("Support")}
+            class=""
+          >
+            <div class="text">support</div>
+          </TextButton>
+        </div>
+      </div>
+      <div></div>
+      <div class="section">
+        <div class="bigtitle">
+          <i class="fas fa-envelope"></i>
+          contact
+        </div>
+        <p>
+          If you encounter a bug, have a feature request or just want to say hi
+          - here are the different ways you can contact me directly.
+        </p>
+        <div class="contactButtons">
+          <TextButton
+            icon="fa-envelope"
+            onClick={() => showModal("Contact")}
+            class=""
+          >
+            <div class="text">mail</div>
+          </TextButton>
+          <a
+            class="button"
+            href="https://x.com/monkeytype"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <div class="fab fa-twitter"></div>
+            twitter
+          </a>
+          <a
+            class="button"
+            href="https://discord.gg/monkeytype"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <div class="fab fa-discord"></div>
+            discord
+          </a>
+          <a
+            class="button"
+            href="https://github.com/monkeytypegame/monkeytype"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <div class="fab fa-github"></div>
+            github
+          </a>
+        </div>
+      </div>
+      <div></div>
+      <div class="section">
+        <div class="bigtitle">
+          <i class="fas fa-users"></i>
+          credits
+        </div>
+        <p>
+          <a
+            href="https://www.reddit.com/user/montydrei"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Montydrei
+          </a>
+          &nbsp;for the name suggestion
+        </p>
+        <p>
+          <a
+            href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Everyone
+          </a>
+          &nbsp;who provided valuable feedback on the original reddit post for
+          the prototype of this website
+        </p>
+        <p>
+          <a href="#supporters_title">Supporters</a> who helped financially by
+          donating, enabling optional ads or buying merch
+        </p>
+        <p>
+          <a
+            href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Contributors
+          </a>
+          &nbsp;on GitHub that have helped with implementing various features,
+          adding themes and more
+        </p>
+      </div>
+      <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">
+        <div class="icon">
+          <i class="fas fa-ad"></i>
+        </div>
+        <div id="ad-about-2"></div>
+      </div>
+      <div id="ad-about-2-small-wrapper" class="ad advertisement ad-h-s">
+        <div class="icon small">
+          <i class="fas fa-ad"></i>
+        </div>
+        <div id="ad-about-2-small"></div>
+      </div>
+      <div></div>
+      <div class="section">
+        <div id="supporters_title" class="bigtitle">
+          <i class="fas fa-hand-holding-usd"></i>
+          top supporters
+        </div>
+        <AsyncContent
+          resource={supporters}
+          errorMessage="Failed to get supporters"
+        >
+          {(data) => (
+            <div class="supporters">
+              <For each={data}>{(name) => <div>{name}</div>}</For>
+            </div>
+          )}
+        </AsyncContent>
+      </div>
+      <div></div>
+      <div class="section">
+        <div id="contributors_title" class="bigtitle">
+          <i class="fas fa-code-branch"></i>
+          contributors
+        </div>
+        <AsyncContent
+          resource={contributors}
+          errorMessage="Failed to get contributors"
+        >
+          {(data) => (
+            <div class="contributors">
+              <For each={data}>{(name) => <div>{name}</div>}</For>
+            </div>
+          )}
+        </AsyncContent>
+      </div>
+    </>
+  );
+}
