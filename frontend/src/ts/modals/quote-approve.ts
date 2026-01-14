@@ -1,4 +1,3 @@
-import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -6,7 +5,7 @@ import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Quote } from "@monkeytype/schemas/quotes";
 import { escapeHTML } from "../utils/misc";
-import { qsr, createElementWithUtils, ElementWithUtils } from "../utils/dom";
+import { createElementWithUtils, ElementWithUtils } from "../utils/dom";
 
 let quotes: Quote[] = [];
 
@@ -70,22 +69,19 @@ function updateList(): void {
 }
 
 function updateQuoteLength(index: number): void {
+  const modalEl = modal.getModal();
   const len = (
-    qsr<HTMLTextAreaElement>(
-      `#quoteApproveModal .quote[data-id="${index}"] .text`,
-    ).getValue() as string
+    modalEl
+      .qsr<HTMLTextAreaElement>(`.quote[data-id="${index}"] .text`)
+      .getValue() as string
   )?.length;
-  qsr(`#quoteApproveModal .quote[data-id="${index}"] .length`).setHtml(
-    `<i class="fas fa-fw fa-ruler"></i>${len}`,
-  );
+  modalEl
+    .qsr(`.quote[data-id="${index}"] .length`)
+    .setHtml(`<i class="fas fa-fw fa-ruler"></i>${len}`);
   if (len < 60) {
-    qsr(`#quoteApproveModal .quote[data-id="${index}"] .length`).addClass(
-      "red",
-    );
+    modalEl.qsr(`.quote[data-id="${index}"] .length`).addClass("red");
   } else {
-    qsr(`#quoteApproveModal .quote[data-id="${index}"] .length`).removeClass(
-      "red",
-    );
+    modalEl.qsr(`.quote[data-id="${index}"] .length`).removeClass("red");
   }
 }
 
@@ -120,7 +116,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 // }
 
 function resetButtons(index: number): void {
-  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  const quote = modal.getModal().qsr(`.quotes .quote[data-id="${index}"]`);
   quote.qsa("button").enable();
   if (quote.qsr(".edit").hasClass("hidden")) {
     quote.qsr(".undo").disable();
@@ -128,21 +124,22 @@ function resetButtons(index: number): void {
 }
 
 function undoQuote(index: number): void {
-  qsr<HTMLTextAreaElement>(
-    `#quoteApproveModal .quote[data-id="${index}"] .text`,
-  ).setValue(quotes[index]?.text ?? "");
-  qsr<HTMLInputElement>(
-    `#quoteApproveModal .quote[data-id="${index}"] .source`,
-  ).setValue(quotes[index]?.source ?? "");
-  qsr(`#quoteApproveModal .quote[data-id="${index}"] .undo`).disable();
-  qsr(`#quoteApproveModal .quote[data-id="${index}"] .approve`).show();
-  qsr(`#quoteApproveModal .quote[data-id="${index}"] .edit`).hide();
+  const modalEl = modal.getModal();
+  modalEl
+    .qsr<HTMLTextAreaElement>(`.quote[data-id="${index}"] .text`)
+    .setValue(quotes[index]?.text ?? "");
+  modalEl
+    .qsr<HTMLInputElement>(`.quote[data-id="${index}"] .source`)
+    .setValue(quotes[index]?.source ?? "");
+  modalEl.qsr(`.quote[data-id="${index}"] .undo`).disable();
+  modalEl.qsr(`.quote[data-id="${index}"] .approve`).show();
+  modalEl.qsr(`.quote[data-id="${index}"] .edit`).hide();
   updateQuoteLength(index);
 }
 
 async function approveQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
-  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  const quote = modal.getModal().qsr(`.quotes .quote[data-id="${index}"]`);
   quote.qsa("button").disable();
   quote.qsa("textarea, input").disable();
 
@@ -166,7 +163,7 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
 
 async function refuseQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
-  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  const quote = modal.getModal().qsr(`.quotes .quote[data-id="${index}"]`);
   quote.qsa("button").disable();
   quote.qsa("textarea, input").disable();
 
@@ -190,13 +187,14 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
 
 async function editQuote(index: number, dbid: string): Promise<void> {
   if (!confirm("Are you sure?")) return;
-  const editText = qsr<HTMLTextAreaElement>(
-    `#quoteApproveModal .quote[data-id="${index}"] .text`,
-  ).getValue() as string;
-  const editSource = qsr<HTMLInputElement>(
-    `#quoteApproveModal .quote[data-id="${index}"] .source`,
-  ).getValue() as string;
-  const quote = qsr(`#quoteApproveModal .quotes .quote[data-id="${index}"]`);
+  const modalEl = modal.getModal();
+  const editText = modalEl
+    .qsr<HTMLTextAreaElement>(`.quote[data-id="${index}"] .text`)
+    .getValue() as string;
+  const editSource = modalEl
+    .qsr<HTMLInputElement>(`.quote[data-id="${index}"] .source`)
+    .getValue() as string;
+  const quote = modalEl.qsr(`.quotes .quote[data-id="${index}"]`);
   quote.qsa("button").disable();
   quote.qsa("textarea, input").disable();
 
@@ -227,7 +225,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
 
 async function setup(modalEl: ElementWithUtils): Promise<void> {
   modalEl.qs("button.refreshList")?.on("click", () => {
-    $("#quoteApproveModal .quotes").empty();
+    modalEl.qsr(".quotes").empty();
     void getQuotes();
   });
 }

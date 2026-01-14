@@ -8,10 +8,6 @@ import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";
 
-let state = {
-  offset: 0,
-};
-
 export function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -21,7 +17,7 @@ export function show(): void {
   }
 
   void modal.show({
-    focusFirstInput: "focusAndSelect",
+    focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       if (getSnapshot()?.streakHourOffset !== undefined) {
         modalEl.qs("input")?.remove();
@@ -47,7 +43,10 @@ function updatePreview(): void {
   const preview = modal.getModal().qs(".preview");
 
   const date = new Date();
-  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCHours(0);
+  date.setUTCMinutes(0);
+  date.setUTCSeconds(0);
+  date.setUTCMilliseconds(0);
 
   const newDate = new Date();
   newDate.setUTCHours(0);
@@ -78,11 +77,8 @@ async function apply(): Promise<void> {
     return;
   }
 
-  if (value < -11 || value > 12 || (value % 1 !== 0 && value % 1 !== 0.5)) {
-    Notifications.add(
-      "Streak offset must be between -11 and 12. Times ending in .5 can be used for 30-minute increments.",
-      0,
-    );
+  if (value < -11 || value > 12) {
+    Notifications.add("Streak hour offset must be between -11 and 12", 0);
     return;
   }
 
@@ -92,29 +88,14 @@ async function apply(): Promise<void> {
     body: { hourOffset: value },
   });
   Loader.hide();
-
   if (response.status !== 200) {
     Notifications.add("Failed to set streak hour offset", -1, { response });
   } else {
     Notifications.add("Streak hour offset set", 1);
     const snap = getSnapshot() as Snapshot;
-
     snap.streakHourOffset = value;
     setSnapshot(snap);
     hide();
-  }
-}
-
-function setStateToInput(): void {
-  const inputValue = parseFloat(
-    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "0",
-  );
-  if (!isNaN(inputValue)) {
-    state.offset = inputValue;
-    if (state.offset < -11) state.offset = -11;
-    if (state.offset > 12) state.offset = 12;
-  } else {
-    state.offset = 0;
   }
 }
 
@@ -126,18 +107,6 @@ const modal = new AnimatedModal({
     });
     modalEl.qs("button")?.on("click", () => {
       void apply();
-    });
-    modalEl.qs(".decreaseOffset")?.on("click", () => {
-      state.offset -= 0.5;
-      if (state.offset < -11) state.offset = -11;
-      updateDisplay();
-      updatePreview();
-    });
-    modalEl.qs(".increaseOffset")?.on("click", () => {
-      state.offset += 0.5;
-      if (state.offset > 12) state.offset = 12;
-      updateDisplay();
-      updatePreview();
     });
   },
 });

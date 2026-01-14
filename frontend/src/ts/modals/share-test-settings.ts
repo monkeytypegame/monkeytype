@@ -1,4 +1,3 @@
-import { ElementWithUtils } from "../utils/dom";
 import Config from "../config";
 import { currentQuote } from "../test/test-words";
 import { getMode2 } from "../utils/misc";
