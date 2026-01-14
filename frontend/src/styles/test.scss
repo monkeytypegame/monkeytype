@@ -396,6 +396,8 @@
     --untyped-letter-color: var(--sub-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    --c-dot: var(--main-color);
+    --c-dot--error: var(--colorful-error-color);
     &.blind .word.error {
       border-bottom: 2px solid transparent;
     }
@@ -515,6 +517,54 @@
       letter {
         color: var(--incorrect-letter-color);
         animation: var(--incorrect-letter-animation);
+      }
+    }
+  }
+
+  &.typed-words-hide {
+    .word.typed {
+      opacity: 0;
+    }
+  }
+
+  &.typed-words-dots:not(.withLigatures) {
+    .word letter {
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1em;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        opacity: 0;
+      }
+    }
+    .typed letter {
+      color: var(--bg-color);
+      animation: typedWordsToDust 200ms ease-out 0ms 1 forwards !important;
+      &::after {
+        animation: typedWordsFadeIn 100ms ease-in 100ms 1 forwards;
+        background: var(--c-dot);
+      }
+    }
+    &:not(.blind) {
+      .word letter.incorrect::after {
+        background: var(--c-dot--error);
+      }
+    }
+
+    @media (prefers-reduced-motion) {
+      .typed letter {
+        animation: none !important;
+        transform: scale(0.4);
+        color: transparent;
+        &::after {
+          animation: none !important;
+          opacity: 1;
+        }
       }
     }
   }
@@ -1416,6 +1466,9 @@
         rgba(0, 0, 0, 0) 99%
       );
     }
+
+    --c-dot: var(--text-color);
+    --c-dot--error: var(--error-color);
   }
   #memoryTimer,
   #layoutfluidTimer {

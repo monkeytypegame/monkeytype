@@ -450,9 +450,16 @@ function updateWordWrapperClasses(): void {
   const existing =
     wordsEl?.className
       .split(/\s+/)
-      .filter((className) => !className.startsWith("highlight-")) ?? [];
+      .filter(
+        (className) =>
+          !className.startsWith("highlight-") &&
+          !className.startsWith("typed-words-"),
+      ) ?? [];
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
+  }
+  if (Config.typedWords !== null) {
+    existing.push("typed-words-" + Config.typedWords.replaceAll("_", "-"));
   }
   wordsEl.className = existing.join(" ");
 
@@ -2021,7 +2028,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
     void applyBurstHeatmap();
   }
-  if (key === "highlightMode") {
+  if (key === "highlightMode" || key === "typedWords") {
     if (getActivePage() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
@@ -2033,6 +2040,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   if (
     [
       "highlightMode",
+      "typedWords",
       "blindMode",
       "indicateTypos",
       "tapeMode",

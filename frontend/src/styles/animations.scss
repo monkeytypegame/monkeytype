@@ -130,3 +130,37 @@
     background-position: 0% 50%;
   }
 }
+
+@keyframes typedWordsFadeIn {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes typedWordsToDust {
+  0% {
+    transform: scale(1);
+    color: var(--current-color);
+  }
+  10% {
+    /* transform: scale(1); */
+  }
+  15% {
+    transform: scale(1);
+    color: var(--c-dot);
+  }
+  80% {
+    /* transform: scale(0.5); */
+    color: var(--c-dot);
+  }
+  100% {
+    transform: scale(0.4);
+    color: transparent;
+  }
+}
