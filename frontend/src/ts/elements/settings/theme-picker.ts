@@ -41,12 +41,10 @@ function updateColors(
   color: string,
   props?: { convertColor?: boolean; noThemeUpdate?: boolean },
 ): void {
-  console.log("### update colors", { key, color, props });
   const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
 
   if (props?.convertColor) {
     color = convertColorToHex(color) ?? "error";
-    console.log("converted value", color);
   }
 
   if (!props?.noThemeUpdate) {
@@ -285,7 +283,7 @@ function convertColorToHex(color: string): string | undefined {
     const r = clamp(rgbMatch[1] as string);
     const g = clamp(rgbMatch[2] as string);
     const b = clamp(rgbMatch[3] as string);
-    return Colors.rgbNumbersToHex(r, g, b);
+    return Colors.rgbToHex(r, g, b);
   }
 
   const hslMatch =
@@ -299,7 +297,7 @@ function convertColorToHex(color: string): string | undefined {
     const s = clamp(hslMatch[2] as string) / 100;
     const l = clamp(hslMatch[3] as string) / 100;
     const { r, g, b } = Colors.hslToRgb(h, s, l);
-    return Colors.rgbNumbersToHex(r, g, b);
+    return Colors.rgbToHex(r, g, b);
   }
   return undefined;
 }
