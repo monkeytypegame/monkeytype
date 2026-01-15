@@ -68,12 +68,18 @@ export function clear(element?: HTMLElement): void {
   element?.querySelector(".activity")?.replaceChildren();
 }
 
-function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
+function update(
+  element: HTMLElement,
+  calendar?: TestActivityCalendar,
+  fullYear = false,
+): void {
   const container = element.querySelector(".activity");
 
   if (container === null) {
     return;
   }
+
+  let calendarToShow = calendar;
 
   container.innerHTML = "";
 
@@ -84,7 +90,13 @@ function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
     return;
   }
 
-  updateMonths(calendar.getMonths());
+  if (fullYear) {
+    calendarToShow = calendar.getFullYearCalendar();
+  } else {
+    calendarToShow = calendar;
+  }
+
+  updateMonths(calendarToShow.getMonths());
   element.querySelector(".nodata")?.classList.add("hidden");
 
   const title = element.querySelector(".title");
@@ -94,7 +106,7 @@ function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
     }
   }
 
-  for (const day of calendar.getDays()) {
+  for (const day of calendarToShow.getDays()) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
@@ -166,11 +178,20 @@ function getYearSelector(element: HTMLElement): SlimSelect {
         // oxlint-disable-next-line no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
-        if (activityByYear === undefined) {
-          await initActivityByYear();
+        const currentYear = new Date().getFullYear().toString();
+
+        if (selected === "current") {
+          update(element, calendar, false);
+        } else if (selected === currentYear) {
+          update(element, calendar, true);
+        } else {
+          if (activityByYear === undefined) {
+            await initActivityByYear();
+          }
+          const activity = activityByYear?.get(selected);
+          update(element, activity, true);
         }
-        const activity = activityByYear?.get(selected);
-        update(element, activity);
+
         // oxlint-disable-next-line no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
           // oxlint-disable-next-line no-unsafe-call
