@@ -186,45 +186,49 @@ qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
   StreakHourOffsetModal.show();
 });
 
-$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
+qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
   showPopup("unlinkDiscord");
 });
 
-$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
   showPopup("removeGoogleAuth");
 });
 
-$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
   showPopup("removeGithubAuth");
 });
 
-$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
   showPopup("removePasswordAuth");
 });
 
-$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
 });
 
-$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
   showPopup("updateEmail");
 });
 
-$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
+qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
   showPopup("updatePassword");
 });
 
-$(".pageAccountSettings").on("click", "#deleteAccount", () => {
+qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
   showPopup("deleteAccount");
 });
 
-$(".pageAccountSettings").on("click", "#resetAccount", () => {
+qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
   showPopup("resetAccount");
 });
 
-$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
-  showPopup("optOutOfLeaderboards");
-});
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#optOutOfLeaderboardsButton",
+  () => {
+    showPopup("optOutOfLeaderboards");
+  },
+);
 
 AuthEvent.subscribe((event) => {
   if (event.type === "authConfigUpdated") {
