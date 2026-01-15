@@ -15,12 +15,12 @@ const state: State = {
 
 function updateUI(): void {
   const modalEl = modal.getModal();
-  modalEl.qs(`.group[data-id="missed"] button`)?.removeClass("active");
+  modalEl.qsa(`.group[data-id="missed"] button`).removeClass("active");
   modalEl
     .qs(`.group[data-id="missed"] button[value="${state.missed}"]`)
     ?.addClass("active");
 
-  modalEl.qs(`.group[data-id="slow"] button`)?.removeClass("active");
+  modalEl.qsa(`.group[data-id="slow"] button`).removeClass("active");
   modalEl
     .qs(`.group[data-id="slow"] button[value="${state.slow}"]`)
     ?.addClass("active");

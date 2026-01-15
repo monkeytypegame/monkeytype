@@ -20,7 +20,6 @@ type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
   CustomTextSettings | null,
-  CustomTextSettings | null,
   boolean | null,
   boolean | null,
   string | null,

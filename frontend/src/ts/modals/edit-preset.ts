@@ -21,7 +21,7 @@ import {
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import { configMetadata } from "../config-metadata";
 
 const state = {
@@ -229,9 +229,7 @@ async function apply(): Promise<void> {
     .qsr<HTMLInputElement>(".group input[title='presets']")
     .getValue() as string;
   const presetName = propPresetName.replaceAll(" ", "_");
-  const presetId = qsr("#editPresetModal .modal").getAttribute(
-    "data-preset-id",
-  ) as string;
+  const presetId = modalEl.getAttribute("data-preset-id") as string;
 
   const updateConfig = modalEl
     .qsr<HTMLInputElement>("label.changePresetToCurrentCheckbox input")
