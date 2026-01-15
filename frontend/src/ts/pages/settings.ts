@@ -980,29 +980,33 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
     });
 });
 
-$(".pageSettings").on(
+qs(".pageSettings")?.onChild(
   "click",
   ".section.themes .customTheme .delButton",
   (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
+    const parentElement = (e.childTarget as HTMLElement).closest(
+      ".customTheme.button",
+    ) as HTMLElement;
+    const customThemeId = parentElement.getAttribute("customThemeId") as string;
     showPopup("deleteCustomTheme", [customThemeId]);
   },
 );
 
-$(".pageSettings").on(
+qs(".pageSettings")?.onChild(
   "click",
   ".section.themes .customTheme .editButton",
   (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
+    const parentElement = (e.childTarget as HTMLElement).closest(
+      ".customTheme.button",
+    ) as HTMLElement;
+    const customThemeId = parentElement.getAttribute("customThemeId") as string;
     showPopup("updateCustomTheme", [customThemeId], {
       focusFirstInput: "focusAndSelect",
     });
   },
 );
 
-$(".pageSettings").on(
+qs(".pageSettings")?.onChild(
   "click",
   ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
   () => {
@@ -1010,7 +1014,7 @@ $(".pageSettings").on(
   },
 );
 
-$("#resetSettingsButton").on("click", () => {
+qs(".pageSettings #resetSettingsButton")?.on("click", () => {
   showPopup("resetSettings");
 });
 
