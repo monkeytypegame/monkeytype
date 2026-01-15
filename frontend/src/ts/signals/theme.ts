@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 
 const defaultTheme: ThemeColors = {
   bg: "#323437",
@@ -27,5 +27,8 @@ export type ThemeColors = {
 };
 export type ColorName = keyof ThemeColors;
 
-export const [getThemeColors, setThemeColors] =
-  createSignal<ThemeColors>(defaultTheme);
+const [themeColors, setThemeColors] = createSignal<ThemeColors>(defaultTheme);
+
+const getThemeColors = createMemo(() => themeColors());
+
+export { getThemeColors, setThemeColors };

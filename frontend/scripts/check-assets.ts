@@ -17,7 +17,7 @@ import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
-import { ThemesList } from "../src/ts/constants/themes";
+import { themes, ThemeSchema, ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
 import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
@@ -381,19 +381,26 @@ async function validateThemes(): Promise<void> {
   //no missing files
   const themeFiles = fs.readdirSync("./static/themes");
 
-  //missing theme files
-  ThemesList.filter((it) => !themeFiles.includes(it.name + ".css")).forEach(
-    (it) =>
-      problems.add(
-        it.name,
-        `missing file frontend/static/themes/${it.name}.css`,
-      ),
+  //missing or additional theme files (mismatch in hasCss)
+  ThemesList.filter(
+    (it) => themeFiles.includes(it.name + ".css") !== (it.hasCss ?? false),
+  ).forEach((it) =>
+    problems.add(
+      it.name,
+      `${it.hasCss ? "missing" : "additional"} file frontend/static/themes/${it.name}.css`,
+    ),
   );
 
   //additional theme files
   themeFiles
     .filter((it) => !ThemesList.some((theme) => theme.name + ".css" === it))
     .forEach((it) => problems.add("_additional", it));
+
+  //validate theme colors are valid hex colors, not covered by typescipt
+  for (const name of Object.keys(themes)) {
+    const theme = themes[name as ThemeName];
+    problems.addValidation(name as ThemeName, ThemeSchema.safeParse(theme));
+  }
 
   console.log(problems.toString());
 

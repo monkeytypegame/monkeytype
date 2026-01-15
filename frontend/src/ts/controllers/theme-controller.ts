@@ -7,7 +7,6 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
@@ -67,13 +66,17 @@ async function updateFavicon(): Promise<void> {
   }, 125);
 }
 
-function clearCustomTheme(): void {
+function _clearCustomTheme(): void {
   console.debug("Theme controller clearing custom theme");
   for (const e of colorVars) {
     document.documentElement.style.setProperty(e, "");
   }
 }
 
+export function applyPreset(name: ThemeName): void {
+  void apply(name);
+}
+/*
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
 export async function loadStyle(
   name: string,
@@ -126,27 +129,26 @@ export async function loadStyle(
       afterLoad();
     };
 
-    if (name !== "custom") {
+    if (props.hasCss) {
       link.href = `/themes/${name}.css`;
+    } else {
     }
 
-    if (props.hasCss) {
-      if (headScript === null) {
-        console.debug("Theme controller appending link to the head", link);
-        document.head.appendChild(link);
-      } else {
-        console.debug(
-          "Theme controller inserting link after current theme",
-          link,
-        );
-        headScript.after(link);
-      }
+    console.log("### setting css to ", link.href);
+
+    if (headScript === null) {
+      console.debug("Theme controller appending link to the head", link);
+      document.head.appendChild(link);
     } else {
-      afterLoad();
+      console.debug(
+        "Theme controller inserting link after current theme",
+        link,
+      );
+      headScript.after(link);
     }
   });
 }
-
+*/
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
 //   const colors = customThemes.find((e) => e._id === themeId)
@@ -156,7 +158,6 @@ export async function loadStyle(
 
 function convertToTheme(colors: string[]): Theme {
   return {
-    name: "Custom" as ThemeName,
     bg: colors[0] as string,
     main: colors[1] as string,
     caret: colors[2] as string,
@@ -209,12 +210,13 @@ async function apply(
   }*/
 
   qsa("#keymap .keymapKey")?.setStyle({});
-  await loadStyle(name, { hasCss: themeColors.hasCss ?? false });
+  //TODO moved
+  //await loadStyle(name, { hasCss: themeColors.hasCss ?? false });
 
   //TODO not needed?!
-  if (name !== "custom") {
-    clearCustomTheme();
-  }
+  //if (name !== "custom") {
+  //    clearCustomTheme();
+  //  }
 
   // if (!isPreview) {
   qsa("#keymap .keymapKey")?.setStyle({});
