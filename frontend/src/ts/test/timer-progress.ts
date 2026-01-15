@@ -117,7 +117,7 @@ function setTimerHtmlToInputLength(el: HTMLElement, wrapInDiv: boolean): void {
   let historyLength = `${TestInput.input.getHistory().length}`;
 
   if (wrapInDiv) {
-    historyLength = "<div>" + historyLength + "</div>";
+    historyLength = `<div>${historyLength}</div>`;
   }
 
   el.innerHTML = historyLength;
