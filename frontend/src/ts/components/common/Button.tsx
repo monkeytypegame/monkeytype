@@ -13,6 +13,7 @@ type BaseProps = {
 type ButtonProps = BaseProps & {
   onClick: () => void;
   href?: never;
+  sameTarget?: true;
 };
 
 type AnchorProps = BaseProps & {
@@ -53,8 +54,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
         <a
           classList={getClassList()}
           href={props.href}
-          target="_blank"
-          rel="noreferrer noopener"
+          target={props.href?.startsWith("#") ? undefined : "_blank"}
+          rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
         >
           {content}
         </a>

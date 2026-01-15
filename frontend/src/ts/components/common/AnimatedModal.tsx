@@ -1,12 +1,12 @@
 import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
-import { applyReducedMotion } from "../utils/misc";
-import { useRefWithUtils } from "../hooks/useRefWithUtils";
+import { applyReducedMotion } from "../../utils/misc";
+import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
   hideModal as storeHideModal,
   ModalId,
   isModalOpen,
   isModalChained,
-} from "../stores/modals";
+} from "../../stores/modals";
 
 type AnimationParams = {
   opacity?: number | [number, number];

@@ -1,10 +1,10 @@
 import { JSXElement, Show } from "solid-js";
-import { getThemeIndicator } from "../signals/core";
-import Config, { setConfig } from "../config";
-import { isAuthenticated } from "../firebase";
-import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
-import * as Commandline from "../commandline/commandline";
+import { getThemeIndicator } from "../../../signals/core";
+import Config, { setConfig } from "../../../config";
+import { isAuthenticated } from "../../../firebase";
+import * as DB from "../../../db";
+import * as Notifications from "../../../elements/notifications";
+import * as Commandline from "../../../commandline/commandline";
 import "./ThemeIndicator.scss";
 
 export function ThemeIndicator(): JSXElement {

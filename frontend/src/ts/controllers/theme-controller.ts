@@ -171,8 +171,6 @@ async function apply(
     }
   }
 
-  ThemeColors.reset();
-
   qsa("#keymap .keymapKey")?.setStyle({});
   await loadStyle(name);
 

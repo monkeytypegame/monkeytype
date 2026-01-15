@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 import { VersionButton } from "./VersionButton";
-import { Button } from "./Button";
-import { showModal } from "../stores/modals";
+import { Button } from "../../common/Button";
+import { showModal } from "../../../stores/modals";
 import "./Footer.scss";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { ScrollToTop } from "./ScrollToTop";

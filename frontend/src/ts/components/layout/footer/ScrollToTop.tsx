@@ -1,5 +1,5 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../../../signals/core";
 import "./ScrollToTop.scss";
 
 export function ScrollToTop(): JSXElement {
