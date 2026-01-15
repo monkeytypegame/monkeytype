@@ -231,8 +231,6 @@ $(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
   showPopup("removePasswordAuth");
 });
 
-
-
 $(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
 });
