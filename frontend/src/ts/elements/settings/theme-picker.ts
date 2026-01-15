@@ -395,9 +395,9 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   ThemeController.applyPreset(Config.theme);
   const themeColors = getThemeColors();
 
-  Misc.typedKeys(themeColors).forEach((key) =>
-    updateColors(key, themeColors[key] as string),
-  );
+  Misc.typedKeys(themeColors)
+    .filter((it) => it !== "hasCss")
+    .forEach((key) => updateColors(key, themeColors[key]));
 });
 
 $(".pageSettings #saveCustomThemeButton").on("click", async () => {
