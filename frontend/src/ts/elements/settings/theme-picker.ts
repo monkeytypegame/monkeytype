@@ -41,10 +41,12 @@ function updateColors(
   color: string,
   props?: { convertColor?: boolean; noThemeUpdate?: boolean },
 ): void {
+  console.log("### update colors", { key, color, props });
   const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
 
-  if (!props?.convertColor) {
-    color = convertColorToHex(color) ?? color;
+  if (props?.convertColor) {
+    color = convertColorToHex(color) ?? "error";
+    console.log("converted value", color);
   }
 
   if (!props?.noThemeUpdate) {
@@ -261,57 +263,45 @@ export async function updateThemeUI(): Promise<void> {
   updateActiveButton();
 }
 
-const converter = qsr(".colorConverter");
 /**
  *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
  * @param color as hex, hsl or rgb
  * @returns  hex color
  */
 function convertColorToHex(color: string): string | undefined {
-  const colorREGEX = [
-    {
-      rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
-      start: "rgb(",
-      end: ")",
-      type: "rgb",
-    },
-    {
-      rule: /\b[A-Z, a-z, 0-9]{6}\b/,
-      start: "#",
-      end: "",
-      type: "hex",
-    },
-    {
-      rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
-      start: "hsl(",
-      end: ")",
-      type: "hsl",
-    },
-  ];
-
-  color = color.replace("°", "");
-
-  let matchedType;
-  for (const regex of colorREGEX) {
-    if (color.match(regex.rule)) {
-      color = regex.start + color + regex.end;
-      matchedType = regex.type;
-      break;
-    }
+  const input = color.trim().toLocaleLowerCase();
+  if (/^#[0-9a-f]{6}$/i.test(input)) {
+    return input;
   }
 
-  color = color.replace("##", "#");
+  const rgbMatch =
+    input.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/) ??
+    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
 
-  if (matchedType === "hex") {
-    console.log("quick exit");
-    return color;
+  if (rgbMatch !== null) {
+    const clamp = (n: string): number =>
+      Math.max(0, Math.min(255, Number.parseFloat(n)));
+
+    const r = clamp(rgbMatch[1] as string);
+    const g = clamp(rgbMatch[2] as string);
+    const b = clamp(rgbMatch[3] as string);
+    return Colors.rgbNumbersToHex(r, g, b);
   }
 
-  converter.setStyle({ color: color });
-  const hexColor: string | undefined = Colors.rgbStringtoHex(
-    converter.native.style.color,
-  );
-  return hexColor;
+  const hslMatch =
+    input.match(/^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/) ??
+    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%$/);
+
+  if (hslMatch) {
+    const clamp = (n: string): number =>
+      Math.max(0, Math.min(255, Number.parseFloat(n)));
+    const h = Number.parseFloat(hslMatch[1] as string) % 360;
+    const s = clamp(hslMatch[2] as string) / 100;
+    const l = clamp(hslMatch[3] as string) / 100;
+    const { r, g, b } = Colors.hslToRgb(h, s, l);
+    return Colors.rgbNumbersToHex(r, g, b);
+  }
+  return undefined;
 }
 
 // Add events to the DOM
