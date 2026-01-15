@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #2c003e;
-  --main-color: #ff8f00;
-  --caret-color: #ff8f00;
-  --sub-color: #6e225e;
-  --sub-alt-color: #1f002d;
-  --text-color: #fff;
-  --error-color: #ff4081;
-  --error-extra-color: #bf2054;
-  --colorful-error-color: #ff4081;
-  --colorful-error-extra-color: #bf2054;
-}
-
 @keyframes pastel {
   0% {
     color: #00b8d4;

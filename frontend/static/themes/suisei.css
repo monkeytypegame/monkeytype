@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #3b4a62;
-  --main-color: #bef0ff;
-  --caret-color: #bef0ff;
-  --sub-color: #fe9841;
-  --sub-alt-color: #313e55;
-  --text-color: #dbdeeb;
-  --error-color: #ed2939;
-  --error-extra-color: #ce122c;
-  --colorful-error-color: #ed2939;
-  --colorful-error-extra-color: #ce122c;
-}
-
 @keyframes pulse {
   0% {
     transform: scale(1);

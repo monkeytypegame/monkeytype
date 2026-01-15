@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #001;
-  --main-color: #7aa2f7;
-  --caret-color: #bb9af7;
-  --sub-color: #414868;
-  --sub-alt-color: #24283b;
-  --text-color: #c0caf5;
-  --error-color: #f7768e;
-  --error-extra-color: #db4b4b;
-  --colorful-error-color: #ff7a93;
-  --colorful-error-extra-color: #ff9e64;
-}
-
 @keyframes tokyo-glow {
   0% {
     color: #c0caf5;
