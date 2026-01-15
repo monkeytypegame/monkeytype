@@ -6,7 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
-import { ElementWithUtils } from "../utils/dom";
+import { qs, ElementWithUtils } from "../utils/dom";
 
 let rating = 0;
 
@@ -26,12 +26,13 @@ export function clearQuoteStats(): void {
 }
 
 function reset(): void {
-  $(`#quoteRateModal .quote .text`).text("-");
-  $(`#quoteRateModal .quote .source .val`).text("-");
-  $(`#quoteRateModal .quote .id .val`).text("-");
-  $(`#quoteRateModal .quote .length .val`).text("-");
-  $("#quoteRateModal .ratingCount .val").text("-");
-  $("#quoteRateModal .ratingAverage .val").text("-");
+  const modalEl = modal.getModal();
+  modalEl.qsr(`.quote .text`).setText("-");
+  modalEl.qsr(`.quote .source .val`).setText("-");
+  modalEl.qsr(`.quote .id .val`).setText("-");
+  modalEl.qsr(`.quote .length .val`).setText("-");
+  modalEl.qsr(".ratingCount .val").setText("-");
+  modalEl.qsr(".ratingAverage .val").setText("-");
 }
 
 function getRatingAverage(quoteStats: QuoteStats): number {
@@ -78,19 +79,24 @@ export async function getQuoteStats(
 }
 
 function refreshStars(force?: number): void {
+  const modalEl = modal.getModal();
   const limit = force ?? rating;
-  $(`#quoteRateModal .star`).removeClass("active");
+  modalEl.qsa(`.star`).removeClass("active");
   for (let i = 1; i <= limit; i++) {
-    $(`#quoteRateModal .star[data-rating=${i}]`).addClass("active");
+    modalEl.qsr(`.star[data-rating="${i}"]`).addClass("active");
   }
 }
 
 async function updateRatingStats(): Promise<void> {
   if (!quoteStats) await getQuoteStats();
-  $("#quoteRateModal .ratingCount .val").text(quoteStats?.ratings ?? "0");
-  $("#quoteRateModal .ratingAverage .val").text(
-    quoteStats?.average?.toFixed(1) ?? "-",
-  );
+  const modalEl = modal.getModal();
+  const ratings = quoteStats?.ratings;
+  modalEl
+    .qsr(".ratingCount .val")
+    .setText(ratings === undefined ? "0" : ratings.toString());
+  modalEl
+    .qsr(".ratingAverage .val")
+    .setText(quoteStats?.average?.toFixed(1) ?? "-");
 }
 
 function updateData(): void {
@@ -105,10 +111,11 @@ function updateData(): void {
   } else if (currentQuote.group === 3) {
     lengthDesc = "thicc";
   }
-  $(`#quoteRateModal .quote .text`).text(currentQuote.text);
-  $(`#quoteRateModal .quote .source .val`).text(currentQuote.source);
-  $(`#quoteRateModal .quote .id .val`).text(currentQuote.id);
-  $(`#quoteRateModal .quote .length .val`).text(lengthDesc as string);
+  const modalEl = modal.getModal();
+  modalEl.qsr(`.quote .text`).setText(currentQuote.text);
+  modalEl.qsr(`.quote .source .val`).setText(currentQuote.source);
+  modalEl.qsr(`.quote .id .val`).setText(`${currentQuote.id}`);
+  modalEl.qsr(`.quote .length .val`).setText(lengthDesc as string);
   void updateRatingStats();
 }
 
@@ -202,11 +209,11 @@ async function submit(): Promise<void> {
   DB.setSnapshot(snapshot);
 
   quoteStats.average = getRatingAverage(quoteStats);
-  $(".pageTest #result #rateQuoteButton .rating").text(
+  qs(".pageTest #result #rateQuoteButton .rating")?.setText(
     quoteStats.average?.toFixed(1),
   );
-  $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
-  $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
+  qs(".pageTest #result #rateQuoteButton .icon")?.removeClass("far");
+  qs(".pageTest #result #rateQuoteButton .icon")?.addClass("fas");
 }
 
 async function setup(modalEl: ElementWithUtils): Promise<void> {

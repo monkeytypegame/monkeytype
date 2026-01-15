@@ -116,7 +116,10 @@ export function show(
       const overrideStringOrGroup =
         settings?.subgroupOverride ?? subgroupSignal ?? null;
 
-      if (overrideStringOrGroup !== undefined) {
+      if (
+        overrideStringOrGroup !== undefined &&
+        overrideStringOrGroup !== null
+      ) {
         if (typeof overrideStringOrGroup === "string") {
           const exists = CommandlineLists.doesListExist(overrideStringOrGroup);
           if (exists) {

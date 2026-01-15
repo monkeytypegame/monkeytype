@@ -875,6 +875,15 @@ export async function saveLocalTagPB<M extends Mode>(
   return;
 }
 
+export function deleteLocalTag(tagId: string): void {
+  getSnapshot()?.results?.forEach((result) => {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      result.tags.splice(tagIndex, 1);
+    }
+  });
+}
+
 export async function updateLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,

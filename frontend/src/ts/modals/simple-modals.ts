@@ -46,7 +46,7 @@ import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-
+import { qs, qsr } from "../utils/dom";
 import { list, PopupKey, showPopup } from "./simple-modals-base";
 
 export { list, showPopup };
@@ -1095,9 +1095,9 @@ list.updateCustomTheme = new SimpleModal({
     if (updateColors === "true") {
       for (const color of ThemeController.colorVars) {
         newColors.push(
-          $(
+          qsr<HTMLInputElement>(
             `.pageSettings .tabContent.customTheme #${color}[type='color']`,
-          ).attr("value") as string,
+          ).getValue() as string,
         );
       }
     } else {
@@ -1276,6 +1276,6 @@ list.lbGoToPage = new SimpleModal({
   },
 });
 
-$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
+qs("#bannerCenter")?.onChild("click", ".banner .text .openNameChange", () => {
   showPopup("updateName");
 });

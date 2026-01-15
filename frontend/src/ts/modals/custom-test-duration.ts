@@ -54,7 +54,8 @@ function format(duration: number): string {
 }
 
 function previewDuration(): void {
-  const input = $("#customTestDurationModal input").val() as string;
+  const modalEl = modal.getModal();
+  const input = modalEl.qsr<HTMLInputElement>("input").getValue() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
@@ -66,7 +67,7 @@ function previewDuration(): void {
     formattedDuration = format(duration);
   }
 
-  $("#customTestDurationModal .preview").text(formattedDuration);
+  modalEl.qs(".preview")?.setText(formattedDuration);
 }
 
 export function show(showOptions?: ShowOptions): void {
@@ -87,7 +88,9 @@ function hide(clearChain = false): void {
 }
 
 function apply(): void {
-  const val = parseInput($("#customTestDurationModal input").val() as string);
+  const val = parseInput(
+    modal.getModal().qsr<HTMLInputElement>("input").getValue() as string,
+  );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     setConfig("time", val);

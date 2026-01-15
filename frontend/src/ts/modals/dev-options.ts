@@ -10,7 +10,7 @@ import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
 import { getInputElement } from "../input/input-element";
 import { disableSlowTimerFail } from "../test/test-timer";
-import { ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 let mediaQueryDebugLevel = 0;
 
@@ -102,7 +102,7 @@ const modal = new AnimatedModal({
 });
 
 export function appendButton(): void {
-  $("body").prepend(
+  qsr("body").prependHtml(
     `
       <div id="devButtons">
         <a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>
