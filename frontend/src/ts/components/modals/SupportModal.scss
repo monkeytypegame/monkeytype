@@ -1,0 +1,42 @@
+@use "../../../styles/media.scss" as *;
+
+#SupportModal {
+  .modal {
+    max-width: 900px;
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 1rem;
+
+      @include media-query(green) {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      @include media-query(purple) {
+        grid-template-columns: 1fr;
+      }
+
+      button,
+      a {
+        display: grid;
+        gap: 1em;
+        padding: 1em;
+        .icon {
+          font-size: 3em;
+          line-height: 1;
+          @include media-query(purple) {
+            font-size: 2em;
+          }
+        }
+
+        @include media-query(purple) {
+          grid-template-columns: auto 1fr;
+          place-content: center center;
+          place-items: center start;
+          text-align: left;
+        }
+      }
+    }
+  }
+}

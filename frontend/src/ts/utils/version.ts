@@ -2,7 +2,7 @@ import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "./json-data";
 import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { createErrorMessage } from "./misc";
+import { createErrorMessage, isDevEnvironment } from "./misc";
 import { setVersion } from "../signals/core";
 
 const memoryLS = new LocalStorageWithSchema({
@@ -19,6 +19,8 @@ function purgeCaches(): void {
 }
 
 export async function fetchLatestVersion(): Promise<void> {
+  if (isDevEnvironment()) return;
+
   const { data: currentVersion, error } = await tryCatch(
     getLatestReleaseFromGitHub(),
   );

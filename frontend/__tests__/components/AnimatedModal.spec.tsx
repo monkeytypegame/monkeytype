@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@solidjs/testing-library";
-import { AnimatedModal } from "../../src/ts/components/AnimatedModal";
+import { AnimatedModal } from "../../src/ts/components/common/AnimatedModal";
 
 describe("AnimatedModal", () => {
   beforeEach(() => {
@@ -13,8 +13,6 @@ describe("AnimatedModal", () => {
   });
 
   function renderModal(props: {
-    isOpen: boolean;
-    onClose: () => void;
     onEscape?: (e: KeyboardEvent) => void;
     onBackdropClick?: (e: MouseEvent) => void;
     class?: string;
@@ -29,7 +27,7 @@ describe("AnimatedModal", () => {
     modalDiv: HTMLDivElement;
   } {
     const { container } = render(() => (
-      <AnimatedModal id="TestModal" {...props}>
+      <AnimatedModal id="Support" {...props}>
         <div data-testid="modal-content">Test Content</div>
       </AnimatedModal>
     ));
@@ -45,14 +43,14 @@ describe("AnimatedModal", () => {
   }
 
   it("renders dialog with correct id and class", () => {
-    const { dialog } = renderModal({ isOpen: false, onClose: vi.fn() });
+    const { dialog } = renderModal({});
 
-    expect(dialog).toHaveAttribute("id", "TestModal");
+    expect(dialog).toHaveAttribute("id", "SupportModal");
     expect(dialog).toHaveClass("modalWrapper", "hidden");
   });
 
   it("renders children inside modal div", () => {
-    const { modalDiv } = renderModal({ isOpen: false, onClose: vi.fn() });
+    const { modalDiv } = renderModal({});
 
     expect(
       modalDiv.querySelector("[data-testid='modal-content']"),
@@ -60,25 +58,19 @@ describe("AnimatedModal", () => {
   });
 
   it("has escape handler attached", () => {
-    const onClose = vi.fn();
-
-    const { dialog } = renderModal({ isOpen: true, onClose });
+    const { dialog } = renderModal({});
 
     expect(dialog.onkeydown).toBeDefined();
   });
 
   it("has backdrop click handler attached", () => {
-    const onClose = vi.fn();
-
-    const { dialog } = renderModal({ isOpen: true, onClose });
+    const { dialog } = renderModal({});
 
     expect(dialog.onmousedown).toBeDefined();
   });
 
   it("applies custom class to dialog", () => {
     const { dialog } = renderModal({
-      isOpen: false,
-      onClose: vi.fn(),
       class: "customClass",
     });
 
@@ -87,11 +79,9 @@ describe("AnimatedModal", () => {
 
   it("renders with animationMode none", () => {
     const { dialog } = renderModal({
-      isOpen: false,
-      onClose: vi.fn(),
       animationMode: "none",
     });
 
-    expect(dialog).toHaveAttribute("id", "TestModal");
+    expect(dialog).toHaveAttribute("id", "SupportModal");
   });
 });
