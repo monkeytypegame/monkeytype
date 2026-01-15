@@ -88,6 +88,11 @@ export class ChartWithUpdateColors<
   }
 
   async updateColors(colors?: ThemeColorsType): Promise<void> {
+    colors ??= getThemeColors();
+    if (colors === undefined) {
+      throw new Error("chart colors are empty.");
+    }
+
     //@ts-expect-error it's too difficult to figure out these types, but this works
     await updateColors(this, colors);
   }

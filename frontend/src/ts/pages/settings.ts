@@ -30,7 +30,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { Theme, ThemesList } from "../constants/themes";
+import { ThemesList, ThemeWithName } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
@@ -613,7 +613,7 @@ export async function update(
   setActiveFunboxButton();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs(true);
+  ThemePicker.setCustomInputs();
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
@@ -926,7 +926,7 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
 }
 
 function getThemeDropdownData(
-  isActive: (theme: Theme) => boolean,
+  isActive: (theme: ThemeWithName) => boolean,
 ): DataArrayPartial {
   return ThemesList.map((theme) => ({
     value: theme.name,

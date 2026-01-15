@@ -14,7 +14,7 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
   text: string;
   isFavorite: boolean;
 }>({
-  text: "unknown",
+  text: "serika dark",
   isFavorite: false,
 });
 

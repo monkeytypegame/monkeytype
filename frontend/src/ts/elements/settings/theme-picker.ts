@@ -3,7 +3,6 @@ import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
 import * as Notifications from "../notifications";
-import * as ChartController from "../../controllers/chart-controller";
 import * as Loader from "../loader";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
@@ -11,7 +10,7 @@ import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../signals/core";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
-import { themes, ThemesListSorted } from "../../constants/themes";
+import { ThemesListSorted } from "../../constants/themes";
 import { qs } from "../../utils/dom";
 import { getThemeColors } from "../../signals/theme";
 
@@ -41,14 +40,15 @@ function updateColors(
   colorPicker: JQuery,
   color: string,
   onlyStyle = false,
-  noThemeUpdate = false,
 ): void {
   if (onlyStyle) {
     const colorID = colorPicker.find("input.color").attr("id");
     if (colorID === undefined) console.error("Could not find color ID!");
+    /* handled by theme-controller
     if (!noThemeUpdate && colorID !== undefined) {
       document.documentElement.style.setProperty(colorID, color);
     }
+    */
     const pickerButton = colorPicker.find("label");
     pickerButton.val(color);
     pickerButton.attr("value", color);
@@ -102,10 +102,11 @@ function updateColors(
   const colorID = colorPicker.find("input.color").attr("id");
 
   if (colorID === undefined) console.error("Could not find color ID!");
+  /* handled by theme-controller
   if (!noThemeUpdate && colorID !== undefined) {
     document.documentElement.style.setProperty(colorID, color);
   }
-
+*/
   const pickerButton = colorPicker.find("label");
 
   pickerButton.val(color);
@@ -251,7 +252,7 @@ export async function fillCustomButtons(): Promise<void> {
   }
 }
 
-export function setCustomInputs(noThemeUpdate = false): void {
+export function setCustomInputs(): void {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
   ).each((_index, element: HTMLElement) => {
@@ -260,7 +261,7 @@ export function setCustomInputs(noThemeUpdate = false): void {
         $(element).find("input.color").attr("id") as string,
       )
     ] as string;
-    updateColors($(element), currentColor, false, noThemeUpdate);
+    updateColors($(element), currentColor, false);
   });
 }
 
@@ -425,17 +426,11 @@ $(".pageSettings .section.themes .tabContainer .customTheme input.input")
 $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   // previewTheme(Config.theme);
   // $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
-  const theme = themes[Config.theme];
-  await ThemeController.loadStyle(Config.theme, {
-    hasCss: theme.hasCss ?? false,
-  });
 
-  // setTimeout(async () => {
-  ChartController.updateAllChartColors();
-
-  //TODO check
+  ThemeController.applyPreset(Config.theme);
   const themeColors = getThemeColors();
 
+  //TODO refactor updateColors to updateColors(key:keyof Omit><Theme,"hasCss">, color:string)
   ThemeController.colorVars.forEach((colorName) => {
     let color;
     if (colorName === "--bg-color") {
@@ -460,6 +455,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
       color = themeColors.colorfulErrorExtra;
     }
 
+    console.log("### update", colorName, "|" + color + "|");
     updateColors($(".colorPicker #" + colorName).parent(), color as string);
   });
   // }, 250);

@@ -5,13 +5,13 @@ import { JSXElement } from "solid-js";
 import { Footer } from "./layout/footer/Footer";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
-import { ThemeColors } from "./layout/ThemeColors";
+import { Theme } from "./layout/Theme";
 
 const components: Record<string, () => JSXElement> = {
   Footer: () => <Footer />,
   Modals: () => <Modals />,
   AboutPage: () => <AboutPage />,
-  ThemeColors: () => <ThemeColors />,
+  Theme: () => <Theme />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

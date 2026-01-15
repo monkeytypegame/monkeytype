@@ -1,14 +1,30 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { hexToHSL } from "../utils/colors";
-import { ThemeColors } from "../signals/theme";
+import { z } from "zod";
 
-export type Theme = {
-  name: ThemeName;
-  hasCss?: boolean;
-} & Pick<ThemeColors, "bg" | "main" | "sub" | "text"> &
-  Partial<Omit<ThemeColors, "bg" | "main" | "sub" | "text">>;
+const hexColorSchema = z
+  .string()
+  .regex(
+    /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
+    "Invalid hex color",
+  );
 
-export const themes: Record<ThemeName, Omit<Theme, "name">> = {
+//TODO remove the optionals after migration
+export const ThemeSchema = z.object({
+  hasCss: z.boolean().optional(),
+  bg: hexColorSchema,
+  main: hexColorSchema,
+  caret: hexColorSchema.optional(),
+  sub: hexColorSchema,
+  subAlt: hexColorSchema.optional(),
+  text: hexColorSchema,
+  error: hexColorSchema.optional(),
+  errorExtra: hexColorSchema.optional(),
+  colorfulError: hexColorSchema.optional(),
+  colorfulErrorExtra: hexColorSchema.optional(),
+});
+export type Theme = z.infer<typeof ThemeSchema>;
+export const themes: Record<ThemeName, Theme> = {
   "8008": {
     bg: "#333a45",
     main: "#f44c7f",
@@ -76,16 +92,16 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     text: "#ffffff",
   },
   dots: {
-    bg: " #121520",
-    caret: " #fff",
-    main: " #fff",
-    sub: " #676e8a",
-    subAlt: " #1b1e2c",
-    text: " #fff",
-    error: " #da3333",
-    errorExtra: " #791717",
-    colorfulError: " #da3333",
-    colorfulErrorExtra: " #791717",
+    bg: "#121520",
+    caret: "#fff",
+    main: "#fff",
+    sub: "#676e8a",
+    subAlt: "#1b1e2c",
+    text: "#fff",
+    error: "#da3333",
+    errorExtra: "#791717",
+    colorfulError: "#da3333",
+    colorfulErrorExtra: "#791717",
     hasCss: true,
   },
   nautilus: {
@@ -1098,7 +1114,7 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   },
   floret: {
     bg: "#00272c",
-    main: " #ffdd6d",
+    main: "#ffdd6d",
     sub: "#779097",
     text: "#E5E5E5",
   },
@@ -1152,17 +1168,18 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   },
 };
 
-export const ThemesList: Theme[] = Object.keys(themes)
+export type ThemeWithName = Theme & { name: ThemeName };
+export const ThemesList: ThemeWithName[] = Object.keys(themes)
   .sort()
   .map(
     (it) =>
       ({
         ...themes[it as ThemeName],
-        name: it,
-      }) as Theme,
+        name: it as ThemeName,
+      }) as Theme & { name: ThemeName },
   );
 
-export const ThemesListSorted = [
+export const ThemesListSorted: ThemeWithName[] = [
   ...ThemesList.sort((a, b) => {
     const b1 = hexToHSL(a.bg);
     const b2 = hexToHSL(b.bg);

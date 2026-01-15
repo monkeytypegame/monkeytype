@@ -1,4 +1,4 @@
-import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
+import { createResource, For, JSXElement, Show } from "solid-js";
 import "./AboutPage.scss";
 import { Button } from "../common/Button";
 import { showModal } from "../../stores/modals";
@@ -10,7 +10,6 @@ import Ape from "../../ape";
 import { intervalToDuration } from "date-fns";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
 import { ChartJs } from "../common/ChartJs";
-import { getThemeColors } from "../../signals/theme";
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
@@ -28,10 +27,6 @@ export function AboutPage(): JSXElement {
   const [speedHistogram] = createResource(isOpen, async (open) =>
     open ? await fetchSpeedHistogram() : undefined,
   );
-
-  createEffect(() => {
-    console.log(getThemeColors());
-  });
 
   return (
     <Show when={isOpen}>

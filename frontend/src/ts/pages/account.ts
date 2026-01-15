@@ -184,6 +184,7 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
 }
 
 async function updateChartColors(): Promise<void> {
+  //TODO call chartController.updateAllChartColotrs instead?
   await ChartController.accountHistory.updateColors();
   await Misc.sleep(0);
   await ChartController.accountActivity.updateColors();
