@@ -9,12 +9,8 @@ import * as Skeleton from "../utils/skeleton";
 import { UserProfile } from "@monkeytype/schemas/users";
 import { PersonalBests } from "@monkeytype/schemas/shared";
 import * as TestActivity from "../elements/test-activity";
-import { TestActivityCalendar } from "../elements/test-activity-calendar";
-import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 import { addFriend } from "./friends";
 import { onDOMReady, qs, qsr } from "../utils/dom";
-
-const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 function reset(): void {
   qs(".page.pageProfile .error")?.hide();
@@ -216,12 +212,11 @@ async function update(options: UpdateOptions): Promise<void> {
       ) as HTMLElement;
 
       if (profile.testActivity !== undefined) {
-        const calendar = new TestActivityCalendar(
-          profile.testActivity.testsByDays,
+        TestActivity.init(
+          testActivity,
+          profile.testActivity,
           new Date(profile.testActivity.lastDay),
-          firstDayOfTheWeek,
         );
-        TestActivity.init(testActivity, calendar);
         const title = testActivity.querySelector(".top .title") as HTMLElement;
         title.innerHTML = title?.innerHTML + " in last 12 months";
       } else {
