@@ -321,6 +321,10 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
+
+    .wordRtl {
+      unicode-bidi: bidi-override;
+    }
   }
 
   &.thaanaTest {
@@ -803,6 +807,10 @@
         &.rightToLeftTest {
           //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
           direction: rtl;
+
+          .wordRtl {
+            unicode-bidi: bidi-override;
+          }
         }
         &.withLigatures {
           .word {

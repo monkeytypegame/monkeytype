@@ -204,6 +204,7 @@ export const LayoutNameSchema = z.enum(
     "inqwerted",
     "rain",
     "night",
+    "night_stic",
     "whix2",
     "haruka",
     "kuntum",
@@ -231,6 +232,7 @@ export const LayoutNameSchema = z.enum(
     "persian_farsi_colemak",
     "persian_standard_colemak",
     "ergo_split46",
+    "tamil99",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),

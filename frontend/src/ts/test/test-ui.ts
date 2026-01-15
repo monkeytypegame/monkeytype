@@ -14,7 +14,7 @@ import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import Format from "../utils/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
@@ -57,6 +57,7 @@ import * as XPBar from "../elements/xp-bar";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import { qsr } from "../utils/dom";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -67,6 +68,7 @@ const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
 const wordsWrapperEl = document.querySelector(
   ".pageTest #wordsWrapper",
 ) as HTMLElement;
+const resultWordsHistoryEl = qsr(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
 export let activeWordHeight = 0;
@@ -217,7 +219,7 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  const isWordRightToLeft = Strings.isWordRightToLeft(
+  const [isWordRightToLeft, _isFullMatch] = Strings.isWordRightToLeft(
     TestWords.words.getCurrent(),
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,
@@ -291,7 +293,7 @@ async function joinOverlappingHints(
 
 async function updateHintsPosition(): Promise<void> {
   if (
-    ActivePage.get() !== "test" ||
+    getActivePage() !== "test" ||
     TestState.resultVisible ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
@@ -510,7 +512,7 @@ export function appendEmptyWordElement(
 }
 
 export function updateWordsInputPosition(): void {
-  if (ActivePage.get() !== "test") return;
+  if (getActivePage() !== "test") return;
   const isTestRightToLeft = TestState.isDirectionReversed
     ? !TestState.isLanguageRightToLeft
     : TestState.isLanguageRightToLeft;
@@ -590,7 +592,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const outOfFocusEl = document.querySelector(
     ".outOfFocusWarning",
@@ -928,7 +930,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
 
@@ -1408,42 +1410,18 @@ async function loadWordsHistory(): Promise<boolean> {
   return true;
 }
 
-export function toggleResultWords(noAnimation = false): void {
-  if (TestState.resultVisible) {
-    ResultWordHighlight.updateToggleWordsHistoryTime();
-    if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
-      //show
+export async function toggleResultWords(noAnimation = false): Promise<void> {
+  if (!TestState.resultVisible) return;
+  ResultWordHighlight.updateToggleWordsHistoryTime();
 
-      if ($("#resultWordsHistory .words .word").length === 0) {
-        void loadWordsHistory().then(() => {
-          if (Config.burstHeatmap) {
-            void applyBurstHeatmap();
-          }
-          $("#resultWordsHistory")
-            .removeClass("hidden")
-            .css("display", "none")
-            .slideDown(noAnimation ? 0 : 250, () => {
-              if (Config.burstHeatmap) {
-                void applyBurstHeatmap();
-              }
-            });
-        });
-      } else {
-        if (Config.burstHeatmap) {
-          void applyBurstHeatmap();
-        }
-        $("#resultWordsHistory")
-          .removeClass("hidden")
-          .css("display", "none")
-          .slideDown(noAnimation ? 0 : 250);
-      }
-    } else {
-      //hide
-
-      $("#resultWordsHistory").slideUp(250, () => {
-        $("#resultWordsHistory").addClass("hidden");
-      });
+  if (resultWordsHistoryEl.isHidden()) {
+    if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
+      await loadWordsHistory();
     }
+    void resultWordsHistoryEl.slideDown(noAnimation ? 0 : 250);
+    void applyBurstHeatmap();
+  } else {
+    void resultWordsHistoryEl.slideUp(noAnimation ? 0 : 250);
   }
 }
 
@@ -1453,8 +1431,7 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let burstlist = [...TestInput.burstHistory];
 
-    burstlist = burstlist.filter((x) => x !== Infinity);
-    burstlist = burstlist.filter((x) => x < 500);
+    burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
 
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     burstlist.forEach((burst, index) => {
@@ -1525,7 +1502,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       }
 
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
-        `<div>${string}</div>`,
+        `<div>${Misc.escapeHTML(string)}</div>`,
       );
     });
 
@@ -1898,7 +1875,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
@@ -1921,6 +1898,9 @@ export function onTestFinish(): void {
   TimerProgress.hide();
   OutOfFocus.hide();
   Monkey.hide();
+  if (Config.playSoundOnClick === "16") {
+    void SoundController.playFartReverb();
+  }
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1991,7 +1971,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Format.typingSpeed(burst, { showDecimalPlaces: false })}
+          ${isNaN(burst) || burst >= 1000 ? "Infinite" : Format.typingSpeed(burst, { showDecimalPlaces: false })}
           ${Config.typingSpeedUnit}
           </div>
           </div>`,
@@ -2020,7 +2000,7 @@ $("#wordsInput").on("focusout", () => {
 });
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {
-  toggleResultWords();
+  void toggleResultWords();
 });
 
 $("#wordsWrapper").on("click", () => {
@@ -2059,7 +2039,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     void applyBurstHeatmap();
   }
   if (key === "highlightMode") {
-    if (ActivePage.get() === "test") {
+    if (getActivePage() === "test") {
       void updateWordLetters({
         input: TestInput.input.current,
         wordIndex: TestState.activeWordIndex,

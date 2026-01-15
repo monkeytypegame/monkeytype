@@ -28,6 +28,7 @@ import replace from "vite-plugin-filter-replace";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
+import solidPlugin from "vite-plugin-solid";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -85,10 +86,11 @@ function getPlugins({
     oxlintChecker({
       debounceDelay: 125,
       typeAware: true,
-      overlay: true,
+      overlay: isDevelopment,
     }),
     jqueryInject(),
     injectHTML(),
+    solidPlugin(),
   ];
 
   const devPlugins: PluginOption[] = [Inspect()];

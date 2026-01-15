@@ -2,6 +2,7 @@ import { debounce } from "throttle-debounce";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
+import { qs, onDOMReady } from "../utils/dom";
 
 let state = navigator.onLine;
 
@@ -33,9 +34,9 @@ const throttledHandleState = debounce(5000, () => {
       Notifications.add("You're back online", 1, {
         customTitle: "Connection",
       });
-      $(
+      qs(
         `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`,
-      ).trigger("click");
+      )?.dispatch("click");
     }
     bannerAlreadyClosed = false;
   } else if (!TestState.isActive) {
@@ -48,7 +49,7 @@ ConnectionEvent.subscribe((newState) => {
   throttledHandleState();
 });
 
-window.addEventListener("load", () => {
+onDOMReady(() => {
   state = navigator.onLine;
   if (!state) {
     showOfflineBanner();

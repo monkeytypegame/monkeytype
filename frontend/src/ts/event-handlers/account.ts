@@ -7,18 +7,19 @@ import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as AddFilterPresetModal from "../modals/new-filter-preset";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
+import { qs } from "../utils/dom";
 
-const accountPage = document.querySelector("#pageAccount") as HTMLElement;
+const accountPage = qs("#pageAccount");
 
-$(accountPage).on("click", ".pbsTime .showAllButton", () => {
+accountPage?.onChild("click", ".pbsTime .showAllButton", () => {
   PbTablesModal.show("time");
 });
 
-$(accountPage).on("click", ".pbsWords .showAllButton", () => {
+accountPage?.onChild("click", ".pbsWords .showAllButton", () => {
   PbTablesModal.show("words");
 });
 
-$(accountPage).on("click", ".editProfileButton", () => {
+accountPage?.onChild("click", ".editProfileButton", () => {
   if (!isAuthenticated()) {
     Notifications.add("You must be logged in to edit your profile", 0);
     return;
@@ -40,9 +41,10 @@ $(accountPage).on("click", ".editProfileButton", () => {
 
 const TagsArraySchema = z.array(z.string());
 
-$(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
-  const resultid = $(e.target).attr("data-result-id");
-  const tags = $(e.target).attr("data-tags");
+accountPage?.onChild("click", ".group.history .resultEditTagsButton", (e) => {
+  const targetButton = e.childTarget as HTMLElement;
+  const resultid = targetButton?.getAttribute("data-result-id");
+  const tags = targetButton?.getAttribute("data-tags");
 
   EditResultTagsModal.show(
     resultid ?? "",
@@ -51,8 +53,6 @@ $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
   );
 });
 
-$(accountPage)
-  .find("button.createFilterPresetBtn")
-  .on("click", () => {
-    AddFilterPresetModal.show();
-  });
+accountPage?.qs("button.createFilterPresetBtn")?.on("click", () => {
+  AddFilterPresetModal.show();
+});
