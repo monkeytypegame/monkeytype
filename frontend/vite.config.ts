@@ -52,7 +52,8 @@ export default defineConfig(({ mode }): UserConfig => {
       open: env["SERVER_OPEN"] !== "false",
       port: 3000,
       host: env["BACKEND_URL"] !== undefined,
-      allowedHosts: true,
+      // Disable host header validation only when explicitly requested for special dev setups
+      allowedHosts: env["DISABLE_HOST_VALIDATION"] === "true" ? true : undefined,
       watch: {
         //we rebuild the whole contracts package when a file changes
         //so we only want to watch one file
