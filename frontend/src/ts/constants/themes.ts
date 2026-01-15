@@ -14,16 +14,17 @@ export const ThemeSchema = z.object({
   hasCss: z.boolean().optional(),
   bg: hexColorSchema,
   main: hexColorSchema,
-  caret: hexColorSchema.optional(),
+  caret: hexColorSchema,
   sub: hexColorSchema,
-  subAlt: hexColorSchema.optional(),
+  subAlt: hexColorSchema,
   text: hexColorSchema,
-  error: hexColorSchema.optional(),
-  errorExtra: hexColorSchema.optional(),
-  colorfulError: hexColorSchema.optional(),
-  colorfulErrorExtra: hexColorSchema.optional(),
+  error: hexColorSchema,
+  errorExtra: hexColorSchema,
+  colorfulError: hexColorSchema,
+  colorfulErrorExtra: hexColorSchema,
 });
 export type Theme = z.infer<typeof ThemeSchema>;
+export type ColorName = keyof Theme;
 export const themes: Record<ThemeName, Theme> = {
   "8008": {
     bg: "#333a45",
@@ -1166,7 +1167,7 @@ export const themes: Record<ThemeName, Theme> = {
     sub: "#0476f2",
     text: "#f0f0f0",
   },
-};
+} as Record<ThemeName, Theme>; //TODO evil,. remove me
 
 export type ThemeWithName = Theme & { name: ThemeName };
 export const ThemesList: ThemeWithName[] = Object.keys(themes)

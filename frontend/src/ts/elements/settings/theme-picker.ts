@@ -10,9 +10,9 @@ import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../signals/core";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
-import { ThemesListSorted } from "../../constants/themes";
-import { qs } from "../../utils/dom";
-import { getThemeColors } from "../../signals/theme";
+import { ColorName, ThemesListSorted } from "../../constants/themes";
+import { qs, qsa, qsr } from "../../utils/dom";
+import { getThemeColors, updateThemeColor } from "../../signals/theme";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -36,87 +36,65 @@ function updateActiveButton(): void {
     ?.classList.add("active");
 }
 
-function updateColors(
-  colorPicker: JQuery,
-  color: string,
-  onlyStyle = false,
-): void {
-  if (onlyStyle) {
-    const colorID = colorPicker.find("input.color").attr("id");
-    if (colorID === undefined) console.error("Could not find color ID!");
-    /* handled by theme-controller
+function updateColors(key: ColorName, color: string, onlyStyle = false): void {
+  const colorPicker = qsr(`.colorPicker input[data-key="${key}"]`).getParent();
+  if (colorPicker === null) return;
+
+  console.log("#### update colors", { key, color, onlyStyle });
+  if (!onlyStyle) {
+    const colorREGEX = [
+      {
+        rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
+        start: "rgb(",
+        end: ")",
+      },
+      {
+        rule: /\b[A-Z, a-z, 0-9]{6}\b/,
+        start: "#",
+        end: "",
+      },
+      {
+        rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
+        start: "hsl(",
+        end: ")",
+      },
+    ];
+
+    color = color.replace("°", "");
+
+    for (const regex of colorREGEX) {
+      if (color.match(regex.rule)) {
+        color = regex.start + color + regex.end;
+        break;
+      }
+    }
+
+    color = color.replace("##", "#");
+
+    $(".colorConverter").css("color", color);
+    const hexColor: string | undefined = Colors.rgbStringtoHex(
+      $(".colorConverter").css("color"),
+    );
+    if (hexColor === undefined) {
+      return;
+    }
+
+    color = hexColor;
+  }
+
+  updateThemeColor(key, color);
+  /* handled by theme-controller
     if (!noThemeUpdate && colorID !== undefined) {
       document.documentElement.style.setProperty(colorID, color);
     }
     */
-    const pickerButton = colorPicker.find("label");
-    pickerButton.val(color);
-    pickerButton.attr("value", color);
-    if (pickerButton.attr("for") !== "--bg-color") {
-      pickerButton.css("background-color", color);
-    }
-    colorPicker.find("input.input").val(color);
-    colorPicker.find("input.color").attr("value", color);
-    colorPicker.find("input.color").val(color);
-    return;
+  const pickerButton = colorPicker.qsr<HTMLLabelElement>("label");
+  pickerButton.setAttribute("value", color);
+  if (pickerButton.getAttribute("for") !== "--bg-color") {
+    pickerButton.setStyle({ backgroundColor: color });
   }
-  const colorREGEX = [
-    {
-      rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
-      start: "rgb(",
-      end: ")",
-    },
-    {
-      rule: /\b[A-Z, a-z, 0-9]{6}\b/,
-      start: "#",
-      end: "",
-    },
-    {
-      rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
-      start: "hsl(",
-      end: ")",
-    },
-  ];
-
-  color = color.replace("°", "");
-
-  for (const regex of colorREGEX) {
-    if (color.match(regex.rule)) {
-      color = regex.start + color + regex.end;
-      break;
-    }
-  }
-
-  color = color.replace("##", "#");
-
-  $(".colorConverter").css("color", color);
-  const hexColor: string | undefined = Colors.rgbStringtoHex(
-    $(".colorConverter").css("color"),
-  );
-  if (hexColor === undefined) {
-    return;
-  }
-
-  color = hexColor;
-
-  const colorID = colorPicker.find("input.color").attr("id");
-
-  if (colorID === undefined) console.error("Could not find color ID!");
-  /* handled by theme-controller
-  if (!noThemeUpdate && colorID !== undefined) {
-    document.documentElement.style.setProperty(colorID, color);
-  }
-*/
-  const pickerButton = colorPicker.find("label");
-
-  pickerButton.val(color);
-  pickerButton.attr("value", color);
-  if (pickerButton.attr("for") !== "--bg-color") {
-    pickerButton.css("background-color", color);
-  }
-  colorPicker.find("input.input").val(color);
-  colorPicker.find("input.color").attr("value", color);
-  colorPicker.find("input.color").val(color);
+  colorPicker.qsr<HTMLInputElement>("input.input").setValue(color);
+  colorPicker.qsr("input.color").setAttribute("value", color);
 }
 
 export async function fillPresetButtons(): Promise<void> {
@@ -253,15 +231,16 @@ export async function fillCustomButtons(): Promise<void> {
 }
 
 export function setCustomInputs(): void {
-  $(
-    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
-  ).each((_index, element: HTMLElement) => {
-    const currentColor = Config.customThemeColors[
-      ThemeController.colorVars.indexOf(
-        $(element).find("input.color").attr("id") as string,
-      )
-    ] as string;
-    updateColors($(element), currentColor, false);
+  const theme = ThemeController.convertCustomColorsToTheme(
+    Config.customThemeColors,
+  );
+  qsa<HTMLInputElement>(
+    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker input[type=color]",
+  ).forEach((element) => {
+    const key = element.getAttribute("data-key") as ColorName;
+    const color = theme[key] as string;
+    updateColors(key, color, false);
+    //updateColors($(element), currentColor, false);
   });
 }
 
@@ -385,80 +364,40 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   }
 });
 
-$(
+function handleColorInput(e: Event): void {
+  const target = e.currentTarget as HTMLInputElement;
+  const key = target.getAttribute("data-key") as ColorName;
+
+  updateColors(key, target.value, true);
+}
+qsa(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
-).on("input", (e) => {
-  const $colorVar = $(e.currentTarget).attr("id") as string;
-  const $pickedColor = $(e.currentTarget).val() as string;
+)
+  .on("input", handleColorInput)
+  .on("change", handleColorInput);
 
-  updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor, true);
-});
-
-$(
-  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
-).on("change", (e) => {
-  const $colorVar = $(e.currentTarget).attr("id") as string;
-  const $pickedColor = $(e.currentTarget).val() as string;
-
-  updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
-});
-
-$(".pageSettings .section.themes .tabContainer .customTheme input.input")
+qsa(".pageSettings .section.themes .tabContainer .customTheme input.input")
   .on("blur", (e) => {
-    if (e.target.id === "name") return;
-    const $colorVar = $(e.currentTarget).attr("id") as string;
-    const $pickedColor = $(e.currentTarget).val() as string;
-
-    updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
+    if ((e.target as HTMLInputElement).id === "name") return;
+    handleColorInput(e);
   })
   .on("keypress", function (e) {
-    if (e.target.id === "name") return;
+    const target = e.target as HTMLInputElement;
+    if (target.id === "name") return;
     if (e.code === "Enter") {
-      $(this).attr("disabled", "disabled");
-      const $colorVar = $(e.currentTarget).attr("id") as string;
-      const $pickedColor = $(e.currentTarget).val() as string;
-
-      updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
-      $(this).removeAttr("disabled");
+      target.setAttribute("disabled", "disabled");
+      handleColorInput(e);
+      target.removeAttribute("disabled");
     }
   });
 
 $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
-  // previewTheme(Config.theme);
-  // $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
-
   ThemeController.applyPreset(Config.theme);
   const themeColors = getThemeColors();
 
-  //TODO refactor updateColors to updateColors(key:keyof Omit><Theme,"hasCss">, color:string)
-  ThemeController.colorVars.forEach((colorName) => {
-    let color;
-    if (colorName === "--bg-color") {
-      color = themeColors.bg;
-    } else if (colorName === "--main-color") {
-      color = themeColors.main;
-    } else if (colorName === "--sub-color") {
-      color = themeColors.sub;
-    } else if (colorName === "--sub-alt-color") {
-      color = themeColors.subAlt;
-    } else if (colorName === "--caret-color") {
-      color = themeColors.caret;
-    } else if (colorName === "--text-color") {
-      color = themeColors.text;
-    } else if (colorName === "--error-color") {
-      color = themeColors.error;
-    } else if (colorName === "--error-extra-color") {
-      color = themeColors.errorExtra;
-    } else if (colorName === "--colorful-error-color") {
-      color = themeColors.colorfulError;
-    } else if (colorName === "--colorful-error-extra-color") {
-      color = themeColors.colorfulErrorExtra;
-    }
-
-    console.log("### update", colorName, "|" + color + "|");
-    updateColors($(".colorPicker #" + colorName).parent(), color as string);
-  });
-  // }, 250);
+  Misc.typedKeys(themeColors).forEach((key) =>
+    updateColors(key, themeColors[key] as string),
+  );
 });
 
 $(".pageSettings #saveCustomThemeButton").on("click", async () => {

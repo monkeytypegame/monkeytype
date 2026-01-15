@@ -4,11 +4,11 @@ import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getThemeIndicator } from "../../signals/core";
 import { themes, Theme as ThemeType } from "../../constants/themes";
 import { ThemeName } from "@monkeytype/schemas/configs";
-import { qsr } from "../../utils/dom";
 
 export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [styleRef, styleEl] = useRefWithUtils<HTMLStyleElement>();
+  const [linkRef, linkEl] = useRefWithUtils<HTMLLinkElement>();
 
   //Use memo to ignore signals without changes
   const themeName = createMemo(() => getThemeIndicator().text);
@@ -16,6 +16,7 @@ export function Theme(): JSXElement {
 
   createEffect(() => {
     const colors = themeColors();
+    console.debug("Theme update colors", themeColors());
     styleEl()?.setHtml(`
 :root {
 
@@ -34,23 +35,20 @@ export function Theme(): JSXElement {
   });
 
   createEffect(() => {
+    //console.log("#### update css", themeName());
     const theme: ThemeType | undefined = themes[themeName() as ThemeName];
 
     const cssFile = theme?.hasCss ? `/themes/${themeName()}.css` : "";
 
     //TODO move the code here or add loader animation?
     //void loadStyle(themeName(), { hasCss: theme?.hasCss ?? false });
-
-    const linkElement = qsr("#currentTheme").setAttribute("href", cssFile);
-    const parent = qsr("head");
-    linkElement.remove();
-    parent.append(linkElement);
+    linkEl()?.setAttribute("href", cssFile);
   });
 
   return (
     <>
-      <style ref={styleRef}></style>;
-      <link rel="stylesheet" id="currentTheme" />
+      <style ref={styleRef}></style>
+      <link ref={linkRef} rel="stylesheet" id="currentTheme" />
     </>
   );
 }

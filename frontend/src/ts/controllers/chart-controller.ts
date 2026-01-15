@@ -68,10 +68,8 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
-import {
-  getThemeColors,
-  ThemeColors as ThemeColorsType,
-} from "../signals/theme";
+import { getThemeColors } from "../signals/theme";
+import { Theme } from "../constants/themes";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -87,7 +85,7 @@ export class ChartWithUpdateColors<
     super(item, config);
   }
 
-  async updateColors(colors?: ThemeColorsType): Promise<void> {
+  async updateColors(colors?: Theme): Promise<void> {
     colors ??= getThemeColors();
     if (colors === undefined) {
       throw new Error("chart colors are empty.");
@@ -1126,7 +1124,7 @@ async function updateColors<
   TLabel = string,
 >(
   chart: ChartWithUpdateColors<TType, TData, TLabel>,
-  colors?: ThemeColorsType,
+  colors?: Theme,
 ): Promise<void> {
   colors ??= getThemeColors();
 
