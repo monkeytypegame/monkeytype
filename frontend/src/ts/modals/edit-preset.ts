@@ -289,7 +289,7 @@ async function apply(): Promise<void> {
 
     if (response.status !== 200 || response.body.data === null) {
       Notifications.add(
-        "Failed to add preset" +
+        "Failed to add preset: " +
           response.body.message.replace(presetName, propPresetName),
         -1,
       );
