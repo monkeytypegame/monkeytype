@@ -11,34 +11,34 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
+import { qs } from "../utils/dom";
 
 let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
   Loader.hide();
-  $("#ad-result-wrapper").removeClass("hidden");
-  $("#ad-result-small-wrapper").removeClass("hidden");
-  $("#testConfig").removeClass("hidden");
-  $(".pageTest .screenshotSpacer").remove();
-  $("#notificationCenter").removeClass("hidden");
-  $("#commandLineMobileButton").removeClass("hidden");
-  $(".pageTest .ssWatermark").addClass("hidden");
-  $(".pageTest .ssWatermark").text("monkeytype.com"); // Reset watermark text
-  $(".pageTest .buttons").removeClass("hidden");
-  $("noscript").removeClass("hidden");
-  $("#nocss").removeClass("hidden");
-  $("header, footer").removeClass("invisible");
-  $("#result").removeClass("noBalloons");
-  $(".wordInputHighlight").removeClass("hidden");
-  $(".highlightContainer").removeClass("hidden");
-  if (revertCookie) $("#cookiesModal").removeClass("hidden");
-  if (revealReplay) $("#resultReplay").removeClass("hidden");
+  qs("#ad-result-wrapper")?.show();
+  qs("#ad-result-small-wrapper")?.show();
+  qs("#testConfig")?.show();
+  qs(".pageTest .screenshotSpacer")?.remove();
+  qs("#notificationCenter")?.show();
+  qs("#commandLineMobileButton")?.show();
+  qs(".pageTest .ssWatermark")?.hide();
+  qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
+  qs(".pageTest .buttons")?.show();
+  qs("noscript")?.show();
+  qs("#nocss")?.show();
+  qs("header, footer")?.show();
+  qs("#result")?.removeClass("noBalloons");
+  qs(".wordInputHighlight")?.show();
+  qs(".highlightContainer")?.show();
+  if (revertCookie) qs("#cookiesModal")?.show();
+  if (revealReplay) qs("#resultReplay")?.show();
   if (!isAuthenticated()) {
-    $(".pageTest .loginTip").removeClass("hidden");
+    qs(".pageTest .loginTip")?.removeClass("hidden");
   }
-  (document.querySelector("html") as HTMLElement).style.scrollBehavior =
-    "smooth";
+  qs("html")?.setStyle({ scrollBehavior: "smooth" });
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
     fb.functions.applyGlobalCSS();
   }
@@ -55,7 +55,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const { domToCanvas } = await import("modern-screenshot");
   Loader.show(true);
 
-  if (!$("#resultReplay").hasClass("hidden")) {
+  if (!qs("#resultReplay")?.hasClass("hidden")) {
     revealReplay = true;
     Replay.pauseReplay();
   }
@@ -68,8 +68,8 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   // --- UI Preparation ---
   const dateNow = new Date(Date.now());
-  $("#resultReplay").addClass("hidden");
-  $(".pageTest .ssWatermark").removeClass("hidden");
+  qs("#resultReplay")?.hide();
+  qs(".pageTest .ssWatermark")?.show();
 
   const snapshot = DB.getSnapshot();
   const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
@@ -79,28 +79,28 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     })}`;
     ssWatermark.unshift(userText);
   }
-  $(".pageTest .ssWatermark").html(
+  qs(".pageTest .ssWatermark")?.setHtml(
     ssWatermark
       .map((el) => `<span>${el}</span>`)
       .join("<span class='pipe'>|</span>"),
   );
-  $(".pageTest .buttons").addClass("hidden");
-  $("#notificationCenter").addClass("hidden");
-  $("#commandLineMobileButton").addClass("hidden");
-  $(".pageTest .loginTip").addClass("hidden");
-  $("noscript").addClass("hidden");
-  $("#nocss").addClass("hidden");
-  $("#ad-result-wrapper").addClass("hidden");
-  $("#ad-result-small-wrapper").addClass("hidden");
-  $("#testConfig").addClass("hidden");
+  qs(".pageTest .buttons")?.hide();
+  qs("#notificationCenter")?.hide();
+  qs("#commandLineMobileButton")?.hide();
+  qs(".pageTest .loginTip")?.hide();
+  qs("noscript")?.hide();
+  qs("#nocss")?.hide();
+  qs("#ad-result-wrapper")?.hide();
+  qs("#ad-result-small-wrapper")?.hide();
+  qs("#testConfig")?.hide();
   // Ensure spacer is removed before adding a new one if function is called rapidly
-  $(".pageTest .screenshotSpacer").remove();
-  $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
-  $("header, footer").addClass("invisible");
-  $("#result").addClass("noBalloons");
-  $(".wordInputHighlight").addClass("hidden");
-  $(".highlightContainer").addClass("hidden");
-  if (revertCookie) $("#cookiesModal").addClass("hidden");
+  qs(".pageTest .screenshotSpacer")?.remove();
+  qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
+  qs("header, footer")?.addClass("invisible");
+  qs("#result")?.addClass("noBalloons");
+  qs(".wordInputHighlight")?.hide();
+  qs(".highlightContainer")?.hide();
+  if (revertCookie) qs("#cookiesModal")?.hide();
 
   for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
     fb.functions.clearGlobal();
@@ -110,8 +110,8 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   window.scrollTo({ top: 0, behavior: "auto" });
 
   // --- Target Element Calculation ---
-  const src = $("#result .wrapper");
-  if (!src.length) {
+  const src = qs("#result .wrapper");
+  if (src === null) {
     console.error("Result wrapper not found for screenshot");
     Notifications.add("Screenshot target element not found", -1);
     revert();
@@ -119,10 +119,10 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
   await Misc.sleep(50); // Small delay for render updates
 
-  const sourceX = src.offset()?.left ?? 0;
-  const sourceY = src.offset()?.top ?? 0;
-  const sourceWidth = src.outerWidth(true) as number;
-  const sourceHeight = src.outerHeight(true) as number;
+  const sourceX = src.getOffsetLeft() ?? 0;
+  const sourceY = src.getOffsetTop() ?? 0;
+  const sourceWidth = src.getOuterWidth();
+  const sourceHeight = src.getOuterHeight();
   const paddingX = convertRemToPixels(2);
   const paddingY = convertRemToPixels(2);
 
@@ -350,7 +350,7 @@ export async function download(): Promise<void> {
   }
 }
 
-$(".pageTest").on("click", "#saveScreenshotButton", (event) => {
+qs(".pageTest")?.onChild("click", "#saveScreenshotButton", (event) => {
   if (event.shiftKey) {
     void download();
   } else {
@@ -358,23 +358,23 @@ $(".pageTest").on("click", "#saveScreenshotButton", (event) => {
   }
 
   // reset save screenshot button icon
-  $("#saveScreenshotButton i")
-    .removeClass("fas fa-download")
-    .addClass("far fa-image");
+  qs("#saveScreenshotButton i")
+    ?.removeClass("fas fa-download")
+    ?.addClass("far fa-image");
 });
 
-$(document).on("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
-  $("#result #saveScreenshotButton i")
-    .removeClass("far fa-image")
-    .addClass("fas fa-download");
+  qs("#result #saveScreenshotButton i")
+    ?.removeClass("far fa-image")
+    ?.addClass("fas fa-download");
 });
 
-$(document).on("keyup", (event) => {
+document.addEventListener("keyup", (event) => {
   if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
-  $("#result #saveScreenshotButton i")
-    .removeClass("fas fa-download")
-    .addClass("far fa-image");
+  qs("#result #saveScreenshotButton i")
+    ?.removeClass("fas fa-download")
+    ?.addClass("far fa-image");
 });
