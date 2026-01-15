@@ -669,6 +669,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's height + margin
+   */
+
+  getOuterHeight(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().height +
+      parseFloat(style.marginTop) +
+      parseFloat(style.marginBottom)
+    );
+  }
+
+  /**
+   * Get The element's width + margin
+   */
+
+  getOuterWidth(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().width +
+      parseFloat(style.marginLeft) +
+      parseFloat(style.marginRight)
+    );
+  }
+
+  /**
    * Get the element's width
    */
   getOffsetWidth(): number {
