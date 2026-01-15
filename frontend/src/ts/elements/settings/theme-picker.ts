@@ -38,7 +38,6 @@ function updateActiveButton(): void {
 
 function updateColors(key: ColorName, color: string, onlyStyle = false): void {
   const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
-  if (colorPicker === null) return;
 
   if (!onlyStyle) {
     color = convertColorToHex(color) ?? color;
