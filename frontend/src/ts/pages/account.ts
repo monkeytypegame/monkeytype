@@ -71,6 +71,8 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
+  const snapshot = DB.getSnapshot();
+
   let diff = result.difficulty ?? "normal";
 
   let icons = `<span aria-label="${result.language?.replace(
@@ -121,7 +123,7 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
   if (result.tags !== undefined && result.tags.length > 0) {
     tagNames = "";
     result.tags.forEach((tag) => {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+      snapshot?.tags?.forEach((snaptag) => {
         if (tag === snaptag._id) {
           tagNames += snaptag.display + ", ";
         }
@@ -223,7 +225,7 @@ async function fillContent(): Promise<void> {
 
   TestActivity.init(
     testActivityEl as HTMLElement,
-    snapshot.testActivity,
+    snapshot.testActivityData,
     new Date(snapshot.addedAt),
   );
   void ResultBatches.update();
@@ -284,7 +286,7 @@ async function fillContent(): Promise<void> {
   filteredResults = [];
   qs(".pageAccount .history table tbody")?.empty();
 
-  DB.getSnapshot()?.results?.forEach((result) => {
+  snapshot.results?.forEach((result) => {
     // totalSeconds += tt;
 
     //apply filters
@@ -439,14 +441,14 @@ async function fillContent(): Promise<void> {
       let tagHide = true;
       if (result.tags === undefined || result.tags.length === 0) {
         //no tags, show when no tag is enabled
-        if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
+        if ((snapshot.tags?.length ?? 0) > 0) {
           if (ResultFilters.getFilter("tags", "none")) tagHide = false;
         } else {
           tagHide = false;
         }
       } else {
         //tags exist
-        const validTags = DB.getSnapshot()?.tags?.map((t) => t._id);
+        const validTags = snapshot.tags?.map((t) => t._id);
 
         if (validTags === undefined) return;
 
@@ -1005,10 +1007,11 @@ async function update(): Promise<void> {
 
 export function updateTagsForResult(resultId: string, tagIds: string[]): void {
   const tagNames: string[] = [];
+  const snapshot = DB.getSnapshot();
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+      snapshot?.tags?.forEach((snaptag) => {
         if (tag === snaptag._id) {
           tagNames.push(snaptag.display);
         }
@@ -1124,9 +1127,8 @@ qs(".pageAccount")?.onChild(
 
       //update local cache
       result.chartData = chartData;
-      const dbResult = DB.getSnapshot()?.results?.find(
-        (it) => it._id === result._id,
-      );
+      const snapshot = DB.getSnapshot();
+      const dbResult = snapshot?.results?.find((it) => it._id === result._id);
       if (dbResult !== undefined) {
         dbResult["chartData"] = result.chartData;
       }

@@ -8,18 +8,28 @@ import {
   TestActivityMonth,
 } from "./test-activity-calendar";
 import { safeNumber } from "@monkeytype/util/numbers";
+import { TestActivity } from "@monkeytype/schemas/users";
+import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 
 let yearSelector: SlimSelect | undefined = undefined;
+let calendar: TestActivityCalendar | undefined = undefined;
 
 export function init(
   element: HTMLElement,
-  calendar?: TestActivityCalendar,
+  testActivityData?: TestActivity,
   userSignUpDate?: Date,
 ): void {
-  if (calendar === undefined) {
+  if (testActivityData === undefined) {
     clear(element);
     return;
   }
+
+  calendar ??= new TestActivityCalendar(
+    testActivityData.testsByDays,
+    new Date(testActivityData.lastDay),
+    getFirstDayOfTheWeek(),
+  );
+
   element.classList.remove("hidden");
 
   if (element.querySelector(".yearSelect") !== null) {

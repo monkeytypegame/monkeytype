@@ -1,5 +1,6 @@
 import {
   ResultFilters,
+  TestActivity,
   User,
   UserProfileDetails,
   UserTag,
@@ -8,10 +9,6 @@ import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { Config, Difficulty, FunboxName } from "@monkeytype/schemas/configs";
-import {
-  ModifiableTestActivityCalendar,
-  TestActivityCalendar,
-} from "../elements/test-activity-calendar";
 import { Preset } from "@monkeytype/schemas/presets";
 import { Language } from "@monkeytype/schemas/languages";
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
@@ -83,8 +80,7 @@ export type Snapshot = Omit<
   presets: SnapshotPreset[];
   results?: SnapshotResult<Mode>[];
   xp: number;
-  testActivity?: ModifiableTestActivityCalendar;
-  testActivityByYear?: { [key: string]: TestActivityCalendar };
+  testActivityData?: TestActivity;
   connections: Record<string, ConnectionStatus | "incoming">;
 };
 

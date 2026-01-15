@@ -1,4 +1,5 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
+import { TestActivity } from "@monkeytype/schemas/users";
 import { safeNumber } from "@monkeytype/util/numbers";
 import {
   format,
@@ -202,6 +203,13 @@ export class TestActivityCalendar implements TestActivityCalendar {
   }
   private nextLastDayOfWeek(date: Date): Date {
     return nextDay(date, ((this.firstDayOfWeek + 6) % 7) as Day);
+  }
+
+  getRawData(): TestActivity {
+    return {
+      testsByDays: this.data.map((v) => (v === undefined ? null : v)),
+      lastDay: this.endDay.getTime(),
+    };
   }
 }
 
