@@ -195,7 +195,7 @@ export function isThaanaConsonant(char: string): boolean {
  * Split a string into individual Unicode code points.
  */
 export function splitIntoCharacters(s: string): string[] {
-  // eslint-disable-next-line @typescript-eslint/no-misused-spread -- Intentional for Thaana character separation
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread -- Intentional use of spread to split into Unicode code points (used by Thaana and other scripts)
   return [...s];
 }
 
