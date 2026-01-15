@@ -219,13 +219,15 @@ export function update(): void {
           width: percent + "vw",
           duration: 250,
         });
-      } else if (Config.timerStyle === "text") {
+      } else if (
+        Config.timerStyle === "text" ||
+        Config.timerStyle === "flash_text"
+      ) {
         updateTimer(textEl, outof, true);
-      } else if (Config.timerStyle === "flash_mini") {
-        updateTimer(miniEl, outof, false);
-      } else if (Config.timerStyle === "flash_text") {
-        updateTimer(textEl, outof, true);
-      } else if (Config.timerStyle === "mini") {
+      } else if (
+        Config.timerStyle === "mini" ||
+        Config.timerStyle === "flash_mini"
+      ) {
         updateTimer(miniEl, outof, false);
       }
     } else if (Config.mode === "zen") {
