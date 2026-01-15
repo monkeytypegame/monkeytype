@@ -43,7 +43,7 @@ export function init(
     return;
   }
 
-  calendar ??= new TestActivityCalendar(
+  calendar = new TestActivityCalendar(
     testActivityData.testsByDays,
     new Date(testActivityData.lastDay),
     getFirstDayOfTheWeek(),
@@ -79,8 +79,6 @@ function update(
     return;
   }
 
-  let calendarToShow = calendar;
-
   container.innerHTML = "";
 
   if (calendar === undefined) {
@@ -90,6 +88,7 @@ function update(
     return;
   }
 
+  let calendarToShow: TestActivityCalendar;
   if (fullYear) {
     calendarToShow = calendar.getFullYearCalendar();
   } else {
