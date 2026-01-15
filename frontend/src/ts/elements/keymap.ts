@@ -136,7 +136,11 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
         duration: 250,
         easing: "out(5)",
       });
-    } catch (e) {}
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log("could not flash keymap key: " + e.message);
+      }
+    }
   });
 }
 
