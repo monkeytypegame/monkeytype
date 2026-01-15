@@ -44,7 +44,7 @@ function updateColors(
   const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
 
   if (props?.convertColor) {
-    color = convertColorToHex(color) ?? "error";
+    color = convertColorToHex(color) ?? "#fc0fc0";
   }
 
   if (!props?.noThemeUpdate) {
@@ -203,7 +203,7 @@ export function setCustomInputs(): void {
   ).forEach((element) => {
     const key = element.getAttribute("data-key") as ColorName;
     const color = theme[key] as string;
-    updateColors(key, color, { convertColor: false, noThemeUpdate: true });
+    updateColors(key, color, { convertColor: true, noThemeUpdate: true });
   });
 }
 
@@ -270,6 +270,13 @@ function convertColorToHex(color: string): string | undefined {
   const input = color.trim().toLocaleLowerCase();
   if (/^#[0-9a-f]{6}$/i.test(input)) {
     return input;
+  }
+
+  if (/^#[0-9a-f]{3}$/i.test(input)) {
+    // Expand #rgb → #rrggbb
+    return (
+      "#" + input[1] + input[1] + input[2] + input[2] + input[3] + input[3]
+    );
   }
 
   const rgbMatch =
@@ -404,7 +411,9 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
 
   Misc.typedKeys(themeColors)
     .filter((it) => it !== "hasCss")
-    .forEach((key) => updateColors(key, themeColors[key]));
+    .forEach((key) =>
+      updateColors(key, themeColors[key], { convertColor: true }),
+    );
 });
 
 $(".pageSettings #saveCustomThemeButton").on("click", async () => {
