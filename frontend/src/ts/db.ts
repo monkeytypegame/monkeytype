@@ -60,7 +60,7 @@ export function getSnapshot(): Snapshot | undefined {
   if (Object.keys(snapshot).length === 0) {
     return undefined;
   }
-  return structuredClone(unwrap(snapshot)) as Snapshot;
+  return unwrap(snapshot) as Snapshot;
 }
 
 export function setSnapshot(
