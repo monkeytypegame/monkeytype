@@ -230,6 +230,22 @@ qs(".pageAccountSettings")?.onChild(
   },
 );
 
+qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
+  showPopup("revokeAllTokens");
+});
+
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#resetPersonalBestsButton",
+  () => {
+    showPopup("resetPersonalBests");
+  },
+);
+
+qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
+  showPopup("updateName");
+});
+
 AuthEvent.subscribe((event) => {
   if (event.type === "authConfigUpdated") {
     updateUI();
