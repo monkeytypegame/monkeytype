@@ -72,6 +72,7 @@ export function setSnapshot(
 ): void {
   if (newSnapshot === undefined) {
     setSnapshotStore({});
+    testActivityByYear.clear();
 
     if (options?.dispatchEvent !== false) {
       AuthEvent.dispatch({
