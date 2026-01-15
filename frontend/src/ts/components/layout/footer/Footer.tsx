@@ -8,7 +8,19 @@ import { ScrollToTop } from "./ScrollToTop";
 
 export function Footer(): JSXElement {
   return (
-    <footer>
+    <footer class="relative text-xs text-sub">
+      {/* Tailwind Breakpoint Debug Indicator */}
+      <div class="fixed bottom-4 right-4 z-[999999999999999] bg-main text-white px-4 py-2 text-2xl font-bold font-mono rounded shadow-lg">
+        <div class="block xl:display-none">2xl</div>
+        <div class="display-none xl:block lg:display-none">xl</div>
+        <div class="display-none lg:block md:display-none">lg</div>
+        <div class="display-none md:block sm:display-none">md</div>
+        <div class="display-none sm:block xs:display-none">sm</div>
+        <div class="display-none xs:block xxs:display-none">xs</div>
+        <div class="display-none xxs:block xxxs:display-none">xxs</div>
+        <div class="display-none xxxs:block">xxxs</div>
+      </div>
+
       <ScrollToTop />
       <div
         id="commandLineMobileButton"
@@ -19,15 +31,15 @@ export function Footer(): JSXElement {
         <i class="fas fa-terminal"></i>
       </div>
 
-      <div class="keyTips">
+      <div class="text-center mb-8 leading-loose">
         <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
         <br />
         <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
         - command line
       </div>
 
-      <div class="leftright">
-        <div class="left">
+      <div class="-m-2 flex justify-between gap-8 sm:grid sm:grid-cols-2">
+        <div class="text-left flex w-max justify-items-start lg:grid lg:grid-cols-4 sm:w-[unset] sm:grid-cols-[repeat(auto-fit, minmax(5rem,1fr))]">
           <Button
             type="text"
             text="contact"
@@ -85,7 +97,7 @@ export function Footer(): JSXElement {
             fixedWidthIcon
           />
         </div>
-        <div class="right">
+        <div class="text-right flex w-max h-max justify-items-end lg:grid lg:grid-cols-2 ">
           <ThemeIndicator />
           <VersionButton />
         </div>

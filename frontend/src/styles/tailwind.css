@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* @config "../../tailwind.config.js"; */
+
+@theme {
+  --color-*: initial;
+  --color-bg: var(--bg-color);
+  --color-main: var(--main-color);
+  --color-caret: var(--caret-color);
+  --color-sub: var(--sub-color);
+  --color-sub-alt: var(--sub-alt-color);
+  --color-text: var(--text-color);
+  --color-error: var(--error-color);
+  --color-error-extra: var(--error-extra-color);
+  --color-colorful-error: var(--colorful-error-color);
+  --color-colorful-error-extra: var(--colorful-error-extra-color);
+
+  --spacing: 0.25em;
+
+  --breakpoint-*: initial;
+}
+
+@utility display-none {
+  display: none;
+}
+
+@custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
+@custom-variant xl (@media (max-width: calc(1536px + 5rem)));
+@custom-variant lg (@media (max-width: calc(1280px + 5rem)));
+@custom-variant md (@media (max-width: calc(1024px + 5rem)));
+@custom-variant sm (@media (max-width: calc(768px + 5rem)));
+@custom-variant xs (@media (max-width: calc(640px + 5rem)));
+@custom-variant xxs (@media (max-width: 425px));
+@custom-variant xxxs (@media (max-width: 330px));
+
+/* $breakpoints: ( */
+/* orange: calc(1536px + 5rem),
+  yellow: calc(1280px + 5rem),
+  green: calc(1024px + 5rem),
+  blue: calc(768px + 5rem),
+  purple: calc(640px + 5rem),
+  brown: 425px,
+  gray: 330px
+); */

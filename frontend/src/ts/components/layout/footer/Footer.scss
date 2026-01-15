@@ -1,17 +1,6 @@
 @use "../../../../styles/media.scss" as *;
 
 footer {
-  position: relative;
-  font-size: 0.75rem;
-  color: var(--sub-color);
-
-  .keyTips {
-    text-align: center;
-    transition: 0.125s;
-    margin-bottom: 2em;
-    line-height: 2;
-  }
-
   #commandLineMobileButton {
     display: none;
     // top: -4rem;
@@ -29,28 +18,6 @@ footer {
     cursor: pointer;
     color: var(--bg-color);
     transition: 0.25s;
-  }
-
-  .leftright {
-    margin: -0.5em;
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
-
-    .left {
-      text-align: left;
-      display: flex;
-      justify-items: start;
-      width: max-content;
-    }
-    .right {
-      text-align: right;
-      display: flex;
-      justify-self: right;
-      width: max-content;
-      height: max-content;
-      justify-items: end;
-    }
   }
 
   .currentVersion {
@@ -82,21 +49,6 @@ footer {
     #commandLineMobileButton {
       opacity: 0;
       pointer-events: none;
-    }
-  }
-
-  @include media-query(green) {
-    & {
-      .leftright {
-        .left {
-          display: grid;
-          grid-template-columns: repeat(4, auto);
-        }
-        .right {
-          display: grid;
-          grid-template-columns: 1fr;
-        }
-      }
     }
   }
 
