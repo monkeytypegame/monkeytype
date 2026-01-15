@@ -66,24 +66,22 @@ export function reset(): void {
 }
 
 function hideElement(el: HTMLElement, hideOnComplete: boolean): void {
-  type AnimateOptions = {
-    opacity: number;
-    duration: number;
-    onComplete?: () => void;
-  };
-
-  const args: AnimateOptions = {
+  let args = {
     opacity: 0,
     duration: applyReducedMotion(125),
   };
 
-  if (hideOnComplete) {
-    args.onComplete = () => {
-      el.classList.add("hidden");
-    };
-  }
-
-  animate(el, args);
+  animate(
+    el,
+    hideOnComplete
+      ? {
+          ...args,
+          onComplete: () => {
+            el.classList.add("hidden");
+          },
+        }
+      : args,
+  );
 }
 
 export function hide(): void {
