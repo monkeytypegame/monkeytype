@@ -208,11 +208,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.allTimeLbs = userData.allTimeLbs;
 
     if (userData.testActivity !== undefined) {
-      // snap.testActivity = new ModifiableTestActivityCalendar(
-      //   userData.testActivity.testsByDays,
-      //   new Date(userData.testActivity.lastDay),
-      //   firstDayOfTheWeek,
-      // );
       snap.testActivityData = userData.testActivity;
     }
 
