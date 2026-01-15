@@ -35,7 +35,7 @@ import {
   SimpleModal,
   TextInput,
 } from "../utils/simple-modal";
-import { ShowOptions } from "../utils/animated-modal";
+
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
   PasswordSchema,
@@ -47,57 +47,10 @@ import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsr } from "../utils/dom";
+import { list, PopupKey, showPopup } from "./simple-modals-base";
 
-type PopupKey =
-  | "updateEmail"
-  | "updateName"
-  | "updatePassword"
-  | "removeGoogleAuth"
-  | "removeGithubAuth"
-  | "removePasswordAuth"
-  | "addPasswordAuth"
-  | "deleteAccount"
-  | "resetAccount"
-  | "optOutOfLeaderboards"
-  | "applyCustomFont"
-  | "resetPersonalBests"
-  | "resetSettings"
-  | "revokeAllTokens"
-  | "unlinkDiscord"
-  | "editApeKey"
-  | "deleteCustomText"
-  | "deleteCustomTextLong"
-  | "resetProgressCustomTextLong"
-  | "updateCustomTheme"
-  | "deleteCustomTheme"
-  | "devGenerateData"
-  | "lbGoToPage";
-
-const list: Record<PopupKey, SimpleModal | undefined> = {
-  updateEmail: undefined,
-  updateName: undefined,
-  updatePassword: undefined,
-  removeGoogleAuth: undefined,
-  removeGithubAuth: undefined,
-  removePasswordAuth: undefined,
-  addPasswordAuth: undefined,
-  deleteAccount: undefined,
-  resetAccount: undefined,
-  optOutOfLeaderboards: undefined,
-  applyCustomFont: undefined,
-  resetPersonalBests: undefined,
-  resetSettings: undefined,
-  revokeAllTokens: undefined,
-  unlinkDiscord: undefined,
-  editApeKey: undefined,
-  deleteCustomText: undefined,
-  deleteCustomTextLong: undefined,
-  resetProgressCustomTextLong: undefined,
-  updateCustomTheme: undefined,
-  deleteCustomTheme: undefined,
-  devGenerateData: undefined,
-  lbGoToPage: undefined,
-};
+export { list, showPopup };
+export type { PopupKey };
 
 type AuthMethod = "password" | "github.com" | "google.com";
 
@@ -1323,122 +1276,6 @@ list.lbGoToPage = new SimpleModal({
   },
 });
 
-export function showPopup(
-  key: PopupKey,
-  showParams = [] as string[],
-  showOptions: ShowOptions = {},
-): void {
-  const popup = list[key];
-  if (popup === undefined) {
-    Notifications.add("Failed to show popup - popup is not defined", -1);
-    return;
-  }
-  popup.show(showParams, showOptions);
-}
-
-//todo: move these event handlers to their respective files (either global event files or popup files)
-qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
-  showPopup("unlinkDiscord");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
-  showPopup("removeGoogleAuth");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
-  showPopup("removeGithubAuth");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
-  showPopup("removePasswordAuth");
-});
-
-qs("#resetSettingsButton")?.on("click", () => {
-  showPopup("resetSettings");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
-  showPopup("revokeAllTokens");
-});
-
-qs(".pageAccountSettings")?.onChild(
-  "click",
-  "#resetPersonalBestsButton",
-  () => {
-    showPopup("resetPersonalBests");
-  },
-);
-
-qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
-  showPopup("updateName");
-});
-
 qs("#bannerCenter")?.onChild("click", ".banner .text .openNameChange", () => {
   showPopup("updateName");
 });
-
-qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
-  showPopup("addPasswordAuth");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
-  showPopup("updateEmail");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
-  showPopup("updatePassword");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
-  showPopup("deleteAccount");
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
-  showPopup("resetAccount");
-});
-
-qs(".pageAccountSettings")?.onChild(
-  "click",
-  "#optOutOfLeaderboardsButton",
-  () => {
-    showPopup("optOutOfLeaderboards");
-  },
-);
-
-qs(".pageSettings")?.onChild(
-  "click",
-  ".section.themes .customTheme .delButton",
-  (e) => {
-    const $parentElement = (e.childTarget as HTMLElement | null)?.closest(
-      ".customTheme.button",
-    );
-    const customThemeId = $parentElement?.getAttribute(
-      "customThemeId",
-    ) as string;
-    showPopup("deleteCustomTheme", [customThemeId]);
-  },
-);
-
-qs(".pageSettings")?.onChild(
-  "click",
-  ".section.themes .customTheme .editButton",
-  (e) => {
-    const $parentElement = (e.childTarget as HTMLElement | null)?.closest(
-      ".customTheme.button",
-    );
-    const customThemeId = $parentElement?.getAttribute(
-      "customThemeId",
-    ) as string;
-    showPopup("updateCustomTheme", [customThemeId], {
-      focusFirstInput: "focusAndSelect",
-    });
-  },
-);
-
-qs(".pageSettings")?.onChild(
-  "click",
-  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
-  () => {
-    showPopup("applyCustomFont");
-  },
-);
