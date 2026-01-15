@@ -1,6 +1,5 @@
 import SlimSelect from "slim-select";
 import { DataObjectPartial } from "slim-select/store";
-import { getTestActivityCalendar } from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as DB from "../db";
 import {
@@ -10,9 +9,29 @@ import {
 import { safeNumber } from "@monkeytype/util/numbers";
 import { TestActivity } from "@monkeytype/schemas/users";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
+import { addDays } from "date-fns/addDays";
+import * as AuthEvent from "../observables/auth-event";
 
 let yearSelector: SlimSelect | undefined = undefined;
 let calendar: TestActivityCalendar | undefined = undefined;
+let activityByYear: Map<string, TestActivityCalendar> | undefined = undefined;
+
+async function initActivityByYear(): Promise<void> {
+  if (activityByYear !== undefined) return;
+  activityByYear = new Map<string, TestActivityCalendar>();
+
+  const data = await DB.getTestActivity();
+  if (data === undefined) return;
+
+  for (const year in data) {
+    const testsByDays = data[year] as (number | null)[];
+    const lastDay = addDays(new Date(parseInt(year), 0, 1), testsByDays.length);
+    activityByYear.set(
+      year,
+      new TestActivityCalendar(testsByDays, lastDay, getFirstDayOfTheWeek()),
+    );
+  }
+}
 
 export function init(
   element: HTMLElement,
@@ -147,7 +166,10 @@ function getYearSelector(element: HTMLElement): SlimSelect {
         // oxlint-disable-next-line no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
-        const activity = await getTestActivityCalendar(selected);
+        if (activityByYear === undefined) {
+          await initActivityByYear();
+        }
+        const activity = activityByYear?.get(selected);
         update(element, activity);
         // oxlint-disable-next-line no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
@@ -196,3 +218,9 @@ function updateLabels(element: HTMLElement, firstDayOfWeek: number): void {
   (element.querySelector(".daysFull") as HTMLElement).innerHTML = buildHtml();
   (element.querySelector(".days") as HTMLElement).innerHTML = buildHtml(3);
 }
+
+AuthEvent.subscribe((data) => {
+  if (data.type === "snapshotUpdated" && DB.getSnapshot() === undefined) {
+    activityByYear?.clear();
+  }
+});

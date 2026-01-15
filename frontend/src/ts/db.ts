@@ -4,11 +4,7 @@ import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { migrateConfig } from "./utils/config";
-import * as Dates from "date-fns";
-import {
-  TestActivityCalendar,
-  ModifiableTestActivityCalendar,
-} from "./elements/test-activity-calendar";
+import { ModifiableTestActivityCalendar } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
@@ -37,6 +33,7 @@ import {
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { createStore, unwrap } from "solid-js/store";
+import { GetTestActivityResponse } from "@monkeytype/contracts/users";
 
 const [snapshot, setSnapshotStore] = createStore<
   // oxlint-disable-next-line typescript/no-unnecessary-type-arguments
@@ -72,7 +69,6 @@ export function setSnapshot(
 ): void {
   if (newSnapshot === undefined) {
     setSnapshotStore({});
-    testActivityByYear.clear();
 
     if (options?.dispatchEvent !== false) {
       AuthEvent.dispatch({
@@ -1126,63 +1122,19 @@ export function addBadge(badge: Badge): void {
   setSnapshot(snapshot, { dispatchEvent: false });
 }
 
-const testActivityByYear = new Map<string, TestActivityCalendar>();
-
-export async function getTestActivityCalendar(
-  yearString: string,
-): Promise<TestActivityCalendar | undefined> {
-  const dbSnapshot = getSnapshot();
-  if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
-
-  if (yearString === "current") {
-    const calendar = new ModifiableTestActivityCalendar(
-      dbSnapshot.testActivityData?.testsByDays ?? [],
-      new Date(dbSnapshot.testActivityData?.lastDay ?? Date.now()),
-      firstDayOfTheWeek,
-    );
-    return calendar;
-  }
-
-  const currentYear = new Date().getFullYear().toString();
-  if (yearString === currentYear) {
-    const calendar = new ModifiableTestActivityCalendar(
-      dbSnapshot.testActivityData?.testsByDays ?? [],
-      new Date(dbSnapshot.testActivityData?.lastDay ?? Date.now()),
-      firstDayOfTheWeek,
-    );
-    return calendar.getFullYearCalendar();
-  }
-
-  if (testActivityByYear.size === 0) {
-    if (!ConnectionState.get()) {
-      return undefined;
-    }
-
-    Loader.show();
-    const response = await Ape.users.getTestActivity();
-    if (response.status !== 200) {
-      Notifications.add("Error getting test activities", -1, { response });
-      Loader.hide();
-      return undefined;
-    }
-
-    for (const year in response.body.data) {
-      if (year === currentYear) continue;
-      const testsByDays = response.body.data[year] ?? [];
-      const lastDay = Dates.addDays(
-        new Date(parseInt(year), 0, 1),
-        testsByDays.length,
-      );
-
-      testActivityByYear.set(
-        year,
-        new TestActivityCalendar(testsByDays, lastDay, firstDayOfTheWeek, true),
-      );
-    }
+export async function getTestActivity(): Promise<
+  GetTestActivityResponse["data"] | undefined
+> {
+  Loader.show();
+  const response = await Ape.users.getTestActivity();
+  if (response.status !== 200) {
+    Notifications.add("Error getting test activity", -1, { response });
     Loader.hide();
+    return undefined;
   }
+  Loader.hide();
 
-  return testActivityByYear.get(yearString);
+  return response.body.data ?? undefined;
 }
 
 export function mergeConnections(connections: Connection[]): void {
