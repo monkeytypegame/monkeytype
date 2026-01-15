@@ -4,6 +4,8 @@ import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getThemeIndicator } from "../../signals/core";
 import { themes, Theme as ThemeType } from "../../constants/themes";
 import { ThemeName } from "@monkeytype/schemas/configs";
+import * as Loader from "../../elements/loader";
+import * as Notifications from "../../elements/notifications";
 
 export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -35,13 +37,22 @@ export function Theme(): JSXElement {
   });
 
   createEffect(() => {
-    //console.log("#### update css", themeName());
-    const theme: ThemeType | undefined = themes[themeName() as ThemeName];
+    const name = themeName();
+    const theme: ThemeType | undefined = themes[name as ThemeName];
+    console.debug("Theme controller loading style", name);
 
     const cssFile = theme?.hasCss ? `/themes/${themeName()}.css` : "";
 
-    //TODO move the code here or add loader animation?
-    //void loadStyle(themeName(), { hasCss: theme?.hasCss ?? false });
+    if (cssFile !== "") Loader.show();
+    linkEl()?.on("load", () => {
+      console.debug("Theme controller loaded style", name);
+      Loader.hide();
+    });
+    linkEl()?.on("error", (e) => {
+      console.debug("Theme controller failed to load style", name, e);
+      console.error(`Failed to load theme ${name}`, e);
+      Notifications.add("Failed to load theme", 0);
+    });
     linkEl()?.setAttribute("href", cssFile);
   });
 

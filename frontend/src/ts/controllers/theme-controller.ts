@@ -207,16 +207,11 @@ async function apply(
     }
   }*/
 
-  qsa("#keymap .keymapKey")?.setStyle({});
-  //TODO moved
-  //await loadStyle(name, { hasCss: themeColors.hasCss ?? false });
-
   //TODO not needed?!
   //if (name !== "custom") {
   //    clearCustomTheme();
   //  }
 
-  // if (!isPreview) {
   qsa("#keymap .keymapKey")?.setStyle({});
   ChartController.updateAllChartColors();
   void updateFavicon();
