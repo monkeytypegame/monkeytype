@@ -538,9 +538,7 @@ export async function getUserAverage10<M extends Mode>(
   }
 
   const retval: [number, number] =
-    snapshot === undefined || (await getUserResults()) === null
-      ? [0, 0]
-      : cont();
+    (await getUserResults()) === null ? [0, 0] : cont();
 
   return retval;
 }
