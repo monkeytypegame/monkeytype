@@ -8,7 +8,7 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../signals/core";
-import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
+import { ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ColorName, ThemesListSorted } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
@@ -37,61 +37,19 @@ function updateActiveButton(): void {
 }
 
 function updateColors(key: ColorName, color: string, onlyStyle = false): void {
-  const colorPicker = qsr(`.colorPicker input[data-key="${key}"]`).getParent();
+  const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
   if (colorPicker === null) return;
 
-  console.log("#### update colors", { key, color, onlyStyle });
   if (!onlyStyle) {
-    const colorREGEX = [
-      {
-        rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
-        start: "rgb(",
-        end: ")",
-      },
-      {
-        rule: /\b[A-Z, a-z, 0-9]{6}\b/,
-        start: "#",
-        end: "",
-      },
-      {
-        rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
-        start: "hsl(",
-        end: ")",
-      },
-    ];
-
-    color = color.replace("°", "");
-
-    for (const regex of colorREGEX) {
-      if (color.match(regex.rule)) {
-        color = regex.start + color + regex.end;
-        break;
-      }
-    }
-
-    color = color.replace("##", "#");
-
-    $(".colorConverter").css("color", color);
-    const hexColor: string | undefined = Colors.rgbStringtoHex(
-      $(".colorConverter").css("color"),
-    );
-    if (hexColor === undefined) {
-      return;
-    }
-
-    color = hexColor;
+    color = convertColorToHex(color) ?? color;
   }
 
   updateThemeColor(key, color);
-  /* handled by theme-controller
-    if (!noThemeUpdate && colorID !== undefined) {
-      document.documentElement.style.setProperty(colorID, color);
-    }
-    */
+
   const pickerButton = colorPicker.qsr<HTMLLabelElement>("label");
   pickerButton.setAttribute("value", color);
-  if (pickerButton.getAttribute("for") !== "--bg-color") {
-    pickerButton.setStyle({ backgroundColor: color });
+  if (key === "bg") {
+    //don't update the color for the background picker
   }
   colorPicker.qsr<HTMLInputElement>("input.input").setValue(color);
   colorPicker.qsr("input.color").setAttribute("value", color);
@@ -235,12 +193,11 @@ export function setCustomInputs(): void {
     Config.customThemeColors,
   );
   qsa<HTMLInputElement>(
-    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker input[type=color]",
+    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
   ).forEach((element) => {
     const key = element.getAttribute("data-key") as ColorName;
     const color = theme[key] as string;
     updateColors(key, color, false);
-    //updateColors($(element), currentColor, false);
   });
 }
 
@@ -261,15 +218,9 @@ function toggleFavourite(themeName: ThemeName): void {
 }
 
 function saveCustomThemeColors(): void {
-  const newColors: string[] = [];
-  for (const color of ThemeController.colorVars) {
-    newColors.push(
-      $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
-        "value",
-      ) as string,
-    );
-  }
-  setConfig("customThemeColors", newColors as CustomThemeColors);
+  const colors = ThemeController.convertThemeToCustomColors(getThemeColors());
+
+  setConfig("customThemeColors", colors);
   Notifications.add("Custom theme saved", 1);
 }
 
@@ -302,6 +253,48 @@ export function updateActiveTab(): void {
 export async function updateThemeUI(): Promise<void> {
   await fillPresetButtons();
   updateActiveButton();
+}
+
+/**
+ *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
+ * @param color as hex, hsl or rgb
+ * @returns  hex color
+ */
+function convertColorToHex(color: string): string | undefined {
+  const colorREGEX = [
+    {
+      rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
+      start: "rgb(",
+      end: ")",
+    },
+    {
+      rule: /\b[A-Z, a-z, 0-9]{6}\b/,
+      start: "#",
+      end: "",
+    },
+    {
+      rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
+      start: "hsl(",
+      end: ")",
+    },
+  ];
+
+  color = color.replace("°", "");
+
+  for (const regex of colorREGEX) {
+    if (color.match(regex.rule)) {
+      color = regex.start + color + regex.end;
+      break;
+    }
+  }
+
+  color = color.replace("##", "#");
+
+  $(".colorConverter").css("color", color);
+  const hexColor: string | undefined = Colors.rgbStringtoHex(
+    $(".colorConverter").css("color"),
+  );
+  return hexColor;
 }
 
 // Add events to the DOM
@@ -366,10 +359,13 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
 
 function handleColorInput(e: Event): void {
   const target = e.currentTarget as HTMLInputElement;
-  const key = target.getAttribute("data-key") as ColorName;
+  const key = target
+    ?.closest(".colorPicker")
+    ?.getAttribute("data-key") as ColorName;
 
   updateColors(key, target.value, true);
 }
+
 qsa(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 )

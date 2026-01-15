@@ -18,7 +18,7 @@ export function Theme(): JSXElement {
 
   createEffect(() => {
     const colors = themeColors();
-    console.debug("Theme update colors", themeColors());
+    console.debug("Theme controller update colors", colors);
     styleEl()?.setHtml(`
 :root {
 
@@ -41,11 +41,11 @@ export function Theme(): JSXElement {
     const theme: ThemeType | undefined = themes[name as ThemeName];
     console.debug("Theme controller loading style", name);
 
-    const cssFile = theme?.hasCss ? `/themes/${themeName()}.css` : "";
+    const hasCss = theme?.hasCss ?? false;
 
-    if (cssFile !== "") Loader.show();
+    if (hasCss) Loader.show();
     linkEl()?.on("load", () => {
-      console.debug("Theme controller loaded style", name);
+      if (hasCss) console.debug("Theme controller loaded style", name);
       Loader.hide();
     });
     linkEl()?.on("error", (e) => {
@@ -53,7 +53,7 @@ export function Theme(): JSXElement {
       console.error(`Failed to load theme ${name}`, e);
       Notifications.add("Failed to load theme", 0);
     });
-    linkEl()?.setAttribute("href", cssFile);
+    linkEl()?.setAttribute("href", hasCss ? `/themes/${themeName()}.css` : "");
   });
 
   return (

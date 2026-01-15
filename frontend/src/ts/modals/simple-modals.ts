@@ -27,7 +27,6 @@ import {
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import { CustomThemeColors } from "@monkeytype/schemas/configs";
 import * as AccountSettings from "../pages/account-settings";
 import {
   ExecReturn,
@@ -46,8 +45,10 @@ import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs, qsr } from "../utils/dom";
+
+import { qs } from "../utils/dom";
 import { list, PopupKey, showPopup } from "./simple-modals-base";
+import { getThemeColors } from "../signals/theme";
 
 export { list, showPopup };
 export type { PopupKey };
@@ -1091,22 +1092,14 @@ list.updateCustomTheme = new SimpleModal({
       };
     }
 
-    let newColors: string[] = [];
-    if (updateColors === "true") {
-      for (const color of ThemeController.colorVars) {
-        newColors.push(
-          qsr<HTMLInputElement>(
-            `.pageSettings .tabContent.customTheme #${color}[type='color']`,
-          ).getValue() as string,
-        );
-      }
-    } else {
-      newColors = customTheme.colors;
-    }
+    let newColors =
+      updateColors === "true"
+        ? ThemeController.convertThemeToCustomColors(getThemeColors())
+        : customTheme.colors;
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors as CustomThemeColors,
+      colors: newColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1115,7 +1108,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    setConfig("customThemeColors", newColors as CustomThemeColors);
+    setConfig("customThemeColors", newColors);
     void ThemePicker.fillCustomButtons();
 
     return {

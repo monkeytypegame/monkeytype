@@ -1535,15 +1535,10 @@
           <div class="customThemeInputs">
             <div class="customThemeInput">
               <label class="colorText">background</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--bg-color-txt"
-                />
+              <div class="colorPicker inputAndButton" data-key="bg">
+                <input type="text" value="#000000" class="input" />
                 <label
-                  for="--bg-color"
+                  for="colorPickerBg"
                   class="button"
                   style="
                     color: var(--text-color);
@@ -1556,22 +1551,16 @@
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--bg-color"
-                  data-key="bg"
+                  id="colorPickerBg"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">sub alt</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--sub-alt-color-txt"
-                />
+              <div class="colorPicker inputAndButton" data-key="subAlt">
+                <input type="text" value="#000000" class="input" />
                 <label
-                  for="--sub-alt-color"
+                  for="colorPickerSubAlt"
                   class="button"
                   style="
                     color: var(--text-color);
@@ -1584,41 +1573,29 @@
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--sub-alt-color"
-                  data-key="subAlt"
+                  id="colorPickerSubAlt"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">main</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--main-color-txt"
-                />
-                <label for="--main-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="main">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerMain" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--main-color"
-                  data-key="main"
+                  id="colorPickerMain"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">sub</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--sub-color-txt"
-                />
+              <div class="colorPicker inputAndButton" data-key="sub">
+                <input type="text" value="#000000" class="input" />
                 <label for="--sub-color" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
@@ -1627,49 +1604,36 @@
                   class="color"
                   value="#000000"
                   id="--sub-color"
-                  data-key="sub"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">caret</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--caret-color-txt"
-                />
-                <label for="--caret-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="caret">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerCaret" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--caret-color"
-                  data-key="caret"
+                  id="colorPickerCaret"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">text</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--text-color-txt"
-                />
-                <label for="--text-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="text">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerText" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--text-color"
-                  data-key="text"
+                  id="colorPickerText"
                 />
               </div>
             </div>
@@ -1678,43 +1642,31 @@
 
             <div class="customThemeInput">
               <label class="colorText">error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--error-color-txt"
-                />
-                <label for="--error-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="error">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerError" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--error-color"
-                  data-key="error"
+                  id="colorPickerError"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">extra error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--error-extra-color-txt"
-                />
-                <label for="--error-extra-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="errorExtra">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerExtraError" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--error-extra-color"
-                  data-key="errorExtra"
+                  id="colorPickerExtraError"
                 />
               </div>
             </div>
@@ -1722,43 +1674,34 @@
             <span class="colorfulHeader">colorful mode</span>
             <div class="customThemeInput">
               <label class="colorText">error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--colorful-error-color-txt"
-                />
-                <label for="--colorful-error-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="colorfulError">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerColorfulError" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--colorful-error-color"
-                  data-key="colorfulError"
+                  id="colorPickerColorfulError"
                 />
               </div>
             </div>
             <div class="customThemeInput">
               <label class="colorText">extra error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--colorful-error-extra-color-txt"
-                />
-                <label for="--colorful-error-extra-color" class="button">
+              <div
+                class="colorPicker inputAndButton"
+                data-key="colorfulErrorExtra"
+              >
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerColorfulErrorExtra" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--colorful-error-extra-color"
-                  data-key="colorfulErrorExtra"
+                  id="colorPickerColorfulErrorExtra"
                 />
               </div>
             </div>

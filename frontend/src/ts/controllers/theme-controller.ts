@@ -8,7 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import { debounce } from "throttle-debounce";
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
@@ -18,19 +18,6 @@ import { getThemeColors, setThemeColor } from "../signals/theme";
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
-
-export const colorVars = [
-  "--bg-color",
-  "--main-color",
-  "--caret-color",
-  "--sub-color",
-  "--sub-alt-color",
-  "--text-color",
-  "--error-color",
-  "--error-extra-color",
-  "--colorful-error-color",
-  "--colorful-error-extra-color",
-];
 
 async function updateFavicon(): Promise<void> {
   setTimeout(async () => {
@@ -60,13 +47,6 @@ async function updateFavicon(): Promise<void> {
       "data:image/svg+xml;base64," + btoa(svgPre),
     );
   }, 125);
-}
-
-function _clearCustomTheme(): void {
-  console.debug("Theme controller clearing custom theme");
-  for (const e of colorVars) {
-    document.documentElement.style.setProperty(e, "");
-  }
 }
 
 export function applyPreset(name: ThemeName): void {
@@ -152,24 +132,38 @@ export async function loadStyle(
 //   UpdateConfig.setConfig("customThemeColors", colors,nosave);
 // }
 
-export function convertCustomColorsToTheme(colors: string[]): Theme {
+export function convertCustomColorsToTheme(colors: CustomThemeColors): Theme {
   return {
-    bg: colors[0] as string,
-    main: colors[1] as string,
-    caret: colors[2] as string,
-    sub: colors[3] as string,
-    subAlt: colors[4] as string,
-    text: colors[5] as string,
-    error: colors[6] as string,
-    errorExtra: colors[7] as string,
-    colorfulError: colors[8] as string,
-    colorfulErrorExtra: colors[9] as string,
+    bg: colors[0],
+    main: colors[1],
+    caret: colors[2],
+    sub: colors[3],
+    subAlt: colors[4],
+    text: colors[5],
+    error: colors[6],
+    errorExtra: colors[7],
+    colorfulError: colors[8],
+    colorfulErrorExtra: colors[9],
   };
+}
+export function convertThemeToCustomColors(theme: Theme): CustomThemeColors {
+  return [
+    theme.bg,
+    theme.main,
+    theme.caret,
+    theme.sub,
+    theme.subAlt,
+    theme.text,
+    theme.error,
+    theme.errorExtra,
+    theme.colorfulError,
+    theme.colorfulErrorExtra,
+  ];
 }
 
 async function apply(
   themeName: string,
-  customColorsOverride?: string[],
+  customColorsOverride?: CustomThemeColors,
   isPreview = false,
 ): Promise<void> {
   console.debug(
@@ -196,21 +190,6 @@ async function apply(
     config: Config.customThemeColors,
   });
   setThemeColor(themeColors);
-
-  /*
-  if ((Config.customTheme && !isPreview) || customColorsOverride) {
-    const colors = customColorsOverride ?? Config.customThemeColors;
-
-    for (let i = 0; i < colorVars.length; i++) {
-      const colorVar = colorVars[i] as string;
-      document.documentElement.style.setProperty(colorVar, colors[i] as string);
-    }
-  }*/
-
-  //TODO not needed?!
-  //if (name !== "custom") {
-  //    clearCustomTheme();
-  //  }
 
   qsa("#keymap .keymapKey")?.setStyle({});
   ChartController.updateAllChartColors();
@@ -245,14 +224,14 @@ function updateFooterIndicator(nameOverride?: string): void {
 
 type PreviewState = {
   theme: string;
-  colors?: string[];
+  colors?: CustomThemeColors;
 } | null;
 
 let previewState: PreviewState = null;
 
 export function preview(
   themeIdentifier: string,
-  customColorsOverride?: string[],
+  customColorsOverride?: CustomThemeColors,
 ): void {
   previewState = { theme: themeIdentifier, colors: customColorsOverride };
   debouncedPreview();
@@ -342,7 +321,7 @@ export async function randomizeTheme(): Promise<void> {
     }
   } while (!filter(nextTheme.bg));
 
-  let colorsOverride: string[] | undefined;
+  let colorsOverride: CustomThemeColors | undefined;
 
   if (Config.randomTheme === "custom") {
     const theme = DB.getSnapshot()?.customThemes?.find(
