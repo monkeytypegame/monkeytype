@@ -210,7 +210,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
   getRawData(): TestActivity {
     return {
       testsByDays: this.data.map((v) => (v === undefined ? null : v)),
-      lastDay: this.endDay.getTime(),
+      lastDay: this.lastDay.getTime(),
     };
   }
 
