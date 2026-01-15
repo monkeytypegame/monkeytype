@@ -875,7 +875,7 @@ export async function saveLocalTagPB<M extends Mode>(
   return;
 }
 
-export async function deleteLocalTag(tagId: string): Promise<void> {
+export function deleteLocalTag(tagId: string): void {
   getSnapshot()?.results?.forEach((result) => {
     const tagIndex = result.tags.indexOf(tagId);
     if (tagIndex > -1) {
