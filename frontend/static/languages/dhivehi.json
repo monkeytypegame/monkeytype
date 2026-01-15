@@ -2,7 +2,8 @@
   "name": "dhivehi",
   "rightToLeft": true,
   "ligatures": false,
-  "bcp47": "dv-MV",
+  "orderedByFrequency": true,
+  "bcp47": "dv",
   "words": [
     "އެ",
     "މި",
