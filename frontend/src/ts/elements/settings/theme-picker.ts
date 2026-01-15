@@ -36,14 +36,20 @@ function updateActiveButton(): void {
     ?.classList.add("active");
 }
 
-function updateColors(key: ColorName, color: string, onlyStyle = false): void {
+function updateColors(
+  key: ColorName,
+  color: string,
+  props?: { convertColor?: boolean; noThemeUpdate?: boolean },
+): void {
   const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
 
-  if (!onlyStyle) {
+  if (!props?.convertColor) {
     color = convertColorToHex(color) ?? color;
   }
 
-  updateThemeColor(key, color);
+  if (!props?.noThemeUpdate) {
+    updateThemeColor(key, color);
+  }
 
   const pickerButton = colorPicker.qsr<HTMLLabelElement>("label");
   pickerButton.setAttribute("value", color);
@@ -197,7 +203,7 @@ export function setCustomInputs(): void {
   ).forEach((element) => {
     const key = element.getAttribute("data-key") as ColorName;
     const color = theme[key] as string;
-    updateColors(key, color, false);
+    updateColors(key, color, { convertColor: false, noThemeUpdate: true });
   });
 }
 
@@ -267,29 +273,39 @@ function convertColorToHex(color: string): string | undefined {
       rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
       start: "rgb(",
       end: ")",
+      type: "rgb",
     },
     {
       rule: /\b[A-Z, a-z, 0-9]{6}\b/,
       start: "#",
       end: "",
+      type: "hex",
     },
     {
       rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
       start: "hsl(",
       end: ")",
+      type: "hsl",
     },
   ];
 
   color = color.replace("°", "");
 
+  let matchedType;
   for (const regex of colorREGEX) {
     if (color.match(regex.rule)) {
       color = regex.start + color + regex.end;
+      matchedType = regex.type;
       break;
     }
   }
 
   color = color.replace("##", "#");
+
+  if (matchedType === "hex") {
+    console.log("quick exit");
+    return color;
+  }
 
   converter.setStyle({ color: color });
   const hexColor: string | undefined = Colors.rgbStringtoHex(
@@ -358,32 +374,38 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   }
 });
 
-function handleColorInput(e: Event): void {
-  const target = e.currentTarget as HTMLInputElement;
-  const key = target
-    ?.closest(".colorPicker")
-    ?.getAttribute("data-key") as ColorName;
+function handleColorInput(props?: {
+  convertColor: boolean;
+}): (e: Event) => void {
+  return (e) => {
+    const target = e.currentTarget as HTMLInputElement;
+    const key = target
+      ?.closest(".colorPicker")
+      ?.getAttribute("data-key") as ColorName;
 
-  updateColors(key, target.value, true);
+    updateColors(key, target.value, {
+      convertColor: props?.convertColor ?? true,
+    });
+  };
 }
 
 qsa(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 )
-  .on("input", handleColorInput)
-  .on("change", handleColorInput);
+  .on("input", handleColorInput({ convertColor: false }))
+  .on("change", handleColorInput());
 
 qsa(".pageSettings .section.themes .tabContainer .customTheme input.input")
   .on("blur", (e) => {
     if ((e.target as HTMLInputElement).id === "name") return;
-    handleColorInput(e);
+    handleColorInput()(e);
   })
   .on("keypress", function (e) {
     const target = e.target as HTMLInputElement;
     if (target.id === "name") return;
     if (e.code === "Enter") {
       target.setAttribute("disabled", "disabled");
-      handleColorInput(e);
+      handleColorInput()(e);
       target.removeAttribute("disabled");
     }
   });
