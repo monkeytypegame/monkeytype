@@ -47,8 +47,9 @@ function updateColors(key: ColorName, color: string, onlyStyle = false): void {
 
   const pickerButton = colorPicker.qsr<HTMLLabelElement>("label");
   pickerButton.setAttribute("value", color);
-  if (key === "bg") {
+  if (key !== "bg") {
     //don't update the color for the background picker
+    pickerButton.setStyle({ backgroundColor: color });
   }
   colorPicker.qsr<HTMLInputElement>("input.input").setValue(color);
   colorPicker.qsr("input.color").setAttribute("value", color);
