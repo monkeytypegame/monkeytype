@@ -2,6 +2,8 @@ import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 import { getActivePage } from "../signals/core";
 import "./ScrollToTop.scss";
 
+import { navigate } from "../controllers/route-controller";
+
 export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
 
@@ -24,19 +26,31 @@ export function ScrollToTop(): JSXElement {
   return (
     <div class={`content-grid ScrollToTop`}>
       <div
-        class={`breakout button`}
+        class={`breakout buttons-wrapper`}
         classList={{
           invisible: getActivePage() === "test" || !visible(),
         }}
-        onClick={() => {
-          setVisible(false);
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
       >
-        <i class="fas fa-angle-double-up"></i>
+        <div
+          class="button"
+          onClick={() => {
+            void navigate("/");
+          }}
+        >
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div
+          class="button"
+          onClick={() => {
+            setVisible(false);
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
+        >
+          <i class="fas fa-angle-double-up"></i>
+        </div>
       </div>
     </div>
   );

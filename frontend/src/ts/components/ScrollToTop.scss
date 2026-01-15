@@ -7,30 +7,37 @@
   top: 0;
   left: 0;
 
-  .button {
-    pointer-events: all;
+  .buttons-wrapper {
     place-self: end end;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     margin-bottom: 2rem;
-    font-size: 2rem;
-    width: 4rem;
-    height: 4rem;
-    text-align: center;
+    pointer-events: none;
 
-    line-height: 4rem;
-    background: var(--sub-alt-color);
-    border-radius: 99rem;
-    outline: 0.5rem solid var(--bg-color);
+    .button {
+      pointer-events: all;
+      font-size: 2rem;
+      width: 4rem;
+      height: 4rem;
+      text-align: center;
 
-    .fas {
-      line-height: 1;
-    }
+      line-height: 4rem;
+      background: var(--sub-alt-color);
+      border-radius: 99rem;
+      outline: 0.5rem solid var(--bg-color);
 
-    cursor: pointer;
-    color: var(--sub-color);
-    transition: 0.25s;
-    &:hover {
-      background: var(--text-color);
-      color: var(--bg-color);
+      .fas {
+        line-height: 1;
+      }
+
+      cursor: pointer;
+      color: var(--sub-color);
+      transition: 0.25s;
+      &:hover {
+        background: var(--text-color);
+        color: var(--bg-color);
+      }
     }
   }
 }
