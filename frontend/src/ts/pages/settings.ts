@@ -1064,3 +1064,7 @@ $(".pageSettings").on(
     showPopup("applyCustomFont");
   },
 );
+
+$("#resetSettingsButton").on("click", () => {
+  showPopup("resetSettings");
+});

@@ -1275,3 +1275,7 @@ list.lbGoToPage = new SimpleModal({
     };
   },
 });
+
+$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
+  showPopup("updateName");
+});

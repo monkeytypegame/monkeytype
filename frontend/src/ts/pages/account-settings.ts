@@ -231,25 +231,7 @@ $(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
   showPopup("removePasswordAuth");
 });
 
-$("#resetSettingsButton").on("click", () => {
-  showPopup("resetSettings");
-});
 
-$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
-  showPopup("revokeAllTokens");
-});
-
-$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
-  showPopup("resetPersonalBests");
-});
-
-$(".pageAccountSettings").on("click", "#updateAccountName", () => {
-  showPopup("updateName");
-});
-
-$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
-  showPopup("updateName");
-});
 
 $(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
