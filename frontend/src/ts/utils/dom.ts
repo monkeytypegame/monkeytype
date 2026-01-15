@@ -311,8 +311,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Toggle a class on the element
    */
-  toggleClass(className: string): this {
-    this.native.classList.toggle(className);
+  toggleClass(className: string, force?: boolean): this {
+    this.native.classList.toggle(className, force);
     return this;
   }
 
@@ -924,6 +924,16 @@ export class ElementsWithUtils<
       item.setStyle(object);
     }
     return this;
+  }
+
+  /**
+   * Set value of all input elements in the array
+   */
+  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
+    for (const item of this) {
+      item.setValue(value);
+    }
+    return this as unknown as this;
   }
 
   /**

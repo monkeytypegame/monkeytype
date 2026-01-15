@@ -2,6 +2,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
+import { qsr } from "../utils/dom";
 
 type State = {
   includeBackground: boolean;
@@ -29,9 +30,9 @@ async function generateUrl(): Promise<string> {
   } = {
     c: ThemeController.colorVars.map(
       (color) =>
-        $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
-          "value",
-        ) as string,
+        qsr<HTMLInputElement>(
+          `.pageSettings .tabContent.customTheme #${color}[type='color']`,
+        ).getValue() as string,
     ),
   };
 
