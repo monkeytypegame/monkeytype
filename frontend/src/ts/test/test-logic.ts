@@ -68,6 +68,7 @@ import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
+import { qs } from "../utils/dom";
 
 let failReason = "";
 
@@ -707,7 +708,7 @@ export async function retrySavingResult(): Promise<void> {
   }
 
   retrySaving.canRetry = false;
-  $("#retrySavingResultButton").addClass("hidden");
+  qs("#retrySavingResultButton")?.hide();
 
   Notifications.add("Retrying to save...");
 
@@ -866,8 +867,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     opacity: 0,
     duration: Misc.applyReducedMotion(125),
   });
-  $(".pageTest #typingTest").addClass("hidden");
-  $(".pageTest .loading").removeClass("hidden");
+  qs(".pageTest #typingTest")?.hide();
+  qs(".pageTest .loading")?.show();
   await Misc.sleep(0); //allow ui update
 
   TestUI.onTestFinish();
@@ -1215,7 +1216,7 @@ async function saveResult(
     });
     AccountButton.loading(false);
     retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
+    qs("#retrySavingResultButton")?.show();
     if (!isRetrying) {
       retrySaving.completedEvent = completedEvent;
     }
@@ -1243,7 +1244,7 @@ async function saveResult(
     //only allow retry if status is not in this list
     if (![460, 461, 463, 464, 465, 466].includes(response.status)) {
       retrySaving.canRetry = true;
-      $("#retrySavingResultButton").removeClass("hidden");
+      qs("#retrySavingResultButton")?.show();
       if (!isRetrying) {
         retrySaving.completedEvent = result;
       }
@@ -1264,11 +1265,11 @@ async function saveResult(
   }
 
   const data = response.body.data;
-  $("#result .stats .tags .editTagsButton").attr(
+  qs("#result .stats .tags .editTagsButton")?.setAttribute(
     "data-result-id",
     data.insertedId,
   );
-  $("#result .stats .tags .editTagsButton").removeClass("invisible");
+  qs("#result .stats .tags .editTagsButton")?.removeClass("invisible");
 
   const localDataToSave: DB.SaveLocalResultData = {};
 
@@ -1339,12 +1340,12 @@ async function saveResult(
       duration: Misc.applyReducedMotion(250),
     });
 
-    $("#result .stats .dailyLeaderboard .bottom").html(
+    qs("#result .stats .dailyLeaderboard .bottom")?.setHtml(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" }),
     );
   }
 
-  $("#retrySavingResultButton").addClass("hidden");
+  qs("#retrySavingResultButton")?.hide();
   if (isRetrying) {
     Notifications.add("Result saved", 1, { important: true });
   }
@@ -1397,15 +1398,19 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-$(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
+qs(".pageTest")?.onChild(
+  "click",
+  "#testModesNotice .textButton.restart",
+  () => {
+    restart();
+  },
+);
+
+qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
   restart();
 });
 
-$(".pageTest").on("click", "#testInitFailed button.restart", () => {
-  restart();
-});
-
-$(".pageTest").on("click", "#restartTestButton", () => {
+qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
@@ -1421,14 +1426,18 @@ $(".pageTest").on("click", "#restartTestButton", () => {
   }
 });
 
-$(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
+qs(".pageTest")?.onChild(
+  "click",
+  "#retrySavingResultButton",
+  retrySavingResult,
+);
 
-$(".pageTest").on("click", "#nextTestButton", () => {
+qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
   ManualRestart.set();
   restart();
 });
 
-$(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
+qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
@@ -1439,10 +1448,11 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
-$(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
+qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
   if (TestState.testRestarting) return;
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
+  if ((e.childTarget as HTMLElement).classList.contains("active")) return;
+  const mode = ((e.childTarget as HTMLElement)?.getAttribute("mode") ??
+    "time") as Mode;
   if (mode === undefined) return;
   if (setConfig("mode", mode)) {
     ManualRestart.set();
@@ -1450,9 +1460,9 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   }
 });
 
-$(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
+qs(".pageTest")?.onChild("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestState.testRestarting) return;
-  const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
+  const wrd = (e.childTarget as HTMLElement)?.getAttribute("wordCount") ?? "15";
   if (wrd !== "custom") {
     if (setConfig("words", parseInt(wrd))) {
       ManualRestart.set();
@@ -1461,9 +1471,10 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   }
 });
 
-$(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
+qs(".pageTest")?.onChild("click", "#testConfig .time .textButton", (e) => {
   if (TestState.testRestarting) return;
-  const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
+  const mode =
+    (e.childTarget as HTMLElement)?.getAttribute("timeConfig") ?? "10";
   if (mode !== "custom") {
     if (setConfig("time", parseInt(mode))) {
       ManualRestart.set();
@@ -1472,43 +1483,51 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   }
 });
 
-$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  if (TestState.testRestarting) return;
-  const lenAttr = $(e.currentTarget).attr("quoteLength");
-  if (lenAttr === "all") {
-    if (setQuoteLengthAll()) {
-      ManualRestart.set();
-      restart();
-    }
-  } else {
-    const len = parseInt(lenAttr ?? "1") as QuoteLength;
-
-    if (len !== -2) {
-      let arr: QuoteLengthConfig = [];
-
-      if (e.shiftKey) {
-        arr = [...Config.quoteLength, len];
-      } else {
-        arr = [len];
-      }
-
-      if (setConfig("quoteLength", arr)) {
+qs(".pageTest")?.onChild(
+  "click",
+  "#testConfig .quoteLength .textButton",
+  (e) => {
+    if (TestState.testRestarting) return;
+    const lenAttr = (e.childTarget as HTMLElement)?.getAttribute("quoteLength");
+    if (lenAttr === "all") {
+      if (setQuoteLengthAll()) {
         ManualRestart.set();
         restart();
       }
+    } else {
+      const len = parseInt(lenAttr ?? "1") as QuoteLength;
+
+      if (len !== -2) {
+        let arr: QuoteLengthConfig = [];
+
+        if (e.shiftKey) {
+          arr = [...Config.quoteLength, len];
+        } else {
+          arr = [len];
+        }
+
+        if (setConfig("quoteLength", arr)) {
+          ManualRestart.set();
+          restart();
+        }
+      }
     }
-  }
-});
+  },
+);
 
-$(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
-  if (TestState.testRestarting) return;
-  if (setConfig("punctuation", !Config.punctuation)) {
-    ManualRestart.set();
-    restart();
-  }
-});
+qs(".pageTest")?.onChild(
+  "click",
+  "#testConfig .punctuationMode.textButton",
+  () => {
+    if (TestState.testRestarting) return;
+    if (setConfig("punctuation", !Config.punctuation)) {
+      ManualRestart.set();
+      restart();
+    }
+  },
+);
 
-$(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
+qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
   if (TestState.testRestarting) return;
   if (setConfig("numbers", !Config.numbers)) {
     ManualRestart.set();
@@ -1516,7 +1535,7 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   }
 });
 
-$("header").on("click", "nav #startTestButton, #logo", () => {
+qs("header")?.onChild("click", "nav #startTestButton, #logo", () => {
   if (getActivePage() === "test") restart();
   // Result.showConfetti();
 });
