@@ -13,11 +13,7 @@ import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
 import { setThemeIndicator } from "../signals/core";
-import {
-  getThemeColors,
-  setThemeColors,
-  ThemeColors as ThemeColorsType,
-} from "../signals/theme";
+import { getThemeColors, setThemeColor } from "../signals/theme";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -156,7 +152,7 @@ export async function loadStyle(
 //   UpdateConfig.setConfig("customThemeColors", colors,nosave);
 // }
 
-function convertToTheme(colors: string[]): Theme {
+export function convertCustomColorsToTheme(colors: string[]): Theme {
   return {
     bg: colors[0] as string,
     main: colors[1] as string,
@@ -187,7 +183,9 @@ async function apply(
   const name = isCustom ? "custom" : themeName;
 
   const themeColors = isCustom
-    ? convertToTheme(customColorsOverride ?? Config.customThemeColors)
+    ? convertCustomColorsToTheme(
+        customColorsOverride ?? Config.customThemeColors,
+      )
     : themes[themeName as ThemeName];
 
   console.debug("Theme controller apply", {
@@ -197,7 +195,7 @@ async function apply(
     customColorsOverride,
     config: Config.customThemeColors,
   });
-  setThemeColors(themeColors as ThemeColorsType);
+  setThemeColor(themeColors);
 
   /*
   if ((Config.customTheme && !isPreview) || customColorsOverride) {
