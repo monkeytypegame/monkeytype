@@ -186,35 +186,6 @@ qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
   StreakHourOffsetModal.show();
 });
 
-AuthEvent.subscribe((event) => {
-  if (event.type === "authConfigUpdated") {
-    updateUI();
-  }
-});
-
-export const page = new PageWithUrlParams({
-  id: "accountSettings",
-  display: "Account Settings",
-  element: pageElement,
-  path: "/account-settings",
-  urlParamsSchema: UrlParameterSchema,
-  afterHide: async (): Promise<void> => {
-    Skeleton.remove("pageAccountSettings");
-  },
-  beforeShow: async (options): Promise<void> => {
-    if (options.urlParams?.tab !== undefined) {
-      state.tab = options.urlParams.tab;
-    }
-    Skeleton.append("pageAccountSettings", "main");
-    pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
-    updateUI();
-  },
-});
-
-onDOMReady(() => {
-  Skeleton.save("pageAccountSettings");
-});
-
 $(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
   showPopup("unlinkDiscord");
 });
@@ -253,4 +224,33 @@ $(".pageAccountSettings").on("click", "#resetAccount", () => {
 
 $(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
   showPopup("optOutOfLeaderboards");
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authConfigUpdated") {
+    updateUI();
+  }
+});
+
+export const page = new PageWithUrlParams({
+  id: "accountSettings",
+  display: "Account Settings",
+  element: pageElement,
+  path: "/account-settings",
+  urlParamsSchema: UrlParameterSchema,
+  afterHide: async (): Promise<void> => {
+    Skeleton.remove("pageAccountSettings");
+  },
+  beforeShow: async (options): Promise<void> => {
+    if (options.urlParams?.tab !== undefined) {
+      state.tab = options.urlParams.tab;
+    }
+    Skeleton.append("pageAccountSettings", "main");
+    pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
+    updateUI();
+  },
+});
+
+onDOMReady(() => {
+  Skeleton.save("pageAccountSettings");
 });
