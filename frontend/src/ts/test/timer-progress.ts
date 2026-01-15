@@ -66,7 +66,7 @@ export function reset(): void {
 }
 
 function hideElement(el: HTMLElement, hideOnComplete: boolean): void {
-  let args = {
+  const args = {
     opacity: 0,
     duration: applyReducedMotion(125),
   };
