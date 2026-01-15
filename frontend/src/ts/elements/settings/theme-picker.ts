@@ -255,6 +255,7 @@ export async function updateThemeUI(): Promise<void> {
   updateActiveButton();
 }
 
+const converter = qsr(".colorConverter");
 /**
  *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
  * @param color as hex, hsl or rgb
@@ -290,9 +291,9 @@ function convertColorToHex(color: string): string | undefined {
 
   color = color.replace("##", "#");
 
-  $(".colorConverter").css("color", color);
+  converter.setStyle({ color: color });
   const hexColor: string | undefined = Colors.rgbStringtoHex(
-    $(".colorConverter").css("color"),
+    converter.native.style.color,
   );
   return hexColor;
 }
