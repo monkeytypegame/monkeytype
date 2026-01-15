@@ -231,7 +231,10 @@ export function update(): void {
     } else if (Config.mode === "zen") {
       if (Config.timerStyle === "text" || Config.timerStyle === "flash_text") {
         updateTimerInputLength(textEl, true);
-      } else {
+      } else if (
+        Config.timerStyle === "mini" ||
+        Config.timerStyle === "flash_mini"
+      ) {
         updateTimerInputLength(miniEl, false);
       }
     }
