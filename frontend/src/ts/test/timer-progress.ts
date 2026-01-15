@@ -83,9 +83,7 @@ function hideElement(el: HTMLElement, hideOnComplete: boolean): void {
     };
   }
 
-  animate(el, {
-    args,
-  });
+  animate(el, args);
 }
 
 export function hide(): void {
