@@ -980,6 +980,40 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
     });
 });
 
+$(".pageSettings").on(
+  "click",
+  ".section.themes .customTheme .delButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    showPopup("deleteCustomTheme", [customThemeId]);
+  },
+);
+
+$(".pageSettings").on(
+  "click",
+  ".section.themes .customTheme .editButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
+  },
+);
+
+$(".pageSettings").on(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont");
+  },
+);
+
+$("#resetSettingsButton").on("click", () => {
+  showPopup("resetSettings");
+});
+
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "fullConfigChange") setEventDisabled(true);
   if (key === "fullConfigChangeFinished") setEventDisabled(false);
@@ -1033,38 +1067,4 @@ export const page = new PageWithUrlParams({
 
 onDOMReady(async () => {
   Skeleton.save("pageSettings");
-});
-
-$(".pageSettings").on(
-  "click",
-  ".section.themes .customTheme .delButton",
-  (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("deleteCustomTheme", [customThemeId]);
-  },
-);
-
-$(".pageSettings").on(
-  "click",
-  ".section.themes .customTheme .editButton",
-  (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("updateCustomTheme", [customThemeId], {
-      focusFirstInput: "focusAndSelect",
-    });
-  },
-);
-
-$(".pageSettings").on(
-  "click",
-  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
-  () => {
-    showPopup("applyCustomFont");
-  },
-);
-
-$("#resetSettingsButton").on("click", () => {
-  showPopup("resetSettings");
 });
