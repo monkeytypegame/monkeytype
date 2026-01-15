@@ -984,10 +984,12 @@ qs(".pageSettings")?.onChild(
   "click",
   ".section.themes .customTheme .delButton",
   (e) => {
-    const parentElement = (e.childTarget as HTMLElement).closest(
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
       ".customTheme.button",
-    ) as HTMLElement;
-    const customThemeId = parentElement.getAttribute("customThemeId") as string;
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
     showPopup("deleteCustomTheme", [customThemeId]);
   },
 );
@@ -996,10 +998,12 @@ qs(".pageSettings")?.onChild(
   "click",
   ".section.themes .customTheme .editButton",
   (e) => {
-    const parentElement = (e.childTarget as HTMLElement).closest(
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
       ".customTheme.button",
-    ) as HTMLElement;
-    const customThemeId = parentElement.getAttribute("customThemeId") as string;
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
     showPopup("updateCustomTheme", [customThemeId], {
       focusFirstInput: "focusAndSelect",
     });
