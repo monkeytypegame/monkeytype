@@ -127,9 +127,9 @@ function updateTimerInputLength(el: HTMLElement, wrapInDiv: boolean): void {
   el.innerHTML = historyLength;
 }
 
-function updateTimer(el: HTMLElement, outof: number): void {
+function updateTimer(el: HTMLElement, outof: number, wrapInDiv: boolean): void {
   if (outof === 0) {
-    updateTimerInputLength(el, false);
+    updateTimerInputLength(el, wrapInDiv);
   } else {
     el.innerHTML = `${getCurrentCount()}/${outof}`;
   }
@@ -220,13 +220,13 @@ export function update(): void {
           duration: 250,
         });
       } else if (Config.timerStyle === "text") {
-        updateTimer(textEl, outof);
+        updateTimer(textEl, outof, true);
       } else if (Config.timerStyle === "flash_mini") {
-        updateTimer(miniEl, outof);
+        updateTimer(miniEl, outof, false);
       } else if (Config.timerStyle === "flash_text") {
-        updateTimer(textEl, outof);
+        updateTimer(textEl, outof, true);
       } else if (Config.timerStyle === "mini") {
-        updateTimer(miniEl, outof);
+        updateTimer(miniEl, outof, false);
       }
     } else if (Config.mode === "zen") {
       if (Config.timerStyle === "text" || Config.timerStyle === "flash_text") {
