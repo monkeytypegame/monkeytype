@@ -115,7 +115,7 @@ function getCurrentCount(): number {
   }
 }
 
-function updateTimerInputLength(el: HTMLElement, wrapInDiv: boolean): void {
+function setTimerHtmlToInputLength(el: HTMLElement, wrapInDiv: boolean): void {
   let historyLength = `${TestInput.input.getHistory().length}`;
 
   if (wrapInDiv) {
@@ -127,7 +127,7 @@ function updateTimerInputLength(el: HTMLElement, wrapInDiv: boolean): void {
 
 function updateTimer(el: HTMLElement, outof: number, wrapInDiv: boolean): void {
   if (outof === 0) {
-    updateTimerInputLength(el, wrapInDiv);
+    setTimerHtmlToInputLength(el, wrapInDiv);
   } else {
     el.innerHTML = `${getCurrentCount()}/${outof}`;
   }
@@ -230,12 +230,12 @@ export function update(): void {
       }
     } else if (Config.mode === "zen") {
       if (Config.timerStyle === "text" || Config.timerStyle === "flash_text") {
-        updateTimerInputLength(textEl, true);
+        setTimerHtmlToInputLength(textEl, true);
       } else if (
         Config.timerStyle === "mini" ||
         Config.timerStyle === "flash_mini"
       ) {
-        updateTimerInputLength(miniEl, false);
+        setTimerHtmlToInputLength(miniEl, false);
       }
     }
   });
