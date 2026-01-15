@@ -1,7 +1,7 @@
 {
   "name": "dhivehi",
   "rightToLeft": true,
-  "ligatures": true,
+  "ligatures": false,
   "bcp47": "dv-MV",
   "words": [
     "އެ",
