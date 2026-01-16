@@ -586,7 +586,7 @@ async function updateActiveCommand(): Promise<void> {
   activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
     clearFontPreview();
-    void ThemeController.clearPreview(false);
+    void ThemeController.clearPreview();
     addCommandlineBackground();
     return;
   }
