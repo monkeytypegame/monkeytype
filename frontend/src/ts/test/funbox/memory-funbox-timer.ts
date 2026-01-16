@@ -1,22 +1,20 @@
-import { animate } from "animejs";
 import { applyReducedMotion } from "../../utils/misc";
+import { qs } from "../../utils/dom";
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
-const timerEl = document.querySelector(
-  "#typingTest #memoryTimer",
-) as HTMLElement;
+const timerEl = qs("#typingTest #memoryTimer");
 
 export function show(): void {
-  animate(timerEl, {
+  timerEl?.animate({
     opacity: 1,
     duration: applyReducedMotion(125),
   });
 }
 
 export function hide(): void {
-  animate(timerEl, {
+  timerEl?.animate({
     opacity: 0,
     duration: applyReducedMotion(125),
   });
@@ -42,11 +40,11 @@ export function start(time: number): void {
     memoryTimer === 0 ? hide() : update(memoryTimer);
     if (memoryTimer <= 0) {
       reset();
-      $("#wordsWrapper").addClass("hidden");
+      qs("#wordsWrapper")?.hide();
     }
   }, 1000);
 }
 
 export function update(sec: number): void {
-  timerEl.textContent = `Timer left to memorise all words: ${sec}s`;
+  timerEl?.setText(`Timer left to memorise all words: ${sec}s`);
 }
