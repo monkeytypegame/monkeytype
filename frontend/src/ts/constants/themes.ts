@@ -1137,8 +1137,6 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     mainColor: "#9d6bff",
     subColor: "#a8a8d0",
     textColor: "#f8f8ff",
-    caretColor: "#e7cfff",
-    errorColor: "#ff6b9c",
   },
 };
 
