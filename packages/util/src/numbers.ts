@@ -156,7 +156,3 @@ export function safeNumber(
   }
   return undefined;
 }
-
-export function clamp(n: number): number {
-  return Math.max(0, Math.min(255, n));
-}

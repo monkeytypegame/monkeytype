@@ -506,7 +506,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#84131f",
     colorfulError: "#b81b2c",
     colorfulErrorExtra: "#84131f",
-    hasCss: true,
   },
   diner: {
     bg: "#537997",
@@ -705,7 +704,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#8a1414",
     colorfulError: "#a63a3a",
     colorfulErrorExtra: "#bd4c4c",
-    hasCss: true,
   },
   floret: {
     bg: "#00272c",
@@ -1833,7 +1831,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#7e2a33",
     colorfulError: "#ca4754",
     colorfulErrorExtra: "#7e2a33",
-    hasCss: true,
   },
   serika: {
     bg: "#e1e1e3",

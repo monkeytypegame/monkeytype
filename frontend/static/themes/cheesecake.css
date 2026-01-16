@@ -1,4 +1,4 @@
-@keyframes rgb {
+@keyframes cheesecake {
   0% {
     fill: #ff0090;
   }
@@ -32,5 +32,5 @@
 }
 
 header > div#logo > div.icon > svg path {
-  animation: 10s linear infinite 0.1s rgb;
+  animation: 10s linear infinite 0.1s cheesecake;
 }

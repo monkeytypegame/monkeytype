@@ -85,8 +85,10 @@ button.text:hover,
 
 #words {
   --correct-letter-animation: rainbow-infinite-loop 5s linear infinite;
-  --incorrect-letter-animation: error-repeat 1s alternate ease-in-out infinite;
-  --extra-letter-animation: error-repeat 1s alternate ease-in-out infinite;
+  --incorrect-letter-animation: rainbow-error-repeat 1s alternate ease-in-out
+    infinite;
+  --extra-letter-animation: rainbow-error-repeat 1s alternate ease-in-out
+    infinite;
 }
 
 #words .word.typed letter.correct,
@@ -112,7 +114,7 @@ button.text:hover,
 
 .button:hover,
 button:not(.textButton):not(.text):hover {
-  animation: glowing-button 2s alternate ease-in-out infinite;
+  animation: rainbow-button 2s alternate ease-in-out infinite;
 }
 
 #words.highlight-off .word letter,
@@ -215,7 +217,7 @@ button:not(.textButton):not(.text):hover {
   }
 }
 
-@keyframes error-repeat {
+@keyframes rainbow-error-repeat {
   0% {
     color: #ff0000;
   }
@@ -251,7 +253,7 @@ button:not(.textButton):not(.text):hover {
   }
 }
 
-@keyframes glowing-button {
+@keyframes rainbow-button {
   0% {
     box-shadow:
       0 0 7.5px 2.5px #60b6ce,

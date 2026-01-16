@@ -1,4 +1,4 @@
-@keyframes pastel {
+@keyframes grape {
   0% {
     color: #00b8d4;
   }
@@ -16,7 +16,7 @@
   }
 }
 
-@keyframes pastel-bg {
+@keyframes grape-bg {
   0% {
     background: #00b8d4;
   }
@@ -39,7 +39,7 @@
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
 .pageAccount .group.filterButtons .buttons .button.active {
-  animation: pastel-bg 5s linear infinite;
+  animation: grape-bg 5s linear infinite;
 }
 
 header.focus .button.discord::after,
@@ -56,17 +56,17 @@ header .config .group .buttons .textButton:hover,
 footer .textButton:hover,
 footer button.text:hover,
 a:not(.button):hover {
-  animation: pastel 5s linear infinite;
+  animation: grape 5s linear infinite;
 }
 
 #words {
-  --correct-letter-animation: pastel 5s linear infinite;
+  --correct-letter-animation: grape 5s linear infinite;
 }
 
 #words.flipped {
   --untyped-letter-color: var(--sub-color);
   --correct-letter-animation: none;
-  --untyped-letter-animation: pastel 5s linear infinite;
+  --untyped-letter-animation: grape 5s linear infinite;
 }
 
 #words .word.typed letter.correct,
@@ -74,7 +74,7 @@ a:not(.button):hover {
 #words.highlight-next-word .word.typed letter,
 #words.highlight-next-two-words .word.typed letter,
 #words.highlight-next-three-words .word.typed letter {
-  animation: pastel 5s linear infinite;
+  animation: grape 5s linear infinite;
 }
 
 #words.flipped .word.typed letter {
@@ -83,5 +83,5 @@ a:not(.button):hover {
 
 #words.highlight-off .word letter,
 #words.highlight-off .word.typed letter {
-  animation: pastel 5s linear infinite;
+  animation: grape 5s linear infinite;
 }
