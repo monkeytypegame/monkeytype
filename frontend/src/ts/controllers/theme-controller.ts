@@ -55,12 +55,11 @@ async function apply(
   customColorsOverride?: CustomThemeColors,
   isPreview = false,
 ): Promise<void> {
-  console.debug(
-    "Theme controller applying theme",
-    themeName,
+  console.debug(`Theme controller applying theme ${themeName}`, {
     customColorsOverride,
     isPreview,
-  );
+  });
+
   const isCustom = themeName === "custom";
 
   const themeColors = isCustom
@@ -124,11 +123,9 @@ async function set(
   themeIdentifier: string,
   isAutoSwitch = false,
 ): Promise<void> {
-  console.debug(
-    "Theme controller setting theme",
-    themeIdentifier,
+  console.debug("Theme controller setting theme", themeIdentifier, {
     isAutoSwitch,
-  );
+  });
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {

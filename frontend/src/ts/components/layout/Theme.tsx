@@ -14,13 +14,29 @@ export function Theme(): JSXElement {
   const [styleRef, styleEl] = useRefWithUtils<HTMLStyleElement>();
   const [linkRef, linkEl] = useRefWithUtils<HTMLLinkElement>();
 
+  const onLoad = (e: Event): void => {
+    const target = e.target as HTMLLinkElement;
+    if (target.href !== "") {
+      console.debug(
+        `Theme controller loaded style for theme ${target.dataset["name"]}`,
+      );
+    }
+    Loader.hide();
+  };
+
+  const onError = (e: Event): void => {
+    const target = e.target as HTMLLinkElement;
+    const name = target.dataset["name"];
+    console.debug("Theme controller failed to load style", name, e);
+    console.error(`Failed to load theme ${name}`, e);
+    Notifications.add("Failed to load theme", 0);
+  };
+
   //Use memo to ignore signals without changes
   const themeName = createMemo(() => getThemeIndicator().text);
-  const themeColors = createMemo(() => getTheme());
 
   createEffect(() => {
-    const colors = themeColors();
-    console.debug("Theme controller update colors", colors);
+    const colors = getTheme();
     styleEl()?.setHtml(`
 :root {
 
@@ -35,33 +51,35 @@ export function Theme(): JSXElement {
     --colorful-error-color: ${colors.colorfulError};
     --colorful-error-extra-color: ${colors.colorfulErrorExtra};
 }
-        `);
+    `);
   });
 
   createEffect(() => {
-    const name = themeName();
-    const theme: ThemeType | undefined = themes[name as ThemeName];
-    console.debug("Theme controller loading style", name);
+    const themeKey = themeName().replace(/ /g, "_");
 
+    //theme name can be custom, we won't find a theme for it
+    const theme: ThemeType | undefined = themes[themeKey as ThemeName];
     const hasCss = theme?.hasCss ?? false;
 
+    console.debug(
+      `Theme controller ${hasCss ? "loading style" : "removing style"} for theme ${themeKey}`,
+    );
+
     if (hasCss) Loader.show();
-    linkEl()?.on("load", () => {
-      if (hasCss) console.debug("Theme controller loaded style", name);
-      Loader.hide();
-    });
-    linkEl()?.on("error", (e) => {
-      console.debug("Theme controller failed to load style", name, e);
-      console.error(`Failed to load theme ${name}`, e);
-      Notifications.add("Failed to load theme", 0);
-    });
-    linkEl()?.setAttribute("href", hasCss ? `/themes/${themeName()}.css` : "");
+    linkEl()?.setAttribute("href", hasCss ? `/themes/${themeKey}.css` : "");
   });
 
   return (
     <MetaProvider>
       <Style id="theme" ref={styleRef} />
-      <Link ref={linkRef} rel="stylesheet" id="currentTheme" />
+      <Link
+        ref={linkRef}
+        rel="stylesheet"
+        id="currentTheme"
+        data-name={themeName()}
+        onError={onError}
+        onLoad={onLoad}
+      />
       <Meta
         id="metaThemeColor"
         name="theme-color"
