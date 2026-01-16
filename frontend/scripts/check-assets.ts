@@ -397,9 +397,14 @@ async function validateThemes(): Promise<void> {
     .forEach((it) => problems.add("_additional", it));
 
   //validate theme colors are valid hex colors, not covered by typescipt
+  const themeNameSchema = z.string().regex(/^[a-z0-9_]+$/, {
+    message:
+      "theme name can only contain lowercase letters, digits and underscore",
+  });
   for (const name of Object.keys(themes)) {
     const theme = themes[name as ThemeName];
     problems.addValidation(name as ThemeName, ThemeSchema.safeParse(theme));
+    problems.addValidation(name as ThemeName, themeNameSchema.safeParse(name));
   }
 
   console.log(problems.toString());
