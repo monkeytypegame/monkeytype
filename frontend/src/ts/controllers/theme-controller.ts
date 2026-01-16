@@ -11,9 +11,9 @@ import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs } from "../utils/dom";
 import { setThemeIndicator } from "../signals/core";
-import { setTheme } from "../signals/theme";
+import { setTheme, ThemeIdentifier } from "../signals/theme";
 
-export let randomTheme: ThemeName | string | null = null;
+export let randomTheme: ThemeIdentifier | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
@@ -51,7 +51,7 @@ export function convertThemeToCustomColors(theme: Theme): CustomThemeColors {
 }
 
 async function apply(
-  themeName: string,
+  themeName: ThemeIdentifier,
   customColorsOverride?: CustomThemeColors,
   isPreview = false,
 ): Promise<void> {
@@ -66,9 +66,9 @@ async function apply(
     ? convertCustomColorsToTheme(
         customColorsOverride ?? Config.customThemeColors,
       )
-    : themes[themeName as ThemeName];
+    : themes[themeName];
 
-  setTheme(themeColors);
+  setTheme({ ...themeColors, name: themeName });
 
   updateThemeIndicator(isPreview ? themeName : undefined);
 
@@ -98,14 +98,14 @@ function updateThemeIndicator(nameOverride?: string): void {
 }
 
 type PreviewState = {
-  theme: string;
+  theme: ThemeIdentifier;
   colors?: CustomThemeColors;
 } | null;
 
 let previewState: PreviewState = null;
 
 export function preview(
-  themeIdentifier: string,
+  themeIdentifier: ThemeIdentifier,
   customColorsOverride?: CustomThemeColors,
 ): void {
   previewState = { theme: themeIdentifier, colors: customColorsOverride };
@@ -120,7 +120,7 @@ const debouncedPreview = debounce<() => void>(250, () => {
 });
 
 async function set(
-  themeIdentifier: string,
+  themeIdentifier: ThemeIdentifier,
   isAutoSwitch = false,
 ): Promise<void> {
   console.debug("Theme controller setting theme", themeIdentifier, {
@@ -185,7 +185,7 @@ export async function randomizeTheme(): Promise<void> {
 
   let nextTheme = null;
   do {
-    randomTheme = themesList[randomThemeIndex] as string;
+    randomTheme = themesList[randomThemeIndex] as ThemeIdentifier;
     nextTheme = themes[themesList[randomThemeIndex] as ThemeName];
     randomThemeIndex++;
     if (randomThemeIndex >= themesList.length) {
@@ -372,7 +372,7 @@ ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
   if (key === "theme") {
     await clearRandom();
     await clearPreview(false);
-    await set(newValue as string);
+    await set(newValue);
   }
   if (key === "randomTheme" && newValue === "off") await clearRandom();
   if (key === "customBackground") await applyCustomBackground();

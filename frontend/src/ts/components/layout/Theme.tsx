@@ -1,9 +1,7 @@
 import { createEffect, createMemo, JSXElement } from "solid-js";
 import { getTheme } from "../../signals/theme";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
-import { getThemeIndicator } from "../../signals/core";
-import { themes, Theme as ThemeType } from "../../constants/themes";
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { themes } from "../../constants/themes";
 import * as Loader from "../../elements/loader";
 import * as Notifications from "../../elements/notifications";
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
@@ -13,6 +11,9 @@ export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [styleRef, styleEl] = useRefWithUtils<HTMLStyleElement>();
   const [linkRef, linkEl] = useRefWithUtils<HTMLLinkElement>();
+
+  //Use memo to ignore signals without changes, needed for the css loading
+  const getThemeName = createMemo(() => getTheme().name);
 
   const onLoad = (e: Event): void => {
     const target = e.target as HTMLLinkElement;
@@ -31,9 +32,6 @@ export function Theme(): JSXElement {
     console.error(`Failed to load theme ${name}`, e);
     Notifications.add("Failed to load theme", 0);
   };
-
-  //Use memo to ignore signals without changes
-  const themeName = createMemo(() => getThemeIndicator().text);
 
   createEffect(() => {
     const colors = getTheme();
@@ -55,18 +53,15 @@ export function Theme(): JSXElement {
   });
 
   createEffect(() => {
-    const themeKey = themeName().replace(/ /g, "_");
-
-    //theme name can be custom, we won't find a theme for it
-    const theme: ThemeType | undefined = themes[themeKey as ThemeName];
-    const hasCss = theme?.hasCss ?? false;
+    const name = getThemeName();
+    const hasCss = name !== "custom" && (themes[name].hasCss ?? false);
 
     console.debug(
-      `Theme controller ${hasCss ? "loading style" : "removing style"} for theme ${themeKey}`,
+      `Theme controller ${hasCss ? "loading style" : "removing style"} for theme ${name}`,
     );
 
     if (hasCss) Loader.show();
-    linkEl()?.setAttribute("href", hasCss ? `/themes/${themeKey}.css` : "");
+    linkEl()?.setAttribute("href", hasCss ? `/themes/${name}123.css` : "");
   });
 
   return (
@@ -76,7 +71,7 @@ export function Theme(): JSXElement {
         ref={linkRef}
         rel="stylesheet"
         id="currentTheme"
-        data-name={themeName()}
+        data-name={getTheme().name}
         onError={onError}
         onLoad={onLoad}
       />

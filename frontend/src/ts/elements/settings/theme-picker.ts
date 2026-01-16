@@ -401,7 +401,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   const themeColors = getTheme();
 
   Misc.typedKeys(themeColors)
-    .filter((it) => it !== "hasCss")
+    .filter((key) => key !== "hasCss" && key !== "name")
     .forEach((key) =>
       updateColorPicker(key, convertColorToHex(themeColors[key])),
     );
