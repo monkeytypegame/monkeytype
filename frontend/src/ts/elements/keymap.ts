@@ -18,6 +18,7 @@ import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getTheme } from "../signals/theme";
+import { createEffect } from "solid-js";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -60,6 +61,14 @@ const stenoKeys: LayoutObject = {
     row5: [],
   },
 };
+
+createEffect(() => {
+  //react on theme change
+  const _theme = getTheme();
+
+  //reset calculated style on all keys
+  keymap.qsa(".keymapKey").setStyle({});
+});
 
 function findKeyElements(char: string): ElementsWithUtils | null {
   if (char === "\n") return null;

@@ -9,7 +9,7 @@ import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
-import { qs, qsa } from "../utils/dom";
+import { qs } from "../utils/dom";
 import { setThemeIndicator } from "../signals/core";
 import { setTheme } from "../signals/theme";
 
@@ -61,9 +61,7 @@ async function apply(
     customColorsOverride,
     isPreview,
   );
-  //TODO check for the new style to match the old one and skip loading. Problem exists on prod
   const isCustom = themeName === "custom";
-  const name = isCustom ? "custom" : themeName;
 
   const themeColors = isCustom
     ? convertCustomColorsToTheme(
@@ -71,16 +69,7 @@ async function apply(
       )
     : themes[themeName as ThemeName];
 
-  console.debug("Theme controller apply", {
-    isCustom,
-    name,
-    themeColors,
-    customColorsOverride,
-    config: Config.customThemeColors,
-  });
   setTheme(themeColors);
-
-  qsa("#keymap .keymapKey")?.setStyle({});
 
   updateThemeIndicator(isPreview ? themeName : undefined);
 
