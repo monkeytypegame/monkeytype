@@ -245,16 +245,6 @@ kbd {
   box-sizing: border-box;
 }
 
-.hidden {
-  display: none !important;
-}
-
-.invisible {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-}
-
 .inputAndIndicator {
   input {
     width: 100%;
