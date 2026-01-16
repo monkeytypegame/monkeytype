@@ -1,6 +1,5 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
-import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
@@ -35,7 +34,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
-import { qs, qsa, qsr, onWindowLoad, ElementWithUtils } from "../utils/dom";
+import { qs, qsa, qsr, ElementWithUtils, onDOMReady } from "../utils/dom";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -215,7 +214,6 @@ let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
   console.log("updating account page");
-  ThemeColors.update();
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -1284,6 +1282,6 @@ export const page = new Page<undefined>({
   },
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccount");
 });

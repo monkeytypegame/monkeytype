@@ -75,11 +75,6 @@
       }
     }
   }
-  .pageAbout {
-    .triplegroup {
-      grid-template-columns: 1fr;
-    }
-  }
   .pageAccount {
     .triplegroup.stats {
       .title {
@@ -237,7 +232,7 @@
     }
   }
   .testActivity {
-    --box-size: 0.58em;
+    --font-size: 0.6em;
     // .activity div,
     // .legend div {
     //   width: 0.7em;

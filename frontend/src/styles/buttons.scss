@@ -8,9 +8,11 @@ button,
 .textButton {
   .fas,
   .far,
-  .fab {
+  .fab,
+  .icon {
     line-height: 1.25;
     pointer-events: none;
+    justify-self: center;
   }
   &.fullWidth {
     width: 100%;

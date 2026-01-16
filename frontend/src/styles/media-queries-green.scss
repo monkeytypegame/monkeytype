@@ -62,13 +62,6 @@
       font-size: 7rem;
     }
   }
-  .pageAbout {
-    .section {
-      .contactButtons {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  }
   .pageSettings {
     .section {
       grid-template-columns: 1fr 1fr;
@@ -217,18 +210,6 @@
       grid-template-areas: "title title" "t15 t60";
     }
   }
-  footer {
-    .leftright {
-      .left {
-        display: grid;
-        grid-template-columns: repeat(4, auto);
-      }
-      .right {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-    }
-  }
   #customTextModal {
     .modal {
       grid-template-areas:
@@ -243,15 +224,9 @@
       }
     }
   }
-  #supportModal {
-    .modal {
-      .buttons {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  }
   .testActivity {
-    --box-size: 0.7em;
+    --gap-size: 0.1em;
+    --font-size: 0.8em;
     .wrapper {
       grid-template-areas:
         "top top"

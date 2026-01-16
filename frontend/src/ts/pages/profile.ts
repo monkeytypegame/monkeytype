@@ -12,7 +12,7 @@ import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 import { addFriend } from "./friends";
-import { qs, qsr } from "../utils/dom";
+import { onDOMReady, qs, qsr } from "../utils/dom";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
@@ -293,4 +293,6 @@ export const page = new Page<undefined | UserProfile>({
   },
 });
 
-Skeleton.save("pageProfile");
+onDOMReady(() => {
+  Skeleton.save("pageProfile");
+});

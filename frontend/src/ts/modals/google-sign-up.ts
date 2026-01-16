@@ -25,7 +25,7 @@ function show(credential: UserCredential): void {
   void modal.show({
     mode: "dialog",
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       signedInUser = credential;
 
       if (!CaptchaController.isCaptchaAvailable()) {
@@ -37,7 +37,7 @@ function show(credential: UserCredential): void {
       }
       CaptchaController.reset("googleSignUpModal");
       CaptchaController.render(
-        $("#googleSignUpModal .captcha")[0] as HTMLElement,
+        modalEl.qsr(".captcha").native,
         "googleSignUpModal",
       );
       enableInput();
@@ -93,7 +93,10 @@ async function apply(): Promise<void> {
   disableButton();
 
   Loader.show();
-  const name = $("#googleSignUpModal input").val() as string;
+  const name = modal
+    .getModal()
+    .qsr<HTMLInputElement>("input")
+    .getValue() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create({ body: { name, captcha } });
@@ -135,11 +138,11 @@ async function apply(): Promise<void> {
 }
 
 function enableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", false);
+  modal.getModal().qsr("button").enable();
 }
 
 function disableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", true);
+  modal.getModal().qsr("button").disable();
 }
 
 const nameInputEl = qsr<HTMLInputElement>("#googleSignUpModal input");

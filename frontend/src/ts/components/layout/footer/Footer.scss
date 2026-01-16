@@ -1,12 +1,12 @@
+@use "../../../../styles/media.scss" as *;
+
 footer {
   position: relative;
-  text-align: center;
-  line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  // margin: -0.5em;
 
   .keyTips {
+    text-align: center;
     transition: 0.125s;
     margin-bottom: 2em;
     line-height: 2;
@@ -33,17 +33,10 @@ footer {
 
   .leftright {
     margin: -0.5em;
-    -webkit-user-select: none;
-    user-select: none;
-    display: grid;
-    grid-template-columns: 1fr max-content;
+    display: flex;
+    justify-content: space-between;
     gap: 2rem;
-    .textButton {
-      text-decoration: none;
-      font-size: 0.75rem;
-      line-height: 1rem;
-      padding: 0.25em 0.5em;
-    }
+
     .left {
       text-align: left;
       display: flex;
@@ -56,15 +49,7 @@ footer {
       justify-self: right;
       width: max-content;
       height: max-content;
-    }
-    .left .textButton,
-    .right .textButton {
-      display: grid;
-      grid-auto-flow: column;
-      gap: 0.25rem;
-      align-items: baseline;
-      width: -moz-available;
-      width: max-content;
+      justify-items: end;
     }
   }
 
@@ -83,34 +68,54 @@ footer {
     }
   }
 
-  .current-theme {
-    .icon {
-      position: relative;
-      .favIndicator {
-        font-size: 0.5em;
-        top: -0.5em;
-        right: -0.5em;
-        padding: 0.25em;
-        position: absolute;
-        background: var(--bg-color);
-        border-radius: 100%;
+  &.focus {
+    .keyTips {
+      opacity: 0;
+    }
+    button,
+    a {
+      opacity: 0;
+    }
+    #newVersionIndicator {
+      opacity: 0;
+    }
+    #commandLineMobileButton {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  @include media-query(green) {
+    & {
+      .leftright {
+        .left {
+          display: grid;
+          grid-template-columns: repeat(4, auto);
+        }
+        .right {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
       }
     }
   }
 
-  &.focus {
-    .keyTips {
-      opacity: 0 !important;
+  @include media-query(purple) {
+    & {
+      .leftright {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        .left {
+          width: unset;
+          grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+        }
+      }
     }
-    .textButton {
-      opacity: 0 !important;
-    }
-    #newVersionIndicator {
-      opacity: 0 !important;
-    }
-    #commandLineMobileButton {
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #commandLineMobileButton {
+    display: block !important;
   }
 }

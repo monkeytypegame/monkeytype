@@ -69,8 +69,9 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
+import { ThemeColors as ThemeColorsType } from "../signals/theme";
 
-class ChartWithUpdateColors<
+export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown,
@@ -84,9 +85,9 @@ class ChartWithUpdateColors<
     super(item, config);
   }
 
-  async updateColors(): Promise<void> {
+  async updateColors(colors?: ThemeColorsType): Promise<void> {
     //@ts-expect-error it's too difficult to figure out these types, but this works
-    await updateColors(this);
+    await updateColors(this, colors);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
@@ -883,75 +884,6 @@ export const accountHistogram = new ChartWithUpdateColors<
   },
 );
 
-export const globalSpeedHistogram = new ChartWithUpdateColors<
-  "bar",
-  ActivityChartDataPoint[],
-  string,
-  "count"
->(
-  document.querySelector(
-    ".pageAbout #publicStatsHistogramChart",
-  ) as HTMLCanvasElement,
-  {
-    type: "bar",
-    data: {
-      labels: [],
-      datasets: [
-        {
-          yAxisID: "count",
-          label: "Users",
-          data: [],
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      hover: {
-        mode: "nearest",
-        intersect: false,
-      },
-      scales: {
-        x: {
-          axis: "x",
-          bounds: "ticks",
-          display: true,
-          title: {
-            display: false,
-            text: "Bucket",
-          },
-          offset: true,
-        },
-        count: {
-          axis: "y",
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-            stepSize: 10,
-          },
-          display: true,
-          title: {
-            display: true,
-            text: "Users",
-          },
-        },
-      },
-      plugins: {
-        annotation: {
-          annotations: [],
-        },
-        tooltip: {
-          animation: { duration: 250 },
-          intersect: false,
-          mode: "index",
-        },
-      },
-    },
-  },
-);
-
 export const miniResult = new ChartWithUpdateColors<
   "line" | "scatter",
   number[],
@@ -1185,13 +1117,16 @@ async function updateColors<
     | ActivityChartDataPoint[]
     | number[],
   TLabel = string,
->(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
-  const bgcolor = await ThemeColors.get("bg");
-  const subcolor = await ThemeColors.get("sub");
-  const subaltcolor = await ThemeColors.get("subAlt");
-  const maincolor = await ThemeColors.get("main");
-  const errorcolor = await ThemeColors.get("error");
-  const textcolor = await ThemeColors.get("text");
+>(
+  chart: ChartWithUpdateColors<TType, TData, TLabel>,
+  colors?: ThemeColorsType,
+): Promise<void> {
+  const bgcolor = colors?.bg ?? (await ThemeColors.get("bg"));
+  const subcolor = colors?.sub ?? (await ThemeColors.get("sub"));
+  const subaltcolor = colors?.subAlt ?? (await ThemeColors.get("subAlt"));
+  const maincolor = colors?.main ?? (await ThemeColors.get("main"));
+  const errorcolor = colors?.error ?? (await ThemeColors.get("error"));
+  const textcolor = colors?.text ?? (await ThemeColors.get("text"));
   const gridcolor = subaltcolor;
 
   for (const scaleKey of typedKeys(chart.scales)) {
@@ -1423,11 +1358,9 @@ function setDefaultFontFamily(font: string): void {
 }
 
 export function updateAllChartColors(): void {
-  ThemeColors.update();
   void result.updateColors();
   void accountHistory.updateColors();
   void accountHistogram.updateColors();
-  void globalSpeedHistogram.updateColors();
   void accountActivity.updateColors();
   void miniResult.updateColors();
 }

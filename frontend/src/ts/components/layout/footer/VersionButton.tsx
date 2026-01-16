@@ -1,10 +1,11 @@
 import { JSXElement, Show, createSignal } from "solid-js";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../../../utils/misc";
 import { envConfig } from "virtual:env-config";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
-import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
-import { getVersion } from "../signals/core";
-import { showModal } from "../stores/modals";
+import { lastSeenServerCompatibility } from "../../../ape/adapters/ts-rest-adapter";
+import { getVersion } from "../../../signals/core";
+import { showModal } from "../../../stores/modals";
+import "./VersionButton.scss";
 
 export function VersionButton(): JSXElement {
   const [indicatorVisible, setIndicatorVisible] = createSignal(true);

@@ -31,17 +31,19 @@ const validatedInput = new ValidatedHtmlInputElement(
           "Name can only contain letters, numbers, spaces, underscores and hyphens",
       }),
     isValid: async (value) => {
-      const checkbox = $("#saveCustomTextModal .isLongText").prop(
-        "checked",
-      ) as boolean;
+      const checkbox = modal
+        .getModal()
+        .qsr<HTMLInputElement>(".isLongText")
+        .isChecked() as boolean;
       const names = CustomText.getCustomTextNames(checkbox);
       return !names.includes(value) ? true : "Duplicate name";
     },
     callback: (result) => {
+      const modalEl = modal.getModal();
       if (result.status === "success") {
-        $("#saveCustomTextModal button.save").prop("disabled", false);
+        modalEl.qsr("button.save").enable();
       } else {
-        $("#saveCustomTextModal button.save").prop("disabled", true);
+        modalEl.qsr("button.save").disable();
       }
     },
   },
@@ -53,18 +55,19 @@ export async function show(options: ShowOptions<IncomingData>): Promise<void> {
     ...options,
     beforeAnimation: async (modalEl, modalChainData) => {
       state.textToSave = modalChainData?.text ?? [];
-      $("#saveCustomTextModal .textName").val("");
-      $("#saveCustomTextModal .isLongText").prop("checked", false);
-      $("#saveCustomTextModal button.save").prop("disabled", true);
+      modalEl.qsr<HTMLInputElement>(".textName").setValue("");
+      modalEl.qsr<HTMLInputElement>(".isLongText").setChecked(false);
+      modalEl.qsr("button.save").disable();
     },
   });
 }
 
 function save(): boolean {
-  const name = $("#saveCustomTextModal .textName").val() as string;
-  const checkbox = $("#saveCustomTextModal .isLongText").prop(
-    "checked",
-  ) as boolean;
+  const modalEl = modal.getModal();
+  const name = modalEl.qsr<HTMLInputElement>(".textName").getValue() as string;
+  const checkbox = modalEl
+    .qsr<HTMLInputElement>(".isLongText")
+    .isChecked() as boolean;
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);

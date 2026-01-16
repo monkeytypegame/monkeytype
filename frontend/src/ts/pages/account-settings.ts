@@ -12,7 +12,8 @@ import * as BlockedUserTable from "../elements/account-settings/blocked-user-tab
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -185,6 +186,66 @@ qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
   StreakHourOffsetModal.show();
 });
 
+qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
+  showPopup("unlinkDiscord");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
+  showPopup("removeGoogleAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
+  showPopup("removeGithubAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
+  showPopup("removePasswordAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
+  showPopup("addPasswordAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
+  showPopup("updateEmail");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
+  showPopup("updatePassword");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
+  showPopup("deleteAccount");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
+  showPopup("resetAccount");
+});
+
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#optOutOfLeaderboardsButton",
+  () => {
+    showPopup("optOutOfLeaderboards");
+  },
+);
+
+qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
+  showPopup("revokeAllTokens");
+});
+
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#resetPersonalBestsButton",
+  () => {
+    showPopup("resetPersonalBests");
+  },
+);
+
+qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
+  showPopup("updateName");
+});
+
 AuthEvent.subscribe((event) => {
   if (event.type === "authConfigUpdated") {
     updateUI();
@@ -210,6 +271,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccountSettings");
 });
