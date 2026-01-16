@@ -39,6 +39,14 @@
 @custom-variant sm (@media (min-width: calc(641px + 5rem)));
 @custom-variant xs (@media (min-width: 426px)); */
 
+.rounded {
+  border-radius: var(--roundness);
+}
+
+.rounded-half {
+  border-radius: calc(var(--roundness) / 2);
+}
+
 /* $breakpoints: ( */
 /* orange: calc(1536px + 5rem),
   yellow: calc(1280px + 5rem),
