@@ -6,7 +6,8 @@ import { themes, Theme as ThemeType } from "../../constants/themes";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import * as Loader from "../../elements/loader";
 import * as Notifications from "../../elements/notifications";
-import { Link, MetaProvider, Style } from "@solidjs/meta";
+import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
+import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -61,6 +62,12 @@ export function Theme(): JSXElement {
     <MetaProvider>
       <Style id="theme" ref={styleRef} />
       <Link ref={linkRef} rel="stylesheet" id="currentTheme" />
+      <Meta
+        id="metaThemeColor"
+        name="theme-color"
+        content="getThemeColors().bg"
+      />
+      <FavIcon theme={getThemeColors()} />
     </MetaProvider>
   );
 }

@@ -999,7 +999,6 @@ export async function update(
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
@@ -1332,7 +1331,6 @@ $(".pageTest #result .chart .chartLegend button").on("click", async (event) => {
   updateResultChartDataVisibility();
   updateMinMaxChartValues();
   applyMinMaxChartValues();
-  void ChartController.result.updateColors();
   ChartController.result.update();
 });
 
@@ -1403,7 +1401,6 @@ ConfigEvent.subscribe(async ({ key }) => {
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    void ChartController.result.updateColors();
     ChartController.result.resize();
   }
 });

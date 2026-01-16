@@ -1,5 +1,3 @@
-import * as ChartController from "./chart-controller";
-import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setConfig } from "../config";
@@ -13,125 +11,15 @@ import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
 import { setThemeIndicator } from "../signals/core";
-import { getThemeColors, setThemeColor } from "../signals/theme";
+import { setThemeColor } from "../signals/theme";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
-async function updateFavicon(): Promise<void> {
-  setTimeout(async () => {
-    let { main, bg } = getThemeColors();
-    console.log("update favicon", main, bg);
-    if (Misc.isDevEnvironment()) {
-      [main, bg] = [bg, main];
-    }
-    if (bg === main) {
-      bg = "#111";
-      main = "#eee";
-    }
-
-    const svgPre = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <style>
-    #bg{fill:${bg};}
-    path{fill:${main};}
-  </style>
-  <g>
-    <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
-    <path d="M9.09 24.1v21.2h5.12V33.1q.256-4.61 4.48-4.61 3.46.384 3.46 3.84v12.9h5.12v-11.5q-.128-5.25 4.48-5.25 3.46.384 3.46 3.84v12.9h5.12v-12.2q0-9.47-7.04-9.47-4.22 0-7.04 3.46-2.18-3.46-6.02-3.46-3.46 0-6.02 2.43v-2.05M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
-  </g>
-</svg>`;
-
-    qs("#favicon")?.setAttribute(
-      "href",
-      "data:image/svg+xml;base64," + btoa(svgPre),
-    );
-  }, 125);
-}
-
 export function applyPreset(name: ThemeName): void {
   void apply(name);
 }
-/*
-let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
-export async function loadStyle(
-  name: string,
-  props: { hasCss: boolean },
-): Promise<void> {
-  return new Promise((resolve) => {
-    function swapCurrentToNext(): void {
-      console.debug("Theme controller swapping elements");
-      const current = qs("#currentTheme");
-      const next = qs("#nextTheme");
-      if (current === null || next === null) {
-        console.debug(
-          "Theme controller failed to swap elements, next or current is missing",
-        );
-        return;
-      }
-      current.remove();
-      next.setAttribute("id", "currentTheme");
-    }
-
-    console.debug("Theme controller loading style", name);
-    loadStyleLoaderTimeouts.push(
-      setTimeout(() => {
-        Loader.show();
-      }, 100),
-    );
-
-    const afterLoad = (): void => {
-      Loader.hide();
-      swapCurrentToNext();
-      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
-      loadStyleLoaderTimeouts = [];
-      qsa("#keymap .keymapKey")?.setStyle({});
-      resolve();
-    };
-    qs("#nextTheme")?.remove();
-    const headScript = document.querySelector("#currentTheme");
-    const link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.id = "nextTheme";
-    link.onload = (): void => {
-      console.debug("Theme controller loaded style", name);
-      afterLoad();
-    };
-    link.onerror = (e): void => {
-      console.debug("Theme controller failed to load style", name, e);
-      console.error(`Failed to load theme ${name}`, e);
-      Notifications.add("Failed to load theme", 0);
-      afterLoad();
-    };
-
-    if (props.hasCss) {
-      link.href = `/themes/${name}.css`;
-    } else {
-    }
-
-    console.log("### setting css to ", link.href);
-
-    if (headScript === null) {
-      console.debug("Theme controller appending link to the head", link);
-      document.head.appendChild(link);
-    } else {
-      console.debug(
-        "Theme controller inserting link after current theme",
-        link,
-      );
-      headScript.after(link);
-    }
-  });
-}
-*/
-// export function changeCustomTheme(themeId: string, nosave = false): void {
-//   const customThemes = DB.getSnapshot().customThemes;
-//   const colors = customThemes.find((e) => e._id === themeId)
-//     ?.colors as string[];
-//   UpdateConfig.setConfig("customThemeColors", colors,nosave);
-// }
 
 export function convertCustomColorsToTheme(colors: CustomThemeColors): Theme {
   return {
@@ -193,10 +81,8 @@ async function apply(
   setThemeColor(themeColors);
 
   qsa("#keymap .keymapKey")?.setStyle({});
-  ChartController.updateAllChartColors();
-  void updateFavicon();
-  qs("#metaThemeColor")?.setAttribute("content", themeColors.bg);
-  updateFooterIndicator(isPreview ? themeName : undefined);
+
+  updateThemeIndicator(isPreview ? themeName : undefined);
 
   if (isColorDark(themeColors.bg)) {
     qs("body")?.addClass("darkMode");
@@ -205,7 +91,7 @@ async function apply(
   }
 }
 
-function updateFooterIndicator(nameOverride?: string): void {
+function updateThemeIndicator(nameOverride?: string): void {
   //text
   let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
@@ -543,7 +429,7 @@ ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
       "favThemes",
     ].includes(key)
   ) {
-    updateFooterIndicator();
+    updateThemeIndicator();
   }
 });
 

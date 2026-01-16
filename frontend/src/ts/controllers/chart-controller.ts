@@ -70,6 +70,7 @@ import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getThemeColors } from "../signals/theme";
 import { Theme } from "../constants/themes";
+import { createEffect } from "solid-js";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -1028,10 +1029,10 @@ type ButtonBelowChart =
   | ".toggleAverage100OnChart";
 
 export function updateAccountChartButtons(): void {
-  updateResults(false);
-  updateAccuracy(false);
-  updateAverage10(false);
-  updateAverage100(false);
+  updateResults();
+  updateAccuracy();
+  updateAverage10();
+  updateAverage100();
 }
 
 function updateAccountChartButton(
@@ -1043,7 +1044,7 @@ function updateAccountChartButton(
     : qs(`.pageAccount ${className}`)?.removeClass("active");
 }
 
-function updateResults(updateChart = true): void {
+function updateResults(): void {
   const resultsOn = Config.accountChart[0] === "on";
   updateAccountChartButton(resultsOn, ".toggleResultsOnChart");
 
@@ -1052,11 +1053,9 @@ function updateResults(updateChart = true): void {
   accountHistory.getDataset("wpmAvgTen").hidden = !resultsOn;
   accountHistory.getDataset("wpmAvgHundred").hidden = !resultsOn;
   accountHistory.getScale("wpm").display = resultsOn;
-
-  if (updateChart) void accountHistory.updateColors();
 }
 
-function updateAccuracy(updateChart = true): void {
+function updateAccuracy(): void {
   const resultsOn = Config.accountChart[0] === "on";
   const accOn = Config.accountChart[1] === "on";
   updateAccountChartButton(accOn, ".toggleAccuracyOnChart");
@@ -1080,11 +1079,9 @@ function updateAccuracy(updateChart = true): void {
     accountHistory.getScale("accAvgTen").min = minAccRoundedTo10;
     accountHistory.getScale("accAvgHundred").min = minAccRoundedTo10;
   }
-
-  if (updateChart) void accountHistory.updateColors();
 }
 
-function updateAverage10(updateChart = true): void {
+function updateAverage10(): void {
   const resultsOn = Config.accountChart[0] === "on";
   const accOn = Config.accountChart[1] === "on";
   const avg10On = Config.accountChart[2] === "on";
@@ -1096,10 +1093,9 @@ function updateAverage10(updateChart = true): void {
   if (resultsOn) {
     accountHistory.getDataset("wpmAvgTen").hidden = !avg10On;
   }
-  if (updateChart) void accountHistory.updateColors();
 }
 
-function updateAverage100(updateChart = true): void {
+function updateAverage100(): void {
   const resultsOn = Config.accountChart[0] === "on";
   const accOn = Config.accountChart[1] === "on";
   const avg100On = Config.accountChart[3] === "on";
@@ -1111,7 +1107,6 @@ function updateAverage100(updateChart = true): void {
   if (resultsOn) {
     accountHistory.getDataset("wpmAvgHundred").hidden = !avg100On;
   }
-  if (updateChart) void accountHistory.updateColors();
 }
 
 async function updateColors<
@@ -1124,10 +1119,8 @@ async function updateColors<
   TLabel = string,
 >(
   chart: ChartWithUpdateColors<TType, TData, TLabel>,
-  colors?: Theme,
+  colors: Theme,
 ): Promise<void> {
-  colors ??= getThemeColors();
-
   const gridcolor = colors.subAlt;
 
   for (const scaleKey of typedKeys(chart.scales)) {
@@ -1358,13 +1351,14 @@ function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 
-export function updateAllChartColors(): void {
-  void result.updateColors();
-  void accountHistory.updateColors();
-  void accountHistogram.updateColors();
-  void accountActivity.updateColors();
-  void miniResult.updateColors();
-}
+createEffect(() => {
+  const theme = getThemeColors();
+  void result.updateColors(theme);
+  void accountHistory.updateColors(theme);
+  void accountHistogram.updateColors(theme);
+  void accountActivity.updateColors(theme);
+  void miniResult.updateColors(theme);
+});
 
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {
