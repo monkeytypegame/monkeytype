@@ -26,6 +26,7 @@ export function Theme(): JSXElement {
   };
 
   const onError = (e: Event): void => {
+    Loader.hide();
     const target = e.target as HTMLLinkElement;
     const name = target.dataset["name"];
     console.debug("Theme controller failed to load style", name, e);
@@ -61,7 +62,7 @@ export function Theme(): JSXElement {
     );
 
     if (hasCss) Loader.show();
-    linkEl()?.setAttribute("href", hasCss ? `/themes/${name}123.css` : "");
+    linkEl()?.setAttribute("href", hasCss ? `/themes/${name}.css` : "");
   });
 
   return (
