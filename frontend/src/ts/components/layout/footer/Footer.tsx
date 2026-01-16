@@ -20,14 +20,17 @@ export function Footer(): JSXElement {
       </div>
 
       <ScrollToTop />
-      <div
+      <button
+        type="button"
         id="commandLineMobileButton"
+        class="grid bottom-8 left-8 fixed bg-main w-12 h-12 text-center leading-12 rounded-full text-bg z-99"
         onClick={() => {
           showModal("Commandline");
         }}
+        tabIndex="-1"
       >
         <i class="fas fa-terminal"></i>
-      </div>
+      </button>
 
       <div class="text-center mb-8 leading-loose">
         <kbd>tab</kbd> and <kbd>enter</kbd> - restart test

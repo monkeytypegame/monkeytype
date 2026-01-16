@@ -1,4 +1,12 @@
-@import "normalize.css";
+// @layer normalize;
+
+// @layer base, normalize, buttons;
+// @layer base, buttons, normalize;
+// @layer base, normalize;
+// @layer properties, normalize, utilities, base;
+// @layer normalize, utilities;
+
+@import "normalize.css" layer(normalize);
 @import "fontawesome-5";
 @import "slim-select/styles";
 @import "balloon-css/src/balloon";

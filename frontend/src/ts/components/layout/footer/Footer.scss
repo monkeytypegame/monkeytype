@@ -2,22 +2,21 @@
 
 footer {
   #commandLineMobileButton {
-    display: none;
-    // top: -4rem;
-    bottom: 2rem;
-    left: 2rem;
-    position: fixed;
-    font-size: 1rem;
-    width: 3rem;
-    height: 3rem;
-    text-align: center;
-    line-height: 3rem;
-    background: var(--main-color);
-    border-radius: 99rem;
-    z-index: 99;
-    cursor: pointer;
-    color: var(--bg-color);
-    transition: 0.25s;
+    // display: none;
+    // bottom: 2rem;
+    // left: 2rem;
+    // position: fixed;
+    // font-size: 1rem;
+    // width: 3rem;
+    // height: 3rem;
+    // text-align: center;
+    // line-height: 3rem;
+    // background: var(--main-color);
+    // border-radius: 99rem;
+    // z-index: 99;
+    // cursor: pointer;
+    // color: var(--bg-color);
+    // transition: 0.25s;
   }
 
   &.focus {
