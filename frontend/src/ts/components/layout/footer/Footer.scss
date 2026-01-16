@@ -20,21 +20,6 @@ footer {
     transition: 0.25s;
   }
 
-  .currentVersion {
-    display: flex;
-    #newVersionIndicator {
-      margin: 0;
-      padding: 0 0.25em;
-      font-size: unset;
-      background-color: var(--main-color);
-      border-radius: calc(var(--roundness) / 2);
-      color: var(--bg-color);
-      text-align: center;
-      cursor: pointer;
-      transition: 0.125s;
-    }
-  }
-
   &.focus {
     .keyTips {
       opacity: 0;
@@ -49,19 +34,6 @@ footer {
     #commandLineMobileButton {
       opacity: 0;
       pointer-events: none;
-    }
-  }
-
-  @include media-query(purple) {
-    & {
-      .leftright {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        .left {
-          width: unset;
-          grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-        }
-      }
     }
   }
 }

@@ -15,7 +15,7 @@
   --color-colorful-error: var(--colorful-error-color);
   --color-colorful-error-extra: var(--colorful-error-extra-color);
 
-  --spacing: 0.25em;
+  /* --spacing: 0.25rem; */
   --breakpoint-xs: 426px;
   --breakpoint-xxs: 331px;
 

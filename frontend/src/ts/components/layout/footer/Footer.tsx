@@ -9,8 +9,7 @@ import { ScrollToTop } from "./ScrollToTop";
 export function Footer(): JSXElement {
   return (
     <footer class="relative text-xs text-sub">
-      {/* Tailwind Breakpoint Debug Indicator */}
-      <div class="fixed left-2 top-12 z-[999999999999999] bg-sub-alt text-text px-2 py-1  font-bold font-mono rounded shadow-lg">
+      <div class="fixed left-2 top-12 z-999999999999999 bg-sub-alt text-text px-2 py-1  font-bold font-mono rounded shadow-lg">
         <div class="display-none 2xl:block">2xl</div>
         <div class="display-none xl:block 2xl:display-none">xl</div>
         <div class="display-none lg:block xl:display-none">lg</div>
@@ -37,8 +36,8 @@ export function Footer(): JSXElement {
         - command line
       </div>
 
-      <div class="-m-2 flex justify-between gap-8 sm:grid sm:grid-cols-2">
-        <div class="text-left flex w-max justify-items-start lg:grid lg:grid-cols-4 sm:w-[unset] sm:grid-cols-[repeat(auto-fit, minmax(5rem,1fr))]">
+      <div class="-m-2 flex justify-between gap-8">
+        <div class="grid grid-cols-1 xs:grid-cols-2 justify-items-start sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
@@ -96,7 +95,7 @@ export function Footer(): JSXElement {
             fixedWidthIcon
           />
         </div>
-        <div class="text-right flex w-max h-max justify-items-end lg:grid lg:grid-cols-2 ">
+        <div class="text-right flex flex-col items-end lg:flex-row">
           <ThemeIndicator />
           <VersionButton />
         </div>
