@@ -4,13 +4,13 @@ import { Button } from "../common/Button";
 import { showModal } from "../../stores/modals";
 import AsyncContent from "../common/AsyncContent";
 import { getActivePage } from "../../signals/core";
-import { getAds } from "../../signals/config";
 import { getContributorsList, getSupportersList } from "../../utils/json-data";
 import Ape from "../../ape";
 import { intervalToDuration } from "date-fns";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
 import { ChartJs } from "../common/ChartJs";
 import { getThemeColors } from "../../signals/theme";
+import { getConfig } from "../../signals/config";
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
@@ -235,7 +235,7 @@ export function AboutPage(): JSXElement {
           </dd>
         </dl>
       </div>
-      <Show when={getAds() === "sellout"}>
+      <Show when={getConfig.ads === "sellout"}>
         <div id="ad-about-1-wrapper" class="ad full-width advertisement ad-h">
           <div class="icon">
             <i class="fas fa-ad"></i>
@@ -364,7 +364,7 @@ export function AboutPage(): JSXElement {
           themes and more
         </p>
       </div>
-      <Show when={getAds() === "sellout"}>
+      <Show when={getConfig.ads === "sellout"}>
         <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">
           <div class="icon">
             <i class="fas fa-ad"></i>
