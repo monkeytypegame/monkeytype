@@ -1,6 +1,5 @@
 import SlimSelect from "slim-select";
 import { DataObjectPartial } from "slim-select/store";
-import { getTestActivityCalendar } from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as DB from "../db";
 import {
@@ -8,18 +7,48 @@ import {
   TestActivityMonth,
 } from "./test-activity-calendar";
 import { safeNumber } from "@monkeytype/util/numbers";
+import { TestActivity } from "@monkeytype/schemas/users";
+import { getFirstDayOfTheWeek } from "../utils/date-and-time";
+import { addDays } from "date-fns/addDays";
+import * as AuthEvent from "../observables/auth-event";
 
 let yearSelector: SlimSelect | undefined = undefined;
+let calendar: TestActivityCalendar | undefined = undefined;
+let activityByYear: Map<string, TestActivityCalendar> | undefined = undefined;
+
+async function initActivityByYear(): Promise<void> {
+  if (activityByYear !== undefined) return;
+  activityByYear = new Map<string, TestActivityCalendar>();
+
+  const data = await DB.getTestActivity();
+  if (data === undefined) return;
+
+  for (const year in data) {
+    const testsByDays = data[year] as (number | null)[];
+    const lastDay = addDays(new Date(parseInt(year), 0, 1), testsByDays.length);
+    activityByYear.set(
+      year,
+      new TestActivityCalendar(testsByDays, lastDay, getFirstDayOfTheWeek()),
+    );
+  }
+}
 
 export function init(
   element: HTMLElement,
-  calendar?: TestActivityCalendar,
+  testActivityData?: TestActivity,
   userSignUpDate?: Date,
 ): void {
-  if (calendar === undefined) {
+  if (testActivityData === undefined) {
     clear(element);
     return;
   }
+
+  calendar = new TestActivityCalendar(
+    testActivityData.testsByDays,
+    new Date(testActivityData.lastDay),
+    getFirstDayOfTheWeek(),
+  );
+
   element.classList.remove("hidden");
 
   if (element.querySelector(".yearSelect") !== null) {
@@ -39,7 +68,11 @@ export function clear(element?: HTMLElement): void {
   element?.querySelector(".activity")?.replaceChildren();
 }
 
-function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
+function update(
+  element: HTMLElement,
+  calendar?: TestActivityCalendar,
+  fullYear = false,
+): void {
   const container = element.querySelector(".activity");
 
   if (container === null) {
@@ -55,7 +88,14 @@ function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
     return;
   }
 
-  updateMonths(calendar.getMonths());
+  let calendarToShow: TestActivityCalendar;
+  if (fullYear) {
+    calendarToShow = calendar.getFullYearCalendar();
+  } else {
+    calendarToShow = calendar;
+  }
+
+  updateMonths(calendarToShow.getMonths());
   element.querySelector(".nodata")?.classList.add("hidden");
 
   const title = element.querySelector(".title");
@@ -65,7 +105,7 @@ function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
     }
   }
 
-  for (const day of calendar.getDays()) {
+  for (const day of calendarToShow.getDays()) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
@@ -137,8 +177,20 @@ function getYearSelector(element: HTMLElement): SlimSelect {
         // oxlint-disable-next-line no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
-        const activity = await getTestActivityCalendar(selected);
-        update(element, activity);
+        const currentYear = new Date().getFullYear().toString();
+
+        if (selected === "current") {
+          update(element, calendar, false);
+        } else if (selected === currentYear) {
+          update(element, calendar, true);
+        } else {
+          if (activityByYear === undefined) {
+            await initActivityByYear();
+          }
+          const activity = activityByYear?.get(selected);
+          update(element, activity, true);
+        }
+
         // oxlint-disable-next-line no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
           // oxlint-disable-next-line no-unsafe-call
@@ -186,3 +238,9 @@ function updateLabels(element: HTMLElement, firstDayOfWeek: number): void {
   (element.querySelector(".daysFull") as HTMLElement).innerHTML = buildHtml();
   (element.querySelector(".days") as HTMLElement).innerHTML = buildHtml(3);
 }
+
+AuthEvent.subscribe((data) => {
+  if (data.type === "snapshotUpdated" && DB.getSnapshot() === undefined) {
+    activityByYear?.clear();
+  }
+});

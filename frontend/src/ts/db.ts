@@ -4,11 +4,7 @@ import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { migrateConfig } from "./utils/config";
-import * as Dates from "date-fns";
-import {
-  TestActivityCalendar,
-  ModifiableTestActivityCalendar,
-} from "./elements/test-activity-calendar";
+import { ModifiableTestActivityCalendar } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
@@ -36,8 +32,15 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import { createStore, unwrap } from "solid-js/store";
+import { GetTestActivityResponse } from "@monkeytype/contracts/users";
 
-let dbSnapshot: Snapshot | undefined;
+const [snapshot, setSnapshotStore] = createStore<
+  // oxlint-disable-next-line typescript/no-unnecessary-type-arguments
+  Snapshot | Record<never, never>
+>({});
+
+// let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 export class SnapshotInitError extends Error {
@@ -54,16 +57,32 @@ export class SnapshotInitError extends Error {
 }
 
 export function getSnapshot(): Snapshot | undefined {
-  return dbSnapshot;
+  if (Object.keys(snapshot).length === 0) {
+    return undefined;
+  }
+  return unwrap(snapshot) as Snapshot;
 }
 
 export function setSnapshot(
   newSnapshot: Snapshot | undefined,
   options?: { dispatchEvent?: boolean },
 ): void {
-  const originalBanned = dbSnapshot?.banned;
-  const originalVerified = dbSnapshot?.verified;
-  const lbOptOut = dbSnapshot?.lbOptOut;
+  if (newSnapshot === undefined) {
+    setSnapshotStore({});
+
+    if (options?.dispatchEvent !== false) {
+      AuthEvent.dispatch({
+        type: "snapshotUpdated",
+        data: { isInitial: false },
+      });
+    }
+    return;
+  }
+
+  const currentSnapshot = getSnapshot();
+  const originalBanned = currentSnapshot?.banned;
+  const originalVerified = currentSnapshot?.verified;
+  const lbOptOut = currentSnapshot?.lbOptOut;
 
   //not allowing user to override these values i guess?
   try {
@@ -75,12 +94,11 @@ export function setSnapshot(
   try {
     delete newSnapshot?.lbOptOut;
   } catch {}
-  dbSnapshot = newSnapshot;
-  if (dbSnapshot) {
-    dbSnapshot.banned = originalBanned;
-    dbSnapshot.verified = originalVerified;
-    dbSnapshot.lbOptOut = lbOptOut;
-  }
+  newSnapshot.banned = originalBanned;
+  newSnapshot.verified = originalVerified;
+  newSnapshot.lbOptOut = lbOptOut;
+
+  setSnapshotStore(newSnapshot);
 
   if (options?.dispatchEvent !== false) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
@@ -190,11 +208,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.allTimeLbs = userData.allTimeLbs;
 
     if (userData.testActivity !== undefined) {
-      snap.testActivity = new ModifiableTestActivityCalendar(
-        userData.testActivity.testsByDays,
-        new Date(userData.testActivity.lastDay),
-        firstDayOfTheWeek,
-      );
+      snap.testActivityData = userData.testActivity;
     }
 
     const hourOffset = userData?.streak?.hourOffset;
@@ -273,16 +287,18 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.connections = convertConnections(connectionsData);
 
-    dbSnapshot = snap;
-    return dbSnapshot;
+    setSnapshot(snap, { dispatchEvent: false });
+    return snap;
   } catch (e) {
-    dbSnapshot = getDefaultSnapshot();
+    setSnapshot(getDefaultSnapshot(), { dispatchEvent: false });
     throw e;
   }
 }
 
 export async function getUserResults(offset?: number): Promise<boolean> {
   if (!isAuthenticated()) return false;
+
+  const dbSnapshot = getSnapshot();
 
   if (!dbSnapshot) return false;
   if (
@@ -336,16 +352,14 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   } else {
     dbSnapshot.results = results;
   }
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
   return true;
-}
-
-function _getCustomThemeById(themeID: string): CustomTheme | undefined {
-  return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
   theme: Omit<CustomTheme, "_id">,
 ): Promise<boolean> {
+  const dbSnapshot = getSnapshot();
   if (!dbSnapshot) return false;
 
   dbSnapshot.customThemes ??= [];
@@ -372,6 +386,8 @@ export async function addCustomTheme(
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
+
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
   return true;
 }
 
@@ -380,6 +396,7 @@ export async function editCustomTheme(
   newTheme: Omit<CustomTheme, "_id">,
 ): Promise<boolean> {
   if (!isAuthenticated()) return false;
+  const dbSnapshot = getSnapshot();
   if (!dbSnapshot) return false;
 
   dbSnapshot.customThemes ??= [];
@@ -408,12 +425,13 @@ export async function editCustomTheme(
 
   dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
     newCustomTheme;
-
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
   return true;
 }
 
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   if (!isAuthenticated()) return false;
+  const dbSnapshot = getSnapshot();
   if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
@@ -428,7 +446,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
     (t) => t._id !== themeId,
   );
-
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
   return true;
 }
 
@@ -512,7 +530,7 @@ export async function getUserAverage10<M extends Mode>(
   }
 
   const retval: [number, number] =
-    snapshot === null || (await getUserResults()) === null ? [0, 0] : cont();
+    (await getUserResults()) === null ? [0, 0] : cont();
 
   return retval;
 }
@@ -623,6 +641,8 @@ export async function getLocalPB<M extends Mode>(
   lazyMode: boolean,
   funboxes: FunboxMetadata[],
 ): Promise<PersonalBest | undefined> {
+  const dbSnapshot = getSnapshot();
+
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }
@@ -655,29 +675,27 @@ function saveLocalPB<M extends Mode>(
   consistency: number,
 ): void {
   if (mode === "quote") return;
+  const dbSnapshot = getSnapshot();
   if (!dbSnapshot) return;
-  function cont(): void {
-    if (!dbSnapshot) return;
-    let found = false;
+  let found = false;
 
-    dbSnapshot.personalBests ??= {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
+  dbSnapshot.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
 
-    dbSnapshot.personalBests[mode] ??= {
-      [mode2]: [],
-    };
+  dbSnapshot.personalBests[mode] ??= {
+    [mode2]: [],
+  };
 
-    dbSnapshot.personalBests[mode][mode2] ??=
-      [] as unknown as PersonalBests[M][Mode2<M>];
+  dbSnapshot.personalBests[mode][mode2] ??=
+    [] as unknown as PersonalBests[M][Mode2<M>];
 
-    (
-      dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]
-    ).forEach((pb) => {
+  (dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]).forEach(
+    (pb) => {
       if (
         (pb.punctuation ?? false) === punctuation &&
         (pb.numbers ?? false) === numbers &&
@@ -693,29 +711,25 @@ function saveLocalPB<M extends Mode>(
         pb.consistency = consistency;
         pb.lazyMode = lazyMode;
       }
+    },
+  );
+  if (!found) {
+    //nothing found
+    (dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]).push({
+      language,
+      difficulty,
+      lazyMode,
+      punctuation,
+      numbers,
+      wpm,
+      acc,
+      raw,
+      timestamp: Date.now(),
+      consistency,
     });
-    if (!found) {
-      //nothing found
-      (dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]).push(
-        {
-          language,
-          difficulty,
-          lazyMode,
-          punctuation,
-          numbers,
-          wpm,
-          acc,
-          raw,
-          timestamp: Date.now(),
-          consistency,
-        },
-      );
-    }
   }
 
-  if (dbSnapshot !== null) {
-    cont();
-  }
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
 }
 
 export async function getLocalTagPB<M extends Mode>(
@@ -728,11 +742,12 @@ export async function getLocalTagPB<M extends Mode>(
   difficulty: Difficulty,
   lazyMode: boolean,
 ): Promise<number> {
-  if (dbSnapshot === null) return 0;
+  const dbSnapshot = getSnapshot();
+  if (dbSnapshot === undefined) return 0;
 
   let ret = 0;
 
-  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
+  const filteredtag = (dbSnapshot.tags ?? []).find((t) => t._id === tagId);
 
   if (filteredtag === undefined) return ret;
 
@@ -780,108 +795,108 @@ export async function saveLocalTagPB<M extends Mode>(
   acc: number,
   raw: number,
   consistency: number,
-): Promise<number | undefined> {
+): Promise<void> {
+  const dbSnapshot = getSnapshot();
   if (!dbSnapshot) return;
   if (mode === "quote") return;
-  function cont(): void {
-    const filteredtag = dbSnapshot?.tags?.find(
-      (t) => t._id === tagId,
-    ) as SnapshotUserTag;
+  const filteredtag = dbSnapshot?.tags?.find(
+    (t) => t._id === tagId,
+  ) as SnapshotUserTag;
 
-    filteredtag.personalBests ??= {
+  filteredtag.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
+
+  filteredtag.personalBests[mode] ??= {
+    [mode2]: [],
+  };
+
+  filteredtag.personalBests[mode][mode2] ??=
+    [] as unknown as PersonalBests[M][Mode2<M>];
+
+  try {
+    let found = false;
+
+    (
+      filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
+    ).forEach((pb) => {
+      if (
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+      ) {
+        found = true;
+        pb.wpm = wpm;
+        pb.acc = acc;
+        pb.raw = raw;
+        pb.timestamp = Date.now();
+        pb.consistency = consistency;
+        pb.lazyMode = lazyMode;
+      }
+    });
+    if (!found) {
+      //nothing found
+      (
+        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
+      ).push({
+        language,
+        difficulty,
+        lazyMode,
+        punctuation,
+        numbers,
+        wpm,
+        acc,
+        raw,
+        timestamp: Date.now(),
+        consistency,
+      });
+    }
+  } catch (e) {
+    //that mode or mode2 is not found
+    filteredtag.personalBests = {
       time: {},
       words: {},
       quote: {},
       zen: {},
       custom: {},
     };
-
-    filteredtag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
-
-    filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as PersonalBests[M][Mode2<M>];
-
-    try {
-      let found = false;
-
-      (
-        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          (pb.punctuation ?? false) === punctuation &&
-          (pb.numbers ?? false) === numbers &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          found = true;
-          pb.wpm = wpm;
-          pb.acc = acc;
-          pb.raw = raw;
-          pb.timestamp = Date.now();
-          pb.consistency = consistency;
-          pb.lazyMode = lazyMode;
-        }
-      });
-      if (!found) {
-        //nothing found
-        (
-          filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
-        ).push({
-          language,
-          difficulty,
-          lazyMode,
-          punctuation,
-          numbers,
-          wpm,
-          acc,
-          raw,
-          timestamp: Date.now(),
-          consistency,
-        });
-      }
-    } catch (e) {
-      //that mode or mode2 is not found
-      filteredtag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      filteredtag.personalBests[mode][mode2] = [
-        {
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          numbers: numbers,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        },
-      ] as unknown as PersonalBests[M][Mode2<M>];
-    }
+    filteredtag.personalBests[mode][mode2] = [
+      {
+        language: language,
+        difficulty: difficulty,
+        lazyMode: lazyMode,
+        punctuation: punctuation,
+        numbers: numbers,
+        wpm: wpm,
+        acc: acc,
+        raw: raw,
+        timestamp: Date.now(),
+        consistency: consistency,
+      },
+    ] as unknown as PersonalBests[M][Mode2<M>];
   }
 
-  if (dbSnapshot !== null) {
-    cont();
-  }
-
-  return;
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
 }
 
 export function deleteLocalTag(tagId: string): void {
-  getSnapshot()?.results?.forEach((result) => {
+  const dbSnapshot = getSnapshot();
+  if (dbSnapshot === undefined) return;
+
+  for (const result of dbSnapshot.results ?? []) {
     const tagIndex = result.tags.indexOf(tagId);
     if (tagIndex > -1) {
       result.tags.splice(tagIndex, 1);
     }
-  });
+  }
+
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
 }
 
 export async function updateLocalTagPB<M extends Mode>(
@@ -894,9 +909,10 @@ export async function updateLocalTagPB<M extends Mode>(
   difficulty: Difficulty,
   lazyMode: boolean,
 ): Promise<void> {
-  if (dbSnapshot === null) return;
+  const dbSnapshot = getSnapshot();
+  if (dbSnapshot === undefined) return;
 
-  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
+  const filteredtag = (dbSnapshot?.tags ?? []).find((t) => t._id === tagId);
 
   if (filteredtag === undefined) return;
 
@@ -907,7 +923,7 @@ export async function updateLocalTagPB<M extends Mode>(
     consistency: 0,
   };
 
-  getSnapshot()?.results?.forEach((result) => {
+  dbSnapshot.results?.forEach((result) => {
     if (result.tags.includes(tagId) && result.wpm > pb.wpm) {
       if (
         result.mode === mode &&
@@ -940,6 +956,8 @@ export async function updateLocalTagPB<M extends Mode>(
     pb.rawWpm,
     pb.consistency,
   );
+
+  setSnapshot(dbSnapshot, { dispatchEvent: false });
 }
 
 export async function updateLbMemory<M extends Mode>(
@@ -973,7 +991,7 @@ export async function updateLbMemory<M extends Mode>(
         body: { mode, mode2, language, rank },
       });
     }
-    setSnapshot(snapshot);
+    setSnapshot(snapshot, { dispatchEvent: false });
   }
 }
 
@@ -1010,8 +1028,14 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     if (snapshot?.results !== undefined) {
       snapshot.results.unshift(data.result);
     }
-    if (snapshot.testActivity !== undefined) {
-      snapshot.testActivity.increment(new Date(data.result.timestamp));
+    if (snapshot.testActivityData !== undefined) {
+      const calendar = new ModifiableTestActivityCalendar(
+        snapshot.testActivityData.testsByDays,
+        new Date(snapshot.testActivityData.lastDay),
+        firstDayOfTheWeek,
+      );
+      calendar.increment(new Date(data.result.timestamp));
+      snapshot.testActivityData = calendar.getRawData();
     }
     snapshot.typingStats ??= {
       timeTyping: 0,
@@ -1079,7 +1103,7 @@ export function updateInboxUnreadSize(newSize: number): void {
   if (!snapshot) return;
 
   snapshot.inboxUnreadSize = newSize;
-  setSnapshot(snapshot);
+  setSnapshot(snapshot, { dispatchEvent: false });
 }
 
 export function addBadge(badge: Badge): void {
@@ -1090,54 +1114,22 @@ export function addBadge(badge: Badge): void {
     badges: [],
   };
   snapshot.inventory.badges.push(badge);
-  setSnapshot(snapshot);
+  setSnapshot(snapshot, { dispatchEvent: false });
 }
 
-export async function getTestActivityCalendar(
-  yearString: string,
-): Promise<TestActivityCalendar | undefined> {
-  if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
-
-  if (yearString === "current") return dbSnapshot.testActivity;
-
-  const currentYear = new Date().getFullYear().toString();
-  if (yearString === currentYear) {
-    return dbSnapshot.testActivity?.getFullYearCalendar();
-  }
-
-  if (dbSnapshot.testActivityByYear === undefined) {
-    if (!ConnectionState.get()) {
-      return undefined;
-    }
-
-    Loader.show();
-    const response = await Ape.users.getTestActivity();
-    if (response.status !== 200) {
-      Notifications.add("Error getting test activities", -1, { response });
-      Loader.hide();
-      return undefined;
-    }
-
-    dbSnapshot.testActivityByYear = {};
-    for (const year in response.body.data) {
-      if (year === currentYear) continue;
-      const testsByDays = response.body.data[year] ?? [];
-      const lastDay = Dates.addDays(
-        new Date(parseInt(year), 0, 1),
-        testsByDays.length,
-      );
-
-      dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
-        testsByDays,
-        lastDay,
-        firstDayOfTheWeek,
-        true,
-      );
-    }
+export async function getTestActivity(): Promise<
+  GetTestActivityResponse["data"] | undefined
+> {
+  Loader.show();
+  const response = await Ape.users.getTestActivity();
+  if (response.status !== 200) {
+    Notifications.add("Error getting test activity", -1, { response });
     Loader.hide();
+    return undefined;
   }
+  Loader.hide();
 
-  return dbSnapshot.testActivityByYear[yearString];
+  return response.body.data ?? undefined;
 }
 
 export function mergeConnections(connections: Connection[]): void {
@@ -1150,7 +1142,7 @@ export function mergeConnections(connections: Connection[]): void {
     snapshot.connections[key] = value;
   }
 
-  setSnapshot(snapshot);
+  setSnapshot(snapshot, { dispatchEvent: false });
 }
 
 function convertConnections(
@@ -1181,36 +1173,3 @@ export function isFriend(uid: string | undefined): boolean {
     ([receiverUid, status]) => receiverUid === uid && status === "accepted",
   );
 }
-
-// export async function DB.getLocalTagPB(tagId) {
-//   function cont() {
-//     let ret = 0;
-//     try {
-//       ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
-//       if (ret === undefined) {
-//         ret = 0;
-//       }
-//       return ret;
-//     } catch (e) {
-//       return ret;
-//     }
-//   }
-
-//   const retval = dbSnapshot !== null ? cont() : undefined;
-
-//   return retval;
-// }
-
-// export async functio(tagId, wpm) {
-//   function cont() {
-//     dbSnapshot.tags.forEach((tag) => {
-//       if (tag._id === tagId) {
-//         tag.pb = wpm;
-//       }
-//     });
-//   }
-
-//   if (dbSnapshot !== null) {
-//     cont();
-//   }
-// }

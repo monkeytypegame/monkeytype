@@ -1,4 +1,5 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
+import { TestActivity } from "@monkeytype/schemas/users";
 import { safeNumber } from "@monkeytype/util/numbers";
 import {
   format,
@@ -36,6 +37,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
   protected endDay: Date;
   protected isFullYear: boolean;
   public firstDayOfWeek: Day;
+  protected lastDay: Date;
 
   constructor(
     data: (number | null | undefined)[],
@@ -44,6 +46,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
     fullYear = false,
   ) {
     this.firstDayOfWeek = firstDayOfWeek;
+    this.lastDay = new UTCDateMini(lastDay);
     const local = new UTCDateMini(lastDay);
     const interval = this.getInterval(local, fullYear);
 
@@ -203,14 +206,33 @@ export class TestActivityCalendar implements TestActivityCalendar {
   private nextLastDayOfWeek(date: Date): Date {
     return nextDay(date, ((this.firstDayOfWeek + 6) % 7) as Day);
   }
+
+  getRawData(): TestActivity {
+    return {
+      testsByDays: this.data.map((v) => (v === undefined ? null : v)),
+      lastDay: this.lastDay.getTime(),
+    };
+  }
+
+  getFullYearCalendar(): TestActivityCalendar {
+    const today = new Date();
+    if (this.lastDay.getFullYear() !== new UTCDateMini(today).getFullYear()) {
+      return new TestActivityCalendar([], today, this.firstDayOfWeek, true);
+    } else {
+      return new TestActivityCalendar(
+        this.data,
+        this.lastDay,
+        this.firstDayOfWeek,
+        true,
+      );
+    }
+  }
 }
 
 export class ModifiableTestActivityCalendar
   extends TestActivityCalendar
   implements ModifiableTestActivityCalendar
 {
-  private lastDay: Date;
-
   constructor(data: (number | null)[], lastDay: Date, firstDayOfWeek: Day) {
     super(data, lastDay, firstDayOfWeek);
     this.lastDay = new UTCDateMini(lastDay);
@@ -238,19 +260,5 @@ export class ModifiableTestActivityCalendar
     }
 
     this.data = this.buildData(this.data, this.lastDay);
-  }
-
-  getFullYearCalendar(): TestActivityCalendar {
-    const today = new Date();
-    if (this.lastDay.getFullYear() !== new UTCDateMini(today).getFullYear()) {
-      return new TestActivityCalendar([], today, this.firstDayOfWeek, true);
-    } else {
-      return new TestActivityCalendar(
-        this.data,
-        this.lastDay,
-        this.firstDayOfWeek,
-        true,
-      );
-    }
   }
 }
