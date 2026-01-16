@@ -3,7 +3,7 @@
 /* @config "../../tailwind.config.js"; */
 
 @theme {
-  --color-*: initial;
+  /* --color-*: initial; */
   --color-bg: var(--bg-color);
   --color-main: var(--main-color);
   --color-caret: var(--caret-color);
@@ -16,22 +16,33 @@
   --color-colorful-error-extra: var(--colorful-error-extra-color);
 
   --spacing: 0.25em;
+  --breakpoint-xs: 426px;
+  --breakpoint-xxs: 331px;
 
-  --breakpoint-*: initial;
+  /* --breakpoint-*: initial; */
+  /* --breakpoint-2xl: calc(1537px + 5rem);
+  --breakpoint-xl: calc(1281px + 5rem);
+  --breakpoint-lg: calc(1025px + 5rem);
+  --breakpoint-md: calc(769px + 5rem);
+  --breakpoint-sm: calc(641px + 5rem);
+  --breakpoint-xs: 426px;
+  --breakpoint-xxs: 331px; */
+
+  /* --breakpoint-xxs: 331px;
+  --breakpoint-xs: 426px;
+  --breakpoint-sm: calc(641px + 5rem);
+  --breakpoint-md: calc(769px + 5rem);
+  --breakpoint-lg: calc(1025px + 5rem);
+  --breakpoint-xl: calc(1281px + 5rem);
+  --breakpoint-2xl: calc(1537px + 5rem); */
 }
 
-@utility display-none {
-  display: none;
-}
-
-@custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
-@custom-variant xl (@media (max-width: calc(1536px + 5rem)));
-@custom-variant lg (@media (max-width: calc(1280px + 5rem)));
-@custom-variant md (@media (max-width: calc(1024px + 5rem)));
-@custom-variant sm (@media (max-width: calc(768px + 5rem)));
-@custom-variant xs (@media (max-width: calc(640px + 5rem)));
-@custom-variant xxs (@media (max-width: 425px));
-@custom-variant xxxs (@media (max-width: 330px));
+/* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
+@custom-variant xl (@media (min-width: calc(1281px + 5rem)));
+@custom-variant lg (@media (min-width: calc(1025px + 5rem)));
+@custom-variant md (@media (min-width: calc(769px + 5rem)));
+@custom-variant sm (@media (min-width: calc(641px + 5rem)));
+@custom-variant xs (@media (min-width: 426px)); */
 
 /* $breakpoints: ( */
 /* orange: calc(1536px + 5rem),
@@ -42,3 +53,16 @@
   brown: 425px,
   gray: 330px
 ); */
+
+@utility display-none {
+  display: none;
+}
+
+/* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
+@custom-variant xl (@media (max-width: calc(1536px + 5rem)));
+@custom-variant lg (@media (max-width: calc(1280px + 5rem)));
+@custom-variant md (@media (max-width: calc(1024px + 5rem)));
+@custom-variant sm (@media (max-width: calc(768px + 5rem)));
+@custom-variant xs (@media (max-width: calc(640px + 5rem)));
+@custom-variant xxs (@media (max-width: 425px));
+@custom-variant xxxs (@media (max-width: 330px)); */

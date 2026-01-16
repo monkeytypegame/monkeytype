@@ -10,15 +10,19 @@ export function Footer(): JSXElement {
   return (
     <footer class="relative text-xs text-sub">
       {/* Tailwind Breakpoint Debug Indicator */}
-      <div class="fixed bottom-4 right-4 z-[999999999999999] bg-main text-white px-4 py-2 text-2xl font-bold font-mono rounded shadow-lg">
-        <div class="block xl:display-none">2xl</div>
-        <div class="display-none xl:block lg:display-none">xl</div>
-        <div class="display-none lg:block md:display-none">lg</div>
-        <div class="display-none md:block sm:display-none">md</div>
-        <div class="display-none sm:block xs:display-none">sm</div>
-        <div class="display-none xs:block xxs:display-none">xs</div>
-        <div class="display-none xxs:block xxxs:display-none">xxs</div>
-        <div class="display-none xxxs:block">xxxs</div>
+      {/* <div class="fixed bottom-4 right-4 z-[999999999999999] bg-main text-white px-4 py-2 text-2xl font-bold font-mono rounded shadow-lg">
+        <div class="display-none 2xl:block">2xl</div>
+        <div class="display-none xl:block 2xl:display-none">xl</div>
+        <div class="display-none lg:block xl:display-none">lg</div>
+        <div class="display-none md:block lg:display-none">md</div>
+        <div class="display-none sm:block md:display-none">sm</div>
+        <div class="display-none xs:block sm:display-none">xs</div>
+        <div class="xs:display-none">xxs</div>
+      </div> */}
+      <div class="fixed bottom-4 left-4 z-[999999999999999] text-white px-4 py-2 text-2xl font-bold font-mono rounded shadow-lg">
+        <div class="bg-gray-500 xxs:bg-amber-800 xs:bg-purple-500 sm:bg-blue-400 md:bg-green-400 lg:bg-amber-500 xl:bg-yellow-400 2xl:bg-red-500">
+          query
+        </div>
       </div>
 
       <ScrollToTop />
