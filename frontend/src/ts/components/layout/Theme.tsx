@@ -38,7 +38,6 @@ export function Theme(): JSXElement {
     const colors = getTheme();
     styleEl()?.setHtml(`
 :root {
-
     --bg-color: ${colors.bg};
     --main-color: ${colors.main};
     --caret-color: ${colors.caret};
@@ -49,8 +48,7 @@ export function Theme(): JSXElement {
     --error-extra-color: ${colors.errorExtra};
     --colorful-error-color: ${colors.colorfulError};
     --colorful-error-extra-color: ${colors.colorfulErrorExtra};
-}
-    `);
+}`);
   });
 
   createEffect(() => {
