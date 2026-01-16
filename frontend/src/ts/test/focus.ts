@@ -5,9 +5,10 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { createSignal } from "solid-js";
 
 const unfocusPx = 3;
-let state = false;
+const [getFocus, setFocus] = createSignal(false);
 
 let cacheReady = false;
 let cache: {
@@ -45,8 +46,8 @@ export function set(value: boolean, withCursor = false): void {
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
 
-    if (value && !state) {
-      state = true;
+    if (value && !getFocus()) {
+      setFocus(true);
 
       // batch DOM operations for better performance
       if (cache.focus) {
@@ -65,8 +66,8 @@ export function set(value: boolean, withCursor = false): void {
       LiveBurst.show();
       LiveAcc.show();
       TimerProgress.show();
-    } else if (!value && state) {
-      state = false;
+    } else if (!value && getFocus()) {
+      setFocus(false);
 
       if (cache.focus) {
         for (const el of cache.focus) {
@@ -90,7 +91,7 @@ export function set(value: boolean, withCursor = false): void {
 
 $(document).on("mousemove", function (event) {
   if (PageTransition.get()) return;
-  if (!state) return;
+  if (!getFocus()) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
