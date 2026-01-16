@@ -19,22 +19,14 @@
   --breakpoint-xs: 426px;
   --breakpoint-xxs: 331px;
 
-  /* --breakpoint-*: initial; */
-  /* --breakpoint-2xl: calc(1537px + 5rem);
-  --breakpoint-xl: calc(1281px + 5rem);
-  --breakpoint-lg: calc(1025px + 5rem);
-  --breakpoint-md: calc(769px + 5rem);
-  --breakpoint-sm: calc(641px + 5rem);
+  --breakpoint-*: initial;
+  --breakpoint-2xl: 1617px;
+  --breakpoint-xl: 1361px;
+  --breakpoint-lg: 1105px;
+  --breakpoint-md: 849px;
+  --breakpoint-sm: 721px;
   --breakpoint-xs: 426px;
-  --breakpoint-xxs: 331px; */
-
-  /* --breakpoint-xxs: 331px;
-  --breakpoint-xs: 426px;
-  --breakpoint-sm: calc(641px + 5rem);
-  --breakpoint-md: calc(769px + 5rem);
-  --breakpoint-lg: calc(1025px + 5rem);
-  --breakpoint-xl: calc(1281px + 5rem);
-  --breakpoint-2xl: calc(1537px + 5rem); */
+  --breakpoint-xxs: 331px;
 }
 
 /* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
