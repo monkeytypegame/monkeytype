@@ -88,14 +88,13 @@ export function set(value: boolean, withCursor = false): void {
   });
 }
 
-$(document).on("mousemove", function (event) {
+document.addEventListener("mousemove", function (event) {
   if (PageTransition.get()) return;
   if (!getFocus()) return;
   if (
-    event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
-    (event.originalEvent.movementX > unfocusPx ||
-      event.originalEvent.movementY > unfocusPx)
+    event.movementX > unfocusPx ||
+    event.movementY > unfocusPx
   ) {
     set(false);
   }
