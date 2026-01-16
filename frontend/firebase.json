@@ -4,27 +4,11 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "/privacy-policy",
-        "destination": "/privacy-policy.html"
-      },
-      {
-        "source": "/terms-of-service",
-        "destination": "/terms-of-service.html"
-      },
-      {
-        "source": "/security-policy",
-        "destination": "/security-policy.html"
-      },
-      {
-        "source": "/adtest",
-        "destination": "/adtest.html"
-      },
-      {
-        "source": "/test",
+        "source": "/about",
         "destination": "/index.html"
       },
       {
-        "source": "!/@(js|about|challenges|css|fonts|funbox|images|languages|layouts|quotes|sound|themes|webfonts)/**",
+        "source": "/@(test|settings|account|login|profile|friends|account-settings|leaderboards){,/**}",
         "destination": "/index.html"
       }
     ],
