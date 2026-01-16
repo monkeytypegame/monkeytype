@@ -27,6 +27,9 @@
   --breakpoint-sm: 721px;
   --breakpoint-xs: 426px;
   --breakpoint-xxs: 331px;
+
+  --default-transition-duration: 0.25s;
+  --duration-half: 0.125s;
 }
 
 /* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
@@ -45,10 +48,6 @@
   brown: 425px,
   gray: 330px
 ); */
-
-@utility display-none {
-  display: none;
-}
 
 /* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
 @custom-variant xl (@media (max-width: calc(1536px + 5rem)));

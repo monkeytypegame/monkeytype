@@ -87,3 +87,9 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+@media (hover: none) and (pointer: coarse) {
+  #commandLineMobileButton {
+    display: block !important;
+  }
+}

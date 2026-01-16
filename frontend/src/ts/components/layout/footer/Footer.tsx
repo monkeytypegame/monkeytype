@@ -2,21 +2,21 @@ import { JSXElement } from "solid-js";
 import { VersionButton } from "./VersionButton";
 import { Button } from "../../common/Button";
 import { showModal } from "../../../stores/modals";
-import "./Footer.scss";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { ScrollToTop } from "./ScrollToTop";
+import { getFocus } from "../../../signals/core";
 
 export function Footer(): JSXElement {
   return (
     <footer class="relative text-xs text-sub">
       <div class="fixed left-2 top-12 z-999999999999999 bg-sub-alt text-text px-2 py-1  font-bold font-mono rounded shadow-lg">
-        <div class="display-none 2xl:block">2xl</div>
-        <div class="display-none xl:block 2xl:display-none">xl</div>
-        <div class="display-none lg:block xl:display-none">lg</div>
-        <div class="display-none md:block lg:display-none">md</div>
-        <div class="display-none sm:block md:display-none">sm</div>
-        <div class="display-none xs:block sm:display-none">xs</div>
-        <div class="xs:display-none">xxs</div>
+        <div class="hidden 2xl:block">2xl</div>
+        <div class="hidden xl:block 2xl:hidden">xl</div>
+        <div class="hidden lg:block xl:hidden">lg</div>
+        <div class="hidden md:block lg:hidden">md</div>
+        <div class="hidden sm:block md:hidden">sm</div>
+        <div class="hidden xs:block sm:hidden">xs</div>
+        <div class="xs:hidden">xxs</div>
       </div>
 
       <ScrollToTop />
@@ -32,14 +32,24 @@ export function Footer(): JSXElement {
         <i class="fas fa-terminal"></i>
       </button>
 
-      <div class="text-center mb-8 leading-loose">
+      <div
+        class="text-center mb-8 leading-loose transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
+        }}
+      >
         <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
         <br />
         <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
         - command line
       </div>
 
-      <div class="-m-2 flex justify-between gap-8">
+      <div
+        class="-m-2 flex justify-between gap-8 transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
+        }}
+      >
         <div class="grid grid-cols-1 xs:grid-cols-2 justify-items-start sm:grid-cols-4 lg:flex">
           <Button
             type="text"
