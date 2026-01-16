@@ -1132,6 +1132,14 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#0476f2",
     textColor: "#f0f0f0",
   },
+  deep_purple: {
+    bgColor: "#0a0a15",
+    mainColor: "#9d6bff",
+    subColor: "#a8a8d0",
+    textColor: "#f8f8ff",
+    caretColor: "#e7cfff",
+    errorColor: "#ff6b9c",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
