@@ -48,7 +48,7 @@ export function VersionButton(): JSXElement {
       <div class="text">{getVersionText()}</div>
       <Show when={showNewIndicator()}>
         <div
-          class="bg-main text-bg rounded-half px-1"
+          class="rounded-half bg-main px-1 text-bg"
           onClick={handleIndicatorClick}
         >
           new

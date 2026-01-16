@@ -13,7 +13,7 @@ export function Footer(): JSXElement {
       <button
         type="button"
         id="commandLineMobileButton"
-        class="hidden bottom-8 left-8 fixed bg-main w-12 h-12 text-center leading-12 rounded-full text-bg z-99"
+        class="fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full bg-main text-center leading-12 text-bg"
         onClick={() => {
           showModal("Commandline");
         }}
@@ -23,7 +23,7 @@ export function Footer(): JSXElement {
       </button>
 
       <div
-        class="text-center mb-8 leading-loose transition-opacity"
+        class="mb-8 text-center leading-loose transition-opacity"
         classList={{
           "opacity-0": getFocus(),
         }}
@@ -40,7 +40,7 @@ export function Footer(): JSXElement {
           "opacity-0": getFocus(),
         }}
       >
-        <div class="grid grid-cols-1 xs:grid-cols-2 justify-items-start sm:grid-cols-4 lg:flex">
+        <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
@@ -98,7 +98,7 @@ export function Footer(): JSXElement {
             fixedWidthIcon
           />
         </div>
-        <div class="text-right flex flex-col items-end lg:flex-row">
+        <div class="flex flex-col items-end text-right lg:flex-row">
           <ThemeIndicator />
           <VersionButton />
         </div>

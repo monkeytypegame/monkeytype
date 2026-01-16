@@ -15,5 +15,8 @@
     "logs",
     "coverage",
     "*.md"
-  ]
+  ],
+  "experimentalTailwindcss": {
+    "stylesheet": "./frontend/src/styles/tailwind.css"
+  }
 }
