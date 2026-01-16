@@ -21,3 +21,5 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
 export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
   "ads" | null
 >(null);
+
+export const [getFocus, setFocus] = createSignal(false);
