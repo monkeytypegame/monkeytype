@@ -1,6 +1,5 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 import { getActivePage } from "../../../signals/core";
-import "./ScrollToTop.scss";
 
 export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
@@ -22,11 +21,17 @@ export function ScrollToTop(): JSXElement {
   });
 
   return (
-    <div class={`content-grid ScrollToTop`}>
-      <div
-        class={`breakout button`}
+    <div class="content-grid ScrollToTop fixed w-full h-full pointer-events-none z-999999 top-0 left-0">
+      <button
+        class="breakout pointer-events-auto text-sub place-self-end rounded-full text-[2rem] w-16 h-16 grid ring-8 ring-bg mb-8 hover:text-bg"
+        style={{
+          "grid-column": "content-end/breakout-end",
+        }}
+        tabIndex="-1"
+        type="button"
         classList={{
-          invisible: getActivePage() === "test" || !visible(),
+          "opacity-0": getActivePage() === "test" || !visible(),
+          "pointer-events-none": getActivePage() === "test" || !visible(),
         }}
         onClick={() => {
           setVisible(false);
@@ -37,7 +42,7 @@ export function ScrollToTop(): JSXElement {
         }}
       >
         <i class="fas fa-angle-double-up"></i>
-      </div>
+      </button>
     </div>
   );
 }
