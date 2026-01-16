@@ -13,7 +13,7 @@ export function Footer(): JSXElement {
       <button
         type="button"
         id="commandLineMobileButton"
-        class="grid bottom-8 left-8 fixed bg-main w-12 h-12 text-center leading-12 rounded-full text-bg z-99"
+        class="hidden bottom-8 left-8 fixed bg-main w-12 h-12 text-center leading-12 rounded-full text-bg z-99"
         onClick={() => {
           showModal("Commandline");
         }}

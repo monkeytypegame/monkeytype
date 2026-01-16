@@ -90,6 +90,6 @@ body {
 
 @media (hover: none) and (pointer: coarse) {
   #commandLineMobileButton {
-    display: block !important;
+    display: grid !important;
   }
 }
