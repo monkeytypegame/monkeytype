@@ -16,6 +16,7 @@ const components: Record<string, () => JSXElement> = {
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
   for (const mountPoint of qsa(name)) {
+    console.log("mount", mountPoint.native, mountPoint.native.parentElement);
     render(() => component(), mountPoint.native);
     mountPoint.native.replaceWith(...mountPoint.native.children);
   }

@@ -22,6 +22,7 @@ let randomThemeIndex = 0;
 async function updateFavicon(): Promise<void> {
   setTimeout(async () => {
     let { main, bg } = getThemeColors();
+    console.log("update favicon", main, bg);
     if (Misc.isDevEnvironment()) {
       [main, bg] = [bg, main];
     }
