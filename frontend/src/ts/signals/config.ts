@@ -23,9 +23,9 @@ subscribe(({ key, newValue }) => {
   } else if (key === "fullConfigChangeFinished") {
     fullConfigChange = false;
     setConfigStore(Config.getConfig());
+  } else if (fullConfigChange) {
+    return;
   } else {
-    if (fullConfigChange) return;
-
     setConfigStore(key, newValue);
   }
 });
