@@ -3,7 +3,7 @@ import Config from "../config";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { ElementWithUtils, qsr } from "../utils/dom";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 const html = qsr("html");
 const body = qsr("body");
@@ -238,7 +238,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
       i > 0;
       i--
     ) {
-      const { caret, error } = getThemeColors();
+      const { caret, error } = getTheme();
       const color = ["2", "4"].includes(Config.monkeyPowerLevel)
         ? randomColor()
         : good

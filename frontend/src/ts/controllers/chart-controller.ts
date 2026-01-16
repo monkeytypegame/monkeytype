@@ -68,7 +68,7 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 import { Theme } from "../constants/themes";
 import { createEffect } from "solid-js";
 
@@ -86,14 +86,13 @@ export class ChartWithUpdateColors<
     super(item, config);
   }
 
-  async updateColors(colors?: Theme): Promise<void> {
-    colors ??= getThemeColors();
-    if (colors === undefined) {
+  async updateColors(theme: Theme): Promise<void> {
+    if (theme === undefined) {
       throw new Error("chart colors are empty.");
     }
 
     //@ts-expect-error it's too difficult to figure out these types, but this works
-    await updateColors(this, colors);
+    await updateColors(this, theme);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
@@ -1352,7 +1351,7 @@ function setDefaultFontFamily(font: string): void {
 }
 
 createEffect(() => {
-  const theme = getThemeColors();
+  const theme = getTheme();
   void result.updateColors(theme);
   void accountHistory.updateColors(theme);
   void accountHistogram.updateColors(theme);

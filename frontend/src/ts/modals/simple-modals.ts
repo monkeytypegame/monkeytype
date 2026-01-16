@@ -48,7 +48,7 @@ import { remoteValidation } from "../utils/remote-validation";
 
 import { qs } from "../utils/dom";
 import { list, PopupKey, showPopup } from "./simple-modals-base";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 export { list, showPopup };
 export type { PopupKey };
@@ -1094,7 +1094,7 @@ list.updateCustomTheme = new SimpleModal({
 
     let newColors =
       updateColors === "true"
-        ? ThemeController.convertThemeToCustomColors(getThemeColors())
+        ? ThemeController.convertThemeToCustomColors(getTheme())
         : customTheme.colors;
 
     const newTheme = {

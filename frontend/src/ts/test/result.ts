@@ -47,7 +47,7 @@ import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../states/connection";
 import { currentQuote } from "./test-words";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -137,7 +137,7 @@ async function updateChartData(): Promise<void> {
     chartData2.pop();
   }
 
-  const subcolor = getThemeColors().sub;
+  const subcolor = getTheme().sub;
 
   if (Config.funbox.length > 0) {
     let content = "";
@@ -281,7 +281,7 @@ function applyFakeChartData(): void {
 }
 
 export async function updateChartPBLine(): Promise<void> {
-  const themecolors = getThemeColors();
+  const themecolors = getTheme();
   const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
@@ -724,7 +724,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         );
         // console.log("new pb for tag " + tag.display);
       } else {
-        const themecolors = getThemeColors();
+        const themecolors = getTheme();
         resultAnnotation.push({
           display: true,
           type: "line",

@@ -17,7 +17,7 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -106,7 +106,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
     const elements = findKeyElements(key);
     if (elements === null || elements.length === 0) return;
 
-    const themecolors = getThemeColors();
+    const themecolors = getTheme();
 
     try {
       let startingStyle = {

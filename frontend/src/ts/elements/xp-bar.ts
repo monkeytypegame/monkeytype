@@ -3,7 +3,7 @@ import * as Levels from "../utils/levels";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { animate } from "animejs";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 let breakdownVisible = false;
 let skip = false;
@@ -409,7 +409,7 @@ async function animateXpBar(
 }
 
 async function flashLevel(): Promise<void> {
-  const themecolors = getThemeColors();
+  const themecolors = getTheme();
 
   levelEl.textContent = `${parseInt(levelEl.textContent ?? "0") + 1}`;
 

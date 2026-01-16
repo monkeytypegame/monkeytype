@@ -5,7 +5,6 @@ import { Link } from "@solidjs/meta";
 
 export function FavIcon(props: { theme: Theme }): JSXElement {
   const icon = createMemo<string>(() => {
-    console.log("#### update favicon", props.theme);
     let { main, bg } = props.theme;
     if (isDevEnvironment()) {
       [main, bg] = [bg, main];

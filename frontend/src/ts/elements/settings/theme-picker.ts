@@ -12,7 +12,7 @@ import { ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ColorName, ThemesListSorted } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
-import { getThemeColors, updateThemeColor } from "../../signals/theme";
+import { getTheme, updateThemeColor } from "../../signals/theme";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -36,21 +36,8 @@ function updateActiveButton(): void {
     ?.classList.add("active");
 }
 
-function updateColors(
-  key: ColorName,
-  color: string,
-  props?: { convertColor?: boolean; noThemeUpdate?: boolean },
-): void {
+function updateColorPicker(key: ColorName, color: string): void {
   const colorPicker = qsr(`.colorPicker[data-key="${key}"]`);
-
-  if (props?.convertColor) {
-    color = convertColorToHex(color) ?? "#fc0fc0";
-  }
-
-  if (!props?.noThemeUpdate) {
-    updateThemeColor(key, color);
-  }
-
   const pickerButton = colorPicker.qsr<HTMLLabelElement>("label");
   pickerButton.setAttribute("value", color);
   if (key !== "bg") {
@@ -202,8 +189,8 @@ export function setCustomInputs(): void {
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
   ).forEach((element) => {
     const key = element.getAttribute("data-key") as ColorName;
-    const color = theme[key] as string;
-    updateColors(key, color, { convertColor: true, noThemeUpdate: true });
+    const color = convertColorToHex(theme[key]);
+    updateColorPicker(key, color);
   });
 }
 
@@ -224,7 +211,7 @@ function toggleFavourite(themeName: ThemeName): void {
 }
 
 function saveCustomThemeColors(): void {
-  const colors = ThemeController.convertThemeToCustomColors(getThemeColors());
+  const colors = ThemeController.convertThemeToCustomColors(getTheme());
 
   setConfig("customThemeColors", colors);
   Notifications.add("Custom theme saved", 1);
@@ -266,7 +253,7 @@ export async function updateThemeUI(): Promise<void> {
  * @param color as hex, hsl or rgb
  * @returns  hex color
  */
-function convertColorToHex(color: string): string | undefined {
+function convertColorToHex(color: string): string {
   const input = color.trim().toLocaleLowerCase();
   if (/^#[0-9a-f]{6}$/i.test(input)) {
     return input;
@@ -306,7 +293,7 @@ function convertColorToHex(color: string): string | undefined {
     const { r, g, b } = Colors.hslToRgb(h, s, l);
     return Colors.rgbToHex(r, g, b);
   }
-  return undefined;
+  return "#fc0fc0"; // default color if input is not a valid
 }
 
 // Add events to the DOM
@@ -369,7 +356,7 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   }
 });
 
-function handleColorInput(props?: {
+function handleColorInput(props: {
   convertColor: boolean;
 }): (e: Event) => void {
   return (e) => {
@@ -378,41 +365,45 @@ function handleColorInput(props?: {
       ?.closest(".colorPicker")
       ?.getAttribute("data-key") as ColorName;
 
-    updateColors(key, target.value, {
-      convertColor: props?.convertColor ?? true,
-    });
+    const color = props?.convertColor
+      ? convertColorToHex(target.value)
+      : target.value;
+
+    updateColorPicker(key, color);
+    updateThemeColor(key, color);
   };
 }
 
+const convertColorAndUpdate = handleColorInput({ convertColor: true });
 qsa(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 )
   .on("input", handleColorInput({ convertColor: false }))
-  .on("change", handleColorInput());
+  .on("change", convertColorAndUpdate);
 
 qsa(".pageSettings .section.themes .tabContainer .customTheme input.input")
   .on("blur", (e) => {
     if ((e.target as HTMLInputElement).id === "name") return;
-    handleColorInput()(e);
+    convertColorAndUpdate(e);
   })
   .on("keypress", function (e) {
     const target = e.target as HTMLInputElement;
     if (target.id === "name") return;
     if (e.code === "Enter") {
       target.setAttribute("disabled", "disabled");
-      handleColorInput()(e);
+      convertColorAndUpdate(e);
       target.removeAttribute("disabled");
     }
   });
 
 $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   ThemeController.applyPreset(Config.theme);
-  const themeColors = getThemeColors();
+  const themeColors = getTheme();
 
   Misc.typedKeys(themeColors)
     .filter((it) => it !== "hasCss")
     .forEach((key) =>
-      updateColors(key, themeColors[key], { convertColor: true }),
+      updateColorPicker(key, convertColorToHex(themeColors[key])),
     );
 });
 

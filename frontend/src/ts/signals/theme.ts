@@ -14,11 +14,10 @@ const defaultTheme: Theme = {
   colorfulErrorExtra: "#7e2a33",
 };
 
-export const [getThemeColors, setThemeColor] =
-  createSignal<Theme>(defaultTheme);
+export const [getTheme, setTheme] = createSignal<Theme>(defaultTheme);
 
 export function updateThemeColor(key: ColorName, color: string): void {
-  setThemeColor((prev) => ({
+  setTheme((prev) => ({
     ...prev,
     [key]: color,
   }));

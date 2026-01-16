@@ -11,7 +11,7 @@ import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
 import { setThemeIndicator } from "../signals/core";
-import { setThemeColor } from "../signals/theme";
+import { setTheme } from "../signals/theme";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -78,7 +78,7 @@ async function apply(
     customColorsOverride,
     config: Config.customThemeColors,
   });
-  setThemeColor(themeColors);
+  setTheme(themeColors);
 
   qsa("#keymap .keymapKey")?.setStyle({});
 

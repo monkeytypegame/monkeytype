@@ -2,7 +2,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 type State = {
   includeBackground: boolean;
@@ -28,7 +28,7 @@ async function generateUrl(): Promise<string> {
     s?: string; //size
     f?: object; //filter
   } = {
-    c: ThemeController.convertThemeToCustomColors(getThemeColors()),
+    c: ThemeController.convertThemeToCustomColors(getTheme()),
   };
 
   if (state.includeBackground) {

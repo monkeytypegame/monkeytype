@@ -1,5 +1,5 @@
 import { createEffect, createMemo, JSXElement } from "solid-js";
-import { getThemeColors } from "../../signals/theme";
+import { getTheme } from "../../signals/theme";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getThemeIndicator } from "../../signals/core";
 import { themes, Theme as ThemeType } from "../../constants/themes";
@@ -16,7 +16,7 @@ export function Theme(): JSXElement {
 
   //Use memo to ignore signals without changes
   const themeName = createMemo(() => getThemeIndicator().text);
-  const themeColors = createMemo(() => getThemeColors());
+  const themeColors = createMemo(() => getTheme());
 
   createEffect(() => {
     const colors = themeColors();
@@ -67,7 +67,7 @@ export function Theme(): JSXElement {
         name="theme-color"
         content="getThemeColors().bg"
       />
-      <FavIcon theme={getThemeColors()} />
+      <FavIcon theme={getTheme()} />
     </MetaProvider>
   );
 }

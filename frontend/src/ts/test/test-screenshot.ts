@@ -10,7 +10,7 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
 let revertCookie = false;
@@ -135,7 +135,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
     // Target the HTML root to include .customBackground
     const fullCanvas = await domToCanvas(root, {
-      backgroundColor: getThemeColors().bg,
+      backgroundColor: getTheme().bg,
       // Sharp output
       scale: window.devicePixelRatio ?? 1,
       style: {

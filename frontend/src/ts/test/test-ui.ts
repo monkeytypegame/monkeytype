@@ -57,7 +57,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import { qsr } from "../utils/dom";
-import { getThemeColors } from "../signals/theme";
+import { getTheme } from "../signals/theme";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1421,7 +1421,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
 
-    const themeColors = getThemeColors();
+    const themeColors = getTheme();
 
     let colors = [
       themeColors.colorfulError,

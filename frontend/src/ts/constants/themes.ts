@@ -24,7 +24,7 @@ export const ThemeSchema = z.object({
   colorfulErrorExtra: hexColorSchema,
 });
 export type Theme = z.infer<typeof ThemeSchema>;
-export type ColorName = keyof Theme;
+export type ColorName = keyof Omit<Theme, "hasCss">;
 export const themes: Record<ThemeName, Theme> = {
   "8008": {
     bg: "#333a45",
