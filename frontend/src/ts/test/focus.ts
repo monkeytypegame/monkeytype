@@ -5,10 +5,9 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { createSignal } from "solid-js";
+import { getFocus, setFocus } from "../signals/core";
 
 const unfocusPx = 3;
-const [getFocus, setFocus] = createSignal(false);
 
 let cacheReady = false;
 let cache: {
