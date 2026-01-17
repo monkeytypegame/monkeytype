@@ -1,10 +1,10 @@
 import { Connection } from "@monkeytype/schemas/connections";
-import { createResourceBackedStore } from "./util/resourceBackedStore";
+import { createLoadingStore } from "./util/loadingStore";
 import Ape from "../ape/";
 import { createEffect } from "solid-js";
 import { isAuthenticated } from "./user";
 
-export const connections = createResourceBackedStore<Connection[]>(
+export const connections = createLoadingStore<Connection[]>(
   async () => {
     const response = await Ape.connections.get();
 
@@ -19,16 +19,16 @@ export const connections = createResourceBackedStore<Connection[]>(
 createEffect(() => {
   const authenticated = isAuthenticated();
   console.log("### isAuthenticated: ", authenticated);
-  if (!authenticated) {
+  //TODO check logout during refresh
+  if (!authenticated && connections.state().ready) {
     connections.reset();
   }
 });
 
 createEffect(() => {
-  const loading = connections.loading();
-  const error = connections.error();
+  const state = connections.state();
 
-  console.log("#### change in resource: ", { loading, error });
+  console.log("#### change in resource: ", state);
 });
 
 //from legacy code

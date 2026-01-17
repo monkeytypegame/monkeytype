@@ -41,10 +41,16 @@ export function AboutPage(): JSXElement {
 
       <Show when={isAuthenticated()}>
         <Button onClick={() => connections.load()} text="load" />
-        <Button onClick={() => connections.reload()} text="reload" />
+        <Button onClick={() => connections.refresh()} text="refresh" />
         <Button onClick={() => connections.reset()} text="reset" />
       </Show>
-      <Show when={connections.shouldLoad() && !connections.loading()}>
+
+      <Show when={connections.state().loading}>... is loading</Show>
+      <Show when={connections.state().error !== undefined}>
+        oh oh, {connections.state().error}
+      </Show>
+      <Show when={connections.state().refreshing}>refreshing...</Show>
+      <Show when={connections.state().ready || connections.state().refreshing}>
         <For each={connections.store}>
           {(connection) => (
             <p>
