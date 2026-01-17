@@ -35,6 +35,7 @@ import {
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
+import { setAuthenticated } from "./signals/user";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -74,6 +75,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     await setPersistence(rememberMe, false);
 
     onAuthStateChanged(Auth, async (user) => {
+      setAuthenticated(user !== undefined && user !== null);
       if (!ignoreAuthCallback) {
         await callback(true, user);
       }
@@ -82,6 +84,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     app = undefined;
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
+    setAuthenticated(false);
     await callback(false, null);
     if (isDevEnvironment()) {
       Notifications.addPSA(

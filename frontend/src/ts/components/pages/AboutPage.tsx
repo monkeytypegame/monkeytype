@@ -11,6 +11,8 @@ import { intervalToDuration } from "date-fns";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
 import { ChartJs } from "../common/ChartJs";
 import { getThemeColors } from "../../signals/theme";
+import { connections } from "../../signals/connections";
+import { isAuthenticated } from "../../signals/user";
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
@@ -35,6 +37,30 @@ export function AboutPage(): JSXElement {
 
   return (
     <Show when={isOpen}>
+      <h2>Connections {connections.store.length}</h2>
+
+      <Show when={isAuthenticated()}>
+        <Button onClick={() => connections.load()} text="load" />
+        <Button onClick={() => connections.reload()} text="reload" />
+        <Button onClick={() => connections.reset()} text="reset" />
+      </Show>
+      <Show when={connections.shouldLoad}>
+        <AsyncContent
+          resource={connections.resource}
+          errorMessage="error loading connections"
+        >
+          {(data) => (
+            <For each={data}>
+              {(connection) => (
+                <p>
+                  {connection.initiatorName} to {connection.receiverName}
+                </p>
+              )}
+            </For>
+          )}
+        </AsyncContent>
+      </Show>
+
       <div class="created">
         Created with love by Miodec.
         <br />
