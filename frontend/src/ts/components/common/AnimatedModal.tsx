@@ -268,7 +268,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     >
       <div
         class={cn(
-          "rounded-double grid gap-4 bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+          "rounded-double grid max-w-md gap-4 bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
           props.modalClass,
         )}
         ref={modalRef}

@@ -4,8 +4,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
 export function ContactModal(): JSXElement {
-  const buttonClass =
-    "md:p-8 gap-4 md:text-2xl p-4 xs:text-xl text-base justify-start";
+  const buttonClass = " gap-4 text-md p-4 text-lg justify-start";
 
   return (
     <AnimatedModal id="Contact" modalClass="max-w-4xl" title="Contact">
