@@ -104,7 +104,7 @@ export const BASE_CONFIGURATION: Configuration = {
     },
   },
   connections: { enabled: false, maxPerUser: 100 },
-  tribe: { mode: "disabled" },
+  tribe: { mode: "enabled" },
 };
 
 type BaseSchema = {

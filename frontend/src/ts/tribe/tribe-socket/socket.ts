@@ -1,13 +1,13 @@
 import { io } from "socket.io-client";
 
-export default io(
+let socket = io(
   window.location.hostname === "localhost"
-    ? "http://localhost:3005"
+    ? "http://localhost:3005" // 3005
     : "https://tribe.monkeytype.com",
   {
     // socket: io("http://localhost:3000", {
     autoConnect: false,
-    secure: true,
+    // secure: true,
     reconnectionAttempts: 0,
     reconnection: false,
     query: {
@@ -15,3 +15,5 @@ export default io(
     },
   },
 );
+
+export default socket;
