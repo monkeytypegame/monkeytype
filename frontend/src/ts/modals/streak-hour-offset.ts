@@ -58,7 +58,7 @@ function updatePreview(): void {
 
   newDate.setHours(newDate.getHours() - -1 * Math.floor(inputValue)); //idk why, but it only works when i subtract (so i have to negate inputValue)
   newDate.setMinutes(
-    newDate.getMinutes() - -1 * ((((inputValue % 1) + 1) % 1) * 60),
+    newDate.getMinutes() - -1 * (((inputValue % 1) + 1) % 1 * 60),
   );
 
   preview?.setHtml(`
