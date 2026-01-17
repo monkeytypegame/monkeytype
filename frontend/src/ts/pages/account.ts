@@ -21,7 +21,8 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
 import { getAuthenticatedUser } from "../firebase";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
@@ -1105,12 +1106,12 @@ qs(".pageAccount")?.onChild(
       target?.addClass("loading");
       target?.removeAttribute("aria-label");
       target?.setHtml('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
-      Loader.show();
+      showLoaderBar();
 
       const response = await Ape.results.getById({
         params: { resultId: result._id },
       });
-      Loader.hide();
+      hideLoaderBar();
 
       target?.setHtml('<i class="fas fa-fw fa-chart-line"></i>');
       target?.removeClass("loading");
@@ -1195,12 +1196,12 @@ qs(".pageAccount .profile")?.onChild("click", ".details .copyLink", () => {
 qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length ?? 0;
 
-  Loader.show();
+  showLoaderBar();
   ResultBatches.disableButton();
 
   await downloadResults(offset);
   await fillContent();
-  Loader.hide();
+  hideLoaderBar();
 });
 
 ConfigEvent.subscribe(({ key }) => {

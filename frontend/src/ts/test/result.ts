@@ -5,7 +5,8 @@ import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import { isAuthenticated } from "../firebase";
@@ -1348,14 +1349,14 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
   if ($button.hasClass("fas")) {
     // Remove from
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.removeQuoteFromFavorites({
       body: {
         language: quoteLang,
         quoteId,
       },
     });
-    Loader.hide();
+    hideLoaderBar();
 
     Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
@@ -1368,11 +1369,11 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     }
   } else {
     // Add to favorites
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.addQuoteToFavorites({
       body: { language: quoteLang, quoteId },
     });
-    Loader.hide();
+    hideLoaderBar();
 
     Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
