@@ -3,10 +3,9 @@ import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { JSAnimation } from "animejs";
 import { getLoaderBarSignal } from "../../signals/loader-bar";
 
-let showAnimation: JSAnimation | null = null;
-
 export function LoaderBar(): JSX.Element {
   const [ref, loaderEl] = useRefWithUtils<HTMLDivElement>();
+  let showAnimation: JSAnimation | null = null;
 
   createEffect(() => {
     const signal = getLoaderBarSignal();
