@@ -42,6 +42,10 @@
   border-radius: var(--roundness);
 }
 
+.rounded-double {
+  border-radius: calc(var(--roundness) * 2);
+}
+
 .rounded-half {
   border-radius: calc(var(--roundness) / 2);
 }

@@ -4,12 +4,12 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
 export function ContactModal(): JSXElement {
-  const buttonClass = "md:p-8 gap-4 md:text-2xl p-4 xs:text-xl text-base";
+  const buttonClass =
+    "md:p-8 gap-4 md:text-2xl p-4 xs:text-xl text-base justify-start";
 
   return (
-    <AnimatedModal id="Contact" modalClass="max-w-4xl">
-      <div class="title">Contact</div>
-      <div class="text">
+    <AnimatedModal id="Contact" modalClass="max-w-4xl" title="Contact">
+      <div>
         Feel free to send an email to contact@monkeytype.com. For business
         inquiries, email jack@monkeytype.com (the buttons below will open the
         default mail client).

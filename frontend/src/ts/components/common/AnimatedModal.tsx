@@ -7,6 +7,7 @@ import {
   isModalOpen,
   isModalChained,
 } from "../../stores/modals";
+import { cn } from "../../utils/cn";
 
 type AnimationParams = {
   opacity?: number | [number, number];
@@ -35,6 +36,7 @@ type AnimatedModalProps = ParentProps<{
   onEscape?: (e: KeyboardEvent) => void;
   onBackdropClick?: (e: MouseEvent) => void;
 
+  title?: string;
   modalClass?: string;
   wrapperClass?: string;
 }>;
@@ -257,11 +259,21 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     <dialog
       id={`${props.id as string}Modal`}
       ref={dialogRef}
-      class={`modalWrapper hidden ${props.wrapperClass ?? ""}`}
+      class={cn(
+        "fixed top-0 left-0 z-1000 m-0 grid h-full max-h-full w-full max-w-full place-items-center border-none bg-[rgba(0,0,0,0.5)] p-4 backdrop:bg-transparent sm:p-8",
+        props.wrapperClass,
+      )}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div class={`modal ${props.modalClass ?? ""}`} ref={modalRef}>
+      <div
+        class={cn(
+          "rounded-double grid gap-4 bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+          props.modalClass,
+        )}
+        ref={modalRef}
+      >
+        <div class="text-2xl text-sub">{props.title}</div>
         {props.children}
       </div>
     </dialog>

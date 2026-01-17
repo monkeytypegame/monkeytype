@@ -17,6 +17,7 @@
     "*.md"
   ],
   "experimentalTailwindcss": {
-    "stylesheet": "./frontend/src/styles/tailwind.css"
+    "stylesheet": "./frontend/src/styles/tailwind.css",
+    "functions": ["cn"]
   }
 }
