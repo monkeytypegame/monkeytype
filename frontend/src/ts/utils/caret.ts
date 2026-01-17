@@ -40,6 +40,8 @@ export class Caret {
   private posAnimation: JSAnimation | null = null;
   private marginTopAnimation: JSAnimation | null = null;
   private marginLeftAnimation: JSAnimation | null = null;
+  private isLineChange: boolean = false;
+  private previousWordTop: number = -1;
 
   constructor(element: ElementWithUtils, style: CaretStyle) {
     this.id = element.native.id;
@@ -150,6 +152,7 @@ export class Caret {
     this.readyToResetMarginTop = false;
     this.readyToResetMarginLeft = false;
     this.cumulativeTapeMarginCorrection = 0;
+    this.previousWordTop = -1;
   }
 
   public handleTapeWordsRemoved(widthRemoved: number): void {
@@ -208,6 +211,11 @@ export class Caret {
 
     // making sure to use a separate animation queue so that it doesnt
     // affect the position animations
+
+    // skip the next smooth caret animation to prevent the caret from
+    // flying across the screen when transitioning to a new line
+    this.isLineChange = true;
+
     if (this.isMainCaret && options.duration === 0) return;
 
     // in case we have two line jumps in a row
@@ -331,7 +339,7 @@ export class Caret {
         this.element.removeClass("debug");
       }
 
-      const { left, top, width } = this.getTargetPositionAndWidth({
+      const { left, top, width, wordTop } = this.getTargetPositionAndWidth({
         word,
         letter,
         wordText,
@@ -382,6 +390,15 @@ export class Caret {
        * will be +20 and I will end up at (30 + 20) = 50
        */
 
+      /**
+       * detecting a line: either from handleLineJump (when the text scrolls from line 2 onwards)
+       * or from wordTop changing (at the end of line 1)
+       */
+      if (this.previousWordTop !== -1 && wordTop !== this.previousWordTop) {
+        this.isLineChange = true;
+      }
+      this.previousWordTop = wordTop;
+
       const animateOrPositionOptions = {
         left: left - currentMarginLeft,
         top: top - currentMarginTop,
@@ -389,11 +406,12 @@ export class Caret {
         ...(options.animate && options.animationOptions),
       };
 
-      if (options.animate) {
+      if (options.animate && !this.isLineChange) {
         this.animatePosition(animateOrPositionOptions);
       } else {
         this.setPosition(animateOrPositionOptions);
       }
+      this.isLineChange = false;
     });
   }
 
@@ -404,7 +422,7 @@ export class Caret {
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
-  }): { left: number; top: number; width: number } {
+  }): { left: number; top: number; width: number; wordTop: number } {
     // in zen, custom or polyglot mode we need to check per-letter
     const checkRtlByLetter =
       Config.mode === "zen" ||
@@ -533,8 +551,9 @@ export class Caret {
     }
 
     //top position
+    const wordTop = options.word.getOffsetTop();
     top += options.letter.getOffsetTop();
-    top += options.word.getOffsetTop();
+    top += wordTop;
 
     if (this.style === "underline") {
       // if style is underline, add the height of the letter to the top
@@ -553,6 +572,7 @@ export class Caret {
       left,
       top,
       width,
+      wordTop,
     };
   }
 }
