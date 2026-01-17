@@ -1,5 +1,9 @@
 import Config from "../../config";
-import { isSpace } from "../../utils/strings";
+import {
+  isSpace,
+  splitIntoCharacters,
+  isCharacterMatch,
+} from "../../utils/strings";
 
 /**
  * Check if the input data is correct
@@ -29,17 +33,21 @@ export function isCharCorrect(options: {
     return inputValue === targetWord;
   }
 
-  const targetChar = targetWord[inputValue.length];
+  // Use splitIntoCharacters to properly handle combining characters (like Thaana fili)
+  const inputChars = splitIntoCharacters(inputValue + data);
+  const targetChars = splitIntoCharacters(targetWord);
+
+  // Get the character we just typed (last in inputChars after combining)
+  const typedCharIndex = inputChars.length - 1;
+  const typedChar = inputChars[typedCharIndex];
+  const targetChar = targetChars[typedCharIndex];
 
   if (targetChar === undefined) {
     return false;
   }
 
-  if (data === targetChar) {
-    return true;
-  }
-
-  return false;
+  // Use isCharacterMatch to handle partial matches (e.g., Thaana consonant before vowel mark)
+  return isCharacterMatch(typedChar ?? "", targetChar);
 }
 
 /**

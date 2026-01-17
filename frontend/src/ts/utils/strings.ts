@@ -176,18 +176,82 @@ export function cleanTypographySymbols(textToClean: string): string {
 }
 
 /**
- * Split a string into characters. This supports multi-byte characters outside of the [Basic Multilinugal Plane](https://en.wikipedia.org/wiki/Plane_(Unicode).
- * Using  `string.length` and `string[index]` does not work.
- * @param s string to be tokenized into characters
- * @returns array of characters
+ * Check if a character is a Thaana combining vowel mark (fili) - U+07A6 to U+07B0
+ */
+export function isThaanaCombiningMark(char: string): boolean {
+  const code = char.charCodeAt(0);
+  return code >= 0x07a6 && code <= 0x07b0;
+}
+
+/**
+ * Check if a character is a Thaana consonant - U+0780 to U+07A5
+ */
+export function isThaanaConsonant(char: string): boolean {
+  const code = char.charCodeAt(0);
+  return code >= 0x0780 && code <= 0x07a5;
+}
+
+/**
+ * Split a string into individual Unicode code points.
  */
 export function splitIntoCharacters(s: string): string[] {
-  const result: string[] = [];
-  for (const t of s) {
-    result.push(t);
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread -- Intentional use of spread to split into Unicode code points (used by Thaana and other scripts)
+  return [...s];
+}
+
+const punctuationEquivalents: Record<string, string> = {
+  "،": ",",
+  "؛": ";",
+  "؟": "?",
+};
+
+function arePunctuationEquivalent(char1: string, char2: string): boolean {
+  if (char1 === char2) return true;
+  if (punctuationEquivalents[char1] === char2) return true;
+  if (punctuationEquivalents[char2] === char1) return true;
+  return false;
+}
+
+/**
+ * Check if input matches target, including partial Thaana matches and punctuation equivalents.
+ */
+export function isCharacterMatch(
+  inputChar: string,
+  targetChar: string,
+): boolean {
+  if (inputChar === targetChar) return true;
+
+  if (inputChar.length === 1 && targetChar.length === 1) {
+    if (arePunctuationEquivalent(inputChar, targetChar)) return true;
   }
 
-  return result;
+  if (
+    inputChar.length === 1 &&
+    targetChar.length === 2 &&
+    isThaanaConsonant(inputChar) &&
+    targetChar.startsWith(inputChar) &&
+    isThaanaCombiningMark(targetChar.charAt(1))
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Check if input matches target for display (no partial Thaana matches).
+ */
+export function isCharacterMatchForDisplay(
+  inputChar: string,
+  targetChar: string,
+): boolean {
+  if (inputChar === targetChar) return true;
+
+  if (inputChar.length === 1 && targetChar.length === 1) {
+    if (arePunctuationEquivalent(inputChar, targetChar)) return true;
+  }
+
+  return false;
 }
 
 /**
@@ -219,7 +283,7 @@ function hasRTLCharacters(word: string): [boolean, number] {
     return [false, 0];
   }
 
-  // This covers Arabic, Farsi, Urdu, and other RTL scripts
+  // This covers Arabic, Farsi, Urdu, Hebrew, Thaana (Dhivehi), and other RTL scripts
   const rtlPattern =
     /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/;
 

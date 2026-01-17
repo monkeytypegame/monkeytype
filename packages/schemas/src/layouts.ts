@@ -96,6 +96,7 @@ export const LayoutNameSchema = z.enum(
     "arabic_101",
     "arabic_102",
     "arabic_mac",
+    "dhivehi",
     "hebrew",
     "urdu_phonetic",
     "brasileiro_nativo",
