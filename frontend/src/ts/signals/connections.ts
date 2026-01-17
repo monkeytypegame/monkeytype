@@ -24,5 +24,12 @@ createEffect(() => {
   }
 });
 
+createEffect(() => {
+  const loading = connections.loading();
+  const error = connections.error();
+
+  console.log("#### change in resource: ", { loading, error });
+});
+
 //from legacy code
 //await connections.ready;

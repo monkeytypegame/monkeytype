@@ -1,6 +1,6 @@
 import { createSignal, createResource, createEffect } from "solid-js";
 import { createStore, Store } from "solid-js/store";
-import type { Accessor, Resource } from "solid-js";
+import type { Accessor } from "solid-js";
 
 export type ResourceBackedStore<T> = {
   /**
@@ -24,9 +24,14 @@ export type ResourceBackedStore<T> = {
   reset: () => void;
 
   /**
-   * resource to be used to get loading and error states
+   * store is loading
    */
-  resource: Resource<T>;
+  loading: Accessor<boolean>;
+
+  /**
+   * loading error
+   */
+  error: Accessor<unknown | undefined>;
 
   /**
    * the data store
@@ -51,19 +56,13 @@ export function createResourceBackedStore<T extends object>(
   initialValue: () => T,
 ): ResourceBackedStore<T> {
   const [shouldLoad, setShouldLoad] = createSignal(false);
+  const [loading, setLoading] = createSignal(false);
+  const [error, setError] = createSignal<unknown>(undefined);
 
-  const [resource, { refetch, mutate }] = createResource(
-    shouldLoad,
-    async (load) => {
-      if (!load) {
-        throw new Error("Load not requested");
-      }
-      const result = await fetcher();
-
-      //@ts-expect-error TODO
-      mutate(result);
-
-      return result;
+  const [resource, { refetch }] = createResource(
+    () => (shouldLoad() ? true : null),
+    async () => {
+      return fetcher();
     },
   );
 
@@ -71,13 +70,17 @@ export function createResourceBackedStore<T extends object>(
   let ready = createReadyPromise();
 
   createEffect(() => {
-    console.log("watch resource", resource.state);
-    if (resource.state === "pending") return;
+    if (!shouldLoad()) {
+      setLoading(false);
+      setError(undefined);
+      return;
+    }
+
+    setLoading(resource.loading);
 
     if (resource.error !== undefined) {
-      //TODO figure out why this is causes logout
-      //ready.reject(resource.error);
-      //reset for next attempt
+      setError(resource.error);
+      //reset store?
       ready = createReadyPromise();
       return;
     }
@@ -85,6 +88,7 @@ export function createResourceBackedStore<T extends object>(
     const value = resource();
     if (value !== undefined) {
       setStore(value);
+      setError(undefined);
       ready.resolve();
     }
   });
@@ -104,9 +108,9 @@ export function createResourceBackedStore<T extends object>(
     reset: () => {
       console.log("### reset");
       setShouldLoad(false);
+      setLoading(false);
+      setError(undefined);
 
-      // reset resource + store
-      mutate(undefined);
       setStore(initialValue());
 
       // reject any waiters
@@ -114,7 +118,8 @@ export function createResourceBackedStore<T extends object>(
       //ready.reject(new Error("Reset"));
       ready = createReadyPromise();
     },
-    resource,
+    loading,
+    error,
     store,
     ready: async () => ready.promise,
   };

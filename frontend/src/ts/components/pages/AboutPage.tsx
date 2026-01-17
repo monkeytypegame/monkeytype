@@ -44,21 +44,14 @@ export function AboutPage(): JSXElement {
         <Button onClick={() => connections.reload()} text="reload" />
         <Button onClick={() => connections.reset()} text="reset" />
       </Show>
-      <Show when={connections.shouldLoad}>
-        <AsyncContent
-          resource={connections.resource}
-          errorMessage="error loading connections"
-        >
-          {(data) => (
-            <For each={data}>
-              {(connection) => (
-                <p>
-                  {connection.initiatorName} to {connection.receiverName}
-                </p>
-              )}
-            </For>
+      <Show when={connections.shouldLoad() && !connections.loading()}>
+        <For each={connections.store}>
+          {(connection) => (
+            <p>
+              {connection.initiatorName} to {connection.receiverName}
+            </p>
           )}
-        </AsyncContent>
+        </For>
       </Show>
 
       <div class="created">
