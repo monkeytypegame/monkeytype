@@ -48,7 +48,7 @@ type ReadyPromise = {
 
 export function createResourceBackedStore<T extends object>(
   fetcher: () => Promise<T>,
-  initialValue: T,
+  initialValue: () => T,
 ): ResourceBackedStore<T> {
   const [shouldLoad, setShouldLoad] = createSignal(false);
 
@@ -67,7 +67,7 @@ export function createResourceBackedStore<T extends object>(
     },
   );
 
-  const [store, setStore] = createStore<T>(initialValue);
+  const [store, setStore] = createStore<T>(initialValue());
   let ready = createReadyPromise();
 
   createEffect(() => {
@@ -107,7 +107,7 @@ export function createResourceBackedStore<T extends object>(
 
       // reset resource + store
       mutate(undefined);
-      setStore(initialValue);
+      setStore(initialValue());
 
       // reject any waiters
       //TODO figure out why this is uncaught

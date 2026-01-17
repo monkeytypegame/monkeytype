@@ -4,14 +4,17 @@ import Ape from "../ape/";
 import { createEffect } from "solid-js";
 import { isAuthenticated } from "./user";
 
-export const connections = createResourceBackedStore<Connection[]>(async () => {
-  const response = await Ape.connections.get();
+export const connections = createResourceBackedStore<Connection[]>(
+  async () => {
+    const response = await Ape.connections.get();
 
-  if (response.status !== 200) {
-    throw new Error(response.body.message);
-  }
-  return response.body.data;
-}, []);
+    if (response.status !== 200) {
+      throw new Error(response.body.message);
+    }
+    return response.body.data;
+  },
+  () => [],
+);
 
 createEffect(() => {
   const authenticated = isAuthenticated();
