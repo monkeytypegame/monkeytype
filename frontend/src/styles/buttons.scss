@@ -41,6 +41,7 @@ input[type="submit"] {
   -webkit-user-select: none;
   user-select: none;
   align-content: center;
+  align-items: center;
   height: -moz-min-content;
   height: min-content;
   line-height: 1.25;
@@ -52,6 +53,7 @@ input[type="submit"] {
   gap: 0.5em;
   align-items: baseline;
   justify-content: center;
+  justify-items: center;
 
   &.danger {
     background: var(--error-color);

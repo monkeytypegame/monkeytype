@@ -35,7 +35,8 @@ type AnimatedModalProps = ParentProps<{
   onEscape?: (e: KeyboardEvent) => void;
   onBackdropClick?: (e: MouseEvent) => void;
 
-  class?: string;
+  modalClass?: string;
+  wrapperClass?: string;
 }>;
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -256,11 +257,11 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     <dialog
       id={`${props.id as string}Modal`}
       ref={dialogRef}
-      class={`modalWrapper hidden ${props.class ?? ""}`}
+      class={`modalWrapper hidden ${props.wrapperClass ?? ""}`}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div class="modal" ref={modalRef}>
+      <div class={`modal ${props.modalClass ?? ""}`} ref={modalRef}>
         {props.children}
       </div>
     </dialog>
