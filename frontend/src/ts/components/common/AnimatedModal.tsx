@@ -260,7 +260,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       id={`${props.id as string}Modal`}
       ref={dialogRef}
       class={cn(
-        "fixed top-0 left-0 z-1000 m-0 grid h-full max-h-full w-full max-w-full place-items-center border-none bg-[rgba(0,0,0,0.5)] p-4 backdrop:bg-transparent sm:p-8",
+        "fixed top-0 left-0 z-1000 m-0 grid h-full max-h-full w-full max-w-full place-items-center border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
         props.wrapperClass,
       )}
       onKeyDown={handleKeyDown}
