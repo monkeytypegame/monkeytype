@@ -156,6 +156,7 @@ async function submit(): Promise<void> {
 
   hide(true);
 
+  showLoaderBar();
   const response = await Ape.quotes.addRating({
     body: { quoteId: currentQuote.id, language: currentQuote.language, rating },
   });
