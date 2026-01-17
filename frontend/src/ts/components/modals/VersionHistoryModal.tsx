@@ -77,11 +77,5 @@ function ReleaseItem(props: {
       <div ref={setBodyHTML}></div>
       <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
     </div>
-    // <div class="release">
-    //   <div class="title">{props.name}</div>
-    //   <div class="date">{props.publishedAt}</div>
-    //   {/* oxlint-disable-next-line solid/reactivity */}
-    //   <div class="body" ref={setBodyHTML}></div>
-    // </div>
   );
 }

@@ -1,5 +1,5 @@
 import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
-import "./AboutPage.scss";
+// import "./AboutPage.scss";
 import { Button } from "../common/Button";
 import { showModal } from "../../stores/modals";
 import AsyncContent from "../common/AsyncContent";
