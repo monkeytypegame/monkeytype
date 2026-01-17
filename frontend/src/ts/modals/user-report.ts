@@ -68,7 +68,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter(qsr("#userReportModal .comment"), 250);
+  new CharacterCounter(modal.getModal().qsr(".comment"), 250);
 }
 
 async function hide(): Promise<void> {
@@ -82,8 +82,12 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  const reason = $("#userReportModal .reason").val() as ReportUserReason;
-  const comment = $("#userReportModal .comment").val() as string;
+  const reason = qsr<HTMLSelectElement>(
+    "#userReportModal .reason",
+  ).getValue() as ReportUserReason;
+  const comment = qsr<HTMLTextAreaElement>(
+    "#userReportModal .comment",
+  ).getValue() as string;
   const captcha = captchaResponse;
 
   if (!reason) {

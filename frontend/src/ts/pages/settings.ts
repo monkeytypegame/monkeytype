@@ -44,6 +44,7 @@ import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 let settingsInitialized = false;
 
@@ -977,6 +978,48 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
       const msg = Misc.createErrorMessage(e, "Failed to copy to clipboard");
       Notifications.add(msg, -1);
     });
+});
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .delButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("deleteCustomTheme", [customThemeId]);
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .editButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont");
+  },
+);
+
+qs(".pageSettings #resetSettingsButton")?.on("click", () => {
+  showPopup("resetSettings");
 });
 
 ConfigEvent.subscribe(({ key, newValue }) => {

@@ -90,12 +90,13 @@ function appendButtons(): void {
 }
 
 function updateActiveButtons(): void {
-  for (const button of $("#editResultTagsModal .modal .buttons button")) {
-    const tagid: string = $(button).attr("data-tag-id") ?? "";
+  const buttons = modal.getModal().qsa(".buttons button");
+  for (const button of buttons) {
+    const tagid: string = button.getAttribute("data-tag-id") ?? "";
     if (state.tags.includes(tagid)) {
-      $(button).addClass("active");
+      button.addClass("active");
     } else {
-      $(button).removeClass("active");
+      button.removeClass("active");
     }
   }
 }

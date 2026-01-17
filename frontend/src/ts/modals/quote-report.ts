@@ -36,9 +36,9 @@ export async function show(
   void modal.show({
     mode: "dialog",
     ...showOptions,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       CaptchaController.render(
-        document.querySelector("#quoteReportModal .g-recaptcha") as HTMLElement,
+        modalEl.qsr(".g-recaptcha").native,
         "quoteReportModal",
       );
 
@@ -50,9 +50,9 @@ export async function show(
         return quote.id === quoteId;
       });
 
-      $("#quoteReportModal .quote").text(state.quoteToReport?.text as string);
-      $("#quoteReportModal .reason").val("Grammatical error");
-      $("#quoteReportModal .comment").val("");
+      modalEl.qsr(".quote").setText(state.quoteToReport?.text as string);
+      modalEl.qsr<HTMLSelectElement>(".reason").setValue("Grammatical error");
+      modalEl.qsr<HTMLTextAreaElement>(".comment").setValue("");
 
       state.reasonSelect = new SlimSelect({
         select: "#quoteReportModal .reason",
@@ -61,7 +61,7 @@ export async function show(
         },
       });
 
-      new CharacterCounter(qsr("#quoteReportModal .comment"), 250);
+      new CharacterCounter(modalEl.qsr(".comment"), 250);
     },
   });
 }
@@ -81,8 +81,12 @@ async function submitReport(): Promise<void> {
 
   const quoteId = state.quoteToReport?.id.toString();
   const quoteLanguage = removeLanguageSize(Config.language);
-  const reason = $("#quoteReportModal .reason").val() as QuoteReportReason;
-  const comment = $("#quoteReportModal .comment").val() as string;
+  const reason = qsr<HTMLSelectElement>(
+    "#quoteReportModal .reason",
+  ).getValue() as QuoteReportReason;
+  const comment = qsr<HTMLTextAreaElement>(
+    "#quoteReportModal .comment",
+  ).getValue() as string;
   const captcha = captchaResponse;
 
   if (quoteId === undefined || quoteId === "") {
