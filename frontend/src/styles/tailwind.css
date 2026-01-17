@@ -50,6 +50,10 @@
   border-radius: calc(var(--roundness) / 2);
 }
 
+.chartCanvas {
+  width: 100% !important;
+}
+
 /* $breakpoints: ( */
 /* orange: calc(1536px + 5rem),
   yellow: calc(1280px + 5rem),
