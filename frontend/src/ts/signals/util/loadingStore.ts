@@ -102,31 +102,38 @@ export function createLoadingStore<T extends object>(
     }
   });
 
+  const load = (): void => {
+    if (!shouldLoad()) setShouldLoad(true);
+  };
+  const refresh = (): void => {
+    if (!shouldLoad()) {
+      setShouldLoad(true);
+    }
+    ready = promiseWithResolvers();
+    updateState("refreshing");
+    void refetch();
+  };
+
+  const reset = (): void => {
+    setShouldLoad(false);
+
+    setStore(initialValue());
+
+    // reject any waiters
+    ready.reject(new Error("Reset"));
+    ready = promiseWithResolvers();
+  };
+
   return {
-    load: () => {
-      if (!shouldLoad()) setShouldLoad(true);
-    },
-    refresh: () => {
-      if (!shouldLoad()) {
-        setShouldLoad(true);
-      }
-      ready = promiseWithResolvers();
-      updateState("refreshing");
-      void refetch();
-    },
-    reset: () => {
-      setShouldLoad(false);
-
-      setStore(initialValue());
-
-      // reject any waiters
-      //if (ready.state === "pending") {
-      ready.reject(new Error("Reset"));
-      //}
-      ready = promiseWithResolvers();
-    },
+    load,
+    refresh,
+    reset,
     state: getState,
     store,
-    ready: async () => ready.promise,
+    ready: async () => {
+      load();
+      await ready.promise;
+      return;
+    },
   };
 }

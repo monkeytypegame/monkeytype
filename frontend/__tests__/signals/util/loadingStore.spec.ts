@@ -29,6 +29,13 @@ describe("createLoadingStore", () => {
     expect(store.state().loading).toBe(true);
   });
 
+  it("should enable loading if ready is called", async () => {
+    const store = createLoadingStore(mockFetcher, initialValue);
+    mockFetcher.mockResolvedValueOnce({ data: "test" });
+
+    await store.ready();
+  });
+
   it("should call the fetcher when load is called", async () => {
     const store = createLoadingStore(mockFetcher, initialValue);
     mockFetcher.mockResolvedValueOnce({ data: "test" });
