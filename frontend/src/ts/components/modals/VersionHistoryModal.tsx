@@ -2,7 +2,7 @@ import { JSXElement, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../../utils/json-data";
 import { AnimatedModal } from "../common/AnimatedModal";
-import "./VersionHistoryModal.scss";
+// import "./VersionHistoryModal.scss";
 import AsyncContent from "../common/AsyncContent";
 import { isModalOpen } from "../../stores/modals";
 
@@ -19,7 +19,10 @@ export function VersionHistoryModal(): JSXElement {
 
       body = body.replace(/\r\n/g, "<br>");
       //replace ### title with h3 title h3
-      body = body.replace(/### (.*?)<br>/g, "<h3>$1</h3>");
+      body = body.replace(
+        /### (.*?)<br>/g,
+        '<h3 class="text-sub mb-2 text-xl">$1</h3>',
+      );
       body = body.replace(/<\/h3><br>/gi, "</h3>");
       //remove - at the start of a line
       body = body.replace(/^- /gm, "");
@@ -41,7 +44,7 @@ export function VersionHistoryModal(): JSXElement {
   });
 
   return (
-    <AnimatedModal id="VersionHistory">
+    <AnimatedModal id="VersionHistory" modalClass="max-w-6xl">
       <AsyncContent
         resource={releases}
         errorMessage="Failed to load version history"
@@ -66,11 +69,19 @@ function ReleaseItem(props: {
   };
 
   return (
-    <div class="release">
-      <div class="title">{props.name}</div>
-      <div class="date">{props.publishedAt}</div>
-      {/* oxlint-disable-next-line solid/reactivity */}
-      <div class="body" ref={setBodyHTML}></div>
+    <div class="grid gap-4">
+      <div class="flex place-items-center justify-between">
+        <div class="text-4xl text-main">{props.name}</div>
+        <div class="text-sub">{props.publishedAt}</div>
+      </div>
+      <div ref={setBodyHTML}></div>
+      <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
     </div>
+    // <div class="release">
+    //   <div class="title">{props.name}</div>
+    //   <div class="date">{props.publishedAt}</div>
+    //   {/* oxlint-disable-next-line solid/reactivity */}
+    //   <div class="body" ref={setBodyHTML}></div>
+    // </div>
   );
 }
