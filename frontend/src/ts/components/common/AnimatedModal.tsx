@@ -260,21 +260,23 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       id={`${props.id as string}Modal`}
       ref={dialogRef}
       class={cn(
-        "fixed top-0 left-0 z-1000 m-0 grid h-full max-h-full w-full max-w-full place-items-center border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+        "fixed top-0 left-0 z-1000 m-0 hidden h-full max-h-full w-full max-w-full border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
         props.wrapperClass,
       )}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div
-        class={cn(
-          "rounded-double grid h-max max-h-full w-full max-w-md gap-4 overflow-auto bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
-          props.modalClass,
-        )}
-        ref={modalRef}
-      >
-        <div class="text-2xl text-sub">{props.title}</div>
-        {props.children}
+      <div class="pointer-events-none grid h-full w-full place-items-center">
+        <div
+          class={cn(
+            "rounded-double pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+            props.modalClass,
+          )}
+          ref={modalRef}
+        >
+          <div class="text-2xl text-sub">{props.title}</div>
+          {props.children}
+        </div>
       </div>
     </dialog>
   );
