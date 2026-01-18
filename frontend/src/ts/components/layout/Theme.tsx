@@ -2,10 +2,10 @@ import { createEffect, createMemo, JSXElement } from "solid-js";
 import { getTheme } from "../../signals/theme";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { themes } from "../../constants/themes";
-import * as Loader from "../../elements/loader";
 import * as Notifications from "../../elements/notifications";
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
 import { FavIcon } from "./FavIcon";
+import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 
 export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -22,11 +22,10 @@ export function Theme(): JSXElement {
         `Theme controller loaded style for theme ${target.dataset["name"]}`,
       );
     }
-    Loader.hide();
   };
 
   const onError = (e: Event): void => {
-    Loader.hide();
+    hideLoaderBar();
     const target = e.target as HTMLLinkElement;
     const name = target.dataset["name"];
     console.debug("Theme controller failed to load style", name, e);
@@ -59,7 +58,7 @@ export function Theme(): JSXElement {
       `Theme controller ${hasCss ? "loading style" : "removing style"} for theme ${name}`,
     );
 
-    if (hasCss) Loader.show();
+    if (hasCss) showLoaderBar();
     linkEl()?.setAttribute("href", hasCss ? `/themes/${name}.css` : "");
   });
 
