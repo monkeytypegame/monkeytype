@@ -58,6 +58,16 @@ export default function AsyncContent<T>(
     return createErrorMessage(err, props.errorMessage ?? "An error occurred");
   };
 
+  const loader: JSXElement = (
+    <div class="preloader">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div>
+  );
+
+  const errorText = (err: unknown): JSXElement => (
+    <div class="error">{handleError(err)}</div>
+  );
+
   return (
     <Conditional
       if={props.alwaysShowContent === true}
@@ -68,30 +78,20 @@ export default function AsyncContent<T>(
         };
         return (
           <>
-            <Show when={p.showLoader && source.loading()}>
-              <div class="preloader">
-                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-              </div>
-            </Show>
+            <Show when={p.showLoader && source.loading()}>{loader}</Show>
             {p.children(value())}
           </>
         );
       })()}
       else={
-        <ErrorBoundary
-          fallback={(err) => <div class="error">{handleError(err)}</div>}
-        >
+        <ErrorBoundary fallback={errorText}>
           <Show when={props.loadingStore?.state().error !== undefined}>
-            {(err) => <div class="error">{handleError(err)}</div>}
+            {errorText}
           </Show>
 
           <Conditional
             if={source.loading()}
-            then={
-              <div class="preloader">
-                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-              </div>
-            }
+            then={loader}
             else={
               <Show
                 when={source.value() !== null && source.value() !== undefined}
