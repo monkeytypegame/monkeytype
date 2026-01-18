@@ -9,7 +9,7 @@ export function LoaderBar(): JSX.Element {
 
   useVisibilityAnimation({
     element: loaderEl,
-    isVisible: () => getLoaderBarSignal()?.action === "show",
+    isVisible: () => getLoaderBarSignal()?.visible === true,
     showAnimationOptions: {
       delay: applyReducedMotion(getLoaderBarSignal()?.instant ? 0 : 125),
     },
