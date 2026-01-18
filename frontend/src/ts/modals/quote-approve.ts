@@ -1,5 +1,6 @@
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -86,9 +87,9 @@ function updateQuoteLength(index: number): void {
 }
 
 async function getQuotes(): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.get();
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to get new quotes", -1, { response });
@@ -143,11 +144,11 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
   quote.qsa("button").disable();
   quote.qsa("textarea, input").disable();
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.approveSubmission({
     body: { quoteId: dbid },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     resetButtons(index);
@@ -167,11 +168,11 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
   quote.qsa("button").disable();
   quote.qsa("textarea, input").disable();
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.rejectSubmission({
     body: { quoteId: dbid },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     resetButtons(index);
@@ -198,7 +199,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   quote.qsa("button").disable();
   quote.qsa("textarea, input").disable();
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.approveSubmission({
     body: {
       quoteId: dbid,
@@ -206,7 +207,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
       editSource,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     resetButtons(index);

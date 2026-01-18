@@ -1,4 +1,10 @@
-import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
+import {
+  JSXElement,
+  createEffect,
+  onCleanup,
+  ParentProps,
+  Show,
+} from "solid-js";
 import { applyReducedMotion } from "../../utils/misc";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
@@ -7,6 +13,7 @@ import {
   isModalOpen,
   isModalChained,
 } from "../../stores/modals";
+import { cn } from "../../utils/cn";
 
 type AnimationParams = {
   opacity?: number | [number, number];
@@ -35,7 +42,9 @@ type AnimatedModalProps = ParentProps<{
   onEscape?: (e: KeyboardEvent) => void;
   onBackdropClick?: (e: MouseEvent) => void;
 
-  class?: string;
+  title?: string;
+  modalClass?: string;
+  wrapperClass?: string;
 }>;
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -256,12 +265,26 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     <dialog
       id={`${props.id as string}Modal`}
       ref={dialogRef}
-      class={`modalWrapper hidden ${props.class ?? ""}`}
+      class={cn(
+        "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+        props.wrapperClass,
+      )}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div class="modal" ref={modalRef}>
-        {props.children}
+      <div class="pointer-events-none flex h-full w-full items-center justify-center">
+        <div
+          class={cn(
+            "modal rounded-double pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+            props.modalClass,
+          )}
+          ref={modalRef}
+        >
+          <Show when={props.title !== undefined && props.title !== ""}>
+            <div class="text-2xl text-sub">{props.title}</div>
+          </Show>
+          {props.children}
+        </div>
       </div>
     </dialog>
   );
