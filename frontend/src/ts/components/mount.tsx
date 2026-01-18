@@ -4,15 +4,13 @@ import { JSXElement } from "solid-js";
 import { Footer } from "./layout/footer/Footer";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
-import { TailwindMediaQueryDebugger } from "./utils/TailwindMediaQueryDebugger";
-import { LoaderBar } from "./layout/LoaderBar";
+import { Overlays } from "./layout/overlays/Overlays";
 
 const components: Record<string, () => JSXElement> = {
   Footer: () => <Footer />,
   Modals: () => <Modals />,
   AboutPage: () => <AboutPage />,
-  TailwindMediaQueryDebugger: () => <TailwindMediaQueryDebugger />,
-  LoaderBar: () => <LoaderBar />,
+  Overlays: () => <Overlays />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
