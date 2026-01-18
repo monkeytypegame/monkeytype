@@ -85,6 +85,7 @@ export function createLoadingStore<T extends object>(
       return;
     }
     updateState("pending");
+    console.log("res:", resource.state);
 
     if (resource.error !== undefined) {
       updateState("errored", resource.error);

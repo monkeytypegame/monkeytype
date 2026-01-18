@@ -1,4 +1,4 @@
-import { ErrorBoundary, JSXElement, Resource, Show, Suspense } from "solid-js";
+import { ErrorBoundary, JSXElement, Resource, Show } from "solid-js";
 import { createErrorMessage } from "../../utils/misc";
 import * as Notifications from "../../elements/notifications";
 import { Conditional } from "./Conditional";
@@ -54,7 +54,7 @@ export default function AsyncContent<T>(
     }
   };
   const handleError = (err: unknown): string => {
-    console.error(err);
+    console.error("AsyncContext failed", err);
     return createErrorMessage(err, props.errorMessage ?? "An error occurred");
   };
 
@@ -81,19 +81,25 @@ export default function AsyncContent<T>(
         <ErrorBoundary
           fallback={(err) => <div class="error">{handleError(err)}</div>}
         >
-          <Suspense
-            fallback={
+          <Show when={props.loadingStore?.state().error !== undefined}>
+            {(err) => <div class="error">{handleError(err)}</div>}
+          </Show>
+
+          <Conditional
+            if={source.loading()}
+            then={
               <div class="preloader">
                 <i class="fas fa-fw fa-spin fa-circle-notch"></i>
               </div>
             }
-          >
-            <Show
-              when={source.value() !== null && source.value() !== undefined}
-            >
-              {props.children(source.value() as T)}
-            </Show>
-          </Suspense>
+            else={
+              <Show
+                when={source.value() !== null && source.value() !== undefined}
+              >
+                {props.children(source.value() as T)}
+              </Show>
+            }
+          />
         </ErrorBoundary>
       }
     />
