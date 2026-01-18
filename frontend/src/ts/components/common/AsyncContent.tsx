@@ -48,7 +48,7 @@ export default function AsyncContent<T>(
         return (
           <>
             <Show when={p.showLoader && props.resource.loading}>
-              <div class="preloader">
+              <div class="preloader p-4 text-center text-2xl text-main">
                 <i class="fas fa-fw fa-spin fa-circle-notch"></i>
               </div>
             </Show>
@@ -62,7 +62,7 @@ export default function AsyncContent<T>(
         >
           <Suspense
             fallback={
-              <div class="preloader">
+              <div class="preloader p-4 text-center text-2xl text-main">
                 <i class="fas fa-fw fa-spin fa-circle-notch"></i>
               </div>
             }
