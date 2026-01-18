@@ -1246,15 +1246,12 @@ function updateResultChartDataVisibility(): void {
       continue;
     }
 
-    $(button).toggleClass("active", vis[id]);
+    button.toggleClass("active", vis[id]);
 
     if (id === "pbLine") {
-      $(button).toggleClass("hidden", !isAuthenticated());
+      button.toggleClass("hidden", !isAuthenticated());
     } else if (id === "tagPbLine") {
-      $(button).toggleClass(
-        "hidden",
-        !isAuthenticated() || !hasTagPbAnnotations,
-      );
+      button.toggleClass("hidden", !isAuthenticated() || !hasTagPbAnnotations);
     }
   }
 }
@@ -1276,18 +1273,18 @@ export function updateTagsAfterEdit(
   }
 
   if (tagIds.length === 0) {
-    $(`.pageTest #result .tags .bottom`).html(
+    qs(`.pageTest #result .tags .bottom`)?.setHtml(
       "<div class='noTags'>no tags</div>",
     );
   } else {
-    $(`.pageTest #result .tags .bottom div.noTags`).remove();
-    const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
+    qs(`.pageTest #result .tags .bottom div.noTags`)?.remove();
+    const currentElements = qsa(`.pageTest #result .tags .bottom div[tagid]`);
 
     const checked: string[] = [];
-    currentElements.each((_, element) => {
-      const tagId = $(element).attr("tagid") as string;
+    currentElements.forEach((element) => {
+      const tagId = element.getAttribute("tagid") ?? "";
       if (!tagIds.includes(tagId)) {
-        $(element).remove();
+        element?.remove();
       } else {
         checked.push(tagId);
       }
@@ -1304,56 +1301,59 @@ export function updateTagsAfterEdit(
       }
     });
 
-    // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
-    $(`.pageTest #result .tags .bottom`).append(html);
+    // qs(`.pageTest #result .tags .bottom`)?.setHtml(tagNames.join("<br>"));
+    qs(`.pageTest #result .tags .bottom`)?.appendHtml(html);
   }
 
-  $(`.pageTest #result .tags .top .editTagsButton`).attr(
+  qs(`.pageTest #result .tags .top .editTagsButton`)?.setAttribute(
     "data-active-tag-ids",
     tagIds.join(","),
   );
 }
 
-$(".pageTest #result .chart .chartLegend button").on("click", async (event) => {
-  const $target = $(event.target);
-  const id = $target.data("id") as string;
+qs(".pageTest #result .chart .chartLegend button")?.on(
+  "click",
+  async (event) => {
+    const $target = event.target as HTMLElement;
+    const id = $target.getAttribute("data-id");
 
-  if (id === "scale") {
-    setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
-    return;
-  }
+    if (id === "scale") {
+      setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
+      return;
+    }
 
-  if (
-    id !== "raw" &&
-    id !== "burst" &&
-    id !== "errors" &&
-    id !== "pbLine" &&
-    id !== "tagPbLine"
-  ) {
-    return;
-  }
-  const vis = resultChartDataVisibility.get();
-  vis[id] = !vis[id];
-  resultChartDataVisibility.set(vis);
+    if (
+      id !== "raw" &&
+      id !== "burst" &&
+      id !== "errors" &&
+      id !== "pbLine" &&
+      id !== "tagPbLine"
+    ) {
+      return;
+    }
+    const vis = resultChartDataVisibility.get();
+    vis[id] = !vis[id];
+    resultChartDataVisibility.set(vis);
 
-  updateResultChartDataVisibility();
-  updateMinMaxChartValues();
-  applyMinMaxChartValues();
-  void ChartController.result.updateColors();
-  ChartController.result.update();
-});
+    updateResultChartDataVisibility();
+    updateMinMaxChartValues();
+    applyMinMaxChartValues();
+    void ChartController.result.updateColors();
+    ChartController.result.update();
+  },
+);
 
-$(".pageTest #favoriteQuoteButton").on("click", async () => {
+qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }
 
-  const $button = $(".pageTest #favoriteQuoteButton .icon");
+  const $button = qs(".pageTest #favoriteQuoteButton .icon");
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 
-  if ($button.hasClass("fas")) {
+  if ($button?.hasClass("fas")) {
     // Remove from
     Loader.show();
     const response = await Ape.users.removeQuoteFromFavorites({
@@ -1367,7 +1367,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
-      $button.removeClass("fas").addClass("far");
+      $button?.removeClass("fas")?.addClass("far");
       const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
         quoteId,
       ) as number;
@@ -1384,7 +1384,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
-      $button.removeClass("far").addClass("fas");
+      $button?.removeClass("far")?.addClass("fas");
       dbSnapshot.favoriteQuotes ??= {};
       dbSnapshot.favoriteQuotes[quoteLang] ??= [];
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);

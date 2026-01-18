@@ -311,8 +311,17 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Toggle a class on the element
    */
-  toggleClass(className: string): this {
-    this.native.classList.toggle(className);
+  toggleClass(className: string, state?: boolean): this {
+    if (state !== undefined) {
+      if (state) {
+        this.addClass(className);
+      } else {
+        this.removeClass(className);
+      }
+    } else {
+      this.native.classList.toggle(className);
+    }
+
     return this;
   }
 
