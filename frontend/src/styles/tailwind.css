@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
-/* @config "../../tailwind.config.js"; */
-
 @theme {
-  /* --color-*: initial; */
+  --color-*: initial;
   --color-bg: var(--bg-color);
   --color-main: var(--main-color);
   --color-caret: var(--caret-color);
@@ -16,7 +14,7 @@
   --color-colorful-error-extra: var(--colorful-error-extra-color);
 
   /* decide on rem or em */
-  /* --spacing: 0.25rem; */
+  --spacing: 0.25rem;
 
   --breakpoint-*: initial;
   --breakpoint-2xl: 1617px;
