@@ -55,8 +55,4 @@
   .rounded-half {
     border-radius: calc(var(--roundness) / 2);
   }
-
-  .chartCanvas {
-    width: 100% !important;
-  }
 }
