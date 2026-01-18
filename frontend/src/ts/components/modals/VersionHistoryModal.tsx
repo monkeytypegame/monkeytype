@@ -63,17 +63,13 @@ function ReleaseItem(props: {
   publishedAt: string;
   bodyHTML: string;
 }): JSXElement {
-  const setBodyHTML = (el: HTMLDivElement): void => {
-    el.innerHTML = props.bodyHTML;
-  };
-
   return (
     <div class="grid gap-4">
       <div class="flex place-items-center justify-between">
         <div class="text-4xl text-main">{props.name}</div>
         <div class="text-sub">{props.publishedAt}</div>
       </div>
-      <div ref={setBodyHTML}></div>
+      <div innerHTML={props.bodyHTML}></div>
       <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
     </div>
   );
