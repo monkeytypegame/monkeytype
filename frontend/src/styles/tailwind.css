@@ -54,6 +54,18 @@
   width: 100% !important;
 }
 
+@keyframes loader {
+  0% {
+    transform: translateX(-100%) scaleX(0);
+  }
+  50% {
+    transform: translateX(0) scaleX(1);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0);
+  }
+}
+
 /* $breakpoints: ( */
 /* orange: calc(1536px + 5rem),
   yellow: calc(1280px + 5rem),

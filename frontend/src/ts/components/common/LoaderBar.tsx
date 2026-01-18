@@ -15,5 +15,14 @@ export function LoaderBar(): JSX.Element {
     },
   });
 
-  return <div id="backgroundLoader" class="hidden" ref={ref}></div>;
+  return (
+    <div
+      class="pointer-events-none fixed top-0 z-9999 hidden h-1 w-full animate-[loader] bg-main"
+      style={{
+        "animation-duration": "2s",
+        "animation-iteration-count": "infinite",
+      }}
+      ref={ref}
+    ></div>
+  );
 }
