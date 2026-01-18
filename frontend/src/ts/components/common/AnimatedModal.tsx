@@ -1,4 +1,10 @@
-import { JSXElement, createEffect, onCleanup, ParentProps } from "solid-js";
+import {
+  JSXElement,
+  createEffect,
+  onCleanup,
+  ParentProps,
+  Show,
+} from "solid-js";
 import { applyReducedMotion } from "../../utils/misc";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
@@ -260,13 +266,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       id={`${props.id as string}Modal`}
       ref={dialogRef}
       class={cn(
-        "fixed top-0 left-0 z-1000 m-0 hidden h-full max-h-full w-full max-w-full border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+        "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
         props.wrapperClass,
       )}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div class="pointer-events-none grid h-full w-full place-items-center">
+      <div class="pointer-events-none flex h-full w-full items-center justify-center">
         <div
           class={cn(
             "rounded-double pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
@@ -274,7 +280,9 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           )}
           ref={modalRef}
         >
-          <div class="text-2xl text-sub">{props.title}</div>
+          <Show when={props.title !== undefined && props.title !== ""}>
+            <div class="text-2xl text-sub">{props.title}</div>
+          </Show>
           {props.children}
         </div>
       </div>
