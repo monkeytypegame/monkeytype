@@ -157,6 +157,7 @@ export const commands: CommandsSubgroup = {
       "timerColor",
       "timerOpacity",
       "highlightMode",
+      "typedWords",
 
       "tapeMode",
       "tapeMargin",

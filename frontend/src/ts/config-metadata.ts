@@ -558,6 +558,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
   },
+  typedWords: {
+    icon: "fa-eye",
+    displayString: "typed words",
+    changeRequiresRestart: false,
+    group: "appearance",
+  },
   tapeMode: {
     icon: "fa-tape",
     triggerResize: true,

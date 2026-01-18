@@ -546,6 +546,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+  typedWords: {
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
   tapeMode: {
     subgroup: {
       options: "fromSchema",
