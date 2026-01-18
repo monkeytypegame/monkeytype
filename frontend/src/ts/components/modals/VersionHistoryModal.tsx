@@ -2,7 +2,6 @@ import { JSXElement, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../../utils/json-data";
 import { AnimatedModal } from "../common/AnimatedModal";
-// import "./VersionHistoryModal.scss";
 import AsyncContent from "../common/AsyncContent";
 import { isModalOpen } from "../../stores/modals";
 
