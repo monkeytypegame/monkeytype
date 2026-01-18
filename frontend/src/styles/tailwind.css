@@ -29,58 +29,34 @@
 
   --default-transition-duration: 0.25s;
   --duration-half: 0.125s;
-}
 
-/* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
-@custom-variant xl (@media (min-width: calc(1281px + 5rem)));
-@custom-variant lg (@media (min-width: calc(1025px + 5rem)));
-@custom-variant md (@media (min-width: calc(769px + 5rem)));
-@custom-variant sm (@media (min-width: calc(641px + 5rem)));
-@custom-variant xs (@media (min-width: 426px)); */
-
-.rounded {
-  border-radius: var(--roundness);
-}
-
-.rounded-double {
-  border-radius: calc(var(--roundness) * 2);
-}
-
-.rounded-half {
-  border-radius: calc(var(--roundness) / 2);
-}
-
-.chartCanvas {
-  width: 100% !important;
-}
-
-@keyframes loader {
-  0% {
-    transform: translateX(-100%) scaleX(0);
-  }
-  50% {
-    transform: translateX(0) scaleX(1);
-  }
-  100% {
-    transform: translateX(100%) scaleX(0);
+  @keyframes loader {
+    0% {
+      transform: translateX(-100%) scaleX(0);
+    }
+    50% {
+      transform: translateX(0) scaleX(1);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0);
+    }
   }
 }
 
-/* $breakpoints: ( */
-/* orange: calc(1536px + 5rem),
-  yellow: calc(1280px + 5rem),
-  green: calc(1024px + 5rem),
-  blue: calc(768px + 5rem),
-  purple: calc(640px + 5rem),
-  brown: 425px,
-  gray: 330px
-); */
+@layer utilities {
+  .rounded {
+    border-radius: var(--roundness);
+  }
 
-/* @custom-variant 2xl (@media (min-width: calc(1537px + 5rem)));
-@custom-variant xl (@media (max-width: calc(1536px + 5rem)));
-@custom-variant lg (@media (max-width: calc(1280px + 5rem)));
-@custom-variant md (@media (max-width: calc(1024px + 5rem)));
-@custom-variant sm (@media (max-width: calc(768px + 5rem)));
-@custom-variant xs (@media (max-width: calc(640px + 5rem)));
-@custom-variant xxs (@media (max-width: 425px));
-@custom-variant xxxs (@media (max-width: 330px)); */
+  .rounded-double {
+    border-radius: calc(var(--roundness) * 2);
+  }
+
+  .rounded-half {
+    border-radius: calc(var(--roundness) / 2);
+  }
+
+  .chartCanvas {
+    width: 100% !important;
+  }
+}
