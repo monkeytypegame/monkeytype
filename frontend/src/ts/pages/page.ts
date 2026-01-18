@@ -4,7 +4,6 @@ import {
   serialize as serializeUrlSearchParams,
 } from "zod-urlsearchparams";
 import { ElementWithUtils } from "../utils/dom";
-import { Key } from "readline";
 
 export type PageName =
   | "loading"

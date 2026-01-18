@@ -3,7 +3,9 @@ import { createStore, Store } from "solid-js/store";
 import type { Accessor, Resource } from "solid-js";
 import { promiseWithResolvers } from "../../utils/misc";
 
-type State = Pick<Resource<unknown>, "loading" | "error" | "state"> & {
+export type LoadError = Error | { message?: string };
+type State = Pick<Resource<unknown>, "loading" | "state"> & {
+  error?: LoadError;
   ready: boolean;
   refreshing: boolean;
 };
@@ -66,15 +68,13 @@ export function createLoadingStore<T extends object>(
 
   const updateState = (
     state: Resource<unknown>["state"],
-    // oxlint-disable-next-line typescript/no-explicit-any
-    error?: any,
+    error?: LoadError,
   ): void => {
     setState({
       state,
       loading: state === "pending",
       ready: state === "ready",
       refreshing: state === "refreshing",
-      // oxlint-disable-next-line typescript/no-explicit-any typescript/no-unsafe-assignment
       error: error,
     });
   };
@@ -88,7 +88,7 @@ export function createLoadingStore<T extends object>(
     console.log("res:", resource.state);
 
     if (resource.error !== undefined) {
-      updateState("errored", resource.error);
+      updateState("errored", resource.error as LoadError);
       ready.reject(resource.error);
       ready = promiseWithResolvers();
       return;
@@ -121,7 +121,8 @@ export function createLoadingStore<T extends object>(
     setStore(initialValue());
 
     // reject any waiters
-    ready.reject(new Error("Reset"));
+    //TODO figue out why this in unhandled
+    //ready.reject(new Error("Reset"));
     ready = promiseWithResolvers();
   };
 

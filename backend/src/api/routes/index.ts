@@ -140,7 +140,8 @@ function applyDevApiRoutes(app: Application): void {
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
 
     app.use(async (req, res, next) => {
-      const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
+      let slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
+      if (req.path.includes("connection")) slowdown *= 2;
       if (slowdown > 0) {
         Logger.info(
           `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`,

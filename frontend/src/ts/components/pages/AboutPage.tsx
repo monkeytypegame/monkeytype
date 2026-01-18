@@ -14,6 +14,8 @@ import { getThemeColors } from "../../signals/theme";
 import { connections } from "../../signals/connections";
 import { isAuthenticated } from "../../signals/user";
 import Loader from "../common/Loader";
+import { createLoadingStore } from "../../signals/util/loadingStore";
+import { User } from "@monkeytype/schemas/users";
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
@@ -32,6 +34,19 @@ export function AboutPage(): JSXElement {
     open ? await fetchSpeedHistogram() : undefined,
   );
 
+  const users = createLoadingStore<User>(
+    async () => {
+      const response = await Ape.users.get();
+
+      if (response.status !== 200) {
+        throw new Error(response.body.message);
+      }
+      return response.body.data;
+    },
+
+    () => ({}) as User,
+  );
+
   createEffect(() => {
     console.log(getThemeColors());
   });
@@ -39,6 +54,7 @@ export function AboutPage(): JSXElement {
   return (
     <Show when={isOpen}>
       <Loader
+        active={isOpen}
         load={{
           user: {
             store: users,
