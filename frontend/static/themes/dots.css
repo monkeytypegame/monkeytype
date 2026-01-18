@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #121520;
-  --caret-color: #fff;
-  --main-color: #fff;
-  --sub-color: #676e8a;
-  --sub-alt-color: #1b1e2c;
-  --text-color: #fff;
-  --error-color: #da3333;
-  --error-extra-color: #791717;
-  --colorful-error-color: #da3333;
-  --colorful-error-extra-color: #791717;
-}
-
 nav {
   gap: 0.5rem;
 }

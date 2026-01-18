@@ -8,7 +8,7 @@ import {
 } from "chart.js";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { ChartWithUpdateColors } from "../../controllers/chart-controller";
-import { getThemeColors } from "../../signals/theme";
+import { getTheme } from "../../signals/theme";
 
 type ChartJSProps<
   T extends ChartType = ChartType,
@@ -48,15 +48,13 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
       chart.options = props.options;
     }
     chart.update();
-    void chart.updateColors();
   });
 
   createEffect(() => {
-    //react on theme changes
-    const colors = getThemeColors();
+    const theme = getTheme();
     if (!chart) return;
 
-    void chart.updateColors(colors);
+    void chart.updateColors(theme);
   });
 
   onCleanup(() => {

@@ -1,16 +1,4 @@
 /*inspired by GMK MOONLIGHT*/
-:root {
-  --bg-color: #191f28;
-  --main-color: #c69f68;
-  --caret-color: #8f744b;
-  --sub-color: #4b5975;
-  --sub-alt-color: #141a22;
-  --text-color: #ccccb5;
-  --error-color: #b81b2c;
-  --error-extra-color: #84131f;
-  --colorful-error-color: #b81b2c;
-  --colorful-error-extra-color: #84131f;
-}
 
 nav {
   gap: 0.5rem;

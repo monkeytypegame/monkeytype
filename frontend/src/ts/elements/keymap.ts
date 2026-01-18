@@ -1,5 +1,4 @@
 import Config from "../config";
-import * as ThemeColors from "./theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
@@ -18,6 +17,8 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { getTheme } from "../signals/theme";
+import { createEffect } from "solid-js";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -60,6 +61,14 @@ const stenoKeys: LayoutObject = {
     row5: [],
   },
 };
+
+createEffect(() => {
+  //react on theme change
+  const _theme = getTheme();
+
+  //reset calculated style on all keys
+  keymap.qsa(".keymapKey").setStyle({});
+});
 
 function findKeyElements(char: string): ElementsWithUtils | null {
   if (char === "\n") return null;
@@ -106,7 +115,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
     const elements = findKeyElements(key);
     if (elements === null || elements.length === 0) return;
 
-    const themecolors = await ThemeColors.getAll();
+    const themecolors = getTheme();
 
     try {
       let startingStyle = {

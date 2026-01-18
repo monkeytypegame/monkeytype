@@ -37,6 +37,9 @@ export const projects: UserWorkspaceConfig[] = [
     plugins,
   },
   {
+    ssr: {
+      noExternal: ["@solidjs/meta"],
+    },
     test: {
       name: { label: "jsx", color: "green" },
       include: ["__tests__/**/*.spec.tsx"],

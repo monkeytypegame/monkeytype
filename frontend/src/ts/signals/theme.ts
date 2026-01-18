@@ -1,6 +1,10 @@
 import { createSignal } from "solid-js";
+import { ColorName, Theme } from "../constants/themes";
+import { ThemeName } from "@monkeytype/schemas/configs";
 
-const defaultTheme: ThemeColors = {
+export type ThemeIdentifier = ThemeName | "custom";
+const defaultTheme: Theme & { name: ThemeIdentifier } = {
+  name: "serika_dark",
   bg: "#323437",
   main: "#e2b714",
   caret: "#e2b714",
@@ -13,19 +17,13 @@ const defaultTheme: ThemeColors = {
   colorfulErrorExtra: "#7e2a33",
 };
 
-export type ThemeColors = {
-  bg: string;
-  main: string;
-  caret: string;
-  sub: string;
-  subAlt: string;
-  text: string;
-  error: string;
-  errorExtra: string;
-  colorfulError: string;
-  colorfulErrorExtra: string;
-};
-export type ColorName = keyof ThemeColors;
+export const [getTheme, setTheme] = createSignal<
+  Theme & { name: ThemeIdentifier }
+>(defaultTheme);
 
-export const [getThemeColors, setThemeColors] =
-  createSignal<ThemeColors>(defaultTheme);
+export function updateThemeColor(key: ColorName, color: string): void {
+  setTheme((prev) => ({
+    ...prev,
+    [key]: color,
+  }));
+}

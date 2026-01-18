@@ -109,7 +109,7 @@ export function hexToRgb(hex: string):
  * @param a The alpha component (0-1), optional.
  * @returns The hexadecimal color string (e.g., "#ff0000" for red or "#ff0000ff" for red with full opacity).
  */
-function rgbToHex(r: number, g: number, b: number, a?: number): string {
+export function rgbToHex(r: number, g: number, b: number, a?: number): string {
   const hexR = Math.round(r).toString(16).padStart(2, "0");
   const hexG = Math.round(g).toString(16).padStart(2, "0");
   const hexB = Math.round(b).toString(16).padStart(2, "0");
@@ -238,26 +238,29 @@ export function isColorDark(hex: string): boolean {
   return hsl.lgt < 50;
 }
 
-/**
- * Converts an RGB string (e.g., "rgb(255, 0, 0)") to a hexadecimal color string.
- * @param rgb The RGB string.
- * @returns The equivalent hexadecimal color string.
- */
-export function rgbStringtoHex(rgb: string): string | undefined {
-  const match: RegExpMatchArray | null = rgb.match(
-    /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/,
-  );
-  if (match === null) return;
-  if (match.length < 3) return;
-  function hexCode(i: string): string {
-    // Take the last 2 characters and convert
-    // them to Hexadecimal.
-    return ("0" + parseInt(i).toString(16)).slice(-2);
-  }
-  return (
-    "#" +
-    hexCode(match[1] as string) +
-    hexCode(match[2] as string) +
-    hexCode(match[3] as string)
-  );
+export function hslToRgb(
+  h: number,
+  s: number,
+  l: number,
+): { r: number; g: number; b: number } {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+
+  let r = 0,
+    g = 0,
+    b = 0;
+
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else if (h < 240) [r, g, b] = [0, x, c];
+  else if (h < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
+  };
 }

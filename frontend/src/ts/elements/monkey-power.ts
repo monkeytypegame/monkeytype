@@ -1,9 +1,9 @@
-import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { ElementWithUtils, qsr } from "../utils/dom";
+import { getTheme } from "../signals/theme";
 
 const html = qsr("html");
 const body = qsr("body");
@@ -238,11 +238,12 @@ export async function addPower(good = true, extra = false): Promise<void> {
       i > 0;
       i--
     ) {
+      const { caret, error } = getTheme();
       const color = ["2", "4"].includes(Config.monkeyPowerLevel)
         ? randomColor()
         : good
-          ? await ThemeColors.get("caret")
-          : await ThemeColors.get("error");
+          ? caret
+          : error;
       ctx.particles.push(
         createParticle(...(coords as [x: number, y: number]), color),
       );

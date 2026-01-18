@@ -184,15 +184,6 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
   return element;
 }
 
-async function updateChartColors(): Promise<void> {
-  await ChartController.accountHistory.updateColors();
-  await Misc.sleep(0);
-  await ChartController.accountActivity.updateColors();
-  await Misc.sleep(0);
-  await ChartController.accountHistogram.updateColors();
-  await Misc.sleep(0);
-}
-
 function reset(): void {
   historyTable.setData([]);
   historyTable.updateBody();
@@ -1271,7 +1262,6 @@ export const page = new Page<undefined>({
     });
 
     await update().then(() => {
-      void updateChartColors();
       qs(".pageAccount .content .accountVerificatinNotice")?.remove();
       if (getAuthenticatedUser()?.emailVerified === false) {
         qs(".pageAccount .content")?.prependHtml(

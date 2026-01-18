@@ -1,17 +1,4 @@
-:root {
-  --bg-color: #3b4a62;
-  --main-color: #bef0ff;
-  --caret-color: #bef0ff;
-  --sub-color: #fe9841;
-  --sub-alt-color: #313e55;
-  --text-color: #dbdeeb;
-  --error-color: #ed2939;
-  --error-extra-color: #ce122c;
-  --colorful-error-color: #ed2939;
-  --colorful-error-extra-color: #ce122c;
-}
-
-@keyframes pulse {
+@keyframes suisei-pulse {
   0% {
     transform: scale(1);
   }
@@ -62,7 +49,7 @@ header nav > .showAlerts {
 }
 header nav > .textButton:hover,
 header nav > .showAlerts:hover {
-  animation: pulse 800ms ease-out infinite;
+  animation: suisei-pulse 800ms ease-out infinite;
   color: var(--main-color);
   background-color: var(--sub-alt-color);
 }

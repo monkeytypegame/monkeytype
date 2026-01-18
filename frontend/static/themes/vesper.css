@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #101010;
-  --main-color: #ffc799;
-  --caret-color: #99ffe4;
-  --sub-color: #a0a0a0;
-  --sub-alt-color: #1c1c1c;
-  --text-color: #ffffff;
-  --error-color: #ff8080;
-  --error-extra-color: #b25959;
-  --colorful-error-color: #ff8080;
-  --colorful-error-extra-color: #b25959;
-}
-
 /* Background & Text Colors */
 #notificationCenter .notif.bad {
   --notif-border-color: #b25959;
