@@ -4,6 +4,7 @@ import {
   serialize as serializeUrlSearchParams,
 } from "zod-urlsearchparams";
 import { ElementWithUtils } from "../utils/dom";
+import { Key } from "readline";
 
 export type PageName =
   | "loading"
@@ -24,6 +25,20 @@ type Options<T> = {
   data?: T;
 };
 
+export type Keyframe = {
+  /**
+   * Percentage of the loading bar to fill.
+   */
+  percentage: number;
+  /**
+   * Duration in milliseconds for the keyframe animation.
+   */
+  durationMs: number;
+  /**
+   * Text to display below the loading bar.
+   */
+  text?: string;
+};
 export type LoadingOptions = {
   /**
    * Get the loading mode for this page.
@@ -50,20 +65,7 @@ export type LoadingOptions = {
        * Each keyframe will be shown in order, with the specified percentage and duration.
        * If not provided, a loading spinner will be shown instead.
        */
-      keyframes: {
-        /**
-         * Percentage of the loading bar to fill.
-         */
-        percentage: number;
-        /**
-         * Duration in milliseconds for the keyframe animation.
-         */
-        durationMs: number;
-        /**
-         * Text to display below the loading bar.
-         */
-        text?: string;
-      }[];
+      keyframes: Keyframe[];
     }
 );
 
