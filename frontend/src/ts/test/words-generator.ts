@@ -23,7 +23,8 @@ import {
   isFunboxActiveWithFunction,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 
@@ -515,12 +516,12 @@ async function getQuoteWordList(
     ? "german"
     : language.name;
 
-  Loader.show();
+  showLoaderBar();
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength,
   );
-  Loader.hide();
+  hideLoaderBar();
 
   if (quotesCollection.length === 0) {
     setConfig("mode", "words");

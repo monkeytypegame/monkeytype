@@ -1,7 +1,8 @@
 import { ElementWithUtils, qsr } from "../utils/dom";
 import Ape from "../ape";
 import Config from "../config";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
@@ -112,7 +113,7 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.report({
     body: {
       quoteId,
@@ -122,7 +123,7 @@ async function submitReport(): Promise<void> {
       captcha,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to report quote", -1, { response });

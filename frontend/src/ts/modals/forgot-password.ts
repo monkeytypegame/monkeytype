@@ -2,7 +2,8 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { UserEmailSchema } from "@monkeytype/schemas/users";
 import { ElementWithUtils } from "../utils/dom";
 
@@ -54,13 +55,13 @@ async function submit(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   void Ape.users
     .forgotPasswordEmail({
       body: { email, captcha: captchaResponse },
     })
     .then((result) => {
-      Loader.hide();
+      hideLoaderBar();
       if (result.status !== 200) {
         Notifications.add(
           "Failed to send password reset email: " + result.body.message,

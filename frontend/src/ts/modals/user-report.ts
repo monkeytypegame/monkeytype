@@ -1,5 +1,6 @@
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
@@ -119,7 +120,7 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.users.report({
     body: {
       uid: state.userUid as string,
@@ -128,7 +129,7 @@ async function submitReport(): Promise<void> {
       captcha,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to report user", -1, { response });
