@@ -45,21 +45,20 @@ export function AboutPage(): JSXElement {
         <Button onClick={() => connections.reset()} text="reset" />
       </Show>
 
-      <Show when={connections.state().loading}>... is loading</Show>
-      <Show when={connections.state().error !== undefined}>
-        oh oh, {connections.state().error}
-      </Show>
-      <Show when={connections.state().refreshing}>refreshing...</Show>
-      <Show when={connections.state().ready || connections.state().refreshing}>
-        <For each={connections.store}>
-          {(connection) => (
-            <p>
-              {connection.initiatorName} to {connection.receiverName}
-            </p>
-          )}
-        </For>
-      </Show>
-
+      <AsyncContent
+        loadingStore={connections}
+        errorMessage="Failed to load connections"
+      >
+        {(data) => (
+          <For each={data}>
+            {(con) => (
+              <p>
+                {con.initiatorName} to {con.receiverName}
+              </p>
+            )}
+          </For>
+        )}
+      </AsyncContent>
       <div class="created">
         Created with love by Miodec.
         <br />
