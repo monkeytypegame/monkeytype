@@ -1132,6 +1132,18 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#0476f2",
     textColor: "#f0f0f0",
   },
+  adwaita_dark: {
+    bgColor: "#222226",
+    mainColor: "#81d0ff",
+    subColor: "#7b7b7b",
+    textColor: "#ffffff",
+  },
+  adwaita_light: {
+    bgColor: "#fafafb",
+    mainColor: "#a2326c",
+    subColor: "#8b8b8b",
+    textColor: "#333338",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
