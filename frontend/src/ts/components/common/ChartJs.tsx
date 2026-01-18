@@ -63,5 +63,5 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
     chart?.destroy();
   });
 
-  return <canvas ref={canvasRef}></canvas>;
+  return <canvas class="chartCanvas" ref={canvasRef}></canvas>;
 }

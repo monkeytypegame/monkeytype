@@ -4,6 +4,7 @@ import { Conditional } from "./Conditional";
 type BaseProps = {
   text?: string;
   icon?: string;
+  iconScale?: number;
   fixedWidthIcon?: boolean;
   class?: string;
   type?: "text" | "button";
@@ -30,6 +31,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       <Show when={props.icon !== undefined}>
         <i
           class={`icon ${props.icon}`}
+          style={{
+            "font-size": `${props.iconScale ?? 1}em`,
+          }}
           classList={{
             "fa-fw": props.text === undefined || props.fixedWidthIcon === true,
           }}

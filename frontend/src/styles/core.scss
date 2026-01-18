@@ -185,17 +185,6 @@ body {
   display: flex;
 }
 
-#backgroundLoader {
-  top: 0;
-  height: 0.25rem;
-  position: fixed;
-  width: 100%;
-  background: var(--main-color);
-  animation: loader 2s cubic-bezier(0.38, 0.16, 0.57, 0.82) infinite;
-  z-index: 9999;
-  opacity: 0;
-}
-
 kbd {
   color: var(--bg-color);
   background-color: var(--sub-color);
@@ -244,16 +233,6 @@ kbd {
 
 * {
   box-sizing: border-box;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.invisible {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
 }
 
 .inputAndIndicator {

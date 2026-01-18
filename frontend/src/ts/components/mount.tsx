@@ -4,12 +4,14 @@ import { JSXElement } from "solid-js";
 import { Footer } from "./layout/footer/Footer";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { TailwindMediaQueryDebugger } from "./utils/TailwindMediaQueryDebugger";
 import { LoaderBar } from "./common/LoaderBar";
 
 const components: Record<string, () => JSXElement> = {
   Footer: () => <Footer />,
   Modals: () => <Modals />,
   AboutPage: () => <AboutPage />,
+  TailwindMediaQueryDebugger: () => <TailwindMediaQueryDebugger />,
   LoaderBar: () => <LoaderBar />,
 };
 

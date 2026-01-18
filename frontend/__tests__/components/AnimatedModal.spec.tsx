@@ -15,7 +15,7 @@ describe("AnimatedModal", () => {
   function renderModal(props: {
     onEscape?: (e: KeyboardEvent) => void;
     onBackdropClick?: (e: MouseEvent) => void;
-    class?: string;
+    wrapperClass?: string;
     beforeShow?: () => void | Promise<void>;
     afterShow?: () => void | Promise<void>;
     beforeHide?: () => void | Promise<void>;
@@ -46,7 +46,7 @@ describe("AnimatedModal", () => {
     const { dialog } = renderModal({});
 
     expect(dialog).toHaveAttribute("id", "SupportModal");
-    expect(dialog).toHaveClass("modalWrapper", "hidden");
+    expect(dialog).toHaveClass("hidden");
   });
 
   it("renders children inside modal div", () => {
@@ -71,10 +71,10 @@ describe("AnimatedModal", () => {
 
   it("applies custom class to dialog", () => {
     const { dialog } = renderModal({
-      class: "customClass",
+      wrapperClass: "customClass",
     });
 
-    expect(dialog).toHaveClass("modalWrapper", "hidden", "customClass");
+    expect(dialog).toHaveClass("customClass");
   });
 
   it("renders with animationMode none", () => {
