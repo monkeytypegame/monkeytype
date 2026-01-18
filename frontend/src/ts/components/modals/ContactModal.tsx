@@ -1,6 +1,5 @@
 import { JSXElement } from "solid-js";
 import { AnimatedModal } from "../common/AnimatedModal";
-// import "./ContactModal.scss";
 import { Button } from "../common/Button";
 
 export function ContactModal(): JSXElement {
