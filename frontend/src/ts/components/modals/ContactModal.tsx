@@ -1,29 +1,30 @@
 import { JSXElement } from "solid-js";
 import { AnimatedModal } from "../common/AnimatedModal";
-import "./ContactModal.scss";
 import { Button } from "../common/Button";
 
 export function ContactModal(): JSXElement {
+  const buttonClass = " gap-4 text-md p-4 text-lg justify-start";
+
   return (
-    <AnimatedModal id="Contact">
-      <div class="title">Contact</div>
-      <div class="text">
+    <AnimatedModal id="Contact" modalClass="max-w-4xl" title="Contact">
+      <div>
         Feel free to send an email to contact@monkeytype.com. For business
         inquiries, email jack@monkeytype.com (the buttons below will open the
         default mail client).
         <br />
         <br />
-        Please <span>do not send</span> requests to delete account, update
-        email, update name or clear personal bests - you can do that in the
-        settings page.
+        Please <span class="text-error">do not send</span> requests to delete
+        account, update email, update name or clear personal bests - you can do
+        that in the settings page.
       </div>
-      <div class="buttons">
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
         <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Question] "
           fixedWidthIcon
           icon="fas fa-question-circle"
           text="Question"
+          class={buttonClass}
         />
         <Button
           type="button"
@@ -31,6 +32,7 @@ export function ContactModal(): JSXElement {
           fixedWidthIcon
           icon="fas fa-comment-dots"
           text="Feedback"
+          class={buttonClass}
         />
         <Button
           type="button"
@@ -38,6 +40,7 @@ export function ContactModal(): JSXElement {
           fixedWidthIcon
           icon="fas fa-bug"
           text="Bug Report"
+          class={buttonClass}
         />
         <Button
           type="button"
@@ -45,6 +48,7 @@ export function ContactModal(): JSXElement {
           fixedWidthIcon
           icon="fas fa-user-circle"
           text="Account Help"
+          class={buttonClass}
         />
         <Button
           type="button"
@@ -52,6 +56,7 @@ export function ContactModal(): JSXElement {
           fixedWidthIcon
           icon="fas fa-briefcase"
           text="Business Inquiry"
+          class={buttonClass}
         />
         <Button
           type="button"
@@ -59,6 +64,7 @@ export function ContactModal(): JSXElement {
           fixedWidthIcon
           icon="fas fa-ellipsis-h"
           text="Other"
+          class={buttonClass}
         />
       </div>
     </AnimatedModal>

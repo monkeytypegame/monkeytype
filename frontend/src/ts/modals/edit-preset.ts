@@ -1,7 +1,8 @@
 import Ape from "../ape";
 import * as DB from "../db";
 import * as Config from "../config";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
@@ -272,7 +273,7 @@ async function apply(): Promise<void> {
 
   hide();
 
-  Loader.show();
+  showLoaderBar();
 
   if (action === "add") {
     const configChanges = getConfigChanges();
@@ -361,7 +362,7 @@ async function apply(): Promise<void> {
   }
 
   void Settings.update();
-  Loader.hide();
+  hideLoaderBar();
 }
 
 function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {

@@ -3,7 +3,7 @@ import * as Notifications from "./elements/notifications";
 import Config, { applyConfig, saveFullConfigToLocalStorage } from "./config";
 import * as Misc from "./utils/misc";
 import * as DB from "./db";
-import * as Loader from "./elements/loader";
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import * as LoginPage from "./pages/login";
 import * as RegisterCaptchaModal from "./modals/register-captcha";
 import {
@@ -43,15 +43,15 @@ async function sendVerificationEmail(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   qs(".sendVerificationEmail")?.disable();
   const response = await Ape.users.verificationEmail();
   qs(".sendVerificationEmail")?.enable();
   if (response.status !== 200) {
-    Loader.hide();
+    hideLoaderBar();
     Notifications.add("Failed to request verification email", -1, { response });
   } else {
-    Loader.hide();
+    hideLoaderBar();
     Notifications.add("Verification email sent", 1);
   }
 }
@@ -295,16 +295,16 @@ async function addAuthProvider(
     });
     return;
   }
-  Loader.show();
+  showLoaderBar();
   const user = getAuthenticatedUser();
   if (!user) return;
   try {
     await linkWithPopup(user, provider);
-    Loader.hide();
+    hideLoaderBar();
     Notifications.add(`${providerName} authentication added`, 1);
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
-    Loader.hide();
+    hideLoaderBar();
     const message = Misc.createErrorMessage(
       error,
       `Failed to add ${providerName} authentication`,

@@ -12,7 +12,7 @@ import {
   getCommandlineSubgroup,
   setCommandlineSubgroup,
 } from "../signals/core";
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
@@ -123,11 +123,11 @@ export function show(
         if (typeof overrideStringOrGroup === "string") {
           const exists = CommandlineLists.doesListExist(overrideStringOrGroup);
           if (exists) {
-            Loader.show();
+            showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
               overrideStringOrGroup,
             );
-            Loader.hide();
+            hideLoaderBar();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";

@@ -3,7 +3,7 @@ import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
 import * as Notifications from "../notifications";
-import * as Loader from "../loader";
+import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
@@ -415,9 +415,9 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
       colors: Config.customThemeColors,
     };
 
-    Loader.show();
+    showLoaderBar();
     await DB.addCustomTheme(newCustomTheme);
-    Loader.hide();
+    hideLoaderBar();
   }
   void fillCustomButtons();
 });

@@ -3,16 +3,13 @@
   <load src="html/head.html" />
 
   <body>
+    <Overlays />
     <div id="mediaQueryDebug"></div>
     <load src="html/warnings.html" />
-    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
-    <div id="backgroundLoader" class="hidden"></div>
-
     <Theme>
       <!-- theme component adds to the head element, don't move to head.html -->
     </Theme>
-
     <div id="bannerCenter" class="focus"></div>
     <div id="notificationCenter">
       <div class="clearAll button hidden">
@@ -43,7 +40,7 @@
         </div>
         <load src="html/pages/loading.html" />
         <div
-          class="page pageAbout hidden full-width content-grid"
+          class="page pageAbout full-width content-grid grid hidden gap-8"
           id="pageAbout"
         >
           <AboutPage />

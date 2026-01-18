@@ -29,6 +29,7 @@ import replace from "vite-plugin-filter-replace";
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -89,6 +90,7 @@ function getPlugins({
     }),
     jqueryInject(),
     injectHTML(),
+    tailwindcss(),
     solidPlugin(),
   ];
 
