@@ -186,7 +186,8 @@ body {
 }
 
 #backgroundLoader {
-  height: 3px;
+  top: 0;
+  height: 0.25rem;
   position: fixed;
   width: 100%;
   background: var(--main-color);

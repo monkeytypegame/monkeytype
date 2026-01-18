@@ -2,7 +2,7 @@ import { Language } from "@monkeytype/schemas/languages";
 import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
+import { hideLoaderBar, showLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
@@ -55,11 +55,12 @@ export async function getQuoteStats(
     return;
   }
 
+  showLoaderBar();
   currentQuote = quote;
   const response = await Ape.quotes.getRating({
     query: { quoteId: currentQuote.id, language: currentQuote.language },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to get quote ratings", -1, { response });
@@ -155,10 +156,11 @@ async function submit(): Promise<void> {
 
   hide(true);
 
+  showLoaderBar();
   const response = await Ape.quotes.addRating({
     body: { quoteId: currentQuote.id, language: currentQuote.language, rating },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to submit quote rating", -1, { response });

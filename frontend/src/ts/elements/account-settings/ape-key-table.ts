@@ -1,4 +1,4 @@
-import * as Loader from "../../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as Notifications from "../../elements/notifications";
 import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
@@ -257,12 +257,12 @@ function refreshList(): void {
 async function toggleActiveKey(keyId: string): Promise<void> {
   const key = apeKeys?.[keyId];
   if (!key || apeKeys === undefined) return;
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.apeKeys.save({
     params: { apeKeyId: keyId },
     body: { enabled: !key.enabled },
   });
-  Loader.hide();
+  hideLoaderBar();
   if (response.status !== 200) {
     Notifications.add("Failed to update key", -1, { response });
     return;

@@ -9,8 +9,7 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import * as Loader from "./elements/loader";
-
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
 import { Config, Difficulty } from "@monkeytype/schemas/configs";
 import {
@@ -1110,11 +1109,11 @@ export async function getTestActivityCalendar(
       return undefined;
     }
 
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add("Error getting test activities", -1, { response });
-      Loader.hide();
+      hideLoaderBar();
       return undefined;
     }
 
@@ -1134,7 +1133,7 @@ export async function getTestActivityCalendar(
         true,
       );
     }
-    Loader.hide();
+    hideLoaderBar();
   }
 
   return dbSnapshot.testActivityByYear[yearString];

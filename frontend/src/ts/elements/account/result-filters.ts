@@ -4,7 +4,7 @@ import * as DB from "../../db";
 import Config from "../../config";
 import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
-import * as Loader from "../loader";
+import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/schemas/configs";
 import {
@@ -183,11 +183,11 @@ export async function createFilterPreset(
   name: string,
 ): Promise<number | undefined> {
   name = name.replace(/ /g, "_");
-  Loader.show();
+  showLoaderBar();
   const result = await Ape.users.addResultFilterPreset({
     body: { ...filters, name },
   });
-  Loader.hide();
+  hideLoaderBar();
   if (result.status === 200) {
     addFilterPresetToSnapshot({ ...filters, name, _id: result.body.data });
     void updateFilterPresets();
@@ -212,11 +212,11 @@ function removeFilterPresetFromSnapshot(id: string): void {
 
 // deletes the currently selected filter preset
 async function deleteFilterPreset(id: string): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const result = await Ape.users.removeResultFilterPreset({
     params: { presetId: id },
   });
-  Loader.hide();
+  hideLoaderBar();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
     void updateFilterPresets();

@@ -1,4 +1,4 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import { isAuthenticated } from "../firebase";
@@ -16,7 +16,7 @@ let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
-  Loader.hide();
+  hideLoaderBar();
   $("#ad-result-wrapper").removeClass("hidden");
   $("#ad-result-small-wrapper").removeClass("hidden");
   $("#testConfig").removeClass("hidden");
@@ -53,7 +53,7 @@ let firefoxClipboardNotificationShown = false;
  */
 async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const { domToCanvas } = await import("modern-screenshot");
-  Loader.show(true);
+  showLoaderBar(true);
 
   if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
