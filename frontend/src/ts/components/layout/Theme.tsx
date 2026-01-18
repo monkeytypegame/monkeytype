@@ -16,6 +16,7 @@ export function Theme(): JSXElement {
   const getThemeName = createMemo(() => getTheme().name);
 
   const onLoad = (e: Event): void => {
+    hideLoaderBar();
     const target = e.target as HTMLLinkElement;
     if (target.href !== "") {
       console.debug(

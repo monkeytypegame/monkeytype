@@ -4,7 +4,7 @@ import { Theme } from "../../../src/ts/components/layout/Theme";
 import * as ThemeSignal from "../../../src/ts/signals/theme";
 import { createSignal } from "solid-js";
 import { ThemeWithName } from "../../../src/ts/constants/themes";
-import * as Loader from "../../../src/ts/elements/loader";
+import * as Loader from "../../../src/ts/signals/loader-bar";
 import * as Notifications from "../../../src/ts/elements/notifications";
 
 vi.mock("../../../src/ts/constants/themes", () => ({
@@ -21,8 +21,8 @@ vi.mock("./FavIcon", () => ({
 describe("Theme component", () => {
   const [themeSignal, setThemeSignal] = createSignal<ThemeWithName>({} as any);
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
-  const loaderShowMock = vi.spyOn(Loader, "show");
-  const loaderHideMock = vi.spyOn(Loader, "hide");
+  const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
+  const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
   const notificationAddMock = vi.spyOn(Notifications, "add");
 
   beforeEach(() => {
