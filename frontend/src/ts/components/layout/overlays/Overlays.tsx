@@ -1,7 +1,9 @@
 import { JSXElement } from "solid-js";
+
 import { TailwindMediaQueryDebugger } from "../../utils/TailwindMediaQueryDebugger";
-import { LoaderBar } from "./LoaderBar";
+
 import { FpsCounter } from "./FpsCounter";
+import { LoaderBar } from "./LoaderBar";
 
 export function Overlays(): JSXElement {
   return (

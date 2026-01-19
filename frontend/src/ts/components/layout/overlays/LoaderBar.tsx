@@ -1,4 +1,5 @@
 import { JSX } from "solid-js";
+
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { useVisibilityAnimation } from "../../../hooks/useVisibilityAnimation";
 import { getLoaderBarSignal } from "../../../signals/loader-bar";
@@ -17,7 +18,7 @@ export function LoaderBar(): JSX.Element {
 
   return (
     <div
-      class="pointer-events-none fixed top-0 z-9999 hidden h-1 w-full animate-[loader] bg-main"
+      class="bg-main pointer-events-none fixed top-0 z-9999 hidden h-1 w-full animate-[loader]"
       style={{
         "animation-duration": "2s",
         "animation-iteration-count": "infinite",

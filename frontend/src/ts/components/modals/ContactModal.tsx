@@ -1,4 +1,5 @@
 import { JSXElement } from "solid-js";
+
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 

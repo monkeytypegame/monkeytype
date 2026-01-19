@@ -1,9 +1,10 @@
-import { JSXElement, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
+import { JSXElement, createResource, For } from "solid-js";
+
+import { isModalOpen } from "../../stores/modals";
 import { getReleasesFromGitHub } from "../../utils/json-data";
 import { AnimatedModal } from "../common/AnimatedModal";
 import AsyncContent from "../common/AsyncContent";
-import { isModalOpen } from "../../stores/modals";
 
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
@@ -66,12 +67,12 @@ function ReleaseItem(props: {
   return (
     <div class="grid gap-4">
       <div class="flex place-items-center justify-between">
-        <div class="text-4xl text-main">{props.name}</div>
+        <div class="text-main text-4xl">{props.name}</div>
         <div class="text-sub">{props.publishedAt}</div>
       </div>
       {/* oxlint-disable-next-line solid/no-innerhtml */}
       <div innerHTML={props.bodyHTML}></div>
-      <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
+      <div class="bg-sub-alt mt-4 mb-16 h-1 w-full rounded"></div>
     </div>
   );
 }

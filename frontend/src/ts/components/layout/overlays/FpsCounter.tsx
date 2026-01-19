@@ -1,5 +1,5 @@
-import { JSX, createSignal, createEffect, onCleanup, Show } from "solid-js";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { JSX, createSignal, createEffect, onCleanup, Show } from "solid-js";
 
 const [isVisible, setVisible] = createSignal(false);
 
@@ -54,7 +54,7 @@ export function FpsCounter(): JSX.Element {
   return (
     <Show when={isVisible()}>
       <div
-        class={"fixed top-0 left-0 z-9999 bg-sub-alt px-2 py-1"}
+        class={"bg-sub-alt fixed top-0 left-0 z-9999 px-2 py-1"}
         style={{
           color: fpsColor(),
         }}
