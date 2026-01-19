@@ -12,50 +12,6 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import * as AuthEvent from "../observables/auth-event";
 import { addBanner } from "../stores/banners";
 
-addBanner({
-  level: -1,
-  customContent: (
-    <>
-      Server is currently offline for scheduled maintenance.{" "}
-      <a target="_blank" href={"some url"}>
-        Check the status page
-      </a>{" "}
-      for more info.
-    </>
-  ),
-  icon: "fas fa-bullhorn",
-});
-
-addBanner({
-  level: -1,
-  icon: "fas fa-exclamation-triangle",
-  customContent: (
-    <>
-      Looks like the server is experiencing unexpected down time.
-      <br />
-      Check the{" "}
-      <a target="_blank" href="https://monkeytype.instatus.com/">
-        status page
-      </a>{" "}
-      for more information.
-    </>
-  ),
-});
-
-addBanner({
-  level: -1,
-  icon: "fas fa-bullhorn",
-  customContent: (
-    <>
-      Server is currently under maintenance.{" "}
-      <a target="_blank" href="https://monkeytype.instatus.com/">
-        Check the status page
-      </a>{" "}
-      for more info.
-    </>
-  ),
-});
-
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
   schema: z.array(IdSchema),
