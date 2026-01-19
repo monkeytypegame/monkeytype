@@ -13,6 +13,7 @@ import { captureException } from "../../sentry";
 import { ColorName, ThemesListSorted } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../signals/theme";
+import { debounce } from "throttle-debounce";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -189,7 +190,7 @@ export function setCustomInputs(): void {
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
   ).forEach((element) => {
     const key = element.getAttribute("data-key") as ColorName;
-    const color = convertColorToHex(theme[key]);
+    const color = Colors.convertColorToHex(theme[key]);
     updateColorPicker(key, color);
   });
 }
@@ -246,54 +247,6 @@ export function updateActiveTab(): void {
 export async function updateThemeUI(): Promise<void> {
   await fillPresetButtons();
   updateActiveButton();
-}
-
-/**
- *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
- * @param color as hex, hsl or rgb
- * @returns  hex color
- */
-function convertColorToHex(color: string): string {
-  const input = color.trim().toLocaleLowerCase();
-  if (/^#[0-9a-f]{6}$/i.test(input)) {
-    return input;
-  }
-
-  if (/^#[0-9a-f]{3}$/i.test(input)) {
-    // Expand #rgb → #rrggbb
-    return (
-      "#" + input[1] + input[1] + input[2] + input[2] + input[3] + input[3]
-    );
-  }
-
-  const rgbMatch =
-    input.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/) ??
-    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
-
-  if (rgbMatch !== null) {
-    const clamp = (n: string): number =>
-      Math.max(0, Math.min(255, Number.parseFloat(n)));
-
-    const r = clamp(rgbMatch[1] as string);
-    const g = clamp(rgbMatch[2] as string);
-    const b = clamp(rgbMatch[3] as string);
-    return Colors.rgbToHex(r, g, b);
-  }
-
-  const hslMatch =
-    input.match(/^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/) ??
-    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%$/);
-
-  if (hslMatch) {
-    const clamp = (n: string): number =>
-      Math.max(0, Math.min(255, Number.parseFloat(n)));
-    const h = Number.parseFloat(hslMatch[1] as string) % 360;
-    const s = clamp(hslMatch[2] as string) / 100;
-    const l = clamp(hslMatch[3] as string) / 100;
-    const { r, g, b } = Colors.hslToRgb(h, s, l);
-    return Colors.rgbToHex(r, g, b);
-  }
-  return "#fc0fc0"; // default color if input is not a valid
 }
 
 // Add events to the DOM
@@ -360,13 +313,13 @@ function handleColorInput(props: {
   convertColor: boolean;
 }): (e: Event) => void {
   return (e) => {
-    const target = e.currentTarget as HTMLInputElement;
+    const target = e.target as HTMLInputElement;
     const key = target
       ?.closest(".colorPicker")
       ?.getAttribute("data-key") as ColorName;
 
     const color = props?.convertColor
-      ? convertColorToHex(target.value)
+      ? Colors.convertColorToHex(target.value)
       : target.value;
 
     updateColorPicker(key, color);
@@ -375,10 +328,14 @@ function handleColorInput(props: {
 }
 
 const convertColorAndUpdate = handleColorInput({ convertColor: true });
+const pickerInputDebounced = debounce(
+  100,
+  handleColorInput({ convertColor: false }),
+);
 qsa(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 )
-  .on("input", handleColorInput({ convertColor: false }))
+  .on("input", pickerInputDebounced)
   .on("change", convertColorAndUpdate);
 
 qsa(".pageSettings .section.themes .tabContainer .customTheme input.input")
@@ -403,7 +360,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   Misc.typedKeys(themeColors)
     .filter((key) => key !== "hasCss" && key !== "name")
     .forEach((key) =>
-      updateColorPicker(key, convertColorToHex(themeColors[key])),
+      updateColorPicker(key, Colors.convertColorToHex(themeColors[key])),
     );
 });
 

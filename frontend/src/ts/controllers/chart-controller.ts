@@ -70,7 +70,7 @@ import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 import { Theme } from "../constants/themes";
-import { createEffect } from "solid-js";
+import { createEffect, on } from "solid-js";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -1350,14 +1350,15 @@ function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 
-createEffect(() => {
-  const theme = getTheme();
-  void result.updateColors(theme);
-  void accountHistory.updateColors(theme);
-  void accountHistogram.updateColors(theme);
-  void accountActivity.updateColors(theme);
-  void miniResult.updateColors(theme);
-});
+createEffect(
+  on(getTheme, (theme) => {
+    void result.updateColors(theme);
+    void accountHistory.updateColors(theme);
+    void accountHistogram.updateColors(theme);
+    void accountActivity.updateColors(theme);
+    void miniResult.updateColors(theme);
+  }),
+);
 
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {

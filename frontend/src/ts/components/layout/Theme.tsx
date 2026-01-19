@@ -1,5 +1,5 @@
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
-import { createEffect, createMemo, JSXElement } from "solid-js";
+import { createEffect, createMemo, JSXElement, on } from "solid-js";
 
 import { themes } from "../../constants/themes";
 import * as Notifications from "../../elements/notifications";
@@ -36,9 +36,9 @@ export function Theme(): JSXElement {
     Notifications.add("Failed to load theme", 0);
   };
 
-  createEffect(() => {
-    const colors = getTheme();
-    styleEl()?.setHtml(`
+  createEffect(
+    on(getTheme, (colors) => {
+      styleEl()?.setHtml(`
 :root {
     --bg-color: ${colors.bg};
     --main-color: ${colors.main};
@@ -51,16 +51,15 @@ export function Theme(): JSXElement {
     --colorful-error-color: ${colors.colorfulError};
     --colorful-error-extra-color: ${colors.colorfulErrorExtra};
 }`);
-  });
+    }),
+  );
 
   createEffect(() => {
     const name = getThemeName();
     const hasCss = name !== "custom" && (themes[name].hasCss ?? false);
-
     console.debug(
       `Theme controller ${hasCss ? "loading style" : "removing style"} for theme ${name}`,
     );
-
     if (hasCss) showLoaderBar();
     linkEl()?.setAttribute("href", hasCss ? `/themes/${name}.css` : "");
   });

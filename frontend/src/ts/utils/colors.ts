@@ -264,3 +264,51 @@ export function hslToRgb(
     b: Math.round((b + m) * 255),
   };
 }
+
+/**
+ *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
+ * @param color as hex, hsl or rgb
+ * @returns  hex color
+ */
+export function convertColorToHex(color: string): string {
+  const input = color.trim().toLocaleLowerCase();
+  if (/^#[0-9a-f]{6}$/i.test(input)) {
+    return input;
+  }
+
+  if (/^#[0-9a-f]{3}$/i.test(input)) {
+    // Expand #rgb → #rrggbb
+    return (
+      "#" + input[1] + input[1] + input[2] + input[2] + input[3] + input[3]
+    );
+  }
+
+  const rgbMatch =
+    input.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/) ??
+    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+
+  if (rgbMatch !== null) {
+    const clamp = (n: string): number =>
+      Math.max(0, Math.min(255, Number.parseFloat(n)));
+
+    const r = clamp(rgbMatch[1] as string);
+    const g = clamp(rgbMatch[2] as string);
+    const b = clamp(rgbMatch[3] as string);
+    return rgbToHex(r, g, b);
+  }
+
+  const hslMatch =
+    input.match(/^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/) ??
+    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%$/);
+
+  if (hslMatch) {
+    const clamp = (n: string): number =>
+      Math.max(0, Math.min(255, Number.parseFloat(n)));
+    const h = Number.parseFloat(hslMatch[1] as string) % 360;
+    const s = clamp(hslMatch[2] as string) / 100;
+    const l = clamp(hslMatch[3] as string) / 100;
+    const { r, g, b } = hslToRgb(h, s, l);
+    return rgbToHex(r, g, b);
+  }
+  return "#fc0fc0"; // default color if input is not a valid
+}

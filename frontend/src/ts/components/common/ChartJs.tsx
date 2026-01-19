@@ -5,7 +5,7 @@ import {
   ChartOptions,
   DefaultDataPoint,
 } from "chart.js";
-import { onMount, onCleanup, createEffect, JSXElement } from "solid-js";
+import { onMount, onCleanup, createEffect, JSXElement, on } from "solid-js";
 
 import { ChartWithUpdateColors } from "../../controllers/chart-controller";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
@@ -51,12 +51,7 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
     chart.update();
   });
 
-  createEffect(() => {
-    const theme = getTheme();
-    if (!chart) return;
-
-    void chart.updateColors(theme);
-  });
+  createEffect(on(getTheme, (theme) => void chart?.updateColors(theme)));
 
   onCleanup(() => {
     chart?.destroy();
