@@ -2,7 +2,7 @@ import { render, fireEvent } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { Theme } from "../../../src/ts/components/layout/Theme";
+import { Theme } from "../../../src/ts/components/core/Theme";
 import { ThemeWithName } from "../../../src/ts/constants/themes";
 import * as Notifications from "../../../src/ts/elements/notifications";
 import * as Loader from "../../../src/ts/signals/loader-bar";

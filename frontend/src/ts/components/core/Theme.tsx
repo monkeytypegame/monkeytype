@@ -7,7 +7,8 @@ import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../signals/loader-bar";
 import { getTheme } from "../../signals/theme";
-import { FavIcon } from "../core/FavIcon";
+
+import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute

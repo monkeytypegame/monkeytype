@@ -3,9 +3,9 @@ import { render } from "solid-js/web";
 
 import { qsa } from "../utils/dom";
 
+import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
-import { Theme } from "./layout/Theme";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
 
