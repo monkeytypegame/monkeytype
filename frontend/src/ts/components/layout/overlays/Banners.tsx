@@ -24,7 +24,7 @@ function Banner(props: BannerType): JSXElement {
     removeBanner(props.id);
     // });
   };
-  const icon =
+  const icon = (): string =>
     props.icon === undefined || props.icon === ""
       ? "fa fa-fw fa-bullhorn"
       : props.icon;
@@ -50,10 +50,10 @@ function Banner(props: BannerType): JSXElement {
                 alt="Banner Image"
                 class="hidden aspect-6/1 h-full max-h-9 self-center xl:block"
               />
-              <i class={`self-center ${icon} xl:hidden`}></i>
+              <i class={`self-center ${icon()} xl:hidden`}></i>
             </>
           }
-          else={<i class={`self-center ${icon}`}></i>}
+          else={<i class={`self-center ${icon()}`}></i>}
         />
         <Conditional
           if={props.customContent !== undefined}
@@ -62,7 +62,7 @@ function Banner(props: BannerType): JSXElement {
         />
         <Conditional
           if={props.important === true}
-          then={<i class={`self-center ${icon}`}></i>}
+          then={<i class={`self-center ${icon()}`}></i>}
           else={
             <button
               type="button"
