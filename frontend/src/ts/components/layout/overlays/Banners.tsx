@@ -92,6 +92,8 @@ export function Banners(): JSXElement {
     qsr("#notificationCenter").setStyle({
       marginTop: offset + "px",
     });
+    qsr("#ad-vertical-left-wrapper").setStyle({ marginTop: offset + "px" });
+    qsr("#ad-vertical-right-wrapper").setStyle({ marginTop: offset + "px" });
   };
 
   const debouncedMarginUpdate = debounce(100, updateMargin);
