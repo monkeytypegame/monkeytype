@@ -454,6 +454,7 @@
       .customTheme.button {
         .delButton,
         .editButton {
+          place-self: start;
           overflow: hidden;
           width: 1.25rem;
           transition: 0.25s;
