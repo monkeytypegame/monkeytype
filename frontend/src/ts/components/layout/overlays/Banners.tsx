@@ -76,8 +76,12 @@ export function Banners(): JSXElement {
 
   const updateMargin = (): void => {
     const height = element()?.getOffsetHeight() ?? 0;
+    const offset = height + convertRemToPixels(2);
     qsr("#app").setStyle({
-      paddingTop: height + convertRemToPixels(2) + "px",
+      paddingTop: offset + "px",
+    });
+    qsr("#notificationCenter").setStyle({
+      marginTop: offset + "px",
     });
   };
 
