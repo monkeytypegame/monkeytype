@@ -31,6 +31,7 @@ import * as Sentry from "./sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as AuthEvent from "./observables/auth-event";
 import { qs, qsa } from "./utils/dom";
+import { addBanner } from "./stores/banners";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -69,14 +70,12 @@ async function getDataAndInit(): Promise<boolean> {
 
     void Sentry.setUser(snapshot.uid, snapshot.name);
     if (snapshot.needsToChangeName) {
-      Notifications.addPSA(
-        "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
-        -1,
-        undefined,
-        true,
-        undefined,
-        true,
-      );
+      addBanner({
+        level: -1,
+        text: "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+        icon: "fas fa-exclamation-triangle",
+        allowHtml: true,
+      });
     }
 
     const areConfigsEqual =

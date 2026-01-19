@@ -2,12 +2,13 @@
 import { debounce } from "throttle-debounce";
 // import * as Numbers from "@monkeytype/util/numbers";
 import * as ConfigEvent from "../observables/config-event";
-import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { onDOMReady, qs } from "../utils/dom";
+import { createEffect, on } from "solid-js";
+import { getBanners } from "../stores/banners";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
@@ -309,9 +310,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
 });
 
-BannerEvent.subscribe(() => {
-  updateVerticalMargin();
-});
+createEffect(on(() => getBanners().length, updateVerticalMargin));
 
 onDOMReady(() => {
   updateBreakpoint(true);
