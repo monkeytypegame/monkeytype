@@ -35,6 +35,9 @@ import { configurationPromise } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Preset } from "@monkeytype/schemas/presets";
 import { GetUserResponse } from "@monkeytype/contracts/users";
+import { ResultMinified } from "@monkeytype/schemas/results";
+import { createEffect } from "solid-js";
+import { pendingConnections } from "./signals/connections";
 import { unwrap } from "solid-js/store";
 
 let dbSnapshot: Snapshot | undefined;
@@ -106,7 +109,7 @@ export async function initSnapshot(preload: {
 
     const userData = preload.userData;
     const presetsData = preload.presetsData;
-    const configData = unwrap(preload.configData);
+    const configData = preload.configData;
     const connectionsData = preload.connectionsData;
 
     if (userData === null) {
@@ -253,7 +256,10 @@ export async function initSnapshot(preload: {
   }
 }
 
-export async function getUserResults(offset?: number): Promise<boolean> {
+export async function getUserResults(
+  offset?: number,
+  resultsData?: ResultMinified[],
+): Promise<boolean> {
   if (!isAuthenticated()) return false;
 
   if (!dbSnapshot) return false;
@@ -268,17 +274,20 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const response = await Ape.results.get({ query: { offset } });
+  if (resultsData === undefined) {
+    const response = await Ape.results.get({ query: { offset } });
 
-  if (response.status !== 200) {
-    Notifications.add("Error getting results", -1, { response });
-    return false;
+    if (response.status !== 200) {
+      Notifications.add("Error getting results", -1, { response });
+      return false;
+    }
+    resultsData = response.body.data;
   }
 
   //another check in case user logs out while waiting for response
   if (!isAuthenticated()) return false;
 
-  const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
+  const results: SnapshotResult<Mode>[] = resultsData.map((result) => {
     result.bailedOut ??= false;
     result.blindMode ??= false;
     result.lazyMode ??= false;
@@ -1113,6 +1122,7 @@ export async function getTestActivityCalendar(
 }
 
 export function mergeConnections(connections: Connection[]): void {
+  console.log("##### merge connections", connections);
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -1154,6 +1164,9 @@ export function isFriend(uid: string | undefined): boolean {
   );
 }
 
+createEffect(() => {
+  mergeConnections(unwrap(pendingConnections.store));
+});
 // export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;

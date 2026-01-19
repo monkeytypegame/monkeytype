@@ -45,6 +45,13 @@ import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
 import "./ready";
+import * as ConnectionSignals from "./signals/connections";
+console.log(
+  "######",
+  ConnectionSignals.connections,
+  ConnectionSignals.friends,
+  ConnectionSignals.pendingConnections,
+);
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

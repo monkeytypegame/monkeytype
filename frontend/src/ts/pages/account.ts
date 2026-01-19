@@ -35,6 +35,7 @@ import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
 import { qs, qsa, qsr, ElementWithUtils, onDOMReady } from "../utils/dom";
+import { acountPageDonePromise } from "../components/pages/AccountPageLoader";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -993,6 +994,7 @@ export async function downloadResults(offset?: number): Promise<void> {
 }
 
 async function update(): Promise<void> {
+  await acountPageDonePromise;
   await downloadResults();
   try {
     await Misc.sleep(0);
@@ -1213,31 +1215,6 @@ export const page = new Page<undefined>({
   id: "account",
   element: qsr(".page.pageAccount"),
   path: "/account",
-  loadingOptions: {
-    loadingMode: () => {
-      if (DB.getSnapshot()?.results === undefined) {
-        return "sync";
-      } else {
-        return "none";
-      }
-    },
-    loadingPromise: async () => {
-      if (DB.getSnapshot() === null) {
-        throw new Error(
-          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
-        );
-      }
-      return downloadResults();
-    },
-    style: "bar",
-    keyframes: [
-      {
-        percentage: 90,
-        durationMs: 2000,
-        text: "Downloading results...",
-      },
-    ],
-  },
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAccount");

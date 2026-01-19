@@ -141,6 +141,7 @@ const removeFriendModal = new SimpleModal({
 });
 
 async function fetchPendingConnections(): Promise<void> {
+  return;
   const result = await Ape.connections.get({
     query: { status: "pending", type: "incoming" },
   });
@@ -198,6 +199,7 @@ function updatePendingConnections(): void {
 }
 
 async function fetchFriends(): Promise<void> {
+  return;
   const result = await Ape.users.getFriends();
   if (result.status !== 200) {
     Notifications.add("Error getting friends: " + result.body.message, -1);
@@ -513,7 +515,7 @@ export const page = new Page<undefined>({
   display: "Friends",
   element: qsr(".page.pageFriends"),
   path: "/friends",
-  loadingOptions: {
+  /*loadingOptions: {
     loadingMode: () => {
       if (!getAuthenticatedUser()) {
         return "none";
@@ -554,6 +556,7 @@ export const page = new Page<undefined>({
       },
     ],
   },
+  */
 
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageFriends");

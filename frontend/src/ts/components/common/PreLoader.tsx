@@ -1,4 +1,4 @@
-import { createEffect, JSXElement } from "solid-js";
+import { createEffect, createMemo, JSXElement } from "solid-js";
 import { createLoadingStore } from "../../signals/util/loadingStore";
 import { PartialConfig } from "@monkeytype/schemas/configs";
 import Ape from "../../ape";
@@ -6,12 +6,19 @@ import { isAuthenticated } from "../../signals/user";
 import { Preset } from "@monkeytype/schemas/presets";
 import Loader from "./Loader";
 import { serverConfiguration } from "../../signals/server-configuration";
-import { connections } from "../../signals/connections";
+import {
+  connections,
+  friends,
+  pendingConnections,
+} from "../../signals/connections";
 import { GetUserResponse } from "@monkeytype/contracts/users";
 import { initSnapshot } from "../../db";
 import { Connection } from "@monkeytype/schemas/connections";
 import { promiseWithResolvers } from "../../utils/misc";
-import { Portal } from "solid-js/web";
+import { BlockingLoader } from "./BlockingLoader";
+import { unwrap } from "solid-js/store";
+import { getActivePage } from "../../signals/core";
+import { ResultMinified } from "@monkeytype/schemas/results";
 
 const { promise: preloaderDonePromise, resolve: loadDone } =
   promiseWithResolvers();
@@ -59,61 +66,97 @@ export function PreLoader(): JSXElement {
     () => [],
   );
 
+  const results = createLoadingStore<ResultMinified[]>(
+    "results",
+    async () => {
+      const response = await Ape.results.get();
+      if (response.status !== 200) {
+        throw new Error(response.body.message);
+      }
+      return response.body.data;
+    },
+    () => [],
+  );
+
   createEffect(() => {
     if (!isAuthenticated()) return;
 
     console.debug("PreLoader: cleaning user data.");
-    [partialConfig, user, presets].forEach((it) => it.reset());
+    [partialConfig, user, presets, results].forEach((it) => it.reset());
+  });
+
+  const load = createMemo(() => {
+    const page = getActivePage();
+    const stores = {
+      userData: {
+        store: user,
+        keyframe: {
+          percentage: 0,
+          text: "Downloading user data...",
+        },
+      },
+      configData: {
+        store: partialConfig,
+        keyframe: {
+          percentage: 0,
+          text: "Downloading user config...",
+        },
+      },
+      presetsData: {
+        store: presets,
+        keyframe: {
+          percentage: 0,
+          text: "Downloading user presets...",
+        },
+      },
+      connectionsData: {
+        store: connections,
+        keyframe: {
+          percentage: 0,
+          text: "Downloading connections...",
+        },
+      },
+      ...(page === "friends" && {
+        friends: {
+          store: friends,
+          keyframe: { percentage: 0, text: "Downloading friends..." },
+        },
+        pendingConnections: {
+          store: pendingConnections,
+          keyframe: {
+            percentage: 0,
+
+            text: "Downloading friend requests...",
+          },
+        },
+      }),
+      ...(page === "account" && {
+        results: {
+          store: results,
+          keyframe: {
+            percentage: 90,
+            text: "Downloading results...",
+          },
+        },
+      }),
+    };
+    const inc = Math.ceil(100 / Object.keys(stores).length);
+    let percentage = inc;
+    for (const store of Object.values(stores)) {
+      store.keyframe["percentage"] = percentage;
+      percentage += inc;
+    }
+
+    console.log("##### update load", stores);
+    return stores;
   });
 
   return (
     <Loader
       active={() => isAuthenticated() && serverConfiguration.state().ready}
-      loader={(keyframe) => (
-        <Portal mount={document.querySelector("main") as HTMLElement}>
-          <div id="preloader">
-            <div class="bar">
-              <div class="fill" style={{ width: keyframe?.percentage + "%" }} />
-            </div>
-            <div class="text">{keyframe?.text ?? "Loading..."}</div>
-          </div>
-        </Portal>
-      )}
+      loader={(kf) => <BlockingLoader keyframe={kf} />}
       onComplete={isLoaded}
-      load={{
-        userData: {
-          store: user,
-          keyframe: {
-            percentage: 50,
-            durationMs: 1,
-            text: "Downloading user data...",
-          },
-        },
-        configData: {
-          store: partialConfig,
-          keyframe: {
-            percentage: 70,
-            durationMs: 1,
-            text: "Downloading user config...",
-          },
-        },
-        presetsData: {
-          store: presets,
-          keyframe: {
-            percentage: 80,
-            durationMs: 1,
-            text: "Downloading user presets...",
-          },
-        },
-        connectionsData: {
-          store: connections,
-          keyframe: {
-            percentage: 90,
-            durationMs: 1,
-            text: "Downloading friends...",
-          },
-        },
-      }}
+      load={() => load()}
     />
   );
 }
@@ -125,6 +168,11 @@ function isLoaded(stores: {
   connectionsData: Connection[];
 }): void {
   console.log("preloader done loading", stores.userData.name);
-  void initSnapshot(stores);
+  void initSnapshot({
+    userData: unwrap(stores.userData),
+    configData: unwrap(stores.configData),
+    presetsData: unwrap(stores.presetsData),
+    connectionsData: unwrap(stores.connectionsData),
+  });
   loadDone();
 }

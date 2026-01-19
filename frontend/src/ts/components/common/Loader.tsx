@@ -1,15 +1,17 @@
-import {
-  Accessor,
-  createEffect,
-  createMemo,
-  JSXElement,
-  Show,
-  on,
-} from "solid-js";
+import { Accessor, createEffect, createMemo, JSXElement, Show } from "solid-js";
 import { LoadError, LoadingStore } from "../../signals/util/loadingStore";
-import { Keyframe } from "../../pages/page";
 import { Store } from "solid-js/store";
 
+export type Keyframe = {
+  /**
+   * Percentage of the loading bar to fill.
+   */
+  percentage: number;
+  /**
+   * Text to display below the loading bar.
+   */
+  text?: string;
+};
 type LoadingStoreAndKeyframe = {
   store: LoadingStore<unknown>;
   keyframe?: Keyframe;
@@ -23,7 +25,7 @@ type ChildData<L extends LoadShape> = {
 
 type LoaderProps<L extends LoadShape> = {
   active: true | Accessor<boolean>;
-  load: L;
+  load: Accessor<L>;
   loader?: (keyframe?: Keyframe) => JSXElement;
   error?: (error: LoadError) => JSXElement;
   onComplete?: (data: ChildData<L>) => void;
@@ -34,31 +36,28 @@ export default function Loader<L extends LoadShape>(
   props: LoaderProps<L>,
 ): JSXElement {
   const loaders = createMemo<LoadingStoreAndKeyframe[]>(() =>
-    Object.values(props.load),
+    Object.values(props.load()),
   );
 
-  if (props.active === true) {
-    console.debug("Loader: load all stores");
-    loaders().forEach((it) => it.store.load());
-  } else {
-    createEffect(
-      on(
-        props.active,
-        (active) => {
-          if (active) {
-            console.debug("Loader: load all stores");
-            loaders().forEach((it) => it.store.load());
-          }
-        },
-        { defer: true },
-      ),
-    );
-  }
+  createEffect(() => {
+    const active = props.active === true ? true : props.active();
+
+    if (!active) return;
+
+    console.debug("Loader: load missing stores");
+
+    for (const { store } of loaders()) {
+      const state = store.state();
+      if (!state.loading && !state.ready && !state.error) {
+        store.load();
+      }
+    }
+  });
 
   const stores = createMemo(
     () =>
       Object.fromEntries(
-        Object.entries(props.load).map(([key, value]) => [
+        Object.entries(props.load()).map(([key, value]) => [
           key,
           value.store.store,
         ]),
@@ -73,6 +72,10 @@ export default function Loader<L extends LoadShape>(
   const allReady = createMemo(() =>
     loaders().every((it) => it.store.state().ready),
   );
+  createEffect(() => {
+    loaders();
+    completed = false;
+  });
 
   createEffect(() => {
     if (!completed && allReady()) {
