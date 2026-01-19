@@ -28,11 +28,5 @@ createEffect(() => {
   }
 });
 
-createEffect(() => {
-  const state = connections.state();
-
-  console.log("#### change in resource: ", state);
-});
-
 //from legacy code
 //await connections.ready;

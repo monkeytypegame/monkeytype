@@ -1,31 +1,15 @@
 import { Configuration } from "@monkeytype/schemas/configuration";
-import Ape from ".";
-import { promiseWithResolvers } from "../utils/misc";
+import { serverConfiguration } from "../signals/server-configuration";
 
-let config: Configuration | undefined = undefined;
-
-const {
-  promise: configurationPromise,
-  resolve,
-  reject,
-} = promiseWithResolvers<boolean>();
-
-export { configurationPromise };
+export const configurationPromise = serverConfiguration.ready();
 
 export function get(): Configuration | undefined {
-  return config;
+  return serverConfiguration.state().ready
+    ? serverConfiguration.store
+    : undefined;
 }
 
 export async function sync(): Promise<void> {
-  const response = await Ape.configuration.get();
-
-  if (response.status !== 200) {
-    const message = `Could not fetch configuration: ${response.body.message}`;
-    console.error(message);
-    reject(message);
-    return;
-  } else {
-    config = response.body.data ?? undefined;
-    resolve(true);
-  }
+  serverConfiguration.refresh();
+  return serverConfiguration.ready();
 }

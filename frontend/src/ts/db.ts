@@ -31,13 +31,11 @@ import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
-import {
-  configurationPromise,
-  get as getServerConfiguration,
-} from "./ape/server-configuration";
+import { configurationPromise } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Preset } from "@monkeytype/schemas/presets";
 import { GetUserResponse } from "@monkeytype/contracts/users";
+import { unwrap } from "solid-js/store";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -89,13 +87,12 @@ export function setSnapshot(
   }
 }
 
-export async function initSnapshot(preload?: {
+export async function initSnapshot(preload: {
   userData: GetUserResponse["data"];
   presetsData: Preset[];
   configData: PartialConfig | null;
   connectionsData: Connection[];
 }): Promise<Snapshot | false> {
-  console.log("DB: init snapshot");
   if (dbSnapshot !== undefined) {
     console.log("DB: return cached snapshot");
     return dbSnapshot;
@@ -107,63 +104,11 @@ export async function initSnapshot(preload?: {
   try {
     if (!isAuthenticated()) return false;
 
-    let userData: GetUserResponse["data"];
-    let presetsData: Preset[];
-    let configData: PartialConfig | null;
-    let connectionsData: Connection[];
-    if (preload) {
-      console.log("DB: init from preload");
-      userData = preload.userData;
-      presetsData = preload.presetsData;
-      configData = preload.configData;
-      connectionsData = preload.connectionsData;
-    } else {
-      const connectionsRequest = getServerConfiguration()?.connections.enabled
-        ? Ape.connections.get()
-        : { status: 200, body: { message: "", data: [] } };
+    const userData = preload.userData;
+    const presetsData = preload.presetsData;
+    const configData = unwrap(preload.configData);
+    const connectionsData = preload.connectionsData;
 
-      const [
-        userResponse,
-        configResponse,
-        presetsResponse,
-        connectionsResponse,
-      ] = await Promise.all([
-        Ape.users.get(),
-        Ape.configs.get(),
-        Ape.presets.get(),
-        connectionsRequest,
-      ]);
-
-      if (userResponse.status !== 200) {
-        throw new SnapshotInitError(
-          `${userResponse.body.message} (user)`,
-          userResponse.status,
-        );
-      }
-      if (configResponse.status !== 200) {
-        throw new SnapshotInitError(
-          `${configResponse.body.message} (config)`,
-          configResponse.status,
-        );
-      }
-      if (presetsResponse.status !== 200) {
-        throw new SnapshotInitError(
-          `${presetsResponse.body.message} (presets)`,
-          presetsResponse.status,
-        );
-      }
-      if (connectionsResponse.status !== 200) {
-        throw new SnapshotInitError(
-          `${connectionsResponse.body.message} (connections)`,
-          connectionsResponse.status,
-        );
-      }
-
-      userData = userResponse.body.data;
-      configData = configResponse.body.data;
-      presetsData = presetsResponse.body.data;
-      connectionsData = connectionsResponse.body.data;
-    }
     if (userData === null) {
       throw new SnapshotInitError(
         `Request was successful but user data is null`,

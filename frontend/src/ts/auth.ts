@@ -59,12 +59,11 @@ async function sendVerificationEmail(): Promise<void> {
 
 async function getDataAndInit(): Promise<boolean> {
   try {
-    console.log("getting account data");
     await preloaderDonePromise;
-    console.log("getting account data waiting done");
-    const snapshot = await DB.initSnapshot();
+    const snapshot = DB.getSnapshot();
+    console.log("got snapshot", snapshot);
 
-    if (snapshot === false) {
+    if (snapshot === undefined) {
       throw new Error(
         "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
       );

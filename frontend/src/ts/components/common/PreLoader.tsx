@@ -1,4 +1,4 @@
-import { createEffect, JSXElement, on } from "solid-js";
+import { createEffect, JSXElement } from "solid-js";
 import { createLoadingStore } from "../../signals/util/loadingStore";
 import { PartialConfig } from "@monkeytype/schemas/configs";
 import Ape from "../../ape";
@@ -18,7 +18,6 @@ const { promise: preloaderDonePromise, resolve: loadDone } =
 export { preloaderDonePromise };
 
 export function PreLoader(): JSXElement {
-  console.log("#### preloader");
   const user = createLoadingStore<GetUserResponse["data"]>(
     "user",
     async () => {
@@ -60,12 +59,10 @@ export function PreLoader(): JSXElement {
   );
 
   createEffect(() => {
-    on(isAuthenticated, (authenticated: boolean) => {
-      if (authenticated) return;
+    if (!isAuthenticated()) return;
 
-      console.debug("PreLoader: cleaning user data.");
-      [partialConfig, user, presets].forEach((it) => it.reset());
-    });
+    console.debug("PreLoader: cleaning user data.");
+    [partialConfig, user, presets].forEach((it) => it.reset());
   });
 
   return (
