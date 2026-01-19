@@ -5,13 +5,15 @@ import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { getActivePage } from "./signals/core";
+import { getActivePage, getGlobalOffsetTop } from "./signals/core";
 import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { applyFontFamily } from "./controllers/theme-controller";
-import { qs } from "./utils/dom";
+import { qs, qsr } from "./utils/dom";
+import { createEffect } from "solid-js";
+import { convertRemToPixels } from "./utils/numbers";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -113,6 +115,12 @@ const throttledEvent = throttle(250, () => {
 window.addEventListener("resize", () => {
   throttledEvent();
   debouncedEvent();
+});
+
+createEffect(() => {
+  qsr("#app").setStyle({
+    paddingTop: getGlobalOffsetTop() + convertRemToPixels(2) + "px",
+  });
 });
 
 ConfigEvent.subscribe(async ({ key }) => {

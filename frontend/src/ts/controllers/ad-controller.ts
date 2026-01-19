@@ -1,13 +1,12 @@
 /* oxlint-disable no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
-// import * as Numbers from "@monkeytype/util/numbers";
 import * as ConfigEvent from "../observables/config-event";
-import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { onDOMReady, qs } from "../utils/dom";
+// import { createEffect } from "solid-js";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
@@ -84,13 +83,6 @@ function removeOn(): void {
 function removeResult(): void {
   qs("#ad-result-wrapper")?.remove();
   qs("#ad-result-small-wrapper")?.remove();
-}
-
-function updateVerticalMargin(): void {
-  // const height = $("#bannerCenter").height() as number;
-  // const margin = height + Numbers.convertRemToPixels(2) + "px";
-  // $("#ad-vertical-left-wrapper").css("margin-top", margin);
-  // $("#ad-vertical-right-wrapper").css("margin-top", margin);
 }
 
 function updateBreakpoint(noReinstate = false): void {
@@ -286,12 +278,10 @@ export function destroyResult(): void {
   // $("#ad-result-small-wrapper").empty();
 }
 
-const debouncedMarginUpdate = debounce(500, updateVerticalMargin);
 const debouncedBreakpointUpdate = debounce(500, updateBreakpoint);
 const debouncedBreakpoint2Update = debounce(500, updateBreakpoint2);
 
 window.addEventListener("resize", () => {
-  debouncedMarginUpdate();
   debouncedBreakpointUpdate();
   debouncedBreakpoint2Update();
 });
@@ -309,9 +299,14 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
 });
 
-BannerEvent.subscribe(() => {
-  updateVerticalMargin();
-});
+// createEffect(() => {
+//   qs("#ad-vertical-left-wrapper")?.setStyle({
+//     marginTop: getGlobalOffsetTop() + "px",
+//   });
+//   qs("#ad-vertical-right-wrapper")?.setStyle({
+//     marginTop: getGlobalOffsetTop() + "px",
+//   });
+// });
 
 onDOMReady(() => {
   updateBreakpoint(true);
