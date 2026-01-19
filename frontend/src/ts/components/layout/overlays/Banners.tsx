@@ -63,7 +63,7 @@ function Banner(props: BannerType): JSXElement {
           else={
             <button
               type="button"
-              class="text self-center text-bg hover:text-text"
+              class="text -mr-2 self-center text-bg hover:text-text"
               onClick={() => {
                 remove();
               }}
