@@ -22,7 +22,6 @@ import {
   indexedDBLocalPersistence,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import * as Notifications from "./elements/notifications";
 import {
   createErrorMessage,
   isDevEnvironment,
@@ -35,6 +34,7 @@ import {
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
+import { addBanner } from "./stores/banners";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -84,12 +84,10 @@ export async function init(callback: ReadyCallback): Promise<void> {
     console.error("Firebase failed to initialize", e);
     await callback(false, null);
     if (isDevEnvironment()) {
-      Notifications.addPSA(
-        createErrorMessage(e, "Firebase uninitialized"),
-        0,
-        undefined,
-        false,
-      );
+      addBanner({
+        level: 0,
+        text: "Dev Info: Firebase failed to initialize",
+      });
     }
   } finally {
     resolveAuthPromise();
