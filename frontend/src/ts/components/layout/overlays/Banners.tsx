@@ -13,7 +13,7 @@ import {
 } from "../../../stores/banners";
 import { cn } from "../../../utils/cn";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { qsr } from "../../../utils/dom";
+import { qs, qsr } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
 import { debounce } from "throttle-debounce";
 import { Conditional } from "../../common/Conditional";
@@ -92,8 +92,8 @@ export function Banners(): JSXElement {
     qsr("#notificationCenter").setStyle({
       marginTop: offset + "px",
     });
-    qsr("#ad-vertical-left-wrapper").setStyle({ marginTop: offset + "px" });
-    qsr("#ad-vertical-right-wrapper").setStyle({ marginTop: offset + "px" });
+    qs("#ad-vertical-left-wrapper")?.setStyle({ marginTop: offset + "px" });
+    qs("#ad-vertical-right-wrapper")?.setStyle({ marginTop: offset + "px" });
   };
 
   const debouncedMarginUpdate = debounce(100, updateMargin);
