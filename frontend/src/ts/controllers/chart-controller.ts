@@ -1346,13 +1346,19 @@ function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 
-createDebouncedEffectOn(500, getTheme, (theme) => {
-  void result.updateColors(theme);
-  void accountHistory.updateColors(theme);
-  void accountHistogram.updateColors(theme);
-  void accountActivity.updateColors(theme);
-  void miniResult.updateColors(theme);
-});
+createDebouncedEffectOn(
+  500,
+  getTheme,
+  (theme) => {
+    void result.updateColors(theme);
+    void accountHistory.updateColors(theme);
+    void accountHistogram.updateColors(theme);
+    void accountActivity.updateColors(theme);
+    void miniResult.updateColors(theme);
+  },
+  {},
+  { atBegin: true },
+);
 
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {
