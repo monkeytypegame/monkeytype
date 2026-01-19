@@ -73,7 +73,6 @@ async function getDataAndInit(): Promise<boolean> {
     if (snapshot.needsToChangeName) {
       addBanner({
         level: -1,
-        // text: "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
         icon: "fas fa-exclamation-triangle",
         customContent: (
           <>
