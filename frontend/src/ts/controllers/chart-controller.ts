@@ -70,7 +70,7 @@ import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 import { Theme } from "../constants/themes";
-import { createEffect, on } from "solid-js";
+import { createDebouncedEffectOn } from "../hooks/effects";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -87,10 +87,6 @@ export class ChartWithUpdateColors<
   }
 
   async updateColors(theme: Theme): Promise<void> {
-    if (theme === undefined) {
-      throw new Error("chart colors are empty.");
-    }
-
     //@ts-expect-error it's too difficult to figure out these types, but this works
     await updateColors(this, theme);
   }
@@ -1350,15 +1346,13 @@ function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 
-createEffect(
-  on(getTheme, (theme) => {
-    void result.updateColors(theme);
-    void accountHistory.updateColors(theme);
-    void accountHistogram.updateColors(theme);
-    void accountActivity.updateColors(theme);
-    void miniResult.updateColors(theme);
-  }),
-);
+createDebouncedEffectOn(500, getTheme, (theme) => {
+  void result.updateColors(theme);
+  void accountHistory.updateColors(theme);
+  void accountHistogram.updateColors(theme);
+  void accountActivity.updateColors(theme);
+  void miniResult.updateColors(theme);
+});
 
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {

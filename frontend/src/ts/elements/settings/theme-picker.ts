@@ -13,7 +13,6 @@ import { captureException } from "../../sentry";
 import { ColorName, ThemesListSorted } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../signals/theme";
-import { debounce } from "throttle-debounce";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -328,10 +327,13 @@ function handleColorInput(props: {
 }
 
 const convertColorAndUpdate = handleColorInput({ convertColor: true });
-const pickerInputDebounced = debounce(
+/*const pickerInputDebounced = debounce(
   100,
   handleColorInput({ convertColor: false }),
 );
+*/
+const pickerInputDebounced = handleColorInput({ convertColor: false });
+
 qsa(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 )

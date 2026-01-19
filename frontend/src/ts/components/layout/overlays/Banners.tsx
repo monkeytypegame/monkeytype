@@ -1,7 +1,7 @@
 import { For, JSXElement, onCleanup, onMount } from "solid-js";
 import { debounce } from "throttle-debounce";
 
-import { createEffectOn } from "../../../hooks/createEffectOn";
+import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { setGlobalOffsetTop } from "../../../signals/core";
 import {
