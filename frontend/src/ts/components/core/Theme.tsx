@@ -23,7 +23,7 @@ export function Theme(): JSXElement {
     const target = e.target as HTMLLinkElement;
     if (target.href !== "") {
       console.debug(
-        `Theme controller loaded style for theme ${target.dataset["name"]}`,
+        `Theme component loaded style for theme ${target.dataset["name"]}`,
       );
     }
   };
@@ -32,7 +32,7 @@ export function Theme(): JSXElement {
     hideLoaderBar();
     const target = e.target as HTMLLinkElement;
     const name = target.dataset["name"];
-    console.debug("Theme controller failed to load style", name, e);
+    console.debug("Theme component failed to load style", name, e);
     console.error(`Failed to load theme ${name}`, e);
     Notifications.add("Failed to load theme", 0);
   };
@@ -57,7 +57,7 @@ export function Theme(): JSXElement {
     const name = getThemeName();
     const hasCss = name !== "custom" && (themes[name].hasCss ?? false);
     console.debug(
-      `Theme controller ${hasCss ? "loading style" : "removing style"} for theme ${name}`,
+      `Theme component ${hasCss ? "loading style" : "removing style"} for theme ${name}`,
     );
     if (hasCss) showLoaderBar();
     linkEl()?.setAttribute("href", hasCss ? `/themes/${name}.css` : "");
