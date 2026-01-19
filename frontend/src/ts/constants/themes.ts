@@ -9,7 +9,6 @@ const hexColorSchema = z
     "Invalid hex color",
   );
 
-//TODO remove the optionals after migration
 export const ThemeSchema = z.object({
   hasCss: z.boolean().optional(),
   bg: hexColorSchema,
