@@ -9,14 +9,13 @@ import {
 import { debounce } from "throttle-debounce";
 
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
+import { setGlobalOffsetTop } from "../../../signals/core";
 import {
   Banner as BannerType,
   getBanners,
   removeBanner,
 } from "../../../stores/banners";
 import { cn } from "../../../utils/cn";
-import { qs, qsr } from "../../../utils/dom";
-import { convertRemToPixels } from "../../../utils/numbers";
 import { Conditional } from "../../common/Conditional";
 
 function Banner(props: BannerType): JSXElement {
@@ -86,15 +85,7 @@ export function Banners(): JSXElement {
 
   const updateMargin = (): void => {
     const height = element()?.getOffsetHeight() ?? 0;
-    const offset = height + convertRemToPixels(2);
-    qsr("#app").setStyle({
-      paddingTop: offset + "px",
-    });
-    qsr("#notificationCenter").setStyle({
-      marginTop: offset + "px",
-    });
-    qs("#ad-vertical-left-wrapper")?.setStyle({ marginTop: offset + "px" });
-    qs("#ad-vertical-right-wrapper")?.setStyle({ marginTop: offset + "px" });
+    setGlobalOffsetTop(height);
   };
 
   const debouncedMarginUpdate = debounce(100, updateMargin);

@@ -3,6 +3,8 @@ import * as NotificationEvent from "../observables/notification-event";
 import { animate } from "animejs";
 import { qsr } from "../utils/dom";
 import { CommonResponsesType } from "@monkeytype/contracts/util/api";
+import { createEffect } from "solid-js";
+import { getGlobalOffsetTop } from "../signals/core";
 
 const notificationCenter = qsr("#notificationCenter");
 const notificationCenterHistory = notificationCenter.qsr(".history");
@@ -239,4 +241,10 @@ notificationCenter.qs(".clearAll")?.on("click", () => {
   });
   visibleStickyNotifications = 0;
   updateClearAllButton();
+});
+
+createEffect(() => {
+  qsr("#notificationCenter").setStyle({
+    marginTop: getGlobalOffsetTop() + "px",
+  });
 });
