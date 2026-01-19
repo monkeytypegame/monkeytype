@@ -64,10 +64,6 @@ function removeAll(): void {
 function removeSellout(): void {
   qs("#ad-footer-wrapper")?.remove();
   qs("#ad-footer-small-wrapper")?.remove();
-  qs("#ad-about-1-wrapper")?.remove();
-  qs("#ad-about-1-small-wrapper")?.remove();
-  qs("#ad-about-2-wrapper")?.remove();
-  qs("#ad-about-2-small-wrapper")?.remove();
   qs("#ad-settings-1-wrapper")?.remove();
   qs("#ad-settings-1-small-wrapper")?.remove();
   qs("#ad-settings-2-wrapper")?.remove();

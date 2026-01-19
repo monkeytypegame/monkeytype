@@ -1,7 +1,8 @@
 import AnimatedModal, { HideOptions, ShowOptions } from "./animated-modal";
 import { Attributes, buildTag } from "./tag-builder";
 import { format as dateFormat } from "date-fns/format";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import {
@@ -372,10 +373,10 @@ export class SimpleModal {
     }
 
     this.disableInputs();
-    Loader.show();
+    showLoaderBar();
     const vals: string[] = this.inputs.map((it) => it.currentValue());
     void this.execFn(this, ...vals).then((res) => {
-      Loader.hide();
+      hideLoaderBar();
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }

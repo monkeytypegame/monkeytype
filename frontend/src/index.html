@@ -3,11 +3,10 @@
   <load src="html/head.html" />
 
   <body>
+    <Overlays />
     <div id="mediaQueryDebug"></div>
     <load src="html/warnings.html" />
-    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
-    <div id="backgroundLoader" class="hidden"></div>
     <div id="bannerCenter" class="focus"></div>
     <div id="notificationCenter">
       <div class="clearAll button hidden">
@@ -21,7 +20,6 @@
         <div class="bar"></div>
       </div>
     </div>
-    <ScrollToTop />
     <div id="popups">
       <load src="html/popups.html" />
     </div>
@@ -38,7 +36,12 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <load src="html/pages/about.html" />
+        <div
+          class="page pageAbout full-width content-grid grid hidden gap-8"
+          id="pageAbout"
+        >
+          <AboutPage />
+        </div>
         <load src="html/pages/settings.html" />
         <load src="html/pages/login.html" />
         <load src="html/pages/account.html" />
@@ -49,7 +52,7 @@
         <load src="html/pages/friends.html" />
         <load src="html/pages/leaderboards.html" />
       </main>
-      <load src="html/footer.html" />
+      <footer />
       <div
         id="ad-footer-wrapper"
         class="full-width ad advertisement ad-h focus"

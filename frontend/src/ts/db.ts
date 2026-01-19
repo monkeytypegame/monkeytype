@@ -9,8 +9,7 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import * as Loader from "./elements/loader";
-
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
 import { Config, Difficulty } from "@monkeytype/schemas/configs";
 import {
@@ -875,6 +874,15 @@ export async function saveLocalTagPB<M extends Mode>(
   return;
 }
 
+export function deleteLocalTag(tagId: string): void {
+  getSnapshot()?.results?.forEach((result) => {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      result.tags.splice(tagIndex, 1);
+    }
+  });
+}
+
 export async function updateLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
@@ -1101,11 +1109,11 @@ export async function getTestActivityCalendar(
       return undefined;
     }
 
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add("Error getting test activities", -1, { response });
-      Loader.hide();
+      hideLoaderBar();
       return undefined;
     }
 
@@ -1125,7 +1133,7 @@ export async function getTestActivityCalendar(
         true,
       );
     }
-    Loader.hide();
+    hideLoaderBar();
   }
 
   return dbSnapshot.testActivityByYear[yearString];

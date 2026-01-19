@@ -113,8 +113,14 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="darkreader-lock" />
   <meta http-equiv="Cache-Control" content="no-store" />
-  <link rel="stylesheet" href="styles/vendor.scss" />
+
+  <!-- 
+    order of the style imports is not important EXCEPT for index
+    index has to be first because it contains the order of css layers
+  -->
   <link rel="stylesheet" href="styles/index.scss" />
+  <link rel="stylesheet" href="styles/tailwind.css" />
+  <link rel="stylesheet" href="styles/vendor.scss" />
 
   <style class="customFont" type="text/css"></style>
 </head>
