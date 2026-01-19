@@ -5,14 +5,15 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { qsa, ElementsWithUtils } from "../utils/dom";
 
 const unfocusPx = 3;
 let state = false;
 
 let cacheReady = false;
 let cache: {
-  focus?: HTMLElement[];
-  cursor?: HTMLElement[];
+  focus?: ElementsWithUtils;
+  cursor?: ElementsWithUtils;
 } = {};
 
 function initializeCache(): void {
@@ -33,8 +34,8 @@ function initializeCache(): void {
     "#ad-footer-small-wrapper",
   ].join(",");
 
-  cache.cursor = [...document.querySelectorAll<HTMLElement>(cursorSelector)];
-  cache.focus = [...document.querySelectorAll<HTMLElement>(elementsSelector)];
+  cache.cursor = qsa(cursorSelector);
+  cache.focus = qsa(elementsSelector);
 
   cacheReady = true;
 }
@@ -50,14 +51,10 @@ export function set(value: boolean, withCursor = false): void {
 
       // batch DOM operations for better performance
       if (cache.focus) {
-        for (const el of cache.focus) {
-          el.classList.add("focus");
-        }
+        cache.focus.addClass("focus");
       }
       if (!withCursor && cache.cursor) {
-        for (const el of cache.cursor) {
-          el.style.cursor = "none";
-        }
+        cache.cursor.setStyle({ cursor: "none" });
       }
 
       Caret.stopAnimation();
@@ -69,14 +66,10 @@ export function set(value: boolean, withCursor = false): void {
       state = false;
 
       if (cache.focus) {
-        for (const el of cache.focus) {
-          el.classList.remove("focus");
-        }
+        cache.focus.removeClass("focus");
       }
       if (cache.cursor) {
-        for (const el of cache.cursor) {
-          el.style.cursor = "";
-        }
+        cache.cursor.setStyle({ cursor: "" });
       }
 
       Caret.startAnimation();
