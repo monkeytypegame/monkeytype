@@ -18,7 +18,7 @@ let bannerAlreadyClosed = false;
 export function showOfflineBanner(): void {
   if (bannerAlreadyClosed) return;
   noInternetBannerId ??= addBanner({
-    level: 0,
+    level: "notice",
     text: "No internet connection",
     icon: "fas fa-exclamation-triangle",
     onClose: () => {

@@ -35,9 +35,9 @@ function Banner(props: BannerType): JSXElement {
       class={cn(
         "content-grid text-bg [&_a]:text-bg [&_a]:hover:text-text w-full [&_a]:underline",
         {
-          "bg-error": props.level === -1,
-          "bg-sub": props.level === 0,
-          "bg-main": props.level === 1,
+          "bg-error": props.level === "error",
+          "bg-sub": props.level === "notice",
+          "bg-main": props.level === "success",
         },
       )}
     >

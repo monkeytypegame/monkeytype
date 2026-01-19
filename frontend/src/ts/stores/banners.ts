@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 
 export type Banner = {
   id: number;
-  level: -1 | 0 | 1;
+  level: "error" | "notice" | "success";
   icon?: string;
   imagePath?: string;
   important?: boolean;

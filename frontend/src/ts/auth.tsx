@@ -73,7 +73,7 @@ async function getDataAndInit(): Promise<boolean> {
     void Sentry.setUser(snapshot.uid, snapshot.name);
     if (snapshot.needsToChangeName) {
       addBanner({
-        level: -1,
+        level: "error",
         icon: "fas fa-exclamation-triangle",
         customContent: (
           <>

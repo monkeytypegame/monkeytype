@@ -85,7 +85,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     await callback(false, null);
     if (isDevEnvironment()) {
       addBanner({
-        level: 0,
+        level: "notice",
         text: "Dev Info: Firebase failed to initialize",
         icon: "fas fa-exclamation-triangle",
       });

@@ -12,7 +12,7 @@ const closed = new LocalStorageWithSchema({
 export function showIfNotClosedBefore(): void {
   if (!closed.get()) {
     addBanner({
-      level: 1,
+      level: "success",
       icon: "fas fa-fw fa-shopping-bag",
       customContent: (
         <>

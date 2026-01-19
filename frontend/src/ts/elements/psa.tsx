@@ -40,7 +40,7 @@ async function getLatest(): Promise<PSA[] | null> {
   if (response.status === 500) {
     if (isDevEnvironment()) {
       addBanner({
-        level: 0,
+        level: "notice",
         text: "Dev Info: Backend server not running",
         icon: "fas fa-exclamation-triangle",
       });
@@ -95,7 +95,7 @@ async function getLatest(): Promise<PSA[] | null> {
         maintenanceData[0].status === "INPROGRESS"
       ) {
         addBanner({
-          level: -1,
+          level: "error",
           customContent: (
             <>
               Server is currently offline for scheduled maintenance.{" "}
@@ -109,7 +109,7 @@ async function getLatest(): Promise<PSA[] | null> {
         });
       } else {
         addBanner({
-          level: -1,
+          level: "error",
           icon: "fas fa-exclamation-triangle",
           customContent: (
             <>
@@ -128,7 +128,7 @@ async function getLatest(): Promise<PSA[] | null> {
     return null;
   } else if (response.status === 503) {
     addBanner({
-      level: -1,
+      level: "error",
       icon: "fas fa-bullhorn",
       customContent: (
         <>
@@ -184,8 +184,17 @@ export async function show(): Promise<void> {
       return;
     }
 
+    let level: "error" | "notice" | "success";
+    if (psa.level === -1) {
+      level = "error";
+    } else if (psa.level === 1) {
+      level = "success";
+    } else {
+      level = "notice";
+    }
+
     addBanner({
-      level: (psa.level ?? 0) as -1 | 0 | 1,
+      level,
       text: psa.message,
       icon: "fas fa-bullhorn",
       important: psa.sticky ?? false,
