@@ -27,3 +27,4 @@ export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
 >(null);
 
 export const [getFocus, setFocus] = createSignal(false);
+export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);

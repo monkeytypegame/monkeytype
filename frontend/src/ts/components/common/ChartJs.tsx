@@ -1,4 +1,3 @@
-import { onMount, onCleanup, createEffect, JSXElement } from "solid-js";
 import {
   Chart,
   ChartType,
@@ -6,9 +5,10 @@ import {
   ChartOptions,
   DefaultDataPoint,
 } from "chart.js";
-import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { onMount, onCleanup, createEffect, JSXElement } from "solid-js";
 import { ChartWithUpdateColors } from "../../controllers/chart-controller";
 import { getTheme } from "../../signals/theme";
+import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 
 type ChartJSProps<
   T extends ChartType = ChartType,

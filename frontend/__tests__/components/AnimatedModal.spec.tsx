@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@solidjs/testing-library";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { AnimatedModal } from "../../src/ts/components/common/AnimatedModal";
 
 describe("AnimatedModal", () => {

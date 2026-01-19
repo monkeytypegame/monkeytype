@@ -24,9 +24,9 @@
 }
 
 @layer custom-styles {
-  @import "buttons", "fonts", "404", "ads", "account", "animations", "banners",
-    "caret", "commandline", "core", "inputs", "keymap", "login", "monkey",
-    "nav", "notifications", "popups", "profile", "scroll", "settings",
+  @import "buttons", "fonts", "404", "ads", "account", "animations", "caret",
+    "commandline", "core", "inputs", "keymap", "login", "monkey", "nav",
+    "notifications", "popups", "profile", "scroll", "settings",
     "account-settings", "leaderboards", "test", "loading", "friends",
     "media-queries";
 

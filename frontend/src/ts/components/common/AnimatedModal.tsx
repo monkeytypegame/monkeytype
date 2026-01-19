@@ -5,7 +5,7 @@ import {
   ParentProps,
   Show,
 } from "solid-js";
-import { applyReducedMotion } from "../../utils/misc";
+
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
   hideModal as storeHideModal,
@@ -14,6 +14,7 @@ import {
   isModalChained,
 } from "../../stores/modals";
 import { cn } from "../../utils/cn";
+import { applyReducedMotion } from "../../utils/misc";
 
 type AnimationParams = {
   opacity?: number | [number, number];
@@ -275,13 +276,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       <div class="pointer-events-none flex h-full w-full items-center justify-center">
         <div
           class={cn(
-            "modal rounded-double pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+            "modal rounded-double bg-bg text-text ring-sub-alt pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto p-4 ring-4 sm:p-8",
             props.modalClass,
           )}
           ref={modalRef}
         >
           <Show when={props.title !== undefined && props.title !== ""}>
-            <div class="text-2xl text-sub">{props.title}</div>
+            <div class="text-sub text-2xl">{props.title}</div>
           </Show>
           {props.children}
         </div>

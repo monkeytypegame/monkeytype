@@ -1,16 +1,18 @@
-import Ape from "../ape";
-import { isDevEnvironment } from "../utils/misc";
-import { secondsToString } from "../utils/date-and-time";
-import * as Notifications from "./notifications";
-import { format } from "date-fns/format";
-import * as Alerts from "./alerts";
 import { PSA } from "@monkeytype/schemas/psas";
-import { z } from "zod";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
-import { tryCatch } from "@monkeytype/util/trycatch";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { format } from "date-fns/format";
+import { z } from "zod";
+
+import Ape from "../ape";
 import * as AuthEvent from "../observables/auth-event";
+import { addBanner } from "../stores/banners";
+import { secondsToString } from "../utils/date-and-time";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { isDevEnvironment } from "../utils/misc";
+
+import * as Alerts from "./alerts";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
@@ -37,12 +39,11 @@ async function getLatest(): Promise<PSA[] | null> {
 
   if (response.status === 500) {
     if (isDevEnvironment()) {
-      Notifications.addPSA(
-        "Dev Info: Backend server not running",
-        0,
-        "exclamation-triangle",
-        false,
-      );
+      addBanner({
+        level: "notice",
+        text: "Dev Info: Backend server not running",
+        icon: "fas fa-exclamation-triangle",
+      });
     } else {
       type InstatusSummary = {
         page: {
@@ -93,35 +94,52 @@ async function getLatest(): Promise<PSA[] | null> {
         maintenanceData[0] !== undefined &&
         maintenanceData[0].status === "INPROGRESS"
       ) {
-        Notifications.addPSA(
-          `Server is currently offline for scheduled maintenance. <a target= '_blank' href='${maintenanceData[0].url}'>Check the status page</a> for more info.`,
-          -1,
-          "bullhorn",
-          true,
-          undefined,
-          true,
-        );
+        addBanner({
+          level: "error",
+          customContent: (
+            <>
+              Server is currently offline for scheduled maintenance.{" "}
+              <a target="_blank" href={maintenanceData[0].url}>
+                Check the status page
+              </a>{" "}
+              for more info.
+            </>
+          ),
+          icon: "fas fa-bullhorn",
+        });
       } else {
-        Notifications.addPSA(
-          "Looks like the server is experiencing unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> for more information.",
-          -1,
-          "exclamation-triangle",
-          false,
-          undefined,
-          true,
-        );
+        addBanner({
+          level: "error",
+          icon: "fas fa-exclamation-triangle",
+          customContent: (
+            <>
+              Looks like the server is experiencing unexpected down time.
+              <br />
+              Check the{" "}
+              <a target="_blank" href="https://monkeytype.instatus.com/">
+                status page
+              </a>{" "}
+              for more information.
+            </>
+          ),
+        });
       }
     }
     return null;
   } else if (response.status === 503) {
-    Notifications.addPSA(
-      "Server is currently under maintenance. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> for more info.",
-      -1,
-      "bullhorn",
-      true,
-      undefined,
-      true,
-    );
+    addBanner({
+      level: "error",
+      icon: "fas fa-bullhorn",
+      customContent: (
+        <>
+          Server is currently under maintenance.{" "}
+          <a target="_blank" href="https://monkeytype.instatus.com/">
+            Check the status page
+          </a>{" "}
+          for more info.
+        </>
+      ),
+    });
     return null;
   } else if (response.status !== 200) {
     return null;
@@ -166,16 +184,24 @@ export async function show(): Promise<void> {
       return;
     }
 
-    Notifications.addPSA(
-      psa.message,
-      psa.level,
-      "bullhorn",
-      psa.sticky,
-      () => {
+    let level: "error" | "notice" | "success";
+    if (psa.level === -1) {
+      level = "error";
+    } else if (psa.level === 1) {
+      level = "success";
+    } else {
+      level = "notice";
+    }
+
+    addBanner({
+      level,
+      text: psa.message,
+      icon: "fas fa-bullhorn",
+      important: psa.sticky ?? false,
+      onClose: () => {
         setMemory(psa._id);
       },
-      true,
-    );
+    });
   });
 }
 
