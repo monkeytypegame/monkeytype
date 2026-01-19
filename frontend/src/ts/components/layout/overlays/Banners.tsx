@@ -57,15 +57,21 @@ function Banner(props: BannerType): JSXElement {
           then={<div class="self-center p-2" innerHTML={props.text}></div>}
           else={<div class="self-center p-2">{props.text}</div>}
         />
-        <button
-          type="button"
-          class="text self-center text-bg hover:text-text"
-          onClick={() => {
-            remove();
-          }}
-        >
-          <i class="fas fa-fw fa-times"></i>
-        </button>
+        <Conditional
+          if={props.important === true}
+          then={<i class={`self-center ${icon}`}></i>}
+          else={
+            <button
+              type="button"
+              class="text self-center text-bg hover:text-text"
+              onClick={() => {
+                remove();
+              }}
+            >
+              <i class="fas fa-fw fa-times"></i>
+            </button>
+          }
+        />
       </div>
     </div>
   );
