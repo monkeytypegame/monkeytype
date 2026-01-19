@@ -87,6 +87,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
       addBanner({
         level: 0,
         text: "Dev Info: Firebase failed to initialize",
+        icon: "fas fa-exclamation-triangle",
       });
     }
   } finally {
