@@ -244,7 +244,7 @@ notificationCenter.qs(".clearAll")?.on("click", () => {
 });
 
 createEffect(() => {
-  qsr("#notificationCenter").setStyle({
+  notificationCenter.setStyle({
     marginTop: getGlobalOffsetTop() + "px",
   });
 });
