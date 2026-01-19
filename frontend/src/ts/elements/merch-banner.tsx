@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+
 import { addBanner } from "../stores/banners";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 const closed = new LocalStorageWithSchema({
   key: "merchBannerClosed3",

@@ -1,16 +1,18 @@
-import Ape from "../ape";
-import { isDevEnvironment } from "../utils/misc";
-import { secondsToString } from "../utils/date-and-time";
-import { format } from "date-fns/format";
-import * as Alerts from "./alerts";
 import { PSA } from "@monkeytype/schemas/psas";
-import { z } from "zod";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
-import { tryCatch } from "@monkeytype/util/trycatch";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { format } from "date-fns/format";
+import { z } from "zod";
+
+import Ape from "../ape";
 import * as AuthEvent from "../observables/auth-event";
 import { addBanner } from "../stores/banners";
+import { secondsToString } from "../utils/date-and-time";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { isDevEnvironment } from "../utils/misc";
+
+import * as Alerts from "./alerts";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",

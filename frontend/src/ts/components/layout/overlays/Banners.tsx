@@ -6,16 +6,17 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
+import { debounce } from "throttle-debounce";
+
+import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import {
   Banner as BannerType,
   getBanners,
   removeBanner,
 } from "../../../stores/banners";
 import { cn } from "../../../utils/cn";
-import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { qs, qsr } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
-import { debounce } from "throttle-debounce";
 import { Conditional } from "../../common/Conditional";
 
 function Banner(props: BannerType): JSXElement {
@@ -32,7 +33,7 @@ function Banner(props: BannerType): JSXElement {
   return (
     <div
       class={cn(
-        "content-grid w-full text-bg [&_a]:text-bg [&_a]:underline [&_a]:hover:text-text",
+        "content-grid text-bg [&_a]:text-bg [&_a]:hover:text-text w-full [&_a]:underline",
         {
           "bg-error": props.level === -1,
           "bg-sub": props.level === 0,
@@ -66,7 +67,7 @@ function Banner(props: BannerType): JSXElement {
           else={
             <button
               type="button"
-              class="text -mr-2 self-center text-bg hover:text-text"
+              class="text text-bg hover:text-text -mr-2 self-center"
               onClick={() => {
                 remove();
               }}

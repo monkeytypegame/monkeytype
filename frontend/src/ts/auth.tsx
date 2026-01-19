@@ -1,11 +1,4 @@
-import Ape from "./ape";
-import * as Notifications from "./elements/notifications";
-import Config, { applyConfig, saveFullConfigToLocalStorage } from "./config";
-import * as Misc from "./utils/misc";
-import * as DB from "./db";
-import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import * as LoginPage from "./pages/login";
-import * as RegisterCaptchaModal from "./modals/register-captcha";
+import { tryCatch } from "@monkeytype/util/trycatch";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -14,6 +7,12 @@ import {
   User as UserType,
   AuthProvider,
 } from "firebase/auth";
+
+import Ape from "./ape";
+import Config, { applyConfig, saveFullConfigToLocalStorage } from "./config";
+import { navigate } from "./controllers/route-controller";
+import * as DB from "./db";
+import * as Notifications from "./elements/notifications";
 import {
   isAuthAvailable,
   getAuthenticatedUser,
@@ -24,15 +23,17 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "./firebase";
-import * as ConnectionState from "./states/connection";
-import { navigate } from "./controllers/route-controller";
-import { getActiveFunboxesWithFunction } from "./test/funbox/list";
-import * as Sentry from "./sentry";
-import { tryCatch } from "@monkeytype/util/trycatch";
-import * as AuthEvent from "./observables/auth-event";
-import { qs, qsa } from "./utils/dom";
-import { addBanner } from "./stores/banners";
+import * as RegisterCaptchaModal from "./modals/register-captcha";
 import { showPopup } from "./modals/simple-modals-base";
+import * as AuthEvent from "./observables/auth-event";
+import * as LoginPage from "./pages/login";
+import * as Sentry from "./sentry";
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
+import * as ConnectionState from "./states/connection";
+import { addBanner } from "./stores/banners";
+import { getActiveFunboxesWithFunction } from "./test/funbox/list";
+import { qs, qsa } from "./utils/dom";
+import * as Misc from "./utils/misc";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
