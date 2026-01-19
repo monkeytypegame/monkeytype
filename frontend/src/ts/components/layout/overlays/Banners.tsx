@@ -1,13 +1,7 @@
-import {
-  createEffect,
-  For,
-  JSXElement,
-  on,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { For, JSXElement, onCleanup, onMount } from "solid-js";
 import { debounce } from "throttle-debounce";
 
+import { createEffectOn } from "../../../hooks/createEffectOn";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { setGlobalOffsetTop } from "../../../signals/core";
 import {
@@ -83,12 +77,12 @@ function Banner(props: BannerType): JSXElement {
 export function Banners(): JSXElement {
   const [ref, element] = useRefWithUtils();
 
-  const updateMargin = (): void => {
+  const setGlobalOffsetSignal = (): void => {
     const height = element()?.getOffsetHeight() ?? 0;
     setGlobalOffsetTop(height);
   };
 
-  const debouncedMarginUpdate = debounce(100, updateMargin);
+  const debouncedMarginUpdate = debounce(100, setGlobalOffsetSignal);
 
   onMount(() => {
     window.addEventListener("resize", debouncedMarginUpdate);
@@ -98,7 +92,7 @@ export function Banners(): JSXElement {
     window.removeEventListener("resize", debouncedMarginUpdate);
   });
 
-  createEffect(on(() => getBanners().length, updateMargin));
+  createEffectOn(() => getBanners().length, setGlobalOffsetSignal);
 
   return (
     <div ref={ref} class="fixed top-0 left-0 z-[1000] w-full">

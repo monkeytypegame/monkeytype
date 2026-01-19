@@ -18,7 +18,7 @@ import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getTheme } from "../signals/theme";
-import { createEffect } from "solid-js";
+import { createEffectOn } from "../hooks/createEffectOn";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -62,10 +62,7 @@ const stenoKeys: LayoutObject = {
   },
 };
 
-createEffect(() => {
-  //react on theme change
-  const _theme = getTheme();
-
+createEffectOn(getTheme, () => {
   //reset calculated style on all keys
   keymap.qsa(".keymapKey").setStyle({});
 });
