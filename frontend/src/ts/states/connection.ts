@@ -35,6 +35,7 @@ const throttledHandleState = debounce(5000, () => {
         customTitle: "Connection",
       });
       removeBanner(noInternetBannerId);
+      noInternetBannerId = undefined;
     }
     bannerAlreadyClosed = false;
   } else if (!TestState.isActive) {
