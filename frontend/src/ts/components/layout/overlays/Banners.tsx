@@ -32,7 +32,7 @@ function Banner(props: BannerType): JSXElement {
   return (
     <div
       class={cn(
-        "content-grid w-full text-bg [&_a]:underline [&_a]:text-bg [&_a]:hover:text-text",
+        "content-grid w-full text-bg [&_a]:text-bg [&_a]:underline [&_a]:hover:text-text",
         {
           "bg-error": props.level === -1,
           "bg-sub": props.level === 0,
@@ -56,8 +56,8 @@ function Banner(props: BannerType): JSXElement {
           else={<i class={`self-center ${icon}`}></i>}
         />
         <Conditional
-          if={props.allowHtml === true}
-          then={<div class="self-center p-2" innerHTML={props.text}></div>}
+          if={props.customContent !== undefined}
+          then={<div class="self-center p-2">{props.customContent}</div>}
           else={<div class="self-center p-2">{props.text}</div>}
         />
         <Conditional

@@ -13,8 +13,14 @@ export function showIfNotClosedBefore(): void {
     addBanner({
       level: 1,
       icon: "fas fa-fw fa-shopping-bag",
-      allowHtml: true,
-      text: `New merch store now open, including a limited edition metal keycap! <a target="_blank" rel="noopener" href="https://mktp.co/merch">monkeytype.store</a>`,
+      customContent: (
+        <>
+          New merch store now open, including a limited edition metal keycap!{" "}
+          <a target="_blank" rel="noopener" href="https://mktp.co/merch">
+            monkeytype.store
+          </a>
+        </>
+      ),
       imagePath: "./images/merch3.png",
       onClose: () => {
         closed.set(true);

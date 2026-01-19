@@ -1,3 +1,4 @@
+import { JSXElement } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export type Banner = {
@@ -5,18 +6,25 @@ export type Banner = {
   level: -1 | 0 | 1;
   icon?: string;
   imagePath?: string;
-  text: string;
   important?: boolean;
-  allowHtml?: boolean;
   onClose?: () => void;
-};
+} & (
+  | {
+      text: string;
+      customContent?: undefined;
+    }
+  | {
+      customContent: JSXElement;
+      text?: undefined;
+    }
+);
 
 let id = 0;
 const [banners, setBanners] = createStore<Banner[]>([]);
 
 export function addBanner(banner: Omit<Banner, "id">): number {
   const newid = id++;
-  setBanners((prev) => [...prev, { ...banner, id: newid }]);
+  setBanners((prev) => [...prev, { ...banner, id: newid } as Banner]);
   return newid;
 }
 

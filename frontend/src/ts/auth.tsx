@@ -32,6 +32,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import * as AuthEvent from "./observables/auth-event";
 import { qs, qsa } from "./utils/dom";
 import { addBanner } from "./stores/banners";
+import { showPopup } from "./modals/simple-modals-base";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -72,9 +73,24 @@ async function getDataAndInit(): Promise<boolean> {
     if (snapshot.needsToChangeName) {
       addBanner({
         level: -1,
-        text: "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+        // text: "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
         icon: "fas fa-exclamation-triangle",
-        allowHtml: true,
+        customContent: (
+          <>
+            You need to update your account name.{" "}
+            <button
+              type="button"
+              class="px-2 py-1"
+              onClick={() => {
+                showPopup("updateName");
+              }}
+            >
+              Click here
+            </button>{" "}
+            to change it and learn more about why.
+          </>
+        ),
+        important: true,
       });
     }
 
