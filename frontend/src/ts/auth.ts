@@ -31,6 +31,7 @@ import * as Sentry from "./sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as AuthEvent from "./observables/auth-event";
 import { qs, qsa } from "./utils/dom";
+import { preloaderDonePromise } from "./components/common/PreLoader";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -59,6 +60,8 @@ async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
+    await preloaderDonePromise;
+    console.log("getting account data waiting done");
     const snapshot = await DB.initSnapshot();
 
     if (snapshot === false) {

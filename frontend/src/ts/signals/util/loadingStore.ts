@@ -44,9 +44,11 @@ export type LoadingStore<T> = {
 };
 
 export function createLoadingStore<T extends object>(
+  name: string,
   fetcher: () => Promise<T>,
   initialValue: () => T,
 ): LoadingStore<T> {
+  console.debug(`LoadingStore ${name}: created`);
   const [shouldLoad, setShouldLoad] = createSignal(false);
   const [getState, setState] = createSignal<State>({
     state: "unresolved",
@@ -70,6 +72,7 @@ export function createLoadingStore<T extends object>(
     state: Resource<unknown>["state"],
     error?: LoadError,
   ): void => {
+    console.debug(`LoadingStore ${name}: update state to ${state}`);
     setState({
       state,
       loading: state === "pending",

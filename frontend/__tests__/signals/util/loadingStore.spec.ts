@@ -11,7 +11,7 @@ describe("createLoadingStore", () => {
   });
 
   it("should initialize with the correct state", () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
 
     expect(store.state().state).toBe("unresolved");
     expect(store.state().loading).toBe(false);
@@ -22,7 +22,7 @@ describe("createLoadingStore", () => {
   });
 
   it("should transition to loading when load is called", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
     store.load();
 
     expect(store.state().state).toBe("pending");
@@ -30,14 +30,14 @@ describe("createLoadingStore", () => {
   });
 
   it("should enable loading if ready is called", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
     mockFetcher.mockResolvedValueOnce({ data: "test" });
 
     await store.ready();
   });
 
   it("should call the fetcher when load is called", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
     mockFetcher.mockResolvedValueOnce({ data: "test" });
     store.load();
 
@@ -50,7 +50,7 @@ describe("createLoadingStore", () => {
 
   it("should handle error when fetcher fails", async () => {
     mockFetcher.mockRejectedValueOnce(new Error("Failed to load"));
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
 
     store.load();
 
@@ -61,7 +61,7 @@ describe("createLoadingStore", () => {
   });
 
   it("should transition to refreshing state on refresh", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
     mockFetcher.mockResolvedValueOnce({ data: "test" });
     store.load();
 
@@ -71,7 +71,7 @@ describe("createLoadingStore", () => {
   });
 
   it("should trigger load when refresh is called and shouldLoad is false", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
     mockFetcher.mockResolvedValueOnce({ data: "test" });
     expect(store.state().state).toBe("unresolved");
 
@@ -88,7 +88,7 @@ describe("createLoadingStore", () => {
   });
 
   it("should reset the store to its initial value on reset", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
     mockFetcher.mockResolvedValueOnce({ data: "test" });
     store.load();
 
@@ -103,7 +103,7 @@ describe("createLoadingStore", () => {
   });
 
   it("should handle a promise rejection during reset", async () => {
-    const store = createLoadingStore(mockFetcher, initialValue);
+    const store = createLoadingStore("test", mockFetcher, initialValue);
 
     // Mock the fetcher to resolve with data
     mockFetcher.mockResolvedValueOnce({ data: "test" });

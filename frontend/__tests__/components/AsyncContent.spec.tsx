@@ -65,6 +65,7 @@ describe("AsyncContent", () => {
 
   it("renders loading state while loadingStore is pending", () => {
     const loadingStore = createLoadingStore(
+      "test",
       async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
         return { data: "data" };
@@ -87,6 +88,7 @@ describe("AsyncContent", () => {
 
   it("renders data when loadingStore resolves", async () => {
     const loadingStore = createLoadingStore<{ data?: string }>(
+      "test",
       async () => {
         return { data: "Test Data" };
       },
@@ -102,6 +104,7 @@ describe("AsyncContent", () => {
 
   it("renders error message when loadingStore fails", async () => {
     const loadingStore = createLoadingStore(
+      "test",
       async () => {
         throw new Error("Test error");
       },

@@ -22,11 +22,12 @@ type ChildData<L extends LoadShape> = {
 };
 
 type LoaderProps<L extends LoadShape> = {
-  active: Accessor<boolean>;
+  active: true | Accessor<boolean>;
   load: L;
   showLoader?: boolean;
   errorMessage?: string;
-  children: (data: ChildData<L>) => JSXElement;
+  onComplete?: (data: ChildData<L>) => void;
+  children?: (data: ChildData<L>) => JSXElement;
 };
 
 export default function Loader<L extends LoadShape>(
@@ -36,18 +37,23 @@ export default function Loader<L extends LoadShape>(
     Object.values(props.load),
   );
 
-  createEffect(
-    on(
-      props.active,
-      (active) => {
-        if (active) {
-          console.debug("Loader: load all stores");
-          loaders().forEach((it) => it.store.load());
-        }
-      },
-      { defer: true },
-    ),
-  );
+  if (props.active === true) {
+    console.debug("Loader: load all stores");
+    loaders().forEach((it) => it.store.load());
+  } else {
+    createEffect(
+      on(
+        props.active,
+        (active) => {
+          if (active) {
+            console.debug("Loader: load all stores");
+            loaders().forEach((it) => it.store.load());
+          }
+        },
+        { defer: true },
+      ),
+    );
+  }
 
   const stores = createMemo(
     () =>
@@ -62,6 +68,18 @@ export default function Loader<L extends LoadShape>(
           : never;
       },
   );
+
+  let completed = false;
+  const allReady = createMemo(() =>
+    loaders().every((it) => it.store.state().ready),
+  );
+
+  createEffect(() => {
+    if (!completed && allReady()) {
+      completed = true;
+      props.onComplete?.(stores());
+    }
+  });
 
   const firstLoadingKeyframe = createMemo<Keyframe | undefined>(() => {
     let min: Keyframe | undefined;
@@ -96,7 +114,7 @@ export default function Loader<L extends LoadShape>(
           </p>
         }
       >
-        {props.children(stores())}
+        {props.children?.(stores())}
       </Show>
     </Show>
   );

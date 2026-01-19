@@ -12,7 +12,7 @@ import {
 import * as Loader from "./elements/loader";
 
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
-import { Config, Difficulty } from "@monkeytype/schemas/configs";
+import { Config, Difficulty, PartialConfig } from "@monkeytype/schemas/configs";
 import {
   Mode,
   Mode2,
@@ -36,6 +36,8 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import { Preset } from "@monkeytype/schemas/presets";
+import { GetUserResponse } from "@monkeytype/contracts/users";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -87,7 +89,17 @@ export function setSnapshot(
   }
 }
 
-export async function initSnapshot(): Promise<Snapshot | false> {
+export async function initSnapshot(preload?: {
+  userData: GetUserResponse["data"];
+  presetsData: Preset[];
+  configData: PartialConfig | null;
+  connectionsData: Connection[];
+}): Promise<Snapshot | false> {
+  console.log("DB: init snapshot");
+  if (dbSnapshot !== undefined) {
+    console.log("DB: return cached snapshot");
+    return dbSnapshot;
+  }
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
   await configurationPromise;
@@ -95,48 +107,63 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
-    const connectionsRequest = getServerConfiguration()?.connections.enabled
-      ? Ape.connections.get()
-      : { status: 200, body: { message: "", data: [] } };
+    let userData: GetUserResponse["data"];
+    let presetsData: Preset[];
+    let configData: PartialConfig | null;
+    let connectionsData: Connection[];
+    if (preload) {
+      console.log("DB: init from preload");
+      userData = preload.userData;
+      presetsData = preload.presetsData;
+      configData = preload.configData;
+      connectionsData = preload.connectionsData;
+    } else {
+      const connectionsRequest = getServerConfiguration()?.connections.enabled
+        ? Ape.connections.get()
+        : { status: 200, body: { message: "", data: [] } };
 
-    const [userResponse, configResponse, presetsResponse, connectionsResponse] =
-      await Promise.all([
+      const [
+        userResponse,
+        configResponse,
+        presetsResponse,
+        connectionsResponse,
+      ] = await Promise.all([
         Ape.users.get(),
         Ape.configs.get(),
         Ape.presets.get(),
         connectionsRequest,
       ]);
 
-    if (userResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${userResponse.body.message} (user)`,
-        userResponse.status,
-      );
-    }
-    if (configResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${configResponse.body.message} (config)`,
-        configResponse.status,
-      );
-    }
-    if (presetsResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${presetsResponse.body.message} (presets)`,
-        presetsResponse.status,
-      );
-    }
-    if (connectionsResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${connectionsResponse.body.message} (connections)`,
-        connectionsResponse.status,
-      );
-    }
+      if (userResponse.status !== 200) {
+        throw new SnapshotInitError(
+          `${userResponse.body.message} (user)`,
+          userResponse.status,
+        );
+      }
+      if (configResponse.status !== 200) {
+        throw new SnapshotInitError(
+          `${configResponse.body.message} (config)`,
+          configResponse.status,
+        );
+      }
+      if (presetsResponse.status !== 200) {
+        throw new SnapshotInitError(
+          `${presetsResponse.body.message} (presets)`,
+          presetsResponse.status,
+        );
+      }
+      if (connectionsResponse.status !== 200) {
+        throw new SnapshotInitError(
+          `${connectionsResponse.body.message} (connections)`,
+          connectionsResponse.status,
+        );
+      }
 
-    const userData = userResponse.body.data;
-    const configData = configResponse.body.data;
-    const presetsData = presetsResponse.body.data;
-    const connectionsData = connectionsResponse.body.data;
-
+      userData = userResponse.body.data;
+      configData = configResponse.body.data;
+      presetsData = presetsResponse.body.data;
+      connectionsData = connectionsResponse.body.data;
+    }
     if (userData === null) {
       throw new SnapshotInitError(
         `Request was successful but user data is null`,

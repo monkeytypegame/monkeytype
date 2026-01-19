@@ -5,7 +5,7 @@ import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
 //@ts-expect-error no types for this package
 import Konami from "konami";
-import * as ServerConfiguration from "./ape/server-configuration";
+import { serverConfiguration as ServerConfiguration } from "./signals/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
@@ -34,14 +34,14 @@ onDOMReady(async () => {
     duration: Misc.applyReducedMotion(250),
   });
   if (ConnectionState.get()) {
-    void ServerConfiguration.sync().then(() => {
-      if (!ServerConfiguration.get()?.users.signUp) {
+    void ServerConfiguration.ready().then(() => {
+      if (!ServerConfiguration.store.users.signUp) {
         AccountButton.hide();
         qs(".register")?.addClass("hidden");
         qs(".login")?.addClass("hidden");
         qs(".disabledNotification")?.removeClass("hidden");
       }
-      if (!ServerConfiguration.get()?.connections.enabled) {
+      if (!ServerConfiguration.store.connections.enabled) {
         qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
       }
     });
