@@ -269,8 +269,9 @@ export function hslToRgb(
  *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
  * @param color as hex, hsl or rgb
  * @returns  hex color
+ * @throws if the input color is not valid
  */
-export function convertColorToHex(color: string): string {
+export function convertStringToHex(color: string): string {
   const input = color.trim().toLocaleLowerCase();
   if (/^#[0-9a-f]{6}$/i.test(input)) {
     return input;
@@ -310,5 +311,5 @@ export function convertColorToHex(color: string): string {
     const { r, g, b } = hslToRgb(h, s, l);
     return rgbToHex(r, g, b);
   }
-  return "#fc0fc0"; // default color if input is not a valid
+  throw new Error(`Invalid color format: ${color}`);
 }

@@ -189,7 +189,7 @@ export function setCustomInputs(): void {
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
   ).forEach((element) => {
     const key = element.getAttribute("data-key") as ColorName;
-    const color = Colors.convertColorToHex(theme[key]);
+    const color = Colors.convertStringToHex(theme[key]);
     updateColorPicker(key, color);
   });
 }
@@ -317,9 +317,18 @@ function handleColorInput(props: {
       ?.closest(".colorPicker")
       ?.getAttribute("data-key") as ColorName;
 
-    const color = props?.convertColor
-      ? Colors.convertColorToHex(target.value)
-      : target.value;
+    let color: string;
+
+    if (props.convertColor) {
+      try {
+        color = Colors.convertStringToHex(target.value);
+      } catch {
+        Notifications.add("Invalid color format", 0);
+        color = "#000000";
+      }
+    } else {
+      color = target.value;
+    }
 
     updateColorPicker(key, color);
     updateThemeColor(key, color);
@@ -362,7 +371,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   Misc.typedKeys(themeColors)
     .filter((key) => key !== "hasCss" && key !== "name")
     .forEach((key) =>
-      updateColorPicker(key, Colors.convertColorToHex(themeColors[key])),
+      updateColorPicker(key, Colors.convertStringToHex(themeColors[key])),
     );
 });
 
