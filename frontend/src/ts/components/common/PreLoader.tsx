@@ -11,6 +11,7 @@ import { GetUserResponse } from "@monkeytype/contracts/users";
 import { initSnapshot } from "../../db";
 import { Connection } from "@monkeytype/schemas/connections";
 import { promiseWithResolvers } from "../../utils/misc";
+import { Portal } from "solid-js/web";
 
 const { promise: preloaderDonePromise, resolve: loadDone } =
   promiseWithResolvers();
@@ -68,12 +69,22 @@ export function PreLoader(): JSXElement {
   return (
     <Loader
       active={() => isAuthenticated() && serverConfiguration.state().ready}
+      loader={(keyframe) => (
+        <Portal mount={document.querySelector("main") as HTMLElement}>
+          <div id="preloader">
+            <div class="bar">
+              <div class="fill" style={{ width: keyframe?.percentage + "%" }} />
+            </div>
+            <div class="text">{keyframe?.text ?? "Loading..."}</div>
+          </div>
+        </Portal>
+      )}
       onComplete={isLoaded}
       load={{
         userData: {
           store: user,
           keyframe: {
-            percentage: 80,
+            percentage: 50,
             durationMs: 1,
             text: "Downloading user data...",
           },
@@ -81,7 +92,7 @@ export function PreLoader(): JSXElement {
         configData: {
           store: partialConfig,
           keyframe: {
-            percentage: 85,
+            percentage: 70,
             durationMs: 1,
             text: "Downloading user config...",
           },
@@ -89,7 +100,7 @@ export function PreLoader(): JSXElement {
         presetsData: {
           store: presets,
           keyframe: {
-            percentage: 90,
+            percentage: 80,
             durationMs: 1,
             text: "Downloading user presets...",
           },
@@ -97,7 +108,7 @@ export function PreLoader(): JSXElement {
         connectionsData: {
           store: connections,
           keyframe: {
-            percentage: 95,
+            percentage: 90,
             durationMs: 1,
             text: "Downloading friends...",
           },

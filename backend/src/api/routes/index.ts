@@ -141,7 +141,11 @@ function applyDevApiRoutes(app: Application): void {
 
     app.use(async (req, res, next) => {
       let slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
-      if (req.path.includes("connection")) slowdown *= 2;
+      if (req.path.includes("connection")) slowdown *= 2.2;
+      if (req.path.includes("presets")) slowdown *= 1.6;
+      if (req.path.includes("config")) slowdown *= 1.2;
+      if (req.path.includes("configuration")) slowdown *= 0.5;
+
       if (slowdown > 0) {
         Logger.info(
           `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`,

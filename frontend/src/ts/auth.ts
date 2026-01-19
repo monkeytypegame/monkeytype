@@ -158,14 +158,6 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
-  let keyframes = [
-    {
-      percentage: 90,
-      durationMs: 1000,
-      text: "Downloading user data...",
-    },
-  ];
-
   //undefined means navigate to whatever the current window.location.pathname is
   await navigate(undefined, {
     force: true,
@@ -180,8 +172,7 @@ export async function onAuthStateChanged(
       loadingPromise: async () => {
         await userPromise;
       },
-      style: "bar",
-      keyframes: keyframes,
+      style: "spinner", //TODO none?!
     },
   });
 

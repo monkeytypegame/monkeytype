@@ -24,8 +24,8 @@ type ChildData<L extends LoadShape> = {
 type LoaderProps<L extends LoadShape> = {
   active: true | Accessor<boolean>;
   load: L;
-  showLoader?: boolean;
-  errorMessage?: string;
+  loader?: (keyframe?: Keyframe) => JSXElement;
+  error?: (error: LoadError) => JSXElement;
   onComplete?: (data: ChildData<L>) => void;
   children?: (data: ChildData<L>) => JSXElement;
 };
@@ -104,14 +104,17 @@ export default function Loader<L extends LoadShape>(
   return (
     <Show
       when={firstLoadingKeyframe() === undefined}
-      fallback={<p>loading keyframe {firstLoadingKeyframe()?.text}</p>}
+      fallback={props.loader?.(firstLoadingKeyframe()) ?? undefined}
     >
       <Show
         when={hasError() === undefined}
         fallback={
-          <p>
-            {props.errorMessage ?? "Loading failed"}: {hasError()?.message}
-          </p>
+          props.error !== undefined ? (
+            // oxlint-disable-next-line typescript/no-non-null-assertion
+            props.error(hasError()!)
+          ) : (
+            <p>Loading failed: {hasError()?.message}</p>
+          )
         }
       >
         {props.children?.(stores())}
