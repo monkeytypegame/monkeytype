@@ -1,7 +1,8 @@
 import Ape from "../ape";
 // import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 // import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
 import { getSnapshot, setSnapshot } from "../db";
@@ -84,7 +85,8 @@ async function apply(): Promise<void> {
     return;
   }
 
-  if (value < -11 || value > 12 || (value % 1 !== 0 && value % 1 !== 0.5)) {
+  // Check if value is whole number or ends in .5 (multiply by 2 to check if result is integer)
+  if (value < -11 || value > 12 || (value * 2) % 1 !== 0) {
     Notifications.add(
       "Streak offset must be between -11 and 12. Times ending in .5 can be used for 30-minute increments.",
       0,
@@ -92,12 +94,12 @@ async function apply(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
 
   const response = await Ape.users.setStreakHourOffset({
     body: { hourOffset: value },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to set streak hour offset", -1, { response });

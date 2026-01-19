@@ -13,23 +13,22 @@ const state: State = {
   slow: false,
 };
 
-const practiseModal = "#practiseWordsModal .modal";
-
 function updateUI(): void {
-  $(`${practiseModal} .group[data-id="missed"] button`).removeClass("active");
-  $(
-    `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`,
-  ).addClass("active");
+  const modalEl = modal.getModal();
+  modalEl.qsa(`.group[data-id="missed"] button`).removeClass("active");
+  modalEl
+    .qs(`.group[data-id="missed"] button[value="${state.missed}"]`)
+    ?.addClass("active");
 
-  $(`${practiseModal} .group[data-id="slow"] button`).removeClass("active");
-  $(
-    `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`,
-  ).addClass("active");
+  modalEl.qsa(`.group[data-id="slow"] button`).removeClass("active");
+  modalEl
+    .qs(`.group[data-id="slow"] button[value="${state.slow}"]`)
+    ?.addClass("active");
 
   if (state.missed === "off" && !state.slow) {
-    $(`${practiseModal} .start`).prop("disabled", true);
+    modalEl.qs(`.start`)?.disable();
   } else {
-    $(`${practiseModal} .start`).prop("disabled", false);
+    modalEl.qs(`.start`)?.enable();
   }
 }
 

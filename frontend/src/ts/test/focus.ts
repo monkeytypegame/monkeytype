@@ -5,10 +5,10 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { getFocus, setFocus } from "../signals/core";
 import { qsa, ElementsWithUtils } from "../utils/dom";
 
 const unfocusPx = 3;
-let state = false;
 
 let cacheReady = false;
 let cache: {
@@ -46,8 +46,8 @@ export function set(value: boolean, withCursor = false): void {
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
 
-    if (value && !state) {
-      state = true;
+    if (value && !getFocus()) {
+      setFocus(true);
 
       // batch DOM operations for better performance
       if (cache.focus) {
@@ -62,8 +62,8 @@ export function set(value: boolean, withCursor = false): void {
       LiveBurst.show();
       LiveAcc.show();
       TimerProgress.show();
-    } else if (!value && state) {
-      state = false;
+    } else if (!value && getFocus()) {
+      setFocus(false);
 
       if (cache.focus) {
         cache.focus.removeClass("focus");
@@ -83,7 +83,7 @@ export function set(value: boolean, withCursor = false): void {
 
 document.addEventListener("mousemove", function (event) {
   if (PageTransition.get()) return;
-  if (!state) return;
+  if (!getFocus()) return;
   if (
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
     event.movementX > unfocusPx ||

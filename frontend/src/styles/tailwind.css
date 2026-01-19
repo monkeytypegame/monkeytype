@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-*: initial;
+  --color-bg: var(--bg-color);
+  --color-main: var(--main-color);
+  --color-caret: var(--caret-color);
+  --color-sub: var(--sub-color);
+  --color-sub-alt: var(--sub-alt-color);
+  --color-text: var(--text-color);
+  --color-error: var(--error-color);
+  --color-error-extra: var(--error-extra-color);
+  --color-colorful-error: var(--colorful-error-color);
+  --color-colorful-error-extra: var(--colorful-error-extra-color);
+
+  /* decide on rem or em */
+  --spacing: 0.25rem;
+
+  --breakpoint-*: initial;
+  --breakpoint-2xl: 1617px;
+  --breakpoint-xl: 1361px;
+  --breakpoint-lg: 1105px;
+  --breakpoint-md: 849px;
+  --breakpoint-sm: 721px;
+  --breakpoint-xs: 426px;
+  --breakpoint-xxs: 331px;
+
+  --default-transition-duration: 0.25s;
+  --duration-half: 0.125s;
+
+  @keyframes loader {
+    0% {
+      transform: translateX(-100%) scaleX(0);
+    }
+    50% {
+      transform: translateX(0) scaleX(1);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0);
+    }
+  }
+}
+
+@layer utilities {
+  .rounded {
+    border-radius: var(--roundness);
+  }
+
+  .rounded-double {
+    border-radius: calc(var(--roundness) * 2);
+  }
+
+  .rounded-half {
+    border-radius: calc(var(--roundness) / 2);
+  }
+}

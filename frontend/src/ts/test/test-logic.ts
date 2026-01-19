@@ -61,7 +61,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
@@ -369,11 +369,11 @@ async function init(): Promise<boolean> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
-  Loader.show();
+  showLoaderBar();
   const { data: language, error } = await tryCatch(
     JSONData.getLanguage(Config.language),
   );
-  Loader.hide();
+  hideLoaderBar();
 
   if (error) {
     Notifications.add(
@@ -494,7 +494,7 @@ async function init(): Promise<boolean> {
     wordsHaveNewline = gen.hasNewline;
     ({ allRightToLeft, allLigatures } = gen);
   } catch (e) {
-    Loader.hide();
+    hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }

@@ -3,12 +3,10 @@
   <load src="html/head.html" />
 
   <body>
+    <Overlays />
     <div id="mediaQueryDebug"></div>
     <load src="html/warnings.html" />
-    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
-    <div id="backgroundLoader" class="hidden"></div>
-    <div id="bannerCenter" class="focus"></div>
     <div id="notificationCenter">
       <div class="clearAll button hidden">
         <i class="fas fa-times"></i>
@@ -37,7 +35,12 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <load src="html/pages/about.html" />
+        <div
+          class="page pageAbout full-width content-grid grid hidden gap-8"
+          id="pageAbout"
+        >
+          <AboutPage />
+        </div>
         <load src="html/pages/settings.html" />
         <load src="html/pages/login.html" />
         <load src="html/pages/account.html" />

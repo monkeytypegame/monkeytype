@@ -131,7 +131,10 @@ const actionModals: Record<Action, SimpleModal> = {
         snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
       }
 
+      DB.deleteLocalTag(tagId);
+
       void Settings.update();
+
       return { status: 1, message: `Tag removed` };
     },
   }),

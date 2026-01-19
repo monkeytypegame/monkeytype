@@ -24,17 +24,6 @@
       }
     }
   }
-  #bannerCenter {
-    font-size: 0.85rem;
-    .banner.withImage {
-      .image {
-        display: none;
-      }
-      .lefticon {
-        display: block;
-      }
-    }
-  }
   header {
     nav {
       .textButton.view-account {
@@ -73,11 +62,6 @@
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
       }
-    }
-  }
-  .pageAbout {
-    .triplegroup {
-      grid-template-columns: 1fr;
     }
   }
   .pageAccount {

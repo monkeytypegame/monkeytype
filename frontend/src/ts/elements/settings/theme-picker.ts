@@ -5,7 +5,7 @@ import * as Colors from "../../utils/colors";
 import * as Notifications from "../notifications";
 import * as ThemeColors from "../theme-colors";
 import * as ChartController from "../../controllers/chart-controller";
-import * as Loader from "../loader";
+import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
@@ -479,9 +479,9 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
       colors: Config.customThemeColors,
     };
 
-    Loader.show();
+    showLoaderBar();
     await DB.addCustomTheme(newCustomTheme);
-    Loader.hide();
+    hideLoaderBar();
   }
   void fillCustomButtons();
 });

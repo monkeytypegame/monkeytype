@@ -8,7 +8,8 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
@@ -93,7 +94,7 @@ export async function loadStyle(name: string): Promise<void> {
     console.debug("Theme controller loading style", name);
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
-        Loader.show();
+        showLoaderBar();
       }, 100),
     );
     qs("#nextTheme")?.remove();
@@ -104,7 +105,7 @@ export async function loadStyle(name: string): Promise<void> {
     link.id = "nextTheme";
     link.onload = (): void => {
       console.debug("Theme controller loaded style", name);
-      Loader.hide();
+      hideLoaderBar();
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
@@ -114,7 +115,7 @@ export async function loadStyle(name: string): Promise<void> {
     link.onerror = (e): void => {
       console.debug("Theme controller failed to load style", name, e);
       console.error(`Failed to load theme ${name}`, e);
-      Loader.hide();
+      hideLoaderBar();
       Notifications.add("Failed to load theme", 0);
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
@@ -170,8 +171,6 @@ async function apply(
       document.documentElement.style.setProperty(colorVar, colors[i] as string);
     }
   }
-
-  ThemeColors.reset();
 
   qsa("#keymap .keymapKey")?.setStyle({});
   await loadStyle(name);
