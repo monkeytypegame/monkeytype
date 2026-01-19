@@ -27,6 +27,7 @@ describe("Theme component", () => {
   const notificationAddMock = vi.spyOn(Notifications, "add");
 
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
     loaderShowMock.mockClear();
     loaderHideMock.mockClear();
@@ -115,6 +116,9 @@ describe("Theme component", () => {
     favIcon: HTMLElement;
   } {
     render(() => <Theme />);
+
+    //wait for debounce
+    vi.runAllTimers();
 
     //make sure content is rendered to the head, not the body
     const head = document.head;
