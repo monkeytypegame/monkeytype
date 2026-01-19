@@ -31,11 +31,14 @@ function Banner(props: BannerType): JSXElement {
 
   return (
     <div
-      class={cn("content-grid w-full text-bg", {
-        "bg-error": props.level === -1,
-        "bg-sub": props.level === 0,
-        "bg-main": props.level === 1,
-      })}
+      class={cn(
+        "content-grid w-full text-bg [&_a]:underline [&_a]:text-bg [&_a]:hover:text-text",
+        {
+          "bg-error": props.level === -1,
+          "bg-sub": props.level === 0,
+          "bg-main": props.level === 1,
+        },
+      )}
     >
       <div class="flex w-full justify-between gap-2">
         <Conditional
