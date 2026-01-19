@@ -113,13 +113,6 @@
       }
     }
   }
-  .pageAbout {
-    .section {
-      .contactButtons {
-        grid-template-columns: 1fr;
-      }
-    }
-  }
   .pageAccount {
     .accountVerificatinNotice {
       button {
@@ -204,15 +197,6 @@
     border-radius: 0.3rem;
     font-size: 0.6rem;
   }
-  footer {
-    .leftright {
-      grid-template-columns: 1fr 1fr;
-      .left {
-        width: unset;
-        grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-      }
-    }
-  }
   #alertsPopup .modal {
     max-width: calc(100% - 4rem);
   }
@@ -256,44 +240,6 @@
         "right right"
         "bottom bottom";
       grid-template-columns: 1fr 1fr;
-    }
-  }
-  #contactModal {
-    .modal {
-      .buttons {
-        grid-template-columns: 1fr;
-        .button {
-          padding: 0.5rem 1rem;
-          .icon,
-          .text {
-            font-size: 1rem;
-          }
-        }
-      }
-    }
-  }
-  #supportModal {
-    .modal {
-      .buttons {
-        grid-template-columns: 1fr;
-        button,
-        a.button {
-          display: grid;
-          grid-template-columns: auto 1fr;
-          justify-content: start;
-          align-items: center;
-          gap: 1.5rem;
-          padding: 0;
-          .icon {
-            font-size: 1.5rem;
-            margin-left: 1.5rem;
-          }
-          .text {
-            text-align: left;
-            font-size: 1rem;
-          }
-        }
-      }
     }
   }
   .testActivity {

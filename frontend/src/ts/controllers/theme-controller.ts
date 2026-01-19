@@ -8,12 +8,14 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs, qsa } from "../utils/dom";
+import { setThemeIndicator } from "../signals/core";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -92,7 +94,7 @@ export async function loadStyle(name: string): Promise<void> {
     console.debug("Theme controller loading style", name);
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
-        Loader.show();
+        showLoaderBar();
       }, 100),
     );
     qs("#nextTheme")?.remove();
@@ -103,7 +105,7 @@ export async function loadStyle(name: string): Promise<void> {
     link.id = "nextTheme";
     link.onload = (): void => {
       console.debug("Theme controller loaded style", name);
-      Loader.hide();
+      hideLoaderBar();
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
@@ -113,7 +115,7 @@ export async function loadStyle(name: string): Promise<void> {
     link.onerror = (e): void => {
       console.debug("Theme controller failed to load style", name, e);
       console.error(`Failed to load theme ${name}`, e);
-      Loader.hide();
+      hideLoaderBar();
       Notifications.add("Failed to load theme", 0);
       swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
@@ -170,8 +172,6 @@ async function apply(
     }
   }
 
-  ThemeColors.reset();
-
   qsa("#keymap .keymapKey")?.setStyle({});
   await loadStyle(name);
 
@@ -197,46 +197,21 @@ async function apply(
 }
 
 function updateFooterIndicator(nameOverride?: string): void {
-  const indicator = document.querySelector<HTMLElement>(
-    "footer .right .current-theme",
-  );
-  const text = indicator?.querySelector<HTMLElement>(".text");
-  const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
-
-  if (
-    !(indicator instanceof HTMLElement) ||
-    !(text instanceof HTMLElement) ||
-    !(favIcon instanceof HTMLElement)
-  ) {
-    return;
-  }
-
   //text
   let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
-  text.innerText = str;
 
   //fav icon
-  const isCustom = Config.customTheme;
-  // hide the favorite icon completely for custom themes
-  if (isCustom) {
-    favIcon.style.display = "none";
-    return;
-  }
-  favIcon.style.display = "";
   const currentTheme = nameOverride ?? randomTheme ?? Config.theme;
   const isFavorite =
+    !Config.customTheme &&
     currentTheme !== null &&
     Config.favThemes.includes(currentTheme as ThemeName);
 
-  if (isFavorite) {
-    favIcon.style.display = "block";
-  } else {
-    favIcon.style.display = "none";
-  }
+  setThemeIndicator({ text: str, isFavorite });
 }
 
 type PreviewState = {

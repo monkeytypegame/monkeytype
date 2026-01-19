@@ -24,7 +24,7 @@ header #logo .icon {
   color: var(--text-color) !important;
 }
 
-key {
+kbd {
   color: var(--text-color);
   background-color: var(--sub-alt-color);
 }

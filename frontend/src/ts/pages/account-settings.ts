@@ -6,13 +6,14 @@ import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
-import * as Loader from "../elements/loader";
+import { showLoaderBar } from "../signals/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -168,7 +169,7 @@ qs(".page.pageAccountSettings")?.onChild("click", ".tabs button", (event) => {
 qsa(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth",
 )?.on("click", () => {
-  Loader.show();
+  showLoaderBar();
   void Ape.users.getDiscordOAuth().then((response) => {
     if (response.status === 200) {
       window.open(response.body.data.url, "_self");
@@ -183,6 +184,66 @@ qsa(
 
 qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
   StreakHourOffsetModal.show();
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
+  showPopup("unlinkDiscord");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
+  showPopup("removeGoogleAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
+  showPopup("removeGithubAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
+  showPopup("removePasswordAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
+  showPopup("addPasswordAuth");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
+  showPopup("updateEmail");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
+  showPopup("updatePassword");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
+  showPopup("deleteAccount");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
+  showPopup("resetAccount");
+});
+
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#optOutOfLeaderboardsButton",
+  () => {
+    showPopup("optOutOfLeaderboards");
+  },
+);
+
+qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
+  showPopup("revokeAllTokens");
+});
+
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  "#resetPersonalBestsButton",
+  () => {
+    showPopup("resetPersonalBests");
+  },
+);
+
+qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
+  showPopup("updateName");
 });
 
 AuthEvent.subscribe((event) => {

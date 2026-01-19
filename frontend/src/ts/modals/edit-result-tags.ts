@@ -1,6 +1,7 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as AccountPage from "../pages/account";
 import * as ConnectionState from "../states/connection";
@@ -90,12 +91,13 @@ function appendButtons(): void {
 }
 
 function updateActiveButtons(): void {
-  for (const button of $("#editResultTagsModal .modal .buttons button")) {
-    const tagid: string = $(button).attr("data-tag-id") ?? "";
+  const buttons = modal.getModal().qsa(".buttons button");
+  for (const button of buttons) {
+    const tagid: string = button.getAttribute("data-tag-id") ?? "";
     if (state.tags.includes(tagid)) {
-      $(button).addClass("active");
+      button.addClass("active");
     } else {
-      $(button).removeClass("active");
+      button.removeClass("active");
     }
   }
 }
@@ -109,11 +111,11 @@ function toggleTag(tagId: string): void {
 }
 
 async function save(): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.results.updateTags({
     body: { resultId: state.resultId, tagIds: state.tags },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   //if got no freaking idea why this is needed
   //but update tags somehow adds undefined to the end of the array

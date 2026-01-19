@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { createResource, Resource } from "solid-js";
-import AsyncContent from "../../src/ts/components/AsyncContent";
+import AsyncContent from "../../src/ts/components/common/AsyncContent";
 
 describe("AsyncContent", () => {
   function renderWithResource<T>(
