@@ -1,11 +1,12 @@
 import { render, fireEvent } from "@solidjs/testing-library";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Theme } from "../../../src/ts/components/layout/Theme";
-import * as ThemeSignal from "../../../src/ts/signals/theme";
 import { createSignal } from "solid-js";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+import { Theme } from "../../../src/ts/components/layout/Theme";
 import { ThemeWithName } from "../../../src/ts/constants/themes";
-import * as Loader from "../../../src/ts/signals/loader-bar";
 import * as Notifications from "../../../src/ts/elements/notifications";
+import * as Loader from "../../../src/ts/signals/loader-bar";
+import * as ThemeSignal from "../../../src/ts/signals/theme";
 
 vi.mock("../../../src/ts/constants/themes", () => ({
   themes: {

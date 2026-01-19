@@ -1,11 +1,13 @@
+import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
 import { createEffect, createMemo, JSXElement } from "solid-js";
-import { getTheme } from "../../signals/theme";
-import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+
 import { themes } from "../../constants/themes";
 import * as Notifications from "../../elements/notifications";
-import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
-import { FavIcon } from "./FavIcon";
+import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+import { getTheme } from "../../signals/theme";
+
+import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute

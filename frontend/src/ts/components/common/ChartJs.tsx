@@ -6,9 +6,10 @@ import {
   DefaultDataPoint,
 } from "chart.js";
 import { onMount, onCleanup, createEffect, JSXElement } from "solid-js";
+
 import { ChartWithUpdateColors } from "../../controllers/chart-controller";
-import { getTheme } from "../../signals/theme";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { getTheme } from "../../signals/theme";
 
 type ChartJSProps<
   T extends ChartType = ChartType,
