@@ -74,11 +74,7 @@ export function Theme(): JSXElement {
         onError={onError}
         onLoad={onLoad}
       />
-      <Meta
-        id="metaThemeColor"
-        name="theme-color"
-        content="getThemeColors().bg"
-      />
+      <Meta id="metaThemeColor" name="theme-color" content={getTheme().bg} />
       <FavIcon theme={getTheme()} />
     </MetaProvider>
   );
