@@ -1,19 +1,21 @@
 import { JSXElement } from "solid-js";
-import { VersionButton } from "./VersionButton";
-import { Button } from "../../common/Button";
-import { showModal } from "../../../stores/modals";
-import { ThemeIndicator } from "./ThemeIndicator";
-import { ScrollToTop } from "./ScrollToTop";
+
 import { getFocus } from "../../../signals/core";
+import { showModal } from "../../../stores/modals";
+import { Button } from "../../common/Button";
+
+import { ScrollToTop } from "./ScrollToTop";
+import { ThemeIndicator } from "./ThemeIndicator";
+import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <footer class="relative text-xs text-sub">
+    <footer class="text-sub relative text-xs">
       <ScrollToTop />
       <button
         type="button"
         id="commandLineMobileButton"
-        class="fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full bg-main text-center leading-12 text-bg"
+        class="bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12"
         onClick={() => {
           showModal("Commandline");
         }}
@@ -40,7 +42,7 @@ export function Footer(): JSXElement {
           "opacity-0": getFocus(),
         }}
       >
-        <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
+        <div class="xs:grid-cols-2 grid grid-cols-1 justify-items-start sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"

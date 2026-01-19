@@ -1,19 +1,20 @@
-import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
-import { Button } from "../common/Button";
-import { showModal } from "../../stores/modals";
-import AsyncContent from "../common/AsyncContent";
-import { getActivePage } from "../../signals/core";
-import { getAds } from "../../signals/config";
-import { getContributorsList, getSupportersList } from "../../utils/json-data";
-import Ape from "../../ape";
 import { intervalToDuration } from "date-fns";
-import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
-import { ChartJs } from "../common/ChartJs";
+import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
+
+import Ape from "../../ape";
+import { getAds } from "../../signals/config";
+import { getActivePage } from "../../signals/core";
 import { getThemeColors } from "../../signals/theme";
+import { showModal } from "../../stores/modals";
+import { getContributorsList, getSupportersList } from "../../utils/json-data";
+import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
+import AsyncContent from "../common/AsyncContent";
+import { Button } from "../common/Button";
+import { ChartJs } from "../common/ChartJs";
 
 function H2(props: { icon: string; text: string }): JSXElement {
   return (
-    <h2 class="flex place-items-center gap-4 pb-4 text-4xl text-sub">
+    <h2 class="text-sub flex place-items-center gap-4 pb-4 text-4xl">
       <i class={props.icon}></i>
       {props.text}
     </h2>
@@ -22,7 +23,7 @@ function H2(props: { icon: string; text: string }): JSXElement {
 
 function H3(props: { icon: string; text: string }): JSXElement {
   return (
-    <h3 class="flex place-items-center gap-2 pb-2 text-sub">
+    <h3 class="text-sub flex place-items-center gap-2 pb-2">
       <i class={props.icon}></i>
       {props.text}
     </h3>
@@ -52,7 +53,7 @@ export function AboutPage(): JSXElement {
 
   return (
     <Show when={isOpen}>
-      <section class="text-center text-sub">
+      <section class="text-sub text-center">
         Created with love by Miodec.
         <br />
         <a href="#supporters_title">Supported</a> and{" "}
@@ -156,7 +157,7 @@ export function AboutPage(): JSXElement {
             />
           )}
         </AsyncContent>
-        <div class="text-right text-xs text-sub">
+        <div class="text-sub text-right text-xs">
           distribution of time 60 leaderboard results (wpm)
         </div>
       </section>

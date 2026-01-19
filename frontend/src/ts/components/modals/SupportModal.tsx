@@ -1,7 +1,8 @@
 import { JSXElement } from "solid-js";
-import { AnimatedModal } from "../common/AnimatedModal";
-import { showModal } from "../../stores/modals";
+
 import { setCommandlineSubgroup } from "../../signals/core";
+import { showModal } from "../../stores/modals";
+import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
 export function SupportModal(): JSXElement {
@@ -19,7 +20,7 @@ export function SupportModal(): JSXElement {
         not be possible without you and your continued support.{" "}
         <i class="fas fa-heart"></i>
       </div>
-      <div class="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
+      <div class="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-4">
         <Button
           type="button"
           onClick={() => {
