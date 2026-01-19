@@ -12,7 +12,7 @@ export function showIfNotClosedBefore(): void {
   if (!closed.get()) {
     addBanner({
       level: 1,
-      icon: "fa fa-fw fa-shopping-bag",
+      icon: "fas fa-fw fa-shopping-bag",
       allowHtml: true,
       text: `New merch store now open, including a limited edition metal keycap! <a target="_blank" rel="noopener" href="https://mktp.co/merch">monkeytype.store</a>`,
       imagePath: "./images/merch3.png",
