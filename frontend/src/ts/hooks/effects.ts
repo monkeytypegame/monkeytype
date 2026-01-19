@@ -30,8 +30,9 @@ export function createDebouncedEffectOn<
   deps: T,
   fn: (value: OnValue<T>, prev: OnValue<T> | undefined, prevValue?: U) => U,
   options: { defer?: boolean } = {},
+  debounceOptions: { atBegin?: boolean } = {},
 ): void {
-  const debouncedFn = debounce(delay, fn);
+  const debouncedFn = debounce(delay, fn, debounceOptions);
   //@ts-expect-error huh?
   createEffect(on(deps as unknown, debouncedFn as unknown, options));
 }
