@@ -26,7 +26,6 @@ type ChangeOptions = {
   loadingOptions?: LoadingOptions;
 };
 
-// NOTE: whenever adding a page add the pathname to the `firebase.json` rewrite rule
 const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
