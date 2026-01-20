@@ -3,6 +3,7 @@ import { render } from "solid-js/web";
 
 import { qsa } from "../utils/dom";
 
+import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
@@ -13,6 +14,7 @@ const components: Record<string, () => JSXElement> = {
   Modals: () => <Modals />,
   AboutPage: () => <AboutPage />,
   Overlays: () => <Overlays />,
+  Theme: () => <Theme />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

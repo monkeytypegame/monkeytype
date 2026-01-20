@@ -7,6 +7,9 @@
     <div id="mediaQueryDebug"></div>
     <load src="html/warnings.html" />
     <div class="customBackground"></div>
+
+    <!-- theme component adds to the head element, don't move to head.html -->
+    <Theme />
     <div id="notificationCenter">
       <div class="clearAll button hidden">
         <i class="fas fa-times"></i>
@@ -69,7 +72,7 @@
       async
       defer
     ></script>
-    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
+
     <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
     <script type="module" src="ts/index.ts"></script>
   </body>

@@ -1,10 +1,9 @@
 import { intervalToDuration } from "date-fns";
-import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
+import { createResource, For, JSXElement, Show } from "solid-js";
 
 import Ape from "../../ape";
 import { getAds } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
-import { getThemeColors } from "../../signals/theme";
 import { showModal } from "../../stores/modals";
 import { getContributorsList, getSupportersList } from "../../utils/json-data";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
@@ -46,10 +45,6 @@ export function AboutPage(): JSXElement {
   const [speedHistogram] = createResource(isOpen, async (open) =>
     open ? await fetchSpeedHistogram() : undefined,
   );
-
-  createEffect(() => {
-    console.log(getThemeColors());
-  });
 
   return (
     <Show when={isOpen}>
