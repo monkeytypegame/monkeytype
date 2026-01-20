@@ -10,7 +10,7 @@ import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <div class="text-sub relative text-xs">
+    <footer class="text-sub relative text-xs">
       <ScrollToTop />
       <button
         type="button"
@@ -105,6 +105,6 @@ export function Footer(): JSXElement {
           <VersionButton />
         </div>
       </div>
-    </div>
+    </footer>
   );
 }
