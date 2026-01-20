@@ -6,6 +6,10 @@
       {
         "source": "/@(test|settings|account|about|login|profile|friends|account-settings|leaderboards){,/**}",
         "destination": "/index.html"
+      },
+      {
+        "source": "/verify",
+        "destination": "/index.html"
       }
     ],
     "cleanUrls": true,
