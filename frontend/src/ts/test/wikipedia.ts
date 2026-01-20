@@ -64,8 +64,8 @@ const LANGUAGE_GROUP_TO_TLD: Partial<Record<LanguageGroupName, string>> = {
   euskera: "eu",
 };
 
-export function getTLD(langaugeGroup: LanguageGroupName): string {
-  return LANGUAGE_GROUP_TO_TLD[langaugeGroup] ?? "en";
+export function getTLD(languageGroup: LanguageGroupName): string {
+  return LANGUAGE_GROUP_TO_TLD[languageGroup] ?? "en";
 }
 
 type Post = {
