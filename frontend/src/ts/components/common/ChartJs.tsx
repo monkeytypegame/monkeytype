@@ -56,8 +56,6 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
     500,
     getTheme,
     (theme) => void chart?.updateColors(theme),
-    {},
-    { atBegin: true },
   );
 
   onCleanup(() => {
