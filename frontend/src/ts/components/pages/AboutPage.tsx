@@ -224,13 +224,19 @@ export function AboutPage(): JSXElement {
         </dl>
       </section>
       <Show when={getAds() === "sellout"}>
-        <div id="ad-about-1-wrapper" class="ad full-width advertisement ad-h">
+        <div
+          id="ad-about-1-wrapper"
+          class="ad full-width advertisement ad-h place-self-center"
+        >
           <div class="icon">
             <i class="fas fa-ad"></i>
           </div>
           <div id="ad-about-1"></div>
         </div>
-        <div id="ad-about-1-small-wrapper" class="ad advertisement ad-h-s">
+        <div
+          id="ad-about-1-small-wrapper"
+          class="ad advertisement ad-h-s place-self-center"
+        >
           <div class="icon small">
             <i class="fas fa-ad"></i>
           </div>
@@ -351,13 +357,19 @@ export function AboutPage(): JSXElement {
         </p>
       </section>
       <Show when={getAds() === "sellout"}>
-        <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">
+        <div
+          id="ad-about-2-wrapper"
+          class="ad full-width advertisement ad-h place-self-center"
+        >
           <div class="icon">
             <i class="fas fa-ad"></i>
           </div>
           <div id="ad-about-2"></div>
         </div>
-        <div id="ad-about-2-small-wrapper" class="ad advertisement ad-h-s">
+        <div
+          id="ad-about-2-small-wrapper"
+          class="ad advertisement ad-h-s place-self-center"
+        >
           <div class="icon small">
             <i class="fas fa-ad"></i>
           </div>
