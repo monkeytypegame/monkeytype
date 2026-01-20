@@ -1,33 +1,48 @@
 import { JSXElement } from "solid-js";
-import { VersionButton } from "./VersionButton";
-import { Button } from "../../common/Button";
+
+import { getFocus } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
-import "./Footer.scss";
-import { ThemeIndicator } from "./ThemeIndicator";
+import { Button } from "../../common/Button";
+
 import { ScrollToTop } from "./ScrollToTop";
+import { ThemeIndicator } from "./ThemeIndicator";
+import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <footer>
+    <footer class="text-sub relative text-xs">
       <ScrollToTop />
-      <div
+      <button
+        type="button"
         id="commandLineMobileButton"
+        class="bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12"
         onClick={() => {
           showModal("Commandline");
         }}
+        tabIndex="-1"
       >
         <i class="fas fa-terminal"></i>
-      </div>
+      </button>
 
-      <div class="keyTips">
+      <div
+        class="mb-8 text-center leading-loose transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
+        }}
+      >
         <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
         <br />
         <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
         - command line
       </div>
 
-      <div class="leftright">
-        <div class="left">
+      <div
+        class="-m-2 flex justify-between gap-8 transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
+        }}
+      >
+        <div class="xs:grid-cols-2 grid grid-cols-1 justify-items-start sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
@@ -85,7 +100,7 @@ export function Footer(): JSXElement {
             fixedWidthIcon
           />
         </div>
-        <div class="right">
+        <div class="flex flex-col items-end text-right lg:flex-row">
           <ThemeIndicator />
           <VersionButton />
         </div>

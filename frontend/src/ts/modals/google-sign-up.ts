@@ -11,7 +11,8 @@ import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
@@ -92,7 +93,7 @@ async function apply(): Promise<void> {
   disableInput();
   disableButton();
 
-  Loader.show();
+  showLoaderBar();
   const name = modal
     .getModal()
     .qsr<HTMLInputElement>("input")
@@ -113,7 +114,7 @@ async function apply(): Promise<void> {
       await AccountController.loadUser(signedInUser.user);
 
       signedInUser = undefined;
-      Loader.hide();
+      hideLoaderBar();
       void hide();
     }
   } catch (e) {
@@ -132,7 +133,7 @@ async function apply(): Promise<void> {
     AccountController.signOut();
     signedInUser = undefined;
     void hide();
-    Loader.hide();
+    hideLoaderBar();
     return;
   }
 }

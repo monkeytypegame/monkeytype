@@ -1,22 +1,22 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
-import * as ThemeColors from "../elements/theme-colors";
 import { format } from "date-fns/format";
 import { getActivePage } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
+import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
-  Loader.hide();
+  hideLoaderBar();
   $("#ad-result-wrapper").removeClass("hidden");
   $("#ad-result-small-wrapper").removeClass("hidden");
   $("#testConfig").removeClass("hidden");
@@ -53,7 +53,7 @@ let firefoxClipboardNotificationShown = false;
  */
 async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const { domToCanvas } = await import("modern-screenshot");
-  Loader.show(true);
+  showLoaderBar(true);
 
   if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
@@ -135,7 +135,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
     // Target the HTML root to include .customBackground
     const fullCanvas = await domToCanvas(root, {
-      backgroundColor: await ThemeColors.get("bg"),
+      backgroundColor: getTheme().bg,
       // Sharp output
       scale: window.devicePixelRatio ?? 1,
       style: {

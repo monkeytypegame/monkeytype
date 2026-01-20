@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #111;
-  --main-color: #eee;
-  --caret-color: #eee;
-  --sub-color: #444;
-  --sub-alt-color: #1a1a1a;
-  --text-color: #eee;
-  --error-color: #eee;
-  --error-extra-color: #b3b3b3;
-  --colorful-error-color: #eee;
-  --colorful-error-extra-color: #b3b3b3;
-}
-
 @keyframes rgb {
   0% {
     color: hsl(120, 39%, 49%);

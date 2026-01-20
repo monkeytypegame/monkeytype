@@ -72,7 +72,7 @@ body {
 
 @media (prefers-reduced-motion) {
   body:not(.ignore-reduced-motion)
-    *:not(.fa-spin, #backgroundLoader, .preloader) {
+    *:not(.fa-spin, .animate-\[loader\], .preloader) {
     animation: none !important;
     transition: none !important;
 
@@ -85,5 +85,11 @@ body {
 
   html {
     scroll-behavior: auto !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #commandLineMobileButton {
+    display: grid !important;
   }
 }

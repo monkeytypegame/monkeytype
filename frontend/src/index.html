@@ -3,12 +3,13 @@
   <load src="html/head.html" />
 
   <body>
+    <Overlays />
     <div id="mediaQueryDebug"></div>
     <load src="html/warnings.html" />
-    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
-    <div id="backgroundLoader" class="hidden"></div>
-    <div id="bannerCenter" class="focus"></div>
+
+    <!-- theme component adds to the head element, don't move to head.html -->
+    <Theme />
     <div id="notificationCenter">
       <div class="clearAll button hidden">
         <i class="fas fa-times"></i>
@@ -38,7 +39,7 @@
         </div>
         <load src="html/pages/loading.html" />
         <div
-          class="page pageAbout hidden full-width content-grid"
+          class="page pageAbout full-width content-grid grid hidden gap-8"
           id="pageAbout"
         >
           <AboutPage />
@@ -71,7 +72,7 @@
       async
       defer
     ></script>
-    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
+
     <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
     <script type="module" src="ts/index.ts"></script>
   </body>

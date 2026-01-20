@@ -1,6 +1,7 @@
 import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
@@ -47,11 +48,11 @@ async function submitQuote(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.add({
     body: { text, source, language, captcha },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to submit quote", -1, { response });

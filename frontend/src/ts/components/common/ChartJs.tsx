@@ -1,14 +1,16 @@
-import { onMount, onCleanup, createEffect, JSXElement } from "solid-js";
 import {
   Chart,
-  ChartType,
   ChartData,
   ChartOptions,
+  ChartType,
   DefaultDataPoint,
 } from "chart.js";
-import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
+
 import { ChartWithUpdateColors } from "../../controllers/chart-controller";
-import { getThemeColors } from "../../signals/theme";
+import { createDebouncedEffectOn } from "../../hooks/effects";
+import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { getTheme } from "../../signals/theme";
 
 type ChartJSProps<
   T extends ChartType = ChartType,
@@ -48,20 +50,17 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
       chart.options = props.options;
     }
     chart.update();
-    void chart.updateColors();
   });
 
-  createEffect(() => {
-    //react on theme changes
-    const colors = getThemeColors();
-    if (!chart) return;
-
-    void chart.updateColors(colors);
-  });
+  createDebouncedEffectOn(
+    125,
+    getTheme,
+    (theme) => void chart?.updateColors(theme),
+  );
 
   onCleanup(() => {
     chart?.destroy();
   });
 
-  return <canvas ref={canvasRef}></canvas>;
+  return <canvas class="chartCanvas" ref={canvasRef}></canvas>;
 }

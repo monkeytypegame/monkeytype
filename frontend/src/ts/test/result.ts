@@ -5,9 +5,9 @@ import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
-import * as ThemeColors from "../elements/theme-colors";
 import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
@@ -48,6 +48,7 @@ import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../states/connection";
 import { currentQuote } from "./test-words";
+import { getTheme } from "../signals/theme";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -137,7 +138,7 @@ async function updateChartData(): Promise<void> {
     chartData2.pop();
   }
 
-  const subcolor = await ThemeColors.get("sub");
+  const subcolor = getTheme().sub;
 
   if (Config.funbox.length > 0) {
     let content = "";
@@ -281,7 +282,7 @@ function applyFakeChartData(): void {
 }
 
 export async function updateChartPBLine(): Promise<void> {
-  const themecolors = await ThemeColors.getAll();
+  const themecolors = getTheme();
   const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
@@ -724,7 +725,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         );
         // console.log("new pb for tag " + tag.display);
       } else {
-        const themecolors = await ThemeColors.getAll();
+        const themecolors = getTheme();
         resultAnnotation.push({
           display: true,
           type: "line",
@@ -999,7 +1000,6 @@ export async function update(
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
@@ -1332,7 +1332,6 @@ $(".pageTest #result .chart .chartLegend button").on("click", async (event) => {
   updateResultChartDataVisibility();
   updateMinMaxChartValues();
   applyMinMaxChartValues();
-  void ChartController.result.updateColors();
   ChartController.result.update();
 });
 
@@ -1348,14 +1347,14 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
   if ($button.hasClass("fas")) {
     // Remove from
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.removeQuoteFromFavorites({
       body: {
         language: quoteLang,
         quoteId,
       },
     });
-    Loader.hide();
+    hideLoaderBar();
 
     Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
@@ -1368,11 +1367,11 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     }
   } else {
     // Add to favorites
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.addQuoteToFavorites({
       body: { language: quoteLang, quoteId },
     });
-    Loader.hide();
+    hideLoaderBar();
 
     Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
@@ -1403,7 +1402,6 @@ ConfigEvent.subscribe(async ({ key }) => {
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    void ChartController.result.updateColors();
     ChartController.result.resize();
   }
 });
