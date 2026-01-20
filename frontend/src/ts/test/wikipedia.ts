@@ -7,231 +7,65 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 
-export async function getTLD(
-  languageGroup: LanguageGroupName,
-): Promise<
-  | "en"
-  | "es"
-  | "fr"
-  | "de"
-  | "pt"
-  | "ar"
-  | "it"
-  | "la"
-  | "af"
-  | "ko"
-  | "ru"
-  | "pl"
-  | "cs"
-  | "sk"
-  | "uk"
-  | "lt"
-  | "id"
-  | "el"
-  | "tr"
-  | "th"
-  | "ta"
-  | "sl"
-  | "hr"
-  | "nl"
-  | "da"
-  | "hu"
-  | "no"
-  | "nn"
-  | "he"
-  | "ms"
-  | "ro"
-  | "fi"
-  | "et"
-  | "cy"
-  | "fa"
-  | "kk"
-  | "vi"
-  | "sv"
-  | "sr"
-  | "ka"
-  | "ca"
-  | "bg"
-  | "eo"
-  | "bn"
-  | "ur"
-  | "hy"
-  | "my"
-  | "hi"
-  | "mk"
-  | "uz"
-  | "be"
-  | "az"
-  | "lv"
-  | "eu"
-> {
-  // language group to tld
-  switch (languageGroup) {
-    case "english":
-      return "en";
+const LANGUAGE_GROUP_TO_TLD: Partial<Record<LanguageGroupName, string>> = {
+  english: "en",
+  spanish: "es",
+  french: "fr",
+  german: "de",
+  portuguese: "pt",
+  arabic: "ar",
+  italian: "it",
+  latin: "la",
+  afrikaans: "af",
+  korean: "ko",
+  russian: "ru",
+  polish: "pl",
+  czech: "cs",
+  slovak: "sk",
+  ukrainian: "uk",
+  lithuanian: "lt",
+  indonesian: "id",
+  greek: "el",
+  turkish: "tr",
+  thai: "th",
+  tamil: "ta",
+  slovenian: "sl",
+  croatian: "hr",
+  dutch: "nl",
+  danish: "da",
+  hungarian: "hu",
+  norwegian_bokmal: "no",
+  norwegian_nynorsk: "nn",
+  hebrew: "he",
+  malay: "ms",
+  romanian: "ro",
+  finnish: "fi",
+  estonian: "et",
+  welsh: "cy",
+  persian: "fa",
+  kazakh: "kk",
+  vietnamese: "vi",
+  swedish: "sv",
+  serbian: "sr",
+  georgian: "ka",
+  catalan: "ca",
+  bulgarian: "bg",
+  esperanto: "eo",
+  bangla: "bn",
+  urdu: "ur",
+  armenian: "hy",
+  myanmar: "my",
+  hindi: "hi",
+  macedonian: "mk",
+  uzbek: "uz",
+  belarusian: "be",
+  azerbaijani: "az",
+  latvian: "lv",
+  euskera: "eu",
+};
 
-    case "spanish":
-      return "es";
-
-    case "french":
-      return "fr";
-
-    case "german":
-      return "de";
-
-    case "portuguese":
-      return "pt";
-
-    case "arabic":
-      return "ar";
-
-    case "italian":
-      return "it";
-
-    case "latin":
-      return "la";
-
-    case "afrikaans":
-      return "af";
-
-    case "korean":
-      return "ko";
-
-    case "russian":
-      return "ru";
-
-    case "polish":
-      return "pl";
-
-    case "czech":
-      return "cs";
-
-    case "slovak":
-      return "sk";
-
-    case "ukrainian":
-      return "uk";
-
-    case "lithuanian":
-      return "lt";
-
-    case "indonesian":
-      return "id";
-
-    case "greek":
-      return "el";
-
-    case "turkish":
-      return "tr";
-
-    case "thai":
-      return "th";
-
-    case "tamil":
-      return "ta";
-
-    case "slovenian":
-      return "sl";
-
-    case "croatian":
-      return "hr";
-
-    case "dutch":
-      return "nl";
-
-    case "danish":
-      return "da";
-
-    case "hungarian":
-      return "hu";
-
-    case "norwegian_bokmal":
-      return "no";
-
-    case "norwegian_nynorsk":
-      return "nn";
-
-    case "hebrew":
-      return "he";
-
-    case "malay":
-      return "ms";
-
-    case "romanian":
-      return "ro";
-
-    case "finnish":
-      return "fi";
-
-    case "estonian":
-      return "et";
-
-    case "welsh":
-      return "cy";
-
-    case "persian":
-      return "fa";
-
-    case "kazakh":
-      return "kk";
-
-    case "vietnamese":
-      return "vi";
-
-    case "swedish":
-      return "sv";
-
-    case "serbian":
-      return "sr";
-
-    case "georgian":
-      return "ka";
-
-    case "catalan":
-      return "ca";
-
-    case "bulgarian":
-      return "bg";
-
-    case "esperanto":
-      return "eo";
-
-    case "bangla":
-      return "bn";
-
-    case "urdu":
-      return "ur";
-
-    case "armenian":
-      return "hy";
-
-    case "myanmar":
-      return "my";
-
-    case "hindi":
-      return "hi";
-
-    case "macedonian":
-      return "mk";
-
-    case "uzbek":
-      return "uz";
-
-    case "belarusian":
-      return "be";
-
-    case "azerbaijani":
-      return "az";
-
-    case "latvian":
-      return "lv";
-
-    case "euskera":
-      return "eu";
-
-    default:
-      return "en";
-  }
+export function getTLD(langaugeGroup: LanguageGroupName): string {
+  return LANGUAGE_GROUP_TO_TLD[langaugeGroup] ?? "en";
 }
 
 type Post = {
@@ -268,7 +102,7 @@ export async function getSection(
 
   const currentLanguageGroup = getGroupForLanguage(language);
   if (currentLanguageGroup !== undefined) {
-    urlTLD = await getTLD(currentLanguageGroup);
+    urlTLD = getTLD(currentLanguageGroup);
   }
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
