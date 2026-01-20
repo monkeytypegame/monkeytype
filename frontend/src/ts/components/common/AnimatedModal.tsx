@@ -263,32 +263,30 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   });
 
   return (
-    <Show when={visibility()}>
-      <dialog
-        id={`${props.id as string}Modal`}
-        ref={dialogRef}
-        class={cn(
-          "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
-          props.wrapperClass,
-        )}
-        onKeyDown={handleKeyDown}
-        onMouseDown={handleBackdropClick}
-      >
-        <div class="pointer-events-none flex h-full w-full items-center justify-center">
-          <div
-            class={cn(
-              "modal rounded-double bg-bg text-text ring-sub-alt pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto p-4 ring-4 sm:p-8",
-              props.modalClass,
-            )}
-            ref={modalRef}
-          >
-            <Show when={props.title !== undefined && props.title !== ""}>
-              <div class="text-sub text-2xl">{props.title}</div>
-            </Show>
-            {props.children}
-          </div>
+    <dialog
+      id={`${props.id as string}Modal`}
+      ref={dialogRef}
+      class={cn(
+        "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+        props.wrapperClass,
+      )}
+      onKeyDown={handleKeyDown}
+      onMouseDown={handleBackdropClick}
+    >
+      <div class="pointer-events-none flex h-full w-full items-center justify-center">
+        <div
+          class={cn(
+            "modal rounded-double bg-bg text-text ring-sub-alt pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto p-4 ring-4 sm:p-8",
+            props.modalClass,
+          )}
+          ref={modalRef}
+        >
+          <Show when={props.title !== undefined && props.title !== ""}>
+            <div class="text-sub text-2xl">{props.title}</div>
+          </Show>
+          {props.children}
         </div>
-      </dialog>
-    </Show>
+      </div>
+    </dialog>
   );
 }
