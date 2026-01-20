@@ -391,7 +391,7 @@ export function isElementVisible(query: string): boolean {
 export function isPopupVisible(popupId: string): boolean {
   return (
     isElementVisible(`#popups #${popupId}`) ||
-    isElementVisible("#solidmodals #" + popupId)
+    isElementVisible(`#solidmodals #${popupId}`)
   );
 }
 
