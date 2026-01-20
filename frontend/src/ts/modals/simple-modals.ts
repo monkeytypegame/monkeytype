@@ -46,7 +46,7 @@ import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs, qsr } from "../utils/dom";
+import { qsr } from "../utils/dom";
 import { list, PopupKey, showPopup } from "./simple-modals-base";
 
 export { list, showPopup };
@@ -1274,8 +1274,4 @@ list.lbGoToPage = new SimpleModal({
       showNotification: false,
     };
   },
-});
-
-qs("#bannerCenter")?.onChild("click", ".banner .text .openNameChange", () => {
-  showPopup("updateName");
 });
