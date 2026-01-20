@@ -45,24 +45,24 @@
       }
     }
   }
-  header {
-    nav {
-      font-size: 0.9rem;
-      line-height: 0.9rem;
-      gap: 0.25rem;
-      .view-account {
-        .text {
-          display: none;
-        }
-      }
-    }
-    #logo {
-      grid-template-columns: 1fr;
-      .text {
-        display: none;
-      }
-    }
-  }
+  // header {
+  //   nav {
+  //     font-size: 0.9rem;
+  //     line-height: 0.9rem;
+  //     gap: 0.25rem;
+  //     .view-account {
+  //       .text {
+  //         display: none;
+  //       }
+  //     }
+  //   }
+  //   #logo {
+  //     grid-template-columns: 1fr;
+  //     .text {
+  //       display: none;
+  //     }
+  //   }
+  // }
   .pageLogin {
     flex-direction: column;
     gap: 4rem;
