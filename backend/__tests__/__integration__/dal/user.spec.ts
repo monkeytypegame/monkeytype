@@ -1,12 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import * as UserDAL from "../../../src/dal/user";
-import * as UserTestData from "../../__testData__/users";
-import { createConnection as createFriend } from "../../__testData__/connections";
-import { ObjectId } from "mongodb";
-import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
-import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
+import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
+import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
+import { ObjectId } from "mongodb";
+import * as UserDAL from "../../../src/dal/user";
+import { createConnection as createFriend } from "../../__testData__/connections";
+import * as UserTestData from "../../__testData__/users";
 
 const mockPersonalBest: PersonalBest = {
   acc: 1,
@@ -1122,6 +1122,55 @@ describe("UserDal", () => {
       expect(year2024[93]).toEqual(2);
     });
   });
+
+  describe("getUser", () => {
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getUser(user.uid, "read");
+
+      expect(read.personalBests).toEqual({
+        custom: {},
+        quote: {},
+        time: {},
+        words: {},
+        zen: {},
+      });
+    });
+  });
+
+  describe("getUserByName", () => {
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getUserByName(user.name, "read");
+
+      expect(read.personalBests).toEqual({
+        custom: {},
+        quote: {},
+        time: {},
+        words: {},
+        zen: {},
+      });
+    });
+  });
+
+  describe("getPersonalBests", () => {
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getPersonalBests(user.uid, "time", "15");
+
+      expect(read).toBeUndefined();
+    });
+  });
+
   describe("getPartialUser", () => {
     it("should throw for unknown user", async () => {
       await expect(async () =>
