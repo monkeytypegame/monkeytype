@@ -1346,7 +1346,7 @@ function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 
-createDebouncedEffectOn(500, getTheme, (theme) => {
+createDebouncedEffectOn(125, getTheme, (theme) => {
   void result.updateColors(theme);
   void accountHistory.updateColors(theme);
   void accountHistogram.updateColors(theme);

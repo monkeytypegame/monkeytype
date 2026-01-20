@@ -37,7 +37,7 @@ export function Theme(): JSXElement {
     Notifications.add("Failed to load theme", 0);
   };
 
-  createDebouncedEffectOn(100, getTheme, (colors) => {
+  createDebouncedEffectOn(125, getTheme, (colors) => {
     styleEl()?.setHtml(`
 :root {
     --bg-color: ${colors.bg};

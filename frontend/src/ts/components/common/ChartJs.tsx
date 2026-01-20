@@ -53,7 +53,7 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   });
 
   createDebouncedEffectOn(
-    500,
+    125,
     getTheme,
     (theme) => void chart?.updateColors(theme),
   );
