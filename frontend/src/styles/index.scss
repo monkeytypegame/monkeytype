@@ -1,11 +1,3 @@
-// layer order
-@layer normalize; /* Normalize stuff */
-@layer theme, base, components, properties; /* Tailwind stuff */
-@layer vendor; /* Vendor files */
-@layer custom-styles; /* scss files */
-@layer hidden; /* custom hidden layer */
-@layer utilities; /* Tailwind again, make them override scss files */
-
 @layer hidden {
   // custom layer to hide elements without using !important
   // (as long as this layer is higher than custom-styles)

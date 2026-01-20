@@ -1,10 +1,9 @@
 import { intervalToDuration } from "date-fns";
-import { createEffect, createResource, For, JSXElement, Show } from "solid-js";
+import { createResource, For, JSXElement, Show } from "solid-js";
 
 import Ape from "../../ape";
 import { getAds } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
-import { getThemeColors } from "../../signals/theme";
 import { showModal } from "../../stores/modals";
 import { getContributorsList, getSupportersList } from "../../utils/json-data";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
@@ -46,10 +45,6 @@ export function AboutPage(): JSXElement {
   const [speedHistogram] = createResource(isOpen, async (open) =>
     open ? await fetchSpeedHistogram() : undefined,
   );
-
-  createEffect(() => {
-    console.log(getThemeColors());
-  });
 
   return (
     <Show when={isOpen}>
@@ -229,13 +224,19 @@ export function AboutPage(): JSXElement {
         </dl>
       </section>
       <Show when={getAds() === "sellout"}>
-        <div id="ad-about-1-wrapper" class="ad full-width advertisement ad-h">
+        <div
+          id="ad-about-1-wrapper"
+          class="ad full-width advertisement ad-h place-self-center"
+        >
           <div class="icon">
             <i class="fas fa-ad"></i>
           </div>
           <div id="ad-about-1"></div>
         </div>
-        <div id="ad-about-1-small-wrapper" class="ad advertisement ad-h-s">
+        <div
+          id="ad-about-1-small-wrapper"
+          class="ad advertisement ad-h-s place-self-center"
+        >
           <div class="icon small">
             <i class="fas fa-ad"></i>
           </div>
@@ -356,13 +357,19 @@ export function AboutPage(): JSXElement {
         </p>
       </section>
       <Show when={getAds() === "sellout"}>
-        <div id="ad-about-2-wrapper" class="ad full-width advertisement ad-h">
+        <div
+          id="ad-about-2-wrapper"
+          class="ad full-width advertisement ad-h place-self-center"
+        >
           <div class="icon">
             <i class="fas fa-ad"></i>
           </div>
           <div id="ad-about-2"></div>
         </div>
-        <div id="ad-about-2-small-wrapper" class="ad advertisement ad-h-s">
+        <div
+          id="ad-about-2-small-wrapper"
+          class="ad advertisement ad-h-s place-self-center"
+        >
           <div class="icon small">
             <i class="fas fa-ad"></i>
           </div>
