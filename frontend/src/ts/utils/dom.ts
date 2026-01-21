@@ -272,9 +272,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Make element visible by scrolling the element's ancestor containers
    */
-  scrollIntoView(options: ScrollIntoViewOptions): this {
+  scrollIntoView(options?: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
-
     return this;
   }
 
@@ -285,6 +284,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.add(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.addClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
+      }
       this.native.classList.add(className);
     }
     return this;
@@ -297,6 +301,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.remove(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.removeClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
+      }
       this.native.classList.remove(className);
     }
     return this;
@@ -306,6 +315,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Check if the element has a class
    */
   hasClass(className: string): boolean {
+    if (className.includes(" ")) {
+      return className
+        .split(" ")
+        .filter((cn) => cn.length > 0)
+        .every((cn) => this.hasClass(cn));
+    }
     return this.native.classList.contains(className);
   }
 
@@ -718,6 +733,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's height + margin
+   */
+
+  getOuterHeight(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().height +
+      parseFloat(style.marginTop) +
+      parseFloat(style.marginBottom)
+    );
+  }
+
+  /**
+   * Get The element's width + margin
+   */
+
+  getOuterWidth(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().width +
+      parseFloat(style.marginLeft) +
+      parseFloat(style.marginRight)
+    );
+  }
+
+  /**
    * Get the element's width
    */
   getOffsetWidth(): number {
@@ -743,6 +786,24 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   getOffsetLeft(): number {
     return this.native.offsetLeft;
+  }
+
+  /**
+   * Get the element's children wrapped in ElementWithUtils instances.
+   *
+   * Note: This method returns a new array of wrappers, but each wrapper maintains
+   * a reference to the actual DOM element. Any operations performed on the returned
+   * children (e.g., addClass, remove, setHtml) will modify the actual DOM elements
+   * and reflect their live DOM state.
+   *
+   * @returns An ElementsWithUtils array containing wrapped child elements
+   */
+  getChildren(): ElementsWithUtils {
+    const children = Array.from(this.native.children);
+    const convertedChildren = new ElementsWithUtils(
+      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
+    );
+    return convertedChildren;
   }
 
   /**
@@ -855,8 +916,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Focus the element
    */
-  focus(): void {
-    this.native.focus();
+  focus(options?: FocusOptions): this {
+    this.native.focus(options);
+    return this;
   }
 
   /**

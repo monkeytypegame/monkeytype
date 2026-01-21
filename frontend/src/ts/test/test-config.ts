@@ -3,68 +3,68 @@ import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
-import { applyReducedMotion, promiseAnimate } from "../utils/misc";
+import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";
-import { animate } from "animejs";
+import { qs, qsa } from "../utils/dom";
 
 export function show(): void {
-  $("#testConfig").removeClass("invisible");
-  $("#mobileTestConfigButton").removeClass("invisible");
+  qs("#testConfig")?.removeClass("invisible");
+  qs("#mobileTestConfigButton")?.removeClass("invisible");
 }
 
 export function hide(): void {
-  $("#testConfig").addClass("invisible");
-  $("#mobileTestConfigButton").addClass("invisible");
+  qs("#testConfig")?.addClass("invisible");
+  qs("#mobileTestConfigButton")?.addClass("invisible");
 }
 
 export async function instantUpdate(): Promise<void> {
-  $("#testConfig .mode .textButton").removeClass("active");
-  $("#testConfig .mode .textButton[mode='" + Config.mode + "']").addClass(
+  qsa("#testConfig .mode .textButton")?.removeClass("active");
+  qs("#testConfig .mode .textButton[mode='" + Config.mode + "']")?.addClass(
     "active",
   );
 
-  $("#testConfig .puncAndNum").addClass("hidden");
-  $("#testConfig .spacer").addClass("hidden");
-  $("#testConfig .time").addClass("hidden");
-  $("#testConfig .wordCount").addClass("hidden");
-  $("#testConfig .customText").addClass("hidden");
-  $("#testConfig .quoteLength").addClass("hidden");
-  $("#testConfig .zen").addClass("hidden");
+  qs("#testConfig .puncAndNum")?.hide();
+  qsa("#testConfig .spacer")?.hide();
+  qs("#testConfig .time")?.hide();
+  qs("#testConfig .wordCount")?.hide();
+  qs("#testConfig .customText")?.hide();
+  qs("#testConfig .quoteLength")?.hide();
+  qs("#testConfig .zen")?.hide();
 
   if (Config.mode === "time") {
-    $("#testConfig .puncAndNum").removeClass("hidden").css({
+    qs("#testConfig .puncAndNum")?.show()?.setStyle({
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("hidden");
-    $("#testConfig .rightSpacer").removeClass("hidden");
-    $("#testConfig .time").removeClass("hidden");
+    qs("#testConfig .leftSpacer")?.show();
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .time")?.show();
 
     updateActiveExtraButtons("time", Config.time);
   } else if (Config.mode === "words") {
-    $("#testConfig .puncAndNum").removeClass("hidden").css({
+    qs("#testConfig .puncAndNum")?.show()?.setStyle({
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("hidden");
-    $("#testConfig .rightSpacer").removeClass("hidden");
-    $("#testConfig .wordCount").removeClass("hidden");
+    qs("#testConfig .leftSpacer")?.show();
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .wordCount")?.show();
 
     updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
-    $("#testConfig .rightSpacer").removeClass("hidden");
-    $("#testConfig .quoteLength").removeClass("hidden");
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .quoteLength")?.show();
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
-    $("#testConfig .puncAndNum").removeClass("hidden").css({
+    qs("#testConfig .puncAndNum")?.show()?.setStyle({
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("hidden");
-    $("#testConfig .rightSpacer").removeClass("hidden");
-    $("#testConfig .customText").removeClass("hidden");
+    qs("#testConfig .leftSpacer")?.show();
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .customText")?.show();
   }
 
   updateActiveExtraButtons("quoteLength", Config.quoteLength);
@@ -113,21 +113,21 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     zen: false,
   };
 
-  const puncAndNumEl = $("#testConfig .puncAndNum");
+  const puncAndNumEl = qs("#testConfig .puncAndNum");
 
   if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
     puncAndNumEl
-      .css({
+      ?.setStyle({
         width: "unset",
-        opacity: 1,
+        opacity: "1",
       })
-      .removeClass("hidden");
+      ?.show();
 
     const width = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0,
+      puncAndNumEl?.native.getBoundingClientRect().width ?? 0,
     );
 
-    animate(puncAndNumEl[0] as HTMLElement, {
+    puncAndNumEl?.animate({
       width: [
         (puncAndNumVisible[previous] ? width : 0) + "px",
         (puncAndNumVisible[current] ? width : 0) + "px",
@@ -142,22 +142,20 @@ async function update(previous: Mode, current: Mode): Promise<void> {
       ease: easing.both,
       onComplete: () => {
         if (puncAndNumVisible[current]) {
-          puncAndNumEl.css("width", "unset");
+          puncAndNumEl?.setStyle({ width: "unset" });
         } else {
-          puncAndNumEl.addClass("hidden");
+          puncAndNumEl?.hide();
         }
       },
     });
 
-    const leftSpacerEl = document.querySelector(
-      "#testConfig .leftSpacer",
-    ) as HTMLElement;
+    const leftSpacerEl = qs("#testConfig .leftSpacer");
 
-    leftSpacerEl.style.width = "0.5em";
-    leftSpacerEl.style.opacity = "1";
-    leftSpacerEl.classList.remove("hidden");
+    leftSpacerEl?.setStyle({ width: "0.5em" });
+    leftSpacerEl?.setStyle({ opacity: "1" });
+    leftSpacerEl?.show();
 
-    animate(leftSpacerEl, {
+    leftSpacerEl?.animate({
       width: [
         puncAndNumVisible[previous] ? "0.5em" : 0,
         puncAndNumVisible[current] ? "0.5em" : 0,
@@ -172,23 +170,21 @@ async function update(previous: Mode, current: Mode): Promise<void> {
       ease: easing.both,
       onComplete: () => {
         if (puncAndNumVisible[current]) {
-          leftSpacerEl.style.width = "";
+          leftSpacerEl?.setStyle({ width: "" });
         } else {
-          leftSpacerEl.classList.add("hidden");
+          leftSpacerEl?.hide();
         }
       },
     });
   }
 
-  const rightSpacerEl = document.querySelector(
-    "#testConfig .rightSpacer",
-  ) as HTMLElement;
+  const rightSpacerEl = qs("#testConfig .rightSpacer");
 
-  rightSpacerEl.style.width = "0.5em";
-  rightSpacerEl.style.opacity = "1";
-  rightSpacerEl.classList.remove("hidden");
+  rightSpacerEl?.setStyle({ width: "0.5em" });
+  rightSpacerEl?.setStyle({ opacity: "1" });
+  rightSpacerEl?.show();
 
-  animate(rightSpacerEl, {
+  rightSpacerEl?.animate({
     width: [
       previous === "zen" ? "0px" : "0.5em",
       current === "zen" ? "0px" : "0.5em",
@@ -202,34 +198,34 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     ease: easing.both,
     onComplete: () => {
       if (current === "zen") {
-        rightSpacerEl.classList.add("hidden");
+        rightSpacerEl?.hide();
       } else {
-        rightSpacerEl.style.width = "";
+        rightSpacerEl?.setStyle({ width: "" });
       }
     },
   });
 
-  const currentEl = $(`#testConfig .${submenu[current]}`);
-  const previousEl = $(`#testConfig .${submenu[previous]}`);
+  const currentEl = qs(`#testConfig .${submenu[current]}`);
+  const previousEl = qs(`#testConfig .${submenu[previous]}`);
 
   const previousWidth = Math.round(
-    previousEl[0]?.getBoundingClientRect().width ?? 0,
+    previousEl?.native.getBoundingClientRect().width ?? 0,
   );
 
-  previousEl.addClass("hidden");
-  currentEl.removeClass("hidden");
+  previousEl?.hide();
+  currentEl?.show();
 
   const currentWidth = Math.round(
-    currentEl[0]?.getBoundingClientRect().width ?? 0,
+    currentEl?.native.getBoundingClientRect().width ?? 0,
   );
 
-  previousEl.removeClass("hidden");
-  currentEl.addClass("hidden");
+  previousEl?.show();
+  currentEl?.hide();
 
   const widthDifference = currentWidth - previousWidth;
   const widthStep = widthDifference / 2;
 
-  await promiseAnimate(previousEl[0] as HTMLElement, {
+  await previousEl?.promiseAnimate({
     opacity: [1, 0],
     width: [previousWidth + "px", previousWidth + widthStep + "px"],
     duration: animTime / 2,
@@ -237,19 +233,19 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   });
 
   previousEl
-    .css({
-      opacity: 1,
+    ?.setStyle({
+      opacity: "1",
       width: "unset",
     })
-    .addClass("hidden");
+    ?.hide();
   currentEl
-    .css({
-      opacity: 0,
+    ?.setStyle({
+      opacity: "0",
       width: previousWidth + widthStep + "px",
     })
-    .removeClass("hidden");
+    ?.show();
 
-  await promiseAnimate(currentEl[0] as HTMLElement, {
+  await currentEl?.promiseAnimate({
     opacity: [0, 1],
     width: [previousWidth + widthStep + "px", currentWidth + "px"],
     duration: animTime / 2,
@@ -258,64 +254,64 @@ async function update(previous: Mode, current: Mode): Promise<void> {
 }
 
 function updateActiveModeButtons(mode: Mode): void {
-  $("#testConfig .mode .textButton").removeClass("active");
-  $("#testConfig .mode .textButton[mode='" + mode + "']").addClass("active");
+  qsa("#testConfig .mode .textButton")?.removeClass("active");
+  qs("#testConfig .mode .textButton[mode='" + mode + "']")?.addClass("active");
 }
 
 function updateActiveExtraButtons(key: string, value: ConfigValue): void {
   if (key === "time") {
-    $("#testConfig .time .textButton").removeClass("active");
+    qsa("#testConfig .time .textButton")?.removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
       : (value as number);
-    $(
+    qs(
       "#testConfig .time .textButton[timeConfig='" + timeCustom + "']",
-    ).addClass("active");
+    )?.addClass("active");
   } else if (key === "words") {
-    $("#testConfig .wordCount .textButton").removeClass("active");
+    qsa("#testConfig .wordCount .textButton")?.removeClass("active");
 
     const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
       ? "custom"
       : (value as number);
 
-    $(
+    qs(
       "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']",
-    ).addClass("active");
+    )?.addClass("active");
   } else if (key === "quoteLength") {
-    $("#testConfig .quoteLength .textButton").removeClass("active");
+    qsa("#testConfig .quoteLength .textButton")?.removeClass("active");
 
     if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
-      $("#testConfig .quoteLength .textButton[quotelength='all']").addClass(
+      qs("#testConfig .quoteLength .textButton[quotelength='all']")?.addClass(
         "active",
       );
     } else {
       (value as QuoteLength[]).forEach((ql) => {
-        $(
+        qs(
           "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']",
-        ).addClass("active");
+        )?.addClass("active");
       });
     }
   } else if (key === "numbers") {
     if (value === false) {
-      $("#testConfig .numbersMode.textButton").removeClass("active");
+      qs("#testConfig .numbersMode.textButton")?.removeClass("active");
     } else {
-      $("#testConfig .numbersMode.textButton").addClass("active");
+      qs("#testConfig .numbersMode.textButton")?.addClass("active");
     }
   } else if (key === "punctuation") {
     if (value === false) {
-      $("#testConfig .punctuationMode.textButton").removeClass("active");
+      qs("#testConfig .punctuationMode.textButton")?.removeClass("active");
     } else {
-      $("#testConfig .punctuationMode.textButton").addClass("active");
+      qs("#testConfig .punctuationMode.textButton")?.addClass("active");
     }
   }
 }
 
 export function showFavoriteQuoteLength(): void {
-  $("#testConfig .quoteLength .favorite").removeClass("hidden");
+  qs("#testConfig .quoteLength .favorite")?.show();
 }
 
 export function hideFavoriteQuoteLength(): void {
-  $("#testConfig .quoteLength .favorite").addClass("hidden");
+  qs("#testConfig .quoteLength .favorite")?.hide();
 }
 
 let ignoreConfigEvent = false;
