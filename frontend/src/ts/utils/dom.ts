@@ -782,17 +782,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the element's children
-   */
-  getChildren(): ElementsWithUtils {
-    const children = Array.from(this.native.children);
-    const convertedChildren = new ElementsWithUtils(
-      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
-    );
-    return convertedChildren;
-  }
-
-  /**
    * Animate the element using Anime.js
    * @param animationParams The Anime.js animation parameters
    * @returns The JSAnimation instance created by Anime.js
