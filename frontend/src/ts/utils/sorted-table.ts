@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ElementWithUtils } from "./dom";
 
 export const SortSchema = z.object({
   property: z.string(),
@@ -12,7 +13,7 @@ type Persistence = {
 };
 
 type SortedTableOptions<T> = {
-  table: string;
+  table: ElementWithUtils;
   data?: T[];
   buildRow: (entry: T) => HTMLTableRowElement;
 } & (
@@ -22,16 +23,13 @@ type SortedTableOptions<T> = {
 
 export class SortedTable<T> {
   protected data: { source: T; element?: HTMLTableRowElement }[] = [];
-  private table: JQuery<HTMLTableElement>;
+  private table: ElementWithUtils;
   private buildRow: (entry: T) => HTMLTableRowElement;
   private sort?: Sort;
   private persistence?: Persistence;
 
   constructor(options: SortedTableOptions<T>) {
-    this.table = $(options.table);
-    if (this.table === undefined) {
-      throw new Error(`No element found for ${options.table}`);
-    }
+    this.table = options.table;
 
     this.buildRow = options.buildRow;
 
@@ -49,10 +47,10 @@ export class SortedTable<T> {
     }
 
     //init headers
-    for (const col of this.table.find(`td[data-sort-property]`)) {
-      col.classList.add("sortable");
+    for (const col of this.table.qsa(`td[data-sort-property]`)) {
+      col.addClass("sortable");
       col.setAttribute("type", "button");
-      col.onclick = (e: MouseEvent) => {
+      col.on("click", (e: MouseEvent) => {
         const target = e.currentTarget as HTMLElement;
         const property = target.dataset["sortProperty"] as string;
         const defaultDirection =
@@ -69,7 +67,7 @@ export class SortedTable<T> {
         this.setSort(updatedSort);
 
         this.updateBody();
-      };
+      });
     }
   }
 
@@ -89,12 +87,12 @@ export class SortedTable<T> {
 
     const { property, descending } = this.sort;
     // Removes styling from previous sorting requests:
-    this.table.find("thead td").removeClass("headerSorted");
-    this.table.find("thead td").children("i").remove();
+    this.table.qsa("thead td").removeClass("headerSorted");
+    this.table.qsa("thead td").getChildren("i").remove();
     this.table
-      .find(`thead td[data-sort-property="${property}"]`)
+      .qsa(`thead td[data-sort-property="${property}"]`)
       .addClass("headerSorted")
-      .append(
+      .appendHtml(
         `<i class="fas ${
           descending ? "fa-sort-down" : "fa-sort-up"
         } aria-hidden="true"></i>`,
@@ -124,9 +122,9 @@ export class SortedTable<T> {
     });
   }
   public updateBody(): void {
-    const body = this.table.find("tbody");
-    body.empty();
-    body.append(
+    const body = this.table.qs("tbody");
+    body?.empty();
+    body?.append(
       this.getData().map((data) => {
         data.element ??= this.buildRow(data.source);
         return data.element;

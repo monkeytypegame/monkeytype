@@ -517,11 +517,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Append a child element
    */
-  append(element: HTMLElement | ElementWithUtils): this {
-    if (element instanceof ElementWithUtils) {
-      this.native.appendChild(element.native);
+  append(
+    elementOrElements:
+      | HTMLElement
+      | ElementWithUtils
+      | HTMLElement[]
+      | ElementsWithUtils
+      | ElementWithUtils[],
+  ): this {
+    if (elementOrElements instanceof ElementsWithUtils) {
+      this.native.append(...elementOrElements.native);
+      return this;
+    }
+
+    if (Array.isArray(elementOrElements)) {
+      for (const element of elementOrElements) {
+        if (element instanceof ElementWithUtils) {
+          this.native.append(element.native);
+        } else {
+          this.native.append(element);
+        }
+      }
+      return this;
+    }
+
+    if (elementOrElements instanceof ElementWithUtils) {
+      this.native.appendChild(elementOrElements.native);
     } else {
-      this.native.append(element);
+      this.native.append(elementOrElements);
     }
     return this;
   }
@@ -818,6 +841,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.select();
     }
   }
+
+  /**
+   * Get the element's children as ElementsWithUtils
+   */
+  getChildren(query?: string): ElementsWithUtils {
+    const children = Array.from(this.native.children)
+      .map((child) => {
+        if (
+          (query !== undefined && child.matches(query)) ||
+          query === undefined
+        ) {
+          return new ElementWithUtils<HTMLElement>(child as HTMLElement);
+        } else {
+          return null;
+        }
+      })
+      .filter((child) => child !== null);
+    return new ElementsWithUtils<HTMLElement>(...children);
+  }
 }
 
 /**
@@ -993,6 +1035,29 @@ export class ElementsWithUtils<
   setAttribute(key: string, value: string): this {
     for (const item of this) {
       item.setAttribute(key, value);
+    }
+    return this;
+  }
+
+  /**
+   * Get all children of all elements in the array as ElementsWithUtils
+   */
+  getChildren(query?: string): ElementsWithUtils {
+    const allChildren: ElementWithUtils[] = [];
+
+    for (const item of this) {
+      allChildren.push(...item.getChildren(query));
+    }
+
+    return new ElementsWithUtils(...allChildren);
+  }
+
+  /**
+   * Append HTML string to all elements in the array
+   */
+  appendHtml(htmlString: string): this {
+    for (const item of this) {
+      item.appendHtml(htmlString);
     }
     return this;
   }
