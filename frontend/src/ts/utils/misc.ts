@@ -734,7 +734,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 }
 
 export function triggerResize(): void {
-  $(window).trigger("resize");
+  window.dispatchEvent(new Event("resize"));
 }
 
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
