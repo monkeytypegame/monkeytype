@@ -6,7 +6,7 @@ type Breakpoints = Record<BreakpointKeys, boolean>;
 
 const styles = getComputedStyle(document.documentElement);
 const tw: Record<BreakpointKeys, number> = {
-  xxs: parseInt(styles.getPropertyValue("--breakpoint-xxs")),
+  xxs: 0,
   xs: parseInt(styles.getPropertyValue("--breakpoint-xs")),
   sm: parseInt(styles.getPropertyValue("--breakpoint-sm")),
   md: parseInt(styles.getPropertyValue("--breakpoint-md")),

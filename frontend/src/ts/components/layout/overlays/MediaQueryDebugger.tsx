@@ -36,6 +36,7 @@ export function MediaQueryDebugger(): JSXElement {
             <Match when={bp().md}>md</Match>
             <Match when={bp().sm}>sm</Match>
             <Match when={bp().xs}>xs</Match>
+            <Match when={bp().xxs}>xxs</Match>
           </Switch>
         </div>
       </div>
