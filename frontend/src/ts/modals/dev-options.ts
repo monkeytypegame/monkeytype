@@ -38,7 +38,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
   modalEl.qs(".toggleMediaQueryDebug")?.on("click", () => {
     mediaQueryDebugLevel++;
-    if (mediaQueryDebugLevel > 3) {
+    if (mediaQueryDebugLevel > 2) {
       mediaQueryDebugLevel = 0;
     }
     Notifications.add(

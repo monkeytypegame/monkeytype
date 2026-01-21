@@ -159,7 +159,6 @@ export async function onAuthStateChanged(
 
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
-    console.debug(user);
     if (user) {
       userPromise = loadUser(user);
     } else {
