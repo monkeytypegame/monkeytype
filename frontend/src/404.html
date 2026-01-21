@@ -2,6 +2,63 @@
 <html lang="en">
   <load src="html/head.html" />
   <body>
+    <script>
+      // Load theme from localStorage before page render to avoid flash
+      try {
+        const configStr = localStorage.getItem("config");
+        if (configStr) {
+          const config = JSON.parse(configStr);
+          const themeName = config.customTheme
+            ? "custom"
+            : config.theme || "serika_dark";
+
+          // Apply theme colors as CSS variables
+          if (config.customTheme && config.customThemeColors) {
+            const colors = config.customThemeColors;
+            const style = document.createElement("style");
+            style.id = "theme";
+            style.textContent = `
+:root {
+    --bg-color: ${colors[0]};
+    --main-color: ${colors[1]};
+    --caret-color: ${colors[2]};
+    --sub-color: ${colors[3]};
+    --sub-alt-color: ${colors[4]};
+    --text-color: ${colors[5]};
+    --error-color: ${colors[6]};
+    --error-extra-color: ${colors[7]};
+    --colorful-error-color: ${colors[8]};
+    --colorful-error-extra-color: ${colors[9]};
+}`;
+            document.head.appendChild(style);
+
+            // Update theme link to empty for custom theme
+            const themeLink = document.getElementById("currentTheme");
+            if (themeLink) themeLink.href = "";
+          } else {
+            // Load preset theme CSS
+            const themeLink = document.getElementById("currentTheme");
+            if (themeLink) themeLink.href = `/themes/${themeName}.css`;
+          }
+
+          // Apply dark mode class if needed
+          const bgColor = config.customTheme
+            ? config.customThemeColors[0]
+            : null;
+          if (bgColor) {
+            // Simple dark mode detection for custom themes
+            const hex = bgColor.replace("#", "");
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            if (brightness < 128) document.body.classList.add("darkMode");
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load theme from localStorage:", e);
+      }
+    </script>
     <script type="module" async>
       import { loadCSS } from "./ts/utils/misc";
       loadCSS("/css/fa.min.css", true);
@@ -63,6 +120,6 @@
         <load src="html/pages/404.html" />
       </main>
     </div>
-    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
+    <link rel="stylesheet" href="" id="currentTheme" />
   </body>
 </html>
