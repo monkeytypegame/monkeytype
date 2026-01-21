@@ -268,10 +268,13 @@ export async function getPartialUser<K extends keyof DBUser>(
   fields: K[],
 ): Promise<Pick<DBUser, K>> {
   const projection = new Map(fields.map((it) => [it, 1]));
-  const results = await getUsersCollection().findOne({ uid }, { projection });
-  if (results === null) throw new MonkeyError(404, "User not found", stack);
+  const partialUser = await getUsersCollection().findOne(
+    { uid },
+    { projection },
+  );
+  if (partialUser === null) throw new MonkeyError(404, "User not found", stack);
 
-  return results;
+  return migrateUser(partialUser);
 }
 
 export async function findByName(name: string): Promise<DBUser | undefined> {

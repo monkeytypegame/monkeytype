@@ -1205,6 +1205,24 @@ describe("UserDal", () => {
         },
       });
     });
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getPartialUser(user.uid, "read", [
+        "uid",
+        "personalBests",
+      ]);
+
+      expect(read.personalBests).toEqual({
+        custom: {},
+        quote: {},
+        time: {},
+        words: {},
+        zen: {},
+      });
+    });
   });
   describe("updateEmail", () => {
     it("throws for nonexisting user", async () => {
