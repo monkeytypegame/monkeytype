@@ -285,7 +285,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.classList.add(...className);
     } else {
       if (className.includes(" ")) {
-        return this.addClass(className.split(" "));
+        return this.addClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
       }
       this.native.classList.add(className);
     }
@@ -300,7 +302,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.classList.remove(...className);
     } else {
       if (className.includes(" ")) {
-        return this.removeClass(className.split(" "));
+        return this.removeClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
       }
       this.native.classList.remove(className);
     }
@@ -312,7 +316,10 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   hasClass(className: string): boolean {
     if (className.includes(" ")) {
-      return className.split(" ").every((cn) => this.hasClass(cn));
+      return className
+        .split(" ")
+        .filter((cn) => cn.length > 0)
+        .every((cn) => this.hasClass(cn));
     }
     return this.native.classList.contains(className);
   }
