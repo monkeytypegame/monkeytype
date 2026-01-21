@@ -3,6 +3,7 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
+import { addBanner } from "../stores/banners";
 
 /**
  * list of deferred callbacks to be executed once we reached ready state
@@ -1071,19 +1072,11 @@ function checkUniqueSelector(
     console.trace("Stack trace for qs/qsr call:");
     if (document.querySelector("#domUtilsQsWarning") !== null) return;
 
-    const bannerCenter = document.querySelector("#bannerCenter");
-    const warning = document.createElement("div");
-    warning.classList.add("psa", "bad", "content-grid");
-    warning.id = "domUtilsQsWarning";
-    warning.innerHTML = `
-        <div class="container">
-          <div class="icon lefticon"><i class="fas fa-fw fa-exclamation-triangle"></i></div>
-          <div class="text">
-             "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details."
-          </div>
-        </div>
-      </div>`;
-    bannerCenter?.appendChild(warning);
+    addBanner({
+      level: "error",
+      icon: "fas fa-exclamation-triangle",
+      text: "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details.",
+    });
   }
 }
 
