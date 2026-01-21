@@ -1116,6 +1116,10 @@ export class ElementsWithUtils<
     }
     return this;
   }
+
+  override indexOf(element: ElementWithUtils<T>): number {
+    return this.native.indexOf(element.native);
+  }
 }
 
 function checkUniqueSelector(
