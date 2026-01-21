@@ -37,7 +37,6 @@ import * as TimerProgress from "../test/timer-progress";
 import * as LiveBurst from "./live-burst";
 import * as LiveSpeed from "./live-speed";
 import * as Monkey from "./monkey";
-import { animate } from "animejs";
 import {
   blurInputElement,
   focusInputElement,
@@ -1098,7 +1097,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
-    animate(wordsEl, {
+    wordsEl.animate({
       marginLeft: newMargin,
       duration,
       ease,
@@ -1106,7 +1105,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      animate(afterNewLineEls[i] as ElementWithUtils, {
+      (afterNewLineEls[i] as ElementWithUtils)?.animate({
         marginLeft: newMargin,
         duration,
         ease,
@@ -1206,7 +1205,7 @@ export async function lineJump(
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
-      await Misc.promiseAnimate(wordsEl.native, {
+      await wordsEl.promiseAnimate({
         marginTop: newMarginTop,
         duration,
       });
