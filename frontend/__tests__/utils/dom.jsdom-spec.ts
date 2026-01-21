@@ -130,10 +130,6 @@ describe("dom", () => {
         await userEvent.click(clickTarget);
 
         //THEN
-
-        //This is the same behavior as jQuery `.on` with selector.
-        //The handler will be called two times,
-        //It does NOT call on the <section> or the parent element itself
         expect(handler).toHaveBeenCalledTimes(2);
 
         //First call is for childTarget inner2 (grand child of parent)

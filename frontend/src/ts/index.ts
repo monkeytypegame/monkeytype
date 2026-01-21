@@ -97,9 +97,6 @@ addToGlobal({
 });
 
 if (isDevEnvironment()) {
-  void import("jquery").then((jq) => {
-    addToGlobal({ $: jq.default });
-  });
   void getDevOptionsModal().then((module) => {
     module.appendButton();
   });
