@@ -126,7 +126,7 @@ export function startTest(now: number): boolean {
 type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
-  event?: JQuery.KeyDownEvent;
+  event?: KeyboardEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
 };
