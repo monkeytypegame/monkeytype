@@ -900,24 +900,22 @@ export async function updateWordLetters({
 // and sometimes we want it to be shifted to the left
 // (for example if the newline is typed incorrectly, or there are any extra letters after it)
 function getNlCharWidth(
-  lastWordInLine?: Element | HTMLElement,
+  lastWordInLine?: ElementWithUtils,
   checkIfIncorrect = true,
 ): number {
-  let nlChar: HTMLElement | null;
+  let nlChar: ElementWithUtils | null;
   if (lastWordInLine) {
-    nlChar = lastWordInLine.querySelector<HTMLElement>("letter.nlChar");
+    nlChar = lastWordInLine.qs("letter.nlChar");
   } else {
-    nlChar = document.querySelector<HTMLElement>(
-      "#words > .word > letter.nlChar",
-    );
+    nlChar = qs("#words > .word > letter.nlChar");
   }
   if (!nlChar) return 0;
-  if (checkIfIncorrect && nlChar.classList.contains("incorrect")) return 0;
-  const letterComputedStyle = window.getComputedStyle(nlChar);
+  if (checkIfIncorrect && nlChar.hasClass("incorrect")) return 0;
+  const letterComputedStyle = window.getComputedStyle(nlChar.native);
   const letterMargin =
     parseFloat(letterComputedStyle.marginLeft) +
     parseFloat(letterComputedStyle.marginRight);
-  return nlChar.offsetWidth + letterMargin;
+  return nlChar.getOffsetWidth() + letterMargin;
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
@@ -930,10 +928,10 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     : TestState.isLanguageRightToLeft;
 
   const wordsWrapperWidth = wordsWrapperEl.getOffsetWidth();
-  const wordsChildrenArr = [...wordsEl.native.children] as HTMLElement[];
+  const wordsChildrenArr = [...wordsEl.getChildren()];
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
-  const afterNewLineEls = wordsEl.native.getElementsByClassName("afterNewline");
+  const afterNewLineEls = wordsEl.qsa(".afterNewline");
 
   let wordsWidthBeforeActive = 0;
   let fullLineWidths = 0;
@@ -942,17 +940,19 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   let widthRemoved = 0;
   const widthRemovedFromLine: number[] = [];
   const afterNewlinesNewMargins: number[] = [];
-  const toRemove: HTMLElement[] = [];
+  const toRemove: ElementWithUtils[] = [];
 
   /* remove leading `.afterNewline` elements */
   for (const child of wordsChildrenArr) {
-    if (child.classList.contains("word")) {
+    if (child.hasClass("word")) {
       // only last leading `.afterNewline` element pushes `.word`s to right
       if (lastAfterNewLineElement) {
-        widthRemoved += parseFloat(lastAfterNewLineElement.style.marginLeft);
+        widthRemoved += parseFloat(
+          lastAfterNewLineElement.getStyle().marginLeft,
+        );
       }
       break;
-    } else if (child.classList.contains("afterNewline")) {
+    } else if (child.hasClass("afterNewline")) {
       toRemove.push(child);
       leadingNewLine = true;
       lastAfterNewLineElement = child;
@@ -963,21 +963,17 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   let lastElementIndex: number;
   // index of the active word in all #words.children
   // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-  const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl.native);
+  const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
   // this will be 0 or 1
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndex)
-    .filter((child) => child.classList.contains("afterNewline")).length;
+    .filter((child) => child.hasClass("afterNewline")).length;
   // the second `.afterNewline` after active word is visible during line jump
-  let lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord + 1] as
-    | HTMLElement
-    | undefined;
+  let lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord + 1];
   if (lastVisibleAfterNewline) {
     lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
   } else {
-    lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord] as
-      | HTMLElement
-      | undefined;
+    lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord];
     if (lastVisibleAfterNewline) {
       lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
     } else {
@@ -991,16 +987,16 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /*calculate .afterNewline & #words new margins + determine elements to remove*/
   for (let i = 0; i <= lastElementIndex; i++) {
-    const child = wordsChildrenArr[i] as HTMLElement;
-    if (child.classList.contains("word")) {
+    const child = wordsChildrenArr[i] as ElementWithUtils;
+    if (child.hasClass("word")) {
       leadingNewLine = false;
-      const childComputedStyle = window.getComputedStyle(child);
+      const childComputedStyle = window.getComputedStyle(child.native);
       const wordOuterWidth =
-        child.offsetWidth +
+        child.getOffsetWidth() +
         parseFloat(childComputedStyle.marginRight) +
         parseFloat(childComputedStyle.marginLeft);
-      const forWordLeft = Math.floor(child.offsetLeft);
-      const forWordWidth = Math.floor(child.offsetWidth);
+      const forWordLeft = Math.floor(child.getOffsetLeft());
+      const forWordWidth = Math.floor(child.getOffsetWidth());
       if (
         (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
         (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
@@ -1011,7 +1007,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
         fullLineWidths += wordOuterWidth;
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
       }
-    } else if (child.classList.contains("afterNewline")) {
+    } else if (child.hasClass("afterNewline")) {
       if (leadingNewLine) continue;
       const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
       fullLineWidths -= nlCharWidth + wordRightMargin;
@@ -1042,12 +1038,12 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   if (toRemove.length > 0) {
     for (const el of toRemove) el.remove();
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
-      const afterNewlineEl = afterNewLineEls[i] as HTMLElement;
+      const afterNewlineEl = afterNewLineEls[i] as ElementWithUtils;
       const currentLineIndent =
-        parseFloat(afterNewlineEl.style.marginLeft) || 0;
-      afterNewlineEl.style.marginLeft = `${
-        currentLineIndent - (widthRemovedFromLine[i] ?? 0)
-      }px`;
+        parseFloat(afterNewlineEl.getStyle().marginLeft) || 0;
+      afterNewlineEl.setStyle({
+        marginLeft: `${currentLineIndent - (widthRemovedFromLine[i] ?? 0)}px`,
+      });
     }
     if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.native.style.marginLeft) || 0;
@@ -1110,7 +1106,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      animate(afterNewLineEls[i] as Element, {
+      animate(afterNewLineEls[i] as ElementWithUtils, {
         marginLeft: newMargin,
         duration,
         ease,
@@ -1120,7 +1116,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     wordsEl.setStyle({ marginLeft: `${newMargin}px` });
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
+      afterNewLineEls[i]?.setStyle({ marginLeft: `${newMargin}px` });
     }
   }
 }
@@ -1140,13 +1136,13 @@ export function updatePremid(): void {
 }
 
 function removeTestElements(lastElementIndexToRemove: number): void {
-  const wordsChildren = wordsEl.native.children;
+  const wordsChildren = wordsEl.getChildren();
 
   if (wordsChildren === undefined) return;
 
   for (let i = lastElementIndexToRemove; i >= 0; i--) {
     const child = wordsChildren[i];
-    if (!child || !child.isConnected) continue;
+    if (!child || !child.native.isConnected) continue;
     child.remove();
   }
 }
@@ -1169,18 +1165,18 @@ export async function lineJump(
 
     // index of the active word in all #words.children
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-    const wordsChildren = [...wordsEl.native.children];
-    const activeWordElementIndex = wordsChildren.indexOf(activeWordEl.native);
+    const wordsChildren = [...wordsEl.getChildren()];
+    const activeWordElementIndex = wordsChildren.indexOf(activeWordEl);
 
     let lastElementIndexToRemove: number | undefined = undefined;
     for (let i = activeWordElementIndex - 1; i >= 0; i--) {
-      const child = wordsChildren[i] as HTMLElement;
-      if (child.classList.contains("hidden")) continue;
-      if (Math.floor(child.offsetTop) < hideBound) {
-        if (child.classList.contains("word")) {
+      const child = wordsChildren[i] as ElementWithUtils;
+      if (child.hasClass("hidden")) continue;
+      if (Math.floor(child.getOffsetTop()) < hideBound) {
+        if (child.hasClass("word")) {
           lastElementIndexToRemove = i;
           break;
-        } else if (child.classList.contains("beforeNewline")) {
+        } else if (child.hasClass("beforeNewline")) {
           // set it to .newline but check .beforeNewline.offsetTop
           // because it's more reliable
           lastElementIndexToRemove = i + 1;
@@ -1584,9 +1580,9 @@ export function highlightAllLettersAsCorrect(wordIndex: number): void {
   requestDebouncedAnimationFrame(
     `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
     () => {
-      const letters = getWordElement(wordIndex)?.native.children;
+      const letters = getWordElement(wordIndex)?.getChildren();
       for (const letter of letters ?? []) {
-        letter.classList.add("correct");
+        letter.addClass("correct");
       }
     },
   );
@@ -1698,7 +1694,7 @@ export function getActiveWordTopAndHeightWithDifferentData(data: string): {
   if (!activeWord) throw new Error("No active word element found");
 
   const nodes = [];
-  for (let i = activeWord.native.children.length; i < data.length; i++) {
+  for (let i = activeWord.getChildren().length; i < data.length; i++) {
     const tempLetter = document.createElement("letter");
     const displayData = data[i] === " " ? "_" : data[i];
     tempLetter.textContent = displayData as string;
@@ -1849,7 +1845,7 @@ export async function afterTestWordChange(
       // because we need to delete newline, beforenewline and afternewline elements which dont have wordindex attributes
       // we need to do this loop thingy and delete all elements after the active word
       let deleteElements = false;
-      for (const child of wordsEl.native.children) {
+      for (const child of wordsEl.getChildren()) {
         if (deleteElements) {
           child.remove();
           continue;

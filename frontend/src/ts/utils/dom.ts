@@ -782,6 +782,24 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's children wrapped in ElementWithUtils instances.
+   *
+   * Note: This method returns a new array of wrappers, but each wrapper maintains
+   * a reference to the actual DOM element. Any operations performed on the returned
+   * children (e.g., addClass, remove, setHtml) will modify the actual DOM elements
+   * and reflect their live DOM state.
+   *
+   * @returns An ElementsWithUtils array containing wrapped child elements
+   */
+  getChildren(): ElementsWithUtils {
+    const children = Array.from(this.native.children);
+    const convertedChildren = new ElementsWithUtils(
+      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
+    );
+    return convertedChildren;
+  }
+
+  /**
    * Animate the element using Anime.js
    * @param animationParams The Anime.js animation parameters
    * @returns The JSAnimation instance created by Anime.js
