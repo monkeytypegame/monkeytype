@@ -4,23 +4,14 @@ import { getFocus } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { Button } from "../../common/Button";
 
+import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
     <footer class="text-sub relative text-xs">
-      <div
-        class="mb-8 text-center leading-loose transition-opacity"
-        classList={{
-          "opacity-0": getFocus(),
-        }}
-      >
-        <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
-        <br />
-        <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
-        - command line
-      </div>
+      <Keytips />
 
       <div
         class="-m-2 flex justify-between gap-8 transition-opacity"

@@ -18,7 +18,6 @@ import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
-import { jqueryInject } from "./vite-plugins/jquery-inject";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
 import Inspect from "vite-plugin-inspect";
@@ -62,7 +61,6 @@ export default defineConfig(({ mode }): UserConfig => {
     root: "src",
     publicDir: "../static",
     optimizeDeps: {
-      include: ["jquery"],
       exclude: ["@fortawesome/fontawesome-free"],
     },
   };
@@ -87,7 +85,6 @@ function getPlugins({
       typeAware: true,
       overlay: isDevelopment,
     }),
-    jqueryInject(),
     injectHTML(),
     tailwindcss(),
     solidPlugin(),
@@ -238,9 +235,6 @@ function getBuildOptions({
         manualChunks: (id) => {
           if (id.includes("@sentry")) {
             return "vendor-sentry";
-          }
-          if (id.includes("jquery")) {
-            return "vendor-jquery";
           }
           if (id.includes("@firebase")) {
             return "vendor-firebase";

@@ -23,6 +23,7 @@ import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+import { qs } from "../../utils/dom";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -61,9 +62,9 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
         TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
-    $("#words").addClass("read_ahead_disabled");
+    qs("#words")?.addClass("read_ahead_disabled");
   } else if (event.key === " ") {
-    $("#words").removeClass("read_ahead_disabled");
+    qs("#words")?.removeClass("read_ahead_disabled");
   }
 }
 
@@ -510,7 +511,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   memory: {
     applyConfig(): void {
-      $("#wordsWrapper").addClass("hidden");
+      qs("#wordsWrapper")?.hide();
       setConfig("showAllLines", true, {
         nosave: true,
       });
@@ -529,11 +530,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     start(): void {
       MemoryTimer.reset();
-      $("#words").addClass("hidden");
+      qs("#words")?.hide();
     },
     restart(): void {
       MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
-      $("#words").removeClass("hidden");
+      qs("#words")?.show();
       if (Config.keymapMode === "next") {
         setConfig("keymapMode", "react");
       }
@@ -672,14 +673,14 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           return;
         }
       }
-      $("body").append('<div id="scanline" />');
-      $("body").addClass("crtmode");
-      $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
+      qs("body")?.appendHtml('<div id="scanline" />');
+      qs("body")?.addClass("crtmode");
+      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
     },
     clearGlobal(): void {
-      $("#scanline").remove();
-      $("body").removeClass("crtmode");
-      $("#globalFunBoxTheme").attr("href", ``);
+      qs("#scanline")?.remove();
+      qs("body")?.removeClass("crtmode");
+      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
     },
   },
   ALL_CAPS: {
