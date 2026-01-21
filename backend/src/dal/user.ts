@@ -1366,7 +1366,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
 }
 
 function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
-  if (user.personalBests === undefined || user.personalBests === null) {
+  if ((user.personalBests ?? null) === null) {
     user.personalBests = {
       time: {},
       words: {},
