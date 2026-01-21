@@ -48,18 +48,9 @@ ConnectionEvent.subscribe((newState) => {
   throttledHandleState();
 });
 
-window.addEventListener("load", () => {
-  console.warn("SECOND_LOAD");
-});
-
 onDOMReady(() => {
-  console.warn("DOM");
   state = navigator.onLine;
   if (!state) {
     showOfflineBanner();
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  console.warn("FIRST_DOM");
 });
