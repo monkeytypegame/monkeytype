@@ -1,39 +1,10 @@
-#mediaQueryDebug {
-  height: 0.5rem;
-  width: 100%;
-  background: #f44336;
-  position: fixed;
-  z-index: 99999999;
-  top: 0px;
-  &::before {
-    content: "red";
-    padding-top: 0.75rem;
-    padding-left: 0.5rem;
-    display: block;
-    z-index: 99999999;
-    position: absolute;
-  }
-  display: none;
-}
-
 body {
   &.mediaQueryDebugLevel1 {
-    #mediaQueryDebug {
-      display: block;
-    }
-  }
-  &.mediaQueryDebugLevel2 {
-    #mediaQueryDebug {
-      display: block;
-    }
     .content-grid {
       border: 0.1rem dashed var(--main-color);
     }
   }
-  &.mediaQueryDebugLevel3 {
-    #mediaQueryDebug {
-      display: block;
-    }
+  &.mediaQueryDebugLevel2 {
     .content-grid > * {
       border: 0.1rem dashed var(--sub-color);
     }

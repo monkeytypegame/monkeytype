@@ -1253,7 +1253,7 @@ export const page = new Page<undefined>({
 
     historyTable ??= new SortedTableWithLimit<SnapshotResult<Mode>>({
       limit: 10,
-      table: ".pageAccount .content .history table",
+      table: qsr(".pageAccount .content .history table"),
       data: filteredResults,
       buildRow: (val) => {
         return buildResultRow(val);
