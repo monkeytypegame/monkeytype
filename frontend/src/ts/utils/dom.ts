@@ -285,6 +285,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.add(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.addClass(className.split(" "));
+      }
       this.native.classList.add(className);
     }
     return this;
@@ -297,6 +300,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.remove(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.removeClass(className.split(" "));
+      }
       this.native.classList.remove(className);
     }
     return this;
@@ -306,6 +312,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Check if the element has a class
    */
   hasClass(className: string): boolean {
+    if (className.includes(" ")) {
+      return className.split(" ").every((cn) => this.hasClass(cn));
+    }
     return this.native.classList.contains(className);
   }
 
