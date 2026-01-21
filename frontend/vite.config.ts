@@ -20,13 +20,12 @@ import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
 import { jqueryInject } from "./vite-plugins/jquery-inject";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
+import { injectPreload } from "./vite-plugins/inject-preload";
 import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import replace from "vite-plugin-filter-replace";
-// eslint-disable-next-line import/no-unresolved
-import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
@@ -181,29 +180,7 @@ function getPlugins({
         },
       },
     ]),
-    UnpluginInjectPreload({
-      files: [
-        {
-          outputMatch: /css\/.*\.css$/,
-          attributes: {
-            as: "style",
-            type: "text/css",
-            rel: "preload",
-            crossorigin: true,
-          },
-        },
-        {
-          outputMatch: /.*\.woff2$/,
-          attributes: {
-            as: "font",
-            type: "font/woff2",
-            rel: "preload",
-            crossorigin: true,
-          },
-        },
-      ],
-      injectTo: "head-prepend",
-    }),
+    injectPreload(),
     minifyJson(),
   ];
 
