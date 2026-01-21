@@ -43,23 +43,6 @@ export function setMediaQueryDebugLevel(level: number): void {
   }
 }
 
-function updateKeytips(): void {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  qs("footer .keyTips")?.setHtml(`
-    ${
-      Config.quickRestart === "off"
-        ? "<kbd>tab</kbd> + <kbd>enter</kbd>"
-        : `<kbd>${Config.quickRestart}</kbd>`
-    } - restart test<br>
-    <kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> - command line`);
-}
-
 if (isDevEnvironment()) {
   qs("header #logo .top")?.setText("localhost");
   qs("head title")?.setText(
@@ -124,15 +107,6 @@ createEffect(() => {
 });
 
 ConfigEvent.subscribe(async ({ key }) => {
-  if (key === "quickRestart") updateKeytips();
-  if (key === "showKeyTips") {
-    const keyTipsElement = qs("footer .keyTips");
-    if (Config.showKeyTips) {
-      keyTipsElement?.removeClass("hidden");
-    } else {
-      keyTipsElement?.addClass("hidden");
-    }
-  }
   if (key === "fontFamily") {
     await applyFontFamily();
   }
