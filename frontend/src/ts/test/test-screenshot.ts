@@ -10,7 +10,7 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { qs } from "../utils/dom";
+import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
@@ -29,7 +29,7 @@ function revert(): void {
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
-  qs("header, footer")?.show();
+  qsa("header, footer")?.show();
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
   qs(".highlightContainer")?.show();
@@ -96,7 +96,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
-  qs("header, footer")?.addClass("invisible");
+  qsa("header, footer")?.addClass("invisible");
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
   qs(".highlightContainer")?.hide();
@@ -359,22 +359,22 @@ qs(".pageTest")?.onChild("click", "#saveScreenshotButton", (event) => {
 
   // reset save screenshot button icon
   qs("#saveScreenshotButton i")
-    ?.removeClass("fas fa-download")
-    ?.addClass("far fa-image");
+    ?.removeClass(["fas", "fa-download"])
+    ?.addClass(["far", "fa-image"]);
 });
 
 document.addEventListener("keydown", (event) => {
   if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   qs("#result #saveScreenshotButton i")
-    ?.removeClass("far fa-image")
-    ?.addClass("fas fa-download");
+    ?.removeClass(["far", "fa-image"])
+    ?.addClass(["fas", "fa-download"]);
 });
 
 document.addEventListener("keyup", (event) => {
   if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   qs("#result #saveScreenshotButton i")
-    ?.removeClass("fas fa-download")
-    ?.addClass("far fa-image");
+    ?.removeClass(["fas", "fa-download"])
+    ?.addClass(["far", "fa-image"]);
 });
