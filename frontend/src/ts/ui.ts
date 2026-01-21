@@ -51,10 +51,10 @@ function updateKeytips(): void {
       : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  qs("footer .keyTips")?.setHtml(`
+  qs("footer #keyTips")?.setHtml(`
     ${
       Config.quickRestart === "off"
-        ? "<kbd>tab</kbd> + <kbd>enter</kbd>"
+        ? "<kbd>tab</kbd> and <kbd>enter</kbd>"
         : `<kbd>${Config.quickRestart}</kbd>`
     } - restart test<br>
     <kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> - command line`);

@@ -15,6 +15,7 @@ export function Footer(): JSXElement {
         classList={{
           "opacity-0": getFocus(),
         }}
+        id="keyTips"
       >
         <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
         <br />
