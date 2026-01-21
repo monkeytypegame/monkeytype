@@ -1,10 +1,13 @@
-import { JSXElement } from "solid-js";
-import { VersionButton } from "./VersionButton";
-import { Button } from "../../common/Button";
-import { showModal } from "../../../stores/modals";
 import "./Footer.scss";
-import { ThemeIndicator } from "./ThemeIndicator";
+
+import { JSXElement } from "solid-js";
+
+import { showModal } from "../../../stores/modals";
+import { Button } from "../../common/Button";
+
 import { ScrollToTop } from "./ScrollToTop";
+import { ThemeIndicator } from "./ThemeIndicator";
+import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
