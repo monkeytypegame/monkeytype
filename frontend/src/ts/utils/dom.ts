@@ -841,25 +841,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.select();
     }
   }
-
-  /**
-   * Get the element's children as ElementsWithUtils
-   */
-  getChildren(query?: string): ElementsWithUtils {
-    const children = Array.from(this.native.children)
-      .map((child) => {
-        if (
-          (query !== undefined && child.matches(query)) ||
-          query === undefined
-        ) {
-          return new ElementWithUtils<HTMLElement>(child as HTMLElement);
-        } else {
-          return null;
-        }
-      })
-      .filter((child) => child !== null);
-    return new ElementsWithUtils<HTMLElement>(...children);
-  }
 }
 
 /**
@@ -1037,19 +1018,6 @@ export class ElementsWithUtils<
       item.setAttribute(key, value);
     }
     return this;
-  }
-
-  /**
-   * Get all children of all elements in the array as ElementsWithUtils
-   */
-  getChildren(query?: string): ElementsWithUtils {
-    const allChildren: ElementWithUtils[] = [];
-
-    for (const item of this) {
-      allChildren.push(...item.getChildren(query));
-    }
-
-    return new ElementsWithUtils(...allChildren);
   }
 
   /**

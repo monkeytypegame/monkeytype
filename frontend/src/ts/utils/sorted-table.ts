@@ -88,7 +88,7 @@ export class SortedTable<T> {
     const { property, descending } = this.sort;
     // Removes styling from previous sorting requests:
     this.table.qsa("thead td").removeClass("headerSorted");
-    this.table.qsa("thead td").getChildren("i").remove();
+    this.table.qsa("thead td > i").remove();
     this.table
       .qsa(`thead td[data-sort-property="${property}"]`)
       .addClass("headerSorted")
