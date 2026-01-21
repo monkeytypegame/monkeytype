@@ -1,44 +1,44 @@
+import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
+import * as db from "../init/db";
+import MonkeyError from "../utils/error";
+import {
+  Collection,
+  ObjectId,
+  Long,
+  type UpdateFilter,
+  type Filter,
+} from "mongodb";
+import { flattenObjectDeep, isPlainObject, WithObjectId } from "../utils/misc";
+import { getCachedConfiguration } from "../init/configuration";
+import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
-import { Configuration } from "@monkeytype/schemas/configuration";
-import { Result as ResultType } from "@monkeytype/schemas/results";
+import {
+  AllRewards,
+  Badge,
+  CustomTheme,
+  MonkeyMail,
+  UserInventory,
+  UserProfileDetails,
+  UserQuoteRatings,
+  UserStreak,
+  ResultFilters,
+  UserTag,
+  User,
+  CountByYearAndDay,
+  Friend,
+} from "@monkeytype/schemas/users";
 import {
   Mode,
   Mode2,
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/schemas/shared";
-import {
-  AllRewards,
-  Badge,
-  CountByYearAndDay,
-  CustomTheme,
-  Friend,
-  MonkeyMail,
-  ResultFilters,
-  User,
-  UserInventory,
-  UserProfileDetails,
-  UserQuoteRatings,
-  UserStreak,
-  UserTag,
-} from "@monkeytype/schemas/users";
-import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
-import { getDayOfYear } from "date-fns";
-import {
-  Collection,
-  Long,
-  ObjectId,
-  type Filter,
-  type UpdateFilter,
-} from "mongodb";
-import { getCachedConfiguration } from "../init/configuration";
-import * as db from "../init/db";
-import GeorgeQueue from "../queues/george-queue";
-import MonkeyError from "../utils/error";
-import { flattenObjectDeep, isPlainObject, WithObjectId } from "../utils/misc";
-import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
-import { aggregateWithAcceptedConnections } from "./connections";
 import { addImportantLog } from "./logs";
+import { Result as ResultType } from "@monkeytype/schemas/results";
+import { Configuration } from "@monkeytype/schemas/configuration";
+import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
+import GeorgeQueue from "../queues/george-queue";
+import { aggregateWithAcceptedConnections } from "./connections";
 
 export type DBUserTag = WithObjectId<UserTag>;
 
