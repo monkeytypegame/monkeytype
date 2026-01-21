@@ -120,6 +120,8 @@ function updateTabs(): void {
     async () => {
       pageElement.qsa(".tab")?.removeClass("active");
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
+      if (state.tab === "apeKeys") void ApeKeyTable.update(updateUI);
+      if (state.tab === "blockedUsers") void BlockedUserTable.update();
     },
   );
   pageElement.qsa("button")?.removeClass("active");
@@ -152,8 +154,6 @@ export function updateUI(): void {
   updateAuthenticationSections();
   updateIntegrationSections();
   updateAccountSections();
-  void ApeKeyTable.update(updateUI);
-  void BlockedUserTable.update();
   updateTabs();
   page.setUrlParams(state);
 }
