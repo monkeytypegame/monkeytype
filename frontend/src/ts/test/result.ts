@@ -817,7 +817,7 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += `<br>stop on ${Config.stopOnError}`;
   }
 
-  qs("#result .stats .testType .bottom")?.setHtml(testType);
+  qsa("#result .stats .testType .bottom")?.setHtml(testType);
 }
 
 function updateOther(
@@ -1032,7 +1032,7 @@ export async function update(
       </div>
 
     `);
-    qs("main #result .stats")?.hide();
+    qsa("main #result .stats")?.hide();
     qs("main #result .chart")?.hide();
     qs("main #result #resultWordsHistory")?.hide();
     qs("main #result #resultReplay")?.hide();
@@ -1045,7 +1045,7 @@ export async function update(
       `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`,
     );
   } else {
-    qs("main #result .stats")?.show();
+    qsa("main #result .stats")?.show();
     qs("main #result .chart")?.show();
     if (!isAuthenticated()) {
       qs("main #result .loginTip")?.show();
@@ -1311,7 +1311,7 @@ export function updateTagsAfterEdit(
   );
 }
 
-qs(".pageTest #result .chart .chartLegend button")?.on(
+qsa(".pageTest #result .chart .chartLegend button")?.on(
   "click",
   async (event) => {
     const $target = event.target as HTMLElement;

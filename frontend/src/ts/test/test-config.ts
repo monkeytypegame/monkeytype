@@ -6,7 +6,7 @@ import { getActivePage } from "../signals/core";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";
-import { qs } from "../utils/dom";
+import { qs, qsa } from "../utils/dom";
 
 export function show(): void {
   qs("#testConfig")?.removeClass("invisible");
@@ -19,13 +19,13 @@ export function hide(): void {
 }
 
 export async function instantUpdate(): Promise<void> {
-  qs("#testConfig .mode .textButton")?.removeClass("active");
+  qsa("#testConfig .mode .textButton")?.removeClass("active");
   qs("#testConfig .mode .textButton[mode='" + Config.mode + "']")?.addClass(
     "active",
   );
 
   qs("#testConfig .puncAndNum")?.hide();
-  qs("#testConfig .spacer")?.hide();
+  qsa("#testConfig .spacer")?.hide();
   qs("#testConfig .time")?.hide();
   qs("#testConfig .wordCount")?.hide();
   qs("#testConfig .customText")?.hide();
@@ -254,13 +254,13 @@ async function update(previous: Mode, current: Mode): Promise<void> {
 }
 
 function updateActiveModeButtons(mode: Mode): void {
-  qs("#testConfig .mode .textButton")?.removeClass("active");
+  qsa("#testConfig .mode .textButton")?.removeClass("active");
   qs("#testConfig .mode .textButton[mode='" + mode + "']")?.addClass("active");
 }
 
 function updateActiveExtraButtons(key: string, value: ConfigValue): void {
   if (key === "time") {
-    qs("#testConfig .time .textButton")?.removeClass("active");
+    qsa("#testConfig .time .textButton")?.removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
       : (value as number);
@@ -268,7 +268,7 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
       "#testConfig .time .textButton[timeConfig='" + timeCustom + "']",
     )?.addClass("active");
   } else if (key === "words") {
-    qs("#testConfig .wordCount .textButton")?.removeClass("active");
+    qsa("#testConfig .wordCount .textButton")?.removeClass("active");
 
     const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
       ? "custom"
@@ -278,7 +278,7 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
       "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']",
     )?.addClass("active");
   } else if (key === "quoteLength") {
-    qs("#testConfig .quoteLength .textButton")?.removeClass("active");
+    qsa("#testConfig .quoteLength .textButton")?.removeClass("active");
 
     if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
       qs("#testConfig .quoteLength .textButton[quotelength='all']")?.addClass(
