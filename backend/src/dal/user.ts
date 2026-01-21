@@ -274,7 +274,10 @@ export async function getPartialUser<K extends keyof DBUser>(
   );
   if (partialUser === null) throw new MonkeyError(404, "User not found", stack);
 
-  return migrateUser(partialUser);
+  if (fields.includes("personalBests" as K)) {
+    return migrateUser(partialUser);
+  }
+  return partialUser;
 }
 
 export async function findByName(name: string): Promise<DBUser | undefined> {
@@ -1369,15 +1372,13 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
 }
 
 function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
-  if ((user.personalBests ?? null) === null) {
-    user.personalBests = {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
-  }
+  user.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
 
   return user;
 }
