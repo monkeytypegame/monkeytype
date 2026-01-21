@@ -517,11 +517,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Append a child element
    */
-  append(element: HTMLElement | ElementWithUtils): this {
-    if (element instanceof ElementWithUtils) {
-      this.native.appendChild(element.native);
+  append(
+    elementOrElements:
+      | HTMLElement
+      | ElementWithUtils
+      | HTMLElement[]
+      | ElementsWithUtils
+      | ElementWithUtils[],
+  ): this {
+    if (elementOrElements instanceof ElementsWithUtils) {
+      this.native.append(...elementOrElements.native);
+      return this;
+    }
+
+    if (Array.isArray(elementOrElements)) {
+      for (const element of elementOrElements) {
+        if (element instanceof ElementWithUtils) {
+          this.native.append(element.native);
+        } else {
+          this.native.append(element);
+        }
+      }
+      return this;
+    }
+
+    if (elementOrElements instanceof ElementWithUtils) {
+      this.native.appendChild(elementOrElements.native);
     } else {
-      this.native.append(element);
+      this.native.append(elementOrElements);
     }
     return this;
   }
@@ -993,6 +1016,16 @@ export class ElementsWithUtils<
   setAttribute(key: string, value: string): this {
     for (const item of this) {
       item.setAttribute(key, value);
+    }
+    return this;
+  }
+
+  /**
+   * Append HTML string to all elements in the array
+   */
+  appendHtml(htmlString: string): this {
+    for (const item of this) {
+      item.appendHtml(htmlString);
     }
     return this;
   }
