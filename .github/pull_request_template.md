@@ -4,8 +4,6 @@
 
 ### Checks
 
-- [ ] Adding/modifying Typescript code?
-  - [ ] I have used `qs`, `qsa` or `qsr` instead of JQuery selectors.
 - [ ] Adding quotes?
   - [ ] Make sure to include translations for the quotes in the description (or another comment) so we can verify their content.
 - [ ] Adding a language?
