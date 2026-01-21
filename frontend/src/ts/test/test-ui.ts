@@ -928,7 +928,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     : TestState.isLanguageRightToLeft;
 
   const wordsWrapperWidth = wordsWrapperEl.getOffsetWidth();
-  const wordsChildrenArr = [...wordsEl.getChildren()];
+  const wordsChildrenArr = wordsEl.getChildren();
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
   const afterNewLineEls = wordsEl.qsa(".afterNewline");
