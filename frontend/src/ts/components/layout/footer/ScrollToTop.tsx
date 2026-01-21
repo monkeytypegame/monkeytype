@@ -24,7 +24,7 @@ export function ScrollToTop(): JSXElement {
   return (
     <div class="content-grid ScrollToTop pointer-events-none fixed top-0 left-0 z-999999 h-full w-full">
       <button
-        class="breakout bg-sub-alt text-sub ring-bg hover:text-bg pointer-events-auto mb-8 grid h-16 w-16 place-self-end rounded-full text-[2rem] ring-8"
+        class="breakout bg-sub-alt text-sub ring-bg hover:text-bg hover:bg-text pointer-events-auto mb-8 grid h-16 w-16 place-self-end rounded-full text-[2rem] ring-8"
         style={{
           "grid-column": "content-end/breakout-end",
         }}

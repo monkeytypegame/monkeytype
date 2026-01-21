@@ -3,13 +3,13 @@
   <load src="html/head.html" />
 
   <body>
-    <Overlays />
+    <mount data-component="overlays"></mount>
     <div id="mediaQueryDebug"></div>
     <load src="html/warnings.html" />
     <div class="customBackground"></div>
 
     <!-- theme component adds to the head element, don't move to head.html -->
-    <Theme />
+    <mount data-component="theme"></mount>
     <div id="notificationCenter">
       <div class="clearAll button hidden">
         <i class="fas fa-times"></i>
@@ -22,6 +22,7 @@
         <div class="bar"></div>
       </div>
     </div>
+    <mount data-component="modals" id="solidmodals"></mount>
     <div id="popups">
       <load src="html/popups.html" />
     </div>
@@ -38,11 +39,8 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <div
-          class="page pageAbout full-width content-grid grid hidden gap-8"
-          id="pageAbout"
-        >
-          <AboutPage />
+        <div class="page pageAbout full-width hidden" id="pageAbout">
+          <mount data-component="aboutpage"></mount>
         </div>
         <load src="html/pages/settings.html" />
         <load src="html/pages/login.html" />
@@ -54,7 +52,7 @@
         <load src="html/pages/friends.html" />
         <load src="html/pages/leaderboards.html" />
       </main>
-      <footer />
+      <mount data-component="footer"></mount>
       <div
         id="ad-footer-wrapper"
         class="full-width ad advertisement ad-h focus"

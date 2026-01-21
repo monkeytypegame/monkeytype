@@ -106,14 +106,25 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="darkreader-lock" />
   <meta http-equiv="Cache-Control" content="no-store" />
-
-  <!-- 
-    order of the style imports is not important EXCEPT for index
-    index has to be first because it contains the order of css layers
-  -->
-  <link rel="stylesheet" href="styles/index.scss" />
-  <link rel="stylesheet" href="styles/tailwind.css" />
-  <link rel="stylesheet" href="styles/vendor.scss" />
+  <style>
+    /* 
+      Layer order NEEDS to be here and one layer per line.
+      This is because vite changes the order of the css imports,
+      and the layer definition needs to be at the very very top, otherwise things break.
+    */
+    @layer normalize;
+    @layer theme;
+    @layer base;
+    @layer components;
+    @layer properties;
+    @layer vendor;
+    @layer custom-styles;
+    @layer hidden;
+    @layer utilities;
+  </style>
+  <link rel="stylesheet" class="testtesttest" href="styles/index.scss" />
+  <link rel="stylesheet" class="testtest" href="styles/tailwind.css" />
+  <link rel="stylesheet" class="test" href="styles/vendor.scss" />
 
   <style class="customFont" type="text/css"></style>
 </head>
