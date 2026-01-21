@@ -3,9 +3,12 @@ import { format as dateFormat } from "date-fns/format";
 import Format from "../../utils/format";
 import { Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { StringNumber } from "@monkeytype/schemas/util";
+import { qs } from "../../utils/dom";
 
 function clearTables(isProfile: boolean): void {
-  const source = isProfile ? "Profile" : "Account";
+  const targetElement = isProfile
+    ? qs(".pageProfile .profile")
+    : qs(".pageAccount .profile");
 
   const showAllButton = `<div class="buttonGroup"><button
   class="showAllButton"
@@ -17,7 +20,7 @@ function clearTables(isProfile: boolean): void {
 
   const htmlToShow = isProfile ? "" : showAllButton;
 
-  $(`.page${source} .profile .pbsWords`).html(`
+  targetElement?.qs(".pbsWords")?.setHtml(`
       <div class="group">
       <div class="quick">
         <div class="test">10 words</div>
@@ -48,7 +51,8 @@ function clearTables(isProfile: boolean): void {
     </div>
     ${htmlToShow}
   `);
-  $(`.page${source} .profile .pbsTime`).html(`
+
+  targetElement?.qs(".pbsTime")?.setHtml(`
       <div class="group">
       <div class="quick">
         <div class="test">15 seconds</div>
@@ -83,14 +87,15 @@ function clearTables(isProfile: boolean): void {
 
 export function update(personalBests?: PersonalBests, isProfile = false): void {
   clearTables(isProfile);
+  const targetElement = isProfile
+    ? qs(".pageProfile .profile")
+    : qs(".pageAccount .profile");
 
   if (personalBests === undefined) return;
   let text = "";
 
-  const source = isProfile ? "Profile" : "Account";
-
-  $(`.page${source} .profile .pbsTime`).html("");
-  $(`.page${source} .profile .pbsWords`).html("");
+  targetElement?.qs(".pbsTime")?.setHtml("");
+  targetElement?.qs(".pbsWords")?.setHtml("");
 
   const timeMode2s: Mode2<"time">[] = ["15", "30", "60", "120"];
   const wordMode2s: Mode2<"words">[] = ["10", "25", "50", "100"];
@@ -109,14 +114,14 @@ export function update(personalBests?: PersonalBests, isProfile = false): void {
       <i class="fas fa-ellipsis-v"></i>
     </button></div>`;
 
-  $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
+  targetElement?.qs(".pbsTime")?.appendHtml(text + showAllButton);
 
   text = "";
   wordMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "words", mode2);
   });
 
-  $(`.page${source} .profile .pbsWords`).append(text + showAllButton);
+  targetElement?.qs(".pbsWords")?.appendHtml(text + showAllButton);
 }
 
 function buildPbHtml(
