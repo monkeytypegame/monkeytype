@@ -7,7 +7,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 
-const LANGUAGE_GROUP_TO_TLD: Partial<Record<LanguageGroupName, string>> = {
+const languageGroupToTld: Partial<Record<LanguageGroupName, string>> = {
   english: "en",
   spanish: "es",
   french: "fr",
@@ -64,8 +64,8 @@ const LANGUAGE_GROUP_TO_TLD: Partial<Record<LanguageGroupName, string>> = {
   euskera: "eu",
 };
 
-export function getTLD(languageGroup: LanguageGroupName): string {
-  return LANGUAGE_GROUP_TO_TLD[languageGroup] ?? "en";
+function getTLD(languageGroup: LanguageGroupName): string {
+  return languageGroupToTld[languageGroup] ?? "en";
 }
 
 type Post = {
