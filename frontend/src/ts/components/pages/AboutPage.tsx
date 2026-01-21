@@ -2,7 +2,7 @@ import { intervalToDuration } from "date-fns";
 import { createResource, For, JSXElement, Show } from "solid-js";
 
 import Ape from "../../ape";
-import { getAds } from "../../signals/config";
+import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { getContributorsList, getSupportersList } from "../../utils/json-data";
@@ -225,7 +225,7 @@ export function AboutPage(): JSXElement {
             </dd>
           </dl>
         </section>
-        <Show when={getAds() === "sellout"}>
+        <Show when={getConfig.ads === "sellout"}>
           <div
             id="ad-about-1-wrapper"
             class="ad full-width advertisement ad-h place-self-center"
@@ -358,7 +358,7 @@ export function AboutPage(): JSXElement {
             adding themes and more
           </p>
         </section>
-        <Show when={getAds() === "sellout"}>
+        <Show when={getConfig.ads === "sellout"}>
           <div
             id="ad-about-2-wrapper"
             class="ad full-width advertisement ad-h place-self-center"
