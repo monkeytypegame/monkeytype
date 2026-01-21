@@ -333,9 +333,6 @@ importers:
       idb:
         specifier: 8.0.3
         version: 8.0.3
-      jquery:
-        specifier: 3.7.1
-        version: 3.7.1
       konami:
         specifier: 1.7.0
         version: 1.7.0
@@ -406,9 +403,6 @@ importers:
       '@types/howler':
         specifier: 2.2.7
         version: 2.2.7
-      '@types/jquery':
-        specifier: 3.5.14
-        version: 3.5.14
       '@types/node':
         specifier: 24.9.1
         version: 24.9.1
@@ -3551,9 +3545,6 @@ packages:
   '@types/ioredis@4.28.10':
     resolution: {integrity: sha512-69LyhUgrXdgcNDv7ogs1qXZomnfOEnSmrmMFqKgt1XMJxmoOSG/u3wYy13yACIfKuMJ8IhKgHafDO3sx19zVQQ==}
 
-  '@types/jquery@3.5.14':
-    resolution: {integrity: sha512-X1gtMRMbziVQkErhTQmSe2jFwwENA/Zr+PprCkF63vFq+Yt5PZ4AlKqgmeNlwgn7dhsXEK888eIW2520EpC+xg==}
-
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -3625,9 +3616,6 @@ packages:
 
   '@types/serve-static@1.15.7':
     resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
-
-  '@types/sizzle@2.3.8':
-    resolution: {integrity: sha512-0vWLNK2D5MT9dg0iOo8GlKguPAU02QjmZitPEsXRuJXU/OGIOt9vT9Fc26wtYuavLxtO45v9PGleoL9Z0k1LHg==}
 
   '@types/ssh2-streams@0.1.12':
     resolution: {integrity: sha512-Sy8tpEmCce4Tq0oSOYdfqaBpA3hDM8SoxoFh5vzFsu2oL+znzGz8oVWW7xb4K920yYMUY+PIG31qZnFMfPWNCg==}
@@ -6526,9 +6514,6 @@ packages:
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
-
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
   js-beautify@1.15.1:
     resolution: {integrity: sha512-ESjNzSlt/sWE8sciZH8kBF8BPlwXPwhR6pWKAw8bw4Bwj+iZcnKW6ONWUutJ7eObuBZQpiIb8S7OYspWrKt7rA==}
@@ -13274,10 +13259,6 @@ snapshots:
     dependencies:
       '@types/node': 24.9.1
 
-  '@types/jquery@3.5.14':
-    dependencies:
-      '@types/sizzle': 2.3.8
-
   '@types/json-schema@7.0.15': {}
 
   '@types/jsonwebtoken@9.0.6':
@@ -13349,8 +13330,6 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/node': 24.9.1
       '@types/send': 0.17.4
-
-  '@types/sizzle@2.3.8': {}
 
   '@types/ssh2-streams@0.1.12':
     dependencies:
@@ -16908,8 +16887,6 @@ snapshots:
   jose@4.15.9: {}
 
   joycon@3.1.1: {}
-
-  jquery@3.7.1: {}
 
   js-beautify@1.15.1:
     dependencies:
