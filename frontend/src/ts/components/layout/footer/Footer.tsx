@@ -4,26 +4,12 @@ import { getFocus } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { Button } from "../../common/Button";
 
-import { ScrollToTop } from "./ScrollToTop";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
     <footer class="text-sub relative text-xs">
-      <ScrollToTop />
-      <button
-        type="button"
-        id="commandLineMobileButton"
-        class="bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12"
-        onClick={() => {
-          showModal("Commandline");
-        }}
-        tabIndex="-1"
-      >
-        <i class="fas fa-terminal"></i>
-      </button>
-
       <div
         class="mb-8 text-center leading-loose transition-opacity"
         classList={{
