@@ -758,13 +758,13 @@ function toggleSettingsGroup(groupName: string): void {
       hide: false,
     });
     groupEl?.addClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.addClass(
       "rotateIcon",
     );
   } else {
     void groupEl?.slideDown(250);
     groupEl?.removeClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.removeClass(
       "rotateIcon",
     );
   }
