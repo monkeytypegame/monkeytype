@@ -26,7 +26,6 @@ describe("dom", () => {
           handler({
             target: e.target,
             childTarget: e.childTarget,
-            //@ts-expect-error will be added later, check TODO on the ChildEvent
             currentTarget: e.currentTarget,
           }),
         );
