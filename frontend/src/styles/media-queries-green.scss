@@ -1,26 +1,12 @@
 @use "./media.scss" as *;
 
 @include media-query(green) {
-  #mediaQueryDebug {
-    background: #9ccc65;
-    &::before {
-      content: "green";
-    }
-  }
   .content-grid {
     --content-max-width: 768px;
   }
   #testConfig {
     font-size: 0.7rem;
     --horizontalPadding: 0.6em;
-  }
-  #bannerCenter {
-    font-size: 0.85rem;
-    .banner .container {
-      .closeButton {
-        padding: 0.4em;
-      }
-    }
   }
   header {
     #logo {

@@ -22,6 +22,7 @@ import {
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { qs } from "../../utils/dom";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -66,18 +67,18 @@ export function toggleFunbox(funbox: FunboxName): void {
 }
 
 export async function clear(): Promise<boolean> {
-  $("body").attr(
+  qs("body")?.setAttribute(
     "class",
-    $("body")
-      ?.attr("class")
+    qs("body")
+      ?.getAttribute("class")
       ?.split(/\s+/)
       ?.filter((it) => !it.startsWith("fb-"))
       ?.join(" ") ?? "",
   );
 
-  $(".funBoxTheme").remove();
+  qs(".funBoxTheme")?.remove();
 
-  $("#wordsWrapper").removeClass("hidden");
+  qs("#wordsWrapper")?.show();
   MemoryTimer.reset();
   ManualRestart.set();
   return true;
@@ -115,7 +116,7 @@ export async function activate(
   await setFunboxBodyClasses();
   await applyFunboxCSS();
 
-  $("#wordsWrapper").removeClass("hidden");
+  qs("#wordsWrapper")?.show();
 
   const { data: language, error } = await tryCatch(
     JSONData.getCurrentLanguage(Config.language),
@@ -216,15 +217,15 @@ export async function rememberSettings(): Promise<void> {
 }
 
 async function setFunboxBodyClasses(): Promise<boolean> {
-  const $body = $("body");
+  const body = qs("body");
 
   const activeFbClasses = getActiveFunboxNames().map(
     (name) => "fb-" + name.replaceAll("_", "-"),
   );
 
   const currentClasses =
-    $body
-      ?.attr("class")
+    body
+      ?.getAttribute("class")
       ?.split(/\s+/)
       .filter((it) => !it.startsWith("fb-")) ?? [];
 
@@ -232,7 +233,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     currentClasses.push("ignore-reduced-motion");
   }
 
-  $body.attr(
+  body?.setAttribute(
     "class",
     [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" "),
   );
@@ -241,7 +242,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  $(".funBoxTheme").remove();
+  qs(".funBoxTheme")?.remove();
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
     const css = document.createElement("link");
     css.classList.add("funBoxTheme");

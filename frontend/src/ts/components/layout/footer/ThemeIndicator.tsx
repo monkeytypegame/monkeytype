@@ -1,11 +1,11 @@
 import { JSXElement, Show } from "solid-js";
-import { getThemeIndicator } from "../../../signals/core";
+
+import * as Commandline from "../../../commandline/commandline";
 import Config, { setConfig } from "../../../config";
-import { isAuthenticated } from "../../../firebase";
 import * as DB from "../../../db";
 import * as Notifications from "../../../elements/notifications";
-import * as Commandline from "../../../commandline/commandline";
-import "./ThemeIndicator.scss";
+import { isAuthenticated } from "../../../firebase";
+import { getThemeIndicator } from "../../../signals/core";
 
 export function ThemeIndicator(): JSXElement {
   const handleClick = (e: MouseEvent): void => {
@@ -34,14 +34,14 @@ export function ThemeIndicator(): JSXElement {
   return (
     <button
       type="button"
-      class="textButton current-theme"
+      class="textButton"
       aria-label="Shift-click to toggle custom theme"
       data-balloon-pos="left"
       onClick={handleClick}
     >
-      <div class="icon">
+      <div class="relative">
         <Show when={getThemeIndicator().isFavorite}>
-          <i class="fas fa-star favIndicator"></i>
+          <i class="fas fa-star bg-bg absolute top-[-0.5em] right-[-0.5em] rounded-full p-[0.25em] text-[0.5em]"></i>
         </Show>
         <i class="fas fa-fw fa-palette"></i>
       </div>

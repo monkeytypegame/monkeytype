@@ -12,7 +12,7 @@ import {
   getCommandlineSubgroup,
   setCommandlineSubgroup,
 } from "../signals/core";
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
@@ -123,11 +123,11 @@ export function show(
         if (typeof overrideStringOrGroup === "string") {
           const exists = CommandlineLists.doesListExist(overrideStringOrGroup);
           if (exists) {
-            Loader.show();
+            showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
               overrideStringOrGroup,
             );
-            Loader.hide();
+            hideLoaderBar();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
@@ -531,16 +531,16 @@ async function showCommands(): Promise<void> {
         <i class="fas fa-star"></i>
       </div>
       <div class="themeBubbles" style="background: ${
-        command.customData["bgColor"]
-      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        command.customData["bg"]
+      };outline: 0.25rem solid ${command.customData["bg"]};">
         <div class="themeBubble" style="background: ${
-          command.customData["mainColor"]
+          command.customData["main"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["subColor"]
+          command.customData["sub"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["textColor"]
+          command.customData["text"]
         }"></div>
       </div>
       </div>`;
@@ -586,7 +586,7 @@ async function updateActiveCommand(): Promise<void> {
   activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
     clearFontPreview();
-    void ThemeController.clearPreview(false);
+    void ThemeController.clearPreview();
     addCommandlineBackground();
     return;
   }

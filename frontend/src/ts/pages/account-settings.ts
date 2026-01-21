@@ -6,7 +6,7 @@ import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
-import * as Loader from "../elements/loader";
+import { showLoaderBar } from "../signals/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import * as Notifications from "../elements/notifications";
@@ -169,7 +169,7 @@ qs(".page.pageAccountSettings")?.onChild("click", ".tabs button", (event) => {
 qsa(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth",
 )?.on("click", () => {
-  Loader.show();
+  showLoaderBar();
   void Ape.users.getDiscordOAuth().then((response) => {
     if (response.status === 200) {
       window.open(response.body.data.url, "_self");

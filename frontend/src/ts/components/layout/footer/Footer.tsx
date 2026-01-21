@@ -1,36 +1,34 @@
-import "./Footer.scss";
-
 import { JSXElement } from "solid-js";
 
+import { getFocus } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { Button } from "../../common/Button";
 
-import { ScrollToTop } from "./ScrollToTop";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <footer>
-      <ScrollToTop />
+    <footer class="text-sub relative text-xs">
       <div
-        id="commandLineMobileButton"
-        onClick={() => {
-          showModal("Commandline");
+        class="mb-8 text-center leading-loose transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
         }}
       >
-        <i class="fas fa-terminal"></i>
-      </div>
-
-      <div class="keyTips">
         <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
         <br />
         <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
         - command line
       </div>
 
-      <div class="leftright">
-        <div class="left">
+      <div
+        class="-m-2 flex justify-between gap-8 transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
+        }}
+      >
+        <div class="xs:grid-cols-2 grid grid-cols-1 justify-items-start sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
@@ -88,7 +86,7 @@ export function Footer(): JSXElement {
             fixedWidthIcon
           />
         </div>
-        <div class="right">
+        <div class="flex flex-col items-end text-right lg:flex-row">
           <ThemeIndicator />
           <VersionButton />
         </div>

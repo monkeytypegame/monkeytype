@@ -1,12 +1,6 @@
 @use "./media.scss" as *;
 
 @include media-query(orange) {
-  #mediaQueryDebug {
-    background: #ffa726;
-    &::before {
-      content: "orange";
-    }
-  }
   .content-grid {
     --content-max-width: 1280px;
   }

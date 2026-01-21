@@ -1,12 +1,6 @@
 @use "./media.scss" as *;
 
 @include media-query(blue) {
-  #mediaQueryDebug {
-    background: #29b6f6;
-    &::before {
-      content: "blue";
-    }
-  }
   .content-grid {
     --content-max-width: 640px;
   }
@@ -21,17 +15,6 @@
     .modal {
       .buttonsTop2 {
         grid-template-columns: 1fr;
-      }
-    }
-  }
-  #bannerCenter {
-    font-size: 0.85rem;
-    .banner.withImage {
-      .image {
-        display: none;
-      }
-      .lefticon {
-        display: block;
       }
     }
   }
