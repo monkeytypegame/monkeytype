@@ -217,14 +217,14 @@ export async function rememberSettings(): Promise<void> {
 }
 
 async function setFunboxBodyClasses(): Promise<boolean> {
-  const $body = qs("body");
+  const body = qs("body");
 
   const activeFbClasses = getActiveFunboxNames().map(
     (name) => "fb-" + name.replaceAll("_", "-"),
   );
 
   const currentClasses =
-    $body
+    body
       ?.getAttribute("class")
       ?.split(/\s+/)
       .filter((it) => !it.startsWith("fb-")) ?? [];
@@ -233,7 +233,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     currentClasses.push("ignore-reduced-motion");
   }
 
-  $body?.setAttribute(
+  body?.setAttribute(
     "class",
     [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" "),
   );
