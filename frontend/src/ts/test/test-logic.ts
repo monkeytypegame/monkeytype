@@ -131,12 +131,6 @@ type RestartOptions = {
   noAnim?: boolean;
 };
 
-// withSameWordset = false,
-// _?: boolean, // this is nosave and should be renamed to nosave when needed
-// event?: JQuery.KeyDownEvent,
-// practiseMissed = false,
-// noAnim = false
-
 export function restart(options = {} as RestartOptions): void {
   const defaultOptions = {
     withSameWordset: false,

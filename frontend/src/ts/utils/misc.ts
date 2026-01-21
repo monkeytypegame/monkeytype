@@ -409,40 +409,6 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
-export type JQueryEasing =
-  | "linear"
-  | "swing"
-  | "easeInSine"
-  | "easeOutSine"
-  | "easeInOutSine"
-  | "easeInQuad"
-  | "easeOutQuad"
-  | "easeInOutQuad"
-  | "easeInCubic"
-  | "easeOutCubic"
-  | "easeInOutCubic"
-  | "easeInQuart"
-  | "easeOutQuart"
-  | "easeInOutQuart"
-  | "easeInQuint"
-  | "easeOutQuint"
-  | "easeInOutQuint"
-  | "easeInExpo"
-  | "easeOutExpo"
-  | "easeInOutExpo"
-  | "easeInCirc"
-  | "easeOutCirc"
-  | "easeInOutCirc"
-  | "easeInBack"
-  | "easeOutBack"
-  | "easeInOutBack"
-  | "easeInElastic"
-  | "easeOutElastic"
-  | "easeInOutElastic"
-  | "easeInBounce"
-  | "easeOutBounce"
-  | "easeInOutBounce";
-
 export async function promiseAnimate(
   el: HTMLElement | string,
   options: AnimationParams,
