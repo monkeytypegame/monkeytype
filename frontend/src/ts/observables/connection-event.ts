@@ -7,7 +7,6 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 window.addEventListener("load", () => {
-  console.warn("LOAD");
   window.addEventListener("online", () => {
     dispatch(true);
   });
