@@ -902,8 +902,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Focus the element
    */
-  focus(options?: FocusOptions): void {
+  focus(options?: FocusOptions): this {
     this.native.focus(options);
+    return this;
   }
 
   /**
