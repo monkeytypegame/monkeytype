@@ -1,6 +1,6 @@
 import { JSXElement, Match, Show, Switch } from "solid-js";
 
-import { bp } from "../../signals/media";
+import { bp } from "../../signals/breakpoints";
 import { isDevEnvironment } from "../../utils/misc";
 
 export function TailwindMediaQueryDebugger(): JSXElement {
