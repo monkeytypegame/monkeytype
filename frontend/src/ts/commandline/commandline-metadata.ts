@@ -546,7 +546,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
-  typedWords: {
+  typedEffect: {
     subgroup: {
       options: "fromSchema",
     },

@@ -521,19 +521,19 @@
     }
   }
 
-  &.typed-words-hide {
+  &.typed-effect-hide {
     .word.typed {
       opacity: 0;
     }
   }
 
-  &.typed-words-fade {
+  &.typed-effect-fade {
     .word.typed {
       animation: fadeOut 250ms ease-in 1 forwards;
     }
   }
 
-  &.typed-words-dots:not(.withLigatures) {
+  &.typed-effect-dots:not(.withLigatures) {
     /* transform already typed letters into appropriately colored dots */
 
     .word letter {
@@ -552,9 +552,9 @@
     }
     .typed letter {
       color: var(--bg-color);
-      animation: typedWordsToDust 200ms ease-out 0ms 1 forwards !important;
+      animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
       &::after {
-        animation: typedWordsFadeIn 100ms ease-in 100ms 1 forwards;
+        animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards;
         background: var(--c-dot);
       }
     }

@@ -558,9 +558,9 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
   },
-  typedWords: {
+  typedEffect: {
     icon: "fa-eye",
-    displayString: "typed words",
+    displayString: "typed effect",
     changeRequiresRestart: false,
     group: "appearance",
   },

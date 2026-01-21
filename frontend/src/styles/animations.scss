@@ -140,7 +140,7 @@
   }
 }
 
-@keyframes typedWordsFadeIn {
+@keyframes typedEffectFadeIn {
   0% {
     opacity: 0;
   }
@@ -152,7 +152,7 @@
   }
 }
 
-@keyframes typedWordsToDust {
+@keyframes typedEffectToDust {
   0% {
     transform: scale(1);
     color: var(--current-color);

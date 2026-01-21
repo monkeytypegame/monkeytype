@@ -453,13 +453,13 @@ function updateWordWrapperClasses(): void {
       .filter(
         (className) =>
           !className.startsWith("highlight-") &&
-          !className.startsWith("typed-words-"),
+          !className.startsWith("typed-effect-"),
       ) ?? [];
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
   }
-  if (Config.typedWords !== null) {
-    existing.push("typed-words-" + Config.typedWords.replaceAll("_", "-"));
+  if (Config.typedEffect !== null) {
+    existing.push("typed-effect-" + Config.typedEffect.replaceAll("_", "-"));
   }
   wordsEl.className = existing.join(" ");
 
@@ -2040,7 +2040,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   if (
     [
       "highlightMode",
-      "typedWords",
+      "typedEffect",
       "blindMode",
       "indicateTypos",
       "tapeMode",
