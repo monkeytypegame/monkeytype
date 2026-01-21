@@ -651,6 +651,31 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Set selected state of option element
+   * @param selected The selected state to set
+   */
+  setSelected(
+    this: ElementWithUtils<HTMLOptionElement>,
+    selected: boolean,
+  ): this {
+    if (this.native instanceof HTMLOptionElement) {
+      this.native.selected = selected;
+    }
+    return this as unknown as this;
+  }
+
+  /**
+   * Get selected state of option element
+   * @returns The selected state of the element, or undefined if the element is not an option.
+   */
+  getSelected(this: ElementWithUtils<HTMLOptionElement>): boolean | undefined {
+    if (this.native instanceof HTMLOptionElement) {
+      return this.native.selected;
+    }
+    return undefined;
+  }
+
+  /**
    * Get the parent element
    */
   getParent<U extends HTMLElement = HTMLElement>(): ElementWithUtils<U> | null {
@@ -1010,6 +1035,7 @@ export class ElementsWithUtils<
     }
     return this;
   }
+
   /**
    * Set attribute value on all elements in the array
    */

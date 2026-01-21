@@ -20,6 +20,7 @@ import { Snapshot } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
 import * as AuthEvent from "../../observables/auth-event";
 import { sanitize } from "../../utils/sanitize";
+import { qs, qsa } from "../../utils/dom";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>,
@@ -159,12 +160,12 @@ export async function setFilterPreset(id: string): Promise<void> {
   }
 
   // make all filter preset butons inactive
-  $(
+  qsa(
     `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset`,
   ).removeClass("active");
 
   // make current filter presest button active
-  $(
+  qsa(
     `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`,
   ).addClass("active");
 }
@@ -233,7 +234,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
 
 function deSelectFilterPreset(): void {
   // make all filter preset buttons inactive
-  $(
+  qsa(
     ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset",
   ).removeClass("active");
 }
@@ -323,29 +324,29 @@ export function updateActive(): void {
       }
 
       if (groupsUsingSelect.has(group)) {
-        const option = $(
+        const option = qs<HTMLOptionElement>(
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`,
         );
         if (filterValue === true) {
-          option.prop("selected", true);
+          option?.setSelected(true);
         } else {
-          option.prop("selected", false);
+          option?.setSelected(false);
         }
       } else {
         let buttonEl;
         if (group === "date") {
-          buttonEl = $(
+          buttonEl = qs(
             `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`,
           );
         } else {
-          buttonEl = $(
+          buttonEl = qs(
             `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`,
           );
         }
         if (filterValue === true) {
-          buttonEl.addClass("active");
+          buttonEl?.addClass("active");
         } else {
-          buttonEl.removeClass("active");
+          buttonEl?.removeClass("active");
         }
       }
     }
@@ -358,12 +359,12 @@ export function updateActive(): void {
 
     const newData = ss.store.getData();
 
-    const allOption = $(
+    const allOption = qs<HTMLOptionElement>(
       `.pageAccount .group.filterButtons .filterGroup[group="${id}"] option[value="all"]`,
     );
 
     if (everythingSelected) {
-      allOption.prop("selected", true);
+      allOption?.setSelected(true);
       for (const data of newData) {
         if ("value" in data) {
           if (data.value === "all") data.selected = true;
@@ -373,7 +374,7 @@ export function updateActive(): void {
       ss.store.setData(newData);
       ss.render.renderValues();
     } else {
-      allOption.prop("selected", false);
+      allOption?.setSelected(false);
     }
 
     for (const data of newData) {
@@ -490,9 +491,7 @@ export function updateActive(): void {
   //tags
   chartString += addText("tags");
 
-  setTimeout(() => {
-    $(".pageAccount .group.chart .above").html(chartString);
-  }, 0);
+  qs(".pageAccount .group.chart .above")?.setHtml(chartString);
 }
 
 function toggle<G extends ResultFiltersGroup>(
@@ -523,52 +522,64 @@ function toggle<G extends ResultFiltersGroup>(
   }
 }
 
-$(
-  ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons",
-).on("click", "button", (e) => {
-  const group = $(e.target)
-    .parents(".buttons")
-    .attr("group") as ResultFiltersGroup;
-  const filter = $(e.target).attr("filter") as ResultFiltersGroupItem<
-    typeof group
-  >;
-  if ($(e.target).hasClass("allFilters")) {
-    Misc.typedKeys(getFilters()).forEach((group) => {
-      // id and name field do not correspond to any ui elements, no need to update
-      if (group === "_id" || group === "name") {
-        return;
-      }
-
-      setAllFilters(group, true);
-    });
-    setAllFilters("date", false);
-    filters.date.all = true;
-  } else if ($(e.target).hasClass("noFilters")) {
-    Misc.typedKeys(getFilters()).forEach((group) => {
-      // id and name field do not correspond to any ui elements, no need to update
-      if (group === "_id" || group === "name") {
-        return;
-      }
-
-      if (group !== "date") {
-        setAllFilters(group, false);
-      }
-    });
-  } else if ($(e.target).is("button")) {
-    if (e.shiftKey) {
-      setAllFilters(group, false);
-      filters[group][filter] =
-        true as ResultFilters[typeof group][typeof filter];
-    } else {
-      toggle(group, filter);
-      // filters[group][filter] = !filters[group][filter];
+for (const el of qsa(`
+  .pageAccount .filterButtons .buttonsAndTitle .buttons,
+  .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons
+  `)) {
+  el.onChild("click", "button", (e) => {
+    const childTarget = e.childTarget as HTMLElement;
+    const group = (e.target as HTMLElement).parentElement?.getAttribute(
+      "group",
+    ) as ResultFiltersGroup | null;
+    if (group === null) {
+      throw new Error("Cannot find group of target.");
     }
-  }
-  updateActive();
-  save();
-});
 
-$(".pageAccount .topFilters button.allFilters").on("click", () => {
+    const filter = childTarget.getAttribute("filter") as ResultFiltersGroupItem<
+      typeof group
+    > | null;
+    if (filter === null) {
+      throw new Error("Cannot find filter of target.");
+    }
+
+    if (childTarget.classList.contains("allFilters")) {
+      Misc.typedKeys(getFilters()).forEach((group) => {
+        // id and name field do not correspond to any ui elements, no need to update
+        if (group === "_id" || group === "name") {
+          return;
+        }
+
+        setAllFilters(group, true);
+      });
+      setAllFilters("date", false);
+      filters.date.all = true;
+    } else if (childTarget.classList.contains("noFilters")) {
+      Misc.typedKeys(getFilters()).forEach((group) => {
+        // id and name field do not correspond to any ui elements, no need to update
+        if (group === "_id" || group === "name") {
+          return;
+        }
+
+        if (group !== "date") {
+          setAllFilters(group, false);
+        }
+      });
+    } else if ((e.target as HTMLElement).tagName === "BUTTON") {
+      if (e.shiftKey) {
+        setAllFilters(group, false);
+        filters[group][filter] =
+          true as ResultFilters[typeof group][typeof filter];
+      } else {
+        toggle(group, filter);
+        // filters[group][filter] = !filters[group][filter];
+      }
+    }
+    updateActive();
+    save();
+  });
+}
+
+qs(".pageAccount .topFilters button.allFilters")?.on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
@@ -588,7 +599,7 @@ $(".pageAccount .topFilters button.allFilters").on("click", () => {
   save();
 });
 
-$(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
+qs(".pageAccount .topFilters button.currentConfigFilter")?.on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
@@ -673,11 +684,19 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
   save();
 });
 
-$(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
-  $(".pageAccount .filterButtons").slideToggle(250);
-  $(".pageAccount .topFilters button.toggleAdvancedFilters").toggleClass(
-    "active",
+qs(".pageAccount .topFilters button.toggleAdvancedFilters")?.on("click", () => {
+  const buttons = qs(".pageAccount .filterButtons");
+  const advancedFiltersButton = qs(
+    ".pageAccount .topFilters button.toggleAdvancedFilters",
   );
+
+  if (buttons?.isVisible()) {
+    void buttons.slideUp(250);
+    advancedFiltersButton?.removeClass("active");
+  } else {
+    void buttons?.slideDown(250);
+    advancedFiltersButton?.addClass("active");
+  }
 });
 
 function adjustScrollposition(
@@ -873,19 +892,19 @@ export async function appendDropdowns(
 }
 
 function tagDropdownUpdate(snapshot: Snapshot): void {
-  const tagsSection = $(
+  const tagsSection = qs(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags",
   );
 
   if (snapshot.tags.length === 0) {
-    tagsSection.addClass("hidden");
+    tagsSection?.addClass("hidden");
     if (groupSelects["tags"]) {
       groupSelects["tags"].destroy();
       delete groupSelects["tags"];
     }
     setFilter("tags", "none", true);
   } else {
-    tagsSection.removeClass("hidden");
+    tagsSection?.removeClass("hidden");
 
     updateTagsDropdownOptions();
 
@@ -922,13 +941,13 @@ function tagDropdownUpdate(snapshot: Snapshot): void {
   }
 }
 
-$(".group.presetFilterButtons .filterBtns").on(
-  "click",
-  ".filterPresets .delete-filter-preset",
-  (e) => {
-    void deleteFilterPreset($(e.currentTarget).data("id") as string);
-  },
-);
+for (const el of qsa(".group.presetFilterButtons .filterBtns")) {
+  el.onChild("click", ".filterPresets .delete-filter-preset", (e) => {
+    void deleteFilterPreset(
+      (e.childTarget as HTMLElement).dataset["id"] as string,
+    );
+  });
+}
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
