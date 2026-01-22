@@ -119,11 +119,10 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
   await Misc.sleep(50); // Small delay for render updates
 
-
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
   console.log(sourceX, sourceY);
-  
+
   const sourceWidth = src.getOuterWidth();
   const sourceHeight = src.getOuterHeight();
   const paddingX = convertRemToPixels(2);
