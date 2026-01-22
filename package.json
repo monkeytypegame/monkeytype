@@ -47,7 +47,7 @@
     "hotfix-dry": "monkeytype-release --hotfix --dry",
     "format-check": "oxfmt . --check",
     "format-fix": "oxfmt .",
-    "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
+    "lint-json-assets": "turbo lint-json --filter @monkeytype/frontend",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
     "check-assets-languages": "turbo check-assets --filter @monkeytype/frontend  -- languages",
