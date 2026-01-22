@@ -10,7 +10,7 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { qs, qsa } from "../utils/dom";
+import { qs } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
@@ -29,7 +29,7 @@ function revert(): void {
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
-  qsa("header, footer")?.removeClass("invisible");
+  qs("header")?.removeClass("invisible");
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
   qsa(".highlightContainer")?.show();
@@ -97,7 +97,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
-  qsa("header, footer")?.addClass("invisible");
+  qs("header")?.addClass("invisible");
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
   qsa(".highlightContainer")?.hide();
