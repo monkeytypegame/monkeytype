@@ -8,10 +8,12 @@ import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
+import { AccountButton } from "./AccountButton";
+
 export function Nav(): JSXElement {
   return (
     <nav
-      class={cn("flex w-full gap-2 transition-opacity", {
+      class={cn("flex w-full items-center gap-2 transition-opacity", {
         "opacity-0": getFocus(),
       })}
     >
@@ -41,13 +43,7 @@ export function Nav(): JSXElement {
       >
         <NotificationBubble show={getNotificationBubble} />
       </Button>
-      <Button
-        type="text"
-        icon="far fa-fw fa-user"
-        onClick={() => {
-          alert("not implemented");
-        }}
-      />
+      <AccountButton />
     </nav>
   );
 }

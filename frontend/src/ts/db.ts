@@ -35,6 +35,7 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import { setAuthenticatedUser } from "./signals/user";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -273,6 +274,15 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.connections = convertConnections(connectionsData);
 
     dbSnapshot = snap;
+
+    setAuthenticatedUser({
+      uid: dbSnapshot.uid,
+      name: dbSnapshot.name,
+      discordAvatar: dbSnapshot.discordAvatar,
+      discordId: dbSnapshot.discordId,
+      xp: dbSnapshot.xp,
+    });
+
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();

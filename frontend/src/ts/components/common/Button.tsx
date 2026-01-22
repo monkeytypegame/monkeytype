@@ -8,6 +8,7 @@ type BaseProps = {
   class?: string;
   type?: "text" | "button";
   children?: JSXElement;
+  ref?: (el: HTMLElement) => void;
 };
 
 type ButtonProps = BaseProps & {
@@ -64,6 +65,7 @@ export function Button(
           href={props.href}
           target={props.href?.startsWith("#") ? undefined : "_blank"}
           rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
+          ref={props.ref}
         >
           {content}
         </a>
@@ -74,6 +76,7 @@ export function Button(
           href={props.routerLink}
           router-link
           onClick={props.onClick}
+          ref={props.ref}
         >
           {content}
         </a>
@@ -83,6 +86,7 @@ export function Button(
           type="button"
           classList={getClassList("")}
           onClick={props.onClick}
+          ref={props.ref}
         >
           {content}
         </button>

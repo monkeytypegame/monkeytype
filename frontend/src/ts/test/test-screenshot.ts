@@ -29,7 +29,6 @@ function revert(): void {
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
-  qs("header")?.removeClass("invisible");
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
   qs(".highlightContainer")?.show();
@@ -97,7 +96,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
-  qs("header")?.addClass("invisible");
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
   qs(".highlightContainer")?.hide();

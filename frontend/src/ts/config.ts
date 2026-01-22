@@ -24,6 +24,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { setAccountButtonSpinner } from "./signals/header";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -47,7 +48,9 @@ let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
+    setAccountButtonSpinner(true);
     void DB.saveConfig(configToSend).then(() => {
+      setAccountButtonSpinner(false);
       AccountButton.loading(false);
     });
   }
@@ -72,9 +75,12 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   configLS.set(config);
   if (!noDbCheck) {
+    setAccountButtonSpinner(true);
     AccountButton.loading(true);
-    void DB.saveConfig(config);
-    AccountButton.loading(false);
+    void DB.saveConfig(config).finally(() => {
+      setAccountButtonSpinner(false);
+      AccountButton.loading(false);
+    });
   }
 }
 

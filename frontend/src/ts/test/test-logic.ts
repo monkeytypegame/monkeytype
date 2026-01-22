@@ -69,6 +69,7 @@ import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
 import { qs } from "../utils/dom";
+import { setAccountButtonSpinner } from "../signals/header";
 
 let failReason = "";
 
@@ -1191,6 +1192,7 @@ async function saveResult(
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
   AccountButton.loading(true);
+  setAccountButtonSpinner(true);
 
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
@@ -1199,6 +1201,7 @@ async function saveResult(
       important: true,
     });
     AccountButton.loading(false);
+    setAccountButtonSpinner(false);
     return null;
   }
 
@@ -1209,6 +1212,7 @@ async function saveResult(
       important: true,
     });
     AccountButton.loading(false);
+    setAccountButtonSpinner(false);
     retrySaving.canRetry = true;
     qs("#retrySavingResultButton")?.show();
     if (!isRetrying) {
@@ -1233,6 +1237,7 @@ async function saveResult(
   const response = await Ape.results.add({ body: { result } });
 
   AccountButton.loading(false);
+  setAccountButtonSpinner(false);
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
