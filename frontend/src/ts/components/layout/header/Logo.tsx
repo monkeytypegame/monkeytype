@@ -1,6 +1,7 @@
 import { JSXElement } from "solid-js";
 
-import { getFocus } from "../../../signals/core";
+import { getActivePage, getFocus } from "../../../signals/core";
+import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 
 export function Logo(): JSXElement {
@@ -9,9 +10,13 @@ export function Logo(): JSXElement {
       href={`${location.origin}/`}
       class="-m-2 flex h-6 w-max gap-2 rounded-[0.8rem] p-2 focus-visible:[&_.sublogo]:text-transparent"
       aria-label="Monkeytype Home"
+      router-link
       style={{
         "box-sizing": "content-box",
         "font-family": "Lexend Deca ,sans-serif",
+      }}
+      onClick={() => {
+        if (getActivePage() === "test") restart();
       }}
     >
       <svg

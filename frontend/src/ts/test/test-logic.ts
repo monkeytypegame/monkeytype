@@ -1529,11 +1529,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
   }
 });
 
-qs("header")?.onChild("click", "nav #startTestButton, #logo", () => {
-  if (getActivePage() === "test") restart();
-  // Result.showConfetti();
-});
-
 // ===============================
 
 ConfigEvent.subscribe(({ key, newValue, nosave }) => {

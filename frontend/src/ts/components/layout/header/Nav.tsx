@@ -1,8 +1,12 @@
 import { JSXElement } from "solid-js";
 
-import { getFocus } from "../../../signals/core";
+import { showAlerts } from "../../../elements/alerts";
+import { getActivePage, getFocus } from "../../../signals/core";
+import { getNotificationBubble } from "../../../signals/header";
+import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
+import { NotificationBubble } from "../../common/NotificationBubble";
 
 export function Nav(): JSXElement {
   return (
@@ -14,44 +18,34 @@ export function Nav(): JSXElement {
       <Button
         type="text"
         icon="fas fa-fw fa-keyboard"
+        routerLink="/"
         onClick={() => {
-          //
+          if (getActivePage() === "test") restart();
         }}
       />
       <Button
         type="text"
         icon="fas fa-fw fa-crown"
-        onClick={() => {
-          //
-        }}
+        routerLink="/leaderboards"
       />
-      <Button
-        type="text"
-        icon="fas fa-fw fa-info"
-        onClick={() => {
-          //
-        }}
-      />
-      <Button
-        type="text"
-        icon="fas fa-fw fa-cog"
-        onClick={() => {
-          //
-        }}
-      />
+      <Button type="text" icon="fas fa-fw fa-info" routerLink="/about" />
+      <Button type="text" icon="fas fa-fw fa-cog" routerLink="/settings" />
       <div class="grow"></div>
       <Button
         type="text"
         icon="fas fa-fw fa-bell"
         onClick={() => {
-          //
+          void showAlerts();
         }}
-      />
+        class="relative"
+      >
+        <NotificationBubble show={getNotificationBubble} />
+      </Button>
       <Button
         type="text"
         icon="far fa-fw fa-user"
         onClick={() => {
-          //
+          alert("not implemented");
         }}
       />
     </nav>

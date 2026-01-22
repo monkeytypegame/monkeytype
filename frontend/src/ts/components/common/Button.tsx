@@ -1,6 +1,4 @@
-import { JSXElement, Show } from "solid-js";
-
-import { Conditional } from "./Conditional";
+import { JSXElement, Match, Show, Switch } from "solid-js";
 
 type BaseProps = {
   text?: string;
@@ -15,18 +13,24 @@ type BaseProps = {
 type ButtonProps = BaseProps & {
   onClick: () => void;
   href?: never;
-  sameTarget?: true;
+  routerLink?: never;
 };
 
 type AnchorProps = BaseProps & {
-  href: string;
   onClick?: never;
+  href: string;
+  routerLink?: never;
 };
 
-export function Button(props: ButtonProps | AnchorProps): JSXElement {
-  const isAnchor = "href" in props;
-  const buttonClass = isAnchor ? "button" : "";
+type RouterProps = BaseProps & {
+  onClick?: () => void;
+  href?: never;
+  routerLink: string;
+};
 
+export function Button(
+  props: ButtonProps | AnchorProps | RouterProps,
+): JSXElement {
   const content = (
     <>
       <Show when={props.icon !== undefined}>
@@ -45,35 +49,44 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     </>
   );
 
-  const getClassList = (): Record<string, boolean> => {
+  const getClassList = (defaultClass: string): Record<string, boolean> => {
     return {
-      [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
+      [(props.type ?? "button") === "text" ? "textButton" : defaultClass]: true,
       [props.class ?? ""]: props.class !== undefined,
     };
   };
 
   return (
-    <Conditional
-      if={isAnchor}
-      then={
+    <Switch>
+      <Match when={"href" in props}>
         <a
-          classList={getClassList()}
+          classList={getClassList("")}
           href={props.href}
           target={props.href?.startsWith("#") ? undefined : "_blank"}
           rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
         >
           {content}
         </a>
-      }
-      else={
+      </Match>
+      <Match when={"routerLink" in props}>
+        <a
+          classList={getClassList("")}
+          href={props.routerLink}
+          router-link
+          onClick={props.onClick}
+        >
+          {content}
+        </a>
+      </Match>
+      <Match when={"onClick" in props}>
         <button
           type="button"
-          classList={getClassList()}
-          onClick={() => props.onClick?.()}
+          classList={getClassList("")}
+          onClick={props.onClick}
         >
           {content}
         </button>
-      }
-    />
+      </Match>
+    </Switch>
   );
 }
