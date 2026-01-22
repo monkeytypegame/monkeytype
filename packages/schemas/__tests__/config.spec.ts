@@ -31,7 +31,7 @@ describe("config schema", () => {
       {
         name: "tiff",
         input: `https://example.com/path/image.tiff`,
-        expectedError: "Unsupported image format.",
+        expectedError: "Unsupported image format",
       },
       {
         name: "non-url",
