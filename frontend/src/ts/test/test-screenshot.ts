@@ -32,7 +32,7 @@ function revert(): void {
   qsa("header, footer")?.removeClass("invisible");
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
-  qs(".highlightContainer")?.show();
+  qsa(".highlightContainer")?.show();
   if (revertCookie) qs("#cookiesModal")?.show();
   if (revealReplay) qs("#resultReplay")?.show();
   if (!isAuthenticated()) {
@@ -100,7 +100,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qsa("header, footer")?.addClass("invisible");
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
-  qs(".highlightContainer")?.hide();
+  qsa(".highlightContainer")?.hide();
   if (revertCookie) qs("#cookiesModal")?.hide();
 
   for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
