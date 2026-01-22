@@ -24,7 +24,11 @@ const parents = {
 };
 
 export function append(id: string, parent: SkeletonAppendParents): void {
-  const popup = skeletons.get(id) as HTMLElement;
+  let popup = skeletons.get(id) as HTMLElement;
+
+  if (popup === undefined) {
+    console.error(`Skeleton with id ${id} not found`);
+  }
   parents[parent].append(popup);
 }
 

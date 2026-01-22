@@ -11,7 +11,7 @@ import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -30,7 +30,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { Theme, ThemesList } from "../constants/themes";
+import { ThemesList, ThemeWithName } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
@@ -43,7 +43,8 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 let settingsInitialized = false;
 
@@ -591,7 +592,7 @@ export async function update(
     eventKey?: ConfigEvent.ConfigEventKey;
   } = {},
 ): Promise<void> {
-  if (ActivePage.get() !== "settings") {
+  if (getActivePage() !== "settings") {
     return;
   }
 
@@ -613,7 +614,7 @@ export async function update(
   setActiveFunboxButton();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs(true);
+  ThemePicker.setCustomInputs();
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
@@ -722,7 +723,7 @@ export async function update(
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&
@@ -757,13 +758,13 @@ function toggleSettingsGroup(groupName: string): void {
       hide: false,
     });
     groupEl?.addClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.addClass(
       "rotateIcon",
     );
   } else {
     void groupEl?.slideDown(250);
     groupEl?.removeClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.removeClass(
       "rotateIcon",
     );
   }
@@ -926,7 +927,7 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
 }
 
 function getThemeDropdownData(
-  isActive: (theme: Theme) => boolean,
+  isActive: (theme: ThemeWithName) => boolean,
 ): DataArrayPartial {
   return ThemesList.map((theme) => ({
     value: theme.name,
@@ -979,6 +980,48 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
     });
 });
 
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .delButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("deleteCustomTheme", [customThemeId]);
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .editButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont");
+  },
+);
+
+qs(".pageSettings #resetSettingsButton")?.on("click", () => {
+  showPopup("resetSettings");
+});
+
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "fullConfigChange") setEventDisabled(true);
   if (key === "fullConfigChangeFinished") setEventDisabled(false);
@@ -993,7 +1036,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled) return;
-  if (ActivePage.get() === "settings" && key !== "theme") {
+  if (getActivePage() === "settings" && key !== "theme") {
     void (key === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey: key }));
@@ -1030,6 +1073,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageSettings");
 });

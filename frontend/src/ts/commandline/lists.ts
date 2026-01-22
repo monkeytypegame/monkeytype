@@ -27,12 +27,15 @@ import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
-import * as FPSCounter from "../elements/fps-counter";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
 import { ConfigKey } from "@monkeytype/schemas/configs";
+import {
+  hideFpsCounter,
+  showFpsCounter,
+} from "../components/layout/overlays/FpsCounter";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -44,6 +47,8 @@ challengesPromise
       Misc.createErrorMessage(e, "Failed to update challenges commands"),
     );
   });
+
+const adsCommands = buildCommands("ads");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -211,7 +216,7 @@ export const commands: CommandsSubgroup = {
     ),
 
     //danger zone
-    ...buildCommands("ads"),
+    ...adsCommands,
 
     //other
     ...LoadChallengeCommands,
@@ -308,7 +313,7 @@ export const commands: CommandsSubgroup = {
             display: "show",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.start();
+              showFpsCounter();
             },
           },
           {
@@ -316,7 +321,7 @@ export const commands: CommandsSubgroup = {
             display: "hide",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.stop();
+              hideFpsCounter();
             },
           },
         ],
@@ -374,6 +379,7 @@ const lists = {
   funbox: FunboxCommands[0]?.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
+  ads: adsCommands[0]?.subgroup,
 };
 
 const subgroupByConfigKey = Object.fromEntries(

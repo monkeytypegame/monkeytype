@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #0f0000;
-  --main-color: #b31313;
-  --caret-color: #b31313;
-  --sub-color: #683434;
-  --sub-alt-color: #200a0a;
-  --text-color: #ffffff;
-  --error-color: #2f3cb6;
-  --error-extra-color: #434a8f;
-  --colorful-error-color: #2f3cb6;
-  --colorful-error-extra-color: #434a8f;
-}
-
 @keyframes fire {
   0% {
     color: #b31313;

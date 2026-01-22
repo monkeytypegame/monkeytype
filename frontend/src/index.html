@@ -3,12 +3,12 @@
   <load src="html/head.html" />
 
   <body>
-    <div id="mediaQueryDebug"></div>
+    <mount data-component="overlays"></mount>
     <load src="html/warnings.html" />
-    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
-    <div id="backgroundLoader" class="hidden"></div>
-    <div id="bannerCenter" class="focus"></div>
+
+    <!-- theme component adds to the head element, don't move to head.html -->
+    <mount data-component="theme"></mount>
     <div id="notificationCenter">
       <div class="clearAll button hidden">
         <i class="fas fa-times"></i>
@@ -21,11 +21,7 @@
         <div class="bar"></div>
       </div>
     </div>
-    <div class="content-grid scrollToTopContainer">
-      <div class="scrollToTopButton invisible breakout">
-        <i class="fas fa-angle-double-up"></i>
-      </div>
-    </div>
+    <mount data-component="modals" id="solidmodals"></mount>
     <div id="popups">
       <load src="html/popups.html" />
     </div>
@@ -42,7 +38,9 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <load src="html/pages/about.html" />
+        <div class="page pageAbout full-width hidden" id="pageAbout">
+          <mount data-component="aboutpage"></mount>
+        </div>
         <load src="html/pages/settings.html" />
         <load src="html/pages/login.html" />
         <load src="html/pages/account.html" />
@@ -53,7 +51,7 @@
         <load src="html/pages/friends.html" />
         <load src="html/pages/leaderboards.html" />
       </main>
-      <load src="html/footer.html" />
+      <mount data-component="footer"></mount>
       <div
         id="ad-footer-wrapper"
         class="full-width ad advertisement ad-h focus"
@@ -71,7 +69,7 @@
       async
       defer
     ></script>
-    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
+
     <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
     <script type="module" src="ts/index.ts"></script>
   </body>

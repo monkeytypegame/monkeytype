@@ -1,10 +1,6 @@
-@media only screen and (max-width: calc(1280px + 5rem)) {
-  #mediaQueryDebug {
-    background: #ffee58;
-    &::before {
-      content: "yellow";
-    }
-  }
+@use "./media.scss" as *;
+
+@include media-query(yellow) {
   .content-grid {
     --content-max-width: 1024px;
   }
@@ -49,8 +45,9 @@
     }
   }
   .testActivity {
-    --box-size: 0.9em;
-    --font-size: 0.9em;
+    // --box-size: 0.9em;
+    // --font-size: 0.9em;
+    --gap-size: 0.15em;
     // .days {
     //   font-size: 0.8em;
     // }

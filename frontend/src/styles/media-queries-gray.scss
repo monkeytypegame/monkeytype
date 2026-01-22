@@ -1,11 +1,7 @@
 //this is very overkill for the modern world so dont worry too much about this width
-@media only screen and (max-width: 330px) {
-  #mediaQueryDebug {
-    background: gray;
-    &::before {
-      content: "gray";
-    }
-  }
+@use "./media.scss" as *;
+
+@include media-query(gray) {
   .pageLeaderboards .content .tableAndUser {
     .titleAndButtons {
       grid-template-columns: 1fr;

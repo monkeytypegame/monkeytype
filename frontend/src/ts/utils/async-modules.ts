@@ -1,4 +1,4 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import { createErrorMessage } from "./misc";
 import * as Skeleton from "../utils/skeleton";
@@ -9,13 +9,13 @@ export async function getDevOptionsModal(): Promise<
   typeof import("../modals/dev-options.js")
 > {
   try {
-    Loader.show();
+    showLoaderBar();
     // oxlint-disable-next-line import/no-unresolved
     const module = await import("../modals/dev-options.js");
-    Loader.hide();
+    hideLoaderBar();
     return module;
   } catch (e) {
-    Loader.hide();
+    hideLoaderBar();
     if (
       e instanceof Error &&
       e.message.includes("Failed to fetch dynamically imported module")

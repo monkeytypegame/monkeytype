@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #00141a;
-  --main-color: #859900;
-  --caret-color: #b58900;
-  --sub-color: #2aa198;
-  --sub-alt-color: #00222b;
-  --text-color: #eee8d5;
-  --error-color: #dc322f;
-  --error-extra-color: #9b225c;
-  --colorful-error-color: #d33682;
-  --colorful-error-extra-color: #9b225c;
-}
-
 #words {
   --correct-letter-color: var(--text-color);
   --untyped-letter-color: #586e75;
@@ -24,7 +11,7 @@ header #logo .icon {
   color: var(--text-color) !important;
 }
 
-key {
+kbd {
   color: var(--text-color);
   background-color: var(--sub-alt-color);
 }
