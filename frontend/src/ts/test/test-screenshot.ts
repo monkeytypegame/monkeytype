@@ -5,7 +5,7 @@ import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import { format } from "date-fns/format";
-import { getActivePage } from "../signals/core";
+import { getActivePage, setIsScreenshotting } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
@@ -17,13 +17,13 @@ let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
+  setIsScreenshotting(false);
   hideLoaderBar();
   qs("#ad-result-wrapper")?.show();
   qs("#ad-result-small-wrapper")?.show();
   qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
   qs("#notificationCenter")?.show();
-  qs("#commandLineMobileButton")?.show();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
   qs(".pageTest .buttons")?.show();
@@ -84,9 +84,10 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       .map((el) => `<span>${el}</span>`)
       .join("<span class='pipe'>|</span>"),
   );
+
+  setIsScreenshotting(true);
   qs(".pageTest .buttons")?.hide();
   qs("#notificationCenter")?.hide();
-  qs("#commandLineMobileButton")?.hide();
   qs(".pageTest .loginTip")?.hide();
   qs("noscript")?.hide();
   qs("#nocss")?.hide();
@@ -121,8 +122,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
-
-  console.log(sourceX, sourceY);
 
   const sourceWidth = src.getOuterWidth();
   const sourceHeight = src.getOuterHeight();
