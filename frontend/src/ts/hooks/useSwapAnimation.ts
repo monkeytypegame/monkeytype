@@ -34,18 +34,10 @@ export function useSwapAnimation<
   });
 
   createEffectOn(getVisible, async (visible, previousVisible) => {
-    const prevEl =
-      previousVisible !== undefined
-        ? options.elements[previousVisible]?.()
-        : null;
+    const prevEl = options.elements[previousVisible ?? ""]?.();
     const newEl = options.elements[visible]?.();
 
-    if (
-      prevEl === undefined ||
-      newEl === undefined ||
-      prevEl === null ||
-      newEl === null
-    ) {
+    if (prevEl === undefined || newEl === undefined) {
       return;
     }
 
