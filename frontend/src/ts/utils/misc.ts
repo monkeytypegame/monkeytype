@@ -409,40 +409,6 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
-export type JQueryEasing =
-  | "linear"
-  | "swing"
-  | "easeInSine"
-  | "easeOutSine"
-  | "easeInOutSine"
-  | "easeInQuad"
-  | "easeOutQuad"
-  | "easeInOutQuad"
-  | "easeInCubic"
-  | "easeOutCubic"
-  | "easeInOutCubic"
-  | "easeInQuart"
-  | "easeOutQuart"
-  | "easeInOutQuart"
-  | "easeInQuint"
-  | "easeOutQuint"
-  | "easeInOutQuint"
-  | "easeInExpo"
-  | "easeOutExpo"
-  | "easeInOutExpo"
-  | "easeInCirc"
-  | "easeOutCirc"
-  | "easeInOutCirc"
-  | "easeInBack"
-  | "easeOutBack"
-  | "easeInOutBack"
-  | "easeInElastic"
-  | "easeOutElastic"
-  | "easeInOutElastic"
-  | "easeInBounce"
-  | "easeOutBounce"
-  | "easeInOutBounce";
-
 export async function promiseAnimate(
   el: HTMLElement | string,
   options: AnimationParams,
@@ -734,7 +700,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 }
 
 export function triggerResize(): void {
-  $(window).trigger("resize");
+  window.dispatchEvent(new Event("resize"));
 }
 
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &

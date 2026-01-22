@@ -1,12 +1,6 @@
 @use "./media.scss" as *;
 
 @include media-query(purple) {
-  #mediaQueryDebug {
-    background: #7e57c2;
-    &::before {
-      content: "purple";
-    }
-  }
   .content-grid {
     --content-max-width: 100%;
     --padding-inline: 1rem;

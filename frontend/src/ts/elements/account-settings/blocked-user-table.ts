@@ -6,9 +6,10 @@ import { isAuthenticated } from "../../firebase";
 import { getReceiverUid } from "../../pages/friends";
 import * as DB from "../../db";
 import { updateFriendRequestsIndicator } from "../account-button";
+import { qsr } from "../../utils/dom";
 
 let blockedUsers: Connection[] = [];
-const element = $("#pageAccountSettings .tab[data-tab='blockedUsers']");
+const element = qsr("#pageAccountSettings .tab[data-tab='blockedUsers']");
 
 async function getData(): Promise<boolean> {
   showLoaderRow();
@@ -37,19 +38,19 @@ export async function update(): Promise<void> {
 }
 
 function showLoaderRow(): void {
-  const table = element.find("table tbody");
+  const table = element.qs("table tbody");
 
-  table.empty();
-  table.append(
+  table?.empty();
+  table?.appendHtml(
     "<tr><td colspan='3' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>",
   );
 }
 
 function refreshList(): void {
-  const table = element.find("table tbody");
-  table.empty();
+  const table = element.qs("table tbody");
+  table?.empty();
   if (blockedUsers.length === 0) {
-    table.append(
+    table?.appendHtml(
       "<tr><td colspan='3' style='text-align: center;'>No blocked users</td></tr>",
     );
     return;
@@ -69,12 +70,12 @@ function refreshList(): void {
     </tr>
     `,
   );
-  table.append(content.join());
+  table?.appendHtml(content.join());
 }
 
-element.on("click", "table button.delete", async (e) => {
-  const row = (e.target as HTMLElement).closest("tr") as HTMLElement;
-  const id = row.dataset["id"];
+element.onChild("click", "table button.delete", async (e) => {
+  const row = (e.childTarget as HTMLElement).closest("tr") as HTMLElement;
+  const id = row?.dataset["id"];
 
   if (id === undefined) {
     throw new Error("Cannot find id of target.");

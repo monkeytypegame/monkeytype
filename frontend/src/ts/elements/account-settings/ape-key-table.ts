@@ -5,6 +5,8 @@ import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
 import { SimpleModal, TextArea } from "../../utils/simple-modal";
 import { isAuthenticated } from "../../firebase";
+import { qs, qsr } from "../../utils/dom";
+
 const editApeKey = new SimpleModal({
   id: "editApeKey",
   title: "Edit Ape key",
@@ -104,11 +106,16 @@ const viewApeKey = new SimpleModal({
   },
   beforeShowFn: (_thisPopup): void => {
     _thisPopup.canClose = false;
-    $("#simpleModal textarea").css("height", "110px");
-    $("#simpleModal .submitButton").addClass("hidden");
+
+    const modalEl = _thisPopup.modal.getModal();
+
+    modalEl.qs("textarea")?.setStyle({
+      height: "110px",
+    });
+    modalEl.qs(".submitButton")?.addClass("hidden");
     setTimeout(() => {
       _thisPopup.canClose = true;
-      $("#simpleModal .submitButton").removeClass("hidden");
+      modalEl.qs(".submitButton")?.removeClass("hidden");
     }, 5000);
   },
 });
@@ -160,7 +167,7 @@ const generateApeKey = new SimpleModal({
 
 let apeKeys: ApeKeys | null = {};
 
-const element = $("#pageAccountSettings .tab[data-tab='apeKeys']");
+const element = qsr("#pageAccountSettings .tab[data-tab='apeKeys']");
 
 async function getData(): Promise<boolean> {
   if (!isAuthenticated()) return false;
@@ -186,10 +193,10 @@ async function getData(): Promise<boolean> {
 }
 
 function showLoaderRow(): void {
-  const table = element.find("table tbody");
+  const table = element.qs("table tbody");
 
-  table.empty();
-  table.append(
+  table?.empty();
+  table?.appendHtml(
     "<tr><td colspan='6' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>",
   );
 }
@@ -197,18 +204,18 @@ function showLoaderRow(): void {
 function refreshList(): void {
   const data = apeKeys;
   if (data === undefined || data === null) return;
-  const table = element.find("table tbody");
-  table.empty();
+  const table = element.qs("table tbody");
+  table?.empty();
   const apeKeyIds = Object.keys(data);
   if (apeKeyIds.length === 0) {
-    table.append(
+    table?.appendHtml(
       "<tr><td colspan='6' style='text-align: center;'>No keys found</td></tr>",
     );
     return;
   }
   apeKeyIds.forEach((apeKeyId) => {
     const key = data[apeKeyId] as ApeKey;
-    table.append(`
+    table?.appendHtml(`
       <tr keyId="${apeKeyId}">
         <td>
           <button class="textButton toggleActive" style="font-size: 1.25rem">
@@ -240,15 +247,15 @@ function refreshList(): void {
       </tr>
     `);
   });
-  for (const tr of table.find("tr")) {
+  for (const tr of table?.qsa("tr") ?? []) {
     const keyid = tr.getAttribute("keyid") as string;
-    tr.querySelector("button.toggleActive")?.addEventListener("click", (e) => {
+    tr.qs("button.toggleActive")?.on("click", (e) => {
       void toggleActiveKey(keyid);
     });
-    tr.querySelector("button.deleteButton")?.addEventListener("click", (e) => {
+    tr.qs("button.deleteButton")?.on("click", (e) => {
       deleteApeKeyModal.show([keyid], {});
     });
-    tr.querySelector("button.editButton")?.addEventListener("click", (e) => {
+    tr.qs("button.editButton")?.on("click", (e) => {
       editApeKey.show([keyid], {});
     });
   }
@@ -282,9 +289,9 @@ let lostAccess = false;
 
 export async function update(onApeKeyChangee?: () => void): Promise<void> {
   if (lostAccess) {
-    $(".pageAccountSettings .tab[data-tab='apeKeys'] table").remove();
-    $(".pageAccountSettings .section.apeKeys .buttons").remove();
-    $(".pageAccountSettings .section.apeKeys .lostAccess").removeClass(
+    qs(".pageAccountSettings .tab[data-tab='apeKeys'] table")?.remove();
+    qs(".pageAccountSettings .section.apeKeys .buttons")?.remove();
+    qs(".pageAccountSettings .section.apeKeys .lostAccess")?.removeClass(
       "hidden",
     );
     return;
@@ -294,6 +301,6 @@ export async function update(onApeKeyChangee?: () => void): Promise<void> {
   refreshList();
 }
 
-$(".pageAccountSettings").on("click", "#generateNewApeKey", () => {
+qs(".pageAccountSettings")?.onChild("click", "#generateNewApeKey", () => {
   generateApeKey.show([], {});
 });

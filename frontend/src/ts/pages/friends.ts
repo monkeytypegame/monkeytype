@@ -223,7 +223,7 @@ function updateFriends(): void {
 
     if (friendsTable === undefined) {
       friendsTable = new SortedTable<Friend>({
-        table: ".pageFriends .friends table",
+        table: qsr(".pageFriends .friends table"),
         data: friendsList,
         buildRow: buildFriendRow,
         persistence: new LocalStorageWithSchema({

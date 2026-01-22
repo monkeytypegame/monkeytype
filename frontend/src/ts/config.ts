@@ -353,6 +353,7 @@ export async function applyConfigFromJson(json: string): Promise<void> {
 const { promise: configLoadPromise, resolve: loadDone } =
   promiseWithResolvers();
 
+export const getConfig = (): Config => config;
 export { configLoadPromise };
 export default config;
 export const __testing = {

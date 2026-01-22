@@ -2,12 +2,6 @@
 @use "./media.scss" as *;
 
 @include media-query(gray) {
-  #mediaQueryDebug {
-    background: gray;
-    &::before {
-      content: "gray";
-    }
-  }
   .pageLeaderboards .content .tableAndUser {
     .titleAndButtons {
       grid-template-columns: 1fr;

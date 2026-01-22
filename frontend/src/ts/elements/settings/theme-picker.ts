@@ -140,37 +140,37 @@ export async function fillPresetButtons(): Promise<void> {
 
 export async function fillCustomButtons(): Promise<void> {
   // Update custom theme buttons
-  const customThemesEl = $(
+  const customThemesEl = qs(
     ".pageSettings .section.themes .allCustomThemes.buttons",
-  ).empty();
-  const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
-  const saveButton = $(
+  )?.empty();
+  const addButton = qs(".pageSettings .section.themes .addCustomThemeButton");
+  const saveButton = qs(
     ".pageSettings .section.themes .tabContent.customTheme #saveCustomThemeButton",
   );
 
   if (!isAuthenticated()) {
-    saveButton.text("save");
-    addButton.addClass("hidden");
-    customThemesEl.css("margin-bottom", "0");
+    saveButton?.setText("save");
+    addButton?.addClass("hidden");
+    customThemesEl?.setStyle({ marginBottom: "0" });
     return;
   }
 
-  saveButton.text("save as new");
-  addButton.removeClass("hidden");
+  saveButton?.setText("save as new");
+  addButton?.removeClass("hidden");
 
   const customThemes = DB.getSnapshot()?.customThemes ?? [];
 
   if (customThemes.length === 0) {
-    customThemesEl.css("margin-bottom", "0");
+    customThemesEl?.setStyle({ marginBottom: "0" });
   } else {
-    customThemesEl.css("margin-bottom", "1rem");
+    customThemesEl?.setStyle({ marginBottom: "1rem" });
   }
 
   for (const customTheme of customThemes) {
     const bgColor = customTheme.colors[0];
     const mainColor = customTheme.colors[1];
 
-    customThemesEl.append(
+    customThemesEl?.appendHtml(
       `<div class="customTheme button" customThemeId='${customTheme._id}' 
       style="color:${mainColor};background:${bgColor}">
       <div class="editButton"><i class="fas fa-pen"></i></div>
@@ -220,12 +220,12 @@ function saveCustomThemeColors(): void {
 export function updateActiveTab(): void {
   // Set force to true only when some change for the active tab has taken place
   // Prevent theme buttons from being added twice by doing an update only when the state has changed
-  $(".pageSettings .section.themes .tabs button").removeClass("active");
-  $(
+  qsa(".pageSettings .section.themes .tabs button")?.removeClass("active");
+  qs(
     `.pageSettings .section.themes .tabs button[data-tab="${
       Config.customTheme ? "custom" : "preset"
     }"]`,
-  ).addClass("active");
+  )?.addClass("active");
 
   if (Config.customTheme) {
     void Misc.swapElements(
@@ -251,13 +251,10 @@ export async function updateThemeUI(): Promise<void> {
 // Add events to the DOM
 
 // Handle click on theme: preset or custom tab
-$(".pageSettings .section.themes .tabs button").on("click", (e) => {
-  $(".pageSettings .section.themes .tabs button").removeClass("active");
-  const $target = $(e.currentTarget);
-  $target.addClass("active");
-  // setCustomInputs();
-  //test
-  if ($target.attr("data-tab") === "preset") {
+qsa(".pageSettings .section.themes .tabs button")?.on("click", (e) => {
+  qsa(".pageSettings .section.themes .tabs button")?.removeClass("active");
+  (e.currentTarget as HTMLElement).classList.add("active");
+  if ((e.currentTarget as HTMLElement).getAttribute("data-tab") === "preset") {
     setConfig("customTheme", false);
   } else {
     setConfig("customTheme", true);
@@ -265,45 +262,61 @@ $(".pageSettings .section.themes .tabs button").on("click", (e) => {
 });
 
 // Handle click on custom theme button
-$(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
-  // Do not apply if user wanted to delete it
-  if ($(e.target).hasClass("delButton")) return;
-  if ($(e.target).hasClass("editButton")) return;
-  const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-  const theme = DB.getSnapshot()?.customThemes?.find(
-    (e) => e._id === customThemeId,
-  );
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme.button",
+  (e) => {
+    // Do not apply if user wanted to delete it
 
-  if (theme === undefined) {
-    //this shouldnt happen but typescript needs this check
-    console.error(
-      "Could not find custom theme in snapshot for id ",
-      customThemeId,
+    const target = e.childTarget as HTMLElement;
+
+    if ((e.target as HTMLElement).classList.contains("delButton")) return;
+    if ((e.target as HTMLElement).classList.contains("editButton")) return;
+    const customThemeId = target.getAttribute("customThemeId") ?? "";
+    const theme = DB.getSnapshot()?.customThemes?.find(
+      (e) => e._id === customThemeId,
     );
-    return;
-  }
 
-  setConfig("customThemeColors", theme.colors);
-});
+    if (theme === undefined) {
+      //this shouldnt happen but typescript needs this check
+      console.error(
+        "Could not find custom theme in snapshot for id ",
+        customThemeId,
+      );
+      return;
+    }
+
+    setConfig("customThemeColors", theme.colors);
+  },
+);
 
 // Handle click on favorite preset theme button
-$(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
-  const theme = $(e.currentTarget)
-    .parents(".theme.button")
-    .attr("theme") as ThemeName;
-  if (theme !== undefined) {
-    toggleFavourite(theme);
-  } else {
-    console.error(
-      "Could not find the theme attribute attached to the button clicked!",
-    );
-  }
-});
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .theme .favButton",
+  (e) => {
+    const theme = (e.childTarget as HTMLElement)
+      .closest(".theme.button")
+      ?.getAttribute("theme") as ThemeName;
+    if (theme !== undefined) {
+      toggleFavourite(theme);
+    } else {
+      console.error(
+        "Could not find the theme attribute attached to the button clicked!",
+      );
+    }
+  },
+);
 
 // Handle click on preset theme button
-$(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
-  const theme = $(e.currentTarget).attr("theme") as ThemeName;
-  if (!$(e.target).hasClass("favButton") && theme !== undefined) {
+qs(".pageSettings")?.onChild("click", ".section.themes .theme.button", (e) => {
+  const theme = (e.childTarget as HTMLElement).getAttribute(
+    "theme",
+  ) as ThemeName;
+  if (
+    !(e.childTarget as HTMLElement).classList.contains("favButton") &&
+    theme !== undefined
+  ) {
     setConfig("theme", theme);
   }
 });
@@ -364,7 +377,7 @@ qsa(".pageSettings .section.themes .tabContainer .customTheme input.input")
     }
   });
 
-$(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
+qs(".pageSettings #loadCustomColorsFromPreset")?.on("click", async () => {
   ThemeController.applyPreset(Config.theme);
   const themeColors = getTheme();
 
@@ -375,7 +388,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
     );
 });
 
-$(".pageSettings #saveCustomThemeButton").on("click", async () => {
+qs(".pageSettings #saveCustomThemeButton")?.on("click", async () => {
   saveCustomThemeColors();
   if (isAuthenticated()) {
     const newCustomTheme = {
