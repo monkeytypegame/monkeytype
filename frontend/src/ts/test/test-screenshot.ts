@@ -10,7 +10,7 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { qs } from "../utils/dom";
+import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
