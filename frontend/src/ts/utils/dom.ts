@@ -580,7 +580,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the element's bounding client rect offset
+   * Get the element's screen bounds: top, left, width and height
    */
   screenBounds(): { top: number; left: number; width: number; height: number } {
     const rect = this.native.getBoundingClientRect();
