@@ -393,8 +393,7 @@ async function createIndex(
       Logger.warning(`Index ${key} not matching, dropping and recreating...`);
 
       const existingIndex = (await getUsersCollection().listIndexes().toArray())
-        // oxlint-disable-next-line no-unsafe-member-access
-        .map((it) => it.name as string)
+        .map((it: unknown) => (it as { name: string }).name)
         .find((it) => it.startsWith(key));
 
       if (existingIndex !== undefined && existingIndex !== null) {
