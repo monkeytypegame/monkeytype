@@ -23,7 +23,7 @@ function revert(): void {
   qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
   qs("#notificationCenter")?.show();
-  qs("#commandLineMobileButton")?.addClass("hidden");
+  qs("#commandLineMobileButton")?.show();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
   qs(".pageTest .buttons")?.show();
