@@ -1,7 +1,8 @@
 import { JSXElement } from "solid-js";
 
-import { getFocus } from "../../../signals/core";
+import { getFocus, getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 
 import { Keytips } from "./Keytips";
@@ -10,7 +11,11 @@ import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <footer class="text-sub relative text-xs">
+    <footer
+      class={cn("text-sub relative text-xs", {
+        "opacity-0": getIsScreenshotting(),
+      })}
+    >
       <Keytips />
 
       <div
