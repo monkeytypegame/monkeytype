@@ -759,6 +759,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's top and left offset relative to the document,
+   * adjusted for margins (moving the origin to the outer edge of the margin).
+   * This is useful when you need to capture an element including its margins.
+   */
+  getOuterPageOffset(): { top: number; left: number } {
+    const rect = this.native.getBoundingClientRect();
+    const style = getComputedStyle(this.native);
+    const marginLeft = parseFloat(style.marginLeft) || 0;
+    const marginTop = parseFloat(style.marginTop) || 0;
+    return {
+      top: rect.top - marginTop + window.scrollY,
+      left: rect.left - marginLeft + window.scrollX,
+    };
+  }
+
+  /**
    * Get the element's width
    */
   getOffsetWidth(): number {

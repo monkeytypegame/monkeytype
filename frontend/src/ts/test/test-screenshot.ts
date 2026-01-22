@@ -29,7 +29,7 @@ function revert(): void {
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
-  qsa("header, footer")?.show();
+  qsa("header, footer")?.removeClass("invisible").show();
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
   qs(".highlightContainer")?.show();
@@ -119,8 +119,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
   await Misc.sleep(50); // Small delay for render updates
 
-  const sourceX = src.getOffsetLeft() ?? 0;
-  const sourceY = src.getOffsetTop() ?? 0;
+  const { top: sourceY, left: sourceX } = src.getOuterPageOffset();
   const sourceWidth = src.getOuterWidth();
   const sourceHeight = src.getOuterHeight();
   const paddingX = convertRemToPixels(2);
