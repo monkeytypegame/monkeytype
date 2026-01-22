@@ -4,69 +4,7 @@ import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
-
-const languageGroupToTld: Partial<Record<LanguageGroupName, string>> = {
-  english: "en",
-  spanish: "es",
-  french: "fr",
-  german: "de",
-  portuguese: "pt",
-  arabic: "ar",
-  italian: "it",
-  latin: "la",
-  afrikaans: "af",
-  korean: "ko",
-  russian: "ru",
-  polish: "pl",
-  czech: "cs",
-  slovak: "sk",
-  ukrainian: "uk",
-  lithuanian: "lt",
-  indonesian: "id",
-  greek: "el",
-  turkish: "tr",
-  thai: "th",
-  tamil: "ta",
-  slovenian: "sl",
-  croatian: "hr",
-  dutch: "nl",
-  danish: "da",
-  hungarian: "hu",
-  norwegian_bokmal: "no",
-  norwegian_nynorsk: "nn",
-  hebrew: "he",
-  malay: "ms",
-  romanian: "ro",
-  finnish: "fi",
-  estonian: "et",
-  welsh: "cy",
-  persian: "fa",
-  kazakh: "kk",
-  vietnamese: "vi",
-  swedish: "sv",
-  serbian: "sr",
-  georgian: "ka",
-  catalan: "ca",
-  bulgarian: "bg",
-  esperanto: "eo",
-  bangla: "bn",
-  urdu: "ur",
-  armenian: "hy",
-  myanmar: "my",
-  hindi: "hi",
-  macedonian: "mk",
-  uzbek: "uz",
-  belarusian: "be",
-  azerbaijani: "az",
-  latvian: "lv",
-  euskera: "eu",
-};
-
-function getTLD(languageGroup: LanguageGroupName): string {
-  return languageGroupToTld[languageGroup] ?? "en";
-}
 
 type Post = {
   title: string;
@@ -98,12 +36,8 @@ export async function getSection(
   showLoaderBar();
 
   // get TLD for wikipedia according to language group
-  let urlTLD = "en";
-
-  const currentLanguageGroup = getGroupForLanguage(language);
-  if (currentLanguageGroup !== undefined) {
-    urlTLD = getTLD(currentLanguageGroup);
-  }
+  const languageProperties = await JSONData.getLanguage(language);
+  const urlTLD = languageProperties.bcp47?.split("-")[0] ?? "en";
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
   const sectionObj: SectionObject = { title: "", author: "" };
