@@ -1,6 +1,8 @@
 import { JSXElement } from "solid-js";
 
+import { getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
+import { cn } from "../../../utils/cn";
 import { ScrollToTop } from "../footer/ScrollToTop";
 
 import { Banners } from "./Banners";
@@ -15,7 +17,12 @@ export function Overlays(): JSXElement {
       <button
         type="button"
         id="commandLineMobileButton"
-        class="bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12"
+        class={cn(
+          "bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12",
+          {
+            "opacity-0": getIsScreenshotting(),
+          },
+        )}
         onClick={() => {
           showModal("Commandline");
         }}

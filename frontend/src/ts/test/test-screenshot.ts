@@ -5,31 +5,31 @@ import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import { format } from "date-fns/format";
-import { getActivePage } from "../signals/core";
+import { getActivePage, setIsScreenshotting } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { qs, qsa } from "../utils/dom";
+import { qs } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
+  setIsScreenshotting(false);
   hideLoaderBar();
   qs("#ad-result-wrapper")?.show();
   qs("#ad-result-small-wrapper")?.show();
   qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
   qs("#notificationCenter")?.show();
-  qs("#commandLineMobileButton")?.show();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
-  qsa("header, footer")?.show();
+  qs("header")?.removeClass("invisible");
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
   qs(".highlightContainer")?.show();
@@ -84,9 +84,10 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       .map((el) => `<span>${el}</span>`)
       .join("<span class='pipe'>|</span>"),
   );
+
+  setIsScreenshotting(true);
   qs(".pageTest .buttons")?.hide();
   qs("#notificationCenter")?.hide();
-  qs("#commandLineMobileButton")?.hide();
   qs(".pageTest .loginTip")?.hide();
   qs("noscript")?.hide();
   qs("#nocss")?.hide();
@@ -96,7 +97,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
-  qsa("header, footer")?.addClass("invisible");
+  qs("header")?.addClass("invisible");
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
   qs(".highlightContainer")?.hide();
@@ -119,8 +120,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
   await Misc.sleep(50); // Small delay for render updates
 
-  const sourceX = src.getOffsetLeft() ?? 0;
-  const sourceY = src.getOffsetTop() ?? 0;
+  const sourceX = src.screenBounds().left ?? 0;
+  const sourceY = src.screenBounds().top ?? 0;
+
   const sourceWidth = src.getOuterWidth();
   const sourceHeight = src.getOuterHeight();
   const paddingX = convertRemToPixels(2);
