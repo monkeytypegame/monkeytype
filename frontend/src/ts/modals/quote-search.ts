@@ -56,7 +56,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
   const quoteLengthDropdown = modal
     .getModal()
-    .qs<HTMLSelectElement>(".quoteLengthFilter");
+    .qs<HTMLSelectElement>("select.quoteLengthFilter");
   const selectedOptions = quoteLengthDropdown
     ? Array.from(quoteLengthDropdown.native.selectedOptions)
     : [];
