@@ -582,12 +582,17 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Get the element's bounding client rect offset
    */
-  offset(): { top: number; left: number } {
+  screenBounds(): { top: number; left: number; width: number; height: number } {
     const rect = this.native.getBoundingClientRect();
     const scrollLeft =
       window.pageXOffset || document.documentElement.scrollLeft;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+    return {
+      top: rect.top + scrollTop,
+      left: rect.left + scrollLeft,
+      width: rect.width,
+      height: rect.height,
+    };
   }
 
   /**
