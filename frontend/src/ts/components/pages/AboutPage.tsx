@@ -1,5 +1,6 @@
 import { intervalToDuration } from "date-fns";
-import { createResource, For, JSXElement, Show } from "solid-js";
+import { createResource, createSignal, For, JSXElement, Show } from "solid-js";
+import { Motion } from "solid-motionone";
 
 import Ape from "../../ape";
 import { getConfig } from "../../signals/config";
@@ -46,9 +47,21 @@ export function AboutPage(): JSXElement {
     open ? await fetchSpeedHistogram() : undefined,
   );
 
+  const [test, setTest] = createSignal(true);
+
   return (
     <Show when={isOpen}>
       <div class="content-grid grid gap-8">
+        <button type="button" onClick={() => setTest(!test())}>
+          Toggle
+        </button>
+        <Motion
+          animate={{ opacity: test() ? 1 : 0 }}
+          hover={{ scale: 2 }}
+          class="w-min"
+        >
+          Hello
+        </Motion>
         <section class="text-sub text-center">
           Created with love by Miodec.
           <br />

@@ -1,14 +1,14 @@
-import * as Misc from "../utils/misc";
-import {
-  getHtmlByUserFlags,
-  SupportsFlags,
-} from "../controllers/user-flag-controller";
-import { isAuthenticated } from "../firebase";
-import * as XpBar from "./xp-bar";
-import { getAvatarElement } from "../utils/discord-avatar";
+// import * as Misc from "../utils/misc";
+// import {
+// getHtmlByUserFlags,
+// SupportsFlags,
+// } from "../controllers/user-flag-controller";
+// import { isAuthenticated } from "../firebase";
+// import * as XpBar from "./xp-bar";
+// import { getAvatarElement } from "../utils/discord-avatar";
 import * as AuthEvent from "../observables/auth-event";
-import { getSnapshot } from "../db";
-import { qs } from "../utils/dom";
+// import { getSnapshot } from "../db";
+// import { qs } from "../utils/dom";
 
 // const nav = qs("header nav");
 // const accountButtonAndMenuEl = nav?.qsr(".accountButtonAndMenu");
@@ -19,7 +19,7 @@ export function hide(): void {
   // loginButtonEl.addClass("hidden");
 }
 
-export function loading(state: boolean): void {
+export function loading(_state: boolean): void {
   // accountButtonAndMenuEl
   //   .qs(".spinner")
   //   ?.setStyle({ opacity: state ? "1" : "0" });
@@ -28,17 +28,17 @@ export function loading(state: boolean): void {
   //   ?.setStyle({ opacity: state ? "0" : "1" });
 }
 
-export function updateName(name: string): void {
+export function updateName(_name: string): void {
   // accountButtonAndMenuEl.qs(".view-account > .text")?.setText(name);
 }
 
-function updateFlags(flags: SupportsFlags): void {
-  // accountButtonAndMenuEl
-  //   .qs(".view-account > .text")
-  //   ?.appendHtml(getHtmlByUserFlags(flags, { iconsOnly: true }));
-}
+// function updateFlags(_flags: SupportsFlags): void {
+// accountButtonAndMenuEl
+//   .qs(".view-account > .text")
+//   ?.appendHtml(getHtmlByUserFlags(flags, { iconsOnly: true }));
+// }
 
-export function updateAvatar(avatar?: {
+export function updateAvatar(_avatar?: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
