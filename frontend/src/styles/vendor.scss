@@ -1,5 +1,23 @@
 @import "fontawesome-5"; // the screenshotting library has some issues with css layers
 
+// fontawesome icon styles do not respect the hidden class from the hidden layer
+.fas.hidden,
+.fab.hidden,
+.fa.hidden,
+.far.hidden {
+  display: none;
+}
+
+// same for invisible
+.fas.invisible,
+.fab.invisible,
+.fa.invisible,
+.far.invisible {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
 @import "normalize.css" layer(normalize);
 @layer vendor {
   @import "slim-select/styles";
