@@ -15,7 +15,8 @@ import QuotesController, { Quote } from "../controllers/quotes-controller";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -55,7 +56,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
   const quoteLengthDropdown = modal
     .getModal()
-    .qs<HTMLSelectElement>(".quoteLengthFilter");
+    .qs<HTMLSelectElement>("select.quoteLengthFilter");
   const selectedOptions = quoteLengthDropdown
     ? Array.from(quoteLengthDropdown.native.selectedOptions)
     : [];
@@ -471,20 +472,20 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-  const $button = modal
+  const button = modal
     .getModal()
-    .qsr(`.searchResult[data-quote-id=${quoteId}] .textButton.favorite i`);
+    .qsr(`.searchResult[data-quote-id="${quoteId}"] .textButton.favorite i`);
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 
   if (alreadyFavorited) {
     try {
-      Loader.show();
+      showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, false);
-      Loader.hide();
-      $button.removeClass("fas").addClass("far");
+      hideLoaderBar();
+      button.removeClass("fas").addClass("far");
     } catch (e) {
-      Loader.hide();
+      hideLoaderBar();
       const message = createErrorMessage(
         e,
         "Failed to remove quote from favorites",
@@ -493,12 +494,12 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
     }
   } else {
     try {
-      Loader.show();
+      showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, true);
-      Loader.hide();
-      $button.removeClass("far").addClass("fas");
+      hideLoaderBar();
+      button.removeClass("far").addClass("fas");
     } catch (e) {
-      Loader.hide();
+      hideLoaderBar();
       const message = createErrorMessage(e, "Failed to add quote to favorites");
       Notifications.add(message, -1);
     }
@@ -524,13 +525,13 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     });
   });
   modalEl.qs(".goToQuoteSubmit")?.on("click", async (e) => {
-    Loader.show();
+    showLoaderBar();
     const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
     const isSubmissionEnabled =
       (getSubmissionEnabled.status === 200 &&
         getSubmissionEnabled.body.data?.isEnabled) ??
       false;
-    Loader.hide();
+    hideLoaderBar();
     if (!isSubmissionEnabled) {
       Notifications.add(
         "Quote submission is disabled temporarily due to a large submission queue.",

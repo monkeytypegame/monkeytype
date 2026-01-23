@@ -5,13 +5,15 @@ import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { getActivePage } from "./signals/core";
+import { getActivePage, getGlobalOffsetTop } from "./signals/core";
 import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { applyFontFamily } from "./controllers/theme-controller";
-import { qs } from "./utils/dom";
+import { qs, qsr } from "./utils/dom";
+import { createEffect } from "solid-js";
+import { convertRemToPixels } from "./utils/numbers";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -39,23 +41,6 @@ export function setMediaQueryDebugLevel(level: number): void {
   if (level > 0 && level < 4) {
     body.classList.add(`mediaQueryDebugLevel${level}`);
   }
-}
-
-function updateKeytips(): void {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  qs("footer .keyTips")?.setHtml(`
-    ${
-      Config.quickRestart === "off"
-        ? "<kbd>tab</kbd> + <kbd>enter</kbd>"
-        : `<kbd>${Config.quickRestart}</kbd>`
-    } - restart test<br>
-    <kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> - command line`);
 }
 
 if (isDevEnvironment()) {
@@ -115,16 +100,13 @@ window.addEventListener("resize", () => {
   debouncedEvent();
 });
 
+createEffect(() => {
+  qsr("#app").setStyle({
+    paddingTop: getGlobalOffsetTop() + convertRemToPixels(2) + "px",
+  });
+});
+
 ConfigEvent.subscribe(async ({ key }) => {
-  if (key === "quickRestart") updateKeytips();
-  if (key === "showKeyTips") {
-    const keyTipsElement = qs("footer .keyTips");
-    if (Config.showKeyTips) {
-      keyTipsElement?.removeClass("hidden");
-    } else {
-      keyTipsElement?.addClass("hidden");
-    }
-  }
   if (key === "fontFamily") {
     await applyFontFamily();
   }

@@ -1,33 +1,30 @@
 import { JSXElement } from "solid-js";
-import { VersionButton } from "./VersionButton";
-import { Button } from "../../common/Button";
+
+import { getFocus, getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
-import "./Footer.scss";
+import { cn } from "../../../utils/cn";
+import { Button } from "../../common/Button";
+
+import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
-import { ScrollToTop } from "./ScrollToTop";
+import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <footer>
-      <ScrollToTop />
+    <footer
+      class={cn("text-sub relative text-xs", {
+        "opacity-0": getIsScreenshotting(),
+      })}
+    >
+      <Keytips />
+
       <div
-        id="commandLineMobileButton"
-        onClick={() => {
-          showModal("Commandline");
+        class="-m-2 flex justify-between gap-8 transition-opacity"
+        classList={{
+          "opacity-0": getFocus(),
         }}
       >
-        <i class="fas fa-terminal"></i>
-      </div>
-
-      <div class="keyTips">
-        <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
-        <br />
-        <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
-        - command line
-      </div>
-
-      <div class="leftright">
-        <div class="left">
+        <div class="xs:grid-cols-2 grid grid-cols-1 justify-items-start sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
@@ -85,7 +82,7 @@ export function Footer(): JSXElement {
             fixedWidthIcon
           />
         </div>
-        <div class="right">
+        <div class="flex flex-col items-end text-right lg:flex-row">
           <ThemeIndicator />
           <VersionButton />
         </div>

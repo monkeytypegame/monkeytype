@@ -1,5 +1,31 @@
-@import "buttons", "fonts", "404", "ads", "account", "animations", "banners",
-  "caret", "commandline", "core", "inputs", "keymap", "login", "monkey", "nav",
-  "notifications", "popups", "profile", "scroll", "settings",
-  "account-settings", "leaderboards", "test", "loading", "friends",
-  "media-queries";
+@layer hidden {
+  // custom layer to hide elements without using !important
+  // (as long as this layer is higher than custom-styles)
+  // this is to fix issues with tailwinds hidden class
+  // while still working for scss files
+  .hidden {
+    display: none;
+  }
+
+  // same for invisible
+  .invisible {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+}
+
+// the screenshotting library has some issues with css layers
+@import "fonts";
+
+@layer custom-styles {
+  @import "buttons", "404", "ads", "account", "animations", "caret",
+    "commandline", "core", "inputs", "keymap", "login", "monkey", "nav",
+    "notifications", "popups", "profile", "scroll", "settings",
+    "account-settings", "leaderboards", "test", "loading", "friends",
+    "media-queries";
+
+  .chartCanvas {
+    width: 100% !important;
+  }
+}

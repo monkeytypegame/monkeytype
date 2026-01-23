@@ -27,7 +27,12 @@ import {
   CountByYearAndDay,
   Friend,
 } from "@monkeytype/schemas/users";
-import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
@@ -246,7 +251,7 @@ export async function updateEmail(
 export async function getUser(uid: string, stack: string): Promise<DBUser> {
   const user = await getUsersCollection().findOne({ uid });
   if (!user) throw new MonkeyError(404, "User not found", stack);
-  return user;
+  return migrateUser(user);
 }
 
 /**
@@ -263,10 +268,16 @@ export async function getPartialUser<K extends keyof DBUser>(
   fields: K[],
 ): Promise<Pick<DBUser, K>> {
   const projection = new Map(fields.map((it) => [it, 1]));
-  const results = await getUsersCollection().findOne({ uid }, { projection });
-  if (results === null) throw new MonkeyError(404, "User not found", stack);
+  const partialUser = await getUsersCollection().findOne(
+    { uid },
+    { projection },
+  );
+  if (partialUser === null) throw new MonkeyError(404, "User not found", stack);
 
-  return results;
+  if (fields.includes("personalBests" as K)) {
+    return migrateUser(partialUser);
+  }
+  return partialUser;
 }
 
 export async function findByName(name: string): Promise<DBUser | undefined> {
@@ -294,7 +305,7 @@ export async function getUserByName(
 ): Promise<DBUser> {
   const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
-  return user;
+  return migrateUser(user);
 }
 
 export async function isDiscordIdAvailable(
@@ -1358,4 +1369,16 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
       },
     ],
   );
+}
+
+function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
+  user.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
+
+  return user;
 }

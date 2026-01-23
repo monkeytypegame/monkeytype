@@ -4,7 +4,8 @@ import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
 import { setMediaQueryDebugLevel } from "../ui";
 import { signIn } from "../auth";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
@@ -37,7 +38,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
   modalEl.qs(".toggleMediaQueryDebug")?.on("click", () => {
     mediaQueryDebugLevel++;
-    if (mediaQueryDebugLevel > 3) {
+    if (mediaQueryDebugLevel > 2) {
       mediaQueryDebugLevel = 0;
     }
     Notifications.add(
@@ -63,10 +64,10 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       );
       return;
     }
-    Loader.show();
+    showLoaderBar();
     void signIn(envConfig.quickLoginEmail, envConfig.quickLoginPassword).then(
       () => {
-        Loader.hide();
+        hideLoaderBar();
       },
     );
     void modal.hide();

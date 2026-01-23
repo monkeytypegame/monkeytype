@@ -1,10 +1,10 @@
-import { JSXElement, createResource, For } from "solid-js";
 import { format } from "date-fns/format";
+import { JSXElement, createResource, For } from "solid-js";
+
+import { isModalOpen } from "../../stores/modals";
 import { getReleasesFromGitHub } from "../../utils/json-data";
 import { AnimatedModal } from "../common/AnimatedModal";
-import "./VersionHistoryModal.scss";
 import AsyncContent from "../common/AsyncContent";
-import { isModalOpen } from "../../stores/modals";
 
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
@@ -19,7 +19,10 @@ export function VersionHistoryModal(): JSXElement {
 
       body = body.replace(/\r\n/g, "<br>");
       //replace ### title with h3 title h3
-      body = body.replace(/### (.*?)<br>/g, "<h3>$1</h3>");
+      body = body.replace(
+        /### (.*?)<br>/g,
+        '<h3 class="text-sub mb-2 text-xl">$1</h3>',
+      );
       body = body.replace(/<\/h3><br>/gi, "</h3>");
       //remove - at the start of a line
       body = body.replace(/^- /gm, "");
@@ -41,7 +44,7 @@ export function VersionHistoryModal(): JSXElement {
   });
 
   return (
-    <AnimatedModal id="VersionHistory">
+    <AnimatedModal id="VersionHistory" modalClass="max-w-6xl">
       <AsyncContent
         resource={releases}
         errorMessage="Failed to load version history"
@@ -61,16 +64,15 @@ function ReleaseItem(props: {
   publishedAt: string;
   bodyHTML: string;
 }): JSXElement {
-  const setBodyHTML = (el: HTMLDivElement): void => {
-    el.innerHTML = props.bodyHTML;
-  };
-
   return (
-    <div class="release">
-      <div class="title">{props.name}</div>
-      <div class="date">{props.publishedAt}</div>
-      {/* oxlint-disable-next-line solid/reactivity */}
-      <div class="body" ref={setBodyHTML}></div>
+    <div class="grid gap-4">
+      <div class="flex place-items-center justify-between">
+        <div class="text-main text-4xl">{props.name}</div>
+        <div class="text-sub">{props.publishedAt}</div>
+      </div>
+      {/* oxlint-disable-next-line solid/no-innerhtml */}
+      <div innerHTML={props.bodyHTML}></div>
+      <div class="bg-sub-alt mt-4 mb-16 h-1 w-full rounded"></div>
     </div>
   );
 }

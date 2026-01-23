@@ -7,7 +7,8 @@ import * as Funbox from "../test/funbox/funbox";
 import Config, { setConfig } from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import {
   Config as ConfigType,
@@ -284,11 +285,11 @@ export async function setup(challengeName: string): Promise<boolean> {
         nosave: true,
       });
     } else if (challenge.type === "script") {
-      Loader.show();
+      showLoaderBar();
       const response = await fetch(
         "/challenges/" + (challenge.parameters[0] as string),
       );
-      Loader.hide();
+      hideLoaderBar();
       if (response.status !== 200) {
         throw new Error(`${response.status} ${response.statusText}`);
       }

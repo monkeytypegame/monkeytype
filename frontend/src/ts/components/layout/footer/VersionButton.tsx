@@ -1,11 +1,11 @@
-import { JSXElement, Show, createSignal } from "solid-js";
-import { isDevEnvironment } from "../../../utils/misc";
-import { envConfig } from "virtual:env-config";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
+import { JSXElement, Show, createSignal } from "solid-js";
+import { envConfig } from "virtual:env-config";
+
 import { lastSeenServerCompatibility } from "../../../ape/adapters/ts-rest-adapter";
 import { getVersion } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
-import "./VersionButton.scss";
+import { isDevEnvironment } from "../../../utils/misc";
 
 export function VersionButton(): JSXElement {
   const [indicatorVisible, setIndicatorVisible] = createSignal(true);
@@ -40,18 +40,18 @@ export function VersionButton(): JSXElement {
     setIndicatorVisible(false);
   };
 
+  const showNewIndicator = (): boolean =>
+    !isDevEnvironment() && getVersion().isNew && indicatorVisible();
+
   return (
-    <button
-      type="button"
-      class="currentVersion textButton"
-      onClick={handleClick}
-    >
+    <button type="button" class="textButton flex" onClick={handleClick}>
       <i class="fas fa-fw fa-code-branch"></i>
       <div class="text">{getVersionText()}</div>
-      <Show
-        when={!isDevEnvironment() && getVersion().isNew && indicatorVisible()}
-      >
-        <div id="newVersionIndicator" onClick={handleIndicatorClick}>
+      <Show when={showNewIndicator()}>
+        <div
+          class="rounded-half bg-main text-bg px-1"
+          onClick={handleIndicatorClick}
+        >
           new
         </div>
       </Show>

@@ -1,21 +1,3 @@
-:root {
-  --bg-color: #1f1f1f;
-  --main-color: #f2c17b;
-  --caret-color: #e3dce0;
-  --sub-color: #768f95;
-  --sub-alt-color: #141414;
-  --text-color: #d2dff4;
-  --error-color: #ff0000;
-  --error-extra-color: #588498;
-  --colorful-error-color: var(--error-color);
-  --colorful-error-extra-color: var(--error-extra-color);
-  /* custom vars */
-  --theme-bg-stripe-color: #434653;
-  --theme-bg-stripe-opacity: 0.1;
-  --theme-accent-stripe-color: #bf8200;
-  --current-color: var(--text-color);
-}
-
 .colorfulMode {
   --current-color: var(--main-color);
 }

@@ -97,6 +97,7 @@
       "huntertran.auto-markdown-toc",
       "dbaeumer.vscode-eslint",
       "oxc.oxc-vscode",
+      "bradlc.vscode-tailwindcss",
     ],
   },
 }

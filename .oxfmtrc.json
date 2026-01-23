@@ -15,5 +15,28 @@
     "logs",
     "coverage",
     "*.md"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.tsx"],
+      "options": {
+        "experimentalTailwindcss": {
+          "stylesheet": "./frontend/src/styles/tailwind.css",
+          "attributes": ["cn"],
+          "functions": ["cn"]
+        },
+        "experimentalSortImports": {
+          "groups": [
+            ["side-effect"],
+            ["builtin"],
+            ["external", "external-type"],
+            ["internal", "internal-type"],
+            ["parent", "parent-type"],
+            ["sibling", "sibling-type"],
+            ["index", "index-type"]
+          ]
+        }
+      }
+    }
   ]
 }
