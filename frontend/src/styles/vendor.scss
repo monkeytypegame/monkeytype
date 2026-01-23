@@ -1,6 +1,8 @@
 @import "fontawesome-5"; // the screenshotting library has some issues with css layers
 
-// fontawesome icon styles do not respect the hidden class from the hidden layer
+/* fontawesome icon styles do not respect the hidden class from the hidden layer.
+* By having these rules outside any layer we make sure that the display none is
+* correctly applied when an element possesses both a .fa* class and the hidden class */
 .fas.hidden,
 .fab.hidden,
 .fa.hidden,
