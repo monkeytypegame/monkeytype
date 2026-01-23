@@ -1409,6 +1409,7 @@ ConfigEvent.subscribe(async ({ key }) => {
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
+    ChartController.result.update();
     ChartController.result.resize();
   }
 });

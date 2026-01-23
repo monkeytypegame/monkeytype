@@ -5,7 +5,7 @@ import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import { format } from "date-fns/format";
-import { getActivePage } from "../signals/core";
+import { getActivePage, setIsScreenshotting } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
@@ -17,22 +17,22 @@ let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
+  setIsScreenshotting(false);
   hideLoaderBar();
   qs("#ad-result-wrapper")?.show();
   qs("#ad-result-small-wrapper")?.show();
   qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
   qs("#notificationCenter")?.show();
-  qs("#commandLineMobileButton")?.show();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
-  qsa("header, footer")?.removeClass("invisible");
+  qs("header")?.removeClass("invisible");
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
-  qs(".highlightContainer")?.show();
+  qsa(".highlightContainer")?.show();
   if (revertCookie) qs("#cookiesModal")?.show();
   if (revealReplay) qs("#resultReplay")?.show();
   if (!isAuthenticated()) {
@@ -84,9 +84,10 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       .map((el) => `<span>${el}</span>`)
       .join("<span class='pipe'>|</span>"),
   );
+
+  setIsScreenshotting(true);
   qs(".pageTest .buttons")?.hide();
   qs("#notificationCenter")?.hide();
-  qs("#commandLineMobileButton")?.hide();
   qs(".pageTest .loginTip")?.hide();
   qs("noscript")?.hide();
   qs("#nocss")?.hide();
@@ -96,10 +97,10 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
-  qsa("header, footer")?.addClass("invisible");
+  qs("header")?.addClass("invisible");
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
-  qs(".highlightContainer")?.hide();
+  qsa(".highlightContainer")?.hide();
   if (revertCookie) qs("#cookiesModal")?.hide();
 
   for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
@@ -121,8 +122,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
-
-  console.log(sourceX, sourceY);
 
   const sourceWidth = src.getOuterWidth();
   const sourceHeight = src.getOuterHeight();
