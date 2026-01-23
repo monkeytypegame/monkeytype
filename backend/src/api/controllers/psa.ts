@@ -4,20 +4,13 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectIds } from "../../utils/misc";
 import { MonkeyRequest } from "../types";
 import { PSA } from "@monkeytype/schemas/psas";
+import { loadingCache } from "../../utils/loadingCache";
 
-const UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
-let cached: PSA[] = [];
-let lastFetchTime = 0;
+//cache for five minutes
+const cache = loadingCache<PSA[]>(5 * 60 * 1000, async () => {
+  return replaceObjectIds(await PsaDAL.get());
+});
 
 export async function getPsas(_req: MonkeyRequest): Promise<GetPsaResponse> {
-  return new MonkeyResponse("PSAs retrieved", await getCachedPsas());
-}
-
-async function getCachedPsas(): Promise<PSA[]> {
-  if (lastFetchTime < Date.now() - UPDATE_INTERVAL) {
-    lastFetchTime = Date.now();
-    cached = replaceObjectIds(await PsaDAL.get());
-  }
-
-  return cached;
+  return new MonkeyResponse("PSAs retrieved", (await cache()) ?? []);
 }
