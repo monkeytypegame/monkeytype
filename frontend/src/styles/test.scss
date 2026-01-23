@@ -1541,14 +1541,12 @@
 }
 
 main.focus .pageTest {
-  #testModesNotice {
+  #testModesNotice,
+  #testConfig,
+  #mobileTestConfigButton,
+  #restartTestButton {
     opacity: 0 !important;
-  }
-  #testConfig {
-    opacity: 0 !important;
-  }
-  #mobileTestConfigButton {
-    opacity: 0 !important;
+    pointer-events: none !important;
   }
 }
 
