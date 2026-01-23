@@ -5,6 +5,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { ElementWithUtils } from "../utils/dom";
 
 type Preset = {
   display: string;
@@ -83,7 +84,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       _presetSelect = new SlimSelect({
         select: "#customGeneratorModal .presetInput",
         settings: {
-          contentLocation: modalEl,
+          contentLocation: modalEl.native,
         },
       });
     },
@@ -91,10 +92,14 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 }
 
 function applyPreset(): void {
-  const presetName = $("#customGeneratorModal .presetInput").val() as string;
+  const modalEl = modal.getModal();
+  const presetName = modalEl.qs<HTMLSelectElement>(".presetInput")?.getValue();
+
   if (presetName !== undefined && presetName !== "" && presets[presetName]) {
     const preset = presets[presetName];
-    $("#customGeneratorModal .characterInput").val(preset.characters.join(" "));
+    modalEl
+      .qsr<HTMLInputElement>(".characterInput")
+      .setValue(preset.characters.join(" "));
   }
 }
 
@@ -105,17 +110,25 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 function generateWords(): string[] {
-  const characterInput = $(
-    "#customGeneratorModal .characterInput",
-  ).val() as string;
-  const minLength =
-    parseInt($("#customGeneratorModal .minLengthInput").val() as string) || 2;
-  const maxLength =
-    parseInt($("#customGeneratorModal .maxLengthInput").val() as string) || 5;
-  const wordCount =
-    parseInt($("#customGeneratorModal .wordCountInput").val() as string) || 100;
+  const modalEl = modal.getModal();
+  const characterInput = modalEl
+    .qs<HTMLInputElement>(".characterInput")
+    ?.getValue();
 
-  if (!characterInput || characterInput.trim() === "") {
+  const minLength =
+    parseInt(
+      modalEl.qs<HTMLInputElement>(".minLengthInput")?.getValue() as string,
+    ) || 2;
+  const maxLength =
+    parseInt(
+      modalEl.qs<HTMLInputElement>(".maxLengthInput")?.getValue() as string,
+    ) || 5;
+  const wordCount =
+    parseInt(
+      modalEl.qs<HTMLInputElement>(".wordCountInput")?.getValue() as string,
+    ) || 100;
+
+  if (characterInput === undefined || characterInput.trim() === "") {
     Notifications.add("Character set cannot be empty", 0);
     return [];
   }
@@ -159,16 +172,16 @@ async function apply(set: boolean): Promise<void> {
   });
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".setButton")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs(".setButton")?.on("click", () => {
     void apply(true);
   });
 
-  modalEl.querySelector(".addButton")?.addEventListener("click", () => {
+  modalEl.qs(".addButton")?.on("click", () => {
     void apply(false);
   });
 
-  modalEl.querySelector(".generateButton")?.addEventListener("click", () => {
+  modalEl.qs(".generateButton")?.on("click", () => {
     applyPreset();
   });
 }

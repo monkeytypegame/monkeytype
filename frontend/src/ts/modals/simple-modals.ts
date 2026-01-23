@@ -27,7 +27,6 @@ import {
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import { CustomThemeColors } from "@monkeytype/schemas/configs";
 import * as AccountSettings from "../pages/account-settings";
 import {
   ExecReturn,
@@ -35,7 +34,7 @@ import {
   SimpleModal,
   TextInput,
 } from "../utils/simple-modal";
-import { ShowOptions } from "../utils/animated-modal";
+
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
   PasswordSchema,
@@ -46,57 +45,11 @@ import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
+import { list, PopupKey, showPopup } from "./simple-modals-base";
+import { getTheme } from "../signals/theme";
 
-type PopupKey =
-  | "updateEmail"
-  | "updateName"
-  | "updatePassword"
-  | "removeGoogleAuth"
-  | "removeGithubAuth"
-  | "removePasswordAuth"
-  | "addPasswordAuth"
-  | "deleteAccount"
-  | "resetAccount"
-  | "optOutOfLeaderboards"
-  | "applyCustomFont"
-  | "resetPersonalBests"
-  | "resetSettings"
-  | "revokeAllTokens"
-  | "unlinkDiscord"
-  | "editApeKey"
-  | "deleteCustomText"
-  | "deleteCustomTextLong"
-  | "resetProgressCustomTextLong"
-  | "updateCustomTheme"
-  | "deleteCustomTheme"
-  | "devGenerateData"
-  | "lbGoToPage";
-
-const list: Record<PopupKey, SimpleModal | undefined> = {
-  updateEmail: undefined,
-  updateName: undefined,
-  updatePassword: undefined,
-  removeGoogleAuth: undefined,
-  removeGithubAuth: undefined,
-  removePasswordAuth: undefined,
-  addPasswordAuth: undefined,
-  deleteAccount: undefined,
-  resetAccount: undefined,
-  optOutOfLeaderboards: undefined,
-  applyCustomFont: undefined,
-  resetPersonalBests: undefined,
-  resetSettings: undefined,
-  revokeAllTokens: undefined,
-  unlinkDiscord: undefined,
-  editApeKey: undefined,
-  deleteCustomText: undefined,
-  deleteCustomTextLong: undefined,
-  resetProgressCustomTextLong: undefined,
-  updateCustomTheme: undefined,
-  deleteCustomTheme: undefined,
-  devGenerateData: undefined,
-  lbGoToPage: undefined,
-};
+export { list, showPopup };
+export type { PopupKey };
 
 type AuthMethod = "password" | "github.com" | "google.com";
 
@@ -1137,22 +1090,14 @@ list.updateCustomTheme = new SimpleModal({
       };
     }
 
-    let newColors: string[] = [];
-    if (updateColors === "true") {
-      for (const color of ThemeController.colorVars) {
-        newColors.push(
-          $(
-            `.pageSettings .tabContent.customTheme #${color}[type='color']`,
-          ).attr("value") as string,
-        );
-      }
-    } else {
-      newColors = customTheme.colors;
-    }
+    let newColors =
+      updateColors === "true"
+        ? ThemeController.convertThemeToCustomColors(getTheme())
+        : customTheme.colors;
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors as CustomThemeColors,
+      colors: newColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1161,7 +1106,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    setConfig("customThemeColors", newColors as CustomThemeColors);
+    setConfig("customThemeColors", newColors);
     void ThemePicker.fillCustomButtons();
 
     return {
@@ -1212,7 +1157,7 @@ list.devGenerateData = new SimpleModal({
         const span = document.querySelector(
           "#devGenerateData_1 + span",
         ) as HTMLInputElement;
-        span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
+        span.innerText = `if checked, user will be created with ${target.value}@example.com and password: password`;
         return;
       },
       validation: {
@@ -1321,107 +1266,3 @@ list.lbGoToPage = new SimpleModal({
     };
   },
 });
-
-export function showPopup(
-  key: PopupKey,
-  showParams = [] as string[],
-  showOptions: ShowOptions = {},
-): void {
-  const popup = list[key];
-  if (popup === undefined) {
-    Notifications.add("Failed to show popup - popup is not defined", -1);
-    return;
-  }
-  popup.show(showParams, showOptions);
-}
-
-//todo: move these event handlers to their respective files (either global event files or popup files)
-$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
-  showPopup("unlinkDiscord");
-});
-
-$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
-  showPopup("removeGoogleAuth");
-});
-
-$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
-  showPopup("removeGithubAuth");
-});
-
-$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
-  showPopup("removePasswordAuth");
-});
-
-$("#resetSettingsButton").on("click", () => {
-  showPopup("resetSettings");
-});
-
-$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
-  showPopup("revokeAllTokens");
-});
-
-$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
-  showPopup("resetPersonalBests");
-});
-
-$(".pageAccountSettings").on("click", "#updateAccountName", () => {
-  showPopup("updateName");
-});
-
-$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
-  showPopup("updateName");
-});
-
-$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
-  showPopup("addPasswordAuth");
-});
-
-$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
-  showPopup("updateEmail");
-});
-
-$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
-  showPopup("updatePassword");
-});
-
-$(".pageAccountSettings").on("click", "#deleteAccount", () => {
-  showPopup("deleteAccount");
-});
-
-$(".pageAccountSettings").on("click", "#resetAccount", () => {
-  showPopup("resetAccount");
-});
-
-$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
-  showPopup("optOutOfLeaderboards");
-});
-
-$(".pageSettings").on(
-  "click",
-  ".section.themes .customTheme .delButton",
-  (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("deleteCustomTheme", [customThemeId]);
-  },
-);
-
-$(".pageSettings").on(
-  "click",
-  ".section.themes .customTheme .editButton",
-  (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("updateCustomTheme", [customThemeId], {
-      focusFirstInput: "focusAndSelect",
-    });
-  },
-);
-
-$(".pageSettings").on(
-  "click",
-  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
-  () => {
-    showPopup("applyCustomFont");
-  },
-);

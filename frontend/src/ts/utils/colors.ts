@@ -109,7 +109,7 @@ export function hexToRgb(hex: string):
  * @param a The alpha component (0-1), optional.
  * @returns The hexadecimal color string (e.g., "#ff0000" for red or "#ff0000ff" for red with full opacity).
  */
-function rgbToHex(r: number, g: number, b: number, a?: number): string {
+export function rgbToHex(r: number, g: number, b: number, a?: number): string {
   const hexR = Math.round(r).toString(16).padStart(2, "0");
   const hexG = Math.round(g).toString(16).padStart(2, "0");
   const hexB = Math.round(b).toString(16).padStart(2, "0");
@@ -238,26 +238,78 @@ export function isColorDark(hex: string): boolean {
   return hsl.lgt < 50;
 }
 
+export function hslToRgb(
+  h: number,
+  s: number,
+  l: number,
+): { r: number; g: number; b: number } {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+
+  let r = 0,
+    g = 0,
+    b = 0;
+
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else if (h < 240) [r, g, b] = [0, x, c];
+  else if (h < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
+  };
+}
+
 /**
- * Converts an RGB string (e.g., "rgb(255, 0, 0)") to a hexadecimal color string.
- * @param rgb The RGB string.
- * @returns The equivalent hexadecimal color string.
+ *  some system color pickers return rgb or hsl values. We need to convert them to hex before storing
+ * @param color as hex, hsl or rgb
+ * @returns  hex color
+ * @throws if the input color is not valid
  */
-export function rgbStringtoHex(rgb: string): string | undefined {
-  const match: RegExpMatchArray | null = rgb.match(
-    /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/,
-  );
-  if (match === null) return;
-  if (match.length < 3) return;
-  function hexCode(i: string): string {
-    // Take the last 2 characters and convert
-    // them to Hexadecimal.
-    return ("0" + parseInt(i).toString(16)).slice(-2);
+export function convertStringToHex(color: string): string {
+  const input = color.trim().toLocaleLowerCase();
+  if (/^#[0-9a-f]{6}$/i.test(input)) {
+    return input;
   }
-  return (
-    "#" +
-    hexCode(match[1] as string) +
-    hexCode(match[2] as string) +
-    hexCode(match[3] as string)
-  );
+
+  if (/^#[0-9a-f]{3}$/i.test(input)) {
+    // Expand #rgb → #rrggbb
+    return (
+      "#" + input[1] + input[1] + input[2] + input[2] + input[3] + input[3]
+    );
+  }
+
+  const rgbMatch =
+    input.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/) ??
+    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+
+  if (rgbMatch !== null) {
+    const clamp = (n: string): number =>
+      Math.max(0, Math.min(255, Number.parseFloat(n)));
+
+    const r = clamp(rgbMatch[1] as string);
+    const g = clamp(rgbMatch[2] as string);
+    const b = clamp(rgbMatch[3] as string);
+    return rgbToHex(r, g, b);
+  }
+
+  const hslMatch =
+    input.match(/^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/) ??
+    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%$/);
+
+  if (hslMatch) {
+    const clamp = (n: string): number =>
+      Math.max(0, Math.min(255, Number.parseFloat(n)));
+    const h = Number.parseFloat(hslMatch[1] as string) % 360;
+    const s = clamp(hslMatch[2] as string) / 100;
+    const l = clamp(hslMatch[3] as string) / 100;
+    const { r, g, b } = hslToRgb(h, s, l);
+    return rgbToHex(r, g, b);
+  }
+  throw new Error(`Invalid color format: ${color}`);
 }

@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #ffffff;
-  --main-color: #fb7100;
-  --caret-color: #067a6e;
-  --sub-color: #a0a0a0;
-  --sub-alt-color: #fff8f4;
-  --text-color: #000000;
-  --error-color: #ed2839;
-  --error-extra-color: #ff6c72;
-  --colorful-error-color: #ed2839;
-  --colorful-error-extra-color: #ff6c72;
-}
-
 #testConfig .spacer {
   background: #efefef;
 }

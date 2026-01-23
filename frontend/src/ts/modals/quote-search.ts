@@ -15,13 +15,15 @@ import QuotesController, { Quote } from "../controllers/quotes-controller";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
+import { qsr, ElementWithUtils } from "../utils/dom";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
@@ -52,8 +54,13 @@ function getSearchService<T>(
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
-  const quoteLengthDropdown = $("#quoteSearchModal .quoteLengthFilter");
-  const quoteLengthFilterValue = quoteLengthDropdown.val() as string[];
+  const quoteLengthDropdown = modal
+    .getModal()
+    .qs<HTMLSelectElement>("select.quoteLengthFilter");
+  const selectedOptions = quoteLengthDropdown
+    ? Array.from(quoteLengthDropdown.native.selectedOptions)
+    : [];
+  const quoteLengthFilterValue = selectedOptions.map((el) => el.value);
 
   if (quoteLengthFilterValue.length === 0) {
     usingCustomLength = true;
@@ -69,7 +76,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (customFilterIndex !== -1) {
     if (QuoteFilterPopup.removeCustom) {
       QuoteFilterPopup.setRemoveCustom(false);
-      const selectElement = quoteLengthDropdown.get(0) as
+      const selectElement = quoteLengthDropdown?.native as
         | HTMLSelectElement
         | null
         | undefined;
@@ -276,78 +283,82 @@ async function updateResults(searchText: string): Promise<void> {
     applyQuoteFavFilter(searchText === "" ? quotes : matches),
   );
 
-  const resultsList = $("#quoteSearchResults");
+  const resultsList = qsr("#quoteSearchResults");
   resultsList.empty();
 
   const totalPages = Math.ceil(quotesToShow.length / pageSize);
 
   if (currentPageNumber >= totalPages) {
-    $("#quoteSearchPageNavigator .nextPage").prop("disabled", true);
+    qsr("#quoteSearchPageNavigator .nextPage").disable();
   } else {
-    $("#quoteSearchPageNavigator .nextPage").prop("disabled", false);
+    qsr("#quoteSearchPageNavigator .nextPage").enable();
   }
 
   if (currentPageNumber <= 1) {
-    $("#quoteSearchPageNavigator .prevPage").prop("disabled", true);
+    qsr("#quoteSearchPageNavigator .prevPage").disable();
   } else {
-    $("#quoteSearchPageNavigator .prevPage").prop("disabled", false);
+    qsr("#quoteSearchPageNavigator .prevPage").enable();
   }
 
   if (quotesToShow.length === 0) {
-    $("#quoteSearchModal  .pageInfo").html("No search results");
+    modal.getModal().qsr(".pageInfo").setHtml("No search results");
     return;
   }
 
   const startIndex = (currentPageNumber - 1) * pageSize;
   const endIndex = Math.min(currentPageNumber * pageSize, quotesToShow.length);
 
-  $("#quoteSearchModal  .pageInfo").html(
-    `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`,
-  );
+  modal
+    .getModal()
+    .qsr(".pageInfo")
+    .setHtml(`${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`);
 
   quotesToShow.slice(startIndex, endIndex).forEach((quote) => {
     const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
-    resultsList.append(quoteSearchResult);
+    resultsList.appendHtml(quoteSearchResult);
   });
 
-  const searchResults = modal
-    .getModal()
-    .querySelectorAll<HTMLElement>(".searchResult");
-  for (const searchResult of searchResults) {
-    const quoteId = parseInt(searchResult.dataset["quoteId"] as string);
-    searchResult
-      .querySelector(".textButton.favorite")
-      ?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (quoteId === undefined || isNaN(quoteId)) {
-          Notifications.add(
-            "Could not toggle quote favorite: quote id is not a number",
-            -1,
-          );
-          return;
-        }
-        void toggleFavoriteForQuote(`${quoteId}`);
-      });
-    searchResult
-      .querySelector(".textButton.report")
-      ?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (quoteId === undefined || isNaN(quoteId)) {
-          Notifications.add(
-            "Could not open quote report modal: quote id is not a number",
-            -1,
-          );
-          return;
-        }
-        void QuoteReportModal.show(quoteId, {
-          modalChain: modal,
-        });
-      });
-    searchResult.addEventListener("click", (e) => {
-      TestState.setSelectedQuoteId(quoteId);
-      apply(quoteId);
+  const searchResults = modal.getModal().qsa(".searchResult");
+  searchResults.qs(".textButton.favorite")?.on("click", (e) => {
+    e.stopPropagation();
+    const quoteId = parseInt(
+      (e.currentTarget as HTMLElement)?.closest<HTMLElement>(".searchResult")
+        ?.dataset?.["quoteId"] as string,
+    );
+    if (quoteId === undefined || isNaN(quoteId)) {
+      Notifications.add(
+        "Could not toggle quote favorite: quote id is not a number",
+        -1,
+      );
+      return;
+    }
+    void toggleFavoriteForQuote(`${quoteId}`);
+  });
+  searchResults.qs(".textButton.report")?.on("click", (e) => {
+    e.stopPropagation();
+    const quoteId = parseInt(
+      (e.currentTarget as HTMLElement)?.closest<HTMLElement>(".searchResult")
+        ?.dataset?.["quoteId"] as string,
+    );
+    if (quoteId === undefined || isNaN(quoteId)) {
+      Notifications.add(
+        "Could not open quote report modal: quote id is not a number",
+        -1,
+      );
+      return;
+    }
+    void QuoteReportModal.show(quoteId, {
+      modalChain: modal,
     });
-  }
+  });
+  searchResults.on("click", (e) => {
+    const quoteId = parseInt(
+      (e.currentTarget as HTMLElement)?.closest<HTMLElement>(".searchResult")
+        ?.dataset?.["quoteId"] as string,
+    );
+    TestState.setSelectedQuoteId(quoteId);
+    apply(quoteId);
+  });
 }
 
 let lengthSelect: SlimSelect | undefined = undefined;
@@ -356,13 +367,13 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       if (!isAuthenticated()) {
-        $("#quoteSearchModal .goToQuoteSubmit").addClass("hidden");
-        $("#quoteSearchModal .toggleFavorites").addClass("hidden");
+        modalEl.qsr(".goToQuoteSubmit").hide();
+        modalEl.qsr(".toggleFavorites").hide();
       } else {
-        $("#quoteSearchModal .goToQuoteSubmit").removeClass("hidden");
-        $("#quoteSearchModal .toggleFavorites").removeClass("hidden");
+        modalEl.qsr(".goToQuoteSubmit").show();
+        modalEl.qsr(".toggleFavorites").show();
       }
 
       const quoteMod = DB.getSnapshot()?.quoteMod;
@@ -371,9 +382,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         (quoteMod === true || (quoteMod as string) !== "");
 
       if (isQuoteMod) {
-        $("#quoteSearchModal .goToQuoteApprove").removeClass("hidden");
+        modalEl.qsr(".goToQuoteApprove").show();
       } else {
-        $("#quoteSearchModal .goToQuoteApprove").addClass("hidden");
+        modalEl.qsr(".goToQuoteApprove").hide();
       }
 
       lengthSelect = new SlimSelect({
@@ -382,7 +393,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         settings: {
           showSearch: false,
           placeholderText: "filter by length",
-          contentLocation: modal.getModal(),
+          contentLocation: modal.getModal().native,
         },
         data: [
           {
@@ -461,20 +472,20 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-  const $button = $(
-    `#quoteSearchModal .searchResult[data-quote-id=${quoteId}] .textButton.favorite i`,
-  );
+  const button = modal
+    .getModal()
+    .qsr(`.searchResult[data-quote-id="${quoteId}"] .textButton.favorite i`);
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 
   if (alreadyFavorited) {
     try {
-      Loader.show();
+      showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, false);
-      Loader.hide();
-      $button.removeClass("fas").addClass("far");
+      hideLoaderBar();
+      button.removeClass("fas").addClass("far");
     } catch (e) {
-      Loader.hide();
+      hideLoaderBar();
       const message = createErrorMessage(
         e,
         "Failed to remove quote from favorites",
@@ -483,73 +494,67 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
     }
   } else {
     try {
-      Loader.show();
+      showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, true);
-      Loader.hide();
-      $button.removeClass("far").addClass("fas");
+      hideLoaderBar();
+      button.removeClass("far").addClass("fas");
     } catch (e) {
-      Loader.hide();
+      hideLoaderBar();
       const message = createErrorMessage(e, "Failed to add quote to favorites");
       Notifications.add(message, -1);
     }
   }
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".searchBox")?.addEventListener("input", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs(".searchBox")?.on("input", (e) => {
     searchForQuotes();
   });
-  modalEl
-    .querySelector("button.toggleFavorites")
-    ?.addEventListener("click", (e) => {
-      if (!isAuthenticated()) {
-        // Notifications.add("You need to be logged in to use this feature!", 0);
-        return;
-      }
+  modalEl.qs("button.toggleFavorites")?.on("click", (e) => {
+    if (!isAuthenticated()) {
+      // Notifications.add("You need to be logged in to use this feature!", 0);
+      return;
+    }
 
-      $(e.target as HTMLElement).toggleClass("active");
-      searchForQuotes();
-    });
-  modalEl.querySelector(".goToQuoteApprove")?.addEventListener("click", (e) => {
+    (e.currentTarget as HTMLElement)?.classList.toggle("active");
+    searchForQuotes();
+  });
+  modalEl.qs(".goToQuoteApprove")?.on("click", (e) => {
     void QuoteApprovePopup.show({
       modalChain: modal,
     });
   });
-  modalEl
-    .querySelector(".goToQuoteSubmit")
-    ?.addEventListener("click", async (e) => {
-      Loader.show();
-      const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
-      const isSubmissionEnabled =
-        (getSubmissionEnabled.status === 200 &&
-          getSubmissionEnabled.body.data?.isEnabled) ??
-        false;
-      Loader.hide();
-      if (!isSubmissionEnabled) {
-        Notifications.add(
-          "Quote submission is disabled temporarily due to a large submission queue.",
-          0,
-          {
-            duration: 5,
-          },
-        );
-        return;
-      }
-      void QuoteSubmitPopup.show({
-        modalChain: modal,
-      });
+  modalEl.qs(".goToQuoteSubmit")?.on("click", async (e) => {
+    showLoaderBar();
+    const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
+    const isSubmissionEnabled =
+      (getSubmissionEnabled.status === 200 &&
+        getSubmissionEnabled.body.data?.isEnabled) ??
+      false;
+    hideLoaderBar();
+    if (!isSubmissionEnabled) {
+      Notifications.add(
+        "Quote submission is disabled temporarily due to a large submission queue.",
+        0,
+        {
+          duration: 5,
+        },
+      );
+      return;
+    }
+    void QuoteSubmitPopup.show({
+      modalChain: modal,
     });
-  modalEl
-    .querySelector(".quoteLengthFilter")
-    ?.addEventListener("change", searchForQuotes);
-  modalEl.querySelector(".nextPage")?.addEventListener("click", () => {
+  });
+  modalEl.qs(".quoteLengthFilter")?.on("change", searchForQuotes);
+  modalEl.qs(".nextPage")?.on("click", () => {
     const searchText = (
       document.getElementById("searchBox") as HTMLInputElement
     ).value;
     currentPageNumber++;
     void updateResults(searchText);
   });
-  modalEl.querySelector(".prevPage")?.addEventListener("click", () => {
+  modalEl.qs(".prevPage")?.on("click", () => {
     const searchText = (
       document.getElementById("searchBox") as HTMLInputElement
     ).value;

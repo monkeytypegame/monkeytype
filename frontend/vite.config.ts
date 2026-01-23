@@ -18,8 +18,7 @@ import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
-import { jqueryInject } from "./vite-plugins/jquery-inject";
-import { checker } from "vite-plugin-checker";
+import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { VitePWA } from "vite-plugin-pwa";
@@ -28,6 +27,8 @@ import replace from "vite-plugin-filter-replace";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
+import solidPlugin from "vite-plugin-solid";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -61,7 +62,6 @@ export default defineConfig(({ mode }): UserConfig => {
     root: "src",
     publicDir: "../static",
     optimizeDeps: {
-      include: ["jquery"],
       exclude: ["@fortawesome/fontawesome-free"],
     },
   };
@@ -81,16 +81,14 @@ function getPlugins({
   const plugins: PluginOption[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
-    checker({
-      oxlint: {
-        lintCommand: "oxlint . --type-aware --type-check",
-      },
-      overlay: {
-        initialIsOpen: false,
-      },
+    oxlintChecker({
+      debounceDelay: 125,
+      typeAware: true,
+      overlay: isDevelopment,
     }),
-    jqueryInject(),
     injectHTML(),
+    tailwindcss(),
+    solidPlugin(),
   ];
 
   const devPlugins: PluginOption[] = [Inspect()];
@@ -260,9 +258,6 @@ function getBuildOptions({
         manualChunks: (id) => {
           if (id.includes("@sentry")) {
             return "vendor-sentry";
-          }
-          if (id.includes("jquery")) {
-            return "vendor-jquery";
           }
           if (id.includes("@firebase")) {
             return "vendor-firebase";

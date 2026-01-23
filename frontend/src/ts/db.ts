@@ -9,8 +9,7 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import * as Loader from "./elements/loader";
-
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
 import { Config, Difficulty } from "@monkeytype/schemas/configs";
 import {
@@ -875,6 +874,73 @@ export async function saveLocalTagPB<M extends Mode>(
   return;
 }
 
+export function deleteLocalTag(tagId: string): void {
+  getSnapshot()?.results?.forEach((result) => {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      result.tags.splice(tagIndex, 1);
+    }
+  });
+}
+
+export async function updateLocalTagPB<M extends Mode>(
+  tagId: string,
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: Language,
+  difficulty: Difficulty,
+  lazyMode: boolean,
+): Promise<void> {
+  if (dbSnapshot === null) return;
+
+  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
+
+  if (filteredtag === undefined) return;
+
+  const pb = {
+    wpm: 0,
+    acc: 0,
+    rawWpm: 0,
+    consistency: 0,
+  };
+
+  getSnapshot()?.results?.forEach((result) => {
+    if (result.tags.includes(tagId) && result.wpm > pb.wpm) {
+      if (
+        result.mode === mode &&
+        result.mode2 === mode2 &&
+        result.punctuation === punctuation &&
+        result.numbers === numbers &&
+        result.language === language &&
+        result.difficulty === difficulty &&
+        result.lazyMode === lazyMode
+      ) {
+        pb.wpm = result.wpm;
+        pb.acc = result.acc;
+        pb.rawWpm = result.rawWpm;
+        pb.consistency = result.consistency;
+      }
+    }
+  });
+
+  await saveLocalTagPB(
+    tagId,
+    mode,
+    mode2,
+    punctuation,
+    numbers,
+    language,
+    difficulty,
+    lazyMode,
+    pb.wpm,
+    pb.acc,
+    pb.rawWpm,
+    pb.consistency,
+  );
+}
+
 export async function updateLbMemory<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
@@ -1043,11 +1109,11 @@ export async function getTestActivityCalendar(
       return undefined;
     }
 
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add("Error getting test activities", -1, { response });
-      Loader.hide();
+      hideLoaderBar();
       return undefined;
     }
 
@@ -1067,7 +1133,7 @@ export async function getTestActivityCalendar(
         true,
       );
     }
-    Loader.hide();
+    hideLoaderBar();
   }
 
   return dbSnapshot.testActivityByYear[yearString];

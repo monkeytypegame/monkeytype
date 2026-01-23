@@ -63,5 +63,10 @@ describe("british-english", () => {
       await expect(replace("'hello'", "")).resolves.toEqual("'hello'");
       await expect(replace("test", "")).resolves.toEqual("test");
     });
+
+    it("ignores prototype-related property names (e.g. constructor, __proto__)", async () => {
+      await expect(replace("constructor", "")).resolves.toEqual("constructor");
+      await expect(replace("__proto__", "")).resolves.toEqual("__proto__");
+    });
   });
 });

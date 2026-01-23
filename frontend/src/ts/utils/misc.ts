@@ -1,4 +1,4 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { envConfig } from "virtual:env-config";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
@@ -271,7 +271,7 @@ export function getMode2<M extends keyof PersonalBests>(
 }
 
 export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const csvString = [
     [
       "_id",
@@ -340,7 +340,7 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
 
   link.click();
   link.remove();
-  Loader.hide();
+  hideLoaderBar();
 }
 
 export function getErrorMessage(error: unknown): string | undefined {
@@ -389,12 +389,15 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return isElementVisible(`#popups #${popupId}`);
+  return (
+    isElementVisible(`#popups #${popupId}`) ||
+    isElementVisible(`#solidmodals #${popupId}`)
+  );
 }
 
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper",
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
   );
   let popupVisible = false;
   for (const popup of popups) {
@@ -405,40 +408,6 @@ export function isAnyPopupVisible(): boolean {
   }
   return popupVisible;
 }
-
-export type JQueryEasing =
-  | "linear"
-  | "swing"
-  | "easeInSine"
-  | "easeOutSine"
-  | "easeInOutSine"
-  | "easeInQuad"
-  | "easeOutQuad"
-  | "easeInOutQuad"
-  | "easeInCubic"
-  | "easeOutCubic"
-  | "easeInOutCubic"
-  | "easeInQuart"
-  | "easeOutQuart"
-  | "easeInOutQuart"
-  | "easeInQuint"
-  | "easeOutQuint"
-  | "easeInOutQuint"
-  | "easeInExpo"
-  | "easeOutExpo"
-  | "easeInOutExpo"
-  | "easeInCirc"
-  | "easeOutCirc"
-  | "easeInOutCirc"
-  | "easeInBack"
-  | "easeOutBack"
-  | "easeInOutBack"
-  | "easeInElastic"
-  | "easeOutElastic"
-  | "easeInOutElastic"
-  | "easeInBounce"
-  | "easeOutBounce"
-  | "easeInOutBounce";
 
 export async function promiseAnimate(
   el: HTMLElement | string,
@@ -597,19 +566,71 @@ export function applyReducedMotion(animationTime: number): number {
 /**
  * Creates a promise with resolvers.
  * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
+ * The returned promise reference stays constant even after reset() - it will always await the current internal promise.
+ * Note: Promise chains created via .then()/.catch()/.finally() will always follow the current internal promise state, even if created before reset().
  */
 export function promiseWithResolvers<T = void>(): {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
   promise: Promise<T>;
+  reset: () => void;
 } {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
+  let innerResolve!: (value: T) => void;
+  let innerReject!: (reason?: unknown) => void;
+  let currentPromise = new Promise<T>((res, rej) => {
+    innerResolve = res;
+    innerReject = rej;
   });
-  return { resolve, reject, promise };
+
+  /**
+   * This was fully AI generated to make the reset function work. Black magic, but its unit-tested and works.
+   */
+
+  const promiseLike = {
+    // oxlint-disable-next-line no-thenable promise-function-async require-await
+    async then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
+      onrejected?:
+        | ((reason: unknown) => TResult2 | PromiseLike<TResult2>)
+        | null,
+    ): Promise<TResult1 | TResult2> {
+      return currentPromise.then(onfulfilled, onrejected);
+    },
+    // oxlint-disable-next-line promise-function-async
+    async catch<TResult = never>(
+      onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
+    ): Promise<T | TResult> {
+      return currentPromise.catch(onrejected);
+    },
+    // oxlint-disable-next-line promise-function-async
+    async finally(onfinally?: (() => void) | null): Promise<T> {
+      return currentPromise.finally(onfinally);
+    },
+    [Symbol.toStringTag]: "Promise" as const,
+  };
+
+  const reset = (): void => {
+    currentPromise = new Promise<T>((res, rej) => {
+      innerResolve = res;
+      innerReject = rej;
+    });
+  };
+
+  // Wrapper functions that always call the current resolver/rejecter
+  const resolve = (value: T): void => {
+    innerResolve(value);
+  };
+
+  const reject = (reason?: unknown): void => {
+    innerReject(reason);
+  };
+
+  return {
+    resolve,
+    reject,
+    promise: promiseLike as Promise<T>,
+    reset,
+  };
 }
 
 /**
@@ -679,7 +700,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 }
 
 export function triggerResize(): void {
-  $(window).trigger("resize");
+  window.dispatchEvent(new Event("resize"));
 }
 
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &

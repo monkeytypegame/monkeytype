@@ -652,6 +652,33 @@ const replacementRules: BritishEnglishReplacements = {
   moisturizing: "moisturising",
   favoring: "favouring",
   marvelous: "marvellous",
+  hematuria: "haematuria",
+  hemoptysis: "haemoptysis",
+  hemorrhoid: "haemorrhoid",
+  hemorrhagic: "haemorrhagic",
+  hypercalcemia: "hypercalcaemia",
+  hyperglycemia: "hyperglycaemia",
+  hypoglycemia: "hypoglycaemia",
+  toxemia: "toxaemia",
+  hypoxemia: "hypoxaemia",
+  bacteremia: "bacteraemia",
+  hypernatremia: "hypernatraemia",
+  hyponatremia: "hyponatraemia",
+  leukocytosis: "leucocytosis",
+  leukocyte: "leucocyte",
+  leukopenia: "leucopenia",
+  apnea: "apnoea",
+  bradypnea: "bradypnoea",
+  tachypnea: "tachypnoea",
+  orthopnea: "orthopnoea",
+  ileocecal: "ileocaecal",
+  metastasize: "metastasise",
+  lymphedema: "lymphoedema",
+  neuron: "neurone",
+  hemianopsia: "hemianopia",
+  galactorrhea: "galactorrhoea",
+  nebulizer: "nebuliser",
+  paresthesia: "paraesthesia",
 };
 
 export async function replace(
@@ -673,6 +700,9 @@ export async function replace(
     ).join("-");
   } else {
     const cleanedWord = word.replace(/^[\W]+|[\W]+$/g, "").toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(replacementRules, cleanedWord)) {
+      return word;
+    }
     const rule = replacementRules[cleanedWord];
 
     if (rule === undefined) return word;

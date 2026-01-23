@@ -27,10 +27,15 @@ import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
-import * as FPSCounter from "../elements/fps-counter";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
+import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import {
+  hideFpsCounter,
+  showFpsCounter,
+} from "../components/layout/overlays/FpsCounter";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -43,22 +48,7 @@ challengesPromise
     );
   });
 
-const languageCommand = buildCommandForConfigKey("language");
-const difficultyCommand = buildCommandForConfigKey("difficulty");
-const blindModeCommand = buildCommandForConfigKey("blindMode");
-const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
-const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
-const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
-const lazyModeCommand = buildCommandForConfigKey("lazyMode");
-const layoutCommand = buildCommandForConfigKey("layout");
-const showAverageCommand = buildCommandForConfigKey("showAverage");
-const showPbCommand = buildCommandForConfigKey("showPb");
-const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
-const customThemeCommand = buildCommandForConfigKey("customTheme");
-const adsCommand = buildCommandForConfigKey("ads");
-const minSpeedCommand = buildCommandForConfigKey("minWpm");
-const minAccCommand = buildCommandForConfigKey("minAcc");
-const paceCaretCommand = buildCommandForConfigKey("paceCaret");
+const adsCommands = buildCommands("ads");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -67,13 +57,15 @@ export const commands: CommandsSubgroup = {
     ...ResultScreenCommands,
 
     //test screen
-    buildCommandForConfigKey("punctuation"),
-    buildCommandForConfigKey("numbers"),
-    buildCommandForConfigKey("mode"),
-    buildCommandForConfigKey("time"),
-    buildCommandForConfigKey("words"),
-    buildCommandForConfigKey("quoteLength"),
-    languageCommand,
+    ...buildCommands(
+      "punctuation",
+      "numbers",
+      "mode",
+      "time",
+      "words",
+      "quoteLength",
+      "language",
+    ),
     {
       id: "changeCustomModeText",
       display: "Change custom text",
@@ -110,14 +102,14 @@ export const commands: CommandsSubgroup = {
 
     //behavior
     ...buildCommands(
-      difficultyCommand,
+      "difficulty",
       "quickRestart",
       "repeatQuotes",
-      blindModeCommand,
+      "blindMode",
       "alwaysShowWordsHistory",
       "singleListCommandLine",
-      minSpeedCommand,
-      minAccCommand,
+      "minWpm",
+      "minAcc",
       ...MinBurstCommands,
       "britishEnglish",
       ...FunboxCommands,
@@ -129,15 +121,15 @@ export const commands: CommandsSubgroup = {
     ...buildCommands(
       "freedomMode",
       "strictSpace",
-      oppositeShiftModeCommand,
-      stopOnErrorCommand,
-      confidenceModeCommand,
+      "oppositeShiftMode",
+      "stopOnError",
+      "confidenceMode",
       "quickEnd",
       "indicateTypos",
       "compositionDisplay",
       "hideExtraLetters",
-      lazyModeCommand,
-      layoutCommand,
+      "lazyMode",
+      "layout",
       "codeUnindentOnBackspace",
     ),
 
@@ -153,7 +145,7 @@ export const commands: CommandsSubgroup = {
     ...buildCommands(
       "smoothCaret",
       "caretStyle",
-      paceCaretCommand,
+      "paceCaret",
       "repeatedPace",
       "paceCaretStyle",
     ),
@@ -183,14 +175,14 @@ export const commands: CommandsSubgroup = {
       "keymapStyle",
       "keymapLegendStyle",
       "keymapSize",
-      keymapLayoutCommand,
+      "keymapLayout",
       "keymapShowTopRow",
     ),
 
     //theme
     ...buildCommands(
       ...ThemesCommands,
-      customThemeCommand,
+      "customTheme",
 
       ...CustomThemesListCommands,
       "flipTestColors",
@@ -217,14 +209,14 @@ export const commands: CommandsSubgroup = {
       "showKeyTips",
       "showOutOfFocusWarning",
       "capsLockWarning",
-      showAverageCommand,
-      showPbCommand,
+      "showAverage",
+      "showPb",
       "monkeyPowerLevel",
       "monkey",
     ),
 
     //danger zone
-    adsCommand,
+    ...adsCommands,
 
     //other
     ...LoadChallengeCommands,
@@ -321,7 +313,7 @@ export const commands: CommandsSubgroup = {
             display: "show",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.start();
+              showFpsCounter();
             },
           },
           {
@@ -329,7 +321,7 @@ export const commands: CommandsSubgroup = {
             display: "hide",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.stop();
+              hideFpsCounter();
             },
           },
         ],
@@ -366,44 +358,55 @@ export const commands: CommandsSubgroup = {
         window.open("https://discord.gg/monkeytype");
       },
     },
+    {
+      id: "signOut",
+      display: "Sign out",
+      icon: "fa-sign-out-alt",
+      exec: (): void => {
+        void signOut();
+      },
+      available: () => {
+        return isAuthAvailable() && isAuthenticated();
+      },
+    },
   ],
 };
 
 const lists = {
-  keymapLayouts: keymapLayoutCommand.subgroup,
-  enableAds: adsCommand.subgroup,
-  customThemesList: customThemeCommand.subgroup,
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
-  languages: languageCommand.subgroup,
-  difficulty: difficultyCommand.subgroup,
-  lazyMode: lazyModeCommand.subgroup,
-  paceCaretMode: paceCaretCommand.subgroup,
-  showAverage: showAverageCommand.subgroup,
-  showPb: showPbCommand.subgroup,
-  minWpm: minSpeedCommand.subgroup,
-  minAcc: minAccCommand.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
-  confidenceMode: confidenceModeCommand.subgroup,
-  stopOnError: stopOnErrorCommand.subgroup,
-  layouts: layoutCommand.subgroup,
-  oppositeShiftMode: oppositeShiftModeCommand.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
-  blindMode: blindModeCommand.subgroup,
+  ads: adsCommands[0]?.subgroup,
 };
 
+const subgroupByConfigKey = Object.fromEntries(
+  commands.list
+    .filter((it) => it.subgroup?.configKey !== undefined)
+    .map((it) => [it.subgroup?.configKey, it.subgroup]),
+) as Record<string, CommandsSubgroup>;
+
 export function doesListExist(listName: string): boolean {
+  if (subgroupByConfigKey[listName] !== undefined) {
+    return true;
+  }
+
   return lists[listName as ListsObjectKeys] !== undefined;
 }
 
 export async function getList(
-  listName: ListsObjectKeys,
+  listName: ListsObjectKeys | ConfigKey,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
-  const list = lists[listName];
+  const subGroup = subgroupByConfigKey[listName];
+  if (subGroup !== undefined) {
+    return subGroup;
+  }
+
+  const list = lists[listName as ListsObjectKeys];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);
     throw new Error(`List ${listName} not found`);

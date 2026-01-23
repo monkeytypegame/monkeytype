@@ -5,6 +5,11 @@ import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../utils/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
+import { SnapshotUserTag } from "../constants/default-snapshot";
+
+function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
+  return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+}
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
@@ -89,12 +94,13 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.getSnapshot()?.tags?.forEach((tag) => {
-        if (tag._id === tagId) {
-          tag.name = tagName;
-          tag.display = propTagName;
-        }
-      });
+      const matchingTag = getTagFromSnapshot(tagId);
+
+      if (matchingTag !== undefined) {
+        matchingTag.name = tagName;
+        matchingTag.display = propTagName;
+      }
+
       void Settings.update();
 
       return { status: 1, message: `Tag updated` };
@@ -120,12 +126,15 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
-        if (tag._id === tagId) {
-          DB.getSnapshot()?.tags?.splice(index, 1);
-        }
-      });
+      const snapshot = DB.getSnapshot();
+      if (snapshot?.tags) {
+        snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
+      }
+
+      DB.deleteLocalTag(tagId);
+
       void Settings.update();
+
       return { status: 1, message: `Tag removed` };
     },
   }),
@@ -148,6 +157,18 @@ const actionModals: Record<Action, SimpleModal> = {
           status: -1,
           message: "Failed to clear tag pb",
           notificationOptions: { response },
+        };
+      }
+
+      const matchingTag = getTagFromSnapshot(tagId);
+
+      if (matchingTag !== undefined) {
+        matchingTag.personalBests = {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
         };
       }
 

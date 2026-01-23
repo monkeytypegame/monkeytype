@@ -114,12 +114,20 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "arrows",
   },
   rAnDoMcAsE: {
-    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    description: "raNdomIze ThE CApitaLizatIon Of EveRY LeTtEr.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "rAnDoMcAsE",
+  },
+  sPoNgEcAsE: {
+    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    canGetPb: false,
+    difficultyLevel: 2,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "sPoNgEcAsE",
   },
   capitals: {
     description: "Capitalize Every Word.",

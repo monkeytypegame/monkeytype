@@ -11,7 +11,7 @@ import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -30,7 +30,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { Theme, ThemesList } from "../constants/themes";
+import { ThemesList, ThemeWithName } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
@@ -43,7 +43,8 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs, qsr } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 
 let settingsInitialized = false;
 
@@ -83,37 +84,25 @@ async function initGroups(): Promise<void> {
   groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
     updateCallback: () => {
       if (Config.keymapMode === "off") {
-        $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
-          "hidden",
-        );
-        $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
-          "hidden",
-        );
-        $(
+        qs(".pageSettings .section[data-config-name='keymapStyle']")?.hide();
+        qs(".pageSettings .section[data-config-name='keymapLayout']")?.hide();
+        qs(
           ".pageSettings .section[data-config-name='keymapLegendStyle']",
-        ).addClass("hidden");
-        $(
+        )?.hide();
+        qs(
           ".pageSettings .section[data-config-name='keymapShowTopRow']",
-        ).addClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
-          "hidden",
-        );
+        )?.hide();
+        qs(".pageSettings .section[data-config-name='keymapSize']")?.hide();
       } else {
-        $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
-          "hidden",
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLayout']",
-        ).removeClass("hidden");
-        $(
+        qs(".pageSettings .section[data-config-name='keymapStyle']")?.show();
+        qs(".pageSettings .section[data-config-name='keymapLayout']")?.show();
+        qs(
           ".pageSettings .section[data-config-name='keymapLegendStyle']",
-        ).removeClass("hidden");
-        $(
+        )?.show();
+        qs(
           ".pageSettings .section[data-config-name='keymapShowTopRow']",
-        ).removeClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
-          "hidden",
-        );
+        )?.show();
+        qs(".pageSettings .section[data-config-name='keymapSize']")?.show();
       }
     },
   });
@@ -226,19 +215,21 @@ async function initGroups(): Promise<void> {
   groups["timerColor"] = new SettingsGroup("timerColor", "button");
   groups["fontFamily"] = new SettingsGroup("fontFamily", "button", {
     updateCallback: () => {
-      const customButton = $(
+      const customButton = qs(
         ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']",
       );
 
       if (
-        $(
+        qsa(
           ".pageSettings .section[data-config-name='fontFamily'] .buttons .active",
         ).length === 0
       ) {
-        customButton.addClass("active");
-        customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+        customButton?.addClass("active");
+        customButton?.setText(
+          `Custom (${Config.fontFamily.replace(/_/g, " ")})`,
+        );
       } else {
-        customButton.text("Custom");
+        customButton?.setText("Custom");
       }
     },
   });
@@ -482,11 +473,11 @@ async function fillSettingsPage(): Promise<void> {
 // export let settingsFillPromise = fillSettingsPage();
 
 export function hideAccountSection(): void {
-  $(`.pageSettings .section.needsAccount`).addClass("hidden");
+  qsa(`.pageSettings .section.needsAccount`)?.hide();
 }
 
 function showAccountSection(): void {
-  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
+  qsa(`.pageSettings .section.needsAccount`)?.show();
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
 }
@@ -519,13 +510,13 @@ function setActiveFunboxButton(): void {
 
 function refreshTagsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
-    const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
+    const tagsEl = qs(".pageSettings .section.tags .tagsList")?.empty();
     DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
       // }
-      tagsEl.append(`
+      tagsEl?.appendHtml(`
 
       <div class="buttons tag" data-id="${tag._id}" data-name="${
         tag.name
@@ -548,17 +539,19 @@ function refreshTagsSettingsSection(): void {
 
       `);
     });
-    $(".pageSettings .section.tags").removeClass("hidden");
+    qs(".pageSettings .section.tags")?.show();
   } else {
-    $(".pageSettings .section.tags").addClass("hidden");
+    qs(".pageSettings .section.tags")?.hide();
   }
 }
 
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
-    const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
+    const presetsEl = qs(
+      ".pageSettings .section.presets .presetsList",
+    )?.empty();
     DB.getSnapshot()?.presets?.forEach((preset: SnapshotPreset) => {
-      presetsEl.append(`
+      presetsEl?.appendHtml(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
         <button class="presetButton">${preset.display}</button>
         <button class="editButton">
@@ -571,9 +564,9 @@ function refreshPresetsSettingsSection(): void {
       
       `);
     });
-    $(".pageSettings .section.presets").removeClass("hidden");
+    qs(".pageSettings .section.presets")?.show();
   } else {
-    $(".pageSettings .section.presets").addClass("hidden");
+    qs(".pageSettings .section.presets")?.hide();
   }
 }
 
@@ -581,16 +574,16 @@ export async function updateFilterSectionVisibility(): Promise<void> {
   const hasBackgroundUrl =
     Config.customBackground !== "" ||
     (await FileStorage.hasFile("LocalBackgroundFile"));
-  const isImageVisible = $(".customBackground img").is(":visible");
+  const isImageVisible = qs(".customBackground img")?.isVisible();
 
   if (hasBackgroundUrl && isImageVisible) {
-    $(
+    qs(
       ".pageSettings .section[data-config-name='customBackgroundFilter']",
-    ).removeClass("hidden");
+    )?.show();
   } else {
-    $(
+    qs(
       ".pageSettings .section[data-config-name='customBackgroundFilter']",
-    ).addClass("hidden");
+    )?.hide();
   }
 }
 
@@ -599,14 +592,14 @@ export async function update(
     eventKey?: ConfigEvent.ConfigEventKey;
   } = {},
 ): Promise<void> {
-  if (ActivePage.get() !== "settings") {
+  if (getActivePage() !== "settings") {
     return;
   }
 
   if (Config.showKeyTips) {
-    $(".pageSettings .tip").removeClass("hidden");
+    qs(".pageSettings .tip")?.show();
   } else {
-    $(".pageSettings .tip").addClass("hidden");
+    qs(".pageSettings .tip")?.hide();
   }
 
   for (const group of Object.values(groups)) {
@@ -621,7 +614,7 @@ export async function update(
   setActiveFunboxButton();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs(true);
+  ThemePicker.setCustomInputs();
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
@@ -674,13 +667,13 @@ export async function update(
   );
 
   if (Config.autoSwitchTheme) {
-    $(
+    qs(
       ".pageSettings .section[data-config-name='autoSwitchThemeInputs']",
-    ).removeClass("hidden");
+    )?.show();
   } else {
-    $(
+    qs(
       ".pageSettings .section[data-config-name='autoSwitchThemeInputs']",
-    ).addClass("hidden");
+    )?.hide();
   }
 
   setInputValue(
@@ -728,9 +721,9 @@ export async function update(
       : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  $(".pageSettings .tip").html(`
+  qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&
@@ -761,71 +754,62 @@ function toggleSettingsGroup(groupName: string): void {
 
   const groupEl = qs(`.pageSettings .settingsGroup.${groupName}`);
   if (!groupEl?.hasClass("slideup")) {
-    groupEl?.animate({
-      height: 0,
-      duration: 250,
-      onComplete: () => {
-        groupEl?.hide();
-      },
+    void groupEl?.slideUp(250, {
+      hide: false,
     });
     groupEl?.addClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.addClass(
       "rotateIcon",
     );
   } else {
-    groupEl?.show();
-    groupEl?.setStyle({ height: "" });
-    const height = groupEl.getOffsetHeight();
-    groupEl?.animate({
-      height: [0, height],
-      duration: 250,
-    });
+    void groupEl?.slideDown(250);
     groupEl?.removeClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.removeClass(
       "rotateIcon",
     );
   }
 }
 
 //funbox
-$(".pageSettings .section[data-config-name='funbox'] .buttons").on(
+qs(".pageSettings .section[data-config-name='funbox'] .buttons")?.onChild(
   "click",
   "button",
   (e) => {
-    const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
+    const target = e.childTarget as HTMLElement;
+    const funbox = target?.getAttribute("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
   },
 );
 
 //tags
-$(".pageSettings .section.tags").on(
+qs(".pageSettings .section.tags")?.onChild(
   "click",
   ".tagsList .tag .tagButton",
   (e) => {
-    const target = e.currentTarget as HTMLElement;
-    const tagid = $(target).parent(".tag").attr("data-id") as string;
+    const target = e.childTarget as HTMLElement;
+    const tagid = target.parentElement?.getAttribute("data-id") as string;
     TagController.toggle(tagid);
-    $(target).toggleClass("active");
+    target.classList.toggle("active");
   },
 );
 
-$(".pageSettings .section.presets").on(
+qs(".pageSettings .section.presets")?.onChild(
   "click",
   ".presetsList .preset .presetButton",
   async (e) => {
-    const target = e.currentTarget as HTMLElement;
-    const presetid = $(target).parent(".preset").attr("data-id") as string;
+    const target = e.childTarget as HTMLElement;
+    const presetid = target.parentElement?.getAttribute("data-id") as string;
     await PresetController.apply(presetid);
     void update();
   },
 );
 
-$("#importSettingsButton").on("click", () => {
+qs("#importSettingsButton")?.on("click", () => {
   ImportExportSettingsModal.show("import");
 });
 
-$("#exportSettingsButton").on("click", () => {
+qs("#exportSettingsButton")?.on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
@@ -837,19 +821,20 @@ $("#exportSettingsButton").on("click", () => {
   );
 });
 
-$(".pageSettings .sectionGroupTitle").on("click", (e) => {
-  toggleSettingsGroup($(e.currentTarget).attr("group") as string);
+qsa(".pageSettings .sectionGroupTitle")?.on("click", (e) => {
+  const target = e.currentTarget as HTMLElement;
+  toggleSettingsGroup(target.getAttribute("group") as string);
 });
 
-$(
+qs(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save",
-).on("click", () => {
+)?.on("click", () => {
   const didConfigSave = setConfig(
     "keymapSize",
     parseFloat(
-      $(
+      qs<HTMLInputElement>(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
-      ).val() as string,
+      )?.getValue() as string,
     ),
   );
   if (didConfigSave) {
@@ -859,15 +844,15 @@ $(
   }
 });
 
-$(
+qs(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
-).on("focusout", () => {
+)?.on("focusout", () => {
   const didConfigSave = setConfig(
     "keymapSize",
     parseFloat(
-      $(
+      qs<HTMLInputElement>(
         ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
-      ).val() as string,
+      )?.getValue() as string,
     ),
   );
   if (didConfigSave) {
@@ -877,16 +862,16 @@ $(
   }
 });
 
-$(
+qs(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
-).on("keypress", (e) => {
+)?.on("keypress", (e) => {
   if (e.key === "Enter") {
     const didConfigSave = setConfig(
       "keymapSize",
       parseFloat(
-        $(
+        qs<HTMLInputElement>(
           ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
-        ).val() as string,
+        )?.getValue() as string,
       ),
     );
     if (didConfigSave) {
@@ -897,11 +882,12 @@ $(
   }
 });
 
-$(".pageSettings .quickNav .links a").on("click", (e) => {
-  const settingsGroup = e.target.innerText;
-  const isClosed = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
-    "slideup",
-  );
+qsa(".pageSettings .quickNav .links a")?.on("click", (e) => {
+  const target = e.currentTarget as HTMLElement;
+  const settingsGroup = target.innerText;
+  const isClosed = qs(
+    `.pageSettings .settingsGroup.${settingsGroup}`,
+  )?.hasClass("slideup");
   if (isClosed) {
     toggleSettingsGroup(settingsGroup);
   }
@@ -941,7 +927,7 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
 }
 
 function getThemeDropdownData(
-  isActive: (theme: Theme) => boolean,
+  isActive: (theme: ThemeWithName) => boolean,
 ): DataArrayPartial {
   return ThemesList.map((theme) => ({
     value: theme.name,
@@ -972,8 +958,9 @@ function handleHighlightSection(highlight: Highlight | undefined): void {
   }
 }
 
-$(".pageSettings .section .groupTitle button").on("click", (e) => {
-  const section = e.target.parentElement?.parentElement;
+qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
+  const target = e.currentTarget as HTMLElement;
+  const section = target.parentElement?.parentElement;
   const configName = (section?.dataset?.["configName"] ??
     section?.dataset?.["sectionId"]) as Highlight | undefined;
   if (configName === undefined) {
@@ -993,21 +980,63 @@ $(".pageSettings .section .groupTitle button").on("click", (e) => {
     });
 });
 
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .delButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("deleteCustomTheme", [customThemeId]);
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .editButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont");
+  },
+);
+
+qs(".pageSettings #resetSettingsButton")?.on("click", () => {
+  showPopup("resetSettings");
+});
+
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "fullConfigChange") setEventDisabled(true);
   if (key === "fullConfigChangeFinished") setEventDisabled(false);
   if (key === "themeLight") {
-    $(
+    qs(
       `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${newValue}"]`,
-    ).attr("selected", "true");
+    )?.setAttribute("selected", "true");
   } else if (key === "themeDark") {
-    $(
+    qs(
       `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${newValue}"]`,
-    ).attr("selected", "true");
+    )?.setAttribute("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled) return;
-  if (ActivePage.get() === "settings" && key !== "theme") {
+  if (getActivePage() === "settings" && key !== "theme") {
     void (key === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey: key }));
@@ -1044,6 +1073,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-$(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageSettings");
 });

@@ -3,6 +3,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { ElementWithUtils } from "../utils/dom";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
@@ -53,7 +54,8 @@ function format(duration: number): string {
 }
 
 function previewDuration(): void {
-  const input = $("#customTestDurationModal input").val() as string;
+  const modalEl = modal.getModal();
+  const input = modalEl.qsr<HTMLInputElement>("input").getValue() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
@@ -65,7 +67,7 @@ function previewDuration(): void {
     formattedDuration = format(duration);
   }
 
-  $("#customTestDurationModal .preview").text(formattedDuration);
+  modalEl.qs(".preview")?.setText(formattedDuration);
 }
 
 export function show(showOptions?: ShowOptions): void {
@@ -73,8 +75,7 @@ export function show(showOptions?: ShowOptions): void {
     ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
-      (modalEl.querySelector("input") as HTMLInputElement).value =
-        `${Config.time}`;
+      modalEl.qs<HTMLInputElement>("input")?.setValue(`${Config.time}`);
       previewDuration();
     },
   });
@@ -87,7 +88,9 @@ function hide(clearChain = false): void {
 }
 
 function apply(): void {
-  const val = parseInput($("#customTestDurationModal input").val() as string);
+  const val = parseInput(
+    modal.getModal().qsr<HTMLInputElement>("input").getValue() as string,
+  );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     setConfig("time", val);
@@ -112,12 +115,12 @@ function apply(): void {
   hide(true);
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     apply();
   });
-  modalEl.querySelector("input")?.addEventListener("input", (e) => {
+  modalEl.qs("input")?.on("input", (e) => {
     previewDuration();
   });
 }

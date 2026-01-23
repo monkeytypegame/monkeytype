@@ -7,7 +7,8 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import Ape from "../ape";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
@@ -31,6 +32,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "../observables/auth-event";
+import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -41,11 +43,11 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const tokenType = fragment.get("token_type") as string;
     const state = fragment.get("state") as string;
 
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.linkDiscord({
       body: { tokenType, accessToken, state },
     });
-    Loader.hide();
+    hideLoaderBar();
 
     if (response.status !== 200) {
       Notifications.add("Failed to link Discord", -1, { response });
@@ -138,7 +140,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 const TestSettingsSchema = z.tuple([
   ModeSchema.nullable(),
   Mode2Schema.nullable(),
-  CustomText.CustomTextSettingsSchema.partial({
+  CustomTextSettingsSchema.partial({
     pipeDelimiter: true,
     limit: true,
     mode: true,

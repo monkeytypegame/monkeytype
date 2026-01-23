@@ -1,7 +1,8 @@
 import Ape from "../ape";
 import * as DB from "../db";
 import * as Config from "../config";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
@@ -21,7 +22,7 @@ import {
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import { configMetadata } from "../config-metadata";
 
 const state = {
@@ -44,42 +45,38 @@ export function show(action: string, id?: string, name?: string): void {
 
   void modal.show({
     focusFirstInput: true,
-    beforeAnimation: async () => {
-      $("#editPresetModal .modal .text").addClass("hidden");
+    beforeAnimation: async (modalEl) => {
+      modalEl.qsr(".text").hide();
       addCheckBoxes();
       presetNameEl ??= new ValidatedHtmlInputElement(
-        qsr("#editPresetModal .modal input"),
+        modalEl.qsr("input[type=text]"),
         {
           schema: PresetNameSchema,
         },
       );
       if (action === "add") {
-        $("#editPresetModal .modal").attr("data-action", "add");
-        $("#editPresetModal .modal .popupTitle").html("Add new preset");
-        $("#editPresetModal .modal .submit").html(`add`);
+        modalEl.setAttribute("data-action", "add");
+        modalEl.qsr(".popupTitle").setHtml("Add new preset");
+        modalEl.qsr(".submit").setHtml("add");
         presetNameEl.setValue(null);
-        presetNameEl.getParent()?.removeClass("hidden");
-        $("#editPresetModal .modal input").removeClass("hidden");
-        $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox",
-        ).addClass("hidden");
-        $("#editPresetModal .modal .inputs").removeClass("hidden");
-        $("#editPresetModal .modal .presetType").removeClass("hidden");
-        $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
+        presetNameEl.getParent()?.show();
+        modalEl.qsa("input").show();
+        modalEl.qsr("label.changePresetToCurrentCheckbox").hide();
+        modalEl.qsr(".inputs").show();
+        modalEl.qsr(".presetType").show();
+        modalEl.qsr(".presetNameTitle").show();
         state.presetType = "full";
       } else if (action === "edit" && id !== undefined && name !== undefined) {
-        $("#editPresetModal .modal").attr("data-action", "edit");
-        $("#editPresetModal .modal").attr("data-preset-id", id);
-        $("#editPresetModal .modal .popupTitle").html("Edit preset");
-        $("#editPresetModal .modal .submit").html(`save`);
+        modalEl.setAttribute("data-action", "edit");
+        modalEl.setAttribute("data-preset-id", id);
+        modalEl.qsr(".popupTitle").setHtml("Edit preset");
+        modalEl.qsr(".submit").setHtml(`save`);
         presetNameEl?.setValue(name);
-        presetNameEl?.getParent()?.removeClass("hidden");
+        presetNameEl?.getParent()?.show();
 
-        $("#editPresetModal .modal input").removeClass("hidden");
-        $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox",
-        ).removeClass("hidden");
-        $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
+        modalEl.qsa("input").show();
+        modalEl.qsr("label.changePresetToCurrentCheckbox").show();
+        modalEl.qsr(".presetNameTitle").show();
         state.setPresetToCurrent = false;
         await updateEditPresetUI();
       } else if (
@@ -87,22 +84,20 @@ export function show(action: string, id?: string, name?: string): void {
         id !== undefined &&
         name !== undefined
       ) {
-        $("#editPresetModal .modal").attr("data-action", "remove");
-        $("#editPresetModal .modal").attr("data-preset-id", id);
-        $("#editPresetModal .modal .popupTitle").html("Delete preset");
-        $("#editPresetModal .modal .submit").html("delete");
-        $("#editPresetModal .modal input").addClass("hidden");
-        $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox",
-        ).addClass("hidden");
-        $("#editPresetModal .modal .text").removeClass("hidden");
-        $("#editPresetModal .modal .deletePrompt").text(
-          `Are you sure you want to delete the preset ${name}?`,
-        );
-        $("#editPresetModal .modal .inputs").addClass("hidden");
-        $("#editPresetModal .modal .presetType").addClass("hidden");
-        $("#editPresetModal .modal .presetNameTitle").addClass("hidden");
-        presetNameEl?.getParent()?.addClass("hidden");
+        modalEl.setAttribute("data-action", "remove");
+        modalEl.setAttribute("data-preset-id", id);
+        modalEl.qsr(".popupTitle").setHtml("Delete preset");
+        modalEl.qsr(".submit").setHtml("delete");
+        modalEl.qsa("input").hide();
+        modalEl.qsr("label.changePresetToCurrentCheckbox").hide();
+        modalEl.qsr(".text").show();
+        modalEl
+          .qsr(".deletePrompt")
+          .setText(`Are you sure you want to delete the preset ${name}?`);
+        modalEl.qsr(".inputs").hide();
+        modalEl.qsr(".presetType").hide();
+        modalEl.qsr(".presetNameTitle").hide();
+        presetNameEl?.getParent()?.hide();
       }
       updateUI();
     },
@@ -137,43 +132,40 @@ async function initializeEditState(id: string): Promise<void> {
 }
 
 function addCheckboxListeners(): void {
+  const modalEl = modal.getModal();
   ConfigGroupNameSchema.options.forEach((settingGroup: ConfigGroupName) => {
-    const checkboxInput = $(
-      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
+    const checkboxInput = modalEl.qsr<HTMLInputElement>(
+      `.checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
     );
-    checkboxInput.on("change", (e) => {
-      state.checkboxes.set(
-        settingGroup,
-        checkboxInput.prop("checked") as boolean,
-      );
+
+    checkboxInput.on("change", async () => {
+      state.checkboxes.set(settingGroup, checkboxInput.isChecked() as boolean);
     });
   });
 
-  const presetToCurrentCheckbox = $(
-    `#editPresetModal .modal .changePresetToCurrentCheckbox input`,
+  const presetToCurrentCheckbox = modalEl.qsr<HTMLInputElement>(
+    `.changePresetToCurrentCheckbox input`,
   );
   presetToCurrentCheckbox.on("change", async () => {
-    state.setPresetToCurrent = presetToCurrentCheckbox.prop(
-      "checked",
-    ) as boolean;
+    state.setPresetToCurrent = presetToCurrentCheckbox.isChecked() as boolean;
     await updateEditPresetUI();
   });
 }
 
 function addCheckBoxes(): void {
+  const modalEl = modal.getModal();
   function camelCaseToSpaced(input: string): string {
     return input.replace(/([a-z])([A-Z])/g, "$1 $2");
   }
-  const settingGroupListEl = $(
-    "#editPresetModal .modal .inputs .checkboxList",
-  ).empty();
+  const settingGroupListEl = modalEl.qsr(".inputs .checkboxList").empty();
+
   ConfigGroupNameSchema.options.forEach((currSettingGroup) => {
     const currSettingGroupTitle = camelCaseToSpaced(currSettingGroup);
     const settingGroupCheckbox: string = `<label class="checkboxTitlePair" data-id="${currSettingGroup}">
               <input type="checkbox" />
               <div class="title">${currSettingGroupTitle}</div>
               </label>`;
-    settingGroupListEl.append(settingGroupCheckbox);
+    settingGroupListEl.appendHtml(settingGroupCheckbox);
   });
   for (const key of state.checkboxes.keys()) {
     state.checkboxes.set(key, true);
@@ -182,35 +174,48 @@ function addCheckBoxes(): void {
 }
 
 function updateUI(): void {
+  const modalEl = modal.getModal();
   ConfigGroupNameSchema.options.forEach((settingGroup: ConfigGroupName) => {
-    $(
-      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
-    ).prop("checked", state.checkboxes.get(settingGroup));
+    if (state.checkboxes.get(settingGroup)) {
+      modalEl
+        .qsr<HTMLInputElement>(
+          `.checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
+        )
+        .setChecked(true);
+    } else {
+      modalEl
+        .qsr<HTMLInputElement>(
+          `.checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
+        )
+        .setChecked(false);
+    }
   });
-  $(`#editPresetModal .modal .presetType button`).removeClass("active");
-  $(
-    `#editPresetModal .modal .presetType button[value="${state.presetType}"]`,
-  ).addClass("active");
-  $(`#editPresetModal .modal .partialPresetGroups`).removeClass("hidden");
+
+  modalEl.qsa(".presetType button").removeClass("active");
+  modalEl
+    .qsr(`.presetType button[value="${state.presetType}"]`)
+    .addClass("active");
+  modalEl.qsr(`.partialPresetGroups`).show();
   if (state.presetType === "full") {
-    $(`#editPresetModal .modal .partialPresetGroups`).addClass("hidden");
+    modalEl.qsr(".partialPresetGroups").hide();
   }
 }
 async function updateEditPresetUI(): Promise<void> {
-  $("#editPresetModal .modal label.changePresetToCurrentCheckbox input").prop(
-    "checked",
-    state.setPresetToCurrent,
-  );
+  const modalEl = modal.getModal();
   if (state.setPresetToCurrent) {
-    const presetId = $("#editPresetModal .modal").attr(
-      "data-preset-id",
-    ) as string;
+    modalEl
+      .qsr<HTMLInputElement>("label.changePresetToCurrentCheckbox input")
+      .setChecked(true);
+    const presetId = modalEl.getAttribute("data-preset-id") as string;
     await initializeEditState(presetId);
-    $("#editPresetModal .modal .inputs").removeClass("hidden");
-    $("#editPresetModal .modal .presetType").removeClass("hidden");
+    modalEl.qsr(".inputs").show();
+    modalEl.qsr(".presetType").show();
   } else {
-    $("#editPresetModal .modal .inputs").addClass("hidden");
-    $("#editPresetModal .modal .presetType").addClass("hidden");
+    modalEl
+      .qsr<HTMLInputElement>("label.changePresetToCurrentCheckbox input")
+      .setChecked(false);
+    modalEl.qsr(".inputs").hide();
+    modalEl.qsr(".presetType").hide();
   }
 }
 
@@ -219,20 +224,21 @@ function hide(): void {
 }
 
 async function apply(): Promise<void> {
-  const action = $("#editPresetModal .modal").attr("data-action");
-  const propPresetName = $("#editPresetModal .modal input").val() as string;
+  const modalEl = modal.getModal();
+  const action = modalEl.getAttribute("data-action");
+  const propPresetName = modalEl
+    .qsr<HTMLInputElement>(".group input[title='presets']")
+    .getValue() as string;
   const presetName = propPresetName.replaceAll(" ", "_");
-  const presetId = $("#editPresetModal .modal").attr(
-    "data-preset-id",
-  ) as string;
+  const presetId = modalEl.getAttribute("data-preset-id") as string;
 
-  const updateConfig = $("#editPresetModal .modal label input").prop(
-    "checked",
-  ) as boolean;
+  const updateConfig = modalEl
+    .qsr<HTMLInputElement>("label.changePresetToCurrentCheckbox input")
+    .isChecked();
 
   const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
-  if (action === undefined) {
+  if (action === null || action === "") {
     return;
   }
 
@@ -267,7 +273,7 @@ async function apply(): Promise<void> {
 
   hide();
 
-  Loader.show();
+  showLoaderBar();
 
   if (action === "add") {
     const configChanges = getConfigChanges();
@@ -356,7 +362,7 @@ async function apply(): Promise<void> {
   }
 
   void Settings.update();
-  Loader.hide();
+  hideLoaderBar();
 }
 
 function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {
@@ -412,18 +418,18 @@ function getConfigChanges(): Partial<ConfigType> {
   };
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     void apply();
   });
   PresetTypeSchema.options.forEach((presetType) => {
-    const presetOption = modalEl.querySelector(
+    const presetOption = modalEl.qs(
       `.presetType button[value="${presetType}"]`,
     );
     if (presetOption === null) return;
 
-    presetOption.addEventListener("click", () => {
+    presetOption.on("click", () => {
       state.presetType = presetType;
       updateUI();
     });

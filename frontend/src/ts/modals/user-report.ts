@@ -1,5 +1,6 @@
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
@@ -46,7 +47,7 @@ export async function show(options: ShowOptions): Promise<void> {
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       CaptchaController.render(
-        modalEl.querySelector(".g-recaptcha") as HTMLElement,
+        modalEl.qsr(".g-recaptcha").native,
         "userReportModal",
       );
 
@@ -54,22 +55,21 @@ export async function show(options: ShowOptions): Promise<void> {
       state.userUid = options.uid;
       state.lbOptOut = options.lbOptOut;
 
-      (modalEl.querySelector(".user") as HTMLElement).textContent = name;
-      (modalEl.querySelector(".reason") as HTMLSelectElement).value =
-        "Inappropriate name";
-      (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
+      modalEl.qs(".user")?.setText(name);
+      modalEl.qs<HTMLSelectElement>(".reason")?.setValue("Inappropriate name");
+      modalEl.qs<HTMLTextAreaElement>(".comment")?.setValue("");
 
       select = new SlimSelect({
-        select: modalEl.querySelector(".reason") as HTMLElement,
+        select: modalEl.qs(".reason")?.native as HTMLElement,
         settings: {
           showSearch: false,
-          contentLocation: modalEl,
+          contentLocation: modalEl.native,
         },
       });
     },
   });
 
-  new CharacterCounter(qsr("#userReportModal .comment"), 250);
+  new CharacterCounter(modal.getModal().qsr(".comment"), 250);
 }
 
 async function hide(): Promise<void> {
@@ -83,8 +83,12 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  const reason = $("#userReportModal .reason").val() as ReportUserReason;
-  const comment = $("#userReportModal .comment").val() as string;
+  const reason = qsr<HTMLSelectElement>(
+    "#userReportModal .reason",
+  ).getValue() as ReportUserReason;
+  const comment = qsr<HTMLTextAreaElement>(
+    "#userReportModal .comment",
+  ).getValue() as string;
   const captcha = captchaResponse;
 
   if (!reason) {
@@ -116,7 +120,7 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.users.report({
     body: {
       uid: state.userUid as string,
@@ -125,7 +129,7 @@ async function submitReport(): Promise<void> {
       captcha,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to report user", -1, { response });
@@ -139,7 +143,7 @@ async function submitReport(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "userReportModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.querySelector("button")?.addEventListener("click", () => {
+    modalEl.qs("button")?.on("click", () => {
       void submitReport();
     });
   },

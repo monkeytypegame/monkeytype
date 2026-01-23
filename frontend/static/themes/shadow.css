@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #000;
-  --main-color: #eee;
-  --caret-color: #eee;
-  --sub-color: #444;
-  --sub-alt-color: #171717;
-  --text-color: #eee;
-  --error-color: #fff;
-  --error-extra-color: #d8d8d8;
-  --colorful-error-color: #fff;
-  --colorful-error-extra-color: #d8d8d8;
-}
-
 header #logo .icon {
   color: #8c3230;
 }

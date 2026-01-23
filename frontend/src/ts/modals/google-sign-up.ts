@@ -1,3 +1,4 @@
+import { ElementWithUtils, qsr } from "../utils/dom";
 import * as Notifications from "../elements/notifications";
 import {
   sendEmailVerification,
@@ -10,14 +11,14 @@ import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
-import { qsr } from "../utils/dom";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -25,7 +26,7 @@ function show(credential: UserCredential): void {
   void modal.show({
     mode: "dialog",
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       signedInUser = credential;
 
       if (!CaptchaController.isCaptchaAvailable()) {
@@ -37,7 +38,7 @@ function show(credential: UserCredential): void {
       }
       CaptchaController.reset("googleSignUpModal");
       CaptchaController.render(
-        $("#googleSignUpModal .captcha")[0] as HTMLElement,
+        modalEl.qsr(".captcha").native,
         "googleSignUpModal",
       );
       enableInput();
@@ -92,8 +93,11 @@ async function apply(): Promise<void> {
   disableInput();
   disableButton();
 
-  Loader.show();
-  const name = $("#googleSignUpModal input").val() as string;
+  showLoaderBar();
+  const name = modal
+    .getModal()
+    .qsr<HTMLInputElement>("input")
+    .getValue() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create({ body: { name, captcha } });
@@ -110,7 +114,7 @@ async function apply(): Promise<void> {
       await AccountController.loadUser(signedInUser.user);
 
       signedInUser = undefined;
-      Loader.hide();
+      hideLoaderBar();
       void hide();
     }
   } catch (e) {
@@ -129,17 +133,17 @@ async function apply(): Promise<void> {
     AccountController.signOut();
     signedInUser = undefined;
     void hide();
-    Loader.hide();
+    hideLoaderBar();
     return;
   }
 }
 
 function enableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", false);
+  modal.getModal().qsr("button").enable();
 }
 
 function disableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", true);
+  modal.getModal().qsr("button").disable();
 }
 
 const nameInputEl = qsr<HTMLInputElement>("#googleSignUpModal input");
@@ -168,8 +172,8 @@ new ValidatedHtmlInputElement(nameInputEl, {
   },
 });
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     void apply();
   });

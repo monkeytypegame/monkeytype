@@ -2,14 +2,13 @@ nav {
   font-size: 1rem;
   line-height: 1rem;
   color: var(--sub-color);
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
   gap: 0.5rem;
-  // margin-bottom: -0.4rem;
-  width: -moz-fit-content;
-  width: fit-content;
   width: 100%;
-  grid-template-columns: auto auto auto auto 1fr auto;
+
+  .spacer {
+    flex-grow: 1;
+  }
 
   button.showAlerts {
     position: relative;
@@ -198,6 +197,7 @@ nav {
 
         a,
         button {
+          justify-items: start;
           justify-content: left;
           padding-left: 0;
           border-radius: 0;

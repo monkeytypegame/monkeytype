@@ -4,12 +4,14 @@ import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
 import { setMediaQueryDebugLevel } from "../ui";
 import { signIn } from "../auth";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
 import { getInputElement } from "../input/input-element";
 import { disableSlowTimerFail } from "../test/test-timer";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 let mediaQueryDebugLevel = 0;
 
@@ -17,47 +19,41 @@ export function show(): void {
   void modal.show();
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".generateData")?.addEventListener("click", () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs(".generateData")?.on("click", () => {
     showPopup("devGenerateData");
   });
-  modalEl
-    .querySelector(".showTestNotifications")
-    ?.addEventListener("click", () => {
-      Notifications.add("This is a test", 1, {
-        duration: 0,
-      });
-      Notifications.add("This is a test", 0, {
-        duration: 0,
-      });
-      Notifications.add("This is a test", -1, {
-        duration: 0,
-        details: { test: true, error: "Example error message" },
-      });
-      void modal.hide();
+  modalEl.qs(".showTestNotifications")?.on("click", () => {
+    Notifications.add("This is a test", 1, {
+      duration: 0,
     });
-  modalEl
-    .querySelector(".toggleMediaQueryDebug")
-    ?.addEventListener("click", () => {
-      mediaQueryDebugLevel++;
-      if (mediaQueryDebugLevel > 3) {
-        mediaQueryDebugLevel = 0;
-      }
-      Notifications.add(
-        `Setting media query debug level to ${mediaQueryDebugLevel}`,
-        5,
-      );
-      setMediaQueryDebugLevel(mediaQueryDebugLevel);
+    Notifications.add("This is a test", 0, {
+      duration: 0,
     });
-  modalEl
-    .querySelector(".showRealWordsInput")
-    ?.addEventListener("click", () => {
-      getInputElement().style.opacity = "1";
-      getInputElement().style.marginTop = "1.5em";
-      getInputElement().style.caretColor = "red";
-      void modal.hide();
+    Notifications.add("This is a test", -1, {
+      duration: 0,
+      details: { test: true, error: "Example error message" },
     });
-  modalEl.querySelector(".quickLogin")?.addEventListener("click", () => {
+    void modal.hide();
+  });
+  modalEl.qs(".toggleMediaQueryDebug")?.on("click", () => {
+    mediaQueryDebugLevel++;
+    if (mediaQueryDebugLevel > 2) {
+      mediaQueryDebugLevel = 0;
+    }
+    Notifications.add(
+      `Setting media query debug level to ${mediaQueryDebugLevel}`,
+      5,
+    );
+    setMediaQueryDebugLevel(mediaQueryDebugLevel);
+  });
+  modalEl.qs(".showRealWordsInput")?.on("click", () => {
+    getInputElement().style.opacity = "1";
+    getInputElement().style.marginTop = "1.5em";
+    getInputElement().style.caretColor = "red";
+    void modal.hide();
+  });
+  modalEl.qs(".quickLogin")?.on("click", () => {
     if (
       envConfig.quickLoginEmail === undefined ||
       envConfig.quickLoginPassword === undefined
@@ -68,15 +64,15 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       );
       return;
     }
-    Loader.show();
+    showLoaderBar();
     void signIn(envConfig.quickLoginEmail, envConfig.quickLoginPassword).then(
       () => {
-        Loader.hide();
+        hideLoaderBar();
       },
     );
     void modal.hide();
   });
-  modalEl.querySelector(".xpBarTest")?.addEventListener("click", () => {
+  modalEl.qs(".xpBarTest")?.on("click", () => {
     setTimeout(() => {
       void update(1000000, 20800, {
         base: 100,
@@ -90,19 +86,15 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     }, 500);
     void modal.hide();
   });
-  modalEl
-    .querySelector(".toggleFakeChartData")
-    ?.addEventListener("click", () => {
-      toggleUserFakeChartData();
-    });
-  modalEl.querySelector(".toggleCaretDebug")?.addEventListener("click", () => {
+  modalEl.qs(".toggleFakeChartData")?.on("click", () => {
+    toggleUserFakeChartData();
+  });
+  modalEl.qs(".toggleCaretDebug")?.on("click", () => {
     toggleCaretDebug();
   });
-  modalEl
-    .querySelector(".disableSlowTimerFail")
-    ?.addEventListener("click", () => {
-      disableSlowTimerFail();
-    });
+  modalEl.qs(".disableSlowTimerFail")?.on("click", () => {
+    disableSlowTimerFail();
+  });
 }
 
 const modal = new AnimatedModal({
@@ -111,7 +103,7 @@ const modal = new AnimatedModal({
 });
 
 export function appendButton(): void {
-  $("body").prepend(
+  qsr("body").prependHtml(
     `
       <div id="devButtons">
         <a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>

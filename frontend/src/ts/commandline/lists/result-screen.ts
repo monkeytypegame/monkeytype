@@ -97,7 +97,7 @@ const commands: Command[] = [
     display: "Toggle word history",
     icon: "fa-align-left",
     exec: (): void => {
-      TestUI.toggleResultWords();
+      void TestUI.toggleResultWords();
     },
     available: (): boolean => {
       return TestState.resultVisible;

@@ -2,8 +2,10 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { UserEmailSchema } from "@monkeytype/schemas/users";
+import { ElementWithUtils } from "../utils/dom";
 
 export function show(): void {
   if (!CaptchaController.isCaptchaAvailable()) {
@@ -20,7 +22,7 @@ export function show(): void {
     beforeAnimation: async (modal) => {
       CaptchaController.reset("forgotPasswordModal");
       CaptchaController.render(
-        modal.querySelector(".g-recaptcha") as HTMLElement,
+        modal.qsr(".g-recaptcha").native,
         "forgotPasswordModal",
         async () => {
           await submit();
@@ -37,11 +39,10 @@ async function submit(): Promise<void> {
     return;
   }
 
-  const email = (
-    modal.getModal().querySelector("input") as HTMLInputElement
-  ).value.trim();
+  const email =
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue()?.trim() ?? "";
 
-  if (!email) {
+  if (email === "") {
     Notifications.add("Please enter your email address");
     CaptchaController.reset("forgotPasswordModal");
     return;
@@ -54,13 +55,13 @@ async function submit(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   void Ape.users
     .forgotPasswordEmail({
       body: { email, captcha: captchaResponse },
     })
     .then((result) => {
-      Loader.hide();
+      hideLoaderBar();
       if (result.status !== 200) {
         Notifications.add(
           "Failed to send password reset email: " + result.body.message,
@@ -79,8 +80,8 @@ function hide(): void {
   void modal.hide();
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("button")?.addEventListener("click", async () => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qs("button")?.on("click", async () => {
     await submit();
   });
 }
