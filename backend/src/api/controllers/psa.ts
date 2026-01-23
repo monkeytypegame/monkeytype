@@ -6,8 +6,8 @@ import { MonkeyRequest } from "../types";
 import { PSA } from "@monkeytype/schemas/psas";
 import { loadingCache } from "../../utils/loadingCache";
 
-//cache for five minutes
-const cache = loadingCache<PSA[]>(5 * 60 * 1000, async () => {
+//cache for one minute
+const cache = loadingCache<PSA[]>(1 * 60 * 1000, async () => {
   return replaceObjectIds(await PsaDAL.get());
 });
 
