@@ -192,6 +192,174 @@
       "source": "geeksforgeeks - Inheritance in C++",
       "length": 80,
       "id": 32
+    },
+    {
+    	"text": "#include <vector>\nint makeVectorSize3() {\n\tstd::vector<int> v{1,2,3};\n\treturn (int)v.size();\n}",
+    	"source": "vector basic example",
+    	"length": 100,
+    	"id": 33
+    },
+    {
+    	"text": "#include <set>\n#include <vector>\nstd::vector<int> setToVector() {\n\tstd::set<int> s{4,1,3};\n\treturn std::vector<int>(s.begin(), s.end());\n}",
+    	"source": "set to vector conversion",
+    	"length": 145,
+    	"id": 34
+    },
+    {
+    	"text": "#include <algorithm>\n#include <vector>\nint countGreater5() {\n\tstd::vector<int> v{1,6,7,2};\n\treturn (int)std::count_if(v.begin(),v.end(),[](int x){return x>5;});\n}",
+    	"source": "count_if with lambda",
+    	"length": 169,
+    	"id": 35
+    },
+    {
+    	"text": "#include <algorithm>\n#include <vector>\nvoid fillWithSeven() {\n\tstd::vector<int> v(5);\n\tstd::fill_n(v.begin(),5,7);\n}",
+    	"source": "std::fill_n usage",
+    	"length": 123,
+    	"id": 36
+    },
+    {
+    	"text": "#include <algorithm>\n#include <vector>\nint sumWithForEach() {\n\tstd::vector<int> v{1,2,3};\n\tint sum=0;\n\tstd::for_each(v.begin(),v.end(),[&](int x){sum+=x;});\n\treturn sum;\n}",
+    	"source": "std::for_each lambda sum",
+    	"length": 182,
+    	"id": 37
+    },
+    {
+    	"text": "#include <vector>\n#include <ranges>\nint countEvenRanges() {\n\tstd::vector<int> v{1,2,3,4,5,6};\n\tauto evens = std::views::filter(v,[](int x){return x%2==0;});\n\tint count=0;\n\tfor(int x: evens) count++;\n\treturn count;\n}",
+    	"source": "ranges filter even",
+    	"length": 228,
+    	"id": 38
+    },
+    {
+    	"text": "#include <functional>\ntemplate<typename T>\nT applyTwice(T x,std::function<T(T)> f) {\n\treturn f(f(x));\n}",
+    	"source": "template with std::function",
+    	"length": 108,
+    	"id": 39
+    },
+    {
+    	"text": "#include <vector>\n#include <algorithm>\nstd::vector<int> removeLessThan(int threshold) {\n\tstd::vector<int> v{7,1,5,3};\n\tv.erase(std::remove_if(v.begin(), v.end(),\n\t\t\t\t[&](int n){return n<threshold;}), v.end());\n\treturn v;\n}",
+    	"source": "erase‑remove idiom lambda",
+    	"length": 236,
+    	"id": 40
+    },
+    {
+    	"text": "#include <vector>\nstd::vector<int> initVectorRange() {\n\tint arr[] = {10,20,30,40};\n\treturn std::vector<int>(std::begin(arr), std::end(arr));\n}",
+    	"source": "vector range constructor",
+    	"length": 148,
+    	"id": 41
+    },
+    {
+    	"text": "#include <set>\n#include <vector>\nstd::vector<int> fromSetSorted() {\n\tstd::set<int> s{5,2,8};\n\tstd::vector<int> v(s.begin(), s.end());\n\treturn v;\n}",
+    	"source": "set iteration to vector",
+    	"length": 155,
+    	"id": 42
+    },
+    {
+    	"text": "#include <memory>\n#include <iostream>\nint uniquePtrSwapDemo() {\n\tstd::unique_ptr<int> a = std::make_unique<int>(10);\n\tstd::unique_ptr<int> b = std::make_unique<int>(20);\n\ta.swap(b);\n\treturn *a + *b;\n}",
+    	"source": "unique_ptr swap example",
+    	"length": 211,
+    	"id": 43
+    },
+    {
+    	"text": "#include <memory>\n#include <iostream>\nint uniquePtrCustomDeleter() {\n\tauto deleter = [](int* p) { delete p; };\n\tstd::unique_ptr<int, decltype(deleter)> up(new int(42), deleter);\n\treturn *up;\n}",
+    	"source": "unique_ptr custom deleter example",
+    	"length": 201,
+    	"id": 44
+    },
+    {
+    	"text": "#include <memory>\n#include <iostream>\nint uniquePtrGetDemo() {\n\tstd::unique_ptr<int> up(new int(7));\n\tint* raw = up.get();\n\treturn *raw;\n}",
+    	"source": "unique_ptr get example",
+    	"length": 147,
+    	"id": 45
+    },
+    {
+    	"text": "#include <memory>\nstd::shared_ptr<int> makeSharedInt() {\n\treturn std::make_shared<int>(5);\n}",
+    	"source": "shared_ptr make_shared example",
+    	"length": 96,
+    	"id": 46
+    },
+    {
+    	"text": "#include <memory>\nint sharedPtrUseCount() {\n\tauto sp = std::make_shared<int>(3);\n\tauto sp2 = sp;\n\treturn (int)sp.use_count();\n}",
+    	"source": "shared_ptr use_count example",
+    	"length": 135,
+    	"id": 47
+    },
+    {
+    	"text": "#include <memory>\n#include <iostream>\nint sharedPtrAliasExample() {\n\nauto p = std::make_shared<int>(10);\n\tstd::shared_ptr<int> alias(p, p.get());\n\treturn *alias;\n}",
+    	"source": "shared_ptr alias example",
+    	"length": 172,
+    	"id": 48
+    },
+    {
+    	"text": "#include <algorithm>\n#include <vector>\nbool hasValueFive() {\n\tstd::vector<int> v{1,2,5,6};\n\treturn std::find(v.begin(), v.end(), 5) != v.end();\n}",
+    	"source": "std::find example",
+    	"length": 152,
+    	"id": 49
+    },
+    {
+    	"text": "#include <algorithm>\n#include <vector>\nint countLessThan3() {\n\tstd::vector<int> v{4,1,2,3};\n\treturn (int)std::count_if(v.begin(), v.end(), [](int n){return n<3;});\n}",
+    	"source": "std::count_if example",
+    	"length": 172,
+    	"id": 50
+    },
+    {
+    	"text": "#include <numeric>\n#include <vector>\nint accumulateSum() {\n\tstd::vector<int> v{1,2,3,4};\n\treturn std::accumulate(v.begin(), v.end(), 0);\n}",
+    	"source": "std::accumulate example",
+    	"length": 145,
+    	"id": 51
+    },
+    {
+    	"text": "#include <iterator>\n#include <vector>\nint iteratorDistance() {\n\tstd::vector<int> v{1,2,3,4};\n\treturn (int)std::distance(v.begin(), v.end());\n}",
+    	"source": "std::distance example",
+    	"length": 149,
+    	"id": 52
+    },
+    {
+    	"text": "template <typename Char, typename Traits, typename Allocator>\nstruct is_contiguous<std::basic_string<Char, Traits, Allocator>>\n\t: std::true_type {};",
+    	"source": "fmt type trait for std::string",
+    	"length": 151,
+    	"id": 53
+    },
+    {
+    	"text": "inline auto clz(uint32_t x) -> int {\n\tunsigned long r = 0;\n\t_BitScanReverse(&r, x);\n\treturn 31 ^ static_cast<int>(r);\n}",
+    	"source": "fmt count leading zeros",
+    	"length": 126,
+    	"id": 54
+    },
+    {
+    	"text": "friend constexpr auto operator==(const uint128_fallback& lhs,\n\tconst uint128_fallback& rhs) -> bool {\n\treturn lhs.hi_ == rhs.hi_ && lhs.lo_ == rhs.lo_;\n}",
+    	"source": "fmt uint128 equality",
+    	"length": 137,
+    	"id": 55
+    },
+    {
+    	"text": "#include <fmt/chrono.h>\n\nint main() {\n\tauto now = std::chrono::system_clock::now();\n\tfmt::print(\"Date and time: {}\\n\", now);\n\tfmt::print(\"Time: {:%H:%M}\\n\", now);\n}",
+    	"source": "fmt chrono printing",
+    	"length": 179,
+    	"id": 56
+    },
+    {
+    	"text": "namespace detail {\n\ntemplate <typename T, typename... Tail>\nconstexpr auto first(const T& value, const Tail&...) -> const T& {\n\treturn value;\n}\n}",
+    	"source": "fmt detail first function",
+    	"length": 152,
+    	"id": 57
+    },
+    {
+    	"text": "template <typename Char, typename... Args>\nconstexpr auto get_arg_index_by_name(basic_string_view<Char> name,\n\ttype_list<Args...>) -> int {\n\treturn get_arg_index_by_name<Args...>(name);\n}",
+    	"source": "fmt get_arg_index_by_name",
+    	"length": 193,
+    	"id": 58
+    },
+    {
+    	"text": "file::~file() noexcept {\n\tif (fd_ != -1 && FMT_POSIX_CALL(close(fd_)) != 0)\n\t\treport_system_error(errno, \"cannot close file\");\n}",
+    	"source": "fmt file destructor",
+    	"length": 136,
+    	"id": 59
+    },
+    {
+    	"text": "template <typename T> struct make_unsigned_or_bool : std::make_unsigned<T> {};\ntemplate <> struct make_unsigned_or_bool<bool> {\n\tusing type = bool;\n};",
+    	"source": "fmt make_unsigned_or_bool",
+    	"length": 172,
+    	"id": 60
     }
   ]
 }
