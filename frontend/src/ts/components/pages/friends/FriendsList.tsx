@@ -61,7 +61,7 @@ const columns = [
   defineColumn("name", {
     header: (props) => <TableColumnHeader column={props.column} title="name" />,
     enableSorting: true,
-    cell: ({ row }) => <FriendName friend={row.original} />,
+    cell: (info) => <FriendName friend={info.row.original} />,
   }),
 
   defineColumn("lastModified", {
@@ -206,13 +206,13 @@ const columns = [
 
   defineColumn("connectionId", {
     header: "",
-    cell: ({ getValue, row }) =>
+    cell: (info) =>
       //check the row is our own user
-      getValue() !== undefined ? (
+      info.getValue() !== undefined ? (
         <Button
           onClick={() => {
             alert(
-              `remove friend ${row.original.name} with connectionId ${getValue()}`,
+              `remove friend ${info.row.original.name} with connectionId ${info.getValue()}`,
             );
           }}
           icon="fas fa-user-times"
