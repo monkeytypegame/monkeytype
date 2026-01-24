@@ -10,7 +10,7 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { qs, qsa } from "../utils/dom";
+import { qs, qsa, qsr } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
@@ -42,6 +42,8 @@ function revert(): void {
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
     fb.functions.applyGlobalCSS();
   }
+
+  qsr("#vendorCss").setAttribute("href", "/styles/vendor.scss");
 }
 
 let firefoxClipboardNotificationShown = false;
@@ -80,9 +82,11 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     ssWatermark.unshift(userText);
   }
   qs(".pageTest .ssWatermark")?.setHtml(
-    ssWatermark
-      .map((el) => `<span>${el}</span>`)
-      .join("<span class='pipe'>|</span>"),
+    //TODO remove after test
+    ` <i class="fas fa-user"></i>           ` +
+      ssWatermark
+        .map((el) => `<span>${el}</span>`)
+        .join("<span class='pipe'>|</span>"),
   );
 
   setIsScreenshotting(true);
@@ -101,6 +105,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
   qsa(".highlightContainer")?.hide();
+
+  qsr("#vendorCss").setAttribute("href", "/styles/vendor-screenshot.scss");
+
   if (revertCookie) qs("#cookiesModal")?.hide();
 
   for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
@@ -118,7 +125,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  await Misc.sleep(50); // Small delay for render updates
+  await Misc.sleep(500); // Small delay for render updates
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
@@ -159,6 +166,8 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       },
       // Normalize the background layer so its negative z-index doesn't get hidden
       onCloneEachNode: (cloned) => {
+        //screenshot library has issues with layers, manually inject the fontawesome.css
+
         if (cloned instanceof HTMLElement) {
           const el = cloned;
           if (el.classList.contains("customBackground")) {
