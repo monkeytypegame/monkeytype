@@ -16,6 +16,11 @@ import { getTheme } from "../signals/theme";
 let revealReplay = false;
 let revertCookie = false;
 
+const screenshotCssHref = qsr("#screeenshotCss").getAttribute("href") as string;
+const vendorCss = qsr("#vendorCss");
+const vendorCssHref = vendorCss.getAttribute("href") as string;
+qsr("#screeenshotCss").remove();
+
 function revert(): void {
   setIsScreenshotting(false);
   hideLoaderBar();
@@ -43,7 +48,7 @@ function revert(): void {
     fb.functions.applyGlobalCSS();
   }
 
-  qsr("#vendorCss").setAttribute("href", "/styles/vendor.scss");
+  qsr("#vendorCss").setAttribute("href", vendorCssHref);
 }
 
 let firefoxClipboardNotificationShown = false;
@@ -83,10 +88,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
   qs(".pageTest .ssWatermark")?.setHtml(
     //TODO remove after test
-    ` <i class="fas fa-user"></i>           ` +
-      ssWatermark
-        .map((el) => `<span>${el}</span>`)
-        .join("<span class='pipe'>|</span>"),
+    ssWatermark
+      .map((el) => `<span>${el}</span>`)
+      .join("<span class='pipe'>|</span>"),
   );
 
   setIsScreenshotting(true);
@@ -110,7 +114,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const vendorCss = qsr("#vendorCss");
   await new Promise<void>((resolve) => {
     vendorCss.native.addEventListener("load", () => resolve(), { once: true });
-    vendorCss.setAttribute("href", "/styles/vendor-screenshot.scss");
+    vendorCss.setAttribute("href", screenshotCssHref);
   });
 
   if (revertCookie) qs("#cookiesModal")?.hide();

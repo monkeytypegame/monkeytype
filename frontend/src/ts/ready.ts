@@ -10,7 +10,7 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
-import { onDOMReady, qs, qsr } from "./utils/dom";
+import { onDOMReady, qs } from "./utils/dom";
 
 onDOMReady(async () => {
   await configLoadPromise;
@@ -77,6 +77,4 @@ onDOMReady(async () => {
       });
     }
   }
-
-  qsr("#vendorScreeenshotCss").remove();
 });
