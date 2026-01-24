@@ -125,7 +125,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  await Misc.sleep(500); // Small delay for render updates
+  await waitForNextFrame();
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
@@ -389,3 +389,11 @@ document.addEventListener("keyup", (event) => {
     ?.removeClass(["fas", "fa-download"])
     ?.addClass(["far", "fa-image"]);
 });
+
+async function waitForNextFrame(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      resolve();
+    });
+  });
+}
