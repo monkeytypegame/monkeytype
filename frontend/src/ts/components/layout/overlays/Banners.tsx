@@ -96,7 +96,7 @@ export function Banners(): JSXElement {
   createEffectOn(() => getBanners().length, setGlobalOffsetSignal);
 
   return (
-    <div ref={ref} class="fixed top-0 left-0 z-[1000] w-full">
+    <div ref={ref} class="fixed top-0 left-0 z-1000 w-full">
       <For each={getBanners()}>{(banner) => <Banner {...banner} />}</For>
     </div>
   );
