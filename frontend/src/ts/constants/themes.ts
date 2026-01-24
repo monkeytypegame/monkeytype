@@ -2325,6 +2325,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
+  adwaita_dark: {
+    bgColor: "#222226",
+    mainColor: "#81d0ff",
+    subColor: "#7b7b7b",
+    textColor: "#ffffff",
+  },
+  adwaita_light: {
+    bgColor: "#fafafb",
+    mainColor: "#a2326c",
+    subColor: "#8b8b8b",
+    textColor: "#333338",
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
