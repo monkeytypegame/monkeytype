@@ -20,6 +20,7 @@ import { getAvatarElement } from "../utils/discord-avatar";
 import { formatXp } from "../utils/levels";
 import { formatTopPercentage } from "../utils/misc";
 import { get as getServerConfiguration } from "../ape/server-configuration";
+import { qs } from "../utils/dom";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | Snapshot;
@@ -31,11 +32,11 @@ export async function update(
   profile: UserProfileOrSnapshot,
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
-  const profileElement = $(`.page${elementClass} .profile`);
-  const details = $(`.page${elementClass} .profile .details`);
+  const profileElement = qs(`.page${elementClass} .profile`);
+  const details = qs(`.page${elementClass} .profile .details`);
 
-  profileElement.attr("uid", profile.uid ?? "");
-  profileElement.attr("name", profile.name ?? "");
+  profileElement?.setAttribute("uid", profile.uid ?? "");
+  profileElement?.setAttribute("name", profile.name ?? "");
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
@@ -52,8 +53,8 @@ export async function update(
     return;
   }
 
-  const avatar = details.find(".avatarAndName .avatar");
-  avatar.replaceWith(getAvatarElement(profile, { size: 256 }));
+  const avatar = details?.qs(".avatarAndName .avatar");
+  avatar?.replaceWith(getAvatarElement(profile, { size: 256 }));
 
   if (profile.inventory?.badges && !banned) {
     let mainHtml = "";
@@ -67,27 +68,27 @@ export async function update(
       }
     }
 
-    details.find(".badges").empty().append(mainHtml);
-    details.find(".allBadges").empty().append(restHtml);
+    details?.qs(".badges")?.empty().appendHtml(mainHtml);
+    details?.qs(".allBadges")?.empty().appendHtml(restHtml);
   }
 
-  details.find(".name").text(profile.name);
+  details?.qs(".name")?.setText(profile.name);
   details
-    .find(".userFlags")
-    .html(
+    ?.qs(".userFlags")
+    ?.setHtml(
       getHtmlByUserFlags({ ...profile, isFriend: DB.isFriend(profile.uid) }),
     );
 
   if (profile.lbOptOut === true) {
     if (where === "profile") {
       profileElement
-        .find(".lbOptOutReminder")
-        .removeClass("hidden")
-        .text(
+        ?.qs(".lbOptOutReminder")
+        ?.removeClass("hidden")
+        ?.setText(
           "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate.",
         );
     } else {
-      profileElement.find(".lbOptOutReminder").addClass("hidden");
+      profileElement?.qs(".lbOptOutReminder")?.addClass("hidden");
     }
   }
 
@@ -100,14 +101,17 @@ export async function update(
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
   const balloonText = `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
-  details.find(".joined").text(joinedText).attr("aria-label", balloonText);
+  details
+    ?.qs(".joined")
+    ?.setText(joinedText)
+    .setAttribute("aria-label", balloonText);
 
   let hoverText = "";
 
   if (profile.streak && profile?.streak > 1) {
     details
-      .find(".streak")
-      .text(
+      ?.qs(".streak")
+      ?.setText(
         `Current streak: ${profile.streak} ${
           profile.streak === 1 ? "day" : "days"
         }`,
@@ -116,7 +120,7 @@ export async function update(
       profile.maxStreak === 1 ? "day" : "days"
     }`;
   } else {
-    details.find(".streak").text("");
+    details?.qs(".streak")?.setText("");
     hoverText = "";
   }
 
@@ -189,29 +193,29 @@ export async function update(
   }
 
   details
-    .find(".streak")
-    .attr("aria-label", hoverText)
-    .attr("data-balloon-break", "");
+    ?.qs(".streak")
+    ?.setAttribute("aria-label", hoverText)
+    ?.setAttribute("data-balloon-break", "");
 
   const { completedPercentage, restartRatio } = Misc.formatTypingStatsRatio(
     profile.typingStats,
   );
 
-  const typingStatsEl = details.find(".typingStats");
+  const typingStatsEl = details?.qs(".typingStats");
   typingStatsEl
-    .find(".started .value")
-    .text(profile.typingStats?.startedTests ?? 0);
+    ?.qs(".started .value")
+    ?.setText(`${profile.typingStats?.startedTests ?? 0}`);
   typingStatsEl
-    .find(".completed .value")
-    .text(profile.typingStats?.completedTests ?? 0)
-    .attr("data-balloon-pos", "up")
-    .attr(
+    ?.qs(".completed .value")
+    ?.setText(`${profile.typingStats?.completedTests ?? 0}`)
+    .setAttribute("data-balloon-pos", "up")
+    .setAttribute(
       "aria-label",
       `${completedPercentage}% (${restartRatio} restarts per completed test)`,
     );
   typingStatsEl
-    .find(".timeTyping .value")
-    .text(
+    ?.qs(".timeTyping .value")
+    ?.setText(
       secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
@@ -225,10 +229,10 @@ export async function update(
 
   if (!banned) {
     bio = !!(profile.details?.bio ?? "");
-    details.find(".bio .value").text(profile.details?.bio ?? "");
+    details?.qs(".bio .value")?.setText(profile.details?.bio ?? "");
 
     keyboard = !!(profile.details?.keyboard ?? "");
-    details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
+    details?.qs(".keyboard .value")?.setText(profile.details?.keyboard ?? "");
 
     if (
       (profile.details?.socialProfiles?.github !== undefined &&
@@ -239,12 +243,12 @@ export async function update(
         profile.details?.socialProfiles?.website !== "")
     ) {
       socials = true;
-      const socialsEl = details.find(".socials .value");
-      socialsEl.empty();
+      const socialsEl = details?.qs(".socials .value");
+      socialsEl?.empty();
 
       const git = profile.details?.socialProfiles.github ?? "";
       if (git) {
-        socialsEl.append(
+        socialsEl?.appendHtml(
           `<a href='https://github.com/${Misc.escapeHTML(
             git,
           )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
@@ -255,7 +259,7 @@ export async function update(
 
       const twitter = profile.details?.socialProfiles.twitter ?? "";
       if (twitter) {
-        socialsEl.append(
+        socialsEl?.appendHtml(
           `<a href='https://x.com/${Misc.escapeHTML(
             twitter,
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
@@ -271,7 +275,7 @@ export async function update(
       const websiteName = website?.match(regex)?.[1] ?? website;
 
       if (website) {
-        socialsEl.append(
+        socialsEl?.appendHtml(
           `<a href='${Misc.escapeHTML(
             website,
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
@@ -286,85 +290,85 @@ export async function update(
   //lbs
 
   if (banned) {
-    profileElement.find(".leaderboardsPositions").addClass("hidden");
+    profileElement?.qs(".leaderboardsPositions")?.addClass("hidden");
   } else {
-    profileElement.find(".leaderboardsPositions").removeClass("hidden");
+    profileElement?.qs(".leaderboardsPositions")?.removeClass("hidden");
 
     const t15 = profile.allTimeLbs?.time?.["15"]?.["english"] ?? null;
     const t60 = profile.allTimeLbs?.time?.["60"]?.["english"] ?? null;
 
     if (t15 === null && t60 === null) {
-      profileElement.find(".leaderboardsPositions").addClass("hidden");
+      profileElement?.qs(".leaderboardsPositions")?.addClass("hidden");
     } else {
       if (t15 !== null) {
         profileElement
-          .find(".leaderboardsPositions .group.t15 .pos")
-          .text(Format.rank(t15?.rank));
+          ?.qs(".leaderboardsPositions .group.t15 .pos")
+          ?.setText(Format.rank(t15?.rank));
         profileElement
-          .find(".leaderboardsPositions .group.t15 .topPercentage")
-          .text(formatTopPercentage(t15));
+          ?.qs(".leaderboardsPositions .group.t15 .topPercentage")
+          ?.setText(formatTopPercentage(t15));
       }
 
       if (t60 !== null) {
         profileElement
-          .find(".leaderboardsPositions .group.t60 .pos")
-          .text(Format.rank(t60?.rank));
+          ?.qs(".leaderboardsPositions .group.t60 .pos")
+          ?.setText(Format.rank(t60?.rank));
 
         profileElement
-          .find(".leaderboardsPositions .group.t60 .topPercentage")
-          .text(formatTopPercentage(t60));
+          ?.qs(".leaderboardsPositions .group.t60 .topPercentage")
+          ?.setText(formatTopPercentage(t60));
       }
     }
   }
 
   if (profile.uid === getAuthenticatedUser()?.uid) {
-    profileElement.find(".userReportButton").addClass("hidden");
+    profileElement?.qs(".userReportButton")?.addClass("hidden");
   } else {
-    profileElement.find(".userReportButton").removeClass("hidden");
+    profileElement?.qs(".userReportButton")?.removeClass("hidden");
   }
 
   const bioAndKey = bio || keyboard;
 
   if (!bio) {
-    details.find(".bio").addClass("hidden");
+    details?.qs(".bio")?.addClass("hidden");
   } else {
-    details.find(".bio").removeClass("hidden");
+    details?.qs(".bio")?.removeClass("hidden");
   }
 
   if (!keyboard) {
-    details.find(".keyboard").addClass("hidden");
+    details?.qs(".keyboard")?.addClass("hidden");
   } else {
-    details.find(".keyboard").removeClass("hidden");
+    details?.qs(".keyboard")?.removeClass("hidden");
   }
 
   if (!bioAndKey) {
-    details.find(".bioAndKeyboard").addClass("hidden");
-    details.find(".sep2").addClass("hidden");
+    details?.qs(".bioAndKeyboard")?.addClass("hidden");
+    details?.qs(".sep2")?.addClass("hidden");
   } else {
-    details.find(".bioAndKeyboard").removeClass("hidden");
-    details.find(".sep2").removeClass("hidden");
+    details?.qs(".bioAndKeyboard")?.removeClass("hidden");
+    details?.qs(".sep2")?.removeClass("hidden");
   }
 
   if (!socials) {
-    details.find(".socials").addClass("hidden");
-    details.find(".sep3").addClass("hidden");
+    details?.qs(".socials")?.addClass("hidden");
+    details?.qs(".sep3")?.addClass("hidden");
   } else {
-    details.find(".socials").removeClass("hidden");
-    details.find(".sep3").removeClass("hidden");
+    details?.qs(".socials")?.removeClass("hidden");
+    details?.qs(".sep3")?.removeClass("hidden");
   }
 
-  details.removeClass("none");
-  details.removeClass("bioAndKey");
-  details.removeClass("soc");
-  details.removeClass("both");
+  details?.removeClass("none");
+  details?.removeClass("bioAndKey");
+  details?.removeClass("soc");
+  details?.removeClass("both");
   if (!socials && !bioAndKey) {
-    details.addClass("none");
+    details?.addClass("none");
   } else if (socials && !bioAndKey) {
-    details.addClass("soc");
+    details?.addClass("soc");
   } else if (!socials && bioAndKey) {
-    details.addClass("bioAndKey");
+    details?.addClass("bioAndKey");
   } else if (socials && bioAndKey) {
-    details.addClass("both");
+    details?.addClass("both");
   }
 
   updateFriendRequestButton();
@@ -376,36 +380,39 @@ export function updateXp(
   sameUserCheck = false,
 ): void {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
-  const profileElement = $(`.page${elementClass} .profile`);
-  const details = $(`.page${elementClass} .profile .details .levelAndBar`);
+  const profileElement = qs(`.page${elementClass} .profile`);
+  const details = qs(`.page${elementClass} .profile .details .levelAndBar`);
 
   if (details === undefined || details === null) return;
 
   if (sameUserCheck && where === "profile") {
     const authedUserUid = getAuthenticatedUser()?.uid;
-    if (authedUserUid !== profileElement.attr("uid")) return;
+    if (authedUserUid !== profileElement?.getAttribute("uid")) return;
   }
 
   const xpDetails = Levels.getXpDetails(xp);
   const xpForLevel = xpDetails.levelMaxXp;
   const xpToDisplay = xpDetails.levelCurrentXp;
   details
-    .find(".level")
-    .text(xpDetails.level)
-    .attr("aria-label", `${formatXp(xp)} total xp`);
+    ?.qs(".level")
+    ?.setText(`${xpDetails.level}`)
+    ?.setAttribute("aria-label", `${formatXp(xp)} total xp`);
   details
-    .find(".xp")
-    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
-    .attr(
+    ?.qs(".xp")
+    ?.setText(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
+    ?.setAttribute(
       "aria-label",
       `${formatXp(xpForLevel - xpToDisplay)} xp until next level`,
     );
   details
-    .find(".xpBar .bar")
-    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+    ?.qs(".xpBar .bar")
+    ?.setStyle({ width: `${(xpToDisplay / xpForLevel) * 100}%` });
   details
-    .find(".xpBar")
-    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
+    ?.qs(".xpBar")
+    ?.setAttribute(
+      "aria-label",
+      `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`,
+    );
 }
 
 export function updateNameFontSize(where: ProfileViewPaths): void {
@@ -415,25 +422,24 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
 
   let details;
   if (where === "account") {
-    details = $(".pageAccount .profile .details");
+    details = qs(".pageAccount .profile .details");
   } else if (where === "profile") {
-    details = $(".pageProfile .profile .details");
+    details = qs(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameFieldjQ = details.find(".user");
-  const nameFieldParent = nameFieldjQ.parent()[0];
-  const nameField = nameFieldjQ[0];
+  const nameField = details?.qs(".user");
+  const nameFieldParent = nameField?.getParent();
   const upperLimit = convertRemToPixels(2);
 
   if (!nameField || !nameFieldParent) return;
 
-  nameField.style.fontSize = `10px`;
-  const parentWidth = nameFieldParent.clientWidth;
-  const widthAt10 = nameField.clientWidth;
+  nameField.native.style.fontSize = `10px`;
+  const parentWidth = nameFieldParent.native.clientWidth;
+  const widthAt10 = nameField.native.clientWidth;
   const ratioAt10 = parentWidth / widthAt10;
   const fittedFontSize = ratioAt10 * 10;
   const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
-  nameField.style.fontSize = `${finalFontSize}px`;
+  nameField.native.style.fontSize = `${finalFontSize}px`;
 }
 
 export function updateFriendRequestButton(): void {
@@ -463,6 +469,6 @@ const throttledEvent = throttle(1000, () => {
   }
 });
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   throttledEvent();
 });

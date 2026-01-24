@@ -47,7 +47,7 @@ async function fill(): Promise<void> {
   }
   longListEl.setHtml(longList);
 
-  modalEl.qs(".list .savedText .button.delete")?.on("click", (e) => {
+  modalEl.qsa(".list .savedText .button.delete")?.on("click", (e) => {
     const name = (e.target as HTMLElement)
       .closest(".savedText")
       ?.getAttribute("data-name");
@@ -60,7 +60,7 @@ async function fill(): Promise<void> {
     });
   });
 
-  modalEl.qs(".listLong .savedLongText .button.delete")?.on("click", (e) => {
+  modalEl.qsa(".listLong .savedLongText .button.delete")?.on("click", (e) => {
     const name = (e.target as HTMLElement)
       .closest(".savedLongText")
       ?.getAttribute("data-name");
@@ -74,7 +74,7 @@ async function fill(): Promise<void> {
   });
 
   modalEl
-    .qs(".listLong .savedLongText .button.resetProgress")
+    .qsa(".listLong .savedLongText .button.resetProgress")
     ?.on("click", (e) => {
       const name = (e.target as HTMLElement)
         .closest(".savedLongText")
@@ -88,14 +88,14 @@ async function fill(): Promise<void> {
       });
     });
 
-  modalEl.qs(".list .savedText .button.name")?.on("click", (e) => {
+  modalEl.qsa(".list .savedText .button.name")?.on("click", (e) => {
     const name = (e.target as HTMLElement).textContent;
     CustomTextState.setCustomTextName(name, false);
     const text = getSavedText(name, false);
     hide({ modalChainData: { text, long: false } });
   });
 
-  modalEl.qs(".listLong .savedLongText .button.name")?.on("click", (e) => {
+  modalEl.qsa(".listLong .savedLongText .button.name")?.on("click", (e) => {
     const name = (e.target as HTMLElement).textContent;
     CustomTextState.setCustomTextName(name, true);
     const text = getSavedText(name, true);

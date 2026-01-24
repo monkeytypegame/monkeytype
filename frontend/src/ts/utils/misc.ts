@@ -389,12 +389,15 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return isElementVisible(`#popups #${popupId}`);
+  return (
+    isElementVisible(`#popups #${popupId}`) ||
+    isElementVisible(`#solidmodals #${popupId}`)
+  );
 }
 
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper",
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
   );
   let popupVisible = false;
   for (const popup of popups) {
@@ -405,40 +408,6 @@ export function isAnyPopupVisible(): boolean {
   }
   return popupVisible;
 }
-
-export type JQueryEasing =
-  | "linear"
-  | "swing"
-  | "easeInSine"
-  | "easeOutSine"
-  | "easeInOutSine"
-  | "easeInQuad"
-  | "easeOutQuad"
-  | "easeInOutQuad"
-  | "easeInCubic"
-  | "easeOutCubic"
-  | "easeInOutCubic"
-  | "easeInQuart"
-  | "easeOutQuart"
-  | "easeInOutQuart"
-  | "easeInQuint"
-  | "easeOutQuint"
-  | "easeInOutQuint"
-  | "easeInExpo"
-  | "easeOutExpo"
-  | "easeInOutExpo"
-  | "easeInCirc"
-  | "easeOutCirc"
-  | "easeInOutCirc"
-  | "easeInBack"
-  | "easeOutBack"
-  | "easeInOutBack"
-  | "easeInElastic"
-  | "easeOutElastic"
-  | "easeInOutElastic"
-  | "easeInBounce"
-  | "easeOutBounce"
-  | "easeInOutBounce";
 
 export async function promiseAnimate(
   el: HTMLElement | string,
@@ -731,7 +700,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 }
 
 export function triggerResize(): void {
-  $(window).trigger("resize");
+  window.dispatchEvent(new Event("resize"));
 }
 
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &

@@ -11,6 +11,7 @@ import {
 } from "../../../stores/banners";
 import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
+import { Fa } from "../../common/Fa";
 
 function Banner(props: BannerType): JSXElement {
   const remove = (): void => {
@@ -65,7 +66,7 @@ function Banner(props: BannerType): JSXElement {
                 remove();
               }}
             >
-              <i class="fas fa-fw fa-times"></i>
+              <Fa icon="times" fixedWidth />
             </button>
           }
         />

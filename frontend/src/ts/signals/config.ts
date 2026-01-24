@@ -1,13 +1,22 @@
-import { createSignal } from "solid-js";
 import { subscribe } from "../observables/config-event";
-import { Ads } from "@monkeytype/schemas/configs";
+import { Config as ConfigType } from "@monkeytype/schemas/configs";
+import { createStore } from "solid-js/store";
+import { getDefaultConfig } from "../constants/default-config";
+import * as Config from "../config";
 
-export const [getAds, setAds] = createSignal<Ads>("off");
+const [getConfig, setConfigStore] = createStore<ConfigType>(getDefaultConfig());
+export { getConfig };
 
-//populate selected config events to the core signals
-//this will get replaced once the config is converted to a signal/store
+let fullConfigChange = false;
 subscribe(({ key, newValue }) => {
-  if (key === "ads") {
-    setAds(newValue);
+  if (key === "fullConfigChange") {
+    fullConfigChange = true;
+  } else if (key === "fullConfigChangeFinished") {
+    fullConfigChange = false;
+    setConfigStore(Config.getConfig());
+  } else if (fullConfigChange) {
+    return;
+  } else {
+    setConfigStore(key, newValue);
   }
 });

@@ -1360,6 +1360,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     updateAccuracy();
     updateAverage10();
     updateAverage100();
+    accountHistory.update();
   }
   if (key === "fontFamily") setDefaultFontFamily(newValue);
 });

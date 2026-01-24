@@ -3,13 +3,14 @@ import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
 import { mapRange } from "@monkeytype/util/numbers";
 import { getTheme } from "../signals/theme";
+import { qs } from "../utils/dom";
 
 export function hide(): void {
-  $(".pageAccount .resultBatches").addClass("hidden");
+  qs(".pageAccount .resultBatches")?.addClass("hidden");
 }
 
 export function show(): void {
-  $(".pageAccount .resultBatches").removeClass("hidden");
+  qs(".pageAccount .resultBatches")?.removeClass("hidden");
 }
 
 export async function update(): Promise<void> {
@@ -38,27 +39,29 @@ export async function update(): Promise<void> {
     : limits.regularUser;
   const percentageLimit = Math.round((results?.length / currentLimit) * 100);
 
-  const barsWrapper = $(".pageAccount .resultBatches .bars");
+  const barsWrapper = qs(".pageAccount .resultBatches .bars");
 
   const bars = {
     downloaded: {
-      fill: barsWrapper.find(".downloaded .fill"),
-      rightText: barsWrapper.find(".downloaded.rightText"),
+      fill: barsWrapper?.qs(".downloaded .fill"),
+      rightText: barsWrapper?.qs(".downloaded.rightText"),
     },
     limit: {
-      fill: barsWrapper.find(".limit .fill"),
-      rightText: barsWrapper.find(".limit.rightText"),
+      fill: barsWrapper?.qs(".limit .fill"),
+      rightText: barsWrapper?.qs(".limit.rightText"),
     },
   };
 
-  bars.downloaded.fill.css("width", Math.min(percentageDownloaded, 100) + "%");
-  bars.downloaded.rightText.text(
+  bars.downloaded.fill?.setStyle({
+    width: Math.min(percentageDownloaded, 100) + "%",
+  });
+  bars.downloaded.rightText?.setText(
     `${results?.length} / ${completedTests} (${percentageDownloaded}%)`,
   );
 
   const colors = getTheme();
 
-  bars.limit.fill.css({
+  bars.limit.fill?.setStyle({
     width: Math.min(percentageLimit, 100) + "%",
     background: blendTwoHexColors(
       colors.sub,
@@ -66,12 +69,12 @@ export async function update(): Promise<void> {
       mapRange(percentageLimit, 50, 100, 0, 1),
     ),
   });
-  bars.limit.rightText.text(
+  bars.limit.rightText?.setText(
     `${results?.length} / ${currentLimit} (${percentageLimit}%)`,
   );
 
-  const text = $(".pageAccount .resultBatches > .text");
-  text.text("");
+  const text = qs(".pageAccount .resultBatches > .text");
+  text?.setText("");
 
   if (results.length >= completedTests) {
     disableButton();
@@ -91,15 +94,15 @@ export async function update(): Promise<void> {
 }
 
 export function disableButton(): void {
-  $(".pageAccount .resultBatches button").prop("disabled", true);
+  qs(".pageAccount .resultBatches button")?.disable();
 }
 
 export function enableButton(): void {
-  $(".pageAccount .resultBatches button").prop("disabled", false);
+  qs(".pageAccount .resultBatches button")?.enable();
 }
 
 export function updateButtonText(text: string): void {
-  $(".pageAccount .resultBatches button").text(text);
+  qs(".pageAccount .resultBatches button")?.setText(text);
 }
 
 export function showOrHideIfNeeded(): void {
