@@ -106,7 +106,12 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qs(".wordInputHighlight")?.hide();
   qsa(".highlightContainer")?.hide();
 
-  qsr("#vendorCss").setAttribute("href", "/styles/vendor-screenshot.scss");
+  // Wait for stylesheet to load
+  const vendorCss = qsr("#vendorCss");
+  await new Promise<void>((resolve) => {
+    vendorCss.native.addEventListener("load", () => resolve(), { once: true });
+    vendorCss.setAttribute("href", "/styles/vendor-screenshot.scss");
+  });
 
   if (revertCookie) qs("#cookiesModal")?.hide();
 
@@ -126,7 +131,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     return null;
   }
   await waitForNextFrame();
-  await Misc.sleep(1000);
+  // await Misc.sleep(1000);
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
