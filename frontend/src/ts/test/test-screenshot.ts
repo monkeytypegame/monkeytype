@@ -19,9 +19,6 @@ let revertCookie = false;
 let screenshotCssHref = "";
 
 onDOMReady(() => {
-  // oxlint-disable-next-line no-debugger
-  debugger;
-  //we can select the screenshotCss link on dev by id or on prod by the href
   const screenshotCss = qsa('link[href^="/css/screenshot"]');
   screenshotCssHref = screenshotCss[0]?.getAttribute("href") as string;
   screenshotCss.remove();
