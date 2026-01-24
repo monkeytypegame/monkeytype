@@ -1,4 +1,5 @@
 import { intervalToDuration } from "date-fns";
+import { spring } from "motion";
 import { createResource, createSignal, For, JSXElement, Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
@@ -62,6 +63,13 @@ export function AboutPage(): JSXElement {
         >
           Hello
         </Motion>
+        <Motion
+          animate={{ marginLeft: test() ? "500px" : "0px" }}
+          class="bg-main h-8 w-8 rounded"
+          transition={{
+            easing: spring({ stiffness: 250, damping: 25 }),
+          }}
+        ></Motion>
         <section class="text-sub text-center">
           Created with love by Miodec.
           <br />
