@@ -115,10 +115,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   // Wait for stylesheet to load
   await new Promise<void>((resolve) => {
-    // vendorCss?.[1]?.native.addEventListener("load", () => resolve(), {
-    //   once: true,
-    // });
-    // vendorCss?.setAttribute("href", screenshotCssHref);
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = screenshotCssHref;
