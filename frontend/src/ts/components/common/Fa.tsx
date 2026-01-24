@@ -2,13 +2,13 @@ import { JSXElement } from "solid-js";
 
 import { FaObject } from "../../types/font-awesome";
 
-export type FaUniversalProps = {
+export type FaProps = {
   fixedWidth?: boolean;
   spin?: boolean;
   size?: number;
 } & FaObject;
 
-export function Fa(props: FaUniversalProps): JSXElement {
+export function Fa(props: FaProps): JSXElement {
   const variant = (): string => props.variant ?? "solid";
   return (
     <i

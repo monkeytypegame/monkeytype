@@ -10,9 +10,9 @@ import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
-import { Fa, FaUniversalProps } from "../common/Fa";
+import { Fa, FaProps } from "../common/Fa";
 
-function H2(props: { text: string; fa: FaUniversalProps }): JSXElement {
+function H2(props: { text: string; fa: FaProps }): JSXElement {
   return (
     <h2 class="text-sub flex place-items-center gap-4 pb-4 text-4xl">
       <Fa {...props.fa} />
@@ -21,7 +21,7 @@ function H2(props: { text: string; fa: FaUniversalProps }): JSXElement {
   );
 }
 
-function H3(props: { text: string; fa: FaUniversalProps }): JSXElement {
+function H3(props: { text: string; fa: FaProps }): JSXElement {
   return (
     <h3 class="text-sub flex place-items-center gap-2 pb-2">
       <Fa {...props.fa} />

@@ -1,11 +1,11 @@
 import { JSXElement, Show } from "solid-js";
 
 import { Conditional } from "./Conditional";
-import { Fa, FaUniversalProps } from "./Fa";
+import { Fa, FaProps } from "./Fa";
 
 type BaseProps = {
   text?: string;
-  fa?: FaUniversalProps;
+  fa?: FaProps;
   class?: string;
   type?: "text" | "button";
   children?: JSXElement;
@@ -29,7 +29,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
   const content = (
     <>
       <Show when={props.fa !== undefined}>
-        <Fa {...(props.fa as FaUniversalProps)} />
+        <Fa {...(props.fa as FaProps)} />
       </Show>
       <Show when={props.text !== undefined}>{props.text}</Show>
       {props.children}
