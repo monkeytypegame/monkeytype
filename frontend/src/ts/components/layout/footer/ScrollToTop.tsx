@@ -1,6 +1,7 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 
 import { getActivePage } from "../../../signals/core";
+import { Fa } from "../../common/Fa";
 
 export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
@@ -42,7 +43,7 @@ export function ScrollToTop(): JSXElement {
           });
         }}
       >
-        <i class="fas fa-angle-double-up"></i>
+        <Fa icon="angle-double-up" />
       </button>
     </div>
   );

@@ -28,58 +28,76 @@ export function Footer(): JSXElement {
           <Button
             type="text"
             text="contact"
-            icon="fas fa-envelope"
-            fixedWidthIcon
+            fa={{
+              icon: "envelope",
+              fixedWidth: true,
+            }}
             onClick={() => showModal("Contact")}
           />
           <Button
             type="text"
             text="support"
-            icon="fas fa-donate"
-            fixedWidthIcon
+            fa={{
+              icon: "donate",
+              fixedWidth: true,
+            }}
             onClick={() => showModal("Support")}
           />
           <Button
             type="text"
             text="github"
-            icon="fas fa-code"
-            fixedWidthIcon
+            fa={{
+              icon: "code",
+              fixedWidth: true,
+            }}
             href="https://github.com/monkeytypegame/monkeytype"
           />
           <Button
             type="text"
             text="discord"
-            icon="fab fa-discord"
-            fixedWidthIcon
+            fa={{
+              icon: "discord",
+              variant: "brand",
+              fixedWidth: true,
+            }}
             href="https://www.discord.gg/monkeytype"
           />
           <Button
             type="text"
             text="twitter"
-            icon="fab fa-twitter"
-            fixedWidthIcon
+            fa={{
+              icon: "twitter",
+              variant: "brand",
+              fixedWidth: true,
+            }}
             href="https://x.com/monkeytype"
           />
           <Button
             type="text"
             text="terms"
-            icon="fas fa-file-contract"
-            fixedWidthIcon
+            fa={{
+              icon: "file-contract",
+              fixedWidth: true,
+            }}
             href="/terms-of-service.html"
           />
           <Button
             href="/security-policy.html"
             type="text"
             text="security"
-            icon="fas fa-shield-alt"
-            fixedWidthIcon
+            fa={{
+              icon: "shield-alt",
+              fixedWidth: true,
+            }}
           />
           <Button
             href="/privacy-policy.html"
             type="text"
             text="privacy"
-            icon="fas fa-lock"
-            fixedWidthIcon
+            fa={{
+              icon: "lock",
+              fixedWidth: true,
+            }}
           />
         </div>
         <div class="flex flex-col items-end text-right lg:flex-row">

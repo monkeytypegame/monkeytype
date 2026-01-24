@@ -51,14 +51,16 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "keyboard",
+        }}
       />
     ));
 
     const icon = container.querySelector("i");
     expect(icon).toBeTruthy();
-    expect(icon?.className).toContain("icon");
-    expect(icon?.className).toContain("fa-test");
+    expect(icon?.className).toContain("fas");
+    expect(icon?.className).toContain("fa-keyboard");
   });
 
   it("applies fa-fw class when text is missing", () => {
@@ -67,7 +69,10 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "keyboard",
+          fixedWidth: true,
+        }}
       />
     ));
 
@@ -81,9 +86,11 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          fixedWidth: true,
+          icon: "keyboard",
+        }}
         text="Hello"
-        fixedWidthIcon
       />
     ));
 
@@ -97,7 +104,9 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "keyboard",
+        }}
         text="Hello"
       />
     ));

@@ -1,12 +1,11 @@
 import { JSXElement, Show } from "solid-js";
 
 import { Conditional } from "./Conditional";
+import { Fa, FaProps } from "./Fa";
 
 type BaseProps = {
   text?: string;
-  icon?: string;
-  iconScale?: number;
-  fixedWidthIcon?: boolean;
+  fa?: FaProps;
   class?: string;
   type?: "text" | "button";
   children?: JSXElement;
@@ -29,16 +28,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   const content = (
     <>
-      <Show when={props.icon !== undefined}>
-        <i
-          class={`icon ${props.icon}`}
-          style={{
-            "font-size": `${props.iconScale ?? 1}em`,
-          }}
-          classList={{
-            "fa-fw": props.text === undefined || props.fixedWidthIcon === true,
-          }}
-        ></i>
+      <Show when={props.fa !== undefined}>
+        <Fa {...(props.fa as FaProps)} />
       </Show>
       <Show when={props.text !== undefined}>{props.text}</Show>
       {props.children}
