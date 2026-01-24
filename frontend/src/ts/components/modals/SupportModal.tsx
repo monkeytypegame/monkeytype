@@ -27,37 +27,46 @@ export function SupportModal(): JSXElement {
             setCommandlineSubgroup("ads");
             showModal("Commandline");
           }}
-          icon="fas fa-ad"
+          fa={{
+            icon: "ad",
+            fixedWidth: true,
+            size: iconScale,
+          }}
           text="Enable Ads"
-          fixedWidthIcon
-          iconScale={iconScale}
           class={buttonClass}
         />
         <Button
           type="button"
           href="https://ko-fi.com/monkeytype"
-          icon="fas fa-donate"
+          fa={{
+            icon: "donate",
+            fixedWidth: true,
+            size: iconScale,
+          }}
           text="Donate"
-          fixedWidthIcon
-          iconScale={iconScale}
           class={buttonClass}
         />
         <Button
           type="button"
           href="https://www.patreon.com/monkeytype"
-          icon="fab fa-patreon"
+          fa={{
+            variant: "brand",
+            icon: "patreon",
+            fixedWidth: true,
+            size: iconScale,
+          }}
           text="Join Patreon"
-          fixedWidthIcon
-          iconScale={iconScale}
           class={buttonClass}
         />
         <Button
           type="button"
           href="https://monkeytype.store"
-          icon="fas fa-tshirt"
+          fa={{
+            icon: "tshirt",
+            fixedWidth: true,
+            size: iconScale,
+          }}
           text="Buy Merch"
-          fixedWidthIcon
-          iconScale={iconScale}
           class={buttonClass}
         />
       </div>

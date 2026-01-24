@@ -51,7 +51,9 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "keyboard",
+        }}
       />
     ));
 
@@ -67,7 +69,9 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "keyboard",
+        }}
       />
     ));
 
@@ -81,9 +85,11 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          fixedWidth: true,
+          icon: "keyboard",
+        }}
         text="Hello"
-        fixedWidthIcon
       />
     ));
 
@@ -97,7 +103,9 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "keyboard",
+        }}
         text="Hello"
       />
     ));

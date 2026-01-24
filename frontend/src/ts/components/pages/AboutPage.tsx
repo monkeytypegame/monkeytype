@@ -275,7 +275,9 @@ export function AboutPage(): JSXElement {
           </p>
           <div class="mt-4 text-xl">
             <Button
-              icon="fas fa-donate"
+              fa={{
+                icon: "donate",
+              }}
               onClick={() => showModal("Support")}
               text="support"
               class="w-full p-8"
@@ -292,25 +294,25 @@ export function AboutPage(): JSXElement {
           <div class="mt-4 grid w-full grid-cols-1 gap-4 text-xl sm:grid-cols-2 lg:grid-cols-4">
             <Button
               text="mail"
-              icon="fas fa-envelope"
+              fa={{ icon: "envelope" }}
               onClick={() => showModal("Contact")}
               class="w-full p-8"
             />
             <Button
               text="twitter"
-              icon="fab fa-twitter"
+              fa={{ icon: "twitter", variant: "brand" }}
               href="https://x.com/monkeytype"
               class="w-full p-8"
             />
             <Button
               text="discord"
-              icon="fab fa-discord"
+              fa={{ icon: "discord", variant: "brand" }}
               href="https://discord.gg/monkeytype"
               class="w-full p-8"
             />
             <Button
               text="github"
-              icon="fab fa-github"
+              fa={{ icon: "github", variant: "brand" }}
               href="https://github.com/monkeytypegame/monkeytype"
               class="w-full p-8"
             />
