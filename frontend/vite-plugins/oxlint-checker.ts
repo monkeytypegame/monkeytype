@@ -7,6 +7,8 @@ export type OxlintCheckerOptions = {
   debounceDelay?: number;
   /** Run type-aware checks (slower but more thorough). @default true */
   typeAware?: boolean;
+  /** Run plugin checks with custom config. @default true */
+  plugin?: boolean;
   /** Show browser overlay with lint status. @default true */
   overlay?: boolean;
   /** File extensions to watch for changes. @default ['.ts', '.tsx', '.js', '.jsx'] */
@@ -27,6 +29,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
   const {
     debounceDelay = 125,
     typeAware = true,
+    plugin = true,
     overlay = true,
     extensions = [".ts", ".tsx", ".js", ".jsx"],
   } = options;
@@ -185,7 +188,35 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       }
     }
 
-    // First pass clean - run type-aware check if enabled
+    // First pass clean - run plugin check if enabled
+    if (plugin) {
+      console.log("\x1b[36mRunning plugin checks...\x1b[0m");
+      sendLintResult({ running: true });
+      const pluginResult = await runLintProcess([
+        "-c",
+        ".oxlintrc-plugin.json",
+      ]);
+
+      // Check if we were superseded by a newer run
+      if (runId !== currentRunId) {
+        return;
+      }
+
+      if (pluginResult.output) {
+        console.log(pluginResult.output);
+      }
+
+      // If plugin check had errors, send them and return (fail fast)
+      if (pluginResult.code !== 0) {
+        const counts = parseLintOutput(pluginResult.output);
+        if (counts.errorCount > 0 || counts.warningCount > 0) {
+          sendLintResult({ ...counts, running: false });
+          return;
+        }
+      }
+    }
+
+    // Run type-aware check if enabled
     if (!typeAware) {
       sendLintResult({ errorCount: 0, warningCount: 0, running: false });
       return;
@@ -275,14 +306,19 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       console.log("\n\x1b[1mRunning oxlint...\x1b[0m");
 
       try {
-        const output = execSync(
-          "npx oxlint . && npx oxlint . --type-aware --type-check",
-          {
-            cwd: process.cwd(),
-            encoding: "utf-8",
-            env: { ...process.env, FORCE_COLOR: "3" },
-          },
-        );
+        const commands = ["npx oxlint ."];
+        if (plugin) {
+          commands.push("npx oxlint . -c .oxlintrc-plugin.json");
+        }
+        if (typeAware) {
+          commands.push("npx oxlint . --type-aware --type-check");
+        }
+
+        const output = execSync(commands.join(" && "), {
+          cwd: process.cwd(),
+          encoding: "utf-8",
+          env: { ...process.env, FORCE_COLOR: "3" },
+        });
 
         if (output) {
           console.log(output);
