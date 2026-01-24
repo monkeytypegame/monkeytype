@@ -10,20 +10,22 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
-import { qs, qsa, qsr } from "../utils/dom";
+import { onDOMReady, qs, qsa } from "../utils/dom";
 import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
 let revertCookie = false;
 
-//we can select the screenshotCss link on dev by id or on prod by the href
-const screenshotCss =
-  qs("#screeenshotCss") ?? qsr('link[href^="/css/screenshot"]');
-const screenshotCssHref = screenshotCss.getAttribute("href") as string;
-//we can select the vendorCss link on dev by id or on prod by the href
-const vendorCss = qs("#vendorCss") ?? qsr('link[href^="/css/vendor"]');
-const vendorCssHref = vendorCss.getAttribute("href") as string;
-screenshotCss.remove();
+let screenshotCssHref = "";
+
+onDOMReady(() => {
+  // oxlint-disable-next-line no-debugger
+  debugger;
+  //we can select the screenshotCss link on dev by id or on prod by the href
+  const screenshotCss = qsa('link[href^="/css/screenshot"]');
+  screenshotCssHref = screenshotCss[0]?.getAttribute("href") as string;
+  screenshotCss.remove();
+});
 
 function revert(): void {
   setIsScreenshotting(false);
@@ -52,7 +54,7 @@ function revert(): void {
     fb.functions.applyGlobalCSS();
   }
 
-  vendorCss.setAttribute("href", vendorCssHref);
+  qs("head link[href='" + screenshotCssHref + "']")?.remove();
 }
 
 let firefoxClipboardNotificationShown = false;
@@ -116,8 +118,15 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   // Wait for stylesheet to load
   await new Promise<void>((resolve) => {
-    vendorCss.native.addEventListener("load", () => resolve(), { once: true });
-    vendorCss.setAttribute("href", screenshotCssHref);
+    // vendorCss?.[1]?.native.addEventListener("load", () => resolve(), {
+    //   once: true,
+    // });
+    // vendorCss?.setAttribute("href", screenshotCssHref);
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = screenshotCssHref;
+    link.onload = () => resolve();
+    document.head.appendChild(link);
   });
 
   if (revertCookie) qs("#cookiesModal")?.hide();
