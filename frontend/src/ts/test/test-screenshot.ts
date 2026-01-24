@@ -16,10 +16,14 @@ import { getTheme } from "../signals/theme";
 let revealReplay = false;
 let revertCookie = false;
 
-const screenshotCssHref = qsr("#screeenshotCss").getAttribute("href") as string;
-const vendorCss = qsr("#vendorCss");
+//we can select the screenshotCss link on dev by id or on prod by the href
+const screenshotCss =
+  qs("#screeenshotCss") ?? qsr('link[href^="/css/screenshot"]');
+const screenshotCssHref = screenshotCss.getAttribute("href") as string;
+//we can select the vendorCss link on dev by id or on prod by the href
+const vendorCss = qs("#vendorCss") ?? qsr('link[href^="/css/vendor"]');
 const vendorCssHref = vendorCss.getAttribute("href") as string;
-qsr("#screeenshotCss").remove();
+screenshotCss.remove();
 
 function revert(): void {
   setIsScreenshotting(false);
@@ -48,7 +52,7 @@ function revert(): void {
     fb.functions.applyGlobalCSS();
   }
 
-  qsr("#vendorCss").setAttribute("href", vendorCssHref);
+  vendorCss.setAttribute("href", vendorCssHref);
 }
 
 let firefoxClipboardNotificationShown = false;
@@ -111,7 +115,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qsa(".highlightContainer")?.hide();
 
   // Wait for stylesheet to load
-  const vendorCss = qsr("#vendorCss");
   await new Promise<void>((resolve) => {
     vendorCss.native.addEventListener("load", () => resolve(), { once: true });
     vendorCss.setAttribute("href", screenshotCssHref);

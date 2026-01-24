@@ -227,6 +227,7 @@ function getBuildOptions({
         security: path.resolve(__dirname, "src/security-policy.html"),
         terms: path.resolve(__dirname, "src/terms-of-service.html"),
         404: path.resolve(__dirname, "src/404.html"),
+        screenshotCss: path.resolve(__dirname, "src/styles/screenshot.scss"), //needs to be a separate file
       },
       output: {
         assetFileNames: (assetInfo) => {
