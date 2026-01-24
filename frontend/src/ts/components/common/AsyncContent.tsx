@@ -4,6 +4,7 @@ import * as Notifications from "../../elements/notifications";
 import { createErrorMessage } from "../../utils/misc";
 
 import { Conditional } from "./Conditional";
+import { Fa } from "./Fa";
 
 export default function AsyncContent<T>(
   props: {
@@ -51,7 +52,7 @@ export default function AsyncContent<T>(
           <>
             <Show when={p.showLoader && props.resource.loading}>
               <div class="preloader text-main p-4 text-center text-2xl">
-                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+                <Fa icon="circle-notch" fixedWidth spin />
               </div>
             </Show>
             {p.children(value())}
@@ -65,7 +66,7 @@ export default function AsyncContent<T>(
           <Suspense
             fallback={
               <div class="preloader text-main p-4 text-center text-2xl">
-                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+                <Fa icon="circle-notch" fixedWidth spin />
               </div>
             }
           >

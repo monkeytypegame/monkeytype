@@ -4,6 +4,7 @@ import { setCommandlineSubgroup } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Fa } from "../common/Fa";
 
 export function SupportModal(): JSXElement {
   const buttonClass = "p-4 flex flex-col text-md";
@@ -18,7 +19,7 @@ export function SupportModal(): JSXElement {
       <div>
         Thank you so much for thinking about supporting this project. It would
         not be possible without you and your continued support.{" "}
-        <i class="fas fa-heart"></i>
+        <Fa icon="heart" />
       </div>
       <div class="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-4">
         <Button
