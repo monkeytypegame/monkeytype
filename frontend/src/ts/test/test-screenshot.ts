@@ -126,6 +126,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     return null;
   }
   await waitForNextFrame();
+  await Misc.sleep(1000);
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
