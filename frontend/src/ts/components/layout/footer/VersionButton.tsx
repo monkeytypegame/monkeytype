@@ -1,3 +1,4 @@
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { JSXElement, Show, createSignal } from "solid-js";
 import { envConfig } from "virtual:env-config";
@@ -46,7 +47,7 @@ export function VersionButton(): JSXElement {
 
   return (
     <button type="button" class="textButton flex" onClick={handleClick}>
-      <Fa icon="code-branch" fixedWidth />
+      <Fa icon={faCodeBranch} fixedWidth />
       <div class="text">{getVersionText()}</div>
       <Show when={showNewIndicator()}>
         <div

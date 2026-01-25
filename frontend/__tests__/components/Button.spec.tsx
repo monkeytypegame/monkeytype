@@ -1,3 +1,4 @@
+import { faKeyboard } from "@fortawesome/free-solid-svg-icons";
 import { render, cleanup } from "@solidjs/testing-library";
 import { describe, it, expect, vi, afterEach } from "vitest";
 
@@ -52,7 +53,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "keyboard",
+          icon: faKeyboard,
         }}
       />
     ));
@@ -70,7 +71,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "keyboard",
+          icon: faKeyboard,
           fixedWidth: true,
         }}
       />
@@ -88,7 +89,7 @@ describe("Button component", () => {
         }}
         fa={{
           fixedWidth: true,
-          icon: "keyboard",
+          icon: faKeyboard,
         }}
         text="Hello"
       />
@@ -105,7 +106,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "keyboard",
+          icon: faKeyboard,
         }}
         text="Hello"
       />

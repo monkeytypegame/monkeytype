@@ -256,6 +256,9 @@ function getBuildOptions({
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
         manualChunks: (id) => {
+          if (id.includes("@fortawesome")) {
+            return "vendor-fontawesome";
+          }
           if (id.includes("@sentry")) {
             return "vendor-sentry";
           }

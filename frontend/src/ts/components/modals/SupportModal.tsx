@@ -1,3 +1,10 @@
+import { faPatreon } from "@fortawesome/free-brands-svg-icons";
+import {
+  faAd,
+  faDonate,
+  faHeart,
+  faTshirt,
+} from "@fortawesome/free-solid-svg-icons";
 import { JSXElement } from "solid-js";
 
 import { setCommandlineSubgroup } from "../../signals/core";
@@ -19,7 +26,7 @@ export function SupportModal(): JSXElement {
       <div>
         Thank you so much for thinking about supporting this project. It would
         not be possible without you and your continued support.{" "}
-        <Fa icon="heart" />
+        <Fa icon={faHeart} />
       </div>
       <div class="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-4">
         <Button
@@ -29,7 +36,7 @@ export function SupportModal(): JSXElement {
             showModal("Commandline");
           }}
           fa={{
-            icon: "ad",
+            icon: faAd,
             fixedWidth: true,
             size: iconScale,
           }}
@@ -40,7 +47,7 @@ export function SupportModal(): JSXElement {
           type="button"
           href="https://ko-fi.com/monkeytype"
           fa={{
-            icon: "donate",
+            icon: faDonate,
             fixedWidth: true,
             size: iconScale,
           }}
@@ -51,8 +58,7 @@ export function SupportModal(): JSXElement {
           type="button"
           href="https://www.patreon.com/monkeytype"
           fa={{
-            variant: "brand",
-            icon: "patreon",
+            icon: faPatreon,
             fixedWidth: true,
             size: iconScale,
           }}
@@ -63,7 +69,7 @@ export function SupportModal(): JSXElement {
           type="button"
           href="https://monkeytype.store"
           fa={{
-            icon: "tshirt",
+            icon: faTshirt,
             fixedWidth: true,
             size: iconScale,
           }}

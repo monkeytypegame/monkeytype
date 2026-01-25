@@ -1,3 +1,4 @@
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import { ErrorBoundary, JSXElement, Resource, Show, Suspense } from "solid-js";
 
 import * as Notifications from "../../elements/notifications";
@@ -52,7 +53,7 @@ export default function AsyncContent<T>(
           <>
             <Show when={p.showLoader && props.resource.loading}>
               <div class="preloader text-main p-4 text-center text-2xl">
-                <Fa icon="circle-notch" fixedWidth spin />
+                <Fa icon={faCircleNotch} fixedWidth spin />
               </div>
             </Show>
             {p.children(value())}
@@ -66,7 +67,7 @@ export default function AsyncContent<T>(
           <Suspense
             fallback={
               <div class="preloader text-main p-4 text-center text-2xl">
-                <Fa icon="circle-notch" fixedWidth spin />
+                <Fa icon={faCircleNotch} fixedWidth spin />
               </div>
             }
           >

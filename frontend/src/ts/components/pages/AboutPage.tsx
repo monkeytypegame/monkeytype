@@ -1,3 +1,23 @@
+import {
+  faDiscord,
+  faGithub,
+  faTwitter,
+} from "@fortawesome/free-brands-svg-icons";
+import {
+  faAd,
+  faAlignLeft,
+  faBug,
+  faChartArea,
+  faCodeBranch,
+  faDonate,
+  faEnvelope,
+  faHandHoldingUsd,
+  faInfoCircle,
+  faKeyboard,
+  faLifeRing,
+  faListOl,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import { intervalToDuration } from "date-fns";
 import { createResource, For, JSXElement, Show } from "solid-js";
 
@@ -159,7 +179,7 @@ export function AboutPage(): JSXElement {
           </div>
         </section>
         <section>
-          <H2 fa={{ icon: "info-circle" }} text="about" />
+          <H2 fa={{ icon: faInfoCircle }} text="about" />
           <p>
             Monkeytype is a minimalistic and customizable typing test. It
             features many test modes, an account system to save your typing
@@ -176,7 +196,7 @@ export function AboutPage(): JSXElement {
           </p>
         </section>
         <section>
-          <H3 fa={{ icon: "align-left" }} text="word set" />
+          <H3 fa={{ icon: faAlignLeft }} text="word set" />
           <p>
             By default, this website uses the most common 200 words in the
             English language to generate its tests. You can change to an
@@ -185,7 +205,7 @@ export function AboutPage(): JSXElement {
           </p>
         </section>
         <section>
-          <H3 fa={{ icon: "keyboard" }} text="keybinds" />
+          <H3 fa={{ icon: faKeyboard }} text="keybinds" />
           <p>
             You can use <kbd>tab</kbd> and <kbd>enter</kbd> (or just{" "}
             <kbd>tab</kbd> if you have quick tab mode enabled) to restart the
@@ -195,7 +215,7 @@ export function AboutPage(): JSXElement {
           </p>
         </section>
         <section>
-          <H3 fa={{ icon: "list-ol" }} text="stats" />
+          <H3 fa={{ icon: faListOl }} text="stats" />
           <dl class="grid">
             <dt class="col-1 mr-4">wpm</dt>
             <dd class="col-2">
@@ -232,7 +252,7 @@ export function AboutPage(): JSXElement {
             class="ad full-width advertisement ad-h place-self-center"
           >
             <div class="icon">
-              <Fa icon="ad" />
+              <Fa icon={faAd} />
             </div>
             <div id="ad-about-1"></div>
           </div>
@@ -241,13 +261,13 @@ export function AboutPage(): JSXElement {
             class="ad advertisement ad-h-s place-self-center"
           >
             <div class="icon small">
-              <Fa icon="ad" />
+              <Fa icon={faAd} />
             </div>
             <div id="ad-about-1-small"></div>
           </div>
         </Show>
         <section>
-          <H3 fa={{ icon: "chart-area" }} text="results screen" />
+          <H3 fa={{ icon: faChartArea }} text="results screen" />
           <p>
             After completing a test you will be able to see your wpm, raw wpm,
             accuracy, character stats, test length, leaderboards info and test
@@ -259,7 +279,7 @@ export function AboutPage(): JSXElement {
           </p>
         </section>
         <section>
-          <H3 fa={{ icon: "bug" }} text="bug report or feature request" />
+          <H3 fa={{ icon: faBug }} text="bug report or feature request" />
           <p>
             If you encounter a bug, or have a feature request - join the Discord
             server, send me an email, a direct message on Twitter or create an
@@ -268,7 +288,7 @@ export function AboutPage(): JSXElement {
         </section>
         <div></div>
         <section>
-          <H2 fa={{ icon: "life-ring" }} text="support" />
+          <H2 fa={{ icon: faLifeRing }} text="support" />
           <p>
             Thanks to everyone who has supported this project. It would not be
             possible without you and your continued support.
@@ -276,7 +296,7 @@ export function AboutPage(): JSXElement {
           <div class="mt-4 text-xl">
             <Button
               fa={{
-                icon: "donate",
+                icon: faDonate,
               }}
               onClick={() => showModal("Support")}
               text="support"
@@ -286,7 +306,7 @@ export function AboutPage(): JSXElement {
         </section>
         <div></div>
         <section>
-          <H2 fa={{ icon: "envelope" }} text="contact" />
+          <H2 fa={{ icon: faEnvelope }} text="contact" />
           <p>
             If you encounter a bug, have a feature request or just want to say
             hi - here are the different ways you can contact me directly.
@@ -294,25 +314,25 @@ export function AboutPage(): JSXElement {
           <div class="mt-4 grid w-full grid-cols-1 gap-4 text-xl sm:grid-cols-2 lg:grid-cols-4">
             <Button
               text="mail"
-              fa={{ icon: "envelope" }}
+              fa={{ icon: faEnvelope }}
               onClick={() => showModal("Contact")}
               class="w-full p-8"
             />
             <Button
               text="twitter"
-              fa={{ icon: "twitter", variant: "brand" }}
+              fa={{ icon: faTwitter }}
               href="https://x.com/monkeytype"
               class="w-full p-8"
             />
             <Button
               text="discord"
-              fa={{ icon: "discord", variant: "brand" }}
+              fa={{ icon: faDiscord }}
               href="https://discord.gg/monkeytype"
               class="w-full p-8"
             />
             <Button
               text="github"
-              fa={{ icon: "github", variant: "brand" }}
+              fa={{ icon: faGithub }}
               href="https://github.com/monkeytypegame/monkeytype"
               class="w-full p-8"
             />
@@ -320,7 +340,7 @@ export function AboutPage(): JSXElement {
         </section>
         <div></div>
         <section>
-          <H2 fa={{ icon: "users" }} text="credits" />
+          <H2 fa={{ icon: faUsers }} text="credits" />
           <p>
             <Button
               type="text"
@@ -367,7 +387,7 @@ export function AboutPage(): JSXElement {
             class="ad full-width advertisement ad-h place-self-center"
           >
             <div class="icon">
-              <Fa icon="ad" />
+              <Fa icon={faAd} />
             </div>
             <div id="ad-about-2"></div>
           </div>
@@ -376,14 +396,14 @@ export function AboutPage(): JSXElement {
             class="ad advertisement ad-h-s place-self-center"
           >
             <div class="icon small">
-              <Fa icon="ad" />
+              <Fa icon={faAd} />
             </div>
             <div id="ad-about-2-small"></div>
           </div>
         </Show>
         <div></div>
         <section>
-          <H2 fa={{ icon: "hand-holding-usd" }} text="top supporters" />
+          <H2 fa={{ icon: faHandHoldingUsd }} text="top supporters" />
           <AsyncContent
             resource={supporters}
             errorMessage="Failed to get supporters"
@@ -403,7 +423,7 @@ export function AboutPage(): JSXElement {
         </section>
         <div></div>
         <section>
-          <H2 fa={{ icon: "code-branch" }} text="contributors" />
+          <H2 fa={{ icon: faCodeBranch }} text="contributors" />
           <AsyncContent
             resource={contributors}
             errorMessage="Failed to get contributors"
