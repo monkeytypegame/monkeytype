@@ -52,7 +52,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "keyboard",
+          icon: "fa-keyboard",
         }}
       />
     ));
@@ -70,7 +70,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "keyboard",
+          icon: "fa-keyboard",
           fixedWidth: true,
         }}
       />
@@ -88,7 +88,7 @@ describe("Button component", () => {
         }}
         fa={{
           fixedWidth: true,
-          icon: "keyboard",
+          icon: "fa-keyboard",
         }}
         text="Hello"
       />
@@ -105,7 +105,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "keyboard",
+          icon: "fa-keyboard",
         }}
         text="Hello"
       />

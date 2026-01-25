@@ -46,7 +46,7 @@ export function VersionButton(): JSXElement {
 
   return (
     <button type="button" class="textButton flex" onClick={handleClick}>
-      <Fa icon="code-branch" fixedWidth />
+      <Fa icon="fa-code-branch" fixedWidth />
       <div class="text">{getVersionText()}</div>
       <Show when={showNewIndicator()}>
         <div

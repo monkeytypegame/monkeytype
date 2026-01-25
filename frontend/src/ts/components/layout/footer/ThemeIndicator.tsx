@@ -43,10 +43,10 @@ export function ThemeIndicator(): JSXElement {
       <div class="relative">
         <Show when={getThemeIndicator().isFavorite}>
           <div class="bg-bg absolute top-[-0.5em] right-[-0.5em] flex rounded-full p-[0.25em]">
-            <Fa icon="star" size={0.5} />
+            <Fa icon="fa-star" size={0.5} />
           </div>
         </Show>
-        <Fa icon="palette" fixedWidth />
+        <Fa icon="fa-palette" fixedWidth />
       </div>
       <div class="text">{getThemeIndicator().text}</div>
     </button>
