@@ -406,13 +406,10 @@ function extractAllFontFaceRules(): CSSFontFaceRule[] {
     for (const rule of rules) {
       if (rule instanceof CSSFontFaceRule) {
         fontRules.push(rule);
-      }
-      // Check for nested rules (CSSLayerBlockRule, CSSMediaRule, CSSSupportsRule, etc.)
-      else if (
+      } else if (
         "cssRules" in rule &&
         typeof rule.cssRules === "object" &&
-        rule.cssRules !== null &&
-        "length" in rule.cssRules
+        rule.cssRules !== null
       ) {
         traverseRules(rule.cssRules as CSSRuleList);
       }
@@ -437,29 +434,20 @@ function extractAllFontFaceRules(): CSSFontFaceRule[] {
  */
 async function fontUrlToDataUrl(url: string): Promise<string | null> {
   try {
-    // Handle relative URLs
     const absoluteUrl = new URL(url, window.location.href).href;
-
     const response = await fetch(absoluteUrl, {
       mode: "cors",
       credentials: "omit",
     });
-
-    if (!response.ok) {
-      console.warn(`Failed to fetch font: ${absoluteUrl}`);
-      return null;
-    }
-
+    if (!response.ok) return null;
     const blob = await response.blob();
-
     return await new Promise<string | null>((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result as string);
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(blob);
     });
-  } catch (e) {
-    console.warn(`Error fetching font ${url}:`, e);
+  } catch {
     return null;
   }
 }
@@ -481,11 +469,8 @@ async function fontFaceRuleToEmbeddedCss(
 
   if (matches.length === 0) return cssText;
 
-  // Replace each URL with its data URL
   for (const match of matches) {
     const originalUrl = match[1];
-
-    // Skip if already a data URL or undefined
     if (
       typeof originalUrl !== "string" ||
       originalUrl === "" ||
@@ -493,11 +478,8 @@ async function fontFaceRuleToEmbeddedCss(
     ) {
       continue;
     }
-
     const dataUrl = await fontUrlToDataUrl(originalUrl);
-
     if (typeof dataUrl === "string" && dataUrl !== "") {
-      // Replace the URL in the cssText
       const urlPattern = new RegExp(
         `url\\(['"]?${originalUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]?\\)`,
         "g",
@@ -527,10 +509,8 @@ function getUsedFontFamilies(): Set<string> {
     if (node instanceof HTMLElement) {
       const fontFamily = getComputedStyle(node).fontFamily;
       if (fontFamily) {
-        // Split and normalize font families
         fontFamily.split(",").forEach((family) => {
-          const normalized = family.trim().replace(/['"]/g, "").toLowerCase();
-          families.add(normalized);
+          families.add(family.trim().replace(/['"]/g, "").toLowerCase());
         });
       }
     }
@@ -547,31 +527,17 @@ async function buildEmbeddedFontCss(): Promise<string> {
   const usedFamilies = getUsedFontFamilies();
   const embeddedRules: string[] = [];
 
-  console.log(
-    `Found ${allFontRules.length} @font-face rules (including @layer)`,
-  );
-  console.log(`Used font families:`, Array.from(usedFamilies));
-
   for (const rule of allFontRules) {
     const fontFamily = rule.style.getPropertyValue("font-family");
     if (!fontFamily) continue;
-
-    // Normalize and check if this font is used
     const normalizedFamily = fontFamily
       .trim()
       .replace(/['"]/g, "")
       .toLowerCase();
-
-    if (!usedFamilies.has(normalizedFamily)) {
-      continue; // Skip unused fonts
-    }
-
+    if (!usedFamilies.has(normalizedFamily)) continue;
     const embeddedCss = await fontFaceRuleToEmbeddedCss(rule);
-    if (embeddedCss !== null) {
-      embeddedRules.push(embeddedCss);
-    }
+    if (embeddedCss !== null) embeddedRules.push(embeddedCss);
   }
 
-  console.log(`Embedded ${embeddedRules.length} font rules`);
   return embeddedRules.join("\n");
 }
