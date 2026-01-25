@@ -158,9 +158,20 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
         return !(el.classList.contains("hidden") || cs.display === "none");
       },
       // Normalize the background layer so its negative z-index doesn't get hidden
-      onCloneEachNode: (cloned) => {
+      // Also copy font properties to work around CSS @layer issues
+      onCloneEachNode: (cloned, original) => {
         if (cloned instanceof HTMLElement) {
           const el = cloned;
+          
+          // Copy font properties from original to ensure fonts work with CSS layers
+          if (original instanceof HTMLElement) {
+            const originalStyles = getComputedStyle(original);
+            el.style.fontFamily = originalStyles.fontFamily;
+            el.style.fontWeight = originalStyles.fontWeight;
+            el.style.fontSize = originalStyles.fontSize;
+            el.style.fontStyle = originalStyles.fontStyle;
+          }
+          
           if (el.classList.contains("customBackground")) {
             el.style.zIndex = "0";
             el.style.width = `${targetWidth}px`;
