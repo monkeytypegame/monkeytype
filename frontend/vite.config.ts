@@ -61,9 +61,7 @@ export default defineConfig(({ mode }): UserConfig => {
     clearScreen: false,
     root: "src",
     publicDir: "../static",
-    optimizeDeps: {
-      exclude: ["@fortawesome/fontawesome-free"],
-    },
+    optimizeDeps: {},
   };
 });
 
