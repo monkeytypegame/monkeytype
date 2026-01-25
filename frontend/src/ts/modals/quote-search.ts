@@ -38,7 +38,7 @@ async function updateQuotes(): Promise<void> {
   ({ quotes } = await QuotesController.getQuotes(Config.language));
 }
 
-async function updateDataBalloonDirection(): Promise<void> {
+async function updateTooltipDirection(): Promise<void> {
   const quotesLanguage = await getLanguage(Config.language);
   const quotesLanguageIsRTL = quotesLanguage?.rightToLeft ?? false;
 
@@ -433,7 +433,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       });
     },
     afterAnimation: async () => {
-      await updateDataBalloonDirection();
+      await updateTooltipDirection();
       await updateQuotes();
     },
   });
