@@ -484,7 +484,7 @@ async function fontFaceRuleToEmbeddedCss(
         `url\\(['"]?${originalUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]?\\)`,
         "g",
       );
-      cssText = cssText.replace(urlPattern, `url(${dataUrl})`);
+      cssText = cssText.replace(urlPattern, () => `url(${dataUrl})`);
     }
   }
 
