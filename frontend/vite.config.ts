@@ -291,7 +291,11 @@ function getCssOptions({
     preprocessorOptions: {
       scss: {
         additionalData(source, fp) {
-          if (isDevelopment || fp.endsWith("index.scss")) {
+          if (
+            isDevelopment ||
+            fp.endsWith("index.scss") ||
+            fp.endsWith("fonts.scss")
+          ) {
             /** Enable for font awesome v6 */
             /*
                 const fontawesomeClasses = getFontawesomeConfig();

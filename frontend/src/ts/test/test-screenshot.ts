@@ -12,11 +12,14 @@ import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../signals/theme";
+import fontCss from "../../styles/fonts.scss?inline";
+import fontAwesomeCss from "../../styles/fontawesome-5.scss?inline";
 
 let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
+  qs("#screenshot-styles")?.remove();
   setIsScreenshotting(false);
   hideLoaderBar();
   qs("#ad-result-wrapper")?.show();
@@ -118,6 +121,11 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     console.warn("Failed to embed fonts:", e);
   }*/
 
+  document.head.insertAdjacentHTML(
+    "beforeend",
+    `<style id="screenshot-styles">${fontCss}\n${fontAwesomeCss}</style>`
+  );
+
   // --- Target Element Calculation ---
   const src = qs("#result .wrapper");
   if (src === null) {
@@ -126,8 +134,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  // Wait a frame to ensure all UI changes are rendered
-  await new Promise((resolve) => requestAnimationFrame(resolve));
+  await Misc.sleep(50); // Small delay for render updates
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
