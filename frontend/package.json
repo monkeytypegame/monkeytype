@@ -65,7 +65,6 @@
   "devDependencies": {
     "@eslint/json": "0.14.0",
     "@fortawesome/fontawesome-common-types": "0.2.36",
-    "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "@solidjs/testing-library": "0.8.10",

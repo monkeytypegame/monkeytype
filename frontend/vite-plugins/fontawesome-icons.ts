@@ -1,5 +1,7 @@
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 import * as fs from "fs";
-import { createRequire } from "module";
 import * as path from "path";
 import { Plugin } from "vite";
 
@@ -18,9 +20,9 @@ type FontawesomeConfig = {
 type FileObject = { name: string; isDirectory: boolean };
 
 const iconSet = {
-  solid: parseIcons("solid"),
-  regular: parseIcons("regular"),
-  brands: parseIcons("brands"),
+  solid: Object.keys(fas),
+  regular: Object.keys(far),
+  brands: Object.keys(fab),
 };
 
 /**
@@ -91,25 +93,19 @@ export function generateFontAwesomeCode(): string {
   const importStatements = [];
 
   // Regular icons
-  const regularImports = source.regular.map(
-    (icon) => `fa${toCamelCase(icon)} as far${toCamelCase(icon)}`,
-  );
+  const regularImports = source.regular.map((icon) => `${icon} as far${icon}`);
   importStatements.push(
     `import { ${regularImports.join(", ")} } from "@fortawesome/free-regular-svg-icons";`,
   );
 
   // Solid icons
-  const solidImports = source.solid.map(
-    (icon) => `fa${toCamelCase(icon)} as fas${toCamelCase(icon)}`,
-  );
+  const solidImports = source.solid.map((icon) => `${icon} as fas${icon}`);
   importStatements.push(
     `import { ${solidImports.join(", ")} } from "@fortawesome/free-solid-svg-icons";`,
   );
 
   // Brands icons
-  const brandImports = source.brands.map(
-    (icon) => `fa${toCamelCase(icon)} as fab${toCamelCase(icon)}`,
-  );
+  const brandImports = source.brands.map((icon) => `${icon} as fab${icon}`);
   importStatements.push(
     `import { ${brandImports.join(", ")} } from "@fortawesome/free-brands-svg-icons";`,
   );
@@ -123,15 +119,15 @@ export function generateFontAwesomeCode(): string {
   code.push("export function initIcons(){");
 
   code.push(
-    `  library.add(${source.solid.map((icon) => `fas${toCamelCase(icon)}`).join(", ")});`,
+    `  library.add(${source.solid.map((icon) => `fas${icon}`).join(", ")});`,
   );
 
   code.push(
-    `  library.add(${source.regular.map((icon) => `far${toCamelCase(icon)}`).join(", ")});`,
+    `  library.add(${source.regular.map((icon) => `far${icon}`).join(", ")});`,
   );
 
   code.push(
-    `  library.add(${source.brands.map((icon) => `fab${toCamelCase(icon)}`).join(", ")});`,
+    `  library.add(${source.brands.map((icon) => `fab${icon}`).join(", ")});`,
   );
 
   code.push("}");
@@ -173,13 +169,18 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
     if (matches) {
       matches.forEach((match) => {
         const [icon] = match.split(" ");
-        usedClassesSet.add((icon as string).substring(3));
+        const name = "fa" + toCamelCase((icon as string).substring(3));
+        usedClassesSet.add(name);
       });
     }
   }
 
   const usedClasses = [...usedClassesSet].sort();
-  const allModuleClasses = new Set(Object.values(modules2).flatMap((it) => it));
+  const allModuleClasses = new Set(
+    Object.values(modules2).flatMap((it) =>
+      it.map((name) => "fa" + toCamelCase(name)),
+    ),
+  );
   const icons = usedClasses.filter((it) => !allModuleClasses.has(it));
 
   const solid = icons.filter((it) => iconSet.solid.includes(it));
@@ -238,18 +239,6 @@ function findAllFiles(
     }
   }
   return out;
-}
-
-function parseIcons(iconSet: string): string[] {
-  const require = createRequire(import.meta.url);
-  const path = require.resolve(
-    `@fortawesome/fontawesome-free/js/${iconSet}.js`,
-  );
-  const file: string | null = fs.readFileSync(path).toString();
-
-  return file
-    ?.match(/"(.*)": \[.*\],/g)
-    ?.map((it) => it.substring(1, it.indexOf(":") - 1)) as string[];
 }
 
 //detect if we run this as a main
