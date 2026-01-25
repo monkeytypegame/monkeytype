@@ -111,12 +111,12 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   window.scrollTo({ top: 0, behavior: "auto" });
 
   // --- Build embedded font CSS ---
-  let embeddedFontCss = "";
+  /*let embeddedFontCss = "";
   try {
     embeddedFontCss = await buildEmbeddedFontCss();
   } catch (e) {
     console.warn("Failed to embed fonts:", e);
-  }
+  }*/
 
   // --- Target Element Calculation ---
   const src = qs("#result .wrapper");
@@ -151,7 +151,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       scale: window.devicePixelRatio ?? 1,
 
       // Pass embedded font CSS with data URLs
-      font: embeddedFontCss ? { cssText: embeddedFontCss } : undefined,
+      //font: embeddedFontCss ? { cssText: embeddedFontCss } : undefined,
 
       style: {
         width: `${targetWidth}px`,
@@ -399,145 +399,145 @@ document.addEventListener("keyup", (event) => {
 /**
  * Recursively extracts all @font-face rules from stylesheets, including those inside @layer
  */
-function extractAllFontFaceRules(): CSSFontFaceRule[] {
-  const fontRules: CSSFontFaceRule[] = [];
-
-  function traverseRules(rules: CSSRuleList): void {
-    for (const rule of rules) {
-      if (rule instanceof CSSFontFaceRule) {
-        fontRules.push(rule);
-      } else if (
-        "cssRules" in rule &&
-        typeof rule.cssRules === "object" &&
-        rule.cssRules !== null
-      ) {
-        traverseRules(rule.cssRules as CSSRuleList);
-      }
-    }
-  }
-
-  for (const sheet of document.styleSheets) {
-    try {
-      if (sheet?.cssRules?.length && sheet.cssRules.length > 0) {
-        traverseRules(sheet.cssRules);
-      }
-    } catch (e) {
-      console.warn("Cannot access stylesheet:", e);
-    }
-  }
-
-  return fontRules;
-}
-
-/**
- * Fetches a font file and converts it to a data URL
- */
-async function fontUrlToDataUrl(url: string): Promise<string | null> {
-  try {
-    const absoluteUrl = new URL(url, window.location.href).href;
-    const response = await fetch(absoluteUrl, {
-      mode: "cors",
-      credentials: "omit",
-    });
-    if (!response.ok) return null;
-    const blob = await response.blob();
-    return await new Promise<string | null>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Converts a @font-face rule to CSS text with embedded data URLs
- */
-async function fontFaceRuleToEmbeddedCss(
-  rule: CSSFontFaceRule,
-): Promise<string | null> {
-  let cssText = rule.cssText;
-  const srcProperty = rule.style.getPropertyValue("src");
-
-  if (!srcProperty) return null;
-
-  // Extract all url() references
-  const urlRegex = /url\(['"]?([^'"]+?)['"]?\)/g;
-  const matches = [...srcProperty.matchAll(urlRegex)];
-
-  if (matches.length === 0) return cssText;
-
-  for (const match of matches) {
-    const originalUrl = match[1];
-    if (
-      typeof originalUrl !== "string" ||
-      originalUrl === "" ||
-      originalUrl.startsWith("data:")
-    ) {
-      continue;
-    }
-    const dataUrl = await fontUrlToDataUrl(originalUrl);
-    if (typeof dataUrl === "string" && dataUrl !== "") {
-      const urlPattern = new RegExp(
-        `url\\(['"]?${originalUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]?\\)`,
-        "g",
-      );
-      cssText = cssText.replace(urlPattern, () => `url(${dataUrl})`);
-    }
-  }
-
-  return cssText;
-}
-
-/**
- * Collects all used font families in the document
- */
-function getUsedFontFamilies(): Set<string> {
-  const families = new Set<string>();
-
-  // Walk through all elements
-  const walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_ELEMENT,
-    null,
-  );
-
-  let node: Node | null;
-  while ((node = walker.nextNode())) {
-    if (node instanceof HTMLElement) {
-      const fontFamily = getComputedStyle(node).fontFamily;
-      if (fontFamily) {
-        fontFamily.split(",").forEach((family) => {
-          families.add(family.trim().replace(/['"]/g, "").toLowerCase());
-        });
-      }
-    }
-  }
-
-  return families;
-}
-
-/**
- * Builds font CSS with data URLs embedded, including fonts from @layer
- */
-async function buildEmbeddedFontCss(): Promise<string> {
-  const allFontRules = extractAllFontFaceRules();
-  const usedFamilies = getUsedFontFamilies();
-  const embeddedRules: string[] = [];
-
-  for (const rule of allFontRules) {
-    const fontFamily = rule.style.getPropertyValue("font-family");
-    if (!fontFamily) continue;
-    const normalizedFamily = fontFamily
-      .trim()
-      .replace(/['"]/g, "")
-      .toLowerCase();
-    if (!usedFamilies.has(normalizedFamily)) continue;
-    const embeddedCss = await fontFaceRuleToEmbeddedCss(rule);
-    if (embeddedCss !== null) embeddedRules.push(embeddedCss);
-  }
-
-  return embeddedRules.join("\n");
-}
+// function extractAllFontFaceRules(): CSSFontFaceRule[] {
+//   const fontRules: CSSFontFaceRule[] = [];
+//
+//   function traverseRules(rules: CSSRuleList): void {
+//     for (const rule of rules) {
+//       if (rule instanceof CSSFontFaceRule) {
+//         fontRules.push(rule);
+//       } else if (
+//         "cssRules" in rule &&
+//         typeof rule.cssRules === "object" &&
+//         rule.cssRules !== null
+//       ) {
+//         traverseRules(rule.cssRules as CSSRuleList);
+//       }
+//     }
+//   }
+//
+//   for (const sheet of document.styleSheets) {
+//     try {
+//       if (sheet?.cssRules?.length && sheet.cssRules.length > 0) {
+//         traverseRules(sheet.cssRules);
+//       }
+//     } catch (e) {
+//       console.warn("Cannot access stylesheet:", e);
+//     }
+//   }
+//
+//   return fontRules;
+// }
+//
+// /**
+//  * Fetches a font file and converts it to a data URL
+//  */
+// async function fontUrlToDataUrl(url: string): Promise<string | null> {
+//   try {
+//     const absoluteUrl = new URL(url, window.location.href).href;
+//     const response = await fetch(absoluteUrl, {
+//       mode: "cors",
+//       credentials: "omit",
+//     });
+//     if (!response.ok) return null;
+//     const blob = await response.blob();
+//     return await new Promise<string | null>((resolve) => {
+//       const reader = new FileReader();
+//       reader.onloadend = () => resolve(reader.result as string);
+//       reader.onerror = () => resolve(null);
+//       reader.readAsDataURL(blob);
+//     });
+//   } catch {
+//     return null;
+//   }
+// }
+//
+// /**
+//  * Converts a @font-face rule to CSS text with embedded data URLs
+//  */
+// async function fontFaceRuleToEmbeddedCss(
+//   rule: CSSFontFaceRule,
+// ): Promise<string | null> {
+//   let cssText = rule.cssText;
+//   const srcProperty = rule.style.getPropertyValue("src");
+//
+//   if (!srcProperty) return null;
+//
+//   // Extract all url() references
+//   const urlRegex = /url\(['"]?([^'"]+?)['"]?\)/g;
+//   const matches = [...srcProperty.matchAll(urlRegex)];
+//
+//   if (matches.length === 0) return cssText;
+//
+//   for (const match of matches) {
+//     const originalUrl = match[1];
+//     if (
+//       typeof originalUrl !== "string" ||
+//       originalUrl === "" ||
+//       originalUrl.startsWith("data:")
+//     ) {
+//       continue;
+//     }
+//     const dataUrl = await fontUrlToDataUrl(originalUrl);
+//     if (typeof dataUrl === "string" && dataUrl !== "") {
+//       const urlPattern = new RegExp(
+//         `url\\(['"]?${originalUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]?\\)`,
+//         "g",
+//       );
+//       cssText = cssText.replace(urlPattern, () => `url(${dataUrl})`);
+//     }
+//   }
+//
+//   return cssText;
+// }
+//
+// /**
+//  * Collects all used font families in the document
+//  */
+// function getUsedFontFamilies(): Set<string> {
+//   const families = new Set<string>();
+//
+//   // Walk through all elements
+//   const walker = document.createTreeWalker(
+//     document.body,
+//     NodeFilter.SHOW_ELEMENT,
+//     null,
+//   );
+//
+//   let node: Node | null;
+//   while ((node = walker.nextNode())) {
+//     if (node instanceof HTMLElement) {
+//       const fontFamily = getComputedStyle(node).fontFamily;
+//       if (fontFamily) {
+//         fontFamily.split(",").forEach((family) => {
+//           families.add(family.trim().replace(/['"]/g, "").toLowerCase());
+//         });
+//       }
+//     }
+//   }
+//
+//   return families;
+// }
+//
+// /**
+//  * Builds font CSS with data URLs embedded, including fonts from @layer
+//  */
+// async function buildEmbeddedFontCss(): Promise<string> {
+//   const allFontRules = extractAllFontFaceRules();
+//   const usedFamilies = getUsedFontFamilies();
+//   const embeddedRules: string[] = [];
+//
+//   for (const rule of allFontRules) {
+//     const fontFamily = rule.style.getPropertyValue("font-family");
+//     if (!fontFamily) continue;
+//     const normalizedFamily = fontFamily
+//       .trim()
+//       .replace(/['"]/g, "")
+//       .toLowerCase();
+//     if (!usedFamilies.has(normalizedFamily)) continue;
+//     const embeddedCss = await fontFaceRuleToEmbeddedCss(rule);
+//     if (embeddedCss !== null) embeddedRules.push(embeddedCss);
+//   }
+//
+//   return embeddedRules.join("\n");
+// }
