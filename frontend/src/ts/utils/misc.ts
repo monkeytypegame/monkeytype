@@ -622,7 +622,11 @@ export function promiseWithResolvers<T = void>(): {
   };
 
   const reject = (reason?: unknown): void => {
-    innerReject(reason);
+    try {
+      innerReject(reason);
+    } catch (e) {
+      //ignore no awaits
+    }
   };
 
   return {
