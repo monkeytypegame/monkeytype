@@ -12,7 +12,6 @@ import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
 import autoprefixer from "autoprefixer";
 import { Fonts } from "./src/ts/constants/fonts";
-//import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { fontPreview } from "./vite-plugins/font-preview";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
@@ -97,7 +96,6 @@ function getPlugins({
 
   const prodPlugins: PluginOption[] = [
     fontPreview(),
-    //fontawesomeSubset(),
     versionFile({ clientVersion }),
     ViteMinifyPlugin(),
     VitePWA({
@@ -294,20 +292,8 @@ function getCssOptions({
       scss: {
         additionalData(source, fp) {
           if (isDevelopment || fp.endsWith("index.scss")) {
-            /** Enable for font awesome v6 */
-            /*
-                const fontawesomeClasses = getFontawesomeConfig();
-
-                //inject variables into sass context
-                $fontawesomeBrands: ${sassList(
-                  fontawesomeClasses.brands
-                )};             
-                $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
-              */
-
             const bypassFonts = isDevelopment
               ? `
-                $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
                 $previewFontsPath:"webfonts";`
               : "";
             const fonts = `
