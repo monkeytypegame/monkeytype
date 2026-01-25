@@ -162,8 +162,8 @@
         }
 
         .globalRank {
-          i {
-            display: none;
+          svg {
+            display: none !important;
           }
           span {
             display: inline;
@@ -174,8 +174,8 @@
             display: table-cell;
           }
           .globalRank {
-            i {
-              display: inline;
+            svg {
+              display: inline !important;
             }
             span {
               display: none;

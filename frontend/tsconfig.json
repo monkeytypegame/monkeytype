@@ -14,7 +14,8 @@
       "virtual:language-hashes": [
         "./src/ts/types/virtual-language-hashes.d.ts"
       ],
-      "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"]
+      "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"],
+      "virtual:fa-icons": ["./src/ts/types/virtual-fa-icons.d.ts"]
     }
   },
   "include": [

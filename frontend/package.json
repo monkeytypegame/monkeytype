@@ -23,6 +23,10 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@fortawesome/fontawesome-svg-core": "1.2.36",
+    "@fortawesome/free-brands-svg-icons": "5.15.4",
+    "@fortawesome/free-regular-svg-icons": "5.15.4",
+    "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@monkeytype/contracts": "workspace:*",
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",

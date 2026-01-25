@@ -11,6 +11,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs } from "./utils/dom";
+import { initIcons } from "virtual:fa-icons";
 
 onDOMReady(async () => {
   await configLoadPromise;
@@ -77,4 +78,5 @@ onDOMReady(async () => {
       });
     }
   }
+  initIcons();
 });

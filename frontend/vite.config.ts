@@ -12,7 +12,7 @@ import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
 import autoprefixer from "autoprefixer";
 import { Fonts } from "./src/ts/constants/fonts";
-import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
+//import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { fontPreview } from "./vite-plugins/font-preview";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
@@ -29,6 +29,7 @@ import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
+import { fontawesomeIcons } from "./vite-plugins/fontawesome-icons";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -81,6 +82,7 @@ function getPlugins({
   const plugins: PluginOption[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
+    fontawesomeIcons({ isDevelopment }),
     oxlintChecker({
       debounceDelay: 125,
       typeAware: true,
@@ -95,7 +97,7 @@ function getPlugins({
 
   const prodPlugins: PluginOption[] = [
     fontPreview(),
-    fontawesomeSubset(),
+    //fontawesomeSubset(),
     versionFile({ clientVersion }),
     ViteMinifyPlugin(),
     VitePWA({

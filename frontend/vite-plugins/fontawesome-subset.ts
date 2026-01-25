@@ -88,7 +88,7 @@ const modules2 = {
  * @param {boolean} debug - Enable debug output
  * @returns {FontawesomeConfig} - used icons
  */
-function getFontawesomeConfig(debug = false): FontawesomeConfig {
+export function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
