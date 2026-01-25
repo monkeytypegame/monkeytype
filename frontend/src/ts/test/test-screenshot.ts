@@ -157,6 +157,29 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
         const cs = getComputedStyle(el);
         return !(el.classList.contains("hidden") || cs.display === "none");
       },
+      // Extract and inject @font-face rules to work around CSS @layer issues
+      onCloneDocument: (clonedDoc) => {
+        // Extract all @font-face rules from stylesheets
+        const fontFaceRules: string[] = [];
+        for (const sheet of Array.from(document.styleSheets)) {
+          try {
+            for (const rule of Array.from(sheet.cssRules || [])) {
+              if (rule instanceof CSSFontFaceRule) {
+                fontFaceRules.push(rule.cssText);
+              }
+            }
+          } catch (e) {
+            // Skip stylesheets that can't be accessed (CORS)
+          }
+        }
+        
+        // Inject @font-face rules into cloned document
+        if (fontFaceRules.length > 0) {
+          const styleEl = clonedDoc.createElement("style");
+          styleEl.textContent = fontFaceRules.join("\n");
+          clonedDoc.head.appendChild(styleEl);
+        }
+      },
       // Normalize the background layer so its negative z-index doesn't get hidden
       // Also copy font properties to work around CSS @layer issues
       onCloneEachNode: (cloned, original) => {
