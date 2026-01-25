@@ -1,3 +1,4 @@
+import { faAngleDoubleUp } from "@fortawesome/free-solid-svg-icons";
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 
 import { getActivePage } from "../../../signals/core";
@@ -43,7 +44,7 @@ export function ScrollToTop(): JSXElement {
           });
         }}
       >
-        <Fa icon="angle-double-up" />
+        <Fa icon={faAngleDoubleUp} />
       </button>
     </div>
   );

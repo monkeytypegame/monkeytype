@@ -1,3 +1,11 @@
+import {
+  faQuestionCircle,
+  faCommentDots,
+  faBug,
+  faUserCircle,
+  faBriefcase,
+  faEllipsisH,
+} from "@fortawesome/free-solid-svg-icons";
 import { JSXElement } from "solid-js";
 
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -25,7 +33,7 @@ export function ContactModal(): JSXElement {
           text="Question"
           class={buttonClass}
           fa={{
-            icon: "question-circle",
+            icon: faQuestionCircle,
             fixedWidth: true,
           }}
         />
@@ -33,7 +41,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Feedback] "
           fa={{
-            icon: "comment-dots",
+            icon: faCommentDots,
             fixedWidth: true,
           }}
           text="Feedback"
@@ -43,7 +51,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:support@monkeytype.com?subject=[Bug] "
           fa={{
-            icon: "bug",
+            icon: faBug,
             fixedWidth: true,
           }}
           text="Bug Report"
@@ -53,7 +61,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:support@monkeytype.com?subject=[Account] "
           fa={{
-            icon: "user-circle",
+            icon: faUserCircle,
             fixedWidth: true,
           }}
           text="Account Help"
@@ -63,7 +71,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:jack@monkeytype.com?subject=[Business] "
           fa={{
-            icon: "briefcase",
+            icon: faBriefcase,
             fixedWidth: true,
           }}
           text="Business Inquiry"
@@ -73,7 +81,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Other] "
           fa={{
-            icon: "ellipsis-h",
+            icon: faEllipsisH,
             fixedWidth: true,
           }}
           text="Other"

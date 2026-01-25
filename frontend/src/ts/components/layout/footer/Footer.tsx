@@ -1,3 +1,12 @@
+import { faDiscord, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import {
+  faCode,
+  faDonate,
+  faEnvelope,
+  faFileContract,
+  faLock,
+  faShieldAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { JSXElement } from "solid-js";
 
 import { getFocus, getIsScreenshotting } from "../../../signals/core";
@@ -17,7 +26,6 @@ export function Footer(): JSXElement {
       })}
     >
       <Keytips />
-
       <div
         class="-m-2 flex justify-between gap-8 transition-opacity"
         classList={{
@@ -29,7 +37,7 @@ export function Footer(): JSXElement {
             type="text"
             text="contact"
             fa={{
-              icon: "envelope",
+              icon: faEnvelope,
               fixedWidth: true,
             }}
             onClick={() => showModal("Contact")}
@@ -38,7 +46,7 @@ export function Footer(): JSXElement {
             type="text"
             text="support"
             fa={{
-              icon: "donate",
+              icon: faDonate,
               fixedWidth: true,
             }}
             onClick={() => showModal("Support")}
@@ -47,7 +55,7 @@ export function Footer(): JSXElement {
             type="text"
             text="github"
             fa={{
-              icon: "code",
+              icon: faCode,
               fixedWidth: true,
             }}
             href="https://github.com/monkeytypegame/monkeytype"
@@ -56,8 +64,7 @@ export function Footer(): JSXElement {
             type="text"
             text="discord"
             fa={{
-              icon: "discord",
-              variant: "brand",
+              icon: faDiscord,
               fixedWidth: true,
             }}
             href="https://www.discord.gg/monkeytype"
@@ -66,8 +73,7 @@ export function Footer(): JSXElement {
             type="text"
             text="twitter"
             fa={{
-              icon: "twitter",
-              variant: "brand",
+              icon: faTwitter,
               fixedWidth: true,
             }}
             href="https://x.com/monkeytype"
@@ -76,7 +82,7 @@ export function Footer(): JSXElement {
             type="text"
             text="terms"
             fa={{
-              icon: "file-contract",
+              icon: faFileContract,
               fixedWidth: true,
             }}
             href="/terms-of-service.html"
@@ -86,7 +92,7 @@ export function Footer(): JSXElement {
             type="text"
             text="security"
             fa={{
-              icon: "shield-alt",
+              icon: faShieldAlt,
               fixedWidth: true,
             }}
           />
@@ -95,7 +101,7 @@ export function Footer(): JSXElement {
             type="text"
             text="privacy"
             fa={{
-              icon: "lock",
+              icon: faLock,
               fixedWidth: true,
             }}
           />

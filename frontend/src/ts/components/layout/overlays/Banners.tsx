@@ -1,3 +1,4 @@
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { For, JSXElement, onCleanup, onMount } from "solid-js";
 import { debounce } from "throttle-debounce";
 
@@ -66,7 +67,7 @@ function Banner(props: BannerType): JSXElement {
                 remove();
               }}
             >
-              <Fa icon="times" fixedWidth />
+              <Fa icon={faTimes} fixedWidth />
             </button>
           }
         />

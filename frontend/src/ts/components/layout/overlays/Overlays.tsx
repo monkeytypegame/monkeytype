@@ -1,3 +1,4 @@
+import { faTerminal } from "@fortawesome/free-solid-svg-icons";
 import { JSXElement } from "solid-js";
 
 import { getIsScreenshotting } from "../../../signals/core";
@@ -29,7 +30,7 @@ export function Overlays(): JSXElement {
         }}
         tabIndex="-1"
       >
-        <Fa icon="terminal" />
+        <Fa icon={faTerminal} />
       </button>
       <Banners />
       <MediaQueryDebugger />
