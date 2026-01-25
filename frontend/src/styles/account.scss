@@ -254,7 +254,7 @@
           align-items: center;
         }
 
-        .fas,
+        .fa,
         .punc {
           margin-right: 0.25rem;
         }
@@ -337,7 +337,7 @@
       &.loading {
         pointer-events: none;
       }
-      &.disabled .fas {
+      &.disabled .fa {
         opacity: 0.5;
         color: var(--sub-color);
       }
@@ -374,9 +374,9 @@
       .title {
         display: flex;
         align-items: baseline;
-        .fab,
-        .fas,
-        .far {
+        .fa,
+        .fa,
+        .fa {
           margin-right: 0.5em;
         }
       }

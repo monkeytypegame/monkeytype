@@ -96,8 +96,8 @@
           color: var(--sub-color);
         }
 
-        .fas,
-        .far {
+        .fa,
+        .fa {
           margin-right: 0.5rem;
           color: var(--sub-color);
         }
@@ -109,9 +109,9 @@
         &.active {
           color: var(--bg-color) !important;
           background: var(--text-color) !important;
-          .fas,
-          .far,
-          .fab {
+          .fa,
+          .fa,
+          .fa {
             color: var(--bg-color);
           }
         }

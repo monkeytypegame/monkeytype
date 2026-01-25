@@ -346,8 +346,8 @@ kbd {
   align-items: baseline;
   --spacing: 0.5em;
   --horizontalScale: 1.25;
-  .fas,
-  .far {
+  .fa,
+  .fa {
     margin-right: calc(var(--spacing) * var(--horizontalScale));
     margin-left: calc(var(--spacing) * var(--horizontalScale));
     margin-top: var(--spacing);

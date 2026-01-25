@@ -8,6 +8,7 @@ export function initFontawesome(): void {
   //hopefully this will not break any existing css or js selectors
   config.autoReplaceSvg = "nest";
   config.observeMutations = true;
+  config.replacementClass = "fa";
 
   dom.watch();
 }

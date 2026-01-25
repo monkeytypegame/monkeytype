@@ -34,11 +34,11 @@
     margin: -0.25em;
     padding: 0.25em;
 
-    .fas {
+    .fa {
       transition: transform 0.25s;
     }
 
-    &.rotateIcon .fas {
+    &.rotateIcon .fa {
       transform: rotate(-90deg);
     }
   }
@@ -117,7 +117,7 @@
       .button {
         height: auto;
 
-        .fas {
+        .fa {
           margin-right: 0rem;
         }
       }
@@ -268,7 +268,7 @@
         grid-template-columns: 1fr 1fr 1fr;
         gap: 1rem;
       }
-      .fas {
+      .fa {
         margin-right: 0rem;
       }
     }
@@ -287,18 +287,18 @@
       font-weight: 300;
       display: flex;
       align-items: baseline;
-      .fab,
-      .fas,
-      .far,
+      .fa,
+      .fa,
+      .fa,
       .textIcon {
         margin-right: 0.5em;
       }
     }
 
     &.themes .groupTitle {
-      .fab,
-      .fas,
-      .far {
+      .fa,
+      .fa,
+      .fa {
         margin-bottom: 0;
       }
     }
@@ -431,8 +431,8 @@
           width: 1.25rem;
           transition: 0.25s;
           opacity: 0;
-          .far,
-          .fas {
+          .fa,
+          .fa {
             margin: 0;
             pointer-events: none;
           }
@@ -460,8 +460,8 @@
           width: 1.25rem;
           transition: 0.25s;
           opacity: 0;
-          .far,
-          .fas {
+          .fa,
+          .fa {
             margin: 0;
             pointer-events: none;
           }
@@ -502,7 +502,7 @@
           transition: 0.25s;
           opacity: 0;
           color: inherit;
-          .far {
+          .fa {
             margin: 0;
           }
           &.active {
@@ -597,7 +597,7 @@
       margin-left: 0.5em;
       align-self: center;
       opacity: 0;
-      .fas {
+      .fa {
         margin-right: 0;
       }
     }

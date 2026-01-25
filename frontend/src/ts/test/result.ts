@@ -726,7 +726,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           result.rawWpm,
           result.consistency,
         );
-        qs(`#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`)?.show();
+        qs(`#result .stats .tags .bottom div[tagid="${tag._id}"] .fa`)?.show();
         qs(
           `#result .stats .tags .bottom div[tagid="${tag._id}"]`,
         )?.setAttribute("aria-label", "+" + Numbers.roundTo2(result.wpm - tpb));

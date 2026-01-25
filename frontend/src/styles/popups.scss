@@ -340,7 +340,7 @@ body.darkMode {
         display: grid;
         gap: 0.5rem;
         grid-template-columns: 2fr 3rem;
-        .button .fas {
+        .button .fa {
           pointer-events: none;
         }
       }
@@ -365,7 +365,7 @@ body.darkMode {
         display: grid;
         gap: 0.5rem;
         grid-template-columns: 2fr auto auto;
-        .button .fas {
+        .button .fa {
           pointer-events: none;
         }
       }
@@ -1299,7 +1299,7 @@ body.darkMode {
           .length.red {
             color: var(--error-color);
           }
-          i.fas {
+          i.fa {
             margin-right: 0.5em;
           }
         }
@@ -1618,7 +1618,7 @@ body.darkMode {
       font-size: 0.75em;
       margin-bottom: 1rem;
       width: 100%;
-      .fas {
+      .fa {
         margin-right: 0.25em;
       }
     }
