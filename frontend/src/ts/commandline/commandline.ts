@@ -417,7 +417,7 @@ function getCommandIconsHtml(command: Command & { isActive: boolean }): {
     }
   }
 
-  let configIconHtml = `<i class="fas fa-fw"></i>`;
+  let configIconHtml = `<i class="iconPlaceholder"></i>`;
   if (command.isActive) {
     configIconHtml = `<i class="fas fa-fw fa-check"></i>`;
   }

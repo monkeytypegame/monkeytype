@@ -96,6 +96,12 @@
           color: var(--sub-color);
         }
 
+        i.iconPlaceholder {
+          display: inline-block;
+          margin-right: 0.5rem;
+          width: 1.25em;
+        }
+
         .fa,
         .fa {
           margin-right: 0.5rem;
