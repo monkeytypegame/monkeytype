@@ -12,7 +12,7 @@ export function Fa(props: FaProps): JSXElement {
   const variant = (): string => props.variant ?? "solid";
   return (
     <i
-      class={`fa-${props.icon}`}
+      class={props.icon}
       classList={{
         ["fas"]: variant() === "solid",
         ["far"]: variant() === "regular",
