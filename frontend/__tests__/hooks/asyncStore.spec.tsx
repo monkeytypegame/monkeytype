@@ -3,6 +3,7 @@ import { For } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAsyncStore } from "../../src/ts/hooks/asyncStore";
+import { sleep } from "../../src/ts/utils/misc";
 
 const fetcher = vi.fn();
 const initialValue = vi.fn(() => ({ data: null }));
@@ -120,6 +121,7 @@ describe("createAsyncStore", () => {
 
     store.update({ data: "newValue" });
     expect(persist).toHaveBeenCalledExactlyOnceWith({ data: "newValue" });
+    expect(store.store()?.data).toEqual("newValue");
   });
 
   it("fails updating when not ready", async () => {
@@ -131,6 +133,27 @@ describe("createAsyncStore", () => {
     expect(() => store.update({})).toThrowError(
       "Store test cannot update in state unresolved",
     );
+  });
+
+  it("should refresh if persist fails", async () => {
+    const persist = vi.fn();
+    persist.mockRejectedValue("no good");
+    const store = createAsyncStore<{ data: string }>({
+      name: "test",
+      fetcher,
+      persist,
+    });
+    fetcher.mockResolvedValue({ data: "oldValue" });
+    store.load();
+
+    await store.ready();
+
+    fetcher.mockClear().mockResolvedValue({ data: "refetchedValue" });
+    store.update({ data: "newValue" });
+    expect(persist).toHaveBeenCalledExactlyOnceWith({ data: "newValue" });
+
+    await sleep(100);
+    expect(store.store()?.data).toEqual("refetchedValue");
   });
 
   it("should be reactive", async () => {
