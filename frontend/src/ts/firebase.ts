@@ -35,6 +35,7 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
 import { addBanner } from "./stores/banners";
+import { setUserId } from "./signals/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -75,6 +76,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
+        setUserId(user ? { uid: user?.uid } : null);
         await callback(true, user);
       }
     });
@@ -82,6 +84,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     app = undefined;
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
+    setUserId(null);
     await callback(false, null);
     if (isDevEnvironment()) {
       addBanner({
