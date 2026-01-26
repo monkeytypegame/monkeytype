@@ -43,7 +43,7 @@ export function ScrollToTop(): JSXElement {
           });
         }}
       >
-        <Fa icon="angle-double-up" />
+        <Fa icon="fa-angle-double-up" />
       </button>
     </div>
   );

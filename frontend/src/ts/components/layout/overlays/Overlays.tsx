@@ -29,7 +29,7 @@ export function Overlays(): JSXElement {
         }}
         tabIndex="-1"
       >
-        <Fa icon="terminal" />
+        <Fa icon="fa-terminal" />
       </button>
       <Banners />
       <MediaQueryDebugger />
