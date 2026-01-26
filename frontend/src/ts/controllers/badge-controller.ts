@@ -1,6 +1,6 @@
 import { FaSolidIcon } from "../types/font-awesome";
 
-type UserBadge = {
+export type UserBadge = {
   id: number;
   name: string;
   description: string;

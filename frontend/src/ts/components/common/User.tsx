@@ -1,10 +1,14 @@
 import { User as UserType } from "@monkeytype/schemas/users";
 import { For, JSX, JSXElement, Show } from "solid-js";
 
-import { badges } from "../../controllers/badge-controller";
+import {
+  badges,
+  UserBadge as UserBadgeType,
+} from "../../controllers/badge-controller";
 import {
   getMatchingFlags,
   SupportsFlags,
+  UserFlag,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
 
@@ -43,10 +47,10 @@ function UserFlags(props: {
   user: SupportsFlags;
   options?: UserFlagOptions;
 }): JSXElement {
-  const flags = getMatchingFlags(props.user);
+  const flags = (): UserFlag[] => getMatchingFlags(props.user);
 
   return (
-    <For each={flags}>
+    <For each={flags()}>
       {(flag) => (
         <Show
           when={props.options?.iconsOnly ?? true}
@@ -69,22 +73,23 @@ function UserFlags(props: {
 }
 
 function UserBadge(props: { id?: number }): JSXElement {
-  const badge = props.id !== undefined ? badges[props.id] : undefined;
+  const badge = (): UserBadgeType | undefined =>
+    props.id !== undefined ? badges[props.id] : undefined;
   return (
     <Show when={badge !== undefined}>
       <div
         class="rounded-xs p-0.5 text-xs"
-        aria-label={badge?.description}
+        aria-label={badge()?.description}
         data-balloon-pos="right"
         style={{
-          background: badge?.background ?? "inherit",
-          color: badge?.color ?? "inherit",
-          ...convertCustomStyle(badge?.customStyle),
+          background: badge()?.background ?? "inherit",
+          color: badge()?.color ?? "inherit",
+          ...convertCustomStyle(badge()?.customStyle),
         }}
       >
-        <Show when={badge?.icon}>
-          <Fa icon={badge?.icon ?? "fa-question"} fixedWidth={true} />
-          <span class="hidden md:inline"> {badge?.name}</span>
+        <Show when={badge()?.icon}>
+          <Fa icon={badge()?.icon ?? "fa-question"} fixedWidth={true} />
+          <span class="hidden lg:inline"> {badge?.name}</span>
         </Show>
       </div>
     </Show>
