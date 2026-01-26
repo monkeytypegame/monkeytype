@@ -6,15 +6,11 @@ import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { formatDuration } from "date-fns/formatDuration";
 import { intervalToDuration } from "date-fns/intervalToDuration";
-import { createResource, JSXElement } from "solid-js";
+import { createResource, JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
-import { getHTMLById } from "../../../controllers/badge-controller";
-import {
-  getHtmlByUserFlags,
-  SupportsFlags,
-} from "../../../controllers/user-flag-controller";
-import { getActivePage } from "../../../signals/core";
+import { SupportsFlags } from "../../../controllers/user-flag-controller";
+import { getActivePage, getUserId } from "../../../signals/core";
 import { secondsToString } from "../../../utils/date-and-time";
 import Format from "../../../utils/format";
 import { getXpDetails } from "../../../utils/levels";
@@ -22,37 +18,16 @@ import { formatTypingStatsRatio } from "../../../utils/misc";
 import { getLanguageDisplayString } from "../../../utils/strings";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
+import { H2 } from "../../common/Headers";
+import { LoadingCircle } from "../../common/Loader";
+import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
-
-/* todo test
-const sortByNumber = (rowA, rowB, columnId) =>
-  rowA.getValue(columnId) - rowB.getValue(columnId);
-*/
 
 const FriendName = (props: {
   friend: Pick<Friend, "uid" | "name" | "badgeId"> & SupportsFlags;
 }): JSXElement => {
-  return (
-    <div class="avatarNameBadge">
-      <div class="avatarPlaceholder"></div>
-      <a
-        href={`${location.origin}/profile/${props.friend.uid}?isUid`}
-        class="entryName"
-        data-uid={props.friend.uid}
-        // oxlint-disable-next-line react/no-unknown-property
-        router-link
-      >
-        {props.friend.name}
-      </a>
-      <div class="flagsAndBadge">
-        {getHtmlByUserFlags(props.friend)}
-        {isSafeNumber(props.friend.badgeId)
-          ? getHTMLById(props.friend.badgeId)
-          : ""}
-      </div>
-    </div>
-  );
+  return <User user={props.friend} />;
 };
 
 const columnHelper = createColumnHelper<Friend>();
@@ -215,8 +190,7 @@ const columns = [
               `remove friend ${info.row.original.name} with connectionId ${info.getValue()}`,
             );
           }}
-          icon="fas fa-user-times"
-          fixedWidthIcon
+          fa={{ icon: "fa-user-times", fixedWidth: true }}
         />
       ) : (
         ""
@@ -225,23 +199,56 @@ const columns = [
 ];
 
 export function FriendsList(): JSXElement {
-  const isOpen = (): boolean => getActivePage() === "about";
-  const [friendsListResource] = createResource(isOpen, async (open) => {
-    if (!open) return [];
-    const response = await Ape.users.getFriends();
-    if (response.status !== 200) {
-      throw new Error(response.body.message);
-    }
-    return response.body.data;
-  });
+  const isOpen = (): boolean =>
+    getActivePage() === "friends" && getUserId() !== null;
+
+  const [friendsListResource, { refetch: refreshFriendsList }] = createResource(
+    isOpen,
+    async (open: boolean) => {
+      if (!open) return undefined;
+      const response = await Ape.users.getFriends();
+      if (response.status !== 200) {
+        throw new Error(response.body.message);
+      }
+      return response.body.data;
+    },
+  );
 
   return (
-    <>
-      <h2>Friends</h2>
-      <AsyncContent resource={friendsListResource}>
-        {(data) => <DataTable id="friendsList" columns={columns} data={data} />}
+    <Show when={getUserId() !== null}>
+      <div class="items-bottom flex">
+        <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
+        <Show when={friendsListResource.state === "refreshing"}>
+          <LoadingCircle />
+        </Show>
+        <Button
+          fa={{ icon: "fa-plus", fixedWidth: true }}
+          class="ml-auto"
+          text="add friend"
+          onClick={() => {
+            void refreshFriendsList();
+          }}
+        />
+      </div>
+
+      <AsyncContent
+        resource={friendsListResource}
+        alwaysShowContent={friendsListResource.state === "refreshing"}
+      >
+        {(data: Friend[] | undefined) => (
+          <DataTable
+            id="friendsList"
+            columns={columns}
+            data={data ?? []}
+            fallback={
+              <div class="text-sub text-center">
+                You don&lsquo;t have any friends :(
+              </div>
+            }
+          />
+        )}
       </AsyncContent>
-    </>
+    </Show>
   );
 }
 

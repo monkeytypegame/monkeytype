@@ -8,7 +8,6 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
-import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
 import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
@@ -16,7 +15,7 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions } from "../pages/page";
-import { onDOMReady, qsa, qsr } from "../utils/dom";
+import { onDOMReady, qsa, qsr, qs } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 
 type ChangeOptions = {
@@ -35,7 +34,7 @@ const pages = {
   login: PageLogin.page,
   profile: PageProfile.page,
   profileSearch: PageProfileSearch.page,
-  friends: Friends.page,
+  friends: solidPage("friends"),
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
   leaderboards: PageLeaderboards.page,
@@ -298,7 +297,11 @@ export async function change(
 function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
-  onDOMReady(() => Skeleton.save(internalId));
+  onDOMReady(() => {
+    console.log("mount page", internalId, qs(`#${internalId}`));
+    Skeleton.save(internalId);
+  });
+  console.log("create page", id, qs(`#${internalId}`));
   return new Page({
     id,
     path,

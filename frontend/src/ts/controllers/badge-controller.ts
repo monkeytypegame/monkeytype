@@ -1,14 +1,16 @@
+import { FaSolidIcon } from "../types/font-awesome";
+
 type UserBadge = {
   id: number;
   name: string;
   description: string;
-  icon?: string;
+  icon?: FaSolidIcon;
   background?: string;
   color?: string;
   customStyle?: string;
 };
 
-const badges: Record<number, UserBadge> = {
+export const badges: Record<number, UserBadge> = {
   1: {
     id: 1,
     name: "Developer",

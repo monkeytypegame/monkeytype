@@ -8,10 +8,12 @@ import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { FriendsPage } from "./pages/friends/FriendsPage";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
+  friendspage: () => <FriendsPage />,
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,

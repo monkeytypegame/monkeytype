@@ -11,7 +11,7 @@ import { AsyncStore } from "../../hooks/asyncStore";
 import { createErrorMessage } from "../../utils/misc";
 
 import { Conditional } from "./Conditional";
-import { Fa } from "./Fa";
+import { LoadingCircle } from "./Loader";
 
 export default function AsyncContent<T>(
   props: {
@@ -32,7 +32,7 @@ export default function AsyncContent<T>(
           children: (data: T) => JSXElement;
         }
       | {
-          alwaysShowContent: true;
+          alwaysShowContent: boolean;
           showLoader?: true;
           children: (data: T | undefined) => JSXElement;
         }
@@ -68,11 +68,7 @@ export default function AsyncContent<T>(
     return createErrorMessage(err, props.errorMessage ?? "An error occurred");
   };
 
-  const loader: JSXElement = (
-    <div class="preloader text-main p-4 text-center text-2xl">
-      <Fa icon="fa-circle-notch" fixedWidth spin />
-    </div>
-  );
+  const loader = <LoadingCircle />;
 
   const errorText = (err: unknown): JSXElement => (
     <div class="error">{handleError(err)}</div>

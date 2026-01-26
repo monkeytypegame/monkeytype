@@ -1,18 +1,20 @@
 import { JSXElement } from "solid-js";
 
 import { FaObject } from "../../types/font-awesome";
+import { cn } from "../../utils/cn";
 
 export type FaProps = {
   fixedWidth?: boolean;
   spin?: boolean;
   size?: number;
+  class?: string;
 } & FaObject;
 
 export function Fa(props: FaProps): JSXElement {
   const variant = (): string => props.variant ?? "solid";
   return (
     <i
-      class={props.icon}
+      class={cn(props.icon, props.class)}
       classList={{
         ["fas"]: variant() === "solid",
         ["far"]: variant() === "regular",

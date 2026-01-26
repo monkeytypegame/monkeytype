@@ -50,8 +50,17 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
         <a
           classList={getClassList()}
           href={props.href}
-          target={props.href?.startsWith("#") ? undefined : "_blank"}
-          rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
+          target={
+            props.href?.startsWith("#") || props.href?.startsWith("/")
+              ? undefined
+              : "_blank"
+          }
+          rel={
+            props.href?.startsWith("#") || props.href?.startsWith("/")
+              ? undefined
+              : "noreferrer noopener"
+          }
+          {...("router-link" in props ? { "router-link": "" } : {})}
         >
           {content}
         </a>
