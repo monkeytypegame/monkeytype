@@ -41,12 +41,7 @@ async function updateQuotes(): Promise<void> {
 async function updateTooltipDirection(): Promise<void> {
   const quotesLanguage = await getLanguage(Config.language);
   const quotesLanguageIsRTL = quotesLanguage?.rightToLeft ?? false;
-
-  if (quotesLanguageIsRTL) {
-    dataBalloonDirection = "right";
-  } else {
-    dataBalloonDirection = "left";
-  }
+  dataBalloonDirection = quotesLanguageIsRTL ? "right" : "left";
 }
 
 function getSearchService<T>(
