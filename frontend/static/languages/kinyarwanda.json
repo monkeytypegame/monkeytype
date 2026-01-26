@@ -2,6 +2,7 @@
   "name": "kinyarwanda",
   "noLazyMode": true,
   "orderedByFrequency": true,
+  "bcp47": "rw-RW",
   "words": [
     "yego",
     "oya",
