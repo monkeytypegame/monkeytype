@@ -180,6 +180,9 @@ export function createAsyncStore<T extends object>({
     // reject any waiters
     const oldReady = ready;
     ready = promiseWithResolvers<T>();
+    oldReady.promise.catch(() => {
+      /* */
+    });
     oldReady.reject?.(new Error("Reset"));
   };
 
@@ -206,9 +209,13 @@ export function createAsyncStore<T extends object>({
       );
 
       if (persist !== undefined && store.value !== undefined) {
-        void persist(store.value).then(() =>
-          console.debug(`Store ${name} persisted.`),
-        );
+        void persist(store.value)
+          .then(() => console.debug(`Store ${name} persisted.`))
+          .catch((error: unknown) => {
+            console.debug(`AsyncStore ${name}: persist failed with`, error);
+            //on error refresh the local store with the remote content
+            refresh();
+          });
       }
     },
     ready: async () => {
