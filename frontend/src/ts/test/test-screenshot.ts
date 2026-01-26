@@ -118,7 +118,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-
   // Wait a frame to ensure all UI changes are rendered
   await new Promise((resolve) => requestAnimationFrame(resolve));
 
