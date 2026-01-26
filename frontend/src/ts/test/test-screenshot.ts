@@ -118,7 +118,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  await Misc.sleep(50); // Small delay for render updates
+
+  // Wait a frame to ensure all UI changes are rendered
+  await new Promise((resolve) => requestAnimationFrame(resolve));
 
   const sourceX = src.screenBounds().left ?? 0;
   const sourceY = src.screenBounds().top ?? 0;
