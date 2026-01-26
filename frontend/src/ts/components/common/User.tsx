@@ -1,5 +1,5 @@
 import { User as UserType } from "@monkeytype/schemas/users";
-import { For, JSX, JSXElement, Show } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
 import {
   badges,
@@ -84,7 +84,7 @@ function UserBadge(props: { id?: number }): JSXElement {
         style={{
           background: badge()?.background ?? "inherit",
           color: badge()?.color ?? "inherit",
-          ...convertCustomStyle(badge()?.customStyle),
+          ...badge()?.customStyle,
         }}
       >
         <Show when={badge()?.icon}>
@@ -94,18 +94,4 @@ function UserBadge(props: { id?: number }): JSXElement {
       </div>
     </Show>
   );
-}
-
-function convertCustomStyle(style?: string): JSX.CSSProperties {
-  if (style === undefined) return {};
-  return Object.fromEntries(
-    style
-      .split(";")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((rule) => {
-        const [key, ...value] = rule.split(":");
-        return [key?.trim(), value.join(":").trim()];
-      }),
-  ) as JSX.CSSProperties;
 }

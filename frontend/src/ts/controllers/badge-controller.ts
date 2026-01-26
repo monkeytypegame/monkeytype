@@ -1,3 +1,4 @@
+import { JSX } from "solid-js/jsx-runtime";
 import { FaSolidIcon } from "../types/font-awesome";
 
 export type UserBadge = {
@@ -7,7 +8,7 @@ export type UserBadge = {
   icon?: FaSolidIcon;
   background?: string;
   color?: string;
-  customStyle?: string;
+  customStyle?: JSX.CSSProperties;
 };
 
 export const badges: Record<number, UserBadge> = {
@@ -17,8 +18,11 @@ export const badges: Record<number, UserBadge> = {
     description: "I made this",
     icon: "fa-laptop",
     color: "white",
-    customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    customStyle: {
+      animation: "rgb-bg 10s linear infinite",
+      background:
+        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%)",
+    },
   },
   2: {
     id: 2,
@@ -26,8 +30,11 @@ export const badges: Record<number, UserBadge> = {
     description: "I helped make this",
     icon: "fa-code",
     color: "white",
-    customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    customStyle: {
+      animation: "rgb-bg 10s linear infinite",
+      background:
+        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%)",
+    },
   },
   3: {
     id: 3,
@@ -35,8 +42,11 @@ export const badges: Record<number, UserBadge> = {
     description: "Discord server moderator",
     icon: "fa-hammer",
     color: "white",
-    customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    customStyle: {
+      animation: "rgb-bg 10s linear infinite",
+      background:
+        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    },
   },
   4: {
     id: 4,
@@ -116,8 +126,11 @@ export const badges: Record<number, UserBadge> = {
     description: "Yes, I'm actually this fast",
     icon: "fa-rocket",
     color: "white",
-    customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    customStyle: {
+      animation: "rgb-bg 10s linear infinite",
+      background:
+        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    },
   },
   14: {
     id: 14,
@@ -134,8 +147,11 @@ export const badges: Record<number, UserBadge> = {
     icon: "fa-bomb",
     color: "white",
     background: "#093d79",
-    customStyle:
-      "animation: gold-shimmer 10s cubic-bezier(0.5, 0, 0.5, 1) infinite; background: linear-gradient(90deg, rgb(8 31 84) 0%, rgb(18 134 158) 100%); background-size: 200% 200%;",
+    customStyle: {
+      animation: "gold-shimmer 10s cubic-bezier(0.5, 0, 0.5, 1) infinite",
+      background:
+        "linear-gradient(90deg, rgb(8 31 84) 0%, rgb(18 134 158) 100%); background-size: 200% 200%;",
+    },
   },
   16: {
     id: 16,
@@ -143,8 +159,12 @@ export const badges: Record<number, UserBadge> = {
     description: "Longest test with zero mistakes - 4 hours and 1 minute",
     icon: "fa-bullseye",
     color: "white",
-    customStyle:
-      "animation: gold-shimmer 10s cubic-bezier(0.5, -0.15, 0.5, 1.15) infinite; background: linear-gradient(45deg, #b8860b 0%, #daa520 25%, #ffd700 50%, #daa520 75%, #b8860b 100%); background-size: 200% 200%;",
+    customStyle: {
+      animation:
+        "gold-shimmer 10s cubic-bezier(0.5, -0.15, 0.5, 1.15) infinite",
+      background:
+        "linear-gradient(45deg, #b8860b 0%, #daa520 25%, #ffd700 50%, #daa520 75%, #b8860b 100%); background-size: 200% 200%;",
+    },
   },
   17: {
     id: 17,
@@ -152,8 +172,11 @@ export const badges: Record<number, UserBadge> = {
     description: "Ferb, I know what we're gonna do today...",
     icon: "fa-sun",
     color: "white",
-    customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    customStyle: {
+      animation: "rgb-bg 10s linear infinite",
+      background:
+        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+    },
   },
 };
 
@@ -177,7 +200,9 @@ export function getHTMLById(
     style += `color: ${badge.color};`;
   }
   if (badge?.customStyle !== undefined) {
-    style += badge.customStyle;
+    style += Object.entries(badge.customStyle)
+      .map(([key, value]) => `${key}: ${value};`)
+      .join(";");
   }
 
   const badgeName = badge?.name ?? "Badge Name Missing";

@@ -1,5 +1,5 @@
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import { Friend } from "@monkeytype/schemas/users";
+import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
@@ -9,12 +9,13 @@ import { intervalToDuration } from "date-fns/intervalToDuration";
 import { createResource, JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
-import { SupportsFlags } from "../../../controllers/user-flag-controller";
 import { getActivePage, getUserId } from "../../../signals/core";
 import { secondsToString } from "../../../utils/date-and-time";
 import Format from "../../../utils/format";
 import { getXpDetails } from "../../../utils/levels";
 import { formatTypingStatsRatio } from "../../../utils/misc";
+import { remoteValidation } from "../../../utils/remote-validation";
+import { SimpleModal } from "../../../utils/simple-modal";
 import { getLanguageDisplayString } from "../../../utils/strings";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
@@ -24,11 +25,59 @@ import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
 
-const FriendName = (props: {
-  friend: Pick<Friend, "uid" | "name" | "badgeId"> & SupportsFlags;
-}): JSXElement => {
-  return <User user={props.friend} />;
-};
+const isOpen = (): boolean =>
+  getActivePage() === "friends" && getUserId() !== null;
+
+const [friendsListResource, { refetch: refreshFriendsList }] = createResource(
+  isOpen,
+  async (open: boolean) => {
+    if (!open) return undefined;
+    const response = await Ape.users.getFriends();
+    if (response.status !== 200) {
+      throw new Error(response.body.message);
+    }
+    return response.body.data;
+  },
+);
+
+export function FriendsList(): JSXElement {
+  return (
+    <Show when={getUserId() !== null}>
+      <div class="items-bottom flex">
+        <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
+        <Show when={friendsListResource.state === "refreshing"}>
+          <LoadingCircle />
+        </Show>
+        <Button
+          fa={{ icon: "fa-plus", fixedWidth: true }}
+          class="ml-auto"
+          text="add friend"
+          onClick={() => {
+            addFriendModal.show(undefined, {});
+          }}
+        />
+      </div>
+
+      <AsyncContent
+        resource={friendsListResource}
+        alwaysShowContent={friendsListResource.state === "refreshing"}
+      >
+        {(data: Friend[] | undefined) => (
+          <DataTable
+            id="friendsList"
+            columns={columns}
+            data={data ?? []}
+            fallback={
+              <div class="text-sub text-center">
+                You don&lsquo;t have any friends :(
+              </div>
+            }
+          />
+        )}
+      </AsyncContent>
+    </Show>
+  );
+}
 
 const columnHelper = createColumnHelper<Friend>();
 const defineColumn = columnHelper.accessor;
@@ -36,7 +85,7 @@ const columns = [
   defineColumn("name", {
     header: (props) => <TableColumnHeader column={props.column} title="name" />,
     enableSorting: true,
-    cell: (info) => <FriendName friend={info.row.original} />,
+    cell: (info) => <User user={info.row.original} />,
   }),
 
   defineColumn("lastModified", {
@@ -186,8 +235,9 @@ const columns = [
       info.getValue() !== undefined ? (
         <Button
           onClick={() => {
-            alert(
-              `remove friend ${info.row.original.name} with connectionId ${info.getValue()}`,
+            removeFriendModal.show(
+              [info.getValue() as string, info.row.original.name],
+              {},
             );
           }}
           fa={{ icon: "fa-user-times", fixedWidth: true }}
@@ -198,58 +248,93 @@ const columns = [
   }),
 ];
 
-export function FriendsList(): JSXElement {
-  const isOpen = (): boolean =>
-    getActivePage() === "friends" && getUserId() !== null;
+const removeFriendModal = new SimpleModal({
+  id: "confirmUnfriend",
+  title: "Remove friend",
+  buttonText: "remove friend",
+  text: "Are you sure you want to remove as a friend?",
+  beforeInitFn: (thisPopup) => {
+    thisPopup.text = `Are you sure you want to remove ${thisPopup.parameters[1]} as a friend?`;
+  },
+  execFn: async (thisPopup) => {
+    const connectionId = thisPopup.parameters[0] as string;
+    const result = await Ape.connections.delete({
+      params: { id: connectionId },
+    });
+    if (result.status !== 200) {
+      return { status: -1, message: result.body.message };
+    } else {
+      /*
+      friendsList = friendsList?.filter(
+        (it) => it.connectionId !== connectionId,
+      );
+      friendsTable?.setData(friendsList ?? []);
+      friendsTable?.updateBody();
 
-  const [friendsListResource, { refetch: refreshFriendsList }] = createResource(
-    isOpen,
-    async (open: boolean) => {
-      if (!open) return undefined;
-      const response = await Ape.users.getFriends();
-      if (response.status !== 200) {
-        throw new Error(response.body.message);
-      }
-      return response.body.data;
+      */
+      void refreshFriendsList();
+      return { status: 1, message: `Friend removed` };
+    }
+  },
+});
+
+const addFriendModal = new SimpleModal({
+  id: "addFriend",
+  title: "Add a friend",
+  inputs: [
+    {
+      placeholder: "user name",
+      type: "text",
+      initVal: "",
+      validation: {
+        schema: UserNameSchema,
+        isValid: remoteValidation(
+          async (name) => Ape.users.getNameAvailability({ params: { name } }),
+          { check: (data) => !data.available || "Unknown user" },
+        ),
+        debounceDelay: 1000,
+      },
     },
-  );
+  ],
+  buttonText: "request",
+  onlineOnly: true,
+  execFn: async (_thisPopup, receiverName) => {
+    const result = await addFriend(receiverName);
 
-  return (
-    <Show when={getUserId() !== null}>
-      <div class="items-bottom flex">
-        <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
-        <Show when={friendsListResource.state === "refreshing"}>
-          <LoadingCircle />
-        </Show>
-        <Button
-          fa={{ icon: "fa-plus", fixedWidth: true }}
-          class="ml-auto"
-          text="add friend"
-          onClick={() => {
-            void refreshFriendsList();
-          }}
-        />
-      </div>
+    if (result === true) {
+      return { status: 1, message: `Request sent to ${receiverName}` };
+    }
 
-      <AsyncContent
-        resource={friendsListResource}
-        alwaysShowContent={friendsListResource.state === "refreshing"}
-      >
-        {(data: Friend[] | undefined) => (
-          <DataTable
-            id="friendsList"
-            columns={columns}
-            data={data ?? []}
-            fallback={
-              <div class="text-sub text-center">
-                You don&lsquo;t have any friends :(
-              </div>
-            }
-          />
-        )}
-      </AsyncContent>
-    </Show>
-  );
+    let status: -1 | 0 | 1 = -1;
+    let message: string = "Unknown error";
+
+    if (result.includes("already exists")) {
+      status = 0;
+      message = `You are already friends with ${receiverName}`;
+    } else if (result.includes("request already sent")) {
+      status = 0;
+      message = `You have already sent a friend request to ${receiverName}`;
+    } else if (result.includes("blocked by initiator")) {
+      status = 0;
+      message = `You have blocked ${receiverName}`;
+    } else if (result.includes("blocked by receiver")) {
+      status = 0;
+      message = `${receiverName} has blocked you`;
+    }
+
+    return { status, message, alwaysHide: true };
+  },
+});
+
+//TODO maybe move to stores/connections
+async function addFriend(receiverName: string): Promise<true | string> {
+  const result = await Ape.connections.create({ body: { receiverName } });
+
+  if (result.status !== 200) {
+    return `Friend request failed: ${result.body.message}`;
+  } else {
+    return true;
+  }
 }
 
 function formatAge(
