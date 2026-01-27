@@ -45,8 +45,8 @@ export default function AsyncContent<T>(
           loading: () => props.resource.loading,
         }
       : {
-          value: props.asyncStore.store,
-          loading: () => props.asyncStore.state().loading,
+          value: () => props.asyncStore.store,
+          loading: () => props.asyncStore.state.loading,
         },
   );
 
@@ -94,8 +94,8 @@ export default function AsyncContent<T>(
       })()}
       else={
         <ErrorBoundary fallback={errorText}>
-          <Show when={props.asyncStore?.state().error !== undefined}>
-            {errorText(props.asyncStore?.state().error)}
+          <Show when={props.asyncStore?.state.error !== undefined}>
+            {errorText(props.asyncStore?.state.error)}
           </Show>
 
           <Conditional

@@ -62,7 +62,7 @@ describe("AsyncContent", () => {
   });
 
   it("renders loading state while asyncStore is pending", () => {
-    const asyncStore = createAsyncStore({
+    const asyncStore = createAsyncStore<{ data?: string }>({
       name: "test",
       fetcher: async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -89,7 +89,7 @@ describe("AsyncContent", () => {
       fetcher: async () => {
         return { data: "Test Data" };
       },
-      autoLoad: true,
+      autoLoad: () => true,
     });
 
     renderWithAsyncStore(asyncStore);
@@ -145,7 +145,7 @@ describe("AsyncContent", () => {
     asyncStore.load();
     const { container } = render(() => (
       <AsyncContent asyncStore={asyncStore} errorMessage={errorMessage}>
-        {(data) => <span data-testid="content">{data.data}</span>}
+        {(data) => <span data-testid="content">{data?.data}</span>}
       </AsyncContent>
     ));
 
