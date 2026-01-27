@@ -15,8 +15,6 @@ import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 import { aggregateWithAcceptedConnections } from "./connections";
 
-import { allTimeLeaderboardCache } from "../utils/all-time-leaderboard-cache";
-
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
 };
@@ -46,14 +44,6 @@ export async function get(
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
-  }
-
-  if (page === 0 && pageSize === 50 && uid === undefined) {
-    const cached = allTimeLeaderboardCache.get({ mode, language });
-    if (cached) {
-      console.log("✅ Cache HIT - leaderboards");
-      return cached.data as DBLeaderboardEntry[];
-    }
   }
 
   const skip = page * pageSize;
@@ -91,19 +81,6 @@ export async function get(
     }
     if (!premiumFeaturesEnabled) {
       leaderboard = leaderboard.map((it) => omit(it, ["isPremium"]));
-    }
-
-    if (page === 0 && pageSize === 50 && uid === undefined) {
-      try {
-        allTimeLeaderboardCache.set(
-          { mode, language },
-          leaderboard,
-          await getCount(mode, mode2, language),
-        );
-        console.log(" Cache SET - leaderboards");
-      } catch (error) {
-        console.warn("Cache set failed:", error);
-      }
     }
 
     return leaderboard;
