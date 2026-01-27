@@ -5,7 +5,6 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  Header,
   SortingState,
 } from "@tanstack/solid-table";
 import { createMemo, For, JSXElement, Match, Show, Switch } from "solid-js";
@@ -13,6 +12,7 @@ import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { bp } from "../../../signals/breakpoints";
+import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 
 import {
@@ -101,11 +101,6 @@ export function DataTable<TData>(
     },
   });
 
-  const renderHeader = (header: Header<TData, unknown>): JSXElement => (
-    <Show when={!header.isPlaceholder}>
-      {flexRender(header.column.columnDef.header, header.getContext())}
-    </Show>
-  );
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
       <Table>
@@ -115,56 +110,68 @@ export function DataTable<TData>(
               <TableRow>
                 <For each={headerGroup.headers}>
                   {(header) => (
-                    <TableHead
-                      colSpan={header.colSpan}
-                      aria-sort={
-                        header.column.getIsSorted() === "asc"
-                          ? "ascending"
-                          : header.column.getIsSorted() === "desc"
-                            ? "descending"
-                            : "none"
+                    <Conditional
+                      if={
+                        header.column.getCanSort() &&
+                        typeof header.column.columnDef.header === "string"
                       }
-                    >
-                      <Show
-                        when={
-                          header.column.getCanSort() &&
-                          typeof header.column.columnDef.header === "string"
-                        }
-                        fallback={renderHeader(header)}
-                      >
-                        <button
-                          type="button"
-                          role="button"
-                          onClick={(e) => {
-                            header.column.getToggleSortingHandler()?.(e);
-                          }}
-                          class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent text-left font-normal whitespace-nowrap"
-                          {...(header.column.columnDef.meta
-                            ?.sortableHeaderMeta ?? {})}
+                      then={
+                        <TableHead
+                          colSpan={header.colSpan}
+                          aria-sort={
+                            header.column.getIsSorted() === "asc"
+                              ? "ascending"
+                              : header.column.getIsSorted() === "desc"
+                                ? "descending"
+                                : "none"
+                          }
                         >
-                          {renderHeader(header)}
+                          <button
+                            type="button"
+                            role="button"
+                            onClick={(e) => {
+                              header.column.getToggleSortingHandler()?.(e);
+                            }}
+                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent text-left font-normal whitespace-nowrap"
+                            {...(header.column.columnDef.meta
+                              ?.sortableHeaderMeta ?? {})}
+                          >
+                            {header.column.columnDef.header}
 
-                          <Switch fallback={<i class="fa-fw" />}>
-                            <Match when={header.column.getIsSorted() === "asc"}>
-                              <Fa
-                                icon={"fa-sort-up"}
-                                fixedWidth
-                                aria-hidden="true"
-                              />
-                            </Match>
-                            <Match
-                              when={header.column.getIsSorted() === "desc"}
-                            >
-                              <Fa
-                                icon={"fa-sort-down"}
-                                fixedWidth
-                                aria-hidden="true"
-                              />
-                            </Match>
-                          </Switch>
-                        </button>
-                      </Show>
-                    </TableHead>
+                            <Switch fallback={<i class="fa-fw" />}>
+                              <Match
+                                when={header.column.getIsSorted() === "asc"}
+                              >
+                                <Fa
+                                  icon={"fa-sort-up"}
+                                  fixedWidth
+                                  aria-hidden="true"
+                                />
+                              </Match>
+                              <Match
+                                when={header.column.getIsSorted() === "desc"}
+                              >
+                                <Fa
+                                  icon={"fa-sort-down"}
+                                  fixedWidth
+                                  aria-hidden="true"
+                                />
+                              </Match>
+                            </Switch>
+                          </button>
+                        </TableHead>
+                      }
+                      else={
+                        <TableHead colSpan={header.colSpan}>
+                          <Show when={!header.isPlaceholder}>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                          </Show>
+                        </TableHead>
+                      }
+                    />
                   )}
                 </For>
               </TableRow>
