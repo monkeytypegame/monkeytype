@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #ffffff;
-  --main-color: #212b43;
-  --caret-color: #212b43;
-  --sub-color: #62cfe6;
-  --sub-alt-color: #ddeff3;
-  --text-color: #212b43;
-  --error-color: #f19dac;
-  --error-extra-color: #e58c9d;
-  --colorful-error-color: #f19dac;
-  --colorful-error-extra-color: #e58c9d;
-}
-
 nav > .textButton:nth-child(1) {
   color: #f19dac;
 }

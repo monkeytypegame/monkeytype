@@ -1,40 +1,22 @@
 import { JSXElement } from "solid-js";
 
-import { getFocus } from "../../../signals/core";
+import { getFocus, getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 
-import { ScrollToTop } from "./ScrollToTop";
+import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
   return (
-    <footer class="text-sub relative text-xs">
-      <ScrollToTop />
-      <button
-        type="button"
-        id="commandLineMobileButton"
-        class="bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12"
-        onClick={() => {
-          showModal("Commandline");
-        }}
-        tabIndex="-1"
-      >
-        <i class="fas fa-terminal"></i>
-      </button>
-
-      <div
-        class="mb-8 text-center leading-loose transition-opacity"
-        classList={{
-          "opacity-0": getFocus(),
-        }}
-      >
-        <kbd>tab</kbd> and <kbd>enter</kbd> - restart test
-        <br />
-        <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd>{" "}
-        - command line
-      </div>
+    <footer
+      class={cn("text-sub relative text-xs", {
+        "opacity-0": getIsScreenshotting(),
+      })}
+    >
+      <Keytips />
 
       <div
         class="-m-2 flex justify-between gap-8 transition-opacity"
@@ -46,58 +28,76 @@ export function Footer(): JSXElement {
           <Button
             type="text"
             text="contact"
-            icon="fas fa-envelope"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-envelope",
+              fixedWidth: true,
+            }}
             onClick={() => showModal("Contact")}
           />
           <Button
             type="text"
             text="support"
-            icon="fas fa-donate"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-donate",
+              fixedWidth: true,
+            }}
             onClick={() => showModal("Support")}
           />
           <Button
             type="text"
             text="github"
-            icon="fas fa-code"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-code",
+              fixedWidth: true,
+            }}
             href="https://github.com/monkeytypegame/monkeytype"
           />
           <Button
             type="text"
             text="discord"
-            icon="fab fa-discord"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-discord",
+              variant: "brand",
+              fixedWidth: true,
+            }}
             href="https://www.discord.gg/monkeytype"
           />
           <Button
             type="text"
             text="twitter"
-            icon="fab fa-twitter"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-twitter",
+              variant: "brand",
+              fixedWidth: true,
+            }}
             href="https://x.com/monkeytype"
           />
           <Button
             type="text"
             text="terms"
-            icon="fas fa-file-contract"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-file-contract",
+              fixedWidth: true,
+            }}
             href="/terms-of-service.html"
           />
           <Button
             href="/security-policy.html"
             type="text"
             text="security"
-            icon="fas fa-shield-alt"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-shield-alt",
+              fixedWidth: true,
+            }}
           />
           <Button
             href="/privacy-policy.html"
             type="text"
             text="privacy"
-            icon="fas fa-lock"
-            fixedWidthIcon
+            fa={{
+              icon: "fa-lock",
+              fixedWidth: true,
+            }}
           />
         </div>
         <div class="flex flex-col items-end text-right lg:flex-row">

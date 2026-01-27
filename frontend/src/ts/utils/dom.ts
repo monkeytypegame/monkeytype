@@ -3,6 +3,7 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
+import { addBanner } from "../stores/banners";
 
 /**
  * list of deferred callbacks to be executed once we reached ready state
@@ -152,11 +153,9 @@ type ElementWithValue =
 
 type ElementWithSelectableValue = HTMLInputElement | HTMLTextAreaElement;
 
-//TODO: after the migration from jQuery to dom-utils we might want to add currentTarget back to the event object, if we have a use-case for it.
-// For now we remove it because currentTarget is not the same element when using dom-utils intead of jQuery to get compile errors.
-export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
+export type OnChildEvent<T extends Event = Event> = T & {
   /**
-   * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
+   * target element matching the selector.
    */
   childTarget: EventTarget | null;
 };
@@ -271,9 +270,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Make element visible by scrolling the element's ancestor containers
    */
-  scrollIntoView(options: ScrollIntoViewOptions): this {
+  scrollIntoView(options?: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
-
     return this;
   }
 
@@ -284,6 +282,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.add(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.addClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
+      }
       this.native.classList.add(className);
     }
     return this;
@@ -296,6 +299,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.remove(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.removeClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
+      }
       this.native.classList.remove(className);
     }
     return this;
@@ -305,6 +313,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Check if the element has a class
    */
   hasClass(className: string): boolean {
+    if (className.includes(" ")) {
+      return className
+        .split(" ")
+        .filter((cn) => cn.length > 0)
+        .every((cn) => this.hasClass(cn));
+    }
     return this.native.classList.contains(className);
   }
 
@@ -517,11 +531,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Append a child element
    */
-  append(element: HTMLElement | ElementWithUtils): this {
-    if (element instanceof ElementWithUtils) {
-      this.native.appendChild(element.native);
+  append(
+    elementOrElements:
+      | HTMLElement
+      | ElementWithUtils
+      | HTMLElement[]
+      | ElementsWithUtils
+      | ElementWithUtils[],
+  ): this {
+    if (elementOrElements instanceof ElementsWithUtils) {
+      this.native.append(...elementOrElements.native);
+      return this;
+    }
+
+    if (Array.isArray(elementOrElements)) {
+      for (const element of elementOrElements) {
+        if (element instanceof ElementWithUtils) {
+          this.native.append(element.native);
+        } else {
+          this.native.append(element);
+        }
+      }
+      return this;
+    }
+
+    if (elementOrElements instanceof ElementWithUtils) {
+      this.native.appendChild(elementOrElements.native);
     } else {
-      this.native.append(element);
+      this.native.append(elementOrElements);
     }
     return this;
   }
@@ -543,14 +580,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the element's bounding client rect offset
+   * Get the element's screen bounds: top, left, width and height
    */
-  offset(): { top: number; left: number } {
+  screenBounds(): { top: number; left: number; width: number; height: number } {
     const rect = this.native.getBoundingClientRect();
     const scrollLeft =
       window.pageXOffset || document.documentElement.scrollLeft;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+    return {
+      top: rect.top + scrollTop,
+      left: rect.left + scrollLeft,
+      width: rect.width,
+      height: rect.height,
+    };
   }
 
   /**
@@ -628,6 +670,31 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Set selected state of option element
+   * @param selected The selected state to set
+   */
+  setSelected(
+    this: ElementWithUtils<HTMLOptionElement>,
+    selected: boolean,
+  ): this {
+    if (this.native instanceof HTMLOptionElement) {
+      this.native.selected = selected;
+    }
+    return this as unknown as this;
+  }
+
+  /**
+   * Get selected state of option element
+   * @returns The selected state of the element, or undefined if the element is not an option.
+   */
+  getSelected(this: ElementWithUtils<HTMLOptionElement>): boolean | undefined {
+    if (this.native instanceof HTMLOptionElement) {
+      return this.native.selected;
+    }
+    return undefined;
+  }
+
+  /**
    * Get the parent element
    */
   getParent<U extends HTMLElement = HTMLElement>(): ElementWithUtils<U> | null {
@@ -669,6 +736,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's height + margin
+   */
+
+  getOuterHeight(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().height +
+      parseFloat(style.marginTop) +
+      parseFloat(style.marginBottom)
+    );
+  }
+
+  /**
+   * Get The element's width + margin
+   */
+
+  getOuterWidth(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().width +
+      parseFloat(style.marginLeft) +
+      parseFloat(style.marginRight)
+    );
+  }
+
+  /**
    * Get the element's width
    */
   getOffsetWidth(): number {
@@ -694,6 +789,24 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   getOffsetLeft(): number {
     return this.native.offsetLeft;
+  }
+
+  /**
+   * Get the element's children wrapped in ElementWithUtils instances.
+   *
+   * Note: This method returns a new array of wrappers, but each wrapper maintains
+   * a reference to the actual DOM element. Any operations performed on the returned
+   * children (e.g., addClass, remove, setHtml) will modify the actual DOM elements
+   * and reflect their live DOM state.
+   *
+   * @returns An ElementsWithUtils array containing wrapped child elements
+   */
+  getChildren(): ElementsWithUtils {
+    const children = Array.from(this.native.children);
+    const convertedChildren = new ElementsWithUtils(
+      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
+    );
+    return convertedChildren;
   }
 
   /**
@@ -806,8 +919,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Focus the element
    */
-  focus(): void {
-    this.native.focus();
+  focus(options?: FocusOptions): this {
+    this.native.focus(options);
+    return this;
   }
 
   /**
@@ -987,6 +1101,7 @@ export class ElementsWithUtils<
     }
     return this;
   }
+
   /**
    * Set attribute value on all elements in the array
    */
@@ -995,6 +1110,20 @@ export class ElementsWithUtils<
       item.setAttribute(key, value);
     }
     return this;
+  }
+
+  /**
+   * Append HTML string to all elements in the array
+   */
+  appendHtml(htmlString: string): this {
+    for (const item of this) {
+      item.appendHtml(htmlString);
+    }
+    return this;
+  }
+
+  override indexOf(element: ElementWithUtils<T>): number {
+    return this.native.indexOf(element.native);
   }
 }
 
@@ -1012,19 +1141,11 @@ function checkUniqueSelector(
     console.trace("Stack trace for qs/qsr call:");
     if (document.querySelector("#domUtilsQsWarning") !== null) return;
 
-    const bannerCenter = document.querySelector("#bannerCenter");
-    const warning = document.createElement("div");
-    warning.classList.add("psa", "bad", "content-grid");
-    warning.id = "domUtilsQsWarning";
-    warning.innerHTML = `
-        <div class="container">
-          <div class="icon lefticon"><i class="fas fa-fw fa-exclamation-triangle"></i></div>
-          <div class="text">
-             "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details."
-          </div>
-        </div>
-      </div>`;
-    bannerCenter?.appendChild(warning);
+    addBanner({
+      level: "error",
+      icon: "fas fa-exclamation-triangle",
+      text: "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details.",
+    });
   }
 }
 

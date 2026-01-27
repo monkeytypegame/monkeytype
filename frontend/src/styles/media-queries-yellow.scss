@@ -1,12 +1,6 @@
 @use "./media.scss" as *;
 
 @include media-query(yellow) {
-  #mediaQueryDebug {
-    background: #ffee58;
-    &::before {
-      content: "yellow";
-    }
-  }
   .content-grid {
     --content-max-width: 1024px;
   }

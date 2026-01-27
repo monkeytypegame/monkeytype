@@ -6,6 +6,7 @@ import * as DB from "../../../db";
 import * as Notifications from "../../../elements/notifications";
 import { isAuthenticated } from "../../../firebase";
 import { getThemeIndicator } from "../../../signals/core";
+import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
   const handleClick = (e: MouseEvent): void => {
@@ -41,9 +42,11 @@ export function ThemeIndicator(): JSXElement {
     >
       <div class="relative">
         <Show when={getThemeIndicator().isFavorite}>
-          <i class="fas fa-star bg-bg absolute top-[-0.5em] right-[-0.5em] rounded-full p-[0.25em] text-[0.5em]"></i>
+          <div class="bg-bg absolute top-[-0.5em] right-[-0.5em] flex rounded-full p-[0.25em]">
+            <Fa icon="fa-star" size={0.5} />
+          </div>
         </Show>
-        <i class="fas fa-fw fa-palette"></i>
+        <Fa icon="fa-palette" fixedWidth />
       </div>
       <div class="text">{getThemeIndicator().text}</div>
     </button>
