@@ -141,7 +141,7 @@ export function DataTable<TData>(
                           >
                             {header.column.columnDef.header}
 
-                            <Switch fallback={<i class="fa-fw" />}>
+                            <Switch fallback={<i class="fa-fw"></i>}>
                               <Match
                                 when={header.column.getIsSorted() === "asc"}
                               >
