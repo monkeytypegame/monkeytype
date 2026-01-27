@@ -2,7 +2,10 @@ import { render, waitFor } from "@solidjs/testing-library";
 import { For } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createAsyncStore } from "../../src/ts/hooks/asyncStore";
+import {
+  createAsyncArrayStore,
+  createAsyncStore,
+} from "../../src/ts/hooks/asyncStore";
 import { sleep } from "../../src/ts/utils/misc";
 
 const fetcher = vi.fn();
@@ -17,20 +20,20 @@ describe("createAsyncStore", () => {
   it("should initialize with the correct state", () => {
     const store = createAsyncStore({ name: "test", fetcher, initialValue });
 
-    expect(store.state().state).toBe("unresolved");
-    expect(store.state().loading).toBe(false);
-    expect(store.state().ready).toBe(false);
-    expect(store.state().refreshing).toBe(false);
-    expect(store.state().error).toBeUndefined();
-    expect(store.store()).toEqual({ data: null });
+    expect(store.state.state).toBe("unresolved");
+    expect(store.state.loading).toBe(false);
+    expect(store.state.ready).toBe(false);
+    expect(store.state.refreshing).toBe(false);
+    expect(store.state.error).toBeUndefined();
+    expect(store.store).toEqual({ data: null });
   });
 
   it("should transition to loading when load is called", async () => {
     const store = createAsyncStore({ name: "test", fetcher, initialValue });
     store.load();
 
-    expect(store.state().state).toBe("pending");
-    expect(store.state().loading).toBe(true);
+    expect(store.state.state).toBe("pending");
+    expect(store.state.loading).toBe(true);
   });
 
   it("should enable loading if ready is called", async () => {
@@ -48,8 +51,8 @@ describe("createAsyncStore", () => {
     await store.ready();
 
     expect(fetcher).toHaveBeenCalledTimes(1);
-    expect(store.state().state).toBe("ready");
-    expect(store.store()).toEqual({ data: "test" });
+    expect(store.state.state).toBe("ready");
+    expect(store.store).toEqual({ data: "test" });
   });
 
   it("should handle error when fetcher fails", async () => {
@@ -60,8 +63,8 @@ describe("createAsyncStore", () => {
 
     await expect(store.ready()).rejects.toThrow("Failed to load");
 
-    expect(store.state().state).toBe("errored");
-    expect(store.state().error).toEqual(new Error("Failed to load"));
+    expect(store.state.state).toBe("errored");
+    expect(store.state.error).toEqual(new Error("Failed to load"));
   });
 
   it("should transition to refreshing state on refresh", async () => {
@@ -70,25 +73,25 @@ describe("createAsyncStore", () => {
     store.load();
 
     store.refresh(); // trigger refresh
-    expect(store.state().state).toBe("refreshing");
-    expect(store.state().refreshing).toBe(true);
+    expect(store.state.state).toBe("refreshing");
+    expect(store.state.refreshing).toBe(true);
   });
 
   it("should trigger load when refresh is called and shouldLoad is false", async () => {
     const store = createAsyncStore({ name: "test", fetcher, initialValue });
     fetcher.mockResolvedValueOnce({ data: "test" });
-    expect(store.state().state).toBe("unresolved");
+    expect(store.state.state).toBe("unresolved");
 
     store.refresh();
-    expect(store.state().state).toBe("refreshing");
-    expect(store.state().refreshing).toBe(true);
+    expect(store.state.state).toBe("refreshing");
+    expect(store.state.refreshing).toBe(true);
 
     // Wait for the store to be ready after fetching
     await store.ready();
 
     // Ensure the store's state is 'ready' after the refresh
-    expect(store.state().state).toBe("ready");
-    expect(store.store()).toEqual({ data: "test" });
+    expect(store.state.state).toBe("ready");
+    expect(store.store).toEqual({ data: "test" });
   });
 
   it("should reset the store to its initial value on reset", async () => {
@@ -98,12 +101,12 @@ describe("createAsyncStore", () => {
 
     await store.ready();
 
-    expect(store.store()).toEqual({ data: "test" });
+    expect(store.store).toEqual({ data: "test" });
 
     store.reset();
-    expect(store.state().state).toBe("unresolved");
-    expect(store.state().loading).toBe(false);
-    expect(store.store()).toEqual({ data: null });
+    expect(store.state.state).toBe("unresolved");
+    expect(store.state.loading).toBe(false);
+    expect(store.store).toEqual({ data: null });
   });
 
   it("should persist changes", async () => {
@@ -121,7 +124,7 @@ describe("createAsyncStore", () => {
 
     store.update({ data: "newValue" });
     expect(persist).toHaveBeenCalledExactlyOnceWith({ data: "newValue" });
-    expect(store.store()?.data).toEqual("newValue");
+    expect(store.store?.data).toEqual("newValue");
   });
 
   it("fails updating when not ready", async () => {
@@ -153,7 +156,7 @@ describe("createAsyncStore", () => {
     expect(persist).toHaveBeenCalledExactlyOnceWith({ data: "newValue" });
 
     await sleep(100);
-    expect(store.store()?.data).toEqual("refetchedValue");
+    expect(store.store?.data).toEqual("refetchedValue");
   });
 
   it("should be reactive", async () => {
@@ -175,11 +178,11 @@ describe("createAsyncStore", () => {
 
     const { container } = render(() => (
       <span>
-        State: {store.state().state} <br />
-        Loading: {store.state().loading ? "true" : "false"} <br />
-        Data: {store.store()?.data ?? "empty"} <br />
-        Number: {store.store()?.nested?.number ?? "no number"}; List:{" "}
-        <For fallback="no list" each={store.store()?.list}>
+        State: {store.state.state} <br />
+        Loading: {store.state.loading ? "true" : "false"} <br />
+        Data: {store.store?.data ?? "empty"} <br />
+        Number: {store.store?.nested?.number ?? "no number"}; List:{" "}
+        <For fallback="no list" each={store.store?.list}>
           {(item) => <span>{item},</span>}
         </For>
       </span>
@@ -199,7 +202,7 @@ describe("createAsyncStore", () => {
     expect(container.textContent).toContain("Number: no number");
     expect(container.textContent).toContain("List: no list");
 
-    //resource loaded successfull
+    //resource loaded successful
     await store.ready();
     expect(container.textContent).toContain("Loading: false");
     expect(container.textContent).toContain("State: ready");
@@ -227,11 +230,110 @@ describe("createAsyncStore", () => {
     //reset back to initial state
     store.reset();
     await waitFor(() =>
-      store.state().state === "unresolved" ? true : undefined,
+      store.state.state === "unresolved" ? true : undefined,
     );
     expect(container.textContent).toContain("Loading: false");
     expect(container.textContent).toContain("State: unresolved");
     expect(container.textContent).toContain("Number: no number");
     expect(container.textContent).toContain("List: no list");
+  });
+});
+
+describe("createAsyncArrayStore", () => {
+  beforeEach(() => {
+    fetcher.mockClear();
+    initialValue.mockClear();
+  });
+
+  it("should be reactive", async () => {
+    const store = createAsyncArrayStore<{
+      data: string;
+      nested?: { number: number };
+      list: string[];
+    }>({ name: "test", fetcher });
+    fetcher.mockResolvedValueOnce([
+      {
+        data: "test",
+        nested: { number: 1 },
+        list: ["Bob", "Kevin"],
+      },
+    ]);
+    fetcher.mockResolvedValueOnce([
+      {
+        data: "updated",
+        nested: { number: 2 },
+        list: ["Bob", "Stuart"],
+      },
+    ]);
+
+    const { container } = render(() => (
+      <span>
+        State: {store.state.state} <br />
+        Loading: {store.state.loading ? "true" : "false"} <br />
+        <For fallback="no items" each={store.store}>
+          {(item) => (
+            <>
+              Data: {item.data ?? "empty"} <br />
+              Number: {item.nested?.number ?? "no number"}; List:{" "}
+              <For fallback="no list" each={item.list}>
+                {(li) => <span>{li},</span>}
+              </For>
+            </>
+          )}
+        </For>
+      </span>
+    ));
+
+    //initial state
+    expect(container.textContent).toContain("Loading: false");
+    expect(container.textContent).toContain("State: unresolved");
+    expect(container.textContent).toContain("no items");
+
+    //load
+    store.load();
+    await store.ready();
+    expect(container.textContent).toContain("Loading: false");
+    expect(container.textContent).toContain("State: ready");
+    expect(container.textContent).toContain("Data: test");
+    expect(container.textContent).toContain("Number: 1");
+    expect(container.textContent).toContain("List: Bob,Kevin,");
+
+    //add item
+    store.addItem({
+      data: "new",
+      nested: { number: 42 },
+      list: ["apple", "banana"],
+    });
+
+    expect(container.textContent).toContain("Data: test");
+    expect(container.textContent).toContain("Number: 1");
+    expect(container.textContent).toContain("List: Bob,Kevin,");
+    expect(container.textContent).toContain("Data: new");
+    expect(container.textContent).toContain("Number: 42");
+    expect(container.textContent).toContain("List: apple,banana,");
+
+    //modify
+    store.updateItem((it) => it.data === "new", {
+      list: ["apple", "banana", "cherry"],
+    });
+    expect(container.textContent).toContain("Data: new");
+    expect(container.textContent).toContain("Number: 42");
+    expect(container.textContent).toContain("List: apple,banana,cherry");
+
+    //remove
+    store.removeItem((it) => it.nested?.number === 42);
+    expect(container.textContent).toContain("Data: test");
+    expect(container.textContent).not.toContain("Data: new");
+    expect(container.textContent).not.toContain("Number: 42");
+    expect(container.textContent).not.toContain("List: apple,banana,cherry");
+
+    //reset back to initial state
+    store.reset();
+    await waitFor(() =>
+      store.state.state === "unresolved" ? true : undefined,
+    );
+    expect(container.textContent).toContain("Loading: false");
+    expect(container.textContent).toContain("State: unresolved");
+    expect(container.textContent).toContain("no items");
   });
 });
