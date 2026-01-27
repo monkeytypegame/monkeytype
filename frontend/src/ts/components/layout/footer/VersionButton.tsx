@@ -6,6 +6,7 @@ import { lastSeenServerCompatibility } from "../../../ape/adapters/ts-rest-adapt
 import { getVersion } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { isDevEnvironment } from "../../../utils/misc";
+import { Fa } from "../../common/Fa";
 
 export function VersionButton(): JSXElement {
   const [indicatorVisible, setIndicatorVisible] = createSignal(true);
@@ -45,7 +46,7 @@ export function VersionButton(): JSXElement {
 
   return (
     <button type="button" class="textButton flex" onClick={handleClick}>
-      <i class="fas fa-fw fa-code-branch"></i>
+      <Fa icon="fa-code-branch" fixedWidth />
       <div class="text">{getVersionText()}</div>
       <Show when={showNewIndicator()}>
         <div

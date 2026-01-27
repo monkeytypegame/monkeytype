@@ -22,48 +22,60 @@ export function ContactModal(): JSXElement {
         <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Question] "
-          fixedWidthIcon
-          icon="fas fa-question-circle"
           text="Question"
           class={buttonClass}
+          fa={{
+            icon: "fa-question-circle",
+            fixedWidth: true,
+          }}
         />
         <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Feedback] "
-          fixedWidthIcon
-          icon="fas fa-comment-dots"
+          fa={{
+            icon: "fa-comment-dots",
+            fixedWidth: true,
+          }}
           text="Feedback"
           class={buttonClass}
         />
         <Button
           type="button"
           href="mailto:support@monkeytype.com?subject=[Bug] "
-          fixedWidthIcon
-          icon="fas fa-bug"
+          fa={{
+            icon: "fa-bug",
+            fixedWidth: true,
+          }}
           text="Bug Report"
           class={buttonClass}
         />
         <Button
           type="button"
           href="mailto:support@monkeytype.com?subject=[Account] "
-          fixedWidthIcon
-          icon="fas fa-user-circle"
+          fa={{
+            icon: "fa-user-circle",
+            fixedWidth: true,
+          }}
           text="Account Help"
           class={buttonClass}
         />
         <Button
           type="button"
           href="mailto:jack@monkeytype.com?subject=[Business] "
-          fixedWidthIcon
-          icon="fas fa-briefcase"
+          fa={{
+            icon: "fa-briefcase",
+            fixedWidth: true,
+          }}
           text="Business Inquiry"
           class={buttonClass}
         />
         <Button
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Other] "
-          fixedWidthIcon
-          icon="fas fa-ellipsis-h"
+          fa={{
+            icon: "fa-ellipsis-h",
+            fixedWidth: true,
+          }}
           text="Other"
           class={buttonClass}
         />
