@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, cleanup } from "@solidjs/testing-library";
-import { Button } from "../../src/ts/components/Button";
+import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { Button } from "../../src/ts/components/common/Button";
 
 describe("Button component", () => {
   afterEach(() => {
@@ -50,14 +51,16 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "fa-keyboard",
+        }}
       />
     ));
 
     const icon = container.querySelector("i");
     expect(icon).toBeTruthy();
-    expect(icon?.className).toContain("icon");
-    expect(icon?.className).toContain("fa-test");
+    expect(icon?.className).toContain("fas");
+    expect(icon?.className).toContain("fa-keyboard");
   });
 
   it("applies fa-fw class when text is missing", () => {
@@ -66,7 +69,10 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "fa-keyboard",
+          fixedWidth: true,
+        }}
       />
     ));
 
@@ -80,9 +86,11 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          fixedWidth: true,
+          icon: "fa-keyboard",
+        }}
         text="Hello"
-        fixedWidthIcon
       />
     ));
 
@@ -96,7 +104,9 @@ describe("Button component", () => {
         onClick={() => {
           //
         }}
-        icon="fa-test"
+        fa={{
+          icon: "fa-keyboard",
+        }}
         text="Hello"
       />
     ));

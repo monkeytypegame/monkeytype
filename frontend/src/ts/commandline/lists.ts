@@ -27,12 +27,15 @@ import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
-import * as FPSCounter from "../elements/fps-counter";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
 import { ConfigKey } from "@monkeytype/schemas/configs";
+import {
+  hideFpsCounter,
+  showFpsCounter,
+} from "../components/layout/overlays/FpsCounter";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -311,7 +314,7 @@ export const commands: CommandsSubgroup = {
             display: "show",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.start();
+              showFpsCounter();
             },
           },
           {
@@ -319,7 +322,7 @@ export const commands: CommandsSubgroup = {
             display: "hide",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.stop();
+              hideFpsCounter();
             },
           },
         ],

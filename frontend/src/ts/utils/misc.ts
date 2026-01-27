@@ -1,4 +1,4 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { envConfig } from "virtual:env-config";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
@@ -271,7 +271,7 @@ export function getMode2<M extends keyof PersonalBests>(
 }
 
 export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const csvString = [
     [
       "_id",
@@ -340,7 +340,7 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
 
   link.click();
   link.remove();
-  Loader.hide();
+  hideLoaderBar();
 }
 
 export function getErrorMessage(error: unknown): string | undefined {
@@ -389,12 +389,15 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return isElementVisible(`#popups #${popupId}`);
+  return (
+    isElementVisible(`#popups #${popupId}`) ||
+    isElementVisible(`#solidmodals #${popupId}`)
+  );
 }
 
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper",
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
   );
   let popupVisible = false;
   for (const popup of popups) {
@@ -405,40 +408,6 @@ export function isAnyPopupVisible(): boolean {
   }
   return popupVisible;
 }
-
-export type JQueryEasing =
-  | "linear"
-  | "swing"
-  | "easeInSine"
-  | "easeOutSine"
-  | "easeInOutSine"
-  | "easeInQuad"
-  | "easeOutQuad"
-  | "easeInOutQuad"
-  | "easeInCubic"
-  | "easeOutCubic"
-  | "easeInOutCubic"
-  | "easeInQuart"
-  | "easeOutQuart"
-  | "easeInOutQuart"
-  | "easeInQuint"
-  | "easeOutQuint"
-  | "easeInOutQuint"
-  | "easeInExpo"
-  | "easeOutExpo"
-  | "easeInOutExpo"
-  | "easeInCirc"
-  | "easeOutCirc"
-  | "easeInOutCirc"
-  | "easeInBack"
-  | "easeOutBack"
-  | "easeInOutBack"
-  | "easeInElastic"
-  | "easeOutElastic"
-  | "easeInOutElastic"
-  | "easeInBounce"
-  | "easeOutBounce"
-  | "easeInOutBounce";
 
 export async function promiseAnimate(
   el: HTMLElement | string,
@@ -619,7 +588,7 @@ export function promiseWithResolvers<T = void>(): {
 
   const promiseLike = {
     // oxlint-disable-next-line no-thenable promise-function-async require-await
-    then<TResult1 = T, TResult2 = never>(
+    async then<TResult1 = T, TResult2 = never>(
       onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
       onrejected?:
         | ((reason: unknown) => TResult2 | PromiseLike<TResult2>)
@@ -628,13 +597,13 @@ export function promiseWithResolvers<T = void>(): {
       return currentPromise.then(onfulfilled, onrejected);
     },
     // oxlint-disable-next-line promise-function-async
-    catch<TResult = never>(
+    async catch<TResult = never>(
       onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
     ): Promise<T | TResult> {
       return currentPromise.catch(onrejected);
     },
     // oxlint-disable-next-line promise-function-async
-    finally(onfinally?: (() => void) | null): Promise<T> {
+    async finally(onfinally?: (() => void) | null): Promise<T> {
       return currentPromise.finally(onfinally);
     },
     [Symbol.toStringTag]: "Promise" as const,
@@ -731,7 +700,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 }
 
 export function triggerResize(): void {
-  $(window).trigger("resize");
+  window.dispatchEvent(new Event("resize"));
 }
 
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &

@@ -1,17 +1,3 @@
-:root {
-  /* --bg-color: linear-gradient(215deg, #cbb8ba, #706768); */
-  --bg-color: #b3baff;
-  --main-color: #130f1a;
-  --caret-color: #00e9e5;
-  --sub-color: #6f6c91;
-  --sub-alt-color: #a3a7df;
-  --text-color: #130f1a;
-  --error-color: #ffe23e;
-  --error-extra-color: #fff1c3;
-  --colorful-error-color: #ffe23e;
-  --colorful-error-extra-color: #fff1c3;
-}
-
 .word.error {
   border-bottom: dotted 2px var(--text-color);
 }

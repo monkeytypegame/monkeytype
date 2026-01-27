@@ -1,44 +1,44 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
-import * as ThemeColors from "../elements/theme-colors";
 import { format } from "date-fns/format";
-import { getActivePage } from "../signals/core";
+import { getActivePage, setIsScreenshotting } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
+import { qs, qsa } from "../utils/dom";
+import { getTheme } from "../signals/theme";
 
 let revealReplay = false;
 let revertCookie = false;
 
 function revert(): void {
-  Loader.hide();
-  $("#ad-result-wrapper").removeClass("hidden");
-  $("#ad-result-small-wrapper").removeClass("hidden");
-  $("#testConfig").removeClass("hidden");
-  $(".pageTest .screenshotSpacer").remove();
-  $("#notificationCenter").removeClass("hidden");
-  $("#commandLineMobileButton").removeClass("hidden");
-  $(".pageTest .ssWatermark").addClass("hidden");
-  $(".pageTest .ssWatermark").text("monkeytype.com"); // Reset watermark text
-  $(".pageTest .buttons").removeClass("hidden");
-  $("noscript").removeClass("hidden");
-  $("#nocss").removeClass("hidden");
-  $("header, footer").removeClass("invisible");
-  $("#result").removeClass("noBalloons");
-  $(".wordInputHighlight").removeClass("hidden");
-  $(".highlightContainer").removeClass("hidden");
-  if (revertCookie) $("#cookiesModal").removeClass("hidden");
-  if (revealReplay) $("#resultReplay").removeClass("hidden");
+  setIsScreenshotting(false);
+  hideLoaderBar();
+  qs("#ad-result-wrapper")?.show();
+  qs("#ad-result-small-wrapper")?.show();
+  qs("#testConfig")?.show();
+  qs(".pageTest .screenshotSpacer")?.remove();
+  qs("#notificationCenter")?.show();
+  qs(".pageTest .ssWatermark")?.hide();
+  qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
+  qs(".pageTest .buttons")?.show();
+  qs("noscript")?.show();
+  qs("#nocss")?.show();
+  qs("header")?.removeClass("invisible");
+  qs("#result")?.removeClass("noBalloons");
+  qs(".wordInputHighlight")?.show();
+  qsa(".highlightContainer")?.show();
+  if (revertCookie) qs("#cookiesModal")?.show();
+  if (revealReplay) qs("#resultReplay")?.show();
   if (!isAuthenticated()) {
-    $(".pageTest .loginTip").removeClass("hidden");
+    qs(".pageTest .loginTip")?.removeClass("hidden");
   }
-  (document.querySelector("html") as HTMLElement).style.scrollBehavior =
-    "smooth";
+  qs("html")?.setStyle({ scrollBehavior: "smooth" });
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
     fb.functions.applyGlobalCSS();
   }
@@ -53,9 +53,9 @@ let firefoxClipboardNotificationShown = false;
  */
 async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const { domToCanvas } = await import("modern-screenshot");
-  Loader.show(true);
+  showLoaderBar(true);
 
-  if (!$("#resultReplay").hasClass("hidden")) {
+  if (!qs("#resultReplay")?.hasClass("hidden")) {
     revealReplay = true;
     Replay.pauseReplay();
   }
@@ -68,8 +68,8 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   // --- UI Preparation ---
   const dateNow = new Date(Date.now());
-  $("#resultReplay").addClass("hidden");
-  $(".pageTest .ssWatermark").removeClass("hidden");
+  qs("#resultReplay")?.hide();
+  qs(".pageTest .ssWatermark")?.show();
 
   const snapshot = DB.getSnapshot();
   const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
@@ -79,28 +79,29 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     })}`;
     ssWatermark.unshift(userText);
   }
-  $(".pageTest .ssWatermark").html(
+  qs(".pageTest .ssWatermark")?.setHtml(
     ssWatermark
       .map((el) => `<span>${el}</span>`)
       .join("<span class='pipe'>|</span>"),
   );
-  $(".pageTest .buttons").addClass("hidden");
-  $("#notificationCenter").addClass("hidden");
-  $("#commandLineMobileButton").addClass("hidden");
-  $(".pageTest .loginTip").addClass("hidden");
-  $("noscript").addClass("hidden");
-  $("#nocss").addClass("hidden");
-  $("#ad-result-wrapper").addClass("hidden");
-  $("#ad-result-small-wrapper").addClass("hidden");
-  $("#testConfig").addClass("hidden");
+
+  setIsScreenshotting(true);
+  qs(".pageTest .buttons")?.hide();
+  qs("#notificationCenter")?.hide();
+  qs(".pageTest .loginTip")?.hide();
+  qs("noscript")?.hide();
+  qs("#nocss")?.hide();
+  qs("#ad-result-wrapper")?.hide();
+  qs("#ad-result-small-wrapper")?.hide();
+  qs("#testConfig")?.hide();
   // Ensure spacer is removed before adding a new one if function is called rapidly
-  $(".pageTest .screenshotSpacer").remove();
-  $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
-  $("header, footer").addClass("invisible");
-  $("#result").addClass("noBalloons");
-  $(".wordInputHighlight").addClass("hidden");
-  $(".highlightContainer").addClass("hidden");
-  if (revertCookie) $("#cookiesModal").addClass("hidden");
+  qs(".pageTest .screenshotSpacer")?.remove();
+  qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");
+  qs("header")?.addClass("invisible");
+  qs("#result")?.addClass("noBalloons");
+  qs(".wordInputHighlight")?.hide();
+  qsa(".highlightContainer")?.hide();
+  if (revertCookie) qs("#cookiesModal")?.hide();
 
   for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
     fb.functions.clearGlobal();
@@ -109,20 +110,30 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({ top: 0, behavior: "auto" });
 
+  // --- Build embedded font CSS ---
+  let embeddedFontCss = "";
+  try {
+    embeddedFontCss = await buildEmbeddedFontCss();
+  } catch (e) {
+    console.warn("Failed to embed fonts:", e);
+  }
+
   // --- Target Element Calculation ---
-  const src = $("#result .wrapper");
-  if (!src.length) {
+  const src = qs("#result .wrapper");
+  if (src === null) {
     console.error("Result wrapper not found for screenshot");
     Notifications.add("Screenshot target element not found", -1);
     revert();
     return null;
   }
-  await Misc.sleep(50); // Small delay for render updates
+  // Wait a frame to ensure all UI changes are rendered
+  await new Promise((resolve) => requestAnimationFrame(resolve));
 
-  const sourceX = src.offset()?.left ?? 0;
-  const sourceY = src.offset()?.top ?? 0;
-  const sourceWidth = src.outerWidth(true) as number;
-  const sourceHeight = src.outerHeight(true) as number;
+  const sourceX = src.screenBounds().left ?? 0;
+  const sourceY = src.screenBounds().top ?? 0;
+
+  const sourceWidth = src.getOuterWidth();
+  const sourceHeight = src.getOuterHeight();
   const paddingX = convertRemToPixels(2);
   const paddingY = convertRemToPixels(2);
 
@@ -135,9 +146,13 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
     // Target the HTML root to include .customBackground
     const fullCanvas = await domToCanvas(root, {
-      backgroundColor: await ThemeColors.get("bg"),
+      backgroundColor: getTheme().bg,
       // Sharp output
       scale: window.devicePixelRatio ?? 1,
+
+      // Pass embedded font CSS with data URLs
+      font: embeddedFontCss ? { cssText: embeddedFontCss } : undefined,
+
       style: {
         width: `${targetWidth}px`,
         height: `${targetHeight}px`,
@@ -350,7 +365,7 @@ export async function download(): Promise<void> {
   }
 }
 
-$(".pageTest").on("click", "#saveScreenshotButton", (event) => {
+qs(".pageTest")?.onChild("click", "#saveScreenshotButton", (event) => {
   if (event.shiftKey) {
     void download();
   } else {
@@ -358,23 +373,171 @@ $(".pageTest").on("click", "#saveScreenshotButton", (event) => {
   }
 
   // reset save screenshot button icon
-  $("#saveScreenshotButton i")
-    .removeClass("fas fa-download")
-    .addClass("far fa-image");
+  qs("#saveScreenshotButton i")
+    ?.removeClass(["fas", "fa-download"])
+    ?.addClass(["far", "fa-image"]);
 });
 
-$(document).on("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
-  $("#result #saveScreenshotButton i")
-    .removeClass("far fa-image")
-    .addClass("fas fa-download");
+  qs("#result #saveScreenshotButton i")
+    ?.removeClass(["far", "fa-image"])
+    ?.addClass(["fas", "fa-download"]);
 });
 
-$(document).on("keyup", (event) => {
+document.addEventListener("keyup", (event) => {
   if (!(TestState.resultVisible && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
-  $("#result #saveScreenshotButton i")
-    .removeClass("fas fa-download")
-    .addClass("far fa-image");
+  qs("#result #saveScreenshotButton i")
+    ?.removeClass(["fas", "fa-download"])
+    ?.addClass(["far", "fa-image"]);
 });
+
+//below is all ai magic
+
+/**
+ * Recursively extracts all @font-face rules from stylesheets, including those inside @layer
+ */
+function extractAllFontFaceRules(): CSSFontFaceRule[] {
+  const fontRules: CSSFontFaceRule[] = [];
+
+  function traverseRules(rules: CSSRuleList): void {
+    for (const rule of rules) {
+      if (rule instanceof CSSFontFaceRule) {
+        fontRules.push(rule);
+      } else if (
+        "cssRules" in rule &&
+        typeof rule.cssRules === "object" &&
+        rule.cssRules !== null
+      ) {
+        traverseRules(rule.cssRules as CSSRuleList);
+      }
+    }
+  }
+
+  for (const sheet of document.styleSheets) {
+    try {
+      if (sheet?.cssRules?.length && sheet.cssRules.length > 0) {
+        traverseRules(sheet.cssRules);
+      }
+    } catch (e) {
+      console.warn("Cannot access stylesheet:", e);
+    }
+  }
+
+  return fontRules;
+}
+
+/**
+ * Fetches a font file and converts it to a data URL
+ */
+async function fontUrlToDataUrl(url: string): Promise<string | null> {
+  try {
+    const absoluteUrl = new URL(url, window.location.href).href;
+    const response = await fetch(absoluteUrl, {
+      mode: "cors",
+      credentials: "omit",
+    });
+    if (!response.ok) return null;
+    const blob = await response.blob();
+    return await new Promise<string | null>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Converts a @font-face rule to CSS text with embedded data URLs
+ */
+async function fontFaceRuleToEmbeddedCss(
+  rule: CSSFontFaceRule,
+): Promise<string | null> {
+  let cssText = rule.cssText;
+  const srcProperty = rule.style.getPropertyValue("src");
+
+  if (!srcProperty) return null;
+
+  // Extract all url() references
+  const urlRegex = /url\(['"]?([^'"]+?)['"]?\)/g;
+  const matches = [...srcProperty.matchAll(urlRegex)];
+
+  if (matches.length === 0) return cssText;
+
+  for (const match of matches) {
+    const originalUrl = match[1];
+    if (
+      typeof originalUrl !== "string" ||
+      originalUrl === "" ||
+      originalUrl.startsWith("data:")
+    ) {
+      continue;
+    }
+    const dataUrl = await fontUrlToDataUrl(originalUrl);
+    if (typeof dataUrl === "string" && dataUrl !== "") {
+      const urlPattern = new RegExp(
+        `url\\(['"]?${originalUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]?\\)`,
+        "g",
+      );
+      cssText = cssText.replace(urlPattern, () => `url(${dataUrl})`);
+    }
+  }
+
+  return cssText;
+}
+
+/**
+ * Collects all used font families in the document
+ */
+function getUsedFontFamilies(): Set<string> {
+  const families = new Set<string>();
+
+  // Walk through all elements
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_ELEMENT,
+    null,
+  );
+
+  let node: Node | null;
+  while ((node = walker.nextNode())) {
+    if (node instanceof HTMLElement) {
+      const fontFamily = getComputedStyle(node).fontFamily;
+      if (fontFamily) {
+        fontFamily.split(",").forEach((family) => {
+          families.add(family.trim().replace(/['"]/g, "").toLowerCase());
+        });
+      }
+    }
+  }
+
+  return families;
+}
+
+/**
+ * Builds font CSS with data URLs embedded, including fonts from @layer
+ */
+async function buildEmbeddedFontCss(): Promise<string> {
+  const allFontRules = extractAllFontFaceRules();
+  const usedFamilies = getUsedFontFamilies();
+  const embeddedRules: string[] = [];
+
+  for (const rule of allFontRules) {
+    const fontFamily = rule.style.getPropertyValue("font-family");
+    if (!fontFamily) continue;
+    const normalizedFamily = fontFamily
+      .trim()
+      .replace(/['"]/g, "")
+      .toLowerCase();
+    if (!usedFamilies.has(normalizedFamily)) continue;
+    const embeddedCss = await fontFaceRuleToEmbeddedCss(rule);
+    if (embeddedCss !== null) embeddedRules.push(embeddedCss);
+  }
+
+  return embeddedRules.join("\n");
+}

@@ -1,6 +1,5 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
-import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
@@ -22,7 +21,8 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
 import { getAuthenticatedUser } from "../firebase";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
@@ -184,15 +184,6 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
   return element;
 }
 
-async function updateChartColors(): Promise<void> {
-  await ChartController.accountHistory.updateColors();
-  await Misc.sleep(0);
-  await ChartController.accountActivity.updateColors();
-  await Misc.sleep(0);
-  await ChartController.accountHistogram.updateColors();
-  await Misc.sleep(0);
-}
-
 function reset(): void {
   historyTable.setData([]);
   historyTable.updateBody();
@@ -215,7 +206,6 @@ let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
   console.log("updating account page");
-  ThemeColors.update();
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -1107,12 +1097,12 @@ qs(".pageAccount")?.onChild(
       target?.addClass("loading");
       target?.removeAttribute("aria-label");
       target?.setHtml('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
-      Loader.show();
+      showLoaderBar();
 
       const response = await Ape.results.getById({
         params: { resultId: result._id },
       });
-      Loader.hide();
+      hideLoaderBar();
 
       target?.setHtml('<i class="fas fa-fw fa-chart-line"></i>');
       target?.removeClass("loading");
@@ -1197,12 +1187,12 @@ qs(".pageAccount .profile")?.onChild("click", ".details .copyLink", () => {
 qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length ?? 0;
 
-  Loader.show();
+  showLoaderBar();
   ResultBatches.disableButton();
 
   await downloadResults(offset);
   await fillContent();
-  Loader.hide();
+  hideLoaderBar();
 });
 
 ConfigEvent.subscribe(({ key }) => {
@@ -1263,7 +1253,7 @@ export const page = new Page<undefined>({
 
     historyTable ??= new SortedTableWithLimit<SnapshotResult<Mode>>({
       limit: 10,
-      table: ".pageAccount .content .history table",
+      table: qsr(".pageAccount .content .history table"),
       data: filteredResults,
       buildRow: (val) => {
         return buildResultRow(val);
@@ -1272,7 +1262,6 @@ export const page = new Page<undefined>({
     });
 
     await update().then(() => {
-      void updateChartColors();
       qs(".pageAccount .content .accountVerificatinNotice")?.remove();
       if (getAuthenticatedUser()?.emailVerified === false) {
         qs(".pageAccount .content")?.prependHtml(

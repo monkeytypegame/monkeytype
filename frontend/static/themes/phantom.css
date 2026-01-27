@@ -1,17 +1,4 @@
-:root {
-  --bg-color: #001;
-  --main-color: #7aa2f7;
-  --caret-color: #bb9af7;
-  --sub-color: #414868;
-  --sub-alt-color: #24283b;
-  --text-color: #c0caf5;
-  --error-color: #f7768e;
-  --error-extra-color: #db4b4b;
-  --colorful-error-color: #ff7a93;
-  --colorful-error-extra-color: #ff9e64;
-}
-
-@keyframes tokyo-glow {
+@keyframes phantom-glow {
   0% {
     color: #c0caf5;
     text-shadow:
@@ -32,7 +19,7 @@
   }
 }
 
-@keyframes tokyo-glow-incorrect {
+@keyframes phantom-glow-incorrect {
   0% {
     text-shadow:
       0 0 5px #f7768e,
@@ -50,7 +37,7 @@
   }
 }
 
-@keyframes tokyo-bg {
+@keyframes phantom-bg {
   0% {
     background: #7aa2f7;
   }
@@ -69,7 +56,7 @@
 
 header:not(.focus) #logo .text {
   color: var(--text-color);
-  animation: tokyo-glow 3s infinite alternate;
+  animation: phantom-glow 3s infinite alternate;
 }
 
 header #logo .text .top {
@@ -95,11 +82,11 @@ button.text.active,
 
 button.text:hover,
 .textButton:hover {
-  animation: tokyo-glow 5s linear infinite;
+  animation: phantom-glow 5s linear infinite;
 }
 
 .word .active {
-  animation: tokyo-glow 5s linear infinite;
+  animation: phantom-glow 5s linear infinite;
 }
 
 button:hover,
@@ -117,7 +104,7 @@ input[type="submit"]:hover {
 }
 
 #caret {
-  animation: tokyo-bg 3s linear infinite;
+  animation: phantom-bg 3s linear infinite;
 }
 
 #logo .bottom,
@@ -129,7 +116,7 @@ header .config .group .buttons .textButton:hover,
 footer .textButton:hover,
 footer button.text:hover,
 a:not(.button):hover {
-  animation: tokyo-glow 3s linear infinite;
+  animation: phantom-glow 3s linear infinite;
 }
 
 .afk,
@@ -140,7 +127,7 @@ a:not(.button):hover {
 #words.highlight-next-word .word.typed letter,
 #words.highlight-next-two-words .word.typed letter,
 #words.highlight-next-three-words .word.typed letter {
-  animation: tokyo-glow 5s linear infinite;
+  animation: phantom-glow 5s linear infinite;
 }
 
 #words.flipped .word.typed letter {
@@ -148,10 +135,10 @@ a:not(.button):hover {
 }
 
 .incorrect {
-  animation: tokyo-glow-incorrect 5s linear infinite;
+  animation: phantom-glow-incorrect 5s linear infinite;
 }
 
 #words.highlight-off .word letter,
 #words.highlight-off .word.typed letter {
-  animation: tokyo-glow 5s linear infinite;
+  animation: phantom-glow 5s linear infinite;
 }
