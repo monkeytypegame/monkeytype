@@ -54,7 +54,10 @@ export function DataTable<TData>(
     fallback: [],
     //migrate old state from sorted-table
     migrate: (value: Record<string, unknown> | unknown[]) =>
-      typeof value === "object" && "property" in value && "descending" in value
+      value !== null &&
+      typeof value === "object" &&
+      "property" in value &&
+      "descending" in value
         ? [
             {
               id: value["property"] as string,
@@ -68,7 +71,7 @@ export function DataTable<TData>(
     const current = bp();
     const result = Object.fromEntries(
       props.columns.map((col) => {
-        //fill missing columnIds, otherwise hidinc columns will not work
+        //fill missing columnIds, otherwise hiding columns will not work
         if (col.id === undefined) {
           if ("accessorKey" in col) {
             col.id = col.accessorKey as string;
