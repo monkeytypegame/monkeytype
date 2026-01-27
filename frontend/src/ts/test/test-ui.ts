@@ -468,7 +468,7 @@ function updateWordWrapperClasses(): void {
   if (Config.typedEffect !== null) {
     existing.push("typed-effect-" + Config.typedEffect.replaceAll("_", "-"));
   }
-  
+
   wordsEl.native.className = existing.join(" ");
 
   updateWordsWidth();
