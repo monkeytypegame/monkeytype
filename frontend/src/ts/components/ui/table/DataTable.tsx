@@ -5,13 +5,15 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  Header,
   SortingState,
 } from "@tanstack/solid-table";
-import { createMemo, For, JSXElement, Show } from "solid-js";
+import { createMemo, For, JSXElement, Match, Show, Switch } from "solid-js";
 import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { bp } from "../../../signals/breakpoints";
+import { Fa } from "../../common/Fa";
 
 import {
   Table,
@@ -99,6 +101,11 @@ export function DataTable<TData>(
     },
   });
 
+  const renderHeader = (header: Header<TData, unknown>): JSXElement => (
+    <Show when={!header.isPlaceholder}>
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </Show>
+  );
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
       <Table>
@@ -118,11 +125,44 @@ export function DataTable<TData>(
                             : "none"
                       }
                     >
-                      <Show when={!header.isPlaceholder}>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                      <Show
+                        when={
+                          header.column.getCanSort() &&
+                          typeof header.column.columnDef.header === "string"
+                        }
+                        fallback={renderHeader(header)}
+                      >
+                        <button
+                          type="button"
+                          role="button"
+                          onClick={(e) => {
+                            header.column.getToggleSortingHandler()?.(e);
+                          }}
+                          class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent text-left font-normal whitespace-nowrap"
+                          {...(header.column.columnDef.meta
+                            ?.sortableHeaderMeta ?? {})}
+                        >
+                          {renderHeader(header)}
+
+                          <Switch fallback={<i class="fa-fw" />}>
+                            <Match when={header.column.getIsSorted() === "asc"}>
+                              <Fa
+                                icon={"fa-sort-up"}
+                                fixedWidth
+                                aria-hidden="true"
+                              />
+                            </Match>
+                            <Match
+                              when={header.column.getIsSorted() === "desc"}
+                            >
+                              <Fa
+                                icon={"fa-sort-down"}
+                                fixedWidth
+                                aria-hidden="true"
+                              />
+                            </Match>
+                          </Switch>
+                        </button>
                       </Show>
                     </TableHead>
                   )}

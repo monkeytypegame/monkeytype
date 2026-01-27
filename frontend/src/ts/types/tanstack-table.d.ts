@@ -22,5 +22,11 @@ declare module "@tanstack/solid-table" {
           value: TValue;
           row: TData;
         }) => JSX.HTMLAttributes<HTMLTableCellElement>);
+
+    /**
+     * additional attributes to be set on the header if it is sortable
+     * Can be used to define mouse-overs with `aria-label` and `data-balloon-pos`
+     */
+    sortableHeaderMeta?: JSX.HTMLAttributes;
   }
 }
