@@ -6,14 +6,15 @@ import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { formatDuration } from "date-fns/formatDuration";
 import { intervalToDuration } from "date-fns/intervalToDuration";
-import { createResource, JSXElement, Show } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
+import { createAsyncArrayStore } from "../../../hooks/asyncStore";
 import { getActivePage, getUserId } from "../../../signals/core";
 import { secondsToString } from "../../../utils/date-and-time";
 import Format from "../../../utils/format";
 import { getXpDetails } from "../../../utils/levels";
-import { formatTypingStatsRatio } from "../../../utils/misc";
+import { addToGlobal, formatTypingStatsRatio } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 import { SimpleModal } from "../../../utils/simple-modal";
 import { getLanguageDisplayString } from "../../../utils/strings";
@@ -28,24 +29,25 @@ import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
 const isOpen = (): boolean =>
   getActivePage() === "friends" && getUserId() !== null;
 
-const [friendsListResource, { refetch: refreshFriendsList }] = createResource(
-  isOpen,
-  async (open: boolean) => {
-    if (!open) return undefined;
+const friendsListStore = createAsyncArrayStore<Friend>({
+  name: "friendsList",
+  autoLoad: isOpen,
+  fetcher: async () => {
+    if (!isOpen()) return undefined;
     const response = await Ape.users.getFriends();
     if (response.status !== 200) {
       throw new Error(response.body.message);
     }
     return response.body.data;
   },
-);
+});
 
 export function FriendsList(): JSXElement {
   return (
     <Show when={getUserId() !== null}>
       <div class="items-bottom flex">
         <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
-        <Show when={friendsListResource.state === "refreshing"}>
+        <Show when={friendsListStore.state.refreshing}>
           <LoadingCircle />
         </Show>
         <Button
@@ -58,10 +60,7 @@ export function FriendsList(): JSXElement {
         />
       </div>
 
-      <AsyncContent
-        resource={friendsListResource}
-        alwaysShowContent={friendsListResource.state === "refreshing"}
-      >
+      <AsyncContent asyncStore={friendsListStore} alwaysShowContent={true}>
         {(data: Friend[] | undefined) => (
           <DataTable
             id="friendsList"
@@ -264,6 +263,10 @@ const removeFriendModal = new SimpleModal({
     if (result.status !== 200) {
       return { status: -1, message: result.body.message };
     } else {
+      //remove from cache
+      friendsListStore.removeItem((it) => it.connectionId === connectionId);
+
+      // friendsList
       /*
       friendsList = friendsList?.filter(
         (it) => it.connectionId !== connectionId,
@@ -272,7 +275,7 @@ const removeFriendModal = new SimpleModal({
       friendsTable?.updateBody();
 
       */
-      void refreshFriendsList();
+
       return { status: 1, message: `Friend removed` };
     }
   },
@@ -405,3 +408,5 @@ function formatPb(entry?: PersonalBest):
 
   return result;
 }
+
+addToGlobal({ f: friendsListStore });
