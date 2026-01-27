@@ -388,7 +388,7 @@ async function applyBritishEnglishToWord(
 function applyLazyModeToWord(word: string, language: LanguageObject): string {
   // polyglot mode, use the word's actual language
   if (currentWordset && currentWordset instanceof PolyglotWordset) {
-    const langName = currentWordset.wordsWithLanguage.get(word);
+    const langName = currentWordset.currentLanguage;
     const langProps = langName
       ? currentWordset.languageProperties.get(langName)
       : undefined;
@@ -508,9 +508,8 @@ async function getQuoteWordList(
     // because it will be reversed again in the generateWords function
     if (wordOrder === "reverse") {
       return currentWordset.words.reverse();
-    } else {
-      return currentWordset.words;
     }
+    return currentWordset.words;
   }
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
@@ -655,17 +654,13 @@ export async function generateWords(
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
-    const result = await funbox.functions.withWords(wordList);
+    currentWordset = await funbox.functions.withWords(wordList);
     // PolyglotWordset if polyglot otherwise Wordset
-    if (result instanceof PolyglotWordset) {
-      const polyglotResult = result;
-      currentWordset = polyglotResult;
+    if (currentWordset instanceof PolyglotWordset) {
       // set allLigatures if any language in languageProperties has ligatures true
       ret.allLigatures = Array.from(
-        polyglotResult.languageProperties.values(),
+        currentWordset.languageProperties.values(),
       ).some((props) => !!props.ligatures);
-    } else {
-      currentWordset = result;
     }
   } else {
     currentWordset = await withWords(wordList);
@@ -901,9 +896,9 @@ export async function getNextWord(
 
   const usingFunboxWithGetWord = isFunboxActiveWithFunction("getWord");
   const randomWordLanguage =
-    (currentWordset instanceof PolyglotWordset
-      ? currentWordset.wordsWithLanguage.get(randomWord)
-      : Config.language) ?? Config.language; // Fall back to Config language if per-word language is unavailable
+    currentWordset instanceof PolyglotWordset
+      ? currentWordset.currentLanguage
+      : Config.language; // Fall back to Config language if per-word language is unavailable
 
   if (
     Config.mode !== "custom" &&

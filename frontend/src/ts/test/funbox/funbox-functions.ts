@@ -146,19 +146,58 @@ class PseudolangWordGenerator extends Wordset {
 }
 
 export class PolyglotWordset extends Wordset {
-  public wordsWithLanguage: Map<string, Language>;
-  public languageProperties: Map<Language, JSONData.LanguageProperties>;
+  readonly wordsMap: Map<Language, Wordset>;
+  readonly languageProperties: Map<Language, JSONData.LanguageProperties>;
+  private currLang: Language;
+  readonly langs: Language[];
 
   constructor(
-    wordsWithLanguage: Map<string, Language>,
+    wordsMap: Map<Language, Wordset>,
     languageProperties: Map<Language, JSONData.LanguageProperties>,
   ) {
-    // build and shuffle the word array
-    const wordArray = Array.from(wordsWithLanguage.keys());
-    Arrays.shuffle(wordArray);
-    super(wordArray);
-    this.wordsWithLanguage = wordsWithLanguage;
+    super([]);
     this.languageProperties = languageProperties;
+    this.langs = Array.from(languageProperties.keys());
+    this.wordsMap = wordsMap;
+    this.resetIndexes();
+    this.length = Array.from(this.wordsMap.values()).reduce(
+      (sum, ws) => sum + ws.words.length,
+      0,
+    );
+    this.currLang = this.langs[0] as Language;
+  }
+
+  get currentLanguage(): Language {
+    return this.currLang;
+  }
+
+  override resetIndexes(): void {
+    this.wordsMap.forEach((ws, _) => {
+      ws.resetIndexes();
+    });
+  }
+
+  private uniformLang(): Language {
+    const index = Math.floor(Math.random() * this.langs.length);
+    this.currLang = this.langs[index] as Language;
+    return this.currLang;
+  }
+
+  private getWordset(): Wordset {
+    const lang = this.uniformLang();
+    return this.wordsMap.get(lang) as Wordset;
+  }
+
+  override randomWord(mode: FunboxWordsFrequency): string {
+    return this.getWordset().randomWord(mode);
+  }
+
+  override shuffledWord(): string {
+    return this.getWordset().shuffledWord();
+  }
+
+  override nextWord(): string {
+    return this.getWordset().nextWord();
   }
 }
 
@@ -764,13 +803,10 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         ]),
       );
 
-      const wordsWithLanguage = new Map(
-        languages.flatMap((lang) =>
-          lang.words.map((word) => [word, lang.name]),
-        ),
+      const wordsMap: Map<Language, Wordset> = new Map(
+        languages.map((lang) => [lang.name, new Wordset(lang.words)]),
       );
-
-      return new PolyglotWordset(wordsWithLanguage, languageProperties);
+      return new PolyglotWordset(wordsMap, languageProperties);
     },
   },
 };
