@@ -21,14 +21,16 @@ export function User(props: {
     Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar"> & {
       badgeId?: number;
     };
-  options?: UserFlagOptions;
+  options?: UserFlagOptions & { showAvatar?: boolean };
 }): JSXElement {
   return (
     <div class="flex items-baseline gap-1">
-      <DiscordAvatar
-        discordId={props.user.discordId}
-        discordAvatar={props.user.discordAvatar}
-      />
+      <Show when={props.options?.showAvatar ?? true}>
+        <DiscordAvatar
+          discordId={props.user.discordId}
+          discordAvatar={props.user.discordAvatar}
+        />
+      </Show>
 
       <Button
         type="text"

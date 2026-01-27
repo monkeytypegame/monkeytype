@@ -3,15 +3,12 @@ import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
-import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { formatDuration } from "date-fns/formatDuration";
-import { intervalToDuration } from "date-fns/intervalToDuration";
 import { JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
 import { createAsyncArrayStore } from "../../../hooks/asyncStore";
 import { getActivePage, getUserId } from "../../../signals/core";
-import { secondsToString } from "../../../utils/date-and-time";
+import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import Format from "../../../utils/format";
 import { getXpDetails } from "../../../utils/levels";
 import { addToGlobal, formatTypingStatsRatio } from "../../../utils/misc";
@@ -44,7 +41,7 @@ const friendsListStore = createAsyncArrayStore<Friend>({
 
 export function FriendsList(): JSXElement {
   return (
-    <Show when={getUserId() !== null}>
+    <Show when={isOpen()}>
       <div class="items-bottom flex">
         <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
         <Show when={friendsListStore.state.refreshing}>
@@ -61,7 +58,7 @@ export function FriendsList(): JSXElement {
       </div>
 
       <AsyncContent asyncStore={friendsListStore} alwaysShowContent={true}>
-        {(data: Friend[] | undefined) => (
+        {(data) => (
           <DataTable
             id="friendsList"
             columns={columns}
@@ -338,25 +335,6 @@ async function addFriend(receiverName: string): Promise<true | string> {
   } else {
     return true;
   }
-}
-
-function formatAge(
-  timestamp: number | undefined,
-  format?: "short" | "full",
-): string {
-  if (timestamp === undefined) return "";
-  let formatted = "";
-  const duration = intervalToDuration({ start: timestamp, end: Date.now() });
-
-  if (format === undefined || format === "full") {
-    formatted = formatDuration(duration, {
-      format: ["years", "months", "days", "hours", "minutes"],
-    });
-  } else {
-    formatted = formatDistanceToNow(timestamp);
-  }
-
-  return formatted !== "" ? formatted : "less then a minute";
 }
 
 function formatStreak(length?: number, prefix?: string): string {

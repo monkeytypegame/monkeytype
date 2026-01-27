@@ -76,7 +76,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
-        setUserId(user ? { uid: user?.uid } : null);
+        setUserId(user?.uid ?? null);
         await callback(true, user);
       }
     });

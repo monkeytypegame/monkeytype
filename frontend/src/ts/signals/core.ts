@@ -1,7 +1,10 @@
-import { createSignal } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 import { PageName } from "../pages/page";
 
-export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
+const [activePage, setActivePage] = createSignal<PageName>("loading");
+export const getActivePage = createMemo(activePage);
+export { setActivePage };
+
 export const [getVersion, setVersion] = createSignal<{
   text: string;
   isNew: boolean;
@@ -30,6 +33,6 @@ export const [getFocus, setFocus] = createSignal(false);
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
-export const [getUserId, setUserId] = createSignal<{ uid: string } | null>(
-  null,
-);
+export const [getUserId, setUserId] = createSignal<string | null>(null);
+
+export const isLoggedIn = createMemo(() => getUserId() !== null);

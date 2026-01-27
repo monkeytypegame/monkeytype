@@ -1,5 +1,8 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { Day } from "date-fns";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import { formatDuration } from "date-fns/formatDuration";
+import { intervalToDuration } from "date-fns/intervalToDuration";
 
 /**
  * Converts seconds to a human-readable string representation of time.
@@ -250,4 +253,23 @@ export function getFirstDayOfTheWeek(): Day {
   }
 
   return 0; //start on sunday
+}
+
+export function formatAge(
+  timestamp: number | undefined,
+  format?: "short" | "full",
+): string {
+  if (timestamp === undefined) return "";
+  let formatted = "";
+  const duration = intervalToDuration({ start: timestamp, end: Date.now() });
+
+  if (format === undefined || format === "full") {
+    formatted = formatDuration(duration, {
+      format: ["years", "months", "days", "hours", "minutes"],
+    });
+  } else {
+    formatted = formatDistanceToNow(timestamp);
+  }
+
+  return formatted !== "" ? formatted : "less then a minute";
 }

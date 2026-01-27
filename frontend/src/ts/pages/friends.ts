@@ -1,18 +1,12 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 import Ape from "../ape";
-import {
-  intervalToDuration,
-  format as dateFormat,
-  formatDuration,
-  formatDistanceToNow,
-  format,
-} from "date-fns";
+import { format as dateFormat, format } from "date-fns";
 import * as Notifications from "../elements/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { formatXp, getXpDetails } from "../utils/levels";
-import { secondsToString } from "../utils/date-and-time";
+import { formatAge, secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
@@ -250,25 +244,6 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
     .querySelector(".avatarPlaceholder")
     ?.replaceWith(getAvatarElement(entry));
   return element;
-}
-
-function formatAge(
-  timestamp: number | undefined,
-  format?: "short" | "full",
-): string {
-  if (timestamp === undefined) return "";
-  let formatted = "";
-  const duration = intervalToDuration({ start: timestamp, end: Date.now() });
-
-  if (format === undefined || format === "full") {
-    formatted = formatDuration(duration, {
-      format: ["years", "months", "days", "hours", "minutes"],
-    });
-  } else {
-    formatted = formatDistanceToNow(timestamp);
-  }
-
-  return formatted !== "" ? formatted : "less then a minute";
 }
 
 function formatPb(entry?: PersonalBest):
