@@ -535,12 +535,8 @@ export async function addResult(
       },
       dailyLeaderboardsConfig,
     );
-    try {
-      allTimeLeaderboardCache.clear();
-      console.log("All-time leaderboard cache cleared");
-    } catch (error) {
-      console.warn("Cache clear failed (non-critical):", error);
-    }
+
+    allTimeLeaderboardCache.clear();
 
     if (
       dailyLeaderboardRank >= 1 &&
