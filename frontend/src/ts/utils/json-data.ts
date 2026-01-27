@@ -35,34 +35,31 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 /**
  * Memoizes an asynchronous function.
- * @template P The type of the function's parameters.
- * @template T The type of the function.
- * @param {T} fn The asynchronous function to memoize.
- * @param {(...args: Parameters<T>) => P} [getKey] Optional function to generate cache keys based on function arguments.
- * @returns {T} The memoized function.
+ * @template P   Cache key type
+ * @template Args Function argument tuple
+ * @template R   Resolved value of the Promise
+ * @param fn The async function to memoize.
+ * @param getKey Optional function to compute a cache key from the function arguments. If omitted, the first argument is used as the key.
+ * @returns A memoized version of the async function with the same signature.
  */
-export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
-  fn: T,
-  getKey?: (...args: Parameters<T>) => P,
-): T {
-  const cache = new Map<P, Promise<ReturnType<T>>>();
+export function memoizeAsync<P, Args extends unknown[], R>(
+  fn: (...args: Args) => Promise<R>,
+  getKey?: (...args: Args) => P,
+): (...args: Args) => Promise<R> {
+  const cache = new Map<P, Promise<R>>();
 
-  return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    const key = getKey ? getKey.apply(args) : (args[0] as P);
+  return async (...args: Args): Promise<R> => {
+    const key = getKey ? getKey(...args) : (args[0] as P);
 
-    if (cache.has(key)) {
-      const ret = await cache.get(key);
-      if (ret !== undefined) {
-        return ret as ReturnType<T>;
-      }
+    const cached = cache.get(key);
+    if (cached) {
+      return cached;
     }
 
-    // oxlint-disable-next-line prefer-spread
-    const result = fn.apply(null, args) as Promise<ReturnType<T>>;
+    const result = fn(...args);
     cache.set(key, result);
-
     return result;
-  }) as T;
+  };
 }
 
 /**
@@ -70,9 +67,7 @@ export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
  * @param url - The URL used to fetch JSON data.
  * @returns A promise that resolves to the cached JSON data.
  */
-export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
-  fetchJson,
-);
+export const cachedFetchJson = memoizeAsync(fetchJson);
 
 /**
  * Fetches a layout by name from the server.
@@ -92,17 +87,9 @@ export type LanguageProperties = Pick<
 
 let currentLanguage: LanguageObject;
 
-/**
- * Fetches the language object for a given language from the server.
- * @param lang The language code.
- * @returns A promise that resolves to the language object.
- */
-export async function getLanguage(lang: Language): Promise<LanguageObject> {
-  // try {
-  if (currentLanguage === undefined || currentLanguage.name !== lang) {
-    const loaded = await cachedFetchJson<LanguageObject>(
-      `/languages/${lang}.json`,
-    );
+const cachedFetchLanguage = memoizeAsync(
+  async (lang: Language): Promise<LanguageObject> => {
+    const loaded = await fetchJson<LanguageObject>(`/languages/${lang}.json`);
 
     if (!isDevEnvironment()) {
       //check the content to make it less easy to manipulate
@@ -116,6 +103,19 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
         );
       }
     }
+    return loaded;
+  },
+);
+/**
+ * Fetches the language object for a given language from the server.
+ * @param lang The language code.
+ * @returns A promise that resolves to the language object.
+ */
+export async function getLanguage(lang: Language): Promise<LanguageObject> {
+  // try {
+  if (currentLanguage === undefined || currentLanguage.name !== lang) {
+    const loaded = await cachedFetchLanguage(lang);
+
     currentLanguage = loaded;
   }
   return currentLanguage;
