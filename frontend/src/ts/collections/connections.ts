@@ -5,7 +5,7 @@ import { queryClient } from "./client";
 import Ape from "../ape";
 
 import { isLoggedIn } from "../signals/core";
-import { addToGlobal } from "../utils/misc";
+import { addToGlobal, sleep } from "../utils/misc";
 
 export const connectionsCollection = createCollection(
   queryCollectionOptions({
@@ -13,6 +13,8 @@ export const connectionsCollection = createCollection(
     queryClient,
     queryKey: ["connections"],
     getKey: (item) => item._id,
+    staleTime: 10,
+    startSync: true,
     queryFn: async () => {
       if (!isLoggedIn()) return [];
       const response = await Ape.connections.get();
@@ -23,6 +25,7 @@ export const connectionsCollection = createCollection(
       return response.body.data;
     },
     onUpdate: async ({ transaction }) => {
+      await sleep(2000);
       for (const update of transaction.mutations) {
         const id = update.key;
         const patch = update.changes;

@@ -5,28 +5,16 @@ import { format as dateFormat } from "date-fns/format";
 import { createSignal, For, JSXElement, Show } from "solid-js";
 
 import { connectionsCollection } from "../../../collections/connections";
-import { createEffectOn } from "../../../hooks/effects";
-import { getActivePage, getUserId } from "../../../signals/core";
+import { getUserId, setVersion } from "../../../signals/core";
 import { formatAge } from "../../../utils/date-and-time";
+import { sleep } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/Loader";
 import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
+import { MiniDataTable } from "../../ui/table/MinimalTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
-
-const [isOpen, setIsOpen] = createSignal(false);
-createEffectOn(getActivePage, (page) => {
-  console.log("### open page", page);
-  setIsOpen(page === "friends");
-});
-
-createEffectOn(isOpen, (open) => {
-  if (open) {
-    console.log("### refetch ", getUserId());
-    void connectionsCollection.utils.refetch();
-  }
-});
 
 function updateConnection(id: string, status: Connection["status"]): void {
   const connection = connectionsCollection.get(id);
@@ -34,7 +22,7 @@ function updateConnection(id: string, status: Connection["status"]): void {
   console.log("### update", connection);
 
   connectionsCollection.update(id, (draft) => {
-    draft.status = status;
+    draft.status = "accepted";
   });
 }
 
@@ -51,24 +39,32 @@ export function PendingConnectionsList(): JSXElement {
   );
 
   return (
-    <Show when={isOpen()}>
+    <Show when={true}>
       <H2
         text="Incoming Requests"
         fa={{ icon: "fa-user-plus", fixedWidth: true }}
       />
       <Button
-        onClick={() => {
-          void connectionsCollection.utils.refetch();
+        onClick={async () => {
+          connectionsCollection.update(query()[0]?._id, (draft) => {
+            draft.initiatorName = "BOB";
+          });
         }}
-        text="refetch"
+        text="update name"
       />
+      <Button
+        onClick={async () => {
+          connectionsCollection.update(query()[0]?._id, (draft) => {
+            draft.status = "accepted";
+          });
+        }}
+        text="accept (fake)"
+      />
+      {`live ${query.isReady}   ${query().length} `} <br></br>
+      <Show when={true} fallback={<div>no data</div>}>
+        <MiniDataTable data={query} columns={columns} />
 
-      {`live ${query.isReady}   ${query().length}`}
-      <Show when={query.isReady} fallback={<LoadingCircle />}>
-        <DataTable id="pendingConnections" columns={columns} data={query()} />
-        <For each={query() ?? []}>
-          {(item) => `live ${item.initiatorName} ${item._id}`}
-        </For>
+        <DataTable id="pendingConnections" columns={columns} query={query} />
       </Show>
     </Show>
   );

@@ -39,6 +39,8 @@ const friendsListStore = createAsyncArrayStore<Friend>({
   },
 });
 
+addToGlobal({ fs: friendsListStore });
+
 export function FriendsList(): JSXElement {
   return (
     <Show when={isOpen()}>

@@ -7,18 +7,9 @@ import {
   getSortedRowModel,
   SortingState,
 } from "@tanstack/solid-table";
-import {
-  Accessor,
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { Accessor, createMemo, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
-import { createEffectOn } from "../../../hooks/effects";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { bp } from "../../../signals/breakpoints";
 
@@ -47,11 +38,12 @@ type DataTableProps<TData, TValue> = {
   id: string;
   columns: AnyColumnDef<TData, TValue>[];
   data?: TData[];
-  query?: any;
+  query?: Accessor<TData[]>;
   fallback?: JSXElement;
 };
 
 export function DataTable<TData>(
+  // oxlint-disable-next-line typescript/no-explicit-any
   props: DataTableProps<TData, any>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -88,9 +80,10 @@ export function DataTable<TData>(
     return result;
   });
 
+  const data = createMemo(() => props.query?.() ?? props.data);
   const table = createSolidTable<TData>({
     get data() {
-      return props.query !== undefined ? props.query() : props.data;
+      return data() ?? [];
     },
     get columns() {
       return props.columns;
@@ -109,9 +102,13 @@ export function DataTable<TData>(
   });
 
   return (
-    <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
+    <Show when={true} fallback={props.fallback}>
+      <br></br>
+      length:{table.options.data.length} :{table.options.data.length}
+      <For each={table.options.data}>
+        {(row) => <div>{`row ${row.initiatorName} - ${row.status}`}</div>}
+      </For>
       <Table>
-        length:{props.query?.().length} :{table.getRowCount()}
         <TableHeader>
           <For each={table.getHeaderGroups()}>
             {(headerGroup) => (
