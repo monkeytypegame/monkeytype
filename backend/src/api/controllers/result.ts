@@ -64,6 +64,7 @@ import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
+import { allTimeLeaderboardCache } from "../../utils/all-time-leaderboard-cache";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -534,6 +535,13 @@ export async function addResult(
       },
       dailyLeaderboardsConfig,
     );
+    try {
+      allTimeLeaderboardCache.clear();
+      console.log("All-time leaderboard cache cleared");
+    } catch (error) {
+      console.warn("Cache clear failed (non-critical):", error);
+    }
+
     if (
       dailyLeaderboardRank >= 1 &&
       dailyLeaderboardRank <= 10 &&

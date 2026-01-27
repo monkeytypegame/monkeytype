@@ -15,6 +15,8 @@ import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 import { aggregateWithAcceptedConnections } from "./connections";
 
+import { allTimeLeaderboardCache } from "../utils/all-time-leaderboard-cache";
+
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
 };
@@ -44,6 +46,14 @@ export async function get(
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
+  }
+
+  if (page === 0 && pageSize === 50 && uid === undefined) {
+    const cached = allTimeLeaderboardCache.get({ mode, language });
+    if (cached) {
+      console.log("✅ Cache HIT - leaderboards");
+      return cached.data as DBLeaderboardEntry[];
+    }
   }
 
   const skip = page * pageSize;
@@ -83,12 +93,23 @@ export async function get(
       leaderboard = leaderboard.map((it) => omit(it, ["isPremium"]));
     }
 
+    if (page === 0 && pageSize === 50 && uid === undefined) {
+      try {
+        allTimeLeaderboardCache.set(
+          { mode, language },
+          leaderboard,
+          await getCount(mode, mode2, language),
+        );
+        console.log(" Cache SET - leaderboards");
+      } catch (error) {
+        console.warn("Cache set failed:", error);
+      }
+    }
+
     return leaderboard;
   } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.error === 175) {
+    if ((e as unknown as { error: number }).error === 175) {
       //QueryPlanKilled, collection was removed during the query
-      return false;
     }
     throw e;
   }
@@ -162,10 +183,8 @@ export async function getRank(
       return results[0] ?? null;
     }
   } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.error === 175) {
+    if ((e as unknown as { error: number }).error === 175) {
       //QueryPlanKilled, collection was removed during the query
-      return false;
     }
     throw e;
   }
@@ -393,8 +412,8 @@ async function createIndex(
       Logger.warning(`Index ${key} not matching, dropping and recreating...`);
 
       const existingIndex = (await getUsersCollection().listIndexes().toArray())
-        // oxlint-disable-next-line no-unsafe-member-access
-        .map((it) => it.name as string)
+
+        .map((it: unknown) => (it as { name: string }).name)
         .find((it) => it.startsWith(key));
 
       if (existingIndex !== undefined && existingIndex !== null) {
