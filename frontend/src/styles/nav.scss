@@ -411,6 +411,7 @@ header {
   }
   //top focus
   &.focus {
+    pointer-events: none !important;
     color: var(--sub-color) !important;
 
     .notificationBubble {
