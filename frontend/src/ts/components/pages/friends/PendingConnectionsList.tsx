@@ -2,7 +2,7 @@ import { Connection } from "@monkeytype/schemas/connections";
 import { and, eq, not, useLiveQuery } from "@tanstack/solid-db";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
-import { createEffect, JSXElement, Show } from "solid-js";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { connectionsCollection } from "../../../collections/connections";
 import { getUserId } from "../../../signals/core";
@@ -12,6 +12,7 @@ import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
+import { MiniTable } from "../../ui/table/MinimalTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
 
 function updateConnection(id: string, status: Connection["status"]): void {
@@ -41,7 +42,10 @@ export function PendingConnectionsList(): JSXElement {
 
   createEffect(() => {
     console.log("first ", query()[0]?.initiatorName);
+    setSignal(() => query());
   });
+
+  const [signal, setSignal] = createSignal(query());
 
   return (
     <Show when={true}>
@@ -72,6 +76,7 @@ export function PendingConnectionsList(): JSXElement {
 
       <Show when={true} fallback={<div>no data</div>}>
         <DataTable id="pendingConnections" columns={columns} query={query} />
+        <MiniTable columns={columns} query={signal} />
       </Show>
     </Show>
   );

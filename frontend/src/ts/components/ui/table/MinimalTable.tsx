@@ -1,38 +1,78 @@
-import { CollectionStatus } from "@tanstack/db";
-import { createSolidTable, getCoreRowModel } from "@tanstack/solid-table";
-import { Accessor, createEffect, createMemo, JSXElement } from "solid-js";
+import { Key } from "@solid-primitives/keyed";
+import {
+  ColumnDef,
+  createSolidTable,
+  getCoreRowModel,
+  Row,
+} from "@tanstack/solid-table";
+import { Accessor, Component, For, JSXElement } from "solid-js";
 
 import { AnyColumnDef } from "./DataTable";
 
-export function MiniDataTable<T>(props: {
-  data: Accessor<T[]> & { isReady: boolean; status: CollectionStatus };
-  // oxlint-disable-next-line typescript/no-explicit-any
-  columns: AnyColumnDef<T, any>[];
+export type TableProps<TData> = {
+  columnDefs: ColumnDef<any>[];
+  query: Accessor<TData[]>;
+};
+
+export function MiniTable<TData>(props: {
+  query: Accessor<TData[]>;
+  columns: AnyColumnDef<TData, any>[];
 }): JSXElement {
-  const data = createMemo(() => props.data());
   const table = createSolidTable({
     get data() {
-      return data();
+      return props.query();
     },
     get columns() {
-      return [];
+      return props.columns;
     },
     getCoreRowModel: getCoreRowModel(),
   });
-  createEffect(() => {
-    // Force table to update when data changes
-    table.setOptions((prev) => ({ ...prev, data: data() }));
-
-    console.log("data:", data().length);
-    console.log("table data:", table.options.data.length);
-    console.log("rows:", table.getRowModel().rows.length);
-  });
 
   return (
-    <pre>
-      status: {props.data.status}
-      len: {props.data().length}
-      rows: {table.getRowModel().rows.length}
-    </pre>
+    <>
+      minitable {table.getRowCount()}
+      <table>
+        <thead></thead>
+        <tbody>
+          <Key each={table.getRowModel().rows} by={(r) => r.original.id}>
+            {(row) => <TableRow row={row()} />}
+          </Key>
+        </tbody>
+      </table>
+    </>
   );
 }
+
+export type RowProps = {
+  row: Row<any>;
+};
+
+export const TableRow: Component<RowProps> = (props: RowProps) => {
+  console.log("TableRow Function");
+  return (
+    <>
+      <tr>
+        <Key each={props.row.getVisibleCells()} by={(c) => c.id}>
+          {(cell) => (
+            <td>
+              <Cell text={cell().getValue() as string} />
+            </td>
+          )}
+        </Key>
+      </tr>
+    </>
+  );
+};
+
+export type CellProps = {
+  text: string;
+};
+
+export const Cell: Component<CellProps> = (props) => {
+  console.log("Cell Component Function");
+  return (
+    <>
+      <span>{props.text}</span>
+    </>
+  );
+};

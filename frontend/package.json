@@ -29,6 +29,7 @@
     "@monkeytype/util": "workspace:*",
     "@sentry/browser": "9.14.0",
     "@sentry/vite-plugin": "3.3.1",
+    "@solid-primitives/keyed": "1.5.3",
     "@solidjs/meta": "0.29.4",
     "@tanstack/db": "0.5.23",
     "@tanstack/query-core": "5.90.20",

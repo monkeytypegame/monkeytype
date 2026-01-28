@@ -84,6 +84,8 @@ export function DataTable<TData>(
     props.query !== undefined ? [...props.query()] : props.data,
   );
   const table = createSolidTable<TData>({
+    debugAll: true,
+
     get data() {
       return data() ?? [];
     },
