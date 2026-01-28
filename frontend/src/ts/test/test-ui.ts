@@ -48,7 +48,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
-import * as BreakLigatures from "./break-ligatures";
+import * as Ligatures from "./break-ligatures";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -142,7 +142,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          BreakLigatures.breakLigaturesForWord(previousActiveWord);
+          Ligatures.set(previousActiveWord, "broken");
         } else if (direction === "back") {
           //
         }
@@ -159,7 +159,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    newActiveWord.removeClass("broken-ligatures");
+    Ligatures.set(newActiveWord, "normal");
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
