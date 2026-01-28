@@ -90,9 +90,11 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       });
 
       modalEl
-        .qsr<HTMLSelectElement>(".newQuoteLanguage")
+        .qsr<HTMLSelectElement>("select.newQuoteLanguage")
         .setValue(Strings.removeLanguageSize(Config.language));
-      modalEl.qsr<HTMLSelectElement>(".newQuoteLanguage").dispatch("change");
+      modalEl
+        .qsr<HTMLSelectElement>("select.newQuoteLanguage")
+        .dispatch("change");
       modalEl.qsr<HTMLInputElement>("input").setValue("");
 
       new CharacterCounter(modalEl.qsr(".newQuoteText"), 250);
