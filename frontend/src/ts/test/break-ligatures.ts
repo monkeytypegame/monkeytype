@@ -24,9 +24,9 @@ function reset(wordEl: ElementWithUtils): void {
 
 export function set(
   wordEl: ElementWithUtils,
-  state: "broken" | "normal",
+  areLigaturesBroken: boolean,
 ): void {
-  state === "normal" ? reset(wordEl) : applyIfNeeded(wordEl);
+  areLigaturesBroken ? applyIfNeeded(wordEl) : reset(wordEl);
 }
 
 export function update(key: string, wordsEl: ElementWithUtils): void {

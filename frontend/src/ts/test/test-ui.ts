@@ -142,7 +142,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          Ligatures.set(previousActiveWord, "broken");
+          Ligatures.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
         }
@@ -159,7 +159,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    Ligatures.set(newActiveWord, "normal");
+    Ligatures.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
