@@ -1,5 +1,5 @@
 import Config from "../config";
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 export function set(
   wordEl: ElementWithUtils,
@@ -11,8 +11,11 @@ export function set(
     return;
   }
 
-  const wordsEl = qsr("#words");
-  if (Config.typedEffect === "dots" && wordsEl.hasClass("withLigatures")) {
+  if (Config.typedEffect !== "dots") return;
+  if (wordEl.hasClass("broken-ligatures")) return;
+
+  const parent = wordEl.native.parentElement;
+  if (parent?.classList.contains("withLigatures")) {
     const width = wordEl.native.getBoundingClientRect().width;
     wordEl.setStyle({ width: `${width}px` });
     wordEl.addClass("broken-ligatures");
