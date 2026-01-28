@@ -30,8 +30,6 @@ export function set(
 }
 
 export function update(key: string, wordsEl: ElementWithUtils): void {
-  if (!["typedEffect", "fontFamily", "fontSize"].includes(key)) return;
-
   const words = wordsEl.qsa(".word.typed");
 
   const shouldReset =
