@@ -11,7 +11,7 @@ function canBreak(wordEl: ElementWithUtils): boolean {
 function applyIfNeeded(wordEl: ElementWithUtils): void {
   if (!canBreak(wordEl)) return;
 
-  const { width } = wordEl.native.getBoundingClientRect();
+  const { width } = wordEl.screenBounds();
   wordEl.setStyle({ width: `${width}px` });
   wordEl.addClass("broken-ligatures");
 }
