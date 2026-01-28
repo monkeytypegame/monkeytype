@@ -48,6 +48,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
+import * as BreakLigatures from "./break-ligatures";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -141,6 +142,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
+          BreakLigatures.breakLigaturesForWord(previousActiveWord);
         } else if (direction === "back") {
           //
         }
