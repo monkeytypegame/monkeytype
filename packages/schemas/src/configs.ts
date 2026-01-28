@@ -182,6 +182,9 @@ export const HighlightModeSchema = z.enum([
 ]);
 export type HighlightMode = z.infer<typeof HighlightModeSchema>;
 
+export const TypedEffectSchema = z.enum(["keep", "hide", "fade", "dots"]);
+export type TypedEffect = z.infer<typeof TypedEffectSchema>;
+
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);
 export type TapeMode = z.infer<typeof TapeModeSchema>;
 
@@ -441,6 +444,7 @@ export const ConfigSchema = z
     timerColor: TimerColorSchema,
     timerOpacity: TimerOpacitySchema,
     highlightMode: HighlightModeSchema,
+    typedEffect: TypedEffectSchema,
     tapeMode: TapeModeSchema,
     tapeMargin: TapeMarginSchema,
     smoothLineScroll: z.boolean(),
