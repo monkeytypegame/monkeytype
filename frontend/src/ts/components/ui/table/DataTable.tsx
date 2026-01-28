@@ -80,7 +80,9 @@ export function DataTable<TData>(
     return result;
   });
 
-  const data = createMemo(() => props.query?.() ?? props.data);
+  const data = createMemo(() =>
+    props.query !== undefined ? [...props.query()] : props.data,
+  );
   const table = createSolidTable<TData>({
     get data() {
       return data() ?? [];
@@ -102,70 +104,75 @@ export function DataTable<TData>(
   });
 
   return (
-    <Show when={true} fallback={props.fallback}>
+    <>
       <br></br>
-      length:{table.options.data.length} :{table.options.data.length}
-      <For each={table.options.data}>
-        {(row) => <div>{`row ${row.initiatorName} - ${row.status}`}</div>}
+      {/*table.getRowCount() > 0*/}
+      <Show when={true} fallback={props.fallback}>
+        <Table>
+          <TableHeader>
+            <For each={table.getHeaderGroups()}>
+              {(headerGroup) => (
+                <TableRow>
+                  <For each={headerGroup.headers}>
+                    {(header) => (
+                      <TableHead
+                        colSpan={header.colSpan}
+                        aria-sort={
+                          header.column.getIsSorted() === "asc"
+                            ? "ascending"
+                            : header.column.getIsSorted() === "desc"
+                              ? "descending"
+                              : "none"
+                        }
+                      >
+                        <Show when={!header.isPlaceholder}>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                        </Show>
+                      </TableHead>
+                    )}
+                  </For>
+                </TableRow>
+              )}
+            </For>
+          </TableHeader>
+          <TableBody>
+            <For each={table.getRowModel().rows}>
+              {(row) => (
+                <TableRow data-state={row.getIsSelected() && "selected"}>
+                  <For each={row.getVisibleCells()}>
+                    {(cell) => {
+                      const cellMeta =
+                        typeof cell.column.columnDef.meta?.cellMeta ===
+                        "function"
+                          ? cell.column.columnDef.meta.cellMeta({
+                              value: cell.getValue(),
+                              row: cell.row.original,
+                            })
+                          : (cell.column.columnDef.meta?.cellMeta ?? {});
+                      return (
+                        <TableCell {...cellMeta}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    }}
+                  </For>
+                </TableRow>
+              )}
+            </For>
+          </TableBody>
+        </Table>
+      </Show>
+      <For each={data()}>
+        {(row) => (
+          <div>{`row ${row.initiatorName} - ${row.status} ${table.getRowModel().rows[0]?.original.initiatorName}`}</div>
+        )}
       </For>
-      <Table>
-        <TableHeader>
-          <For each={table.getHeaderGroups()}>
-            {(headerGroup) => (
-              <TableRow>
-                <For each={headerGroup.headers}>
-                  {(header) => (
-                    <TableHead
-                      colSpan={header.colSpan}
-                      aria-sort={
-                        header.column.getIsSorted() === "asc"
-                          ? "ascending"
-                          : header.column.getIsSorted() === "desc"
-                            ? "descending"
-                            : "none"
-                      }
-                    >
-                      <Show when={!header.isPlaceholder}>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                      </Show>
-                    </TableHead>
-                  )}
-                </For>
-              </TableRow>
-            )}
-          </For>
-        </TableHeader>
-        <TableBody>
-          <For each={table.getRowModel().rows}>
-            {(row) => (
-              <TableRow data-state={row.getIsSelected() && "selected"}>
-                <For each={row.getVisibleCells()}>
-                  {(cell) => {
-                    const cellMeta =
-                      typeof cell.column.columnDef.meta?.cellMeta === "function"
-                        ? cell.column.columnDef.meta.cellMeta({
-                            value: cell.getValue(),
-                            row: cell.row.original,
-                          })
-                        : (cell.column.columnDef.meta?.cellMeta ?? {});
-                    return (
-                      <TableCell {...cellMeta}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    );
-                  }}
-                </For>
-              </TableRow>
-            )}
-          </For>
-        </TableBody>
-      </Table>
-    </Show>
+    </>
   );
 }

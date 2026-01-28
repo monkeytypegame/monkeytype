@@ -2,18 +2,16 @@ import { Connection } from "@monkeytype/schemas/connections";
 import { and, eq, not, useLiveQuery } from "@tanstack/solid-db";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { createEffect, JSXElement, Show } from "solid-js";
 
 import { connectionsCollection } from "../../../collections/connections";
-import { getUserId, setVersion } from "../../../signals/core";
+import { getUserId } from "../../../signals/core";
 import { formatAge } from "../../../utils/date-and-time";
-import { sleep } from "../../../utils/misc";
+import { addToGlobal } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
-import { LoadingCircle } from "../../common/Loader";
 import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
-import { MiniDataTable } from "../../ui/table/MinimalTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
 
 function updateConnection(id: string, status: Connection["status"]): void {
@@ -22,7 +20,7 @@ function updateConnection(id: string, status: Connection["status"]): void {
   console.log("### update", connection);
 
   connectionsCollection.update(id, (draft) => {
-    draft.status = "accepted";
+    draft.status = status;
   });
 }
 
@@ -37,6 +35,13 @@ export function PendingConnectionsList(): JSXElement {
         ),
       ),
   );
+  addToGlobal({
+    q: query,
+  });
+
+  createEffect(() => {
+    console.log("first ", query()[0]?.initiatorName);
+  });
 
   return (
     <Show when={true}>
@@ -46,9 +51,13 @@ export function PendingConnectionsList(): JSXElement {
       />
       <Button
         onClick={async () => {
-          connectionsCollection.update(query()[0]?._id, (draft) => {
-            draft.initiatorName = "BOB";
+          console.log("update started");
+          const tx = connectionsCollection.update(query()[0]?._id, (draft) => {
+            draft.initiatorName = "Kevin";
           });
+
+          await tx.isPersisted.promise;
+          console.log("update done");
         }}
         text="update name"
       />
@@ -60,10 +69,8 @@ export function PendingConnectionsList(): JSXElement {
         }}
         text="accept (fake)"
       />
-      {`live ${query.isReady}   ${query().length} `} <br></br>
-      <Show when={true} fallback={<div>no data</div>}>
-        <MiniDataTable data={query} columns={columns} />
 
+      <Show when={true} fallback={<div>no data</div>}>
         <DataTable id="pendingConnections" columns={columns} query={query} />
       </Show>
     </Show>
