@@ -2075,6 +2075,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
       "colorfulMode",
       "showAllLines",
       "fontSize",
+      "fontFamily",
       "maxLineWidth",
       "tapeMargin",
     ].includes(key)

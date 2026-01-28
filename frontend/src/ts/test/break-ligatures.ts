@@ -5,8 +5,7 @@ function canBreak(wordEl: ElementWithUtils): boolean {
   if (Config.typedEffect !== "dots") return false;
   if (wordEl.hasClass("broken-ligatures")) return false;
 
-  const parent = wordEl.native.parentElement;
-  return !!parent?.classList.contains("withLigatures");
+  return !!wordEl.native.closest(".withLigatures");
 }
 
 function applyIfNeeded(wordEl: ElementWithUtils): void {
@@ -31,8 +30,18 @@ export function set(
 }
 
 export function update(key: string, wordsEl: ElementWithUtils): void {
-  if (key !== "typedEffect") return;
-  if (!wordsEl.hasClass("withLigatures")) return;
+  if (!["typedEffect", "fontFamily", "fontSize"].includes(key)) return;
 
-  wordsEl.qsa(".word.typed").forEach(applyIfNeeded);
+  const words = wordsEl.qsa(".word.typed");
+
+  const shouldReset =
+    !wordsEl.hasClass("withLigatures") ||
+    Config.typedEffect !== "dots" ||
+    key === "fontFamily" ||
+    key === "fontSize";
+
+  if (shouldReset) {
+    words.forEach(reset);
+  }
+  words.forEach(applyIfNeeded);
 }
