@@ -2080,6 +2080,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
     ].includes(key)
   ) {
     updateWordWrapperClasses();
+    Ligatures.update(key, wordsEl);
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();
