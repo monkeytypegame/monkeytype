@@ -30,6 +30,7 @@
     "@sentry/browser": "9.14.0",
     "@sentry/vite-plugin": "3.3.1",
     "@solidjs/meta": "0.29.4",
+    "@tanstack/solid-table": "8.21.3",
     "@ts-rest/core": "3.52.1",
     "animejs": "4.2.2",
     "balloon-css": "1.2.0",
