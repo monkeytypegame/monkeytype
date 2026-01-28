@@ -167,12 +167,10 @@ export function DataTable<TData>(
                       else={
                         <TableHead colSpan={header.colSpan}>
                           <Show when={!header.isPlaceholder}>
-                            <div class="">
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                            </div>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                           </Show>
                         </TableHead>
                       }
