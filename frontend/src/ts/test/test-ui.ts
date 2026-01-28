@@ -159,6 +159,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
+    newActiveWord.removeClass("broken-ligatures");
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
