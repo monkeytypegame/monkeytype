@@ -135,7 +135,7 @@ export function DataTable<TData>(
                             onClick={(e) => {
                               header.column.getToggleSortingHandler()?.(e);
                             }}
-                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent text-left font-normal whitespace-nowrap"
+                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 text-left font-normal whitespace-nowrap"
                             {...(header.column.columnDef.meta
                               ?.sortableHeaderMeta ?? {})}
                           >
@@ -167,10 +167,12 @@ export function DataTable<TData>(
                       else={
                         <TableHead colSpan={header.colSpan}>
                           <Show when={!header.isPlaceholder}>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            <div class="">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                            </div>
                           </Show>
                         </TableHead>
                       }
