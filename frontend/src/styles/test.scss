@@ -572,7 +572,6 @@
         background: var(--c-dot--error);
       }
     }
-    // Handle error dots for broken ligatures too?
     &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
       background: var(--c-dot--error);
     }
