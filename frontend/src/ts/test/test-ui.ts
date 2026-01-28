@@ -2080,7 +2080,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
-    updateWordWrapperClasses();
+    if (key !== "fontFamily") updateWordWrapperClasses();
     Ligatures.update(key, wordsEl);
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {
