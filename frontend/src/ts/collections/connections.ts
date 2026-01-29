@@ -4,8 +4,16 @@ import { queryClient } from "./client";
 
 import Ape from "../ape";
 
-import { getUserId, isLoggedIn } from "../signals/core";
+import { getActivePage, getUserId, isLoggedIn } from "../signals/core";
 import { addToGlobal } from "../utils/misc";
+import { createEffectOn } from "../hooks/effects";
+
+createEffectOn(getActivePage, (page) => {
+  if (page === "friends") {
+    console.log("### refreshing connections");
+    void queryClient.invalidateQueries({ queryKey: ["connections"] });
+  }
+});
 
 export const connectionsCollection = createCollection(
   queryCollectionOptions({
@@ -13,8 +21,8 @@ export const connectionsCollection = createCollection(
     queryClient,
     queryKey: ["connections", getUserId()],
     getKey: (item) => item._id,
-    staleTime: 10,
-    startSync: true,
+    //staleTime: 10,
+    //startSync: true,
     queryFn: async () => {
       if (!isLoggedIn()) return [];
       const response = await Ape.connections.get();

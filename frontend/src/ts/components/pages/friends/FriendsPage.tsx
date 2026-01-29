@@ -1,17 +1,36 @@
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
+import { Friend } from "@monkeytype/schemas/users";
+import { createCollection } from "@tanstack/db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { useQuery } from "@tanstack/solid-query";
 import { JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
 import { queryClient } from "../../../collections/client";
 import { connectionsCollection } from "../../../collections/connections";
+import { createEffectOn } from "../../../hooks/effects";
 import { getActivePage, getUserId } from "../../../signals/core";
 import { addToGlobal } from "../../../utils/misc";
 
 import { FriendsList } from "./FriendsList";
 import { PendingConnectionsList } from "./PendingConnectionsList";
 export function FriendsPage(): JSXElement {
-  const isOpen = (): boolean => getActivePage() === "friends";
+  const friendsCollection = createCollection(
+    queryCollectionOptions({
+      queryClient,
+      queryKey: ["friendsList", getUserId()],
+      getKey: (item) => item.uid,
+      queryFn: async () => {
+        if (getUserId() === null) return [];
+        const response = await Ape.users.getFriends();
+        if (response.status !== 200) {
+          throw new Error(response.body.message);
+        }
+        return response.body.data;
+      },
+    }),
+  );
+  addToGlobal({ fc: friendsCollection });
 
   const friendsData = useQuery(() => {
     const uid = getUserId();
@@ -37,15 +56,28 @@ export function FriendsPage(): JSXElement {
     if (result.status !== 200) {
       return `Friend request failed: ${result.body.message}`;
     } else {
-      //TODO add to connections
       return true;
     }
   };
 
   const removeFriend = async (connectionId: string): Promise<true | string> => {
-    await connectionsCollection.delete(connectionId).isPersisted.promise;
+    const tx = connectionsCollection.delete(connectionId);
 
-    void friendsData.refetch();
+    //optimistic update not working. remove the friend from the friendsList
+    const currentFriends = queryClient.getQueryData(["friendsList"]) as
+      | Friend[]
+      | undefined;
+    if (currentFriends) {
+      const updatedFriends = currentFriends.filter(
+        (it) => it.connectionId !== connectionId,
+      );
+      queryClient.setQueryData(["friendsList"], updatedFriends);
+    }
+
+    setTimeout(async () => {
+      await tx.isPersisted.promise;
+      void friendsData.refetch();
+    }, 500);
     return true;
   };
 
@@ -67,7 +99,7 @@ export function FriendsPage(): JSXElement {
   };
 
   return (
-    <Show when={isOpen}>
+    <Show when={true}>
       <div class="content-grid grid gap-8">
         <section>
           <PendingConnectionsList onUpdate={updateConnection} />
