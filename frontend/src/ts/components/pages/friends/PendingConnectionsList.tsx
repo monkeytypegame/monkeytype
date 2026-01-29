@@ -1,4 +1,4 @@
-import { Connection } from "@monkeytype/schemas/connections";
+import { Connection, ConnectionStatus } from "@monkeytype/schemas/connections";
 import { and, eq, not, useLiveQuery } from "@tanstack/solid-db";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
@@ -8,6 +8,7 @@ import { connectionsCollection } from "../../../collections/connections";
 import { getUserId } from "../../../signals/core";
 import { formatAge } from "../../../utils/date-and-time";
 import { addToGlobal } from "../../../utils/misc";
+import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { User } from "../../common/User";
@@ -15,17 +16,18 @@ import { DataTable } from "../../ui/table/DataTable";
 import { MiniTable } from "../../ui/table/MinimalTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
 
-function updateConnection(id: string, status: Connection["status"]): void {
-  const connection = connectionsCollection.get(id);
-  if (!connection) return;
-  console.log("### update", connection);
+let onUpdate: (
+  conenctionId: string,
+  status: ConnectionStatus | "rejected",
+) => Promise<void> | undefined;
 
-  connectionsCollection.update(id, (draft) => {
-    draft.status = status;
-  });
-}
-
-export function PendingConnectionsList(): JSXElement {
+export function PendingConnectionsList(props: {
+  onUpdate: (
+    conenctionId: string,
+    status: ConnectionStatus | "rejected",
+  ) => Promise<void>;
+}): JSXElement {
+  onUpdate = props.onUpdate;
   const query = useLiveQuery((q) =>
     q
       .from({ connections: connectionsCollection })
@@ -52,26 +54,6 @@ export function PendingConnectionsList(): JSXElement {
       <H2
         text="Incoming Requests"
         fa={{ icon: "fa-user-plus", fixedWidth: true }}
-      />
-      <Button
-        onClick={async () => {
-          console.log("update started");
-          const tx = connectionsCollection.update(query()[0]?._id, (draft) => {
-            draft.initiatorName = "Kevin";
-          });
-
-          await tx.isPersisted.promise;
-          console.log("update done");
-        }}
-        text="update name"
-      />
-      <Button
-        onClick={async () => {
-          connectionsCollection.update(query()[0]?._id, (draft) => {
-            draft.status = "accepted";
-          });
-        }}
-        text="accept (fake)"
       />
 
       <Show when={true} fallback={<div>no data</div>}>
@@ -108,12 +90,20 @@ const columns = [
     header: "",
 
     cell: (info) => (
-      <>
+      <div class="flex w-auto justify-between">
         <Button
-          onClick={() => updateConnection(info.getValue(), "accepted")}
+          onClick={() => void onUpdate(info.getValue(), "accepted")}
           fa={{ icon: "fa-check", fixedWidth: true }}
         />
-      </>
+        <Button
+          onClick={() => void onUpdate(info.getValue(), "rejected")}
+          fa={{ icon: "fa-times", fixedWidth: true }}
+        />
+        <Button
+          onClick={() => void onUpdate(info.getValue(), "blocked")}
+          fa={{ icon: "fa-shield-alt", fixedWidth: true }}
+        />
+      </div>
     ),
   }),
 ];

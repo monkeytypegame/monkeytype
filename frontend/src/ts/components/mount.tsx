@@ -1,6 +1,8 @@
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
+import { queryClient } from "../collections/client";
 import { qsa } from "../utils/dom";
 
 import { Theme } from "./core/Theme";
@@ -13,7 +15,11 @@ import { FriendsPage } from "./pages/friends/FriendsPage";
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
-  friendspage: () => <FriendsPage />,
+  friendspage: () => (
+    <QueryClientProvider client={queryClient}>
+      <FriendsPage />
+    </QueryClientProvider>
+  ),
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,

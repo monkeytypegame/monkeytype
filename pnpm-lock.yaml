@@ -297,6 +297,9 @@ importers:
       '@tanstack/solid-db':
         specifier: 0.2.3
         version: 0.2.3(solid-js@1.9.10)(typescript@5.9.3)
+      '@tanstack/solid-query':
+        specifier: 5.90.23
+        version: 5.90.23(solid-js@1.9.10)
       '@tanstack/solid-table':
         specifier: 8.21.3
         version: 8.21.3(solid-js@1.9.10)
@@ -3441,6 +3444,11 @@ packages:
     resolution: {integrity: sha512-m0Y2qeKQOBYliXcxN3/oo2YC+cf87EPDA/he6O1oRWQh2Jtey05WZ9A1wuTCKRGk+KtE/fWhZN60kjg86cR25Q==}
     peerDependencies:
       solid-js: '>=1.9.0'
+
+  '@tanstack/solid-query@5.90.23':
+    resolution: {integrity: sha512-pbZc4+Kgm7ktzIuu01R3KOWfazQKgNp4AZvW0RSvv+sNMpYoileUDAkXEcjDJe6RJmb3fVvTR4LlcSL5pxDElQ==}
+    peerDependencies:
+      solid-js: ^1.6.0
 
   '@tanstack/solid-table@8.21.3':
     resolution: {integrity: sha512-PmhfSLBxVKiFs01LtYOYrCRhCyTUjxmb4KlxRQiqcALtip8+DOJeeezQM4RSX/GUS0SMVHyH/dNboCpcO++k2A==}
@@ -13196,6 +13204,11 @@ snapshots:
       solid-js: 1.9.10
     transitivePeerDependencies:
       - typescript
+
+  '@tanstack/solid-query@5.90.23(solid-js@1.9.10)':
+    dependencies:
+      '@tanstack/query-core': 5.90.20
+      solid-js: 1.9.10
 
   '@tanstack/solid-table@8.21.3(solid-js@1.9.10)':
     dependencies:

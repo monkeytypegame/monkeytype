@@ -6,7 +6,7 @@ export const queryClient = new QueryClient();
 
 createEffectOn(isLoggedIn, (state) => {
   if (!state) {
-    console.debug("QueryClient invalidate all queries.");
-    void queryClient.invalidateQueries();
+    console.debug("QueryClient clear.");
+    queryClient.clear();
   }
 });

@@ -1,3 +1,4 @@
+import { UseQueryResult } from "@tanstack/solid-query";
 import {
   createMemo,
   ErrorBoundary,
@@ -20,10 +21,17 @@ export default function AsyncContent<T>(
     | {
         resource: Resource<T | undefined>;
         asyncStore?: never;
+        query?: never;
       }
     | {
         asyncStore: AsyncStore<T>;
         resource?: never;
+        query?: never;
+      }
+    | {
+        asyncStore?: never;
+        resource?: never;
+        query: UseQueryResult<T>;
       }
   ) &
     (
@@ -38,17 +46,28 @@ export default function AsyncContent<T>(
         }
     ),
 ): JSXElement {
-  const source = createMemo(() =>
-    props.resource !== undefined
-      ? {
-          value: props.resource,
-          loading: () => props.resource.loading,
-        }
-      : {
-          value: () => props.asyncStore.store,
-          loading: () => props.asyncStore.state.loading,
-        },
-  );
+  const source = createMemo(() => {
+    if (props.resource !== undefined) {
+      return {
+        value: props.resource,
+        loading: () => props.resource.loading,
+      };
+    }
+    if (props.asyncStore !== undefined) {
+      return {
+        value: () => props.asyncStore.store,
+        loading: () => props.asyncStore.state.loading,
+      };
+    }
+
+    if (props.query !== undefined) {
+      return {
+        value: () => props.query.data,
+        loading: () => props.query?.isLoading,
+      };
+    }
+    throw new Error("missing source");
+  });
 
   const value = () => {
     try {

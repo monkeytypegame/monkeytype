@@ -7,7 +7,10 @@ const Table: Component<ComponentProps<"table">> = (props) => {
   const [local, others] = splitProps(props, ["class"]);
   return (
     <table
-      class={cn("w-full border-separate border-spacing-0", local.class)}
+      class={cn(
+        "w-full table-auto border-separate border-spacing-0",
+        local.class,
+      )}
       {...others}
     ></table>
   );

@@ -15,7 +15,7 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions } from "../pages/page";
-import { onDOMReady, qsa, qsr, qs } from "../utils/dom";
+import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 
 type ChangeOptions = {
@@ -298,10 +298,8 @@ function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => {
-    console.log("mount page", internalId, qs(`#${internalId}`));
     Skeleton.save(internalId);
   });
-  console.log("create page", id, qs(`#${internalId}`));
   return new Page({
     id,
     path,

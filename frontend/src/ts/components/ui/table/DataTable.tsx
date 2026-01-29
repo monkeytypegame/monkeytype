@@ -84,8 +84,6 @@ export function DataTable<TData>(
     props.query !== undefined ? [...props.query()] : props.data,
   );
   const table = createSolidTable<TData>({
-    debugAll: true,
-
     get data() {
       return data() ?? [];
     },
@@ -108,8 +106,7 @@ export function DataTable<TData>(
   return (
     <>
       <br></br>
-      {/*table.getRowCount() > 0*/}
-      <Show when={true} fallback={props.fallback}>
+      <Show when={table.getRowCount() > 0} fallback={props.fallback}>
         <Table>
           <TableHeader>
             <For each={table.getHeaderGroups()}>
@@ -170,11 +167,6 @@ export function DataTable<TData>(
           </TableBody>
         </Table>
       </Show>
-      <For each={data()}>
-        {(row) => (
-          <div>{`row ${row.initiatorName} - ${row.status} ${table.getRowModel().rows[0]?.original.initiatorName}`}</div>
-        )}
-      </For>
     </>
   );
 }

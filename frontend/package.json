@@ -35,6 +35,7 @@
     "@tanstack/query-core": "5.90.20",
     "@tanstack/query-db-collection": "1.0.20",
     "@tanstack/solid-db": "0.2.3",
+    "@tanstack/solid-query": "5.90.23",
     "@tanstack/solid-table": "8.21.3",
     "@ts-rest/core": "3.52.1",
     "animejs": "4.2.2",

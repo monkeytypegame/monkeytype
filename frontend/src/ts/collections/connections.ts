@@ -4,14 +4,14 @@ import { queryClient } from "./client";
 
 import Ape from "../ape";
 
-import { isLoggedIn } from "../signals/core";
-import { addToGlobal, sleep } from "../utils/misc";
+import { getUserId, isLoggedIn } from "../signals/core";
+import { addToGlobal } from "../utils/misc";
 
 export const connectionsCollection = createCollection(
   queryCollectionOptions({
     syncMode: "on-demand",
     queryClient,
-    queryKey: ["connections"],
+    queryKey: ["connections", getUserId()],
     getKey: (item) => item._id,
     staleTime: 10,
     startSync: true,
@@ -21,15 +21,36 @@ export const connectionsCollection = createCollection(
       if (response.status !== 200) {
         throw new Error("Error fetching connections:" + response.body.message);
       }
-      console.log("### Loaded connections", response.body.data.length);
+
       return response.body.data;
     },
     onUpdate: async ({ transaction }) => {
-      await sleep(2000);
       for (const update of transaction.mutations) {
-        const id = update.key;
+        const id = update.key as string;
         const patch = update.changes;
-        console.log("### sync", { id, patch });
+        if (patch.status !== undefined && patch.status !== "pending") {
+          const result = await Ape.connections.update({
+            params: { id },
+            body: { status: patch.status },
+          });
+          if (result.status !== 200) {
+            throw new Error(
+              `Cannot update friend request: ${result.body.message}`,
+            );
+          }
+        }
+      }
+    },
+    onDelete: async ({ transaction }) => {
+      for (const remove of transaction.mutations) {
+        const id = remove.key as string;
+
+        const result = await Ape.connections.delete({
+          params: { id },
+        });
+        if (result.status !== 200) {
+          throw new Error(`Cannot remove request: ${result.body.message}`);
+        }
       }
     },
   }),
