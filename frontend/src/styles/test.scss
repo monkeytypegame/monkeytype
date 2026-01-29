@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Faruma&display=swap");
+
 .highlightContainer {
   position: absolute;
   overflow: hidden;
@@ -324,6 +326,18 @@
       unicode-bidi: bidi-override;
     }
   }
+
+  &.thaanaTest {
+    font-family: "Faruma", "MV Faseyha", sans-serif;
+
+    .word letter {
+      display: inline-block;
+      unicode-bidi: isolate;
+      vertical-align: baseline;
+      line-height: 1;
+    }
+  }
+
   &.withLigatures {
     .word {
       overflow-wrap: anywhere;

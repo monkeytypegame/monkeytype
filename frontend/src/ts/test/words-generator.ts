@@ -113,7 +113,8 @@ export async function punctuateWord(
           currentLanguage === "arabic" ||
           currentLanguage === "persian" ||
           currentLanguage === "urdu" ||
-          currentLanguage === "kurdish"
+          currentLanguage === "kurdish" ||
+          currentLanguage === "dhivehi"
         ) {
           word += "؟";
         } else if (currentLanguage === "greek") {
@@ -217,7 +218,11 @@ export async function punctuateWord(
       // However, a) it has fallen into disuse in contemporary times and
       // b) there isn't a dedicated key on a keyboard to input it
       word = ".";
-    } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
+    } else if (
+      currentLanguage === "arabic" ||
+      currentLanguage === "kurdish" ||
+      currentLanguage === "dhivehi"
+    ) {
       word += "؛";
     } else if (currentLanguage === "chinese") {
       word += "；";
@@ -229,7 +234,8 @@ export async function punctuateWord(
       currentLanguage === "arabic" ||
       currentLanguage === "urdu" ||
       currentLanguage === "persian" ||
-      currentLanguage === "kurdish"
+      currentLanguage === "kurdish" ||
+      currentLanguage === "dhivehi"
     ) {
       word += "،";
     } else if (currentLanguage === "japanese") {
