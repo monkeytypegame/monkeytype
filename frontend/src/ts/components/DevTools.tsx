@@ -1,6 +1,11 @@
+import { TanStackDevtools } from "@tanstack/solid-devtools";
 import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
 import { JSXElement } from "solid-js";
 
 export function DevTools(): JSXElement {
-  return <SolidQueryDevtools initialIsOpen={false} />;
+  return (
+    <TanStackDevtools
+      plugins={[{ name: "TanStack Query", render: <SolidQueryDevtools /> }]}
+    />
+  );
 }

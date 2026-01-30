@@ -29,23 +29,22 @@ const SortingStateSchema = z.array(
   }),
 );
 
-export type AnyColumnDef<TData, TValue> =
-  | ColumnDef<TData, TValue>
+export type DataTableColumnDef<TData> =
+  // oxlint-disable-next-line typescript/no-explicit-any
+  | ColumnDef<TData, any>
   //  | AccessorFnColumnDef<TData, TValue>
-  | AccessorKeyColumnDef<TData, TValue>;
+  // oxlint-disable-next-line typescript/no-explicit-any
+  | AccessorKeyColumnDef<TData, any>;
 
-type DataTableProps<TData, TValue> = {
+type DataTableProps<TData> = {
   id: string;
-  columns: AnyColumnDef<TData, TValue>[];
+  columns: DataTableColumnDef<TData>[];
   data?: TData[];
   query?: Accessor<TData[]>;
   fallback?: JSXElement;
 };
 
-export function DataTable<TData>(
-  // oxlint-disable-next-line typescript/no-explicit-any
-  props: DataTableProps<TData, any>,
-): JSXElement {
+export function DataTable<TData>(props: DataTableProps<TData>): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
     //oxlint-disable-next-line solid/reactivity
     key: `${props.id}Sort`,
@@ -104,69 +103,65 @@ export function DataTable<TData>(
   });
 
   return (
-    <>
-      <br></br>
-      <Show when={table.getRowCount() > 0} fallback={props.fallback}>
-        <Table>
-          <TableHeader>
-            <For each={table.getHeaderGroups()}>
-              {(headerGroup) => (
-                <TableRow>
-                  <For each={headerGroup.headers}>
-                    {(header) => (
-                      <TableHead
-                        colSpan={header.colSpan}
-                        aria-sort={
-                          header.column.getIsSorted() === "asc"
-                            ? "ascending"
-                            : header.column.getIsSorted() === "desc"
-                              ? "descending"
-                              : "none"
-                        }
-                      >
-                        <Show when={!header.isPlaceholder}>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                        </Show>
-                      </TableHead>
-                    )}
-                  </For>
-                </TableRow>
-              )}
-            </For>
-          </TableHeader>
-          <TableBody>
-            <For each={table.getRowModel().rows}>
-              {(row) => (
-                <TableRow data-state={row.getIsSelected() && "selected"}>
-                  <For each={row.getVisibleCells()}>
-                    {(cell) => {
-                      const cellMeta =
-                        typeof cell.column.columnDef.meta?.cellMeta ===
-                        "function"
-                          ? cell.column.columnDef.meta.cellMeta({
-                              value: cell.getValue(),
-                              row: cell.row.original,
-                            })
-                          : (cell.column.columnDef.meta?.cellMeta ?? {});
-                      return (
-                        <TableCell {...cellMeta}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      );
-                    }}
-                  </For>
-                </TableRow>
-              )}
-            </For>
-          </TableBody>
-        </Table>
-      </Show>
-    </>
+    <Show when={table.getRowCount() > 0} fallback={props.fallback}>
+      <Table>
+        <TableHeader>
+          <For each={table.getHeaderGroups()}>
+            {(headerGroup) => (
+              <TableRow>
+                <For each={headerGroup.headers}>
+                  {(header) => (
+                    <TableHead
+                      colSpan={header.colSpan}
+                      aria-sort={
+                        header.column.getIsSorted() === "asc"
+                          ? "ascending"
+                          : header.column.getIsSorted() === "desc"
+                            ? "descending"
+                            : "none"
+                      }
+                    >
+                      <Show when={!header.isPlaceholder}>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      </Show>
+                    </TableHead>
+                  )}
+                </For>
+              </TableRow>
+            )}
+          </For>
+        </TableHeader>
+        <TableBody>
+          <For each={table.getRowModel().rows}>
+            {(row) => (
+              <TableRow data-state={row.getIsSelected() && "selected"}>
+                <For each={row.getVisibleCells()}>
+                  {(cell) => {
+                    const cellMeta =
+                      typeof cell.column.columnDef.meta?.cellMeta === "function"
+                        ? cell.column.columnDef.meta.cellMeta({
+                            value: cell.getValue(),
+                            row: cell.row.original,
+                          })
+                        : (cell.column.columnDef.meta?.cellMeta ?? {});
+                    return (
+                      <TableCell {...cellMeta}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    );
+                  }}
+                </For>
+              </TableRow>
+            )}
+          </For>
+        </TableBody>
+      </Table>
+    </Show>
   );
 }
