@@ -33,7 +33,7 @@
     "@tanstack/db": "0.5.23",
     "@tanstack/query-core": "5.90.20",
     "@tanstack/query-db-collection": "1.0.20",
-    "@tanstack/solid-db": "0.2.5",
+    "@tanstack/solid-db": "0.2.3",
     "@tanstack/solid-devtools": "0.7.23",
     "@tanstack/solid-query": "5.90.23",
     "@tanstack/solid-query-devtools": "5.91.3",

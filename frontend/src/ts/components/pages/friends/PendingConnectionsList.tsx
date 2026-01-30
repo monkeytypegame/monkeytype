@@ -42,9 +42,7 @@ export function PendingConnectionsList(props: {
         fa={{ icon: "fa-user-plus", fixedWidth: true }}
       />
 
-      <Show when={true} fallback={<div>no data</div>}>
-        <DataTable id="pendingConnections" columns={columns()} query={query} />
-      </Show>
+      <DataTable id="pendingConnections" columns={columns()} query={query} />
     </Show>
   );
 }
@@ -88,14 +86,17 @@ function getColumnDefinitions({
         <div class="flex w-auto justify-between">
           <Button
             onClick={() => void onUpdate(info.getValue(), "accepted")}
+            label="accept"
             fa={{ icon: "fa-check", fixedWidth: true }}
           />
           <Button
             onClick={() => void onUpdate(info.getValue(), "rejected")}
+            label="reject"
             fa={{ icon: "fa-times", fixedWidth: true }}
           />
           <Button
             onClick={() => void onUpdate(info.getValue(), "blocked")}
+            label="block"
             fa={{ icon: "fa-shield-alt", fixedWidth: true }}
           />
         </div>

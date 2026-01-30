@@ -15,6 +15,7 @@ type ButtonProps = BaseProps & {
   onClick: () => void;
   href?: never;
   sameTarget?: true;
+  label?: string | { text: string; position: "up" | "down" | "left" | "right" };
 };
 
 type AnchorProps = BaseProps & {
@@ -40,6 +41,18 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     return {
       [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
       [props.class ?? ""]: props.class !== undefined,
+    };
+  };
+
+  const ariaLabel = (): object => {
+    if (isAnchor) return {};
+    if (props.label === undefined) return {};
+    if (typeof props.label === "string") {
+      return { "aria-label": props.label, "data-balloon-pos": "up" };
+    }
+    return {
+      "aria-label": props.label.text,
+      "data-balloon-pos": props.label.position,
     };
   };
 
@@ -70,6 +83,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           classList={getClassList()}
           onClick={() => props.onClick?.()}
+          {...ariaLabel()}
         >
           {content}
         </button>

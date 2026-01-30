@@ -8,7 +8,6 @@ import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import { showLoaderBar } from "../signals/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
-import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
@@ -153,7 +152,6 @@ export function updateUI(): void {
   updateIntegrationSections();
   updateAccountSections();
   void ApeKeyTable.update(updateUI);
-  void BlockedUserTable.update();
   updateTabs();
   page.setUrlParams(state);
 }

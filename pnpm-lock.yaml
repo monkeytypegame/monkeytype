@@ -292,8 +292,8 @@ importers:
         specifier: 1.0.20
         version: 1.0.20(@tanstack/query-core@5.90.20)(typescript@5.9.3)
       '@tanstack/solid-db':
-        specifier: 0.2.5
-        version: 0.2.5(solid-js@1.9.10)(typescript@5.9.3)
+        specifier: 0.2.3
+        version: 0.2.3(solid-js@1.9.10)(typescript@5.9.3)
       '@tanstack/solid-devtools':
         specifier: 0.7.23
         version: 0.7.23(csstype@3.1.3)(solid-js@1.9.10)
@@ -3442,11 +3442,6 @@ packages:
     peerDependencies:
       typescript: '>=4.7'
 
-  '@tanstack/db@0.5.25':
-    resolution: {integrity: sha512-VqVchs6Mm4rw2GyiOkaoD+PJw6lCJT8EI/TzPu8KWZy3QxyOlilpMvEuDTCl0LZdp1iLYlQT1NdgDg0gimV3kQ==}
-    peerDependencies:
-      typescript: '>=4.7'
-
   '@tanstack/devtools-client@0.0.5':
     resolution: {integrity: sha512-hsNDE3iu4frt9cC2ppn1mNRnLKo2uc1/1hXAyY9z4UYb+o40M2clFAhiFoo4HngjfGJDV3x18KVVIq7W4Un+zA==}
     engines: {node: '>=18'}
@@ -3487,8 +3482,8 @@ packages:
   '@tanstack/query-devtools@5.93.0':
     resolution: {integrity: sha512-+kpsx1NQnOFTZsw6HAFCW3HkKg0+2cepGtAWXjiiSOJJ1CtQpt72EE2nyZb+AjAbLRPoeRmPJ8MtQd8r8gsPdg==}
 
-  '@tanstack/solid-db@0.2.5':
-    resolution: {integrity: sha512-tunB6Nbd2UHnPGXwprc0S4OjsP1JvwG0blmLnKgoG3bKdGyJQ8yVknHc7WWwIUdeAz4tH4x/p2RDVloqEKrnCA==}
+  '@tanstack/solid-db@0.2.3':
+    resolution: {integrity: sha512-m0Y2qeKQOBYliXcxN3/oo2YC+cf87EPDA/he6O1oRWQh2Jtey05WZ9A1wuTCKRGk+KtE/fWhZN60kjg86cR25Q==}
     peerDependencies:
       solid-js: '>=1.9.0'
 
@@ -13266,13 +13261,6 @@ snapshots:
       '@tanstack/pacer-lite': 0.2.1
       typescript: 5.9.3
 
-  '@tanstack/db@0.5.25(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.17(typescript@5.9.3)
-      '@tanstack/pacer-lite': 0.2.1
-      typescript: 5.9.3
-
   '@tanstack/devtools-client@0.0.5':
     dependencies:
       '@tanstack/devtools-event-client': 0.4.0
@@ -13323,10 +13311,10 @@ snapshots:
 
   '@tanstack/query-devtools@5.93.0': {}
 
-  '@tanstack/solid-db@0.2.5(solid-js@1.9.10)(typescript@5.9.3)':
+  '@tanstack/solid-db@0.2.3(solid-js@1.9.10)(typescript@5.9.3)':
     dependencies:
       '@solid-primitives/map': 0.7.2(solid-js@1.9.10)
-      '@tanstack/db': 0.5.25(typescript@5.9.3)
+      '@tanstack/db': 0.5.23(typescript@5.9.3)
       solid-js: 1.9.10
     transitivePeerDependencies:
       - typescript

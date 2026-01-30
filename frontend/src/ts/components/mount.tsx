@@ -11,6 +11,7 @@ import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { BlockedUsers } from "./pages/account-settings/BlockedUsers";
 import { FriendsPage } from "./pages/friends/FriendsPage";
 
 const components: Record<string, () => JSXElement> = {
@@ -20,6 +21,7 @@ const components: Record<string, () => JSXElement> = {
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
+  accountblockedusers: () => <BlockedUsers />,
   devtools: () => <DevTools />,
 };
 

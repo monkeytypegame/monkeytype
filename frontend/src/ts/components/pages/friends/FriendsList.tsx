@@ -289,6 +289,7 @@ function getColumnDefinitions({
             onClick={() => {
               removeFriend(info.getValue() as string, info.row.original.name);
             }}
+            label="remove friend"
             fa={{ icon: "fa-user-times", fixedWidth: true }}
           />
         ) : (
