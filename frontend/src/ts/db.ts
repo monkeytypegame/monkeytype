@@ -1,6 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import { isAuthenticated, getAuthenticatedUser } from "./firebase";
+import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { migrateConfig } from "./utils/config";
@@ -30,11 +30,7 @@ import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
-import {
-  configurationPromise,
-  get as getServerConfiguration,
-} from "./ape/server-configuration";
-import { Connection } from "@monkeytype/schemas/connections";
+import { configurationPromise } from "./ape/server-configuration";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -94,17 +90,11 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
-    const connectionsRequest = getServerConfiguration()?.connections.enabled
-      ? Ape.connections.get()
-      : { status: 200, body: { message: "", data: [] } };
-
-    const [userResponse, configResponse, presetsResponse, connectionsResponse] =
-      await Promise.all([
-        Ape.users.get(),
-        Ape.configs.get(),
-        Ape.presets.get(),
-        connectionsRequest,
-      ]);
+    const [userResponse, configResponse, presetsResponse] = await Promise.all([
+      Ape.users.get(),
+      Ape.configs.get(),
+      Ape.presets.get(),
+    ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
@@ -124,17 +114,10 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         presetsResponse.status,
       );
     }
-    if (connectionsResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${connectionsResponse.body.message} (connections)`,
-        connectionsResponse.status,
-      );
-    }
 
     const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
-    const connectionsData = connectionsResponse.body.data;
 
     if (userData === null) {
       throw new SnapshotInitError(
@@ -269,8 +252,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         },
       );
     }
-
-    snap.connections = convertConnections(connectionsData);
 
     dbSnapshot = snap;
     return dbSnapshot;
@@ -1137,48 +1118,6 @@ export async function getTestActivityCalendar(
   }
 
   return dbSnapshot.testActivityByYear[yearString];
-}
-
-export function mergeConnections(connections: Connection[]): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
-  const update = convertConnections(connections);
-
-  for (const [key, value] of Object.entries(update)) {
-    snapshot.connections[key] = value;
-  }
-
-  setSnapshot(snapshot);
-}
-
-function convertConnections(
-  connectionsData: Connection[],
-): Snapshot["connections"] {
-  return Object.fromEntries(
-    connectionsData.map((connection) => {
-      const isMyRequest =
-        getAuthenticatedUser()?.uid === connection.initiatorUid;
-
-      return [
-        isMyRequest ? connection.receiverUid : connection.initiatorUid,
-        connection.status === "pending" && !isMyRequest
-          ? "incoming"
-          : connection.status,
-      ];
-    }),
-  );
-}
-
-export function isFriend(uid: string | undefined): boolean {
-  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
-
-  const snapshot = getSnapshot();
-  if (!snapshot) return false;
-
-  return Object.entries(snapshot.connections).some(
-    ([receiverUid, status]) => receiverUid === uid && status === "accepted",
-  );
 }
 
 // export async function DB.getLocalTagPB(tagId) {

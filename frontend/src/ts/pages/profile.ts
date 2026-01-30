@@ -11,8 +11,8 @@ import { PersonalBests } from "@monkeytype/schemas/shared";
 import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
-import { addFriend } from "./friends";
 import { onDOMReady, qs, qsr } from "../utils/dom";
+import { addConnection } from "../collections/connections";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
@@ -254,14 +254,9 @@ qs(".page.pageProfile")?.onChild(
     const friendName =
       qs(".page.pageProfile .profile")?.getAttribute("name") ?? "";
 
-    const result = await addFriend(friendName);
-
-    if (result === true) {
-      Notifications.add(`Request sent to ${friendName}`);
+    await addConnection(friendName).then(() => {
       qs(".profile .details .addFriendButton")?.disable();
-    } else {
-      Notifications.add(result, -1);
-    }
+    });
   },
 );
 

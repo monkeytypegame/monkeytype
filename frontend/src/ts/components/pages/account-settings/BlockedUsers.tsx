@@ -1,5 +1,11 @@
 import { Connection } from "@monkeytype/schemas/connections";
-import { and, eq, not, useLiveQuery } from "@tanstack/solid-db";
+import {
+  and,
+  eq,
+  InitialQueryBuilder,
+  not,
+  useLiveQuery,
+} from "@tanstack/solid-db";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
@@ -14,16 +20,21 @@ import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
 
 export function BlockedUsers(): JSXElement {
-  const query = useLiveQuery((q) =>
-    q
-      .from({ connections: connectionsCollection })
-      .where(({ connections }) =>
-        and(
-          eq(connections.status, "blocked"),
-          not(eq(connections.initiatorUid, getUserId())),
-        ),
-      ),
-  );
+  const query = useLiveQuery(() => ({
+    id: "blockedConnections",
+    startSync: false,
+    query: (q: InitialQueryBuilder) => {
+      console.log("### blocked");
+      return q
+        .from({ connections: connectionsCollection })
+        .where(({ connections }) =>
+          and(
+            eq(connections.status, "blocked"),
+            not(eq(connections.initiatorUid, getUserId())),
+          ),
+        );
+    },
+  }));
 
   const columns = createMemo(() => {
     const defineColumn = createColumnHelper<Connection>().accessor;
@@ -60,7 +71,7 @@ export function BlockedUsers(): JSXElement {
   return (
     <>
       <div class="section blockedUsers">
-        <H3 text="blocked users 2" fa={{ icon: "fa-user-shield" }} />
+        <H3 text="blocked users" fa={{ icon: "fa-user-shield" }} />
         <p>Blocked users cannot send you friend requests.</p>
       </div>
 

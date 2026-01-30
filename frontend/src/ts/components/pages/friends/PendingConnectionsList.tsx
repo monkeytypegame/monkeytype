@@ -1,11 +1,9 @@
 import { Connection, ConnectionStatus } from "@monkeytype/schemas/connections";
-import { and, eq, not, useLiveQuery } from "@tanstack/solid-db";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { connectionsCollection } from "../../../collections/connections";
-import { getUserId } from "../../../signals/core";
+import { pendingConnectionsQuery } from "../../../collections/connections";
 import { formatAge } from "../../../utils/date-and-time";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
@@ -24,17 +22,7 @@ export function PendingConnectionsList(props: {
   const columns = createMemo(() =>
     getColumnDefinitions({ onUpdate: props.onUpdate }),
   );
-  const query = useLiveQuery((q) =>
-    q
-      .from({ connections: connectionsCollection })
-      .where(({ connections }) =>
-        and(
-          eq(connections.status, "pending"),
-          not(eq(connections.initiatorUid, getUserId())),
-        ),
-      ),
-  );
-
+  const query = pendingConnectionsQuery;
   return (
     <Show when={query().length > 0}>
       <H2

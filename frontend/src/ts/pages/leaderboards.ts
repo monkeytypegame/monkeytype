@@ -45,6 +45,7 @@ import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { isFriend } from "../collections/connections";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -454,7 +455,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,
-              isFriend: DB.isFriend(entry.uid),
+              isFriend: isFriend(entry.uid),
             })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
@@ -511,7 +512,7 @@ function buildWeeklyTableRow(
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,
-              isFriend: DB.isFriend(entry.uid),
+              isFriend: isFriend(entry.uid),
             })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""

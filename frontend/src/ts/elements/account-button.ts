@@ -9,6 +9,7 @@ import { getAvatarElement } from "../utils/discord-avatar";
 import * as AuthEvent from "../observables/auth-event";
 import { getSnapshot } from "../db";
 import { qsr } from "../utils/dom";
+import { pendingConnectionsQuery } from "../collections/connections";
 
 const nav = qsr("header nav");
 const accountButtonAndMenuEl = nav.qsr(".accountButtonAndMenu");
@@ -84,22 +85,15 @@ export function update(): void {
 }
 
 export function updateFriendRequestsIndicator(): void {
-  const friends = getSnapshot()?.connections;
-
   const bubbleElements = accountButtonAndMenuEl.qsa(
     ".view-account > .notificationBubble, .goToFriends > .notificationBubble",
   );
-  if (friends !== undefined) {
-    const pendingFriendRequests = Object.values(friends).filter(
-      (it) => it === "incoming",
-    ).length;
-    if (pendingFriendRequests > 0) {
-      bubbleElements.show();
-      return;
-    }
-  }
 
-  bubbleElements.hide();
+  if (pendingConnectionsQuery().length > 0) {
+    bubbleElements.show();
+  } else {
+    bubbleElements.hide();
+  }
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;

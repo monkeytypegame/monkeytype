@@ -21,6 +21,7 @@ import { formatXp } from "../utils/levels";
 import { formatTopPercentage } from "../utils/misc";
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { qs } from "../utils/dom";
+import { findConnectionByUid, isFriend } from "../collections/connections";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | Snapshot;
@@ -73,11 +74,12 @@ export async function update(
   }
 
   details?.qs(".name")?.setText(profile.name);
-  details
-    ?.qs(".userFlags")
-    ?.setHtml(
-      getHtmlByUserFlags({ ...profile, isFriend: DB.isFriend(profile.uid) }),
-    );
+  details?.qs(".userFlags")?.setHtml(
+    getHtmlByUserFlags({
+      ...profile,
+      isFriend: profile.uid !== undefined && isFriend(profile.uid),
+    }),
+  );
 
   if (profile.lbOptOut === true) {
     if (where === "profile") {
@@ -442,7 +444,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   nameField.native.style.fontSize = `${finalFontSize}px`;
 }
 
-export function updateFriendRequestButton(): void {
+function updateFriendRequestButton(): void {
   const myUid = getAuthenticatedUser()?.uid;
   const profileUid = document
     .querySelector(".profile")
@@ -450,7 +452,11 @@ export function updateFriendRequestButton(): void {
   const button = document.querySelector(".profile .addFriendButton");
 
   const myProfile = myUid === profileUid;
-  const hasRequest = DB.getSnapshot()?.connections[profileUid] !== undefined;
+  const existingConnection = findConnectionByUid({
+    initiatorUid: profileUid,
+    receiverUid: profileUid,
+  });
+  const hasRequest = existingConnection !== undefined;
   const featureEnabled = getServerConfiguration()?.connections.enabled;
 
   if (!featureEnabled || myUid === undefined || myProfile) {
