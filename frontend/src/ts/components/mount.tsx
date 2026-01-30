@@ -6,6 +6,7 @@ import { queryClient } from "../collections/client";
 import { qsa } from "../utils/dom";
 
 import { Theme } from "./core/Theme";
+import { DevTools } from "./DevTools";
 import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
@@ -15,19 +16,23 @@ import { FriendsPage } from "./pages/friends/FriendsPage";
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
-  friendspage: () => (
-    <QueryClientProvider client={queryClient}>
-      <FriendsPage />
-    </QueryClientProvider>
-  ),
+  friendspage: () => <FriendsPage />,
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
+  devtools: () => <DevTools />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
   for (const mountPoint of qsa(name)) {
-    render(() => component(), mountPoint.native);
+    render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          {component()}
+        </QueryClientProvider>
+      ),
+      mountPoint.native,
+    );
   }
 }
 

@@ -4,13 +4,13 @@ import { queryClient } from "./client";
 
 import Ape from "../ape";
 
-import { getActivePage, getUserId, isLoggedIn } from "../signals/core";
-import { addToGlobal } from "../utils/misc";
 import { createEffectOn } from "../hooks/effects";
+import { getActivePage, isLoggedIn } from "../signals/core";
+import { addToGlobal } from "../utils/misc";
 
 createEffectOn(getActivePage, (page) => {
+  //refresh connections when entering the friends page
   if (page === "friends") {
-    console.log("### refreshing connections");
     void queryClient.invalidateQueries({ queryKey: ["connections"] });
   }
 });
@@ -19,10 +19,8 @@ export const connectionsCollection = createCollection(
   queryCollectionOptions({
     syncMode: "on-demand",
     queryClient,
-    queryKey: ["connections", getUserId()],
+    queryKey: ["connections"],
     getKey: (item) => item._id,
-    //staleTime: 10,
-    //startSync: true,
     queryFn: async () => {
       if (!isLoggedIn()) return [];
       const response = await Ape.connections.get();

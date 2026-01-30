@@ -1,3 +1,4 @@
+import { useIsFetching } from "@tanstack/solid-query";
 import { JSX } from "solid-js";
 
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
@@ -7,10 +8,12 @@ import { applyReducedMotion } from "../../../utils/misc";
 
 export function LoaderBar(): JSX.Element {
   const [ref, loaderEl] = useRefWithUtils<HTMLDivElement>();
+  const fetchingQueries = useIsFetching();
 
   useVisibilityAnimation({
     element: loaderEl,
-    isVisible: () => getLoaderBarSignal()?.visible === true,
+    isVisible: () =>
+      getLoaderBarSignal()?.visible === true || fetchingQueries() > 0,
     showAnimationOptions: {
       delay: applyReducedMotion(getLoaderBarSignal()?.instant ? 0 : 125),
     },

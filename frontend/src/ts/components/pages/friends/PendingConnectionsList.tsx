@@ -7,7 +7,6 @@ import { JSXElement, Show } from "solid-js";
 import { connectionsCollection } from "../../../collections/connections";
 import { getUserId } from "../../../signals/core";
 import { formatAge } from "../../../utils/date-and-time";
-import { addToGlobal } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { User } from "../../common/User";
@@ -36,12 +35,9 @@ export function PendingConnectionsList(props: {
         ),
       ),
   );
-  addToGlobal({
-    q: query,
-  });
 
   return (
-    <Show when={true}>
+    <Show when={query().length > 0}>
       <H2
         text="Incoming Requests"
         fa={{ icon: "fa-user-plus", fixedWidth: true }}
@@ -53,6 +49,7 @@ export function PendingConnectionsList(props: {
     </Show>
   );
 }
+
 const defineColumn = createColumnHelper<Connection>().accessor;
 const columns = [
   defineColumn("initiatorName", {

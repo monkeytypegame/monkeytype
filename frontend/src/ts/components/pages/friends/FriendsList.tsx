@@ -22,13 +22,13 @@ import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
 import { TableColumnHeader } from "../../ui/table/TableColumnHeader";
 
-let onAdd: (receiverName: string) => Promise<true | string> | undefined;
-let onDelete: (connectionId: string) => Promise<true | string> | undefined;
+let onAdd: (receiverName: string) => Promise<void> | undefined;
+let onDelete: (connectionId: string) => Promise<void> | undefined;
 
 export function FriendsList(props: {
   data: UseQueryResult<Friend[]>;
-  onAdd: (receiverName: string) => Promise<true | string>;
-  onDelete: (uid: string) => Promise<true | string>;
+  onAdd: (receiverName: string) => Promise<void>;
+  onDelete: (uid: string) => Promise<void>;
 }): JSXElement {
   onDelete = props.onDelete;
   onAdd = props.onAdd;
@@ -92,30 +92,14 @@ const addFriendModal = new SimpleModal({
   buttonText: "request",
   onlineOnly: true,
   execFn: async (_thisPopup, receiverName) => {
-    const result = (await onAdd(receiverName)) ?? "missing callback";
+    void (await onAdd(receiverName));
 
-    if (result === true) {
-      return { status: 1, message: `Request sent to ${receiverName}` };
-    }
-
-    let status: -1 | 0 | 1 = -1;
-    let message: string = "Unknown error";
-
-    if (result.includes("already exists")) {
-      status = 0;
-      message = `You are already friends with ${receiverName}`;
-    } else if (result.includes("request already sent")) {
-      status = 0;
-      message = `You have already sent a friend request to ${receiverName}`;
-    } else if (result.includes("blocked by initiator")) {
-      status = 0;
-      message = `You have blocked ${receiverName}`;
-    } else if (result.includes("blocked by receiver")) {
-      status = 0;
-      message = `${receiverName} has blocked you`;
-    }
-
-    return { status, message, alwaysHide: true };
+    return {
+      showNotification: false,
+      status: 1,
+      message: "",
+      alwaysHide: true,
+    };
   },
 });
 
@@ -129,13 +113,14 @@ const removeFriendModal = new SimpleModal({
   },
   execFn: async (thisPopup) => {
     const connectionId = thisPopup.parameters[0] as string;
-    const result = (await onDelete(connectionId)) ?? "missing callback";
+    void onDelete(connectionId);
 
-    if (result !== true) {
-      return { status: -1, message: result };
-    } else {
-      return { status: 1, message: `Friend removed` };
-    }
+    return {
+      showNotification: false,
+      status: 1,
+      message: "",
+      alwaysHide: true,
+    };
   },
 });
 

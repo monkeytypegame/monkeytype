@@ -1,42 +1,26 @@
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
 import { Friend } from "@monkeytype/schemas/users";
-import { createCollection } from "@tanstack/db";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { useQuery } from "@tanstack/solid-query";
 import { JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
 import { queryClient } from "../../../collections/client";
 import { connectionsCollection } from "../../../collections/connections";
-import { createEffectOn } from "../../../hooks/effects";
+import * as Notifications from "../../../elements/notifications";
 import { getActivePage, getUserId } from "../../../signals/core";
 import { addToGlobal } from "../../../utils/misc";
 
 import { FriendsList } from "./FriendsList";
 import { PendingConnectionsList } from "./PendingConnectionsList";
-export function FriendsPage(): JSXElement {
-  const friendsCollection = createCollection(
-    queryCollectionOptions({
-      queryClient,
-      queryKey: ["friendsList", getUserId()],
-      getKey: (item) => item.uid,
-      queryFn: async () => {
-        if (getUserId() === null) return [];
-        const response = await Ape.users.getFriends();
-        if (response.status !== 200) {
-          throw new Error(response.body.message);
-        }
-        return response.body.data;
-      },
-    }),
-  );
-  addToGlobal({ fc: friendsCollection });
 
+const friendsDataName = "friendsList";
+
+export function FriendsPage(): JSXElement {
   const friendsData = useQuery(() => {
     const uid = getUserId();
     return {
       queryClient: queryClient,
-      queryKey: ["friendsList", uid], //add current user id to the key to avoid mixing data
+      queryKey: [friendsDataName],
       queryFn: async () => {
         const response = await Ape.users.getFriends();
         if (response.status !== 200) {
@@ -50,52 +34,81 @@ export function FriendsPage(): JSXElement {
   });
   addToGlobal({ fd: friendsData });
 
-  const addFriend = async (receiverName: string): Promise<true | string> => {
-    const result = await Ape.connections.create({ body: { receiverName } });
+  const addFriend = async (receiverName: string): Promise<void> => {
+    setTimeout(async () => {
+      const response = await Ape.connections.create({ body: { receiverName } });
 
-    if (result.status !== 200) {
-      return `Friend request failed: ${result.body.message}`;
-    } else {
-      return true;
-    }
+      if (response.status === 200) {
+        Notifications.add(`Request sent to ${receiverName}`, 1);
+      } else {
+        const result = response.body.message;
+        let status = -1;
+        let message = "Unknown error";
+
+        if (result.includes("already exists")) {
+          status = 0;
+          message = `You are already friends with ${receiverName}`;
+        } else if (result.includes("request already sent")) {
+          status = 0;
+          message = `You have already sent a friend request to ${receiverName}`;
+        } else if (result.includes("blocked by initiator")) {
+          status = 0;
+          message = `You have blocked ${receiverName}`;
+        } else if (result.includes("blocked by receiver")) {
+          status = 0;
+          message = `${receiverName} has blocked you`;
+        }
+
+        Notifications.add(message, status);
+      }
+    }, 0);
   };
 
-  const removeFriend = async (connectionId: string): Promise<true | string> => {
-    const tx = connectionsCollection.delete(connectionId);
+  const removeFriend = async (connectionId: string): Promise<void> => {
+    void connectionsCollection
+      .delete(connectionId)
+      .isPersisted.promise.then(() => {
+        void friendsData.refetch();
+      });
 
-    //optimistic update not working. remove the friend from the friendsList
-    const currentFriends = queryClient.getQueryData(["friendsList"]) as
-      | Friend[]
-      | undefined;
-    if (currentFriends) {
+    //optimistic update
+    const currentFriends = queryClient.getQueryData([
+      friendsDataName,
+    ]) as Friend[];
+    if (currentFriends !== undefined) {
       const updatedFriends = currentFriends.filter(
         (it) => it.connectionId !== connectionId,
       );
-      queryClient.setQueryData(["friendsList"], updatedFriends);
+      queryClient.setQueryData([friendsDataName], () => updatedFriends);
     }
-
-    setTimeout(async () => {
-      await tx.isPersisted.promise;
-      void friendsData.refetch();
-    }, 500);
-    return true;
   };
 
   const updateConnection = async (
     connectionId: string,
     status: ConnectionStatus | "rejected",
   ): Promise<void> => {
-    if (status === "rejected") {
-      await connectionsCollection.delete(connectionId).isPersisted.promise;
-    } else {
-      await connectionsCollection.update(connectionId, (draft) => {
-        draft.status = status;
-      }).isPersisted.promise;
-    }
+    const tx =
+      status === "rejected"
+        ? connectionsCollection.delete(connectionId)
+        : connectionsCollection.update(connectionId, (draft) => {
+            draft.status = status;
+          });
 
-    if (status === "accepted") {
-      void friendsData.refetch();
-    }
+    void tx.isPersisted.promise.then(() => {
+      if (status === "accepted") {
+        void friendsData.refetch();
+      }
+
+      if (status === "blocked") {
+        Notifications.add(`User has been blocked`, 0);
+      }
+      if (status === "accepted") {
+        Notifications.add(`Request accepted`, 1);
+      }
+      if (status === "rejected") {
+        Notifications.add(`Request rejected`, 0);
+      }
+    });
   };
 
   return (
