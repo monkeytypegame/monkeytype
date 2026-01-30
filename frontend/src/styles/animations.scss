@@ -19,6 +19,15 @@
   }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes caretFlashSmooth {
   0%,
   100% {
@@ -128,5 +137,39 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@keyframes typedEffectFadeIn {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes typedEffectToDust {
+  0% {
+    transform: scale(1);
+    color: var(--current-color);
+  }
+  10% {
+    /* transform: scale(1); */
+  }
+  15% {
+    transform: scale(1);
+    color: var(--c-dot);
+  }
+  80% {
+    /* transform: scale(0.5); */
+    color: var(--c-dot);
+  }
+  100% {
+    transform: scale(0.4);
+    color: transparent;
   }
 }
