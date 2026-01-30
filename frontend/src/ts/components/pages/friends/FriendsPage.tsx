@@ -25,7 +25,7 @@ export function FriendsPage(): JSXElement {
     return {
       queryClient: queryClient,
       queryKey: [friendsDataName],
-      staleTime: 1000 * 60 * 5, //cache for 5 minutes
+      staleTime: 1000 * 5, //cache for 5 seconds
       queryFn: async () => {
         const response = await Ape.users.getFriends();
         if (response.status !== 200) {
