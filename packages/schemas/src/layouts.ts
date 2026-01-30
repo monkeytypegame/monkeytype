@@ -21,6 +21,7 @@ export const LayoutNameSchema = z.enum(
     "swiss_french",
     "workman",
     "prog_workman",
+    "statica_3x5",
     "turkish_q",
     "turkish_f",
     "turkish_e",
