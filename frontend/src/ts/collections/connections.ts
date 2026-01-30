@@ -31,7 +31,6 @@ export const connectionsCollection = createCollection(
     queryClient,
     queryKey: [connectionsCollectionName],
     staleTime: 1000 * 5, //5 seconds
-
     getKey: (item) => item._id,
     queryFn: async () => {
       if (!isLoggedIn()) return [];
@@ -140,5 +139,8 @@ export async function addConnection(receiverName: string): Promise<void> {
 }
 
 function invalidateQuery(): void {
-  // void queryClient.invalidateQueries({ queryKey: [connectionsCollectionName] });
+  void queryClient.invalidateQueries({
+    queryKey: [connectionsCollectionName],
+    stale: true,
+  });
 }
