@@ -32,7 +32,7 @@ const SortingStateSchema = z.array(
   }),
 );
 
-export type AnyColumnDef<TData, TValue> =
+export type AnyColumnDef<TData, TValue = unknown> =
   | ColumnDef<TData, TValue>
   | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
@@ -114,10 +114,7 @@ export function DataTable<TData, TValue = unknown>(
                 <For each={headerGroup.headers}>
                   {(header) => (
                     <Conditional
-                      if={
-                        header.column.getCanSort() &&
-                        typeof header.column.columnDef.header === "string"
-                      }
+                      if={header.column.getCanSort()}
                       then={
                         <TableHead
                           colSpan={header.colSpan}
@@ -139,7 +136,12 @@ export function DataTable<TData, TValue = unknown>(
                             {...(header.column.columnDef.meta
                               ?.sortableHeaderMeta ?? {})}
                           >
-                            {header.column.columnDef.header}
+                            <Show when={!header.isPlaceholder}>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                            </Show>
 
                             <Switch fallback={<i class="fa-fw"></i>}>
                               <Match
