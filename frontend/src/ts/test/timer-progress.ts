@@ -54,7 +54,7 @@ export function show(): void {
           textEl.classList.remove("hidden");
         },
       });
-    } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
+    } else if (Config.timerStyle === "mini") {
       animate(miniEl, {
         opacity: [0, 1],
         duration: applyReducedMotion(125),
