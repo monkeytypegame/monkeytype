@@ -1,4 +1,4 @@
-import { JSXElement, Show } from "solid-js";
+import { JSX, JSXElement, Show } from "solid-js";
 
 import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
@@ -7,6 +7,7 @@ type BaseProps = {
   text?: string;
   fa?: FaProps;
   class?: string;
+  classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
   type?: "text" | "button";
   children?: JSXElement;
 };
@@ -36,10 +37,11 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     </>
   );
 
-  const getClassList = (): Record<string, boolean> => {
+  const getClassList = (): Record<string, boolean | undefined> => {
     return {
       [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
       [props.class ?? ""]: props.class !== undefined,
+      ...props.classList,
     };
   };
 
