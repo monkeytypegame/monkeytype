@@ -16,16 +16,18 @@ import { Button } from "./Button";
 import { DiscordAvatar } from "./DiscordAvatar";
 import { Fa } from "./Fa";
 
-export function User(props: {
-  user: SupportsFlags &
-    Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar"> & {
-      badgeId?: number;
-    };
-  options?: UserFlagOptions & { showAvatar?: boolean };
-}): JSXElement {
+export function User(
+  props: {
+    user: SupportsFlags &
+      Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar"> & {
+        badgeId?: number;
+      };
+    showAvatar?: boolean;
+  } & UserFlagOptions,
+): JSXElement {
   return (
-    <div class="flex items-baseline gap-1">
-      <Show when={props.options?.showAvatar ?? true}>
+    <div class="grid grid-cols-[1.25em_max-content_auto] items-center justify-items-start gap-2">
+      <Show when={props.showAvatar ?? true}>
         <DiscordAvatar
           discordId={props.user.discordId}
           discordAvatar={props.user.discordAvatar}
@@ -39,25 +41,30 @@ export function User(props: {
         router-link
       />
 
-      <UserFlags user={props.user} options={props.options} />
-      <UserBadge id={props.user.badgeId} />
+      <div class="text-sub flex items-center justify-center gap-2">
+        <UserFlags
+          user={props.user}
+          iconsOnly={props.iconsOnly}
+          isFriend={props.isFriend}
+        />
+        <UserBadge id={props.user.badgeId} />
+      </div>
     </div>
   );
 }
 
-function UserFlags(props: {
-  user: SupportsFlags;
-  options?: UserFlagOptions;
-}): JSXElement {
-  const flags = (): UserFlag[] => getMatchingFlags(props.user);
+function UserFlags(
+  props: {
+    user: SupportsFlags;
+  } & UserFlagOptions,
+): JSXElement {
+  const flags = (): UserFlag[] => getMatchingFlags(props);
+  console.log("### ", props.user, flags());
 
   return (
     <For each={flags()}>
       {(flag) => (
-        <Show
-          when={props.options?.iconsOnly ?? true}
-          fallback={<Fa icon={flag.icon} />}
-        >
+        <Show when={props.iconsOnly ?? true} fallback={<Fa icon={flag.icon} />}>
           <div
             aria-label={flag.description}
             data-balloon-pos="right"

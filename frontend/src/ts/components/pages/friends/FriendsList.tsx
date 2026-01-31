@@ -137,7 +137,7 @@ function getColumnDefinitions({
         <TableColumnHeader column={props.column} title="name" />
       ),
       enableSorting: true,
-      cell: (info) => <User user={info.row.original} />,
+      cell: (info) => <User user={info.row.original} isFriend={false} />,
     }),
 
     defineColumn("lastModified", {

@@ -47,7 +47,7 @@ export function BlockedUsers(): JSXElement {
               name: info.getValue(),
               uid: info.row.original.initiatorUid,
             }}
-            options={{ showAvatar: false }}
+            showAvatar={false}
           />
         ),
       }),

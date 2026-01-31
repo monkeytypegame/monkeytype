@@ -50,7 +50,7 @@ function getColumnDefinitions({
       cell: (info) => (
         <User
           user={{ name: info.getValue(), uid: info.row.original.initiatorUid }}
-          options={{ showAvatar: false }}
+          showAvatar={false}
         />
       ),
     }),
@@ -71,7 +71,7 @@ function getColumnDefinitions({
       header: "",
 
       cell: (info) => (
-        <div class="flex w-auto justify-between">
+        <div class="flex justify-end gap-2">
           <Button
             onClick={() => void onUpdate(info.getValue(), "accepted")}
             label="accept"
