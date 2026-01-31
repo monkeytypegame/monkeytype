@@ -70,14 +70,14 @@ export function DataTable<TData, TValue = unknown>(
   const columnVisibility = createMemo(() => {
     const current = bp();
     const result = Object.fromEntries(
-      props.columns.map((col) => {
-        //fill missing columnIds, otherwise hiding columns will not work
-        if (col.id === undefined) {
-          if ("accessorKey" in col) {
-            col.id = col.accessorKey as string;
-          }
-        }
-        return [col.id as string, current[col.meta?.breakpoint ?? "xxs"]];
+      props.columns.map((col, index) => {
+        const id =
+          col.id ??
+          ("accessorKey" in col && col.accessorKey !== null
+            ? String(col.accessorKey)
+            : `__col_${index}`);
+
+        return [id, current[col.meta?.breakpoint ?? "xxs"]];
       }),
     );
 
