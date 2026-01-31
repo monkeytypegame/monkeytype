@@ -1,4 +1,5 @@
 import {
+  AccessorFnColumnDef,
   AccessorKeyColumnDef,
   ColumnDef,
   createSolidTable,
@@ -33,7 +34,7 @@ const SortingStateSchema = z.array(
 
 export type AnyColumnDef<TData, TValue> =
   | ColumnDef<TData, TValue>
-  //  | AccessorFnColumnDef<TData, TValue>
+  | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
 
 type DataTableProps<TData, TValue> = {
@@ -43,9 +44,8 @@ type DataTableProps<TData, TValue> = {
   fallback?: JSXElement;
 };
 
-export function DataTable<TData>(
-  // oxlint-disable-next-line typescript/no-explicit-any
-  props: DataTableProps<TData, any>,
+export function DataTable<TData, TValue = unknown>(
+  props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
     //oxlint-disable-next-line solid/reactivity
