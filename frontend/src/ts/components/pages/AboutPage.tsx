@@ -1,10 +1,13 @@
+import { useQuery } from "@tanstack/solid-query";
 import { intervalToDuration } from "date-fns";
-import { createResource, For, JSXElement, Show } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
 import Ape from "../../ape";
+import { queryClient } from "../../query-client";
 import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
+import { qsr } from "../../utils/dom";
 import { getContributorsList, getSupportersList } from "../../utils/json-data";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
@@ -29,23 +32,67 @@ function H3(props: { text: string; fa: FaProps }): JSXElement {
     </h3>
   );
 }
+qsr("nav .view-about").on("mouseenter", () => {
+  prefetch();
+});
+
+const staleTime = 1000 * 60 * 60; //cache results for one hour
+function prefetch(): void {
+  void queryClient.prefetchQuery({
+    queryKey: ["public", "contributors"],
+    queryFn: getContributorsList,
+    staleTime,
+  });
+
+  void queryClient.prefetchQuery({
+    queryKey: ["public", "supporters"],
+    queryFn: getSupportersList,
+    staleTime,
+  });
+
+  void queryClient.prefetchQuery({
+    queryKey: ["public", "typingStats"],
+    queryFn: fetchTypingStats,
+    staleTime,
+  });
+
+  void queryClient.prefetchQuery({
+    queryKey: ["public", "speedHistogram"],
+    queryFn: fetchSpeedHistogram,
+    staleTime,
+  });
+}
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
-  const [contributors] = createResource(isOpen, async (open) =>
-    open ? await getContributorsList() : undefined,
-  );
-  const [supporters] = createResource(isOpen, async (open) =>
-    open ? await getSupportersList() : undefined,
-  );
 
-  const [typingStats] = createResource(isOpen, async (open) =>
-    open ? await fetchTypingStats() : undefined,
-  );
+  const contributors = useQuery(() => ({
+    queryKey: ["public", "contributors"],
+    queryFn: getContributorsList,
+    enabled: isOpen(),
+    staleTime,
+  }));
 
-  const [speedHistogram] = createResource(isOpen, async (open) =>
-    open ? await fetchSpeedHistogram() : undefined,
-  );
+  const supporters = useQuery(() => ({
+    queryKey: ["public", "supporters"],
+    queryFn: getSupportersList,
+    enabled: isOpen(),
+    staleTime,
+  }));
+
+  const typingStats = useQuery(() => ({
+    queryKey: ["public", "typingStats"],
+    queryFn: fetchTypingStats,
+    enabled: isOpen(),
+    staleTime,
+  }));
+
+  const speedHistogram = useQuery(() => ({
+    queryKey: ["public", "speedHistogram"],
+    queryFn: fetchSpeedHistogram,
+    enabled: isOpen(),
+    staleTime,
+  }));
 
   return (
     <Show when={isOpen}>
@@ -61,7 +108,7 @@ export function AboutPage(): JSXElement {
         <section>
           <AsyncContent
             alwaysShowContent
-            resource={typingStats}
+            query={typingStats}
             errorMessage="Failed to get global typing stats"
           >
             {(data) => (
@@ -90,7 +137,7 @@ export function AboutPage(): JSXElement {
         <section class="h-48 w-full">
           <AsyncContent
             alwaysShowContent
-            resource={speedHistogram}
+            query={speedHistogram}
             errorMessage="Failed to get global speed stats for histogram"
           >
             {(data) => (
@@ -385,7 +432,7 @@ export function AboutPage(): JSXElement {
         <section>
           <H2 fa={{ icon: "fa-hand-holding-usd" }} text="top supporters" />
           <AsyncContent
-            resource={supporters}
+            query={supporters}
             errorMessage="Failed to get supporters"
           >
             {(data) => (
@@ -405,7 +452,7 @@ export function AboutPage(): JSXElement {
         <section>
           <H2 fa={{ icon: "fa-code-branch" }} text="contributors" />
           <AsyncContent
-            resource={contributors}
+            query={contributors}
             errorMessage="Failed to get contributors"
           >
             {(data) => (
