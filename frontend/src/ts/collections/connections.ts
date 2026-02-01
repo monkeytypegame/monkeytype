@@ -1,10 +1,4 @@
-import {
-  and,
-  createCollection,
-  eq,
-  InitialQueryBuilder,
-  not,
-} from "@tanstack/db";
+import { and, createCollection, eq, not } from "@tanstack/db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "./client";
 
@@ -20,11 +14,11 @@ createEffectOn(getActivePage, (page) => {
   //refresh connections when entering the friends page
   if (page === "friends") {
     console.log("#### trigger refresh on page friends");
-    invalidateQuery();
+    invalidateConnections();
   }
 });
 
-const connectionsCollectionName = "connections";
+const connectionsCollectionName = ["user", "connections"];
 export const connectionsCollection = createCollection(
   queryCollectionOptions({
     syncMode: "on-demand",
@@ -74,21 +68,16 @@ export const connectionsCollection = createCollection(
   }),
 );
 
-export const pendingConnectionsQuery = useLiveQuery(() => ({
-  id: "pendingConnections",
-  startSync: false,
-  query: (q: InitialQueryBuilder) => {
-    console.log("### pending");
-    return q
-      .from({ connections: connectionsCollection })
-      .where(({ connections }) =>
-        and(
-          eq(connections.status, "pending"),
-          not(eq(connections.initiatorUid, getUserId())),
-        ),
-      );
-  },
-}));
+export const pendingConnectionsQuery = useLiveQuery((q) =>
+  q
+    .from({ connections: connectionsCollection })
+    .where(({ connections }) =>
+      and(
+        eq(connections.status, "pending"),
+        not(eq(connections.initiatorUid, getUserId())),
+      ),
+    ),
+);
 
 export function isFriend(uid: string): boolean {
   return (
@@ -114,7 +103,7 @@ export async function addConnection(receiverName: string): Promise<void> {
 
   if (response.status === 200) {
     Notifications.add(`Request sent to ${receiverName}`, 1);
-    invalidateQuery();
+    invalidateConnections();
   } else {
     const result = response.body.message;
     let status = -1;
@@ -138,7 +127,7 @@ export async function addConnection(receiverName: string): Promise<void> {
   }
 }
 
-function invalidateQuery(): void {
+function invalidateConnections(): void {
   void queryClient.invalidateQueries({
     queryKey: [connectionsCollectionName],
     stale: true,

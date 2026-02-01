@@ -1,11 +1,5 @@
 import { Connection } from "@monkeytype/schemas/connections";
-import {
-  and,
-  eq,
-  InitialQueryBuilder,
-  not,
-  useLiveQuery,
-} from "@tanstack/solid-db";
+import { and, eq, not, useLiveQuery } from "@tanstack/solid-db";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
@@ -20,22 +14,16 @@ import { User } from "../../common/User";
 import { DataTable } from "../../ui/table/DataTable";
 
 export function BlockedUsers(): JSXElement {
-  const query = useLiveQuery(() => ({
-    id: "blockedConnections",
-    startSync: false,
-    query: (q: InitialQueryBuilder) => {
-      console.log("### blocked");
-      return q
-        .from({ connections: connectionsCollection })
-        .where(({ connections }) =>
-          and(
-            eq(connections.status, "blocked"),
-            not(eq(connections.initiatorUid, getUserId())),
-          ),
-        );
-    },
-  }));
-
+  const query = useLiveQuery((q) =>
+    q
+      .from({ connections: connectionsCollection })
+      .where(({ connections }) =>
+        and(
+          eq(connections.status, "blocked"),
+          not(eq(connections.initiatorUid, getUserId())),
+        ),
+      ),
+  );
   const columns = createMemo(() => {
     const defineColumn = createColumnHelper<Connection>().accessor;
     return [

@@ -59,7 +59,6 @@ function UserFlags(
   } & UserFlagOptions,
 ): JSXElement {
   const flags = (): UserFlag[] => getMatchingFlags(props);
-  console.log("### ", props.user, flags());
 
   return (
     <For each={flags()}>
