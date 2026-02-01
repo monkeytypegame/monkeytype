@@ -2328,14 +2328,15 @@ export const themes: Record<ThemeName, Theme> = {
   cole: {
     bg: "#0c0c0c",
     caret: "#f2e6cf",
-    main: "#2d9969",
+    main: "#b38d59",
     sub: "#a5a5a5",
-    subAlt: "#b0b0b0",
+    subAlt: "#101010",
     text: "#f2e6cf",
     error: "#cc5d4b",
     errorExtra: "#cc5d4b",
     colorfulError: "#cc5d4b",
     colorfulErrorExtra: "#cc5d4b",
+    hasCss: true,
   },
 };
 export type ThemeWithName = Theme & { name: ThemeName };
