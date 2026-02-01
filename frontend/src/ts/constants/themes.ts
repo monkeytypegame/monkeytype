@@ -2339,6 +2339,7 @@ export const themes: Record<ThemeName, Theme> = {
     hasCss: true,
   },
 };
+
 export type ThemeWithName = Theme & { name: ThemeName };
 export const ThemesList: ThemeWithName[] = Object.keys(themes)
   .sort()
