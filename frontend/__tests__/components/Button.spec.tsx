@@ -1,5 +1,5 @@
-import { render, cleanup } from "@solidjs/testing-library";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { cleanup, render } from "@solidjs/testing-library";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Button } from "../../src/ts/components/common/Button";
 
@@ -17,7 +17,7 @@ describe("Button component", () => {
 
     const button = container.querySelector("button");
     expect(button).toBeTruthy();
-    expect(button?.textContent).toContain("Click me");
+    expect(button).toHaveTextContent("Click me");
   });
 
   it("renders an anchor element when href is provided", () => {
@@ -27,9 +27,12 @@ describe("Button component", () => {
 
     const anchor = container.querySelector("a");
     expect(anchor).toBeTruthy();
-    expect(anchor?.getAttribute("href")).toBe("https://example.com");
-    expect(anchor?.getAttribute("target")).toBe("_blank");
-    expect(anchor?.getAttribute("rel")).toContain("noreferrer");
+    expect(anchor).toHaveAttribute("href", "https://example.com");
+    expect(anchor).toHaveAttribute("target", "_blank");
+    expect(anchor).toHaveAttribute("rel", "noreferrer noopener");
+    expect(anchor).not.toHaveAttribute("router-link");
+    expect(anchor).not.toHaveAttribute("aria-label");
+    expect(anchor).not.toHaveAttribute("data-balloon-pos");
   });
 
   it("calls onClick when button is clicked", async () => {
@@ -59,25 +62,8 @@ describe("Button component", () => {
 
     const icon = container.querySelector("i");
     expect(icon).toBeTruthy();
-    expect(icon?.className).toContain("fas");
-    expect(icon?.className).toContain("fa-keyboard");
-  });
-
-  it("applies fa-fw class when text is missing", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        fa={{
-          icon: "fa-keyboard",
-          fixedWidth: true,
-        }}
-      />
-    ));
-
-    const icon = container.querySelector("i");
-    expect(icon?.classList.contains("fa-fw")).toBe(true);
+    expect(icon).toHaveClass("fas");
+    expect(icon).toHaveClass("fa-keyboard");
   });
 
   it("applies fa-fw class when fixedWidthIcon is true", () => {
@@ -95,7 +81,7 @@ describe("Button component", () => {
     ));
 
     const icon = container.querySelector("i");
-    expect(icon?.classList.contains("fa-fw")).toBe(true);
+    expect(icon).toHaveClass("fa-fw");
   });
 
   it("does not apply fa-fw when text is present and fixedWidthIcon is false", () => {
@@ -112,7 +98,7 @@ describe("Button component", () => {
     ));
 
     const icon = container.querySelector("i");
-    expect(icon?.classList.contains("fa-fw")).toBe(false);
+    expect(icon).not.toHaveClass("fa-fw");
   });
 
   it("applies default button class", () => {
@@ -126,7 +112,7 @@ describe("Button component", () => {
     ));
 
     const button = container.querySelector("button");
-    expect(button?.classList.contains("button")).toBe(false);
+    expect(button).not.toHaveClass("button");
   });
 
   it("applies textButton class when type is text", () => {
@@ -141,7 +127,7 @@ describe("Button component", () => {
     ));
 
     const button = container.querySelector("button");
-    expect(button?.classList.contains("textButton")).toBe(true);
+    expect(button).toHaveClass("textButton");
   });
 
   it("applies custom class when class prop is provided", () => {
@@ -156,7 +142,7 @@ describe("Button component", () => {
     ));
 
     const button = container.querySelector("button");
-    expect(button?.classList.contains("custom-class")).toBe(true);
+    expect(button).toHaveClass("custom-class");
   });
 
   it("renders children content", () => {
@@ -172,7 +158,7 @@ describe("Button component", () => {
 
     const child = container.querySelector('[data-testid="child"]');
     expect(child).toBeTruthy();
-    expect(child?.textContent).toBe("Child");
+    expect(child).toHaveTextContent("Child");
   });
 
   it("applies custom class list when classList prop is provided", () => {
@@ -191,9 +177,9 @@ describe("Button component", () => {
     ));
 
     const button = container.querySelector("button");
-    expect(button?.classList.contains("customTrue")).toBe(true);
-    expect(button?.classList.contains("customFalse")).toBe(false);
-    expect(button?.classList.contains("customUndefined")).toBe(false);
+    expect(button).toHaveClass("customTrue");
+    expect(button).not.toHaveClass("customFalse");
+    expect(button).not.toHaveClass("customUndefined");
   });
 
   it("applies active", () => {
@@ -208,8 +194,87 @@ describe("Button component", () => {
     ));
 
     const button = container.querySelector("button");
-    expect(button?.classList.contains("bg-main")).toBe(true);
-    expect(button?.classList.contains("text-bg")).toBe(true);
-    expect(button?.classList.contains("hover:bg-text")).toBe(true);
+    expect(button).toHaveClass("bg-main");
+    expect(button).toHaveClass("text-bg");
+    expect(button).toHaveClass("hover:bg-text");
+  });
+
+  it("applies aria-label to button provided as text", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          //
+        }}
+        text="Hello"
+        ariaLabel="test"
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button).toHaveAttribute("aria-label", "test");
+    expect(button).toHaveAttribute("data-balloon-pos", "up");
+  });
+
+  it("applies aria-label to button provided as object", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          //
+        }}
+        text="Hello"
+        ariaLabel={{ text: "test", position: "down" }}
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button).toHaveAttribute("aria-label", "test");
+    expect(button).toHaveAttribute("data-balloon-pos", "down");
+  });
+
+  it("applies router-link to button", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          //
+        }}
+        text="Hello"
+        router-link
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button).toHaveAttribute("router-link", "");
+  });
+
+  it("applies aria-label to anchor provided as text", () => {
+    const { container } = render(() => (
+      <Button href="http://example.com" text="Hello" ariaLabel="test" />
+    ));
+
+    const anchor = container.querySelector("a");
+    expect(anchor).toHaveAttribute("aria-label", "test");
+    expect(anchor).toHaveAttribute("data-balloon-pos", "up");
+  });
+
+  it("applies aria-label to anchor provided as object", () => {
+    const { container } = render(() => (
+      <Button
+        href="http://example.com"
+        text="Hello"
+        ariaLabel={{ text: "test", position: "down" }}
+      />
+    ));
+
+    const anchor = container.querySelector("a");
+    expect(anchor).toHaveAttribute("aria-label", "test");
+    expect(anchor).toHaveAttribute("data-balloon-pos", "down");
+  });
+  it("applies router-link to ancor", () => {
+    const { container } = render(() => (
+      <Button href="http://example.com" text="Hello" router-link />
+    ));
+
+    const anchor = container.querySelector("a");
+    expect(anchor).toHaveAttribute("router-link", "");
   });
 });
