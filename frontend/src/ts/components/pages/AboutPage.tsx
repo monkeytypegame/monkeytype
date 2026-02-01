@@ -16,6 +16,7 @@ import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa, FaProps } from "../common/Fa";
+import { User } from "../common/User";
 
 function H2(props: { text: string; fa: FaProps }): JSXElement {
   return (
