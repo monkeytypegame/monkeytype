@@ -13,7 +13,7 @@ import * as Notifications from "../../elements/notifications";
 import { createErrorMessage } from "../../utils/misc";
 
 import { Conditional } from "./Conditional";
-import { Fa } from "./Fa";
+import { LoadingCircle } from "./LoadingCircle";
 
 export default function AsyncContent<T>(
   props: {
@@ -78,11 +78,7 @@ export default function AsyncContent<T>(
     return message;
   };
 
-  const loader = (
-    <div class="preloader p-4 text-center text-2xl text-main">
-      <Fa icon="fa-circle-notch" fixedWidth spin />
-    </div>
-  );
+  const loader = <LoadingCircle />;
 
   const errorText = (err: unknown): JSXElement => (
     <div class="error">{handleError(err)}</div>
