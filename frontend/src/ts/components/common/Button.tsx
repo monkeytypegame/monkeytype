@@ -9,6 +9,7 @@ type BaseProps = {
   class?: string;
   classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
   type?: "text" | "button";
+  active?: boolean;
   children?: JSXElement;
 };
 
@@ -41,6 +42,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     return {
       [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
       [props.class ?? ""]: props.class !== undefined,
+      "bg-main": props.active,
+      "text-bg": props.active,
       ...props.classList,
     };
   };

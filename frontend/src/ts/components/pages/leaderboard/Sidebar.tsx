@@ -130,10 +130,7 @@ function Group<T>(props: {
             fa={{ icon: item.icon }}
             text={item.text}
             class="justify-start"
-            classList={{
-              "bg-main": item.id === props.selected(),
-              "text-bg": item.id === props.selected(),
-            }}
+            active={item.id === props.selected()}
           />
         )}
       </For>

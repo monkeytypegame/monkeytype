@@ -1,7 +1,10 @@
-import { JSXElement, Show } from "solid-js";
+import { and, gt, lt, lte, useLiveQuery } from "@tanstack/solid-db";
+import { createSignal, For, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
+import { allTimeLeaderboardCollection } from "../../../collections/leaderboards";
 import { getActivePage } from "../../../signals/core";
+import { addToGlobal } from "../../../utils/misc";
 
 import { Selection, Sidebar } from "./Sidebar";
 
@@ -12,6 +15,19 @@ export function LeaderboardPage(): JSXElement {
     time: "60",
     friendsOnly: false,
   });
+
+  const [page, setPage] = createSignal(0);
+
+  addToGlobal({ setPage });
+  const allTimeQuery = useLiveQuery((q) =>
+    q
+      .from({ lb: allTimeLeaderboardCollection })
+      .where(({ lb }) =>
+        and(gt(lb.rank, page() * 50), lte(lb.rank, (page() + 1) * 50)),
+      )
+      .orderBy(({ lb }) => lb.rank, "asc"),
+  );
+
   return (
     <Show when={isOpen}>
       <div class="content-grid grid">
@@ -20,7 +36,16 @@ export function LeaderboardPage(): JSXElement {
             <Sidebar onSelect={setSelection} />
           </div>
 
-          <div class="w-full flex-1">{JSON.stringify(selection)}</div>
+          <div class="w-full flex-1">
+            {JSON.stringify(selection)}
+            <For each={allTimeQuery()}>
+              {(item) => (
+                <div>
+                  {item.rank} - {item.name} - {item.wpm}
+                </div>
+              )}
+            </For>
+          </div>
         </div>
       </div>
     </Show>
