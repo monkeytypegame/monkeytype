@@ -174,4 +174,42 @@ describe("Button component", () => {
     expect(child).toBeTruthy();
     expect(child?.textContent).toBe("Child");
   });
+
+  it("applies custom class list when classList prop is provided", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          //
+        }}
+        text="Hello"
+        classList={{
+          customTrue: true,
+          customFalse: false,
+          customUndefined: undefined,
+        }}
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button?.classList.contains("customTrue")).toBe(true);
+    expect(button?.classList.contains("customFalse")).toBe(false);
+    expect(button?.classList.contains("customUndefined")).toBe(false);
+  });
+
+  it("applies active", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          //
+        }}
+        text="Hello"
+        active
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button?.classList.contains("bg-main")).toBe(true);
+    expect(button?.classList.contains("text-bg")).toBe(true);
+    expect(button?.classList.contains("hover:bg-text")).toBe(true);
+  });
 });
