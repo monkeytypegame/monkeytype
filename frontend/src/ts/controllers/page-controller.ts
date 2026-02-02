@@ -295,7 +295,10 @@ export async function change(
   return true;
 }
 
-function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
+function solidPage(
+  id: PageName,
+  props?: { path?: string; loadingOptions?: LoadingOptions },
+): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
@@ -309,5 +312,6 @@ function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
     afterHide: async () => {
       Skeleton.remove(internalId);
     },
+    loadingOptions: props?.loadingOptions,
   });
 }

@@ -25,8 +25,6 @@ export const allTimeLeaderboardCollection = createCollection(
       const pageSize = upper - lower;
       const page = upper / pageSize - 1;
 
-      console.log("####", { lower, upper, page, pageSize });
-
       const query: GetLeaderboardQuery = {
         language: "english",
         mode: "time",

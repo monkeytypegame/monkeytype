@@ -1,4 +1,4 @@
-import { and, gt, lt, lte, useLiveQuery } from "@tanstack/solid-db";
+import { and, gt, lte, useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
@@ -12,7 +12,8 @@ export function LeaderboardPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "leaderboards";
   const [selection, setSelection] = createStore<Selection>({
     type: "allTime",
-    time: "60",
+    mode: "time",
+    mode2: "15",
     friendsOnly: false,
   });
 
