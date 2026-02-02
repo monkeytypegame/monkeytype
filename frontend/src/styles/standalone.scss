@@ -1,5 +1,23 @@
 @import "balloon-css/balloon.min.css";
+@import "core.scss";
+
+@font-face {
+  font-family: Roboto Mono;
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/webfonts/RobotoMono-Regular.woff2) format("woff2");
+}
+@font-face {
+  font-family: Lexend Deca;
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/webfonts/LexendDeca-Regular.woff2) format("woff2");
+}
+
 :root {
+  --font: "Roboto Mono", monospace;
   --bg-color: #323437;
   --main-color: #e2b714;
   --caret-color: #e2b714;
@@ -10,4 +28,71 @@
   --error-extra-color: #7e2a33;
   --colorful-error-color: #ca4754;
   --colorful-error-extra-color: #7e2a33;
+}
+
+header {
+  grid-template-areas: "logo menu";
+  line-height: 2.3rem;
+  font-size: 2.3rem;
+  /* text-align: center; */
+  // transition: 0.25s;
+  // padding: 0 5px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr;
+  z-index: 3;
+  align-items: center;
+  gap: 0.5rem;
+  -webkit-user-select: none;
+  user-select: none;
+
+  #logo {
+    // margin-bottom: 0.6rem;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    transition: none;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.35rem 0.25rem;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+
+    .icon {
+      width: 2.5rem;
+      display: grid;
+      align-items: center;
+      background-color: transparent;
+      // margin-bottom: 0.15rem;
+      svg path {
+        transition: 0.25s;
+        fill: var(--main-color);
+      }
+    }
+    .text {
+      .top {
+        position: absolute;
+        left: 0.35em;
+        font-size: 0.325em;
+        line-height: 0.325em;
+        color: var(--sub-color);
+        transition:
+          color 0.125s,
+          opacity 0.125s;
+      }
+      position: relative;
+      font-size: 2rem;
+      line-height: 2rem;
+      font-family: "Lexend Deca", sans-serif;
+      transition: color 0.25s;
+      font-weight: unset;
+      margin-block-start: unset;
+      margin-block-end: unset;
+      margin-top: -0.23em;
+    }
+    white-space: nowrap;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
