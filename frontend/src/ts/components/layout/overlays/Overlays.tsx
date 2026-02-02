@@ -3,6 +3,7 @@ import { JSXElement } from "solid-js";
 import { getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
+import { Fa } from "../../common/Fa";
 import { ScrollToTop } from "../footer/ScrollToTop";
 
 import { Banners } from "./Banners";
@@ -28,7 +29,7 @@ export function Overlays(): JSXElement {
         }}
         tabIndex="-1"
       >
-        <i class="fas fa-terminal"></i>
+        <Fa icon="fa-terminal" />
       </button>
       <Banners />
       <MediaQueryDebugger />
