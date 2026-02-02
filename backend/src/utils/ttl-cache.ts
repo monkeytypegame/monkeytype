@@ -10,7 +10,7 @@
  *
  * @returns {() => Promise<T | undefined>}
  */
-export function loadingCache<T>(
+export function cacheWithTTL<T>(
   ttlMs: number,
   fn: () => Promise<T>,
 ): () => Promise<T | undefined> {
