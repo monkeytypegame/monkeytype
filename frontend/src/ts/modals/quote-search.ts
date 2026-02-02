@@ -56,7 +56,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
   const quoteLengthDropdown = modal
     .getModal()
-    .qs<HTMLSelectElement>(".quoteLengthFilter");
+    .qs<HTMLSelectElement>("select.quoteLengthFilter");
   const selectedOptions = quoteLengthDropdown
     ? Array.from(quoteLengthDropdown.native.selectedOptions)
     : [];
@@ -472,9 +472,9 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-  const $button = modal
+  const button = modal
     .getModal()
-    .qsr(`.searchResult[data-quote-id=${quoteId}] .textButton.favorite i`);
+    .qsr(`.searchResult[data-quote-id="${quoteId}"] .textButton.favorite i`);
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 
@@ -483,7 +483,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, false);
       hideLoaderBar();
-      $button.removeClass("fas").addClass("far");
+      button.removeClass("fas").addClass("far");
     } catch (e) {
       hideLoaderBar();
       const message = createErrorMessage(
@@ -497,7 +497,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, true);
       hideLoaderBar();
-      $button.removeClass("far").addClass("fas");
+      button.removeClass("far").addClass("fas");
     } catch (e) {
       hideLoaderBar();
       const message = createErrorMessage(e, "Failed to add quote to favorites");
