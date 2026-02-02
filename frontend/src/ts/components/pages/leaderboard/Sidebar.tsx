@@ -10,6 +10,7 @@ import {
 } from "solid-js";
 
 import { getServerConfiguration } from "../../../ape/server-configuration";
+import { isLoggedIn } from "../../../signals/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Button } from "../../common/Button";
 
@@ -19,8 +20,7 @@ export type Selection = {
   type: LeaderboardType;
   friendsOnly: boolean;
   mode?: Mode;
-  // oxlint-disable-next-line typescript/no-explicit-any
-  mode2?: Mode2<any>;
+  mode2?: string;
   language?: Language;
 };
 
@@ -35,7 +35,7 @@ type ValidLeaderboards = {
   daily: LanguagesByModeByMode2;
 };
 
-type ModeSelect = Required<Pick<Selection, "mode" | "mode2">>;
+export type ModeSelect = Required<Pick<Selection, "mode" | "mode2">>;
 
 export function Sidebar(props: {
   onSelect: (selection: Selection) => void;
@@ -107,7 +107,7 @@ export function Sidebar(props: {
 
       if (supportedLanguages === undefined || supportedLanguages.length < 1) {
         throw new Error(
-          `Daily leaderboard config not valid for mode:${state.mode.mode} mode2:${state.mode.mode2 as string}`,
+          `Daily leaderboard config not valid for mode:${state.mode.mode} mode2:${state.mode.mode2}`,
         );
       }
 
@@ -157,22 +157,24 @@ export function Sidebar(props: {
           },
         ]}
       />
-      <Group
-        selected={friendsOnly}
-        onSelect={setFriendsOnly}
-        items={[
-          {
-            id: false,
-            text: "everyone",
-            icon: "fa-users",
-          },
-          {
-            id: true,
-            text: "friends only",
-            icon: "fa-user-friends",
-          },
-        ]}
-      />
+      <Show when={isLoggedIn()}>
+        <Group
+          selected={friendsOnly}
+          onSelect={setFriendsOnly}
+          items={[
+            {
+              id: false,
+              text: "everyone",
+              icon: "fa-users",
+            },
+            {
+              id: true,
+              text: "friends only",
+              icon: "fa-user-friends",
+            },
+          ]}
+        />
+      </Show>
       <Show when={type() !== "weekly"}>
         <Group
           selected={mode}
@@ -240,7 +242,6 @@ function getLanguageButtons(
   valid: LanguagesByModeByMode2,
   mode: ModeSelect | undefined,
 ): GroupItem<Language>[] {
-  console.log("#### getLanguageButtons", mode);
   if (mode === undefined) return [];
 
   return (valid[mode.mode]?.[mode.mode2] ?? []).map((language) => ({
