@@ -1,11 +1,11 @@
 import { Accessor, createSignal, onCleanup } from "solid-js";
 import { debounce } from "throttle-debounce";
 
-type BreakpointKeys = "xxl" | "xl" | "lg" | "md" | "sm" | "xs" | "xxs";
-type Breakpoints = Record<BreakpointKeys, boolean>;
+export type BreakpointKey = "xxl" | "xl" | "lg" | "md" | "sm" | "xs" | "xxs";
+type Breakpoints = Record<BreakpointKey, boolean>;
 
 const styles = getComputedStyle(document.documentElement);
-const tw: Record<BreakpointKeys, number> = {
+const tw: Record<BreakpointKey, number> = {
   xxs: 0,
   xs: parseInt(styles.getPropertyValue("--breakpoint-xs")),
   sm: parseInt(styles.getPropertyValue("--breakpoint-sm")),
@@ -18,7 +18,7 @@ const tw: Record<BreakpointKeys, number> = {
 export const bp = createBreakpoints(tw);
 
 function createBreakpoints(
-  breakpoints: Record<BreakpointKeys, number>,
+  breakpoints: Record<BreakpointKey, number>,
 ): Accessor<Breakpoints> {
   const queries = Object.fromEntries(
     Object.entries(breakpoints).map(([key, px]) => [
@@ -49,5 +49,5 @@ function createBreakpoints(
     }
   });
 
-  return matches as Accessor<Record<BreakpointKeys, boolean>>;
+  return matches as Accessor<Record<BreakpointKey, boolean>>;
 }
