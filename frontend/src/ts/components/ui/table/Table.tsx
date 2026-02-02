@@ -57,7 +57,7 @@ const TableHead: Component<ComponentProps<"th">> = (props) => {
     <th
       aria-label={local["aria-label"]}
       class={cn(
-        "text-sub has-button:p-0 appearance-none p-2 text-left align-bottom text-xs font-normal",
+        "text-sub has-button:p-0 appearance-none p-2 align-bottom text-xs font-normal",
         local.class,
       )}
       {...others}

@@ -1,6 +1,9 @@
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Numbers from "@monkeytype/util/numbers";
-import { Config as ConfigType } from "@monkeytype/schemas/configs";
+import {
+  Config as ConfigType,
+  TypingSpeedUnit,
+} from "@monkeytype/schemas/configs";
 import Config from "../config";
 
 export type FormatOptions = {
@@ -21,8 +24,14 @@ export type FallbackOptions = {
 };
 
 export class Formatting {
-  constructor(private config: ConfigType) {
-    //
+  public typingSpeedUnit: TypingSpeedUnit;
+  private alwaysShowDecimalPlaces;
+
+  constructor(
+    config: Pick<ConfigType, "typingSpeedUnit" | "alwaysShowDecimalPlaces">,
+  ) {
+    this.typingSpeedUnit = config.typingSpeedUnit;
+    this.alwaysShowDecimalPlaces = config.alwaysShowDecimalPlaces;
   }
 
   typingSpeed(
@@ -32,7 +41,7 @@ export class Formatting {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     if (wpm === undefined || wpm === null) return options.fallback ?? "";
 
-    const result = getTypingSpeedUnit(this.config.typingSpeedUnit).fromWpm(wpm);
+    const result = getTypingSpeedUnit(this.typingSpeedUnit).fromWpm(wpm);
 
     return this.number(result, options);
   }
@@ -74,10 +83,7 @@ export class Formatting {
     }
     const suffix = formatOptions.suffix ?? "";
 
-    if (
-      formatOptions.showDecimalPlaces ??
-      this.config.alwaysShowDecimalPlaces
-    ) {
+    if (formatOptions.showDecimalPlaces ?? this.alwaysShowDecimalPlaces) {
       return Numbers.roundTo2(value).toFixed(2) + suffix;
     }
     return (formatOptions.rounding ?? Math.round)(value).toString() + suffix;

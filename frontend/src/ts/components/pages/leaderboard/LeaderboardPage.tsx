@@ -2,15 +2,17 @@ import {
   LeaderboardEntry,
   XpLeaderboardEntry,
 } from "@monkeytype/schemas/leaderboards";
-import { keepPreviousData, useQuery } from "@tanstack/solid-query";
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { useQuery } from "@tanstack/solid-query";
+import { createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import Ape from "../../../ape";
+import { createEffectOn } from "../../../hooks/effects";
+import { getConfig } from "../../../signals/config";
 import { getActivePage } from "../../../signals/core";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 
+import { LeaderboardTable } from "./LeaderboardTable";
 import { LeaderboardType, Selection, Sidebar } from "./Sidebar";
 
 export function LeaderboardPage(): JSXElement {
@@ -27,6 +29,14 @@ export function LeaderboardPage(): JSXElement {
     setSelection(selection);
     setPage(0);
   };
+
+  createEffectOn(
+    () => getConfig.typingSpeedUnit,
+    (unit) => {
+      console.log("#### change typing speed to ", unit);
+      //TODO better way to refresh table
+    },
+  );
 
   const query = useQuery(() => ({
     queryKey: [
@@ -63,8 +73,21 @@ export function LeaderboardPage(): JSXElement {
       return fetchLeaderboard(type, mode, page.page);
     },
     //5 minutes for alltime, 10 seconds for others
-    staleTime: selection.type === "allTime" ? 1000 : 1000 * 10,
-    placeholderData: keepPreviousData,
+    staleTime: selection.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
+    placeholderData: (old) => {
+      if (old === undefined || old.length === 0 || old[0] === undefined) {
+        return undefined;
+      }
+      const last = old[0];
+      if (
+        (selection.type === "weekly" && !("totalXp" in last)) ||
+        (selection.type !== "weekly" && !("wpm" in last))
+      ) {
+        return [];
+      }
+
+      return old;
+    },
   }));
 
   return (
@@ -85,22 +108,13 @@ export function LeaderboardPage(): JSXElement {
               fa={{ icon: "fa-chevron-right" }}
             />
 
-            <Show when={query.isError}>error: {query.error}</Show>
             <Show when={query.isLoading}>loading....</Show>
             <Show when={query.isRefetching}>loading updating...</Show>
 
-            <Conditional
-              if={selection.type === "weekly"}
-              then={<div>t.b.d.</div>}
-              else={
-                <For each={query.data}>
-                  {(item) => (
-                    <div>
-                      {item.rank} - {item.name} - {item.wpm}
-                    </div>
-                  )}
-                </For>
-              }
+            <LeaderboardTable
+              type={selection.type === "weekly" ? "xp" : "wpm"}
+              query={query}
+              friendsOnly={selection.friendsOnly}
             />
           </div>
         </div>

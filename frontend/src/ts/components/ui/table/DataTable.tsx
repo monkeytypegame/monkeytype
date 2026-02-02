@@ -32,19 +32,20 @@ const SortingStateSchema = z.array(
   }),
 );
 
-export type AnyColumnDef<TData, TValue = unknown> =
+// oxlint-disable-next-line typescript/no-explicit-any
+export type DataTableColumnDef<TData, TValue = any> =
   | ColumnDef<TData, TValue>
   | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
 
 type DataTableProps<TData, TValue> = {
   id: string;
-  columns: AnyColumnDef<TData, TValue>[];
+  columns: DataTableColumnDef<TData, TValue>[];
   data: TData[];
   fallback?: JSXElement;
 };
 
-export function DataTable<TData, TValue = unknown>(
+export function DataTable<TData, TValue>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -77,7 +78,11 @@ export function DataTable<TData, TValue = unknown>(
             ? String(col.accessorKey)
             : `__col_${index}`);
 
-        return [id, current[col.meta?.breakpoint ?? "xxs"]];
+        return [
+          id,
+          current[col.meta?.breakpoint ?? "xxs"] &&
+            !current[col.meta?.maxBreakpoint ?? "xxl"],
+        ];
       }),
     );
 
@@ -132,9 +137,19 @@ export function DataTable<TData, TValue = unknown>(
                             onClick={(e) => {
                               header.column.getToggleSortingHandler()?.(e);
                             }}
-                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 text-left font-normal whitespace-nowrap"
+                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap"
                             {...(header.column.columnDef.meta
                               ?.sortableHeaderMeta ?? {})}
+                            classList={{
+                              "text-left":
+                                (header.column.columnDef.meta?.align ??
+                                  "left") === "left",
+                              "text-center":
+                                header.column.columnDef.meta?.align ===
+                                "center",
+                              "text-right":
+                                header.column.columnDef.meta?.align === "right",
+                            }}
                           >
                             <Show when={!header.isPlaceholder}>
                               {flexRender(
@@ -167,7 +182,18 @@ export function DataTable<TData, TValue = unknown>(
                         </TableHead>
                       }
                       else={
-                        <TableHead colSpan={header.colSpan}>
+                        <TableHead
+                          colSpan={header.colSpan}
+                          classList={{
+                            "text-left":
+                              (header.column.columnDef.meta?.align ??
+                                "left") === "left",
+                            "text-center":
+                              header.column.columnDef.meta?.align === "center",
+                            "text-right":
+                              header.column.columnDef.meta?.align === "right",
+                          }}
+                        >
                           <Show when={!header.isPlaceholder}>
                             {flexRender(
                               header.column.columnDef.header,
@@ -197,7 +223,18 @@ export function DataTable<TData, TValue = unknown>(
                           })
                         : (cell.column.columnDef.meta?.cellMeta ?? {});
                     return (
-                      <TableCell {...cellMeta}>
+                      <TableCell
+                        {...cellMeta}
+                        classList={{
+                          "text-left":
+                            (cell.column.columnDef.meta?.align ?? "left") ===
+                            "left",
+                          "text-center":
+                            cell.column.columnDef.meta?.align === "center",
+                          "text-right":
+                            cell.column.columnDef.meta?.align === "right",
+                        }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
