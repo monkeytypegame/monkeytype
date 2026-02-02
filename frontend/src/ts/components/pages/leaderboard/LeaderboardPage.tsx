@@ -37,6 +37,7 @@ export function LeaderboardPage(): JSXElement {
         mode: selection.mode,
         mode2: selection.mode2,
         language: selection.language,
+        friendsOnly: selection.friendsOnly,
         previous: false, //TODO
       },
       { page: page() ?? 0 },
@@ -62,7 +63,7 @@ export function LeaderboardPage(): JSXElement {
       return fetchLeaderboard(type, mode, page.page);
     },
     //5 minutes for alltime, 10 seconds for others
-    staleTime: selection.type === "allTime" ? 1000 * 60 * 5 : 1000 * 10,
+    staleTime: selection.type === "allTime" ? 1000 : 1000 * 10,
     placeholderData: keepPreviousData,
   }));
 
