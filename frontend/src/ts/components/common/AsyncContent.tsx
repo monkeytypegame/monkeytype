@@ -3,8 +3,10 @@ import {
   createMemo,
   ErrorBoundary,
   JSXElement,
+  Match,
   Resource,
   Show,
+  Switch,
 } from "solid-js";
 
 import * as Notifications from "../../elements/notifications";
@@ -32,7 +34,7 @@ export default function AsyncContent<T>(
           children: (data: T) => JSXElement;
         }
       | {
-          alwaysShowContent: boolean;
+          alwaysShowContent: true;
           showLoader?: true;
           children: (data: T | undefined) => JSXElement;
         }
@@ -42,14 +44,17 @@ export default function AsyncContent<T>(
     if (props.resource !== undefined) {
       return {
         value: props.resource,
-        loading: () => props.resource.loading,
+        isLoading: () => props.resource.loading,
+        isError: () => false,
       };
     }
 
     if (props.query !== undefined) {
       return {
         value: () => props.query.data,
-        loading: () => props.query?.isLoading,
+        isLoading: () => props.query?.isLoading,
+        isError: () => props.query.isError,
+        error: () => props.query.error,
       };
     }
     throw new Error("missing source");
@@ -59,18 +64,18 @@ export default function AsyncContent<T>(
     try {
       return source().value;
     } catch (err) {
-      const message = createErrorMessage(
-        err,
-        props.errorMessage ?? "An error occurred",
-      );
-      console.error("AsyncContent error:", message);
-      Notifications.add(message, -1);
+      handleError(err);
       return undefined;
     }
   };
   const handleError = (err: unknown): string => {
-    console.error("AsyncContext failed", err);
-    return createErrorMessage(err, props.errorMessage ?? "An error occurred");
+    const message = createErrorMessage(
+      err,
+      props.errorMessage ?? "An error occurred",
+    );
+    console.error("AsyncContext failed", message, err);
+    Notifications.add(message, -1);
+    return message;
   };
 
   const loader = (
@@ -83,37 +88,39 @@ export default function AsyncContent<T>(
     <div class="error">{handleError(err)}</div>
   );
   return (
-    <Conditional
-      if={props.alwaysShowContent === true}
-      then={(() => {
-        const p = props as {
-          showLoader?: true;
-          children: (data: T | undefined) => JSXElement;
-        };
-        return (
+    <ErrorBoundary fallback={errorText}>
+      <Switch
+        fallback={
           <>
-            <Show when={p.showLoader && source().loading()}>{loader}</Show>
-            {p.children(value()?.())}
+            <Show when={source().isLoading() && !props.alwaysShowContent}>
+              {loader}
+            </Show>
+            <Conditional
+              if={props.alwaysShowContent === true}
+              then={(() => {
+                const p = props as {
+                  children: (data: T | undefined) => JSXElement;
+                };
+                return <>{p.children(value()?.())}</>;
+              })()}
+              else={
+                <Show
+                  when={
+                    source().value() !== null && source().value() !== undefined
+                  }
+                >
+                  {props.children(source().value() as T)}
+                </Show>
+              }
+            />
           </>
-        );
-      })()}
-      else={
-        <ErrorBoundary fallback={errorText}>
-          <Conditional
-            if={source().loading()}
-            then={loader}
-            else={
-              <Show
-                when={
-                  source().value() !== null && source().value() !== undefined
-                }
-              >
-                {props.children(source().value() as T)}
-              </Show>
-            }
-          />
-        </ErrorBoundary>
-      }
-    />
+        }
+      >
+        <Match when={source().isError()}>{errorText(source().error?.())}</Match>
+        <Match when={source().isLoading() && !props.alwaysShowContent}>
+          {loader}
+        </Match>
+      </Switch>
+    </ErrorBoundary>
   );
 }
