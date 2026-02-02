@@ -33,11 +33,14 @@ export function toggleScript(...params: string[]): void {
 }
 
 export function setFunbox(funbox: FunboxName[]): boolean {
-  if (funbox.length === 0) {
-    for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
-      fb.functions.clearGlobal();
-    }
+  const previousFunboxes = getActiveFunboxNames();
+
+  const removedFunboxes = previousFunboxes.filter((fb) => !funbox.includes(fb));
+
+  for (const fb of removedFunboxes) {
+    get(fb).functions?.clearGlobal?.();
   }
+
   FunboxMemory.load();
   setConfig("funbox", funbox);
   return true;
@@ -56,12 +59,20 @@ export function toggleFunbox(funbox: FunboxName): void {
     );
     return;
   }
+
   FunboxMemory.load();
+
+  const wasActive = getActiveFunboxNames().includes(funbox);
+
   configToggleFunbox(funbox, false);
 
-  if (!getActiveFunboxNames().includes(funbox)) {
+  const isActive = getActiveFunboxNames().includes(funbox);
+
+  if (wasActive && !isActive) {
     get(funbox).functions?.clearGlobal?.();
-  } else {
+  }
+
+  if (!wasActive && isActive) {
     get(funbox).functions?.applyGlobalCSS?.();
   }
 }
@@ -77,8 +88,8 @@ export async function clear(): Promise<boolean> {
   );
 
   qs(".funBoxTheme")?.remove();
-
   qs("#wordsWrapper")?.show();
+
   MemoryTimer.reset();
   ManualRestart.set();
   return true;
@@ -93,8 +104,6 @@ export async function activate(
     Config.funbox = funbox;
   }
 
-  // The configuration might be edited with dev tools,
-  // so we need to double check its validity
   if (!checkCompatibility(getActiveFunboxNames())) {
     Notifications.add(
       Misc.createErrorMessage(
@@ -105,9 +114,7 @@ export async function activate(
       ),
       -1,
     );
-    setConfig("funbox", [], {
-      nosave: true,
-    });
+    setConfig("funbox", [], { nosave: true });
     await clear();
     return false;
   }
@@ -121,30 +128,22 @@ export async function activate(
   const { data: language, error } = await tryCatch(
     JSONData.getCurrentLanguage(Config.language),
   );
+
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1,
     );
-    setConfig("funbox", [], {
-      nosave: true,
-    });
+    setConfig("funbox", [], { nosave: true });
     await clear();
     return false;
   }
 
-  if (language.ligatures) {
-    if (isFunboxActiveWithProperty("noLigatures")) {
-      Notifications.add(
-        "Current language does not support this funbox mode",
-        0,
-      );
-      setConfig("funbox", [], {
-        nosave: true,
-      });
-      await clear();
-      return;
-    }
+  if (language.ligatures && isFunboxActiveWithProperty("noLigatures")) {
+    Notifications.add("Current language does not support this funbox mode", 0);
+    setConfig("funbox", [], { nosave: true });
+    await clear();
+    return;
   }
 
   let canSetSoFar = true;
@@ -155,58 +154,57 @@ export async function activate(
       configValue,
       getActiveFunboxes(),
     );
+
     if (check.result) continue;
-    if (!check.result) {
-      if (check.forcedConfigs && check.forcedConfigs.length > 0) {
-        if (configKey === "mode") {
-          setConfig("mode", check.forcedConfigs[0] as Mode);
-        }
-        if (configKey === "words") {
-          setConfig("words", check.forcedConfigs[0] as number);
-        }
-        if (configKey === "time") {
-          setConfig("time", check.forcedConfigs[0] as number);
-        }
-        if (configKey === "punctuation") {
-          setConfig("punctuation", check.forcedConfigs[0] as boolean);
-        }
-        if (configKey === "numbers") {
-          setConfig("numbers", check.forcedConfigs[0] as boolean);
-        }
-        if (configKey === "highlightMode") {
-          setConfig("highlightMode", check.forcedConfigs[0] as HighlightMode);
-        }
-      } else {
-        canSetSoFar = false;
-        break;
-      }
+
+    const value = check.forcedConfigs?.[0];
+
+    if (value === undefined) {
+      canSetSoFar = false;
+      break;
+    }
+
+    if (configKey === "mode" && typeof value === "string") {
+      setConfig("mode", value as Mode);
+    }
+
+    if (configKey === "words" && typeof value === "number") {
+      setConfig("words", value);
+    }
+
+    if (configKey === "time" && typeof value === "number") {
+      setConfig("time", value);
+    }
+
+    if (configKey === "punctuation" && typeof value === "boolean") {
+      setConfig("punctuation", value);
+    }
+
+    if (configKey === "numbers" && typeof value === "boolean") {
+      setConfig("numbers", value);
+    }
+
+    if (configKey === "highlightMode" && typeof value === "string") {
+      setConfig("highlightMode", value as HighlightMode);
     }
   }
 
   if (!canSetSoFar) {
-    if (Config.funbox.length > 1) {
-      Notifications.add(
-        `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
-        -1,
-      );
-    } else {
-      Notifications.add(
-        `Failed to activate funbox ${Config.funbox}: no forced configs. Disabling funbox`,
-        -1,
-      );
-    }
-    setConfig("funbox", [], {
-      nosave: true,
-    });
+    Notifications.add(
+      `Failed to activate funbox: no intersecting forced configs. Disabling funbox`,
+      -1,
+    );
+    setConfig("funbox", [], { nosave: true });
     await clear();
     return;
   }
 
   ManualRestart.set();
+
   for (const fb of getActiveFunboxesWithFunction("applyConfig")) {
     fb.functions.applyConfig();
   }
-  // ModesNotice.update();
+
   return true;
 }
 
@@ -235,7 +233,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 
   body?.setAttribute(
     "class",
-    [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" "),
+    [...new Set([...currentClasses, ...activeFbClasses])].join(" "),
   );
 
   return true;
@@ -243,6 +241,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 
 async function applyFunboxCSS(): Promise<boolean> {
   qs(".funBoxTheme")?.remove();
+
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
     const css = document.createElement("link");
     css.classList.add("funBoxTheme");
@@ -250,5 +249,6 @@ async function applyFunboxCSS(): Promise<boolean> {
     css.href = "funbox/" + funbox.name + ".css";
     document.head.appendChild(css);
   }
+
   return true;
 }
