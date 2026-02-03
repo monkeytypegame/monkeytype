@@ -18,6 +18,7 @@ describe("Button component", () => {
     const button = container.querySelector("button");
     expect(button).toBeTruthy();
     expect(button).toHaveTextContent("Click me");
+    expect(button).not.toBeDisabled();
   });
 
   it("renders an anchor element when href is provided", () => {
@@ -269,12 +270,28 @@ describe("Button component", () => {
     expect(anchor).toHaveAttribute("aria-label", "test");
     expect(anchor).toHaveAttribute("data-balloon-pos", "down");
   });
-  it("applies router-link to ancor", () => {
+
+  it("applies router-link to anchor", () => {
     const { container } = render(() => (
       <Button href="http://example.com" text="Hello" router-link />
     ));
 
     const anchor = container.querySelector("a");
     expect(anchor).toHaveAttribute("router-link", "");
+  });
+
+  it("applies disabled to button", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          /** */
+        }}
+        text="Hello"
+        disabled={true}
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button).toBeDisabled();
   });
 });

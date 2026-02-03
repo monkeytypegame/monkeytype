@@ -21,11 +21,13 @@ type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
   active?: boolean;
+  disabled?: boolean;
 };
 
 type AnchorProps = BaseProps & {
   href: string;
   onClick?: never;
+  disabled?: never;
 };
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
@@ -87,6 +89,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onClick={() => props.onClick?.()}
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
+          disabled={props.disabled ?? false}
         >
           {content}
         </button>
