@@ -43,6 +43,7 @@ type DataTableProps<TData, TValue> = {
   columns: DataTableColumnDef<TData, TValue>[];
   data: TData[];
   fallback?: JSXElement;
+  hideHeader?: true;
 };
 
 export function DataTable<TData, TValue>(
@@ -112,34 +113,80 @@ export function DataTable<TData, TValue>(
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
       <Table>
-        <TableHeader>
-          <For each={table.getHeaderGroups()}>
-            {(headerGroup) => (
-              <TableRow>
-                <For each={headerGroup.headers}>
-                  {(header) => (
-                    <Conditional
-                      if={header.column.getCanSort()}
-                      then={
-                        <TableHead
-                          colSpan={header.colSpan}
-                          aria-sort={
-                            header.column.getIsSorted() === "asc"
-                              ? "ascending"
-                              : header.column.getIsSorted() === "desc"
-                                ? "descending"
-                                : "none"
-                          }
-                        >
-                          <button
-                            type="button"
-                            role="button"
-                            onClick={(e) => {
-                              header.column.getToggleSortingHandler()?.(e);
-                            }}
-                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap"
-                            {...(header.column.columnDef.meta
-                              ?.sortableHeaderMeta ?? {})}
+        <Show when={!props.hideHeader}>
+          <TableHeader>
+            <For each={table.getHeaderGroups()}>
+              {(headerGroup) => (
+                <TableRow>
+                  <For each={headerGroup.headers}>
+                    {(header) => (
+                      <Conditional
+                        if={header.column.getCanSort()}
+                        then={
+                          <TableHead
+                            colSpan={header.colSpan}
+                            aria-sort={
+                              header.column.getIsSorted() === "asc"
+                                ? "ascending"
+                                : header.column.getIsSorted() === "desc"
+                                  ? "descending"
+                                  : "none"
+                            }
+                          >
+                            <button
+                              type="button"
+                              role="button"
+                              onClick={(e) => {
+                                header.column.getToggleSortingHandler()?.(e);
+                              }}
+                              class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap"
+                              {...(header.column.columnDef.meta
+                                ?.sortableHeaderMeta ?? {})}
+                              classList={{
+                                "text-left":
+                                  (header.column.columnDef.meta?.align ??
+                                    "left") === "left",
+                                "text-center":
+                                  header.column.columnDef.meta?.align ===
+                                  "center",
+                                "text-right":
+                                  header.column.columnDef.meta?.align ===
+                                  "right",
+                              }}
+                            >
+                              <Show when={!header.isPlaceholder}>
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                              </Show>
+
+                              <Switch fallback={<i class="fa-fw"></i>}>
+                                <Match
+                                  when={header.column.getIsSorted() === "asc"}
+                                >
+                                  <Fa
+                                    icon={"fa-sort-up"}
+                                    fixedWidth
+                                    aria-hidden="true"
+                                  />
+                                </Match>
+                                <Match
+                                  when={header.column.getIsSorted() === "desc"}
+                                >
+                                  <Fa
+                                    icon={"fa-sort-down"}
+                                    fixedWidth
+                                    aria-hidden="true"
+                                  />
+                                </Match>
+                              </Switch>
+                            </button>
+                          </TableHead>
+                        }
+                        else={
+                          <TableHead
+                            colSpan={header.colSpan}
                             classList={{
                               "text-left":
                                 (header.column.columnDef.meta?.align ??
@@ -157,58 +204,16 @@ export function DataTable<TData, TValue>(
                                 header.getContext(),
                               )}
                             </Show>
-
-                            <Switch fallback={<i class="fa-fw"></i>}>
-                              <Match
-                                when={header.column.getIsSorted() === "asc"}
-                              >
-                                <Fa
-                                  icon={"fa-sort-up"}
-                                  fixedWidth
-                                  aria-hidden="true"
-                                />
-                              </Match>
-                              <Match
-                                when={header.column.getIsSorted() === "desc"}
-                              >
-                                <Fa
-                                  icon={"fa-sort-down"}
-                                  fixedWidth
-                                  aria-hidden="true"
-                                />
-                              </Match>
-                            </Switch>
-                          </button>
-                        </TableHead>
-                      }
-                      else={
-                        <TableHead
-                          colSpan={header.colSpan}
-                          classList={{
-                            "text-left":
-                              (header.column.columnDef.meta?.align ??
-                                "left") === "left",
-                            "text-center":
-                              header.column.columnDef.meta?.align === "center",
-                            "text-right":
-                              header.column.columnDef.meta?.align === "right",
-                          }}
-                        >
-                          <Show when={!header.isPlaceholder}>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                          </Show>
-                        </TableHead>
-                      }
-                    />
-                  )}
-                </For>
-              </TableRow>
-            )}
-          </For>
-        </TableHeader>
+                          </TableHead>
+                        }
+                      />
+                    )}
+                  </For>
+                </TableRow>
+              )}
+            </For>
+          </TableHeader>
+        </Show>
         <TableBody>
           <For each={table.getRowModel().rows}>
             {(row) => (

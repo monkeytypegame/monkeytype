@@ -10,19 +10,12 @@ import {
 } from "solid-js";
 
 import { getServerConfiguration } from "../../../ape/server-configuration";
+import { Selection } from "../../../queries/leaderboards";
 import { isLoggedIn } from "../../../signals/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Button } from "../../common/Button";
 
 type GroupItem<T> = { id: T; text: string; icon: FaSolidIcon };
-export type LeaderboardType = "allTime" | "daily" | "weekly";
-export type Selection = {
-  type: LeaderboardType;
-  friendsOnly: boolean;
-  mode?: Mode;
-  mode2?: string;
-  language?: Language;
-};
 
 type LanguagesByModeByMode2 = Partial<
   // oxlint-disable-next-line typescript/no-explicit-any

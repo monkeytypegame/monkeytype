@@ -57,7 +57,6 @@ export default function AsyncContent<T>(
         error: () => props.query.error,
       };
     }
-    throw new Error("missing source");
   });
 
   const value = () => {

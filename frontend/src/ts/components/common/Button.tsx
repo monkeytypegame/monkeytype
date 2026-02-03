@@ -17,6 +17,7 @@ type ButtonProps = BaseProps & {
   onClick: () => void;
   href?: never;
   sameTarget?: true;
+  disabled?: boolean;
 };
 
 type AnchorProps = BaseProps & {
@@ -66,6 +67,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           classList={getClassList()}
           onClick={() => props.onClick?.()}
+          disabled={props["disabled"] as boolean}
         >
           {content}
         </button>

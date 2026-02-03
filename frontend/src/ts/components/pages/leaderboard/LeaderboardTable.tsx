@@ -2,7 +2,6 @@ import {
   LeaderboardEntry,
   XpLeaderboardEntry,
 } from "@monkeytype/schemas/leaderboards";
-import { UseQueryResult } from "@tanstack/solid-query";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
@@ -12,14 +11,15 @@ import { getConfig } from "../../../signals/config";
 import { secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
-import AsyncContent from "../../common/AsyncContent";
+import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
 type LeaderboardTableProps = {
   type: "wpm" | "xp";
-  query: UseQueryResult<LeaderboardEntry[] | XpLeaderboardEntry[]>;
+  entries: LeaderboardEntry[] | XpLeaderboardEntry[];
   friendsOnly: boolean;
+  hideHeader?: true;
 };
 
 export function LeaderboardTable(props: LeaderboardTableProps): JSXElement {
@@ -32,27 +32,26 @@ export function LeaderboardTable(props: LeaderboardTableProps): JSXElement {
   const xpColumns = createMemo(() => getXpColumns(props.friendsOnly));
 
   return (
-    <AsyncContent query={props.query}>
-      {(data) => {
-        if (props.type === "wpm") {
-          return (
-            <DataTable
-              id="leaderboardTable"
-              columns={wpmColumns()}
-              data={data as LeaderboardEntry[]}
-            />
-          );
-        } else {
-          return (
-            <DataTable
-              id="xpLeaderboardTable"
-              columns={xpColumns()}
-              data={data as XpLeaderboardEntry[]}
-            />
-          );
-        }
-      }}
-    </AsyncContent>
+    <Conditional
+      if={props.type === "wpm"}
+      then={
+        <DataTable
+          fallback=<div>no data found</div>
+          id="leaderboardTable"
+          columns={wpmColumns()}
+          data={props.entries as LeaderboardEntry[]}
+          hideHeader={props.hideHeader}
+        />
+      }
+      else={
+        <DataTable
+          id="xpLeaderboardTable"
+          columns={xpColumns()}
+          data={props.entries as XpLeaderboardEntry[]}
+          hideHeader={props.hideHeader}
+        />
+      }
+    />
   );
 }
 
