@@ -40,7 +40,7 @@ export type LeaderboardMeta = {
 };
 
 export const getLeaderboardQueryOptions = (
-  props: Required<Selection> & {
+  props: Selection & {
     page: number;
   }, // oxlint-disable-next-line typescript/explicit-function-return-type
 ) =>

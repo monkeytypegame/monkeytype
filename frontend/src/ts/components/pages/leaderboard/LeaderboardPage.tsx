@@ -12,6 +12,7 @@ import {
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
+import { createEffectOn } from "../../../hooks/effects";
 import { queryClient } from "../../../queries/client";
 import {
   getLeaderboardQueryOptions,
@@ -49,6 +50,17 @@ export function LeaderboardPage(): JSXElement {
     setSelection(selection);
     setPage(0);
   };
+
+  createEffect(() => {
+    //TODO fetch previous page as well, check boundaries
+    void queryClient.prefetchQuery(
+      getLeaderboardQueryOptions({
+        ...selection,
+        previous: false, //TODO
+        page: page() + 1,
+      }),
+    );
+  });
 
   const query = useQuery(() => ({
     ...getLeaderboardQueryOptions({

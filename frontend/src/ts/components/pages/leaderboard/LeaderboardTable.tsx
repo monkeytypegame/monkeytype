@@ -75,7 +75,7 @@ function getWpmColumns({
       },
     }),
     defineColumn("rank", {
-      header: friendsOnly ? () => <Fa icon="fa-users" /> : "#",
+      header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
       cell: (info) =>
         info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
       meta: {
@@ -214,7 +214,7 @@ function getXpColumns(
       },
     }),
     defineColumn("rank", {
-      header: friendsOnly ? () => <Fa icon="fa-users" /> : "#",
+      header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
       cell: (info) =>
         info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
       meta: {
