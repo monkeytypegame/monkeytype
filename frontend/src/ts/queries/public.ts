@@ -3,7 +3,7 @@ import { intervalToDuration } from "date-fns";
 import Ape from "../ape";
 import { getContributorsList, getSupportersList } from "../utils/json-data";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
-import { baseKey } from "./keys";
+import { baseKey } from "./utils/keys";
 
 const queryKeys = {
   root: () => baseKey("public"),
