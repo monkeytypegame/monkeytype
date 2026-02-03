@@ -72,17 +72,18 @@ export function DataTable<TData, TValue = unknown>(
     const current = bp();
     const result = Object.fromEntries(
       props.columns.map((col, index) => {
-        const id =
+        col.id =
           col.id ??
           ("accessorKey" in col && col.accessorKey !== null
             ? String(col.accessorKey)
             : `__col_${index}`);
 
-        return [
-          id,
+        const visible =
           current[col.meta?.breakpoint ?? "xxs"] &&
-            !current[col.meta?.maxBreakpoint ?? "xxl"],
-        ];
+          (col.meta?.maxBreakpoint === undefined ||
+            !current[col.meta?.maxBreakpoint]);
+
+        return [col.id, visible];
       }),
     );
 
