@@ -41,7 +41,7 @@ export function User(
         router-link
       />
 
-      <div class="text-sub flex items-center justify-center gap-2">
+      <div class="flex items-center justify-center gap-2 text-sub">
         <UserFlags
           {...props.user}
           isFriend={props.isFriend}
