@@ -79,7 +79,7 @@ export default function AsyncContent<T>(
   };
 
   const loader = (
-    <div class="preloader text-main p-4 text-center text-2xl">
+    <div class="preloader p-4 text-center text-2xl text-main">
       <Fa icon="fa-circle-notch" fixedWidth spin />
     </div>
   );
