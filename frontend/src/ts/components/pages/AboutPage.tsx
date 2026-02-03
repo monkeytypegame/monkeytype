@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
-import { queryClient } from "../../queries/client";
+import { queryClient } from "../../queries";
 import {
   getContributorsQueryOptions,
   getSpeedHistogramQueryOptions,

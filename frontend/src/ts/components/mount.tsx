@@ -2,7 +2,7 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
-import { queryClient } from "../queries/client";
+import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
 
 import { DevTools } from "./core/DevTools";
