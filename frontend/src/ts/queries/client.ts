@@ -1,3 +1,3 @@
-import { QueryClient } from "@tanstack/query-core";
+import { QueryClient } from "@tanstack/solid-query";
 
 export const queryClient = new QueryClient();

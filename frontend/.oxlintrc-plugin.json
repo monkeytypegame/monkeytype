@@ -8,7 +8,7 @@
   "overrides": [
     {
       "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
-      "files": ["src/**/*.tsx"],
+      "files": ["src/**/*.tsx", "src/**/*.ts"],
       "rules": {
         "solid/components-return-once": "error",
         "solid/event-handlers": "error",

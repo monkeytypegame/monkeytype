@@ -1,9 +1,9 @@
 import { queryOptions } from "@tanstack/solid-query";
-import { baseKey } from "./keys";
-import { getContributorsList, getSupportersList } from "../utils/json-data";
-import Ape from "../ape";
 import { intervalToDuration } from "date-fns";
+import Ape from "../ape";
+import { getContributorsList, getSupportersList } from "../utils/json-data";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
+import { baseKey } from "./keys";
 
 const queryKeys = {
   root: () => baseKey("public"),
