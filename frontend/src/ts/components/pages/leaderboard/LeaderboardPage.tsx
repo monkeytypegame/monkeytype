@@ -53,13 +53,15 @@ export function LeaderboardPage(): JSXElement {
 
   createEffect(() => {
     //TODO fetch previous page as well, check boundaries
-    void queryClient.prefetchQuery(
-      getLeaderboardQueryOptions({
-        ...selection,
-        previous: false, //TODO
-        page: page() + 1,
-      }),
-    );
+    if (isOpen()) {
+      void queryClient.prefetchQuery(
+        getLeaderboardQueryOptions({
+          ...selection,
+          previous: false, //TODO
+          page: page() + 1,
+        }),
+      );
+    }
   });
 
   const query = useQuery(() => ({
