@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/solid-query";
-import { intervalToDuration } from "date-fns";
 import { For, JSXElement, Show } from "solid-js";
 
-import Ape from "../../ape";
-import { queryClient } from "../../query-client";
+import { queryClient } from "../../queries/client";
+import {
+  getContributorsQueryOptions,
+  getSpeedHistogramQueryOptions,
+  getSupportersQueryOptions,
+  getTypingStatsQueryOptions,
+} from "../../queries/public";
 import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { qsr } from "../../utils/dom";
-import { getContributorsList, getSupportersList } from "../../utils/json-data";
-import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
@@ -32,66 +34,32 @@ function H3(props: { text: string; fa: FaProps }): JSXElement {
     </h3>
   );
 }
+
 qsr("nav .view-about").on("mouseenter", () => {
   prefetch();
 });
-
-const staleTime = 1000 * 60 * 60; //cache results for one hour
-function prefetch(): void {
-  void queryClient.prefetchQuery({
-    queryKey: ["public", "contributors"],
-    queryFn: getContributorsList,
-    staleTime,
-  });
-
-  void queryClient.prefetchQuery({
-    queryKey: ["public", "supporters"],
-    queryFn: getSupportersList,
-    staleTime,
-  });
-
-  void queryClient.prefetchQuery({
-    queryKey: ["public", "typingStats"],
-    queryFn: fetchTypingStats,
-    staleTime,
-  });
-
-  void queryClient.prefetchQuery({
-    queryKey: ["public", "speedHistogram"],
-    queryFn: fetchSpeedHistogram,
-    staleTime,
-  });
-}
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
 
   const contributors = useQuery(() => ({
-    queryKey: ["public", "contributors"],
-    queryFn: getContributorsList,
+    ...getContributorsQueryOptions(),
     enabled: isOpen(),
-    staleTime,
   }));
 
   const supporters = useQuery(() => ({
-    queryKey: ["public", "supporters"],
-    queryFn: getSupportersList,
+    ...getSupportersQueryOptions(),
     enabled: isOpen(),
-    staleTime,
   }));
 
   const typingStats = useQuery(() => ({
-    queryKey: ["public", "typingStats"],
-    queryFn: fetchTypingStats,
+    ...getTypingStatsQueryOptions(),
     enabled: isOpen(),
-    staleTime,
   }));
 
   const speedHistogram = useQuery(() => ({
-    queryKey: ["public", "speedHistogram"],
-    queryFn: fetchSpeedHistogram,
+    ...getSpeedHistogramQueryOptions(),
     enabled: isOpen(),
-    staleTime,
   }));
 
   return (
@@ -468,100 +436,9 @@ export function AboutPage(): JSXElement {
   );
 }
 
-type GroupDisplay = {
-  label: string;
-  text: string;
-  subText: string;
-};
-
-async function fetchTypingStats(): Promise<{
-  timeTyping: GroupDisplay;
-  testsStarted: GroupDisplay;
-  testsCompleted: GroupDisplay;
-}> {
-  const response = await Ape.public.getTypingStats();
-
-  if (response.status !== 200) {
-    throw new Error(response.body.message);
-  }
-  const data = response.body.data;
-
-  const typingSecondsRounded = Math.round(data.timeTyping);
-  const typingDuration = intervalToDuration({
-    start: 0,
-    end: typingSecondsRounded * 1000,
-  });
-  const startedWithMagnitude = getNumberWithMagnitude(data.testsStarted);
-  const completedWithMagnitude = getNumberWithMagnitude(data.testsCompleted);
-
-  const result = {
-    timeTyping: {
-      label:
-        numberWithSpaces(Math.round(typingSecondsRounded / 3600)) + " hours",
-      text: typingDuration.years?.toString() ?? "",
-      subText: "years",
-    },
-    testsStarted: {
-      label: numberWithSpaces(data.testsStarted) + " tests",
-      text:
-        startedWithMagnitude.rounded < 10
-          ? startedWithMagnitude.roundedTo2.toString()
-          : startedWithMagnitude.rounded.toString(),
-      subText: startedWithMagnitude.orderOfMagnitude,
-    },
-    testsCompleted: {
-      label: numberWithSpaces(data.testsCompleted) + " tests",
-      text:
-        completedWithMagnitude.rounded < 10
-          ? completedWithMagnitude.roundedTo2.toString()
-          : completedWithMagnitude.rounded.toString(),
-      subText: completedWithMagnitude.orderOfMagnitude,
-    },
-  };
-  return result;
-}
-
-async function fetchSpeedHistogram(): Promise<
-  | {
-      labels: string[];
-      data: { x: number; y: number }[];
-    }
-  | undefined
-> {
-  const response = await Ape.public.getSpeedHistogram({
-    query: {
-      language: "english",
-      mode: "time",
-      mode2: "60",
-    },
-  });
-
-  if (response.status !== 200) {
-    throw new Error(response.body.message);
-  }
-
-  const data = response.body.data;
-
-  const histogramChartDataBucketed: { x: number; y: number }[] = [];
-  const labels: string[] = [];
-
-  const keys = Object.keys(data).sort(
-    (a, b) => parseInt(a, 10) - parseInt(b, 10),
-  );
-  for (const [i, key] of keys.entries()) {
-    const nextKey = keys[i + 1];
-    const bucket = parseInt(key, 10);
-    histogramChartDataBucketed.push({
-      x: bucket,
-      y: data[bucket] as number,
-    });
-    labels.push(`${bucket} - ${bucket + 9}`);
-    if (nextKey !== undefined && bucket + 10 !== parseInt(nextKey, 10)) {
-      for (let j = bucket + 10; j < parseInt(nextKey, 10); j += 10) {
-        histogramChartDataBucketed.push({ x: j, y: 0 });
-        labels.push(`${j} - ${j + 9}`);
-      }
-    }
-  }
-  return { data: histogramChartDataBucketed, labels };
+function prefetch(): void {
+  void queryClient.prefetchQuery(getContributorsQueryOptions());
+  void queryClient.prefetchQuery(getSupportersQueryOptions());
+  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
+  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
 }
