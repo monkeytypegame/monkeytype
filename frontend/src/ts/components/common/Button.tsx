@@ -68,7 +68,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           classList={getClassList()}
           onClick={() => props.onClick?.()}
-          disabled={props.disabled !== false}
+          disabled={props.disabled ?? false}
         >
           {content}
         </button>

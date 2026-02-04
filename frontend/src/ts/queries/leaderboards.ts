@@ -40,12 +40,12 @@ export type LeaderboardMeta = {
 };
 
 export const getLeaderboardQueryOptions = (
-  props: Selection & {
+  options: Selection & {
     page: number;
   }, // oxlint-disable-next-line typescript/explicit-function-return-type
 ) =>
   queryOptions({
-    queryKey: queryKeys.leaderboardData(props),
+    queryKey: queryKeys.leaderboardData(options),
     queryFn: async (ctx) => {
       const type = ctx.queryKey[2] as LeaderboardType | undefined;
       const mode = ctx.queryKey[3] as
@@ -71,7 +71,7 @@ export const getLeaderboardQueryOptions = (
       return await fetchLeaderboard(type, mode, page.page);
     },
     //5 minutes for alltime, 10 seconds for others
-    staleTime: props.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
+    staleTime: options.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
     placeholderData: (old) => {
       if (
         old === undefined ||
@@ -83,8 +83,8 @@ export const getLeaderboardQueryOptions = (
       }
       const last = old["entries"][0];
       if (
-        (props.type === "weekly" && !("totalXp" in last)) ||
-        (props.type !== "weekly" && !("wpm" in last))
+        (options.type === "weekly" && !("totalXp" in last)) ||
+        (options.type !== "weekly" && !("wpm" in last))
       ) {
         return undefined;
       }

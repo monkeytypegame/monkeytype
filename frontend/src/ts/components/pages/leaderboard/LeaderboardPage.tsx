@@ -12,7 +12,7 @@ import {
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { queryClient } from "../../../queries/client";
+import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
   LeaderboardType,

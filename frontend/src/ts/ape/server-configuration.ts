@@ -1,7 +1,7 @@
 import { Configuration } from "@monkeytype/schemas/configuration";
 import Ape from ".";
 import { promiseWithResolvers } from "../utils/misc";
-import { queryClient } from "../queries/client";
+import { queryClient } from "../queries";
 const staleTime = 1000 * 60 * 60;
 const queryKey = ["serverConfiguration"];
 

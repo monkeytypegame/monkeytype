@@ -282,9 +282,6 @@ importers:
       '@solidjs/meta':
         specifier: 0.29.4
         version: 0.29.4(solid-js@1.9.10)
-      '@tanstack/query-core':
-        specifier: 5.90.20
-        version: 5.90.20
       '@tanstack/solid-query':
         specifier: 5.90.23
         version: 5.90.23(solid-js@1.9.10)
