@@ -26,21 +26,19 @@ export function User(
   } & UserFlagOptions,
 ): JSXElement {
   return (
-    <div class="grid grid-cols-[1.25em_max-content_auto] items-center justify-items-start gap-2">
+    <div class="inline-flex items-center text-sm leading-none">
       <Show when={props.showAvatar ?? true}>
         <DiscordAvatar
           discordId={props.user.discordId}
           discordAvatar={props.user.discordAvatar}
         />
       </Show>
-
       <Button
         type="text"
         href={`/profile/${props.user.uid}?isUid`}
         text={props.user.name}
         router-link
       />
-
       <div class="flex items-center justify-center gap-2 text-sub">
         <UserFlags
           {...props.user}
@@ -55,7 +53,6 @@ export function User(
 
 function UserFlags(props: SupportsFlags & UserFlagOptions): JSXElement {
   const flags = (): UserFlag[] => getMatchingFlags(props);
-  console.log("####", props, flags());
 
   return (
     <For each={flags()}>
@@ -83,7 +80,7 @@ function UserBadge(props: { id?: number }): JSXElement {
   return (
     <Show when={badge !== undefined}>
       <div
-        class="rounded-md p-0.5 text-xs"
+        class="rounded-md p-[0.5em] text-[0.75em]"
         aria-label={badge()?.description}
         data-balloon-pos="right"
         style={{
@@ -94,7 +91,7 @@ function UserBadge(props: { id?: number }): JSXElement {
       >
         <Show when={badge()?.icon}>
           <Fa icon={badge()?.icon ?? "fa-question"} fixedWidth={true} />
-          <span class="hidden lg:inline"> {badge()?.name}</span>
+          <span class="hidden md:inline"> {badge()?.name}</span>
         </Show>
       </div>
     </Show>

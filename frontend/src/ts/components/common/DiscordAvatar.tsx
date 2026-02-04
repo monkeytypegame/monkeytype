@@ -1,9 +1,8 @@
-import { JSXElement, Show } from "solid-js";
+import { createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { FaSolidIcon } from "../../types/font-awesome";
 
-import { Conditional } from "./Conditional";
 import { Fa } from "./Fa";
 
 //cache successful and missing avatars
@@ -15,44 +14,35 @@ export function DiscordAvatar(props: {
   size?: number;
   missingIcon?: FaSolidIcon;
 }): JSXElement {
+  const cacheKey = (): string => `${props.discordId}/${props.discordAvatar}`;
+  const [showSpinner, setShowSpinner] = createSignal(true);
   return (
-    <div class="grid grid-cols-[1.25em_max-content_auto] items-center justify-items-start gap-2">
-      <div class="col-start-1 col-end-2 row-start-1 row-end-2 grid h-(--size) w-(--size) place-content-center leading-(--size) text-(--size) transition-[opacity,filter] duration-125 [--size:1em]">
-        <Conditional
-          if={
-            props.discordId !== undefined &&
-            props.discordAvatar !== undefined &&
-            avatar[`${props.discordId}/${props.discordAvatar}`] !== false
-          }
-          then={
-            <>
-              <Show
-                when={
-                  avatar[`${props.discordId}/${props.discordAvatar}`] ===
-                  undefined
-                }
-              >
-                <Fa
-                  icon={"fa-circle-notch"}
-                  spin={true}
-                  class="absolute z-0 h-[1em] w-[1em]"
-                />
-              </Show>
-              <img
-                src={`https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`}
-                class="absolute z-10 h-[1em] w-[1em] rounded-full object-cover"
-                onLoad={() => {
-                  setAvatar(`${props.discordId}/${props.discordAvatar}`, true);
-                }}
-                onError={() => {
-                  setAvatar(`${props.discordId}/${props.discordAvatar}`, false);
-                }}
-              />
-            </>
-          }
-          else={<Fa icon={props.missingIcon ?? "fa-user-circle"} />}
-        />
-      </div>
+    <div class="relative inline-flex h-[1em] w-[1em] shrink-0 items-center justify-center">
+      <Show
+        when={
+          props.discordId !== undefined &&
+          props.discordAvatar !== undefined &&
+          avatar[cacheKey()] !== false
+        }
+        fallback={<Fa icon={props.missingIcon ?? "fa-user-circle"} />}
+      >
+        <>
+          <Show when={showSpinner()}>
+            <Fa icon={"fa-circle-notch"} spin={true} class="absolute inset-0" />
+          </Show>
+          <img
+            src={`https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`}
+            class="relative h-full w-full rounded-full object-cover"
+            onLoad={() => {
+              setAvatar(cacheKey(), true);
+              setShowSpinner(false);
+            }}
+            onError={() => {
+              setAvatar(cacheKey(), false);
+            }}
+          />
+        </>
+      </Show>
     </div>
   );
 }
