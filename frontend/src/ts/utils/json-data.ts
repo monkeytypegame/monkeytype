@@ -168,7 +168,7 @@ export async function getChallengeList(): Promise<Challenge[]> {
  * @returns A promise that resolves to the list of supporters.
  */
 export async function getSupportersList(): Promise<string[]> {
-  const data = await cachedFetchJson<string[]>("/supporters.json");
+  const data = await fetchJson<string[]>("/supporters.json");
   return data;
 }
 
@@ -177,7 +177,7 @@ export async function getSupportersList(): Promise<string[]> {
  * @returns A promise that resolves to the list of contributors.
  */
 export async function getContributorsList(): Promise<string[]> {
-  const data = await cachedFetchJson<string[]>("/contributors.json");
+  const data = await fetchJson<string[]>("/contributors.json");
   return data;
 }
 
