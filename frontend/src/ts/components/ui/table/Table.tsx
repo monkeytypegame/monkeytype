@@ -28,7 +28,7 @@ const TableBody: Component<ComponentProps<"tbody">> = (props) => {
   return (
     <tbody
       class={cn(
-        "[&>tr]:odd:bg-sub-alt text-xs md:text-sm lg:text-base",
+        "text-xs md:text-sm lg:text-base [&>tr]:odd:bg-sub-alt",
         local.class,
       )}
       {...others}
@@ -57,7 +57,7 @@ const TableHead: Component<ComponentProps<"th">> = (props) => {
     <th
       aria-label={local["aria-label"]}
       class={cn(
-        "text-sub has-button:p-0 appearance-none p-2 text-left align-bottom text-xs font-normal",
+        "has-button:p-0 appearance-none p-2 text-left align-bottom text-xs font-normal text-sub",
         local.class,
       )}
       {...others}

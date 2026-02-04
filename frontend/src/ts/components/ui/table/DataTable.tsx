@@ -132,7 +132,7 @@ export function DataTable<TData, TValue = unknown>(
                             onClick={(e) => {
                               header.column.getToggleSortingHandler()?.(e);
                             }}
-                            class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 text-left font-normal whitespace-nowrap"
+                            class="m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 text-left font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
                             {...(header.column.columnDef.meta
                               ?.sortableHeaderMeta ?? {})}
                           >
