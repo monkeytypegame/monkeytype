@@ -15,26 +15,9 @@ import { qsr } from "../../utils/dom";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
-import { Fa, FaProps } from "../common/Fa";
+import { Fa } from "../common/Fa";
+import { H1, H3 } from "../common/Headers";
 import { User } from "../common/User";
-
-function H2(props: { text: string; fa: FaProps }): JSXElement {
-  return (
-    <h2 class="flex place-items-center gap-4 pb-4 text-4xl text-sub">
-      <Fa {...props.fa} />
-      {props.text}
-    </h2>
-  );
-}
-
-function H3(props: { text: string; fa: FaProps }): JSXElement {
-  return (
-    <h3 class="flex place-items-center gap-2 pb-2 text-sub">
-      <Fa {...props.fa} />
-      {props.text}
-    </h3>
-  );
-}
 
 qsr("nav .view-about").on("mouseenter", () => {
   prefetch();
@@ -65,6 +48,53 @@ export function AboutPage(): JSXElement {
 
   return (
     <div class="content-grid grid gap-8">
+      <section>
+        {/*TODO remove after testing */}
+        <ul>
+          <li>
+            <User
+              user={{ name: "Bob", uid: "uid", badgeId: 6, isPremium: true }}
+              isFriend={true}
+            />
+          </li>
+          <li>
+            <User
+              user={{
+                name: "Miodec",
+                uid: "uid",
+                discordId: "102819690287489024",
+                discordAvatar: "a_af6c0b8ad26fdd6bcb86ed7bb40ee6e5",
+                badgeId: 1,
+              }}
+            />
+          </li>
+          <li>
+            <User
+              user={{
+                name: "Kevin",
+                uid: "uid",
+                discordId: "invalid",
+                discordAvatar: "invalid",
+
+                banned: true,
+                lbOptOut: true,
+              }}
+            />
+          </li>
+          <li>
+            <User
+              user={{
+                name: "Stuart",
+                uid: "uid",
+
+                banned: true,
+                lbOptOut: true,
+              }}
+              iconsOnly={true}
+            />
+          </li>
+        </ul>
+      </section>
       <section class="text-center text-sub">
         Created with love by Miodec.
         <br />
@@ -174,7 +204,7 @@ export function AboutPage(): JSXElement {
         </div>
       </section>
       <section>
-        <H2 fa={{ icon: "fa-info-circle" }} text="about" />
+        <H1 fa={{ icon: "fa-info-circle" }} text="about" />
         <p>
           Monkeytype is a minimalistic and customizable typing test. It features
           many test modes, an account system to save your typing speed history,
@@ -282,7 +312,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-life-ring" }} text="support" />
+        <H1 fa={{ icon: "fa-life-ring" }} text="support" />
         <p>
           Thanks to everyone who has supported this project. It would not be
           possible without you and your continued support.
@@ -300,7 +330,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-envelope" }} text="contact" />
+        <H1 fa={{ icon: "fa-envelope" }} text="contact" />
         <p>
           If you encounter a bug, have a feature request or just want to say hi
           - here are the different ways you can contact me directly.
@@ -334,7 +364,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-users" }} text="credits" />
+        <H1 fa={{ icon: "fa-users" }} text="credits" />
         <p>
           <Button
             type="text"
@@ -397,7 +427,7 @@ export function AboutPage(): JSXElement {
       </Show>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-hand-holding-usd" }} text="top supporters" />
+        <H1 fa={{ icon: "fa-hand-holding-usd" }} text="top supporters" />
         <AsyncContent
           query={supporters}
           errorMessage="Failed to get supporters"
@@ -416,7 +446,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-code-branch" }} text="contributors" />
+        <H1 fa={{ icon: "fa-code-branch" }} text="contributors" />
         <AsyncContent
           query={contributors}
           errorMessage="Failed to get contributors"
