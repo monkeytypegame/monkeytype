@@ -333,14 +333,17 @@ export async function resetConfig(): Promise<void> {
 }
 
 export async function loadFromLocalStorage(): Promise<void> {
-  console.log("loading localStorage config");
-  const newConfig = configLS.get();
-  if (newConfig === undefined) {
-    await resetConfig();
-  } else {
-    await applyConfig(newConfig);
-    saveFullConfigToLocalStorage(true);
-  }
+  // console.log("loading localStorage config");
+  // const newConfig = configLS.get();
+  // if (newConfig === undefined) {
+  //   await resetConfig();
+  // } else {
+  //   await applyConfig(newConfig);
+  //   saveFullConfigToLocalStorage(true);
+  // }
+  await applyConfig(getDefaultConfig());
+  await DB.resetConfig();
+  saveFullConfigToLocalStorage(true);
   loadDone();
 }
 
