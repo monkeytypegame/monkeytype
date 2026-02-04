@@ -8,21 +8,21 @@ import { queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
 
 const queryKeys = {
-  leaderboardMeta: (props: Selection) => [
-    props.friendsOnly ? "user" : "leaderboard",
+  leaderboardMeta: (options: Selection) => [
+    options.friendsOnly ? "user" : "leaderboard",
     "leaderboard",
-    props.type,
+    options.type,
     {
-      mode: props.mode,
-      mode2: props.mode2,
-      language: props.language,
-      friendsOnly: props.friendsOnly,
-      previous: props.previous,
+      mode: options.mode,
+      mode2: options.mode2,
+      language: options.language,
+      friendsOnly: options.friendsOnly,
+      previous: options.previous,
     },
   ],
-  leaderboardData: (props: Selection & { page: number }) => [
-    ...queryKeys.leaderboardMeta(props),
-    { page: props.page },
+  leaderboardData: (options: Selection & { page: number }) => [
+    ...queryKeys.leaderboardMeta(options),
+    { page: options.page },
   ],
 };
 export type LeaderboardType = "allTime" | "daily" | "weekly";

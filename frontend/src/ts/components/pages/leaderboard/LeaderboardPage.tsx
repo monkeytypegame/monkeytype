@@ -12,7 +12,6 @@ import {
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { createEffectOn } from "../../../hooks/effects";
 import { queryClient } from "../../../queries/client";
 import {
   getLeaderboardQueryOptions,
