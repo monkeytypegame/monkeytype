@@ -1,108 +1,118 @@
 <div class="page pageTest hidden full-width content-grid" data-nosnippet>
-  <!-- <div id="testConfig" class="full-width"> -->
-  <!--   <div class="row"> -->
-  <!--     <div class="puncAndNum"> -->
-  <!--       <button class="textButton punctuationMode"> -->
-  <!--         <i class="fas fa-fw fa-at"></i> -->
-  <!--         punctuation -->
-  <!--       </button> -->
-  <!--       <button class="textButton numbersMode"> -->
-  <!--         <i class="fas fa-fw fa-hashtag"></i> -->
-  <!--         numbers -->
-  <!--       </button> -->
-  <!--     </div> -->
-  <!---->
-  <!-- <div class="spacer leftSpacer"></div> -->
-  <!---->
-  <div class="mode hidden">
-    <button class="textButton" mode="time">
-      <i class="fas fa-fw fa-clock"></i>
-      time
-    </button>
-    <button class="textButton" mode="words">
-      <i class="fas fa-fw fa-font"></i>
-      words
-    </button>
-    <button class="textButton" mode="quote">
-      <i class="fas fa-fw fa-quote-left"></i>
-      quote
-    </button>
-    <button class="textButton" mode="zen">
-      <i class="fas fa-fw fa-mountain"></i>
-      zen
-    </button>
-    <button class="textButton" mode="custom">
-      <i class="fas fa-fw fa-wrench"></i>
-      custom
+  <div id="testConfig" class="full-width">
+    <div class="row">
+      <div class="puncAndNum">
+        <button class="textButton punctuationMode" disabled>
+          <i class="fas fa-fw fa-at"></i>
+          punctuation
+        </button>
+        <button class="textButton numbersMode" disabled>
+          <i class="fas fa-fw fa-hashtag"></i>
+          numbers
+        </button>
+      </div>
+      <div class="spacer leftSpacer"></div>
+      <div class="mode hidden">
+        <button class="textButton" mode="time">
+          <i class="fas fa-fw fa-clock"></i>
+          time
+        </button>
+        <button class="textButton" mode="words">
+          <i class="fas fa-fw fa-font"></i>
+          words
+        </button>
+        <button class="textButton" mode="quote">
+          <i class="fas fa-fw fa-quote-left"></i>
+          quote
+        </button>
+        <button class="textButton" mode="zen">
+          <i class="fas fa-fw fa-mountain"></i>
+          zen
+        </button>
+        <button class="textButton" mode="custom">
+          <i class="fas fa-fw fa-wrench"></i>
+          custom
+        </button>
+      </div>
+      <div class="spacer rightSpacer"></div>
+      <div class="time">
+        <button class="textButton" timeConfig="15" disabled>
+          <span>15</span>
+        </button>
+        <button class="textButton" timeConfig="30"><span>30</span></button>
+        <button class="textButton" timeConfig="60" disabled>
+          <span>60</span>
+        </button>
+        <button class="textButton" timeConfig="120" disabled>
+          <span>120</span>
+        </button>
+        <button class="textButton" timeConfig="custom" disabled>
+          <i class="fas fa-fw fa-tools"></i>
+        </button>
+      </div>
+
+      <div class="wordCount">
+        <button class="textButton" wordCount="10" disabled>
+          <span>10</span>
+        </button>
+        <button class="textButton" wordCount="25" disabled>
+          <span>25</span>
+        </button>
+        <button class="textButton" wordCount="50" disabled>
+          <span>50</span>
+        </button>
+        <button class="textButton" wordCount="100" disabled>
+          <span>100</span>
+        </button>
+        <button class="textButton" wordCount="custom" disabled>
+          <i class="fas fa-fw fa-tools"></i>
+        </button>
+      </div>
+
+      <div class="quoteLength">
+        <button class="textButton" quotelength="all">all</button>
+        <button class="textButton" quotelength="0">short</button>
+        <button class="textButton" quotelength="1">medium</button>
+        <button class="textButton" quotelength="2">long</button>
+        <button class="textButton" quotelength="3">thicc</button>
+        <button class="textButton favorite hidden" quotelength="-3">
+          <i class="fas fa-heart"></i>
+        </button>
+        <button class="textButton" quotelength="-2">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+
+      <div class="zen">
+        <div
+          class="textButton"
+          style="
+            width: 0;
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: 0;
+            margin-right: 0;
+          "
+        >
+           
+        </div>
+      </div>
+
+      <div class="customText">
+        <button class="textButton">change</button>
+      </div>
+    </div>
+    <button class="shareButton textButton">
+      <i class="fas fa-fw fa-share"></i>
     </button>
   </div>
-  <!---->
-  <div class="spacer rightSpacer"></div>
-  <!---->
-  <!--     <div class="time"> -->
-  <!--       <button class="textButton" timeConfig="15"><span>15</span></button> -->
-  <!--       <button class="textButton" timeConfig="30"><span>30</span></button> -->
-  <!--       <button class="textButton" timeConfig="60"><span>60</span></button> -->
-  <!--       <button class="textButton" timeConfig="120"><span>120</span></button> -->
-  <!--       <button class="textButton" timeConfig="custom"> -->
-  <!--         <i class="fas fa-fw fa-tools"></i> -->
-  <!--       </button> -->
-  <!--     </div> -->
-  <!---->
-  <!--     <div class="wordCount"> -->
-  <!--       <button class="textButton" wordCount="10"><span>10</span></button> -->
-  <!--       <button class="textButton" wordCount="25"><span>25</span></button> -->
-  <!--       <button class="textButton" wordCount="50"><span>50</span></button> -->
-  <!--       <button class="textButton" wordCount="100"><span>100</span></button> -->
-  <!--       <button class="textButton" wordCount="custom"> -->
-  <!--         <i class="fas fa-fw fa-tools"></i> -->
-  <!--       </button> -->
-  <!--     </div> -->
-  <!---->
-  <!--     <div class="quoteLength"> -->
-  <!--       <button class="textButton" quotelength="all">all</button> -->
-  <!--       <button class="textButton" quotelength="0">short</button> -->
-  <!--       <button class="textButton" quotelength="1">medium</button> -->
-  <!--       <button class="textButton" quotelength="2">long</button> -->
-  <!--       <button class="textButton" quotelength="3">thicc</button> -->
-  <!--       <button class="textButton favorite hidden" quotelength="-3"> -->
-  <!--         <i class="fas fa-heart"></i> -->
-  <!--       </button> -->
-  <!--       <button class="textButton" quotelength="-2"> -->
-  <!--         <i class="fas fa-search"></i> -->
-  <!--       </button> -->
-  <!--     </div> -->
-  <!---->
-  <!--     <div class="zen"> -->
-  <!--       <div -->
-  <!--         class="textButton" -->
-  <!--         style=" -->
-  <!--           width: 0; -->
-  <!--           padding-left: 0; -->
-  <!--           padding-right: 0; -->
-  <!--           margin-left: 0; -->
-  <!--           margin-right: 0; -->
-  <!--         " -->
-  <!--       > -->
-  <!--           -->
-  <!--       </div> -->
-  <!--     </div> -->
-  <!---->
-  <!--     <div class="customText"> -->
-  <!--       <button class="textButton">change</button> -->
-  <!--     </div> -->
-  <!--   </div> -->
-  <!--   <button class="shareButton textButton"> -->
-  <!--     <i class="fas fa-fw fa-share"></i> -->
-  <!--   </button> -->
-  <!-- </div> -->
 
-  <!-- <div id="mobileTestConfigButton"> -->
-  <!--   <button> -->
-  <!--     <i class="fas fa-fw fa-cog"></i> -->
-  <!--     Test settings -->
-  <!--   </button> -->
-  <!-- </div> -->
+  <div id="mobileTestConfigButton">
+    <button>
+      <i class="fas fa-fw fa-cog"></i>
+      Test settings
+    </button>
+  </div>
   <div id="testInitFailed" class="content-grid hidden">
     <div class="message">
       <div class="text">
