@@ -17,8 +17,8 @@
   },
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
-    "oxlint": "1.40.0",
-    "oxlint-tsgolint": "0.11.1",
+    "oxlint": "1.43.0",
+    "oxlint-tsgolint": "0.11.4",
     "typescript": "5.9.3"
   },
   "peerDependencies": {

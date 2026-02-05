@@ -12,7 +12,7 @@ import { VersionButton } from "./VersionButton";
 export function Footer(): JSXElement {
   return (
     <footer
-      class={cn("text-sub relative text-xs", {
+      class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
@@ -24,7 +24,7 @@ export function Footer(): JSXElement {
           "opacity-0": getFocus(),
         }}
       >
-        <div class="xs:grid-cols-2 grid grid-cols-1 justify-items-start sm:grid-cols-4 lg:flex">
+        <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
