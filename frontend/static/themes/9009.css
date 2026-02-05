@@ -1,15 +1,3 @@
-.word letter.incorrect {
-  color: var(--error-color);
-}
-
-.word letter.incorrect.extra {
-  color: var(--error-extra-color);
-}
-
-.word.error {
-  border-bottom: solid 2px var(--error-color);
-}
-
 kbd {
   color: var(--sub-color);
   background-color: var(--main-color);
