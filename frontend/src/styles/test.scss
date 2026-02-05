@@ -354,8 +354,8 @@
         display: none;
       }
       & letter.incorrect {
-        color: var(--correct-letter-color);
-        animation: var(--correct-letter-animation);
+        color: var(--correct-letter-color) !important;
+        animation: var(--correct-letter-animation) !important;
       }
       & .hints hint {
         display: none;
