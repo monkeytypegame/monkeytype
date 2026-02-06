@@ -1,7 +1,16 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
 import { useQuery } from "@tanstack/solid-query";
-import { endOfDay, endOfWeek } from "date-fns";
+import {
+  endOfDay,
+  endOfWeek,
+  startOfDay,
+  startOfWeek,
+  subDays,
+  subHours,
+  subMinutes,
+} from "date-fns";
 import { differenceInSeconds } from "date-fns/differenceInSeconds";
+import { format as dateFormat } from "date-fns/format";
 import {
   createEffect,
   createMemo,
@@ -21,6 +30,7 @@ import {
 import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { secondsToString } from "../../../utils/date-and-time";
 import { qsr } from "../../../utils/dom";
+import { addToGlobal } from "../../../utils/misc";
 import { capitalizeFirstLetter } from "../../../utils/strings";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
@@ -50,13 +60,13 @@ export function LeaderboardPage(): JSXElement {
     setPage(0);
   };
 
+  addToGlobal({ selection });
   createEffect(() => {
     //TODO fetch previous page as well, check boundaries
     if (isOpen()) {
       void queryClient.prefetchQuery(
         getLeaderboardQueryOptions({
           ...selection,
-          previous: false, //TODO
           page: page() + 1,
         }),
       );
@@ -80,7 +90,11 @@ export function LeaderboardPage(): JSXElement {
         </div>
 
         <div class="w-full flex-1">
-          <Title selection={selection} />
+          <Title
+            selection={selection}
+            onPreviousSelect={() => setSelection("previous", (old) => !old)}
+          />
+
           <Show when={isLoggedIn()}>
             <LeaderboardTable
               type={selection.type === "weekly" ? "xp" : "wpm"}
@@ -147,7 +161,10 @@ export function LeaderboardPage(): JSXElement {
   );
 }
 
-function Title(props: { selection: Selection }): JSXElement {
+function Title(props: {
+  selection: Selection;
+  onPreviousSelect: () => void;
+}): JSXElement {
   const title = createMemo(() => {
     const type =
       props.selection.type === "allTime"
@@ -167,7 +184,74 @@ function Title(props: { selection: Selection }): JSXElement {
     return `${type} ${language} ${mode} ${friend}Leaderboard`;
   });
 
-  return <H2 text={title()} />;
+  const subTitle = createMemo(() => {
+    const utcDateFormat = "EEEE, do MMMM yyyy";
+    const localDateFormat = "EEEE, do MMMM yyyy HH:mm";
+    const toLocalString = (
+      timestamp: UTCDateMini,
+      endTimestamp: UTCDateMini,
+    ): string =>
+      `local time\n${dateFormat(utcToLocalDate(timestamp), localDateFormat)} -\n${dateFormat(utcToLocalDate(endTimestamp), localDateFormat)}`;
+
+    if (props.selection.type === "daily") {
+      let timestamp = startOfDay(new UTCDateMini());
+      if (props.selection.previous) {
+        timestamp = subHours(timestamp, 24);
+      }
+      const endTimestamp = endOfDay(timestamp);
+      return {
+        dateString: dateFormat(timestamp, utcDateFormat) + " UTC",
+        localString: toLocalString(timestamp, endTimestamp),
+        buttonText: props.selection.previous ? "show today" : "show yesterday",
+      };
+    } else if (props.selection.type === "weekly") {
+      let timestamp = startOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
+      if (props.selection.previous) {
+        timestamp = subDays(timestamp, 7);
+      }
+      const endTimestamp = endOfWeek(timestamp, { weekStartsOn: 1 });
+
+      return {
+        dateString: `${dateFormat(timestamp, utcDateFormat)} - ${dateFormat(endTimestamp, utcDateFormat)} UTC`,
+        localString: toLocalString(timestamp, endTimestamp),
+        buttonText: props.selection.previous
+          ? "show this week"
+          : "show last week",
+      };
+    }
+    return null;
+  });
+
+  return (
+    <>
+      <H2 text={title()} class="p-0" />
+      <Show when={subTitle() !== null}>
+        <div class="flex items-center gap-2">
+          <div
+            data-balloon-pos="down"
+            data-balloon-break
+            aria-label={subTitle()?.localString}
+          >
+            {subTitle()?.dateString}
+          </div>
+          <div class="h-[1.75em] w-[0.25em] rounded bg-sub-alt"></div>
+          <Button
+            text={subTitle()?.buttonText}
+            type="text"
+            onClick={props.onPreviousSelect}
+            fa={{
+              icon: props.selection.previous ? "fa-forward" : "fa-backward",
+              variant: "solid",
+            }}
+          />
+        </div>
+      </Show>
+    </>
+  );
+}
+
+function utcToLocalDate(timestamp: UTCDateMini): Date {
+  return subMinutes(timestamp, new Date().getTimezoneOffset());
 }
 
 function NextUpdate(props: { type: LeaderboardType }): JSXElement {

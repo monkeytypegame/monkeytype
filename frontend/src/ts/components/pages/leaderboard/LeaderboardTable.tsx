@@ -179,12 +179,15 @@ function getWpmColumns({
     }),
     defineColumn("timestamp", {
       header: "date",
-      cell: (info) => (
-        <>
-          <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
-          <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
-        </>
-      ),
+      cell: (info) =>
+        info.getValue() !== undefined ? (
+          <>
+            <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
+            <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
+          </>
+        ) : (
+          ""
+        ),
       meta: {
         align: "right",
       },
@@ -246,18 +249,26 @@ function getXpColumns(
 
     defineColumn("lastActivityTimestamp", {
       header: "date",
-      cell: (info) => (
-        <>
-          <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
-          <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
-        </>
-      ),
+      cell: (info) =>
+        info.getValue() !== undefined ? (
+          <>
+            <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
+            <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
+          </>
+        ) : (
+          ""
+        ),
       meta: {
         align: "right",
-        cellMeta: ({ value }) => ({
-          "aria-label": formatDistanceToNow(value, { addSuffix: true }),
-          "data-balloon-pos": "left",
-        }),
+        cellMeta: (info) =>
+          info.value !== undefined
+            ? {
+                "aria-label": formatDistanceToNow(info.value, {
+                  addSuffix: true,
+                }),
+                "data-balloon-pos": "left",
+              }
+            : {},
       },
     }),
   ];
