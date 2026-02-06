@@ -18,6 +18,7 @@ import { LoadingCircle } from "./LoadingCircle";
 export default function AsyncContent<T>(
   props: {
     errorMessage?: string;
+    loader?: JSXElement;
   } & (
     | {
         resource: Resource<T | undefined>;
@@ -78,7 +79,8 @@ export default function AsyncContent<T>(
     return message;
   };
 
-  const loader = <LoadingCircle />;
+  const loader = (): JSXElement =>
+    props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
 
   const errorText = (err: unknown): JSXElement => (
     <div class="error">{handleError(err)}</div>
@@ -89,7 +91,7 @@ export default function AsyncContent<T>(
         fallback={
           <>
             <Show when={source().isLoading() && !props.alwaysShowContent}>
-              {loader}
+              {loader()}
             </Show>
             <Conditional
               if={props.alwaysShowContent === true}
@@ -114,7 +116,7 @@ export default function AsyncContent<T>(
       >
         <Match when={source().isError()}>{errorText(source().error?.())}</Match>
         <Match when={source().isLoading() && !props.alwaysShowContent}>
-          {loader}
+          {loader()}
         </Match>
       </Switch>
     </ErrorBoundary>
