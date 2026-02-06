@@ -716,6 +716,10 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
+export function isWindows(): boolean {
+  return isPlatform("Win");
+}
+
 export function isLinux(): boolean {
   return isPlatform("Linux");
 }

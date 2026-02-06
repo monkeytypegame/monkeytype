@@ -1,10 +1,13 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
 import { qsr } from "../utils/dom";
+import { isMac, isLinux, isWindows } from "../utils/misc";
 
 const el = qsr("#capsWarning");
 
 export let capsState = false;
+const isMacOs = isMac();
+const isLinuxOs = isLinux();
+const isWindowsOs = isWindows();
 
 let visible = false;
 
@@ -22,15 +25,7 @@ function hide(): void {
   }
 }
 
-function update(event: KeyboardEvent): void {
-  capsState = event?.getModifierState("CapsLock");
-
-  if (event.key === "CapsLock") {
-    capsState = !capsState;
-  }
-}
-
-function updateWarningVisibility(): void {
+function updateIndicator(): void {
   try {
     if (Config.capsLockWarning && capsState) {
       show();
@@ -40,24 +35,39 @@ function updateWarningVisibility(): void {
   } catch {}
 }
 
-function updateCapsForMac(eventType: "keyup" | "keydown"): void {
-  if (eventType === "keyup") {
-    capsState = false;
-  } else {
-    capsState = true;
+function update(event: KeyboardEvent): void {
+  if (event.key !== "CapsLock") {
+    capsState = event.getModifierState("CapsLock");
   }
+  updateIndicator();
 }
 
 document.addEventListener("keyup", (event) => {
-  if (Misc.isMac() && event.key === "CapsLock") updateCapsForMac("keyup");
-  updateWarningVisibility();
-});
-
-document.addEventListener("keydown", (event) => {
-  if (Misc.isMac() && event.key === "CapsLock") {
-    updateCapsForMac("keydown");
-    updateWarningVisibility();
+  if (isMacOs) {
+    if (event.key === "CapsLock") {
+      capsState = event.getModifierState("CapsLock");
+    }
+  } else if (isWindowsOs) {
+    if (event.key === "CapsLock") {
+      capsState = event.getModifierState("CapsLock");
+    }
   } else {
     update(event);
   }
+  updateIndicator();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (isMacOs) {
+    if (event.key === "CapsLock") {
+      capsState = event.getModifierState("CapsLock");
+    } else {
+      update(event);
+    }
+  } else if (isLinuxOs) {
+    if (event.key === "CapsLock") {
+      capsState = !event.getModifierState("CapsLock");
+    }
+  }
+  updateIndicator();
 });
