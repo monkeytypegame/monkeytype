@@ -22,7 +22,7 @@ type LeaderboardTableProps = {
   hideHeader?: true;
 };
 
-export function LeaderboardTable(props: LeaderboardTableProps): JSXElement {
+export function Table(props: LeaderboardTableProps): JSXElement {
   const wpmColumns = createMemo(() =>
     getWpmColumns({
       friendsOnly: props.friendsOnly,
