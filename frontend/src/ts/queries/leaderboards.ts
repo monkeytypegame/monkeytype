@@ -8,7 +8,7 @@ import { queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
 
 const queryKeys = {
-  leaderboardMeta: (options: Selection) => [
+  leaderboardData: (options: Selection & { page: number }) => [
     options.friendsOnly ? "user" : "leaderboard",
     "leaderboard",
     options.type,
@@ -19,25 +19,27 @@ const queryKeys = {
       friendsOnly: options.friendsOnly,
       previous: options.previous,
     },
-  ],
-  leaderboardData: (options: Selection & { page: number }) => [
-    ...queryKeys.leaderboardMeta(options),
     { page: options.page },
   ],
 };
-export type LeaderboardType = "allTime" | "daily" | "weekly";
-export type Selection = {
-  type: LeaderboardType;
-  friendsOnly: boolean;
-  mode?: Mode;
-  mode2?: string;
-  language?: Language;
-  previous?: boolean;
-};
-export type LeaderboardMeta = {
-  count: number;
-  minWpm?: number;
-};
+export type LeaderboardType = Selection["type"];
+export type Selection =
+  | {
+      type: "weekly";
+      friendsOnly: boolean;
+      previous: boolean;
+      language?: never;
+      mode?: never;
+      mode2?: never;
+    }
+  | {
+      type: "daily" | "allTime";
+      mode: Mode;
+      mode2: string;
+      language: Language;
+      friendsOnly: boolean;
+      previous: boolean;
+    };
 
 export const getLeaderboardQueryOptions = (
   options: Selection & {
@@ -58,8 +60,8 @@ export const getLeaderboardQueryOptions = (
 
       if (type === "weekly") {
         return await fetchWeeklyLeaderboard(
+          mode.friendsOnly ?? false,
           mode.previous ?? false,
-          mode.friendsOnly,
           page.page,
         );
       }
@@ -121,7 +123,7 @@ async function fetchLeaderboard(
   page: number,
 ): Promise<GetLeaderboardResponse["data"]> {
   const query = {
-    friendsOnly: selection.friendsOnly,
+    friendsOnly: selection.friendsOnly ? true : undefined,
     language: selection.language,
     mode: selection.mode,
     mode2: selection.mode2,

@@ -1,26 +1,18 @@
 import { Language } from "@monkeytype/schemas/languages";
-import { Mode, Mode2 } from "@monkeytype/schemas/shared";
-import {
-  Accessor,
-  createEffect,
-  createSignal,
-  For,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { Mode } from "@monkeytype/schemas/shared";
+import { For, JSXElement, Show } from "solid-js";
+import { createStore } from "solid-js/store";
 
 import { getServerConfiguration } from "../../../ape/server-configuration";
 import { Selection } from "../../../queries/leaderboards";
 import { isLoggedIn } from "../../../signals/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
+import { addToGlobal } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 
 type GroupItem<T> = { id: T; text: string; icon: FaSolidIcon };
 
-type LanguagesByModeByMode2 = Partial<
-  // oxlint-disable-next-line typescript/no-explicit-any
-  Record<Mode, Record<Mode2<any>, Language[]>>
->;
+type LanguagesByModeByMode2 = Partial<Record<Mode, Record<string, Language[]>>>;
 
 type ValidLeaderboards = {
   allTime: LanguagesByModeByMode2;
@@ -28,158 +20,94 @@ type ValidLeaderboards = {
   daily: LanguagesByModeByMode2;
 };
 
-export type ModeSelect = Required<Pick<Selection, "mode" | "mode2">>;
+export type ModeSelect = Pick<Selection, "mode" | "mode2">;
 
 export function Sidebar(props: {
   onSelect: (selection: Selection) => void;
 }): JSXElement {
-  const [type, setType] = createSignal<Selection["type"]>("allTime");
-  const [friendsOnly, setFriendsOnly] =
-    createSignal<Selection["friendsOnly"]>(false);
-  const [mode, setMode] = createSignal<ModeSelect | undefined>({
+  const [selection, setSelection] = createStore<Selection>({
+    type: "allTime",
     mode: "time",
     mode2: "15",
+    language: "english",
+    previous: false,
+    friendsOnly: false,
   });
-  const [language, setLanguage] =
-    createSignal<Selection["language"]>("english");
 
+  addToGlobal({ ss: selection });
   const validLeaderboards = (): ValidLeaderboards => getValidLeaderboards();
 
-  /**
-   * update leaderboard selection to a valid state.
-   * @param key
-   * @returns
-   */
-  const setSelected = (
-    key: "type" | "mode" | "language",
-  ): ((val: unknown) => void) => {
-    return (value) => {
-      const state = {
-        type: type(),
-        mode: mode(),
-        language: language(),
-      };
-
-      //@ts-expect-error generic
-      state[key] = value;
-
-      if (state.type === "weekly") {
-        setType("weekly");
-        setLanguage(undefined);
-        setMode(undefined);
-        return;
-      }
-      state.mode ??= { mode: "time", mode2: "15" };
-
-      const validLeaderboard = validLeaderboards()[state.type];
-
-      let validModes2 = validLeaderboard[state.mode.mode];
-
-      if (validModes2 === undefined) {
-        const firstMode = Object.keys(validLeaderboard).sort()[0] as Mode;
-        if (firstMode === undefined) {
-          throw new Error(`no valid leaderboard config for type ${state.type}`);
-        }
-        state.mode.mode = firstMode;
-        validModes2 = validLeaderboard[firstMode];
-      }
-
-      let supportedLanguages = validModes2?.[state.mode.mode2];
-      if (supportedLanguages === undefined) {
-        const firstLanguage = Object.keys(validModes2 ?? {}).sort(
-          (a, b) => parseInt(a) - parseInt(b),
-        )[0];
-        if (firstLanguage === undefined) {
-          throw new Error(
-            `no valid leaderboard config for type ${state.type} and mode ${state.mode.mode}`,
-          );
-        }
-        state.mode.mode2 = firstLanguage;
-        supportedLanguages = validModes2?.[firstLanguage];
-      }
-
-      if (supportedLanguages === undefined || supportedLanguages.length < 1) {
-        throw new Error(
-          `Daily leaderboard config not valid for mode:${state.mode.mode} mode2:${state.mode.mode2}`,
-        );
-      }
-
-      if (
-        state.language === undefined ||
-        !supportedLanguages.includes(state.language)
-      ) {
-        state.language = supportedLanguages.sort()[0] as Language;
-      }
-
-      setType(state.type);
-      setMode(state.mode);
-      setLanguage(state.language);
-    };
-  };
-
-  createEffect(() => {
-    props.onSelect({
-      type: type(),
-      friendsOnly: friendsOnly(),
-      mode: mode()?.mode,
-      mode2: mode()?.mode2,
-      language: language(),
+  function updateSelection(patch: Partial<Selection>): void {
+    setSelection((prev) => {
+      const newValue = normalizeSelection(
+        //@ts-expect-error this is fine
+        { ...prev, ...patch },
+        validLeaderboards(),
+      );
+      props.onSelect(newValue);
+      return newValue;
     });
-  });
+  }
+
+  function selectType(type: Selection["type"]): void {
+    updateSelection({ type });
+  }
+
+  function selectMode(value: ModeSelect): void {
+    updateSelection({ mode: value.mode, mode2: value.mode2 });
+  }
+
+  function selectLanguage(language: Language): void {
+    updateSelection({ language });
+  }
+  function selectFriendsOnly(friendsOnly: boolean): void {
+    updateSelection({ friendsOnly });
+  }
 
   return (
     <>
       <Group
-        selected={type}
-        onSelect={setSelected("type")}
+        selected={selection.type}
+        onSelect={selectType}
         items={[
           {
             id: "allTime",
             text: "all-time english",
             icon: "fa-globe-americas",
           },
-          {
-            id: "weekly",
-            text: "weekly xp",
-            icon: "fa-calendar-day",
-          },
-          {
-            id: "daily",
-            text: "daily",
-            icon: "fa-sun",
-          },
+          { id: "weekly", text: "weekly xp", icon: "fa-calendar-day" },
+          { id: "daily", text: "daily", icon: "fa-sun" },
         ]}
       />
       <Show when={isLoggedIn()}>
         <Group
-          selected={friendsOnly}
-          onSelect={setFriendsOnly}
+          selected={selection.friendsOnly}
+          onSelect={selectFriendsOnly}
           items={[
-            {
-              id: false,
-              text: "everyone",
-              icon: "fa-users",
-            },
-            {
-              id: true,
-              text: "friends only",
-              icon: "fa-user-friends",
-            },
+            { id: false, text: "everyone", icon: "fa-users" },
+            { id: true, text: "friends only", icon: "fa-user-friends" },
           ]}
         />
       </Show>
-      <Show when={type() !== "weekly"}>
+      <Show when={selection.type !== "weekly"}>
         <Group
-          selected={mode}
-          onSelect={setSelected("mode")}
-          items={getModeButtons(validLeaderboards()[type()], language())}
+          selected={{ mode: selection.mode, mode2: selection.mode2 }}
+          onSelect={selectMode}
+          items={getModeButtons(
+            validLeaderboards()[selection.type],
+            selection.language as Language,
+          )}
         />
       </Show>
-      <Show when={type() === "daily"}>
+      <Show when={selection.type === "daily"}>
         <Group
-          selected={language}
-          onSelect={setSelected("language")}
-          items={getLanguageButtons(validLeaderboards()[type()], mode())}
+          selected={selection.language as Language}
+          onSelect={selectLanguage}
+          items={getLanguageButtons(
+            validLeaderboards().daily,
+            selection.mode as Mode,
+            selection.mode2 as string,
+          )}
         />
       </Show>
     </>
@@ -188,14 +116,14 @@ export function Sidebar(props: {
 
 function Group<T>(props: {
   items: GroupItem<T>[];
-  selected: Accessor<T>;
+  selected: T;
   onSelect: (selected: T) => void;
 }): JSXElement {
   const isEqual = (a: unknown, b: unknown): boolean =>
     typeof a === "object" ? JSON.stringify(a) === JSON.stringify(b) : a === b;
 
   return (
-    <div class="bg-sub-alt mb-4 grid gap-4 rounded-xl p-4">
+    <div class="mb-4 grid gap-4 rounded-xl bg-sub-alt p-4">
       <For each={props.items}>
         {(item) => (
           <Button
@@ -203,12 +131,61 @@ function Group<T>(props: {
             fa={{ icon: item.icon }}
             text={item.text}
             class="justify-start"
-            active={isEqual(item.id, props.selected())}
+            active={isEqual(item.id, props.selected)}
           />
         )}
       </For>
     </div>
   );
+}
+
+function normalizeSelection(
+  draft: Selection,
+  valid: ValidLeaderboards,
+): Selection {
+  if (draft.type === "weekly") {
+    return {
+      ...draft,
+      mode: undefined,
+      mode2: undefined,
+      language: undefined,
+      previous: false,
+    };
+  }
+
+  let { mode, mode2, language } = draft;
+  const validModes = valid[draft.type];
+
+  if (mode === null || validModes[mode] === undefined) {
+    const firstMode = Object.keys(validModes).sort()[0] as Mode | undefined;
+    if (!firstMode) {
+      throw new Error(`No valid mode for type ${draft.type}`);
+    }
+    mode = firstMode;
+  }
+
+  const validMode2 = validModes[mode] as Record<string, Language[]>;
+
+  if (mode2 === null || validMode2[mode2] === undefined) {
+    const firstMode2 = Object.keys(validMode2).sort(
+      (a, b) => parseInt(a) - parseInt(b),
+    )[0];
+    if (firstMode2 === undefined) {
+      throw new Error(`No valid mode2 for ${draft.type}:${mode}`);
+    }
+    mode2 = firstMode2;
+  }
+
+  const supportedLanguages = validMode2[mode2];
+  if (!supportedLanguages || supportedLanguages.length === 0) {
+    throw new Error(`Invalid leaderboard config for ${mode}:${mode2}`);
+  }
+
+  if (!language || !supportedLanguages.includes(language)) {
+    language = supportedLanguages.sort()[0] as Language;
+  }
+
+  return { ...draft, mode, mode2, language };
 }
 
 function getModeButtons(
@@ -233,11 +210,12 @@ function getModeButtons(
 
 function getLanguageButtons(
   valid: LanguagesByModeByMode2,
-  mode: ModeSelect | undefined,
+  mode: Mode,
+  mode2: string,
 ): GroupItem<Language>[] {
   if (mode === undefined) return [];
 
-  return (valid[mode.mode]?.[mode.mode2] ?? []).map((language) => ({
+  return (valid[mode]?.[mode2] ?? []).map((language) => ({
     id: language,
     text: language,
     icon: "fa-globe",
@@ -289,8 +267,5 @@ function getValidLeaderboards(): ValidLeaderboards {
 }
 
 function convertRuleOption(rule: string): string[] {
-  if (rule.startsWith("(")) {
-    return rule.slice(1, -1).split("|");
-  }
-  return [rule];
+  return rule.startsWith("(") ? rule.slice(1, -1).split("|") : [rule];
 }

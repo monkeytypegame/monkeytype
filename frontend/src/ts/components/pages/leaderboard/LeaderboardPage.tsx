@@ -51,7 +51,9 @@ export function LeaderboardPage(): JSXElement {
     type: "allTime",
     mode: "time",
     mode2: "15",
+    language: "english",
     friendsOnly: false,
+    previous: false,
   });
 
   const [page, setPage] = createSignal(0);
@@ -61,6 +63,7 @@ export function LeaderboardPage(): JSXElement {
   };
 
   addToGlobal({ selection });
+
   createEffect(() => {
     //TODO fetch previous page as well, check boundaries
     if (isOpen()) {
@@ -76,7 +79,6 @@ export function LeaderboardPage(): JSXElement {
   const query = useQuery(() => ({
     ...getLeaderboardQueryOptions({
       ...selection,
-      previous: false,
       page: page() ?? 0,
     }),
     enabled: isOpen(),
