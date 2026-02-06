@@ -23,15 +23,14 @@ function hide(): void {
 }
 
 function update(event: KeyboardEvent): void {
-  if (event.key === "CapsLock" && capsState !== null) {
-    capsState = !capsState;
-  } else {
-    const modState = event.getModifierState?.("CapsLock");
-    if (modState !== undefined) {
-      capsState = modState;
-    }
-  }
+  capsState = event?.getModifierState("CapsLock");
 
+  if (event.key === "CapsLock") {
+    capsState = !capsState;
+  }
+}
+
+function updateWarningVisibility(): void {
   try {
     if (Config.capsLockWarning && capsState) {
       show();
@@ -41,8 +40,12 @@ function update(event: KeyboardEvent): void {
   } catch {}
 }
 
-document.addEventListener("keyup", update);
+document.addEventListener("keyup", (event) => {
+  updateWarningVisibility();
+  if (Misc.isMac()) update(event);
+});
 
 document.addEventListener("keydown", (event) => {
-  if (Misc.isMac()) update(event);
+  update(event);
+  if (Misc.isMac()) updateWarningVisibility();
 });
