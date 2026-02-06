@@ -23,13 +23,10 @@ function hide(): void {
 }
 
 function update(event: KeyboardEvent): void {
-  if (event.key === "CapsLock" && capsState !== null) {
-    capsState = !capsState;
-  } else {
-    const modState = event.getModifierState?.("CapsLock");
-    if (modState !== undefined) {
-      capsState = modState;
-    }
+  const modState = event.getModifierState?.("CapsLock");
+
+  if (modState !== undefined) {
+    capsState = modState;
   }
 
   try {
