@@ -2,6 +2,7 @@
   "name": "chinese_traditional_1k",
   "noLazyMode": true,
   "rightToLeft": false,
+  "orderedByFrequency": true,
   "bcp47": "zh-CN",
   "words": [
 "我們",
