@@ -4,6 +4,7 @@ import MonkeyError, {
   isFirebaseError,
 } from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
+import { getCached, setCached, invalidateUserCache } from "../../utils/cache";
 import * as DiscordUtils from "../../utils/discord";
 import {
   buildAgentLog,
@@ -914,6 +915,10 @@ export async function getProfile(
 ): Promise<GetProfileResponse> {
   const { uidOrName } = req.params;
 
+  const cacheKey = `user:profile:${uidOrName}`;
+  const cached = await getCached<GetProfileResponse>(cacheKey);
+  if (cached !== null) return cached;
+
   const user = req.query.isUid
     ? await UserDAL.getUser(uidOrName, "get user profile")
     : await UserDAL.getUserByName(uidOrName, "get user profile");
@@ -987,7 +992,11 @@ export async function getProfile(
   };
 
   if (banned) {
-    return new MonkeyResponse("Profile retrived: banned user", baseProfile);
+    await setCached(
+      cacheKey,
+      new MonkeyResponse("Profile retrieved: banned user", baseProfile),
+    );
+    return new MonkeyResponse("Profile retrieved: banned user", baseProfile);
   }
 
   const allTimeLbs = await getAllTimeLbs(user.uid);
@@ -1005,6 +1014,10 @@ export async function getProfile(
   } else {
     delete profileData.testActivity;
   }
+  await setCached(
+    cacheKey,
+    new MonkeyResponse("Profile retrieved", profileData),
+  );
   return new MonkeyResponse("Profile retrieved", profileData);
 }
 
@@ -1050,7 +1063,7 @@ export async function updateProfile(
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
-
+  await invalidateUserCache(uid);
   return new MonkeyResponse("Profile updated", profileDetailsUpdates);
 }
 
