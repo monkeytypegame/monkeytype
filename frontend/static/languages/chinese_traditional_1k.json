@@ -1,6 +1,7 @@
 {
   "name": "chinese_traditional_1k",
   "noLazyMode": true,
+  "rightToLeft": false,
   "bcp47": "zh-CN",
   "words": [
 "我們",
