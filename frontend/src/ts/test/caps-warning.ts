@@ -49,12 +49,12 @@ function updateCapsForMac(eventType: "keyup" | "keydown"): void {
 }
 
 document.addEventListener("keyup", (event) => {
-  if (Misc.isMac()) updateCapsForMac("keyup");
+  if (Misc.isMac() && event.key === "CapsLock") updateCapsForMac("keyup");
   updateWarningVisibility();
 });
 
 document.addEventListener("keydown", (event) => {
-  if (Misc.isMac()) {
+  if (Misc.isMac() && event.key === "CapsLock") {
     updateCapsForMac("keydown");
     updateWarningVisibility();
   } else {
