@@ -55,7 +55,7 @@ document.addEventListener("keyup", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (Misc.isMac()) {
-    updateCapsForMac("keyup");
+    updateCapsForMac("keydown");
   } else {
     update(event);
   }
