@@ -39,7 +39,6 @@ function update(event: KeyboardEvent): void {
   if (event.key !== "CapsLock") {
     capsState = event.getModifierState("CapsLock");
   }
-  updateCapsWarningVisibility();
 }
 
 document.addEventListener("keyup", (event) => {
