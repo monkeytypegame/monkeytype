@@ -36,7 +36,13 @@ function updateCapsWarningVisibility(): void {
 }
 
 function update(event: KeyboardEvent): void {
+  /*
+     CapsLock is pressed. We cannot use the modifierState for "CapsLock" in this case
+     because the browser implementation differs widely depending on the browser and even the
+     operating system.
+   */
   if (event.key !== "CapsLock") {
+    /* on all other key presses we can trust the modifierState */
     capsState = event.getModifierState("CapsLock");
   }
 }
@@ -47,6 +53,9 @@ document.addEventListener("keyup", (event) => {
       capsState = event.getModifierState("CapsLock");
     }
   } else if (isWindowsOs) {
+    /**
+     * Windows sends the correct state on keyup
+     */
     if (event.key === "CapsLock") {
       capsState = event.getModifierState("CapsLock");
     }
@@ -58,12 +67,16 @@ document.addEventListener("keyup", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (isMacOs) {
+    /* macOs sends only keyDown when enabling CapsLock and only keyUp when disabling. */
     if (event.key === "CapsLock") {
       capsState = event.getModifierState("CapsLock");
     } else {
       update(event);
     }
   } else if (isLinuxOs) {
+    /**
+     * Linux sends the correct state before the toggle only on keydown, so we invert the modifier state
+     */
     if (event.key === "CapsLock") {
       capsState = !event.getModifierState("CapsLock");
     }
