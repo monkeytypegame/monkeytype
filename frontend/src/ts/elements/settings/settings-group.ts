@@ -238,9 +238,11 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         }
       }
     } else if (this.mode === "range") {
-      const range = this.elements?.[0] as HTMLInputElement | null | undefined;
+      const range = this.elements?.[0] as
+        | ElementWithUtils<HTMLInputElement>
+        | undefined;
 
-      const rangeValue = document.querySelector(
+      const rangeValue = qs(
         `.pageSettings .section[data-config-name='${this.configName}'] .value`,
       );
 
@@ -248,8 +250,8 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         return;
       }
 
-      range.value = newValue as unknown as string;
-      rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
+      range.setValue(newValue as unknown as string);
+      rangeValue.setText(`${(newValue as number).toFixed(1)}`);
     }
     if (this.updateCallback) this.updateCallback();
   }
