@@ -206,20 +206,22 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
     const newValue = valueOverride ?? (Config[this.configName] as T);
 
     if (this.mode === "select") {
-      const select = this.elements?.[0] as HTMLSelectElement | null | undefined;
+      const select = this.elements?.[0] as
+        | ElementWithUtils<HTMLSelectElement>
+        | undefined;
       if (!select) {
         return;
       }
 
       //@ts-expect-error this is fine, slimselect adds slim to the element
-      const ss = select.slim as SlimSelect | undefined;
+      const ss = select.native.slim as SlimSelect | undefined;
       if (ss !== undefined) {
         const currentSelected = ss.getSelected()[0] ?? null;
         if (newValue !== currentSelected) {
           ss.setSelected(newValue as string);
         }
       } else {
-        if (select.value !== newValue) select.value = newValue as string;
+        if (select.getValue() !== newValue) select.setValue(newValue as string);
       }
     } else if (this.mode === "button") {
       for (const button of this.elements) {
