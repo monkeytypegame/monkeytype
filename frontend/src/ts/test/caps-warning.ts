@@ -40,12 +40,23 @@ function updateWarningVisibility(): void {
   } catch {}
 }
 
+function updateCapsForMac(eventType: "keyup" | "keydown"): void {
+  if (eventType === "keyup") {
+    capsState = false;
+  } else {
+    capsState = true;
+  }
+}
+
 document.addEventListener("keyup", (event) => {
+  if (Misc.isMac()) updateCapsForMac("keyup");
   updateWarningVisibility();
-  if (Misc.isMac()) update(event);
 });
 
 document.addEventListener("keydown", (event) => {
-  update(event);
-  if (Misc.isMac()) updateWarningVisibility();
+  if (Misc.isMac()) {
+    updateCapsForMac("keyup");
+  } else {
+    update(event);
+  }
 });
