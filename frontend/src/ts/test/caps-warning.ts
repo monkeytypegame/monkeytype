@@ -25,7 +25,7 @@ function hide(): void {
   }
 }
 
-function updateIndicator(): void {
+function updateCapsWarningVisibility(): void {
   try {
     if (Config.capsLockWarning && capsState) {
       show();
@@ -39,7 +39,7 @@ function update(event: KeyboardEvent): void {
   if (event.key !== "CapsLock") {
     capsState = event.getModifierState("CapsLock");
   }
-  updateIndicator();
+  updateCapsWarningVisibility();
 }
 
 document.addEventListener("keyup", (event) => {
@@ -54,7 +54,7 @@ document.addEventListener("keyup", (event) => {
   } else {
     update(event);
   }
-  updateIndicator();
+  updateCapsWarningVisibility();
 });
 
 document.addEventListener("keydown", (event) => {
@@ -69,5 +69,5 @@ document.addEventListener("keydown", (event) => {
       capsState = !event.getModifierState("CapsLock");
     }
   }
-  updateIndicator();
+  updateCapsWarningVisibility();
 });
