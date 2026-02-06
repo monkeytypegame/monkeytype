@@ -55,6 +55,7 @@ export const LanguageSchema = z.enum(
     "chinese_simplified_10k",
     "chinese_simplified_50k",
     "chinese_traditional",
+    "chinese_traditional_1k",
     "russian",
     "russian_1k",
     "russian_5k",
