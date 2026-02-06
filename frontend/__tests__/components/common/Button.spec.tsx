@@ -1,7 +1,9 @@
 import { cleanup, render } from "@solidjs/testing-library";
+import { createSignal } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Button } from "../../../src/ts/components/common/Button";
+import { FaSolidIcon } from "../../../src/ts/types/font-awesome";
 
 describe("Button component", () => {
   afterEach(() => {
@@ -65,6 +67,29 @@ describe("Button component", () => {
     expect(icon).toBeTruthy();
     expect(icon).toHaveClass("fas");
     expect(icon).toHaveClass("fa-keyboard");
+  });
+
+  it("renders icon when icon prop has changed", () => {
+    const [icon, setIcon] = createSignal<FaSolidIcon>("fa-keyboard");
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          //
+        }}
+        fa={{
+          icon: icon(),
+          class: "test",
+        }}
+      />
+    ));
+
+    setIcon("fa-backward");
+
+    const i = container.querySelector("i");
+    expect(i).toBeTruthy();
+    expect(i).toHaveClass("fas");
+    expect(i).toHaveClass("fa-backward");
+    expect(i).toHaveClass("test");
   });
 
   it("applies fa-fw class when fixedWidthIcon is true", () => {
