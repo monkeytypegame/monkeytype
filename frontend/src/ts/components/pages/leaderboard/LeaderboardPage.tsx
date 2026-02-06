@@ -5,17 +5,18 @@ import { createStore } from "solid-js/store";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
+  getRankQueryOptions,
   Selection,
 } from "../../../queries/leaderboards";
-import { getActivePage } from "../../../signals/core";
+import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { qsr } from "../../../utils/dom";
-import { addToGlobal } from "../../../utils/misc";
 import AsyncContent from "../../common/AsyncContent";
 
 import { Sidebar } from "./Sidebar";
 import { Table } from "./Table";
 import { TableNavigation } from "./TableNavigation";
 import { Title } from "./Title";
+import { UserRank } from "./UserRank";
 
 //TODO update page name
 qsr("nav .view-about").on("mouseenter", () => {
@@ -35,12 +36,12 @@ export function LeaderboardPage(): JSXElement {
   });
 
   const [page, setPage] = createSignal(0);
+  const [scrollToUser, setScrollToUser] = createSignal(false);
+
   const onSelectionChange = (selection: Selection): void => {
     setSelection(selection);
     setPage(0);
   };
-
-  addToGlobal({ selection });
 
   createEffect(() => {
     //TODO fetch previous page as well, check boundaries
@@ -62,6 +63,18 @@ export function LeaderboardPage(): JSXElement {
     enabled: isOpen(),
   }));
 
+  const rank = useQuery(() => ({
+    ...getRankQueryOptions(selection),
+    enabled: isLoggedIn() && isOpen(),
+  }));
+
+  const userPage = (): number | undefined => {
+    const userRank = rank.data?.friendsRank ?? rank.data?.rank;
+    if (userRank === undefined) return undefined;
+    const page = Math.ceil(userRank / 50) - 1;
+    return page;
+  };
+
   return (
     <div class="content-grid grid">
       <div class="flex flex-col gap-8 lg:flex-row">
@@ -75,11 +88,27 @@ export function LeaderboardPage(): JSXElement {
             onPreviousSelect={() => setSelection("previous", (old) => !old)}
           />
 
+          <AsyncContent query={rank} alwaysShowContent>
+            {(data) => (
+              <UserRank
+                type={selection.type === "weekly" ? "xp" : "wpm"}
+                data={data}
+                minWpm={
+                  query.data && "minWpm" in query.data
+                    ? (query.data.minWpm as number)
+                    : undefined
+                }
+              />
+            )}
+          </AsyncContent>
+
           <TableNavigation
             type={selection.type}
             lastPage={Math.ceil((query.data?.count ?? 0) / 50)}
             currentPage={page()}
             onPageChange={setPage}
+            userPage={userPage()}
+            onScrollToUser={setScrollToUser}
             isLoading={
               query.isLoading || query.isFetching || query.isRefetching
             }
@@ -90,6 +119,8 @@ export function LeaderboardPage(): JSXElement {
                   type={selection.type === "weekly" ? "xp" : "wpm"}
                   entries={data?.entries ?? []}
                   friendsOnly={selection.friendsOnly}
+                  scrollToUser={scrollToUser}
+                  onScrolledToUser={() => setScrollToUser(false)}
                 />
               )}
             </AsyncContent>

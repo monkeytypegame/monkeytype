@@ -24,6 +24,7 @@ export function TableNavigation(
     userPage?: number;
     currentPage: number;
     onPageChange: Setter<number>;
+    onScrollToUser: Setter<boolean>;
     isLoading?: boolean;
   } & ParentProps,
 ): JSXElement {
@@ -39,6 +40,7 @@ export function TableNavigation(
           userPage={props.userPage}
           currentPage={props.currentPage}
           onPageChange={props.onPageChange}
+          onScrollToUser={props.onScrollToUser}
         />
       </div>
 
@@ -49,6 +51,7 @@ export function TableNavigation(
           lastPage={props.lastPage}
           currentPage={props.currentPage}
           onPageChange={props.onPageChange}
+          onScrollToUser={props.onScrollToUser}
         />
       </div>
     </>
@@ -60,6 +63,7 @@ function Navigation(props: {
   userPage?: number;
   currentPage: number;
   onPageChange: Setter<number>;
+  onScrollToUser: Setter<boolean>;
   isLoading?: boolean;
 }): JSXElement {
   return (
@@ -72,13 +76,18 @@ function Navigation(props: {
         fa={{ icon: "fa-crown", fixedWidth: true }}
         disabled={props.currentPage === 0}
       />
-      <Button
-        onClick={() => props.onPageChange(props.userPage as number)}
-        fa={{ icon: "fa-user", fixedWidth: true }}
-        disabled={
-          props.userPage === undefined || props.currentPage === props.userPage
-        }
-      />
+      <Show when={props.userPage !== undefined}>
+        <Button
+          onClick={() => {
+            props.onPageChange(props.userPage as number);
+            props.onScrollToUser(true);
+          }}
+          fa={{ icon: "fa-user", fixedWidth: true }}
+          disabled={
+            props.userPage === undefined || props.currentPage === props.userPage
+          }
+        />
+      </Show>
       <Button
         onClick={() => props.onPageChange((old) => old - 1)}
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
@@ -92,7 +101,7 @@ function Navigation(props: {
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
-        disabled={props.currentPage + 1 >= props.lastPage}
+        disabled={props.currentPage >= props.lastPage}
       />
     </div>
   );

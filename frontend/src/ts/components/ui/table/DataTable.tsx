@@ -8,7 +8,17 @@ import {
   getSortedRowModel,
   SortingState,
 } from "@tanstack/solid-table";
-import { createMemo, For, JSXElement, Match, Show, Switch } from "solid-js";
+import {
+  Accessor,
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  JSXElement,
+  Match,
+  Show,
+  Switch,
+} from "solid-js";
 import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
@@ -38,12 +48,17 @@ export type DataTableColumnDef<TData, TValue = any> =
   | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
 
-type DataTableProps<TData, TValue> = {
+export type DataTableProps<TData, TValue> = {
   id: string;
   columns: DataTableColumnDef<TData, TValue>[];
   data: TData[];
   fallback?: JSXElement;
   hideHeader?: true;
+  rowSelection?: {
+    getRowId: (row: TData) => string;
+    class: string;
+    activeRow: Accessor<string | null>;
+  };
 };
 
 export function DataTable<TData, TValue>(
@@ -90,6 +105,15 @@ export function DataTable<TData, TValue>(
     return result;
   });
 
+  const [rowSelection, setRowSelection] = createSignal({});
+  createEffect(() => {
+    if (!props.rowSelection || props.rowSelection.activeRow === undefined) {
+      setRowSelection({});
+    } else {
+      setRowSelection({ [`${props.rowSelection.activeRow()}`]: true });
+    }
+  });
+
   const table = createSolidTable<TData>({
     get data() {
       return props.data;
@@ -100,6 +124,13 @@ export function DataTable<TData, TValue>(
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    enableRowSelection: () => props.rowSelection !== undefined,
+    getRowId: (row, index) =>
+      props.rowSelection !== undefined
+        ? props.rowSelection.getRowId(row)
+        : index.toString(),
+    onRowSelectionChange: setRowSelection,
+
     state: {
       get sorting() {
         return sorting();
@@ -107,12 +138,15 @@ export function DataTable<TData, TValue>(
       get columnVisibility() {
         return columnVisibility();
       },
+      get rowSelection() {
+        return rowSelection();
+      },
     },
   });
 
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
-      <Table>
+      <Table id={props.id}>
         <Show when={!props.hideHeader}>
           <TableHeader>
             <For each={table.getHeaderGroups()}>
@@ -139,7 +173,7 @@ export function DataTable<TData, TValue>(
                               onClick={(e) => {
                                 header.column.getToggleSortingHandler()?.(e);
                               }}
-                              class="text-sub hover:bg-sub-alt m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap"
+                              class="m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
                               {...(header.column.columnDef.meta
                                 ?.sortableHeaderMeta ?? {})}
                               classList={{
@@ -217,7 +251,14 @@ export function DataTable<TData, TValue>(
         <TableBody>
           <For each={table.getRowModel().rows}>
             {(row) => (
-              <TableRow data-state={row.getIsSelected() && "selected"}>
+              <TableRow
+                data-state={row.getIsSelected() && "selected"}
+                class={
+                  row.getIsSelected() && props.rowSelection
+                    ? props.rowSelection.class
+                    : ""
+                }
+              >
                 <For each={row.getVisibleCells()}>
                   {(cell) => {
                     const cellMeta =

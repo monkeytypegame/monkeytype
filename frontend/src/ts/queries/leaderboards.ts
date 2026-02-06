@@ -1,27 +1,12 @@
 import {
-  GetLeaderboardResponse,
-  GetWeeklyXpLeaderboardResponse,
+  GetLeaderboardQuery,
+  GetLeaderboardRankQuery,
 } from "@monkeytype/contracts/leaderboards";
 import { Language } from "@monkeytype/schemas/languages";
 import { Mode } from "@monkeytype/schemas/shared";
-import { queryOptions } from "@tanstack/solid-query";
+import { QueryKey, queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
 
-const queryKeys = {
-  leaderboardData: (options: Selection & { page: number }) => [
-    options.friendsOnly ? "user" : "leaderboard",
-    "leaderboard",
-    options.type,
-    {
-      mode: options.mode,
-      mode2: options.mode2,
-      language: options.language,
-      friendsOnly: options.friendsOnly,
-      previous: options.previous,
-    },
-    { page: options.page },
-  ],
-};
 export type LeaderboardType = Selection["type"];
 export type Selection =
   | {
@@ -41,38 +26,84 @@ export type Selection =
       previous: boolean;
     };
 
+const queryKeys = {
+  root: (options: Selection & { userSpecific?: true }) => [
+    options.userSpecific === true || options.friendsOnly
+      ? "user"
+      : "leaderboard",
+    "leaderboard",
+    options.type,
+    {
+      mode: options.mode,
+      mode2: options.mode2,
+      language: options.language,
+      friendsOnly: options.friendsOnly,
+      previous: options.previous,
+    },
+  ],
+  data: (options: Selection & { page: number }) => [
+    ...queryKeys.root(options),
+    { page: options.page },
+  ],
+  rank: (options: Selection) =>
+    queryKeys.root({ ...options, userSpecific: true }), //rank is always user specific
+};
+
 export const getLeaderboardQueryOptions = (
   options: Selection & {
     page: number;
   }, // oxlint-disable-next-line typescript/explicit-function-return-type
 ) =>
   queryOptions({
-    queryKey: queryKeys.leaderboardData(options),
+    queryKey: queryKeys.data(options),
     queryFn: async (ctx) => {
-      const type = ctx.queryKey[2] as LeaderboardType | undefined;
-      const mode = ctx.queryKey[3] as
-        | Required<Omit<Selection, "type"> & { previous: boolean }>
-        | undefined;
       const page = ctx.queryKey[4] as { page: number } | undefined;
-      if (type === undefined) throw new Error("type missing in query");
-      if (mode === undefined) throw new Error("mode missing in query");
       if (page === undefined) throw new Error("page missing in query");
 
-      if (type === "weekly") {
-        return await fetchWeeklyLeaderboard(
-          mode.friendsOnly ?? false,
-          mode.previous ?? false,
-          page.page,
+      const selection = getSelectionFromQueryKey(ctx.queryKey);
+
+      let request;
+
+      if (selection.type === "weekly") {
+        request = Ape.leaderboards.getWeeklyXp({
+          query: {
+            friendsOnly: selection.friendsOnly ? true : undefined,
+            weeksBefore: selection.previous ? 1 : undefined,
+            pageSize: 50,
+            page: page.page,
+          },
+        });
+      } else {
+        const baseQuery: GetLeaderboardQuery = {
+          mode: selection.mode,
+          mode2: selection.mode2,
+          language: selection.language,
+          friendsOnly: selection.friendsOnly ? true : undefined,
+          pageSize: 50,
+          page: page.page,
+        };
+        if (selection.type === "allTime") {
+          request = Ape.leaderboards.get({ query: baseQuery });
+        } else {
+          request = Ape.leaderboards.getDaily({
+            query: {
+              ...baseQuery,
+              daysBefore: selection.previous ? 1 : undefined,
+            },
+          });
+        }
+      }
+
+      const response = await request;
+      if (response.status !== 200) {
+        throw new Error(
+          `Failed to get ${selection.type} leaderboard rank: ` +
+            response.body.message,
         );
       }
-
-      if (mode.language === undefined) {
-        throw new Error("language missing in query");
-      }
-
-      return await fetchLeaderboard(type, mode, page.page);
+      return response.body.data;
     },
-    //5 minutes for alltime, 10 seconds for others
+    //5 minutes for alltime, one minute for others
     staleTime: options.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
     placeholderData: (old) => {
       if (
@@ -95,52 +126,80 @@ export const getLeaderboardQueryOptions = (
     },
   });
 
-async function fetchWeeklyLeaderboard(
-  friendsOnly: boolean,
-  previousWeek: boolean,
-  page: number,
-): Promise<GetWeeklyXpLeaderboardResponse["data"]> {
-  const response = await Ape.leaderboards.getWeeklyXp({
-    query: {
-      friendsOnly,
-      weeksBefore: previousWeek ? 1 : undefined,
-      page,
-      pageSize: 50,
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export const getRankQueryOptions = (options: Selection) =>
+  queryOptions({
+    queryKey: queryKeys.rank(options),
+    queryFn: async (ctx) => {
+      let request;
+      const selection = getSelectionFromQueryKey(ctx.queryKey);
+      if (selection.type === "weekly") {
+        request = Ape.leaderboards.getWeeklyXpRank({
+          query: {
+            friendsOnly: selection.friendsOnly ? true : undefined,
+            weeksBefore: selection.previous ? 1 : undefined,
+          },
+        });
+      } else {
+        const baseQuery: GetLeaderboardRankQuery = {
+          mode: selection.mode,
+          mode2: selection.mode2,
+          language: selection.language,
+          friendsOnly: selection.friendsOnly ? true : undefined,
+        };
+        if (selection.type === "allTime") {
+          request = Ape.leaderboards.getRank({ query: baseQuery });
+        } else {
+          request = Ape.leaderboards.getDailyRank({
+            query: {
+              ...baseQuery,
+              daysBefore: selection.previous ? 1 : undefined,
+            },
+          });
+        }
+      }
+
+      const response = await request;
+      if (response.status !== 200) {
+        throw new Error(
+          `Failed to get ${selection.type} leaderboard rank: ` +
+            response.body.message,
+        );
+      }
+      return response.body.data;
     },
+    //5 minutes for alltime, one minute for others
+    staleTime: options.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
   });
 
-  if (response.status !== 200) {
-    throw new Error(
-      "Error fetching weekly leaderboard: " + response.body.message,
-    );
+function getSelectionFromQueryKey(queryKey: QueryKey): Selection {
+  if (queryKey.length < 3) throw new Error("invalid query key");
+
+  const type = queryKey[2] as LeaderboardType | undefined;
+  const mode = queryKey[3] as
+    | Required<Omit<Selection, "type"> & { previous: boolean }>
+    | undefined;
+
+  if (type === undefined) throw new Error("type missing in query");
+  if (mode === undefined) throw new Error("mode missing in query");
+
+  if (type === "weekly") {
+    return {
+      type: "weekly",
+      friendsOnly: mode.friendsOnly,
+      previous: mode.previous,
+    };
+  } else {
+    if (mode.language === undefined) {
+      throw new Error("language missing in query");
+    }
+    return {
+      type,
+      mode: mode.mode,
+      mode2: mode.mode2,
+      language: mode.language,
+      friendsOnly: mode.friendsOnly,
+      previous: mode.previous,
+    };
   }
-
-  return response.body.data;
-}
-async function fetchLeaderboard(
-  type: "allTime" | "daily",
-  selection: Required<Omit<Selection, "type"> & { previous: boolean }>,
-  page: number,
-): Promise<GetLeaderboardResponse["data"]> {
-  const query = {
-    friendsOnly: selection.friendsOnly ? true : undefined,
-    language: selection.language,
-    mode: selection.mode,
-    mode2: selection.mode2,
-    pageSize: 50,
-    page,
-  };
-  const response = await (type === "allTime"
-    ? Ape.leaderboards.get({ query })
-    : Ape.leaderboards.getDaily({
-        query: { ...query, daysBefore: selection.previous ? 1 : undefined },
-      }));
-
-  if (response.status !== 200) {
-    throw new Error(
-      `Failed to get ${type} leaderboard: ` + response.body.message,
-    );
-  }
-
-  return response.body.data;
 }

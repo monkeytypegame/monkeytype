@@ -5,24 +5,38 @@ import {
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { createMemo, JSXElement } from "solid-js";
+import { Accessor, createMemo, JSXElement } from "solid-js";
 
+import { createEffectOn } from "../../../hooks/effects";
 import { getConfig } from "../../../signals/config";
+import { getUserId } from "../../../signals/core";
 import { secondsToString } from "../../../utils/date-and-time";
+import { qs } from "../../../utils/dom";
 import { Formatting } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
-type LeaderboardTableProps = {
+export function Table(props: {
   type: "wpm" | "xp";
   entries: LeaderboardEntry[] | XpLeaderboardEntry[];
   friendsOnly: boolean;
   hideHeader?: true;
-};
+  scrollToUser: Accessor<boolean>;
+  onScrolledToUser: () => void;
+}): JSXElement {
+  const commonProps = createMemo(() => ({
+    id: "leaderboardTable",
+    fallback: <div>no data found</div>,
+    hideHeader: props.hideHeader,
+    rowSelection: {
+      getRowId: (row: { uid: string }) => row.uid,
+      activeRow: getUserId,
+      class: "text-main",
+    },
+  }));
 
-export function Table(props: LeaderboardTableProps): JSXElement {
   const wpmColumns = createMemo(() =>
     getWpmColumns({
       friendsOnly: props.friendsOnly,
@@ -31,24 +45,32 @@ export function Table(props: LeaderboardTableProps): JSXElement {
   );
   const xpColumns = createMemo(() => getXpColumns(props.friendsOnly));
 
+  createEffectOn(props.scrollToUser, (enabled) => {
+    if (enabled) {
+      requestAnimationFrame(() => {
+        qs("#leaderboardTable tr[data-state='selected']")?.scrollIntoView({
+          block: "center",
+        });
+        props.onScrolledToUser();
+      });
+    }
+  });
+
   return (
     <Conditional
       if={props.type === "wpm"}
       then={
         <DataTable
-          fallback=<div>no data found</div>
-          id="leaderboardTable"
+          {...commonProps()}
           columns={wpmColumns()}
           data={props.entries as LeaderboardEntry[]}
-          hideHeader={props.hideHeader}
         />
       }
       else={
         <DataTable
-          id="xpLeaderboardTable"
+          {...commonProps()}
           columns={xpColumns()}
           data={props.entries as XpLeaderboardEntry[]}
-          hideHeader={props.hideHeader}
         />
       }
     />

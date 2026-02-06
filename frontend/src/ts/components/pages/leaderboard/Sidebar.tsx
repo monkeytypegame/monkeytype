@@ -7,7 +7,6 @@ import { getServerConfiguration } from "../../../ape/server-configuration";
 import { Selection } from "../../../queries/leaderboards";
 import { isLoggedIn } from "../../../signals/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
-import { addToGlobal } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 
 type GroupItem<T> = { id: T; text: string; icon: FaSolidIcon };
@@ -34,7 +33,6 @@ export function Sidebar(props: {
     friendsOnly: false,
   });
 
-  addToGlobal({ ss: selection });
   const validLeaderboards = (): ValidLeaderboards => getValidLeaderboards();
 
   function updateSelection(patch: Partial<Selection>): void {
