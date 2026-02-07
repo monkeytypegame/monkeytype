@@ -716,33 +716,20 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
-function isWindows(): boolean {
+export function isWindows(): boolean {
   return isPlatform("Win");
 }
 
-function isLinux(): boolean {
+export function isLinux(): boolean {
   return isPlatform("Linux");
 }
 
-function isMac(): boolean {
+export function isMac(): boolean {
   return isPlatform("Mac");
 }
 
 export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
-}
-
-export function getCurrentOs(): string {
-  if (isMac()) {
-    return "Mac";
-  }
-  if (isLinux()) {
-    return "Linux";
-  }
-  if (isWindows()) {
-    return "Windows";
-  }
-  return "Unknown";
 }
 
 export function scrollToCenterOrTop(el: HTMLElement | null): void {
