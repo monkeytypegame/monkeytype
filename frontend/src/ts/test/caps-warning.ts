@@ -49,6 +49,7 @@ function updateCapsKeyup(event: KeyboardEvent): void {
     // Windows always sends the correct state on keyup (for Caps Lock and for regular keys)
     capsState = isCapsLockOn(event);
   } else if (event.key !== "CapsLock") {
+    // Linux sends the correct state on keyup if key isn't Caps Lock
     capsState = isCapsLockOn(event);
   }
   updateCapsWarningVisibility();
