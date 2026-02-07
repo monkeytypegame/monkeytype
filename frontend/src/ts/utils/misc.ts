@@ -716,7 +716,7 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
-export function isWindows(): boolean {
+function isWindows(): boolean {
   return isPlatform("Win");
 }
 
