@@ -720,11 +720,11 @@ function isWindows(): boolean {
   return isPlatform("Win");
 }
 
-export function isLinux(): boolean {
+function isLinux(): boolean {
   return isPlatform("Linux");
 }
 
-export function isMac(): boolean {
+function isMac(): boolean {
   return isPlatform("Mac");
 }
 
