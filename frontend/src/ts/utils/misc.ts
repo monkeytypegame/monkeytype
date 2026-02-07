@@ -732,6 +732,19 @@ export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
+export function getCurrentOs(): string {
+  if (isMac()) {
+    return "Mac";
+  }
+  if (isLinux()) {
+    return "Linux";
+  }
+  if (isWindows()) {
+    return "Windows";
+  }
+  return "Unknown";
+}
+
 export function scrollToCenterOrTop(el: HTMLElement | null): void {
   if (!el) return;
 

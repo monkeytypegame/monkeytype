@@ -1,10 +1,11 @@
 import Config from "../config";
 import { qsr } from "../utils/dom";
-import { isMac, isLinux, isWindows } from "../utils/misc";
+import { getCurrentOs } from "../utils/misc";
 
 const el = qsr("#capsWarning");
 
 export let capsState = false;
+const os = getCurrentOs();
 
 let visible = false;
 
@@ -36,21 +37,7 @@ function isCapsLockOn(event: KeyboardEvent): boolean {
   return event.getModifierState("CapsLock");
 }
 
-function getCurrentOs(): string {
-  if (isMac()) {
-    return "Mac";
-  }
-  if (isLinux()) {
-    return "Linux";
-  }
-  if (isWindows()) {
-    return "Windows";
-  }
-  return "Unknown";
-}
-
 function updateCapsKeyup(event: KeyboardEvent): void {
-  const os = getCurrentOs();
   if (os === "Mac") {
     // macOs sends only keydown when enabling CapsLock and only keyup when disabling.
     if (event.key === "CapsLock") {
@@ -66,7 +53,6 @@ function updateCapsKeyup(event: KeyboardEvent): void {
 }
 
 function updateCapsKeydown(event: KeyboardEvent): void {
-  const os = getCurrentOs();
   if (os === "Mac") {
     // macOs sends only keydown when enabling CapsLock and only keyup when disabling.
     capsState = isCapsLockOn(event);
