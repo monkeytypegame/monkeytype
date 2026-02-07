@@ -5,9 +5,6 @@ import { isMac, isLinux, isWindows } from "../utils/misc";
 const el = qsr("#capsWarning");
 
 export let capsState = false;
-const isMacOs = isMac();
-const isLinuxOs = isLinux();
-const isWindowsOs = isWindows();
 
 let visible = false;
 
@@ -39,27 +36,45 @@ function isCapsLockOn(event: KeyboardEvent): boolean {
   return event.getModifierState("CapsLock");
 }
 
-document.addEventListener("keyup", (event) => {
-  if (isMacOs) {
+function getCurrentOs(): string {
+  if (isMac()) {
+    return "Mac";
+  }
+
+  if (isLinux()) {
+    return "Linux";
+  }
+
+  if (isWindows()) {
+    return "Windows";
+  }
+
+  return "Unknown";
+}
+
+function updateCapsKeyup(event: KeyboardEvent): void {
+  const os = getCurrentOs();
+  if (os === "Mac") {
     // macOs sends only keydown when enabling CapsLock and only keyup when disabling.
     if (event.key === "CapsLock") {
       capsState = isCapsLockOn(event);
     }
-  } else if (isWindowsOs) {
+  } else if (os === "Windows") {
     // Windows always sends the correct state on keyup (for CapsLock and regular keys
     capsState = isCapsLockOn(event);
   } else if (event.key !== "CapsLock") {
     capsState = isCapsLockOn(event);
   }
   updateCapsWarningVisibility();
-});
+}
 
-document.addEventListener("keydown", (event) => {
-  if (isMacOs) {
+function updateCapsKeydown(event: KeyboardEvent): void {
+  const os = getCurrentOs();
+  if (os === "Mac") {
     // macOs sends only keydown when enabling CapsLock and only keyup when disabling.
     capsState = isCapsLockOn(event);
     updateCapsWarningVisibility();
-  } else if (isLinuxOs) {
+  } else if (os === "Linux") {
     /* Linux sends the correct state before the toggle only on keydown,
      * so we invert the modifier state
      */
@@ -67,4 +82,12 @@ document.addEventListener("keydown", (event) => {
       capsState = !isCapsLockOn(event);
     }
   }
+}
+
+document.addEventListener("keyup", (event) => {
+  updateCapsKeyup(event);
+});
+
+document.addEventListener("keydown", (event) => {
+  updateCapsKeydown(event);
 });
