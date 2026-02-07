@@ -41,7 +41,7 @@ document.addEventListener("keyup", (event) => {
   if (os === "Mac") {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
     if (event.key === "CapsLock") {
-      capsState = isCapsLockOn(event);
+      capsState = false;
     }
   } else if (os === "Windows") {
     // Windows always sends the correct state on keyup (for Caps Lock and for regular keys)
