@@ -6,6 +6,7 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
+import { Fa } from "../../common/Fa";
 
 export function UserRank(props: {
   type: "wpm" | "xp";
@@ -16,23 +17,32 @@ export function UserRank(props: {
   return (
     <div class="flex rounded bg-sub-alt p-4">
       <Show
-        when={props.data}
+        when={props.data !== undefined}
         fallback={
-          <div class="w-full p-2 text-center">
-            Not qualified
-            <Show when={props.minWpm}>
-              {" "}
-              (min speed required:{" "}
-              {format().typingSpeed(props.minWpm, {
-                showDecimalPlaces: true,
-                suffix: ` ${format().typingSpeedUnit}`,
-              })}
-              )
-            </Show>
+          <div class="w-full text-center">
+            <Fa icon="fa-circle-notch" fixedWidth spin />
           </div>
         }
       >
-        foo
+        <Show
+          when={props.data}
+          fallback={
+            <div class="w-full p-2 text-center">
+              Not qualified
+              <Show when={props.minWpm}>
+                {" "}
+                (min speed required:{" "}
+                {format().typingSpeed(props.minWpm, {
+                  showDecimalPlaces: true,
+                  suffix: ` ${format().typingSpeedUnit}`,
+                })}
+                )
+              </Show>
+            </div>
+          }
+        >
+          foo
+        </Show>
       </Show>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createEffect, createSignal, JSXElement } from "solid-js";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { queryClient } from "../../../queries";
@@ -88,19 +88,21 @@ export function LeaderboardPage(): JSXElement {
             onPreviousSelect={() => setSelection("previous", (old) => !old)}
           />
 
-          <AsyncContent query={rank} alwaysShowContent>
-            {(data) => (
-              <UserRank
-                type={selection.type === "weekly" ? "xp" : "wpm"}
-                data={data}
-                minWpm={
-                  query.data && "minWpm" in query.data
-                    ? (query.data.minWpm as number)
-                    : undefined
-                }
-              />
-            )}
-          </AsyncContent>
+          <Show when={isLoggedIn()}>
+            <AsyncContent query={rank} alwaysShowContent>
+              {(data) => (
+                <UserRank
+                  type={selection.type === "weekly" ? "xp" : "wpm"}
+                  data={data}
+                  minWpm={
+                    query.data && "minWpm" in query.data
+                      ? (query.data.minWpm as number)
+                      : undefined
+                  }
+                />
+              )}
+            </AsyncContent>
+          </Show>
 
           <TableNavigation
             type={selection.type}

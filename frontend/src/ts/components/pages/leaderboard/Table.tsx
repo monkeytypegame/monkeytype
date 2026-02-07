@@ -28,7 +28,6 @@ export function Table(props: {
 }): JSXElement {
   const commonProps = createMemo(() => ({
     id: "leaderboardTable",
-    fallback: <div>no data found</div>,
     hideHeader: props.hideHeader,
     rowSelection: {
       getRowId: (row: { uid: string }) => row.uid,
@@ -45,16 +44,19 @@ export function Table(props: {
   );
   const xpColumns = createMemo(() => getXpColumns(props.friendsOnly));
 
-  createEffectOn(props.scrollToUser, (enabled) => {
-    if (enabled) {
-      requestAnimationFrame(() => {
-        qs("#leaderboardTable tr[data-state='selected']")?.scrollIntoView({
-          block: "center",
+  createEffectOn(
+    () => props.scrollToUser(),
+    (enabled) => {
+      if (enabled) {
+        requestAnimationFrame(() => {
+          qs("#leaderboardTable tr[data-state='selected']")?.scrollIntoView({
+            block: "center",
+          });
+          props.onScrolledToUser();
         });
-        props.onScrolledToUser();
-      });
-    }
-  });
+      }
+    },
+  );
 
   return (
     <Conditional
