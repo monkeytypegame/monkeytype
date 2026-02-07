@@ -51,5 +51,9 @@ function update(event: KeyboardEvent): void {
 document.addEventListener("keyup", update);
 
 document.addEventListener("keydown", (event) => {
-  if (Misc.isMac()) update(event);
+  if (Misc.isMac()) {
+    update(event);
+  } else if (Misc.isLinux() && event.key === "CapsLock") {
+    update(event);
+  }
 });
