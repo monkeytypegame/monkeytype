@@ -36,7 +36,7 @@ function isCapsLockOn(event: KeyboardEvent): boolean {
   return event.getModifierState("CapsLock");
 }
 
-function updateCapsKeyup(event: KeyboardEvent): void {
+document.addEventListener("keyup", (event) => {
   if (isMac()) {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
     if (event.key === "CapsLock") {
@@ -52,9 +52,9 @@ function updateCapsKeyup(event: KeyboardEvent): void {
     capsState = isCapsLockOn(event);
   }
   updateCapsWarningVisibility();
-}
+});
 
-function updateCapsKeydown(event: KeyboardEvent): void {
+document.addEventListener("keydown", (event) => {
   if (isMac()) {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
     if (event.key === "CapsLock") {
@@ -69,12 +69,4 @@ function updateCapsKeydown(event: KeyboardEvent): void {
       capsState = !isCapsLockOn(event);
     }
   }
-}
-
-document.addEventListener("keyup", (event) => {
-  updateCapsKeyup(event);
-});
-
-document.addEventListener("keydown", (event) => {
-  updateCapsKeydown(event);
 });
