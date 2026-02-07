@@ -40,15 +40,12 @@ function getCurrentOs(): string {
   if (isMac()) {
     return "Mac";
   }
-
   if (isLinux()) {
     return "Linux";
   }
-
   if (isWindows()) {
     return "Windows";
   }
-
   return "Unknown";
 }
 
