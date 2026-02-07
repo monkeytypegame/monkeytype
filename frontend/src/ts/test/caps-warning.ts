@@ -58,7 +58,7 @@ function updateCapsKeydown(event: KeyboardEvent): void {
     capsState = isCapsLockOn(event);
     updateCapsWarningVisibility();
   } else if (os === "Linux") {
-    /* Linux sends the correct state before the toggle only on keydown,
+    /* Linux sends the correct state before CapsLock is toggled only on keydown,
      * so we invert the modifier state
      */
     if (event.key === "CapsLock") {
