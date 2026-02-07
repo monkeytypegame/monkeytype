@@ -39,12 +39,12 @@ function isCapsLockOn(event: KeyboardEvent): boolean {
 
 function updateCapsKeyup(event: KeyboardEvent): void {
   if (os === "Mac") {
-    // macOS sends only keydown when enabling CapsLock and only keyup when disabling.
+    // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
     if (event.key === "CapsLock") {
       capsState = isCapsLockOn(event);
     }
   } else if (os === "Windows") {
-    // Windows always sends the correct state on keyup (for CapsLock and for regular keys)
+    // Windows always sends the correct state on keyup (for Caps Lock and for regular keys)
     capsState = isCapsLockOn(event);
   } else if (event.key !== "CapsLock") {
     capsState = isCapsLockOn(event);
@@ -54,11 +54,11 @@ function updateCapsKeyup(event: KeyboardEvent): void {
 
 function updateCapsKeydown(event: KeyboardEvent): void {
   if (os === "Mac") {
-    // macOS sends only keydown when enabling CapsLock and only keyup when disabling.
+    // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
     capsState = isCapsLockOn(event);
     updateCapsWarningVisibility();
   } else if (os === "Linux") {
-    /* Linux sends the correct state before CapsLock is toggled only on keydown,
+    /* Linux sends the correct state before Caps Lock is toggled only on keydown,
      * so we invert the modifier state
      */
     if (event.key === "CapsLock") {
