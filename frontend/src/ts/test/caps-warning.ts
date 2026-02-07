@@ -55,7 +55,7 @@ function updateCapsKeyup(event: KeyboardEvent): void {
 function updateCapsKeydown(event: KeyboardEvent): void {
   if (os === "Mac") {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
-    capsState = true;
+    capsState = isCapsLockOn(event);
     updateCapsWarningVisibility();
   } else if (os === "Linux") {
     /* Linux sends the correct state before Caps Lock is toggled only on keydown,
