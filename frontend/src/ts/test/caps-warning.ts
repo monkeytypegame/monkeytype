@@ -1,10 +1,11 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
 import { qsr } from "../utils/dom";
+import { getCurrentOs } from "../utils/misc";
 
 const el = qsr("#capsWarning");
 
 export let capsState = false;
+const os = getCurrentOs();
 
 let visible = false;
 
@@ -22,16 +23,7 @@ function hide(): void {
   }
 }
 
-function update(event: KeyboardEvent): void {
-  if (event.key === "CapsLock" && capsState !== null) {
-    capsState = !capsState;
-  } else {
-    const modState = event.getModifierState?.("CapsLock");
-    if (modState !== undefined) {
-      capsState = modState;
-    }
-  }
-
+function updateCapsWarningVisibility(): void {
   try {
     if (Config.capsLockWarning && capsState) {
       show();
@@ -41,8 +33,37 @@ function update(event: KeyboardEvent): void {
   } catch {}
 }
 
-document.addEventListener("keyup", update);
+function isCapsLockOn(event: KeyboardEvent): boolean {
+  return event.getModifierState("CapsLock");
+}
+
+document.addEventListener("keyup", (event) => {
+  if (os === "Mac") {
+    // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
+    if (event.key === "CapsLock") {
+      capsState = false;
+    }
+  } else if (os === "Windows") {
+    // Windows always sends the correct state on keyup (for Caps Lock and for regular keys)
+    capsState = isCapsLockOn(event);
+  } else if (event.key !== "CapsLock") {
+    // Linux sends the correct state on keyup if key isn't Caps Lock
+    capsState = isCapsLockOn(event);
+  }
+  updateCapsWarningVisibility();
+});
 
 document.addEventListener("keydown", (event) => {
-  if (Misc.isMac()) update(event);
+  if (os === "Mac") {
+    // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
+    capsState = isCapsLockOn(event);
+    updateCapsWarningVisibility();
+  } else if (os === "Linux") {
+    /* Linux sends the correct state before Caps Lock is toggled only on keydown,
+     * so we invert the modifier state
+     */
+    if (event.key === "CapsLock") {
+      capsState = !isCapsLockOn(event);
+    }
+  }
 });
