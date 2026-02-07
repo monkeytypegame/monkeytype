@@ -35,17 +35,21 @@ function updateCapsWarningVisibility(): void {
   } catch {}
 }
 
+function isCapsLockOn(event: KeyboardEvent): boolean {
+  return event.getModifierState("CapsLock");
+}
+
 document.addEventListener("keyup", (event) => {
   if (isMacOs) {
     /* macOs sends only keyDown when enabling CapsLock and only keyUp when disabling. */
     if (event.key === "CapsLock") {
-      capsState = event.getModifierState("CapsLock");
+      capsState = isCapsLockOn(event);
     }
   } else if (isWindowsOs) {
     /* Windows always sends the correct state on keyup (for CapsLock and regular keys */
-    capsState = event.getModifierState("CapsLock");
+    capsState = isCapsLockOn(event);
   } else if (event.key !== "CapsLock") {
-    capsState = event.getModifierState("CapsLock");
+    capsState = isCapsLockOn(event);
   }
   updateCapsWarningVisibility();
 });
@@ -53,12 +57,12 @@ document.addEventListener("keyup", (event) => {
 document.addEventListener("keydown", (event) => {
   if (isMacOs) {
     /* macOs sends only keyDown when enabling CapsLock and only keyUp when disabling. */
-    capsState = event.getModifierState("CapsLock");
+    capsState = isCapsLockOn(event);
     updateCapsWarningVisibility();
   } else if (isLinuxOs) {
     /* Linux sends the correct state before the toggle only on keydown, so we invert the modifier state */
     if (event.key === "CapsLock") {
-      capsState = !event.getModifierState("CapsLock");
+      capsState = !isCapsLockOn(event);
     }
   }
 });
