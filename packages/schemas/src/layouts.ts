@@ -62,6 +62,8 @@ export const LayoutNameSchema = z.enum(
     "niro",
     "mongolian",
     "JCUKEN",
+    "statica_3x5",
+    "Vestnik",
     "Diktor",
     "Diktor_VoronovMod",
     "Redaktor",
