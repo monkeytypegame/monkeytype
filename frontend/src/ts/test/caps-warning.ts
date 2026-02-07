@@ -44,7 +44,7 @@ function updateCapsKeyup(event: KeyboardEvent): void {
       capsState = isCapsLockOn(event);
     }
   } else if (os === "Windows") {
-    // Windows always sends the correct state on keyup (for CapsLock and regular keys
+    // Windows always sends the correct state on keyup (for CapsLock and for regular keys)
     capsState = isCapsLockOn(event);
   } else if (event.key !== "CapsLock") {
     capsState = isCapsLockOn(event);
