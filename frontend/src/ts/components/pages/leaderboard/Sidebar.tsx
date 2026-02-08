@@ -154,6 +154,8 @@ function normalizeSelection(
   let { mode, mode2, language } = draft;
   const validModes = valid[draft.type];
 
+  if (valid === undefined) throw new Error("no valid leaderboards");
+
   if (mode === null || validModes[mode] === undefined) {
     const firstMode = Object.keys(validModes).sort()[0] as Mode | undefined;
     if (!firstMode) {

@@ -2,10 +2,11 @@ import {
   LeaderboardEntry,
   XpLeaderboardEntry,
 } from "@monkeytype/schemas/leaderboards";
-import { createMemo, JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement, Match, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
+import { Fa } from "../../common/Fa";
 import { LoadingCircle } from "../../common/LoadingCircle";
 
 import { Table, TableEntry } from "./Table";
@@ -16,15 +17,16 @@ export function UserRank(props: {
   minWpm?: number;
   friendsOnly: boolean;
   total: number | undefined;
+  memoryDifference: number | undefined;
 }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
-  const userOverride = createMemo(() => {
+  const userOverride = (): JSXElement => {
     if (
       props.data === undefined ||
       props.data === null ||
       props.total === undefined
     ) {
-      return <div>no data</div>;
+      return "";
     }
     const rank = props.friendsOnly
       ? (props.data.friendsRank as number)
@@ -35,13 +37,35 @@ export function UserRank(props: {
     if (rank === 1) {
       percentileString = "GOAT";
     }
+
     return (
       <>
         <div>You ({percentileString})</div>
-        <div class="text-xs text-sub">( = since you last checked)</div>
+        <div class="text-xs text-sub">
+          {" "}
+          <Show when={props.memoryDifference !== undefined}>
+            ({" "}
+            <Switch>
+              <Match when={props.memoryDifference === 0}>=</Match>
+              <Match when={(props.memoryDifference as number) > 0}>
+                <>
+                  <Fa icon="fa-angle-up" fixedWidth />
+                  {Math.abs(props.memoryDifference as number)}
+                </>
+              </Match>
+              <Match when={(props.memoryDifference as number) < 0}>
+                <>
+                  <Fa icon="fa-angle-down" fixedWidth />
+                  {Math.abs(props.memoryDifference as number)}
+                </>
+              </Match>
+            </Switch>{" "}
+            since you last checked)
+          </Show>
+        </div>
       </>
     );
-  });
+  };
   return (
     <div class="flex rounded bg-sub-alt">
       <Show
@@ -67,11 +91,7 @@ export function UserRank(props: {
         >
           <Table
             type={props.type}
-            entries={[
-              {
-                ...props.data,
-              } as TableEntry,
-            ]}
+            entries={[props.data as TableEntry]}
             friendsOnly={props.friendsOnly}
             userOverride={userOverride}
             hideHeader={true}

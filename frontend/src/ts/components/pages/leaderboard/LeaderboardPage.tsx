@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
+import { getSnapshot, updateLbMemory } from "../../../db";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
@@ -38,11 +39,6 @@ export function LeaderboardPage(): JSXElement {
   const [page, setPage] = createSignal(0);
   const [scrollToUser, setScrollToUser] = createSignal(false);
 
-  const onSelectionChange = (selection: Selection): void => {
-    setSelection(selection);
-    setPage(0);
-  };
-
   createEffect(() => {
     //TODO fetch previous page as well, check boundaries
     if (isOpen()) {
@@ -67,6 +63,30 @@ export function LeaderboardPage(): JSXElement {
     ...getRankQueryOptions(selection),
     enabled: isLoggedIn() && isOpen(),
   }));
+
+  const onSelectionChange = (newSelection: Selection): void => {
+    //TODO: find a better place to update
+    if (
+      rank.data !== undefined &&
+      rank.data !== null &&
+      selection !== undefined &&
+      selection.type === "allTime"
+    ) {
+      const diff = getLbMemoryDifference(selection, rank.data.rank);
+
+      if (diff !== 0) {
+        void updateLbMemory(
+          "time",
+          selection.mode2,
+          "english",
+          rank.data.rank,
+          true,
+        );
+      }
+    }
+    setSelection(newSelection);
+    setPage(0);
+  };
 
   const userPage = (): number | undefined => {
     const userRank = rank.data?.friendsRank ?? rank.data?.rank;
@@ -101,6 +121,10 @@ export function LeaderboardPage(): JSXElement {
                       ? (query.data.minWpm as number)
                       : undefined
                   }
+                  memoryDifference={getLbMemoryDifference(
+                    selection,
+                    data?.rank,
+                  )}
                 />
               )}
             </AsyncContent>
@@ -133,6 +157,26 @@ export function LeaderboardPage(): JSXElement {
       </div>
     </div>
   );
+}
+
+function getLbMemoryDifference(
+  selection: Selection,
+  currentRank: number | undefined,
+): number | undefined {
+  if (
+    selection.type !== "allTime" ||
+    selection.mode !== "time" ||
+    selection.language !== "english" ||
+    selection.friendsOnly ||
+    currentRank === undefined
+  ) {
+    return undefined;
+  }
+  const oldRank =
+    getSnapshot()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
+  const diff = oldRank - currentRank;
+
+  return diff;
 }
 
 function prefetch(): void {

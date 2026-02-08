@@ -27,6 +27,7 @@ export async function sync(): Promise<void> {
       queryFn: fetch,
       queryKey,
       staleTime,
+      gcTime: staleTime,
     });
     resolve(true);
   } catch (e) {
