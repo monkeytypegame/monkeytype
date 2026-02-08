@@ -94,6 +94,8 @@ export function LeaderboardPage(): JSXElement {
                 <UserRank
                   type={selection.type === "weekly" ? "xp" : "wpm"}
                   data={data}
+                  friendsOnly={selection.friendsOnly}
+                  total={query.data?.count}
                   minWpm={
                     query.data && "minWpm" in query.data
                       ? (query.data.minWpm as number)

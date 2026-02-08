@@ -59,9 +59,11 @@ export type DataTableProps<TData, TValue> = {
     class: string;
     activeRow: Accessor<string | null>;
   };
+  class?: string;
 };
 
-export function DataTable<TData, TValue>(
+// oxlint-disable-next-line typescript/no-explicit-any
+export function DataTable<TData, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -88,17 +90,18 @@ export function DataTable<TData, TValue>(
     const current = bp();
     const result = Object.fromEntries(
       props.columns.map((col, index) => {
-        const id =
+        col.id =
           col.id ??
           ("accessorKey" in col && col.accessorKey !== null
             ? String(col.accessorKey)
             : `__col_${index}`);
 
-        return [
-          id,
+        const visible =
           current[col.meta?.breakpoint ?? "xxs"] &&
-            !current[col.meta?.maxBreakpoint ?? "xxl"],
-        ];
+          (col.meta?.maxBreakpoint === undefined ||
+            !current[col.meta?.maxBreakpoint]);
+
+        return [col.id, visible];
       }),
     );
 
@@ -146,7 +149,7 @@ export function DataTable<TData, TValue>(
 
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
-      <Table id={props.id}>
+      <Table id={props.id} class={props.class}>
         <Show when={!props.hideHeader}>
           <TableHeader>
             <For each={table.getHeaderGroups()}>
@@ -174,8 +177,6 @@ export function DataTable<TData, TValue>(
                                 header.column.getToggleSortingHandler()?.(e);
                               }}
                               class="m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
-                              {...(header.column.columnDef.meta
-                                ?.sortableHeaderMeta ?? {})}
                               classList={{
                                 "text-left":
                                   (header.column.columnDef.meta?.align ??
@@ -187,6 +188,8 @@ export function DataTable<TData, TValue>(
                                   header.column.columnDef.meta?.align ===
                                   "right",
                               }}
+                              {...(header.column.columnDef.meta?.headerMeta ??
+                                {})}
                             >
                               <Show when={!header.isPlaceholder}>
                                 {flexRender(
@@ -231,6 +234,8 @@ export function DataTable<TData, TValue>(
                               "text-right":
                                 header.column.columnDef.meta?.align === "right",
                             }}
+                            {...(header.column.columnDef.meta?.headerMeta ??
+                              {})}
                           >
                             <Show when={!header.isPlaceholder}>
                               {flexRender(

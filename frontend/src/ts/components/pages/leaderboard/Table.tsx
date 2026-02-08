@@ -18,22 +18,30 @@ import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
+type WpmEntry = LeaderboardEntry & { userOverride?: () => JSXElement };
+type XpEntry = XpLeaderboardEntry & { userOverride?: () => JSXElement };
+export type TableEntry = WpmEntry | XpEntry;
+
 export function Table(props: {
   type: "wpm" | "xp";
-  entries: LeaderboardEntry[] | XpLeaderboardEntry[];
+  entries: TableEntry[];
   friendsOnly: boolean;
+  userOnly?: true;
   hideHeader?: true;
-  scrollToUser: Accessor<boolean>;
-  onScrolledToUser: () => void;
+  scrollToUser?: Accessor<boolean>;
+  onScrolledToUser?: () => void;
 }): JSXElement {
   const commonProps = createMemo(() => ({
     id: "leaderboardTable",
     hideHeader: props.hideHeader,
-    rowSelection: {
-      getRowId: (row: { uid: string }) => row.uid,
-      activeRow: getUserId,
-      class: "text-main",
-    },
+    class: "table-auto [&>tbody>tr>td]:whitespace-nowrap",
+    rowSelection: props.userOnly
+      ? undefined
+      : {
+          getRowId: (row: { uid: string }) => row.uid,
+          activeRow: getUserId,
+          class: "text-main",
+        },
   }));
 
   const wpmColumns = createMemo(() =>
@@ -45,14 +53,14 @@ export function Table(props: {
   const xpColumns = createMemo(() => getXpColumns(props.friendsOnly));
 
   createEffectOn(
-    () => props.scrollToUser(),
+    () => props.scrollToUser?.(),
     (enabled) => {
       if (enabled) {
         requestAnimationFrame(() => {
           qs("#leaderboardTable tr[data-state='selected']")?.scrollIntoView({
             block: "center",
           });
-          props.onScrolledToUser();
+          props.onScrolledToUser?.();
         });
       }
     },
@@ -85,17 +93,19 @@ function getWpmColumns({
 }: {
   friendsOnly: boolean;
   format: Formatting;
-}): DataTableColumnDef<LeaderboardEntry>[] {
-  const defineColumn = createColumnHelper<LeaderboardEntry>().accessor;
+}): DataTableColumnDef<WpmEntry>[] {
+  const defineColumn = createColumnHelper<WpmEntry>().accessor;
   const columns = [
     defineColumn("friendsRank", {
-      header: () => (
-        <span aria-label="friends rank" data-balloon-pos="down">
-          <Fa icon="fa-user-friends" />
-        </span>
-      ),
+      header: () => <Fa icon="fa-user-friends" />,
+      cell: (info) =>
+        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
       meta: {
         align: "center",
+        headerMeta: {
+          "aria-label": "Friends rank",
+          "data-balloon-pos": "down",
+        },
       },
     }),
     defineColumn("rank", {
@@ -104,11 +114,19 @@ function getWpmColumns({
         info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
       meta: {
         align: "center",
+        headerMeta: {
+          "aria-label": "Global rank",
+          "data-balloon-pos": "down",
+        },
       },
     }),
     defineColumn("uid", {
       header: "name",
-      cell: (info) => <User user={info.row.original} />,
+      cell: (info) =>
+        info.row.original.userOverride?.() ?? <User user={info.row.original} />,
+      meta: {
+        cellMeta: () => ({ class: "w-full" }),
+      },
     }),
     defineColumn("wpm", {
       header: format.typingSpeedUnit,
@@ -133,7 +151,7 @@ function getWpmColumns({
       header: () => (
         <>
           <div>{format.typingSpeedUnit}</div>
-          <div class="text-sub">accucacy</div>
+          <div class="opacity-50">accucacy</div>
         </>
       ),
       cell: (info) => (
@@ -178,7 +196,7 @@ function getWpmColumns({
       header: () => (
         <>
           <div>raw</div>
-          <div class="text-sub">consistency</div>
+          <div class="opacity-50">consistency</div>
         </>
       ),
       cell: (info) => (
@@ -225,19 +243,19 @@ function getWpmColumns({
   return columns.map((it) => ({ ...it, enableSorting: false }));
 }
 
-function getXpColumns(
-  friendsOnly: boolean,
-): DataTableColumnDef<XpLeaderboardEntry>[] {
-  const defineColumn = createColumnHelper<XpLeaderboardEntry>().accessor;
+function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
+  const defineColumn = createColumnHelper<XpEntry>().accessor;
   const columns = [
     defineColumn("friendsRank", {
-      header: () => (
-        <span aria-label="friends rank" data-balloon-pos="down">
-          <Fa icon="fa-user-friends" />
-        </span>
-      ),
+      header: () => <Fa icon="fa-user-friends" />,
+      cell: (info) =>
+        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
       meta: {
         align: "center",
+        headerMeta: {
+          "aria-label": "Friends rank",
+          "data-balloon-pos": "down",
+        },
       },
     }),
     defineColumn("rank", {
@@ -246,11 +264,19 @@ function getXpColumns(
         info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
       meta: {
         align: "center",
+        headerMeta: {
+          "aria-label": "Global rank",
+          "data-balloon-pos": "down",
+        },
       },
     }),
     defineColumn("uid", {
       header: "name",
-      cell: (info) => <User user={info.row.original} />,
+      cell: (info) =>
+        info.row.original.userOverride?.() ?? <User user={info.row.original} />,
+      meta: {
+        cellMeta: () => ({ class: "w-full" }),
+      },
     }),
     defineColumn("totalXp", {
       header: "wpm",
@@ -298,7 +324,7 @@ function getXpColumns(
   ];
 
   if (!friendsOnly) {
-    columns.unshift();
+    columns.shift();
   }
 
   return columns.map((it) => ({

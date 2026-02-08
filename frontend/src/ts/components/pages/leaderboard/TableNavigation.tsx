@@ -101,7 +101,7 @@ function Navigation(props: {
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
-        disabled={props.currentPage >= props.lastPage}
+        disabled={props.currentPage + 1 >= props.lastPage}
       />
     </div>
   );
@@ -139,5 +139,5 @@ function NextUpdate(props: { type: LeaderboardType }): JSXElement {
     return "";
   });
 
-  return <div>{nextUpdate()}</div>;
+  return <div class="text-sub">{nextUpdate()}</div>;
 }

@@ -4,30 +4,55 @@ import {
 } from "@monkeytype/schemas/leaderboards";
 import { createMemo, JSXElement, Show } from "solid-js";
 
+import { bp } from "../../../signals/breakpoints";
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
-import { Fa } from "../../common/Fa";
+import { LoadingCircle } from "../../common/LoadingCircle";
+
+import { Table, TableEntry } from "./Table";
 
 export function UserRank(props: {
   type: "wpm" | "xp";
   data?: LeaderboardEntry | XpLeaderboardEntry | null;
   minWpm?: number;
+  friendsOnly: boolean;
+  total: number | undefined;
 }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
+  const userOverride = createMemo(() => {
+    if (
+      props.data === undefined ||
+      props.data === null ||
+      props.total === undefined
+    ) {
+      return <div>no data</div>;
+    }
+    const rank = props.friendsOnly
+      ? (props.data.friendsRank as number)
+      : props.data.rank;
+    const percentile = (rank / props.total) * 100;
+
+    let percentileString = `Top ${percentile.toFixed(2)}%`;
+    if (rank === 1) {
+      percentileString = "GOAT";
+    }
+    return () => (
+      <>
+        <div>You ({percentileString})</div>
+        <div class="text-xs text-sub">( = since you last checked)</div>
+      </>
+    );
+  });
   return (
-    <div class="flex rounded bg-sub-alt p-4">
+    <div class="flex rounded bg-sub-alt">
       <Show
         when={props.data !== undefined}
-        fallback={
-          <div class="w-full text-center">
-            <Fa icon="fa-circle-notch" fixedWidth spin />
-          </div>
-        }
+        fallback={<LoadingCircle class="w-full p-4 text-center" />}
       >
         <Show
           when={props.data}
           fallback={
-            <div class="w-full p-2 text-center">
+            <div class="w-full p-4 text-center">
               Not qualified
               <Show when={props.minWpm}>
                 {" "}
@@ -41,7 +66,18 @@ export function UserRank(props: {
             </div>
           }
         >
-          foo
+          <Table
+            type={props.type}
+            entries={[
+              {
+                ...props.data,
+                userOverride,
+              } as TableEntry,
+            ]}
+            friendsOnly={props.friendsOnly}
+            userOnly={true}
+            hideHeader={!bp().xl || undefined}
+          />
         </Show>
       </Show>
     </div>
