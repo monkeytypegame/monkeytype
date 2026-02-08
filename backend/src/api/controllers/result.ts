@@ -121,6 +121,7 @@ export async function getResults(
     limit,
     offset,
   });
+
   void addLog(
     "user_results_requested",
     {
@@ -132,7 +133,10 @@ export async function getResults(
     uid,
   );
 
-  return new MonkeyResponse("Results retrieved", replaceObjectIds(results));
+  return new MonkeyResponse(
+    "Results retrieved",
+    replaceObjectIds(results) as GetResultsResponse["data"],
+  );
 }
 
 export async function getResultById(
@@ -142,7 +146,11 @@ export async function getResultById(
   const { resultId } = req.params;
 
   const result = await ResultDAL.getResult(uid, resultId);
-  return new MonkeyResponse("Result retrieved", replaceObjectId(result));
+
+  return new MonkeyResponse(
+    "Result retrieved",
+    replaceObjectId(result) as GetResultByIdResponse["data"],
+  );
 }
 
 export async function getLastResult(
@@ -150,7 +158,11 @@ export async function getLastResult(
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const result = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse("Result retrieved", replaceObjectId(result));
+
+  return new MonkeyResponse(
+    "Result retrieved",
+    replaceObjectId(result) as GetLastResultResponse["data"],
+  );
 }
 
 export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
@@ -200,6 +212,8 @@ export async function addResult(
 
   const completedEvent = req.body.result;
   completedEvent.uid = uid;
+
+  const isPractice = completedEvent.mode === "practice";
 
   if (isTestTooShort(completedEvent)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
@@ -437,7 +451,7 @@ export async function addResult(
   let isPb = false;
   let tagPbs: string[] = [];
 
-  if (!completedEvent.bailedOut) {
+  if (!completedEvent.bailedOut && !isPractice) {
     [isPb, tagPbs] = await Promise.all([
       UserDAL.checkIfPb(uid, user, completedEvent),
       UserDAL.checkIfTagPb(uid, user, completedEvent),
@@ -629,27 +643,32 @@ export async function addResult(
     dbresult.keyDurationStats = keyDurationStats;
   }
 
-  const addedResult = await ResultDAL.addResult(uid, dbresult);
+  let insertedId: string | undefined;
+
+  if (!isPractice) {
+    const addedResult = await ResultDAL.addResult(uid, dbresult);
+    insertedId = addedResult.insertedId.toHexString();
+  }
 
   await UserDAL.incrementXp(uid, xpGained.xp);
   await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
-  if (isPb) {
+  if (isPb && insertedId !== undefined) {
     void addLog(
       "user_new_pb",
-      `${completedEvent.mode + " " + completedEvent.mode2} ${
+      `${completedEvent.mode} ${completedEvent.mode2} ${
         completedEvent.wpm
       } ${completedEvent.acc}% ${completedEvent.rawWpm} ${
         completedEvent.consistency
-      }% (${addedResult.insertedId})`,
+      }% (${insertedId})`,
       uid,
     );
   }
 
   const data: PostResultResponse = {
+    insertedId: insertedId ?? "practice",
     isPb,
     tagPbs,
-    insertedId: addedResult.insertedId.toHexString(),
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
     xpBreakdown: xpGained.breakdown ?? {},
@@ -703,7 +722,7 @@ async function calculateXp(
     funboxBonus: funboxBonusConfiguration,
   } = xpConfiguration;
 
-  if (mode === "zen" || !enabled) {
+  if (mode === "zen" || mode === "practice" || !enabled) {
     return {
       xp: 0,
     };
