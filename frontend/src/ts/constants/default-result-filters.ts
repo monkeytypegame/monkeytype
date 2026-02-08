@@ -20,7 +20,9 @@ const object: ResultFilters = {
     quote: true,
     zen: true,
     custom: true,
+    practice: false, // practice results are never part of stats
   },
+
   words: {
     "10": true,
     "25": true,
