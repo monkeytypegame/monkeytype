@@ -4,7 +4,6 @@ import {
 } from "@monkeytype/schemas/leaderboards";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { bp } from "../../../signals/breakpoints";
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -36,7 +35,7 @@ export function UserRank(props: {
     if (rank === 1) {
       percentileString = "GOAT";
     }
-    return () => (
+    return (
       <>
         <div>You ({percentileString})</div>
         <div class="text-xs text-sub">( = since you last checked)</div>
@@ -71,12 +70,11 @@ export function UserRank(props: {
             entries={[
               {
                 ...props.data,
-                userOverride,
               } as TableEntry,
             ]}
             friendsOnly={props.friendsOnly}
-            userOnly={true}
-            hideHeader={!bp().xl || undefined}
+            userOverride={userOverride}
+            hideHeader={true}
           />
         </Show>
       </Show>

@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement } from "solid-js";
 
 import { createEffectOn } from "../../../hooks/effects";
+import { bp } from "../../../signals/breakpoints";
 import { getConfig } from "../../../signals/config";
 import { getUserId } from "../../../signals/core";
 import { secondsToString } from "../../../utils/date-and-time";
@@ -18,39 +19,58 @@ import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
-type WpmEntry = LeaderboardEntry & { userOverride?: () => JSXElement };
-type XpEntry = XpLeaderboardEntry & { userOverride?: () => JSXElement };
+type WpmEntry = LeaderboardEntry;
+type XpEntry = XpLeaderboardEntry;
 export type TableEntry = WpmEntry | XpEntry;
 
-export function Table(props: {
-  type: "wpm" | "xp";
-  entries: TableEntry[];
-  friendsOnly: boolean;
-  userOnly?: true;
-  hideHeader?: true;
-  scrollToUser?: Accessor<boolean>;
-  onScrolledToUser?: () => void;
-}): JSXElement {
+export function Table(
+  props: {
+    type: "wpm" | "xp";
+    entries: TableEntry[];
+    friendsOnly: boolean;
+    hideHeader?: true;
+  } & (
+    | {
+        scrollToUser: Accessor<boolean>;
+        onScrolledToUser: () => void;
+        userOverride?: never;
+      }
+    | {
+        scrollToUser?: never;
+        onScrolledToUser?: never;
+        userOverride: Accessor<JSXElement>;
+      }
+  ),
+): JSXElement {
   const commonProps = createMemo(() => ({
     id: "leaderboardTable",
     hideHeader: props.hideHeader,
     class: "table-auto [&>tbody>tr>td]:whitespace-nowrap",
-    rowSelection: props.userOnly
-      ? undefined
-      : {
-          getRowId: (row: { uid: string }) => row.uid,
-          activeRow: getUserId,
-          class: "text-main",
-        },
+    rowSelection:
+      props.userOverride !== undefined
+        ? undefined
+        : {
+            getRowId: (row: { uid: string }) => row.uid,
+            activeRow: getUserId,
+            class: "text-main",
+          },
   }));
 
   const wpmColumns = createMemo(() =>
     getWpmColumns({
       friendsOnly: props.friendsOnly,
       format: new Formatting(getConfig),
+      userOverride: props.userOverride,
+      addHeader: props.userOverride !== undefined && bp().xl,
     }),
   );
-  const xpColumns = createMemo(() => getXpColumns(props.friendsOnly));
+  const xpColumns = createMemo(() =>
+    getXpColumns({
+      friendsOnly: props.friendsOnly,
+      userOverride: props.userOverride,
+      addHeader: props.userOverride !== undefined && bp().xl,
+    }),
+  );
 
   createEffectOn(
     () => props.scrollToUser?.(),
@@ -90,9 +110,13 @@ export function Table(props: {
 function getWpmColumns({
   friendsOnly,
   format,
+  userOverride,
+  addHeader,
 }: {
   friendsOnly: boolean;
   format: Formatting;
+  userOverride?: Accessor<JSXElement>;
+  addHeader?: boolean;
 }): DataTableColumnDef<WpmEntry>[] {
   const defineColumn = createColumnHelper<WpmEntry>().accessor;
   const columns = [
@@ -122,16 +146,20 @@ function getWpmColumns({
     }),
     defineColumn("uid", {
       header: "name",
-      cell: (info) =>
-        info.row.original.userOverride?.() ?? <User user={info.row.original} />,
+      cell: (info) => userOverride?.() ?? <User user={info.row.original} />,
       meta: {
         cellMeta: () => ({ class: "w-full" }),
       },
     }),
     defineColumn("wpm", {
       header: format.typingSpeedUnit,
+
       cell: (info) =>
-        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+        wrapWithHeader(
+          format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+          format.typingSpeedUnit,
+          addHeader,
+        ),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -140,7 +168,11 @@ function getWpmColumns({
     defineColumn("acc", {
       header: "accuracy",
       cell: (info) =>
-        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+        wrapWithHeader(
+          format.percentage(info.getValue(), { showDecimalPlaces: true }),
+          "accuracy",
+          addHeader,
+        ),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -176,7 +208,11 @@ function getWpmColumns({
     defineColumn("raw", {
       header: "raw",
       cell: (info) =>
-        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+        wrapWithHeader(
+          format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+          "raw",
+          addHeader,
+        ),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -185,7 +221,11 @@ function getWpmColumns({
     defineColumn("consistency", {
       header: "consistency",
       cell: (info) =>
-        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+        wrapWithHeader(
+          format.percentage(info.getValue(), { showDecimalPlaces: true }),
+          "consistency",
+          addHeader,
+        ),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -223,10 +263,22 @@ function getWpmColumns({
       header: "date",
       cell: (info) =>
         info.getValue() !== undefined ? (
-          <>
-            <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
-            <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
-          </>
+          addHeader ? (
+            wrapWithHeader(
+              dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
+              "date",
+              true,
+            )
+          ) : (
+            <>
+              <div class="text-xs">
+                {dateFormat(info.getValue(), "dd MMM yyyy")}
+              </div>
+              <div class="text-xs text-sub">
+                {dateFormat(info.getValue(), "HH:mm")}
+              </div>
+            </>
+          )
         ) : (
           ""
         ),
@@ -243,7 +295,15 @@ function getWpmColumns({
   return columns.map((it) => ({ ...it, enableSorting: false }));
 }
 
-function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
+function getXpColumns({
+  friendsOnly,
+  userOverride,
+  addHeader,
+}: {
+  friendsOnly: boolean;
+  userOverride?: Accessor<JSXElement>;
+  addHeader?: boolean;
+}): DataTableColumnDef<XpEntry>[] {
   const defineColumn = createColumnHelper<XpEntry>().accessor;
   const columns = [
     defineColumn("friendsRank", {
@@ -272,8 +332,7 @@ function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
     }),
     defineColumn("uid", {
       header: "name",
-      cell: (info) =>
-        info.row.original.userOverride?.() ?? <User user={info.row.original} />,
+      cell: (info) => userOverride?.() ?? <User user={info.row.original} />,
       meta: {
         cellMeta: () => ({ class: "w-full" }),
       },
@@ -281,9 +340,13 @@ function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
     defineColumn("totalXp", {
       header: "wpm",
       cell: (info) =>
-        info.getValue() < 1000
-          ? info.getValue()
-          : abbreviateNumber(info.getValue()),
+        wrapWithHeader(
+          info.getValue() < 1000
+            ? info.getValue().toFixed(0)
+            : abbreviateNumber(info.getValue()),
+          "xp gained",
+          addHeader,
+        ),
       meta: {
         align: "right",
       },
@@ -291,7 +354,11 @@ function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
     defineColumn("timeTypedSeconds", {
       header: "time typed",
       cell: (info) =>
-        secondsToString(Math.round(info.getValue()), true, true, ":"),
+        wrapWithHeader(
+          secondsToString(Math.round(info.getValue()), true, true, ":"),
+          "time typed",
+          addHeader,
+        ),
       meta: {
         align: "right",
       },
@@ -301,10 +368,22 @@ function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
       header: "date",
       cell: (info) =>
         info.getValue() !== undefined ? (
-          <>
-            <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
-            <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
-          </>
+          addHeader ? (
+            wrapWithHeader(
+              dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
+              "last activity",
+              true,
+            )
+          ) : (
+            <>
+              <div class="text-xs">
+                {dateFormat(info.getValue(), "dd MMM yyyy")}
+              </div>
+              <div class="text-xs text-sub">
+                {dateFormat(info.getValue(), "HH:mm")}
+              </div>
+            </>
+          )
         ) : (
           ""
         ),
@@ -335,4 +414,19 @@ function getXpColumns(friendsOnly: boolean): DataTableColumnDef<XpEntry>[] {
 //placeholder
 function User(props: { user: { name: string } }): JSXElement {
   return <div>{props.user.name}</div>;
+}
+
+function wrapWithHeader(
+  value: string,
+  header: string,
+  enabled?: boolean,
+): string | JSXElement {
+  return enabled ? (
+    <>
+      <div class="text-xs text-sub">{header}</div>
+      <div>{value}</div>
+    </>
+  ) : (
+    value
+  );
 }
