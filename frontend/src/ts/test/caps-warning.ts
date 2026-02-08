@@ -23,13 +23,11 @@ function hide(): void {
 }
 
 function update(event: KeyboardEvent): void {
-  if (event.key === "CapsLock" && capsState !== null) {
+  const modState = event.getModifierState?.("CapsLock");
+  if (modState !== undefined) {
+    capsState = modState;
+  } else if (event.key === "CapsLock" && capsState !== null) {
     capsState = !capsState;
-  } else {
-    const modState = event.getModifierState?.("CapsLock");
-    if (modState !== undefined) {
-      capsState = modState;
-    }
   }
 
   try {
@@ -38,7 +36,7 @@ function update(event: KeyboardEvent): void {
     } else {
       hide();
     }
-  } catch {}
+  } catch { }
 }
 
 document.addEventListener("keyup", update);
@@ -46,3 +44,6 @@ document.addEventListener("keyup", update);
 document.addEventListener("keydown", (event) => {
   if (Misc.isMac()) update(event);
 });
+
+document.addEventListener("mousedown", update);
+document.addEventListener("mouseup", update);
