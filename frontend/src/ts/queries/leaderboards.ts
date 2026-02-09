@@ -2,29 +2,32 @@ import {
   GetLeaderboardQuery,
   GetLeaderboardRankQuery,
 } from "@monkeytype/contracts/leaderboards";
-import { Language } from "@monkeytype/schemas/languages";
-import { Mode } from "@monkeytype/schemas/shared";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
+import { ModeSchema } from "@monkeytype/schemas/shared";
 import { QueryKey, queryOptions } from "@tanstack/solid-query";
+import { z } from "zod";
 import Ape from "../ape";
 
 export type LeaderboardType = Selection["type"];
-export type Selection =
-  | {
-      type: "weekly";
-      friendsOnly: boolean;
-      previous: boolean;
-      language?: never;
-      mode?: never;
-      mode2?: never;
-    }
-  | {
-      type: "daily" | "allTime";
-      mode: Mode;
-      mode2: string;
-      language: Language;
-      friendsOnly: boolean;
-      previous: boolean;
-    };
+const XpSelection = z.object({
+  type: z.literal("weekly"),
+  friendsOnly: z.boolean(),
+  previous: z.boolean(),
+  language: z.never().optional(),
+  mode: z.never().optional(),
+  mode2: z.never().optional(),
+});
+const WpmSelection = z.object({
+  type: z.enum(["daily", "allTime"]),
+  friendsOnly: z.boolean(),
+  previous: z.boolean(),
+  mode: ModeSchema,
+  mode2: z.string(),
+  language: LanguageSchema,
+});
+
+export const SelectionSchema = WpmSelection.or(XpSelection);
+export type Selection = z.infer<typeof SelectionSchema>;
 
 const queryKeys = {
   root: (options: Selection & { userSpecific?: true }) => [

@@ -89,14 +89,17 @@ function Navigation(props: {
         />
       </Show>
       <Button
-        onClick={() => props.onPageChange((old) => old - 1)}
+        onClick={() =>
+          props.onPageChange((old) => Math.min(old, props.lastPage) - 1)
+        }
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
         disabled={props.currentPage === 0}
       />
       <Button
-        onClick={() => props.onPageChange((old) => old - 1)}
+        //TODO
+        onClick={() => props.onPageChange(() => 7)}
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
-        disabled={true} //TODO
+        disabled={true}
       />
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}

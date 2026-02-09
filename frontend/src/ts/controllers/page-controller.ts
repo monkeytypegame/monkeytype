@@ -1,23 +1,34 @@
-import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
-import { getActivePage, setActivePage } from "../signals/core";
-import * as Settings from "../pages/settings";
+import * as AdController from "../controllers/ad-controller";
+import * as Page404 from "../pages/404";
 import * as Account from "../pages/account";
-import * as PageTest from "../pages/test";
-import * as PageLogin from "../pages/login";
+import * as PageAccountSettings from "../pages/account-settings";
+import * as Friends from "../pages/friends";
+import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageLoading from "../pages/loading";
+import * as PageLogin from "../pages/login";
+import Page, {
+  LoadingOptions,
+  PageName,
+  PageWithUrlParams,
+  UrlParamsSchema,
+} from "../pages/page";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
-import * as Friends from "../pages/friends";
-import * as Page404 from "../pages/404";
-import * as PageLeaderboards from "../pages/leaderboards";
-import * as PageAccountSettings from "../pages/account-settings";
+import * as Settings from "../pages/settings";
+import * as PageTest from "../pages/test";
+import { getActivePage, setCurrentPage } from "../signals/core";
 import * as PageTransition from "../states/page-transition";
-import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import Page, { PageName, LoadingOptions } from "../pages/page";
 import { onDOMReady, qsa, qsr } from "../utils/dom";
+import * as Misc from "../utils/misc";
 import * as Skeleton from "../utils/skeleton";
+import * as Strings from "../utils/strings";
+
+import { z } from "zod";
+import {
+  LeaderboardUrlParamsSchema,
+  readGetParameters as lbReadGetParameters,
+} from "../components/pages/leaderboard/LeaderboardPage";
 
 type ChangeOptions = {
   force?: boolean;
@@ -30,7 +41,12 @@ const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
   settings: Settings.page,
-  about: solidPage("about"),
+  about: solidPage("about", {
+    urlParamsSchema: LeaderboardUrlParamsSchema,
+    beforeShow: async (options) => {
+      lbReadGetParameters(options.urlParams);
+    },
+  }),
   account: Account.page,
   login: PageLogin.page,
   profile: PageProfile.page,
@@ -246,7 +262,7 @@ export async function change(
     }
 
     pages.loading.element.addClass("active");
-    setActivePage(pages.loading.id);
+    setCurrentPage(pages.loading);
     Focus.set(false);
     PageLoading.showError();
     PageLoading.updateText(
@@ -260,7 +276,7 @@ export async function change(
 
   //between
   updateTitle(nextPage);
-  setActivePage(nextPage.id);
+  setCurrentPage(nextPage);
   updateOpenGraphUrl();
   Focus.set(false);
 
@@ -295,23 +311,32 @@ export async function change(
   return true;
 }
 
-function solidPage(
+// oxlint-disable-next-line typescript/no-explicit-any
+function solidPage<U extends UrlParamsSchema | never>(
   id: PageName,
-  props?: { path?: string; loadingOptions?: LoadingOptions },
+  props?: {
+    path?: string;
+    loadingOptions?: LoadingOptions;
+    urlParamsSchema?: U;
+    beforeShow?: (options: { urlParams?: z.infer<U> }) => Promise<void>;
+  },
 ): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
-  return new Page({
+  return new PageWithUrlParams({
     id,
     path,
     element: qsr(`#${internalId}`),
-    beforeShow: async () => {
+    beforeShow: async (options) => {
       Skeleton.append(internalId, "main");
+      await props?.beforeShow?.(options);
     },
     afterHide: async () => {
       Skeleton.remove(internalId);
     },
     loadingOptions: props?.loadingOptions,
+    //@ts-expect-error ignore for now
+    urlParamsSchema: props?.urlParamsSchema,
   });
 }

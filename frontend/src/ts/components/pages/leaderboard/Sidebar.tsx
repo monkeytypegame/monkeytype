@@ -1,7 +1,6 @@
 import { Language } from "@monkeytype/schemas/languages";
 import { Mode } from "@monkeytype/schemas/shared";
-import { For, JSXElement, Show } from "solid-js";
-import { createStore } from "solid-js/store";
+import { Accessor, For, JSXElement, Show } from "solid-js";
 
 import { getServerConfiguration } from "../../../ape/server-configuration";
 import { Selection } from "../../../queries/leaderboards";
@@ -22,29 +21,19 @@ type ValidLeaderboards = {
 export type ModeSelect = Pick<Selection, "mode" | "mode2">;
 
 export function Sidebar(props: {
+  selection: Accessor<Selection>;
   onSelect: (selection: Selection) => void;
 }): JSXElement {
-  const [selection, setSelection] = createStore<Selection>({
-    type: "allTime",
-    mode: "time",
-    mode2: "15",
-    language: "english",
-    previous: false,
-    friendsOnly: false,
-  });
-
   const validLeaderboards = (): ValidLeaderboards => getValidLeaderboards();
 
   function updateSelection(patch: Partial<Selection>): void {
-    setSelection((prev) => {
-      const newValue = normalizeSelection(
+    props.onSelect(
+      normalizeSelection(
         //@ts-expect-error this is fine
-        { ...prev, ...patch },
+        { ...props.selection(), ...patch },
         validLeaderboards(),
-      );
-      props.onSelect(newValue);
-      return newValue;
-    });
+      ),
+    );
   }
 
   function selectType(type: Selection["type"]): void {
@@ -65,7 +54,7 @@ export function Sidebar(props: {
   return (
     <>
       <Group
-        selected={selection.type}
+        selected={props.selection().type}
         onSelect={selectType}
         items={[
           {
@@ -79,7 +68,7 @@ export function Sidebar(props: {
       />
       <Show when={isLoggedIn()}>
         <Group
-          selected={selection.friendsOnly}
+          selected={props.selection().friendsOnly}
           onSelect={selectFriendsOnly}
           items={[
             { id: false, text: "everyone", icon: "fa-users" },
@@ -87,24 +76,27 @@ export function Sidebar(props: {
           ]}
         />
       </Show>
-      <Show when={selection.type !== "weekly"}>
+      <Show when={props.selection().type !== "weekly"}>
         <Group
-          selected={{ mode: selection.mode, mode2: selection.mode2 }}
+          selected={{
+            mode: props.selection().mode,
+            mode2: props.selection().mode2,
+          }}
           onSelect={selectMode}
           items={getModeButtons(
-            validLeaderboards()[selection.type],
-            selection.language as Language,
+            validLeaderboards()[props.selection().type],
+            props.selection().language as Language,
           )}
         />
       </Show>
-      <Show when={selection.type === "daily"}>
+      <Show when={props.selection().type === "daily"}>
         <Group
-          selected={selection.language as Language}
+          selected={props.selection().language as Language}
           onSelect={selectLanguage}
           items={getLanguageButtons(
             validLeaderboards().daily,
-            selection.mode as Mode,
-            selection.mode2 as string,
+            props.selection().mode as Mode,
+            props.selection().mode2 as string,
           )}
         />
       </Show>
