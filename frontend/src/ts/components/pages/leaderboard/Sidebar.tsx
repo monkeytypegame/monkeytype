@@ -1,8 +1,8 @@
+import { ValidModeRule } from "@monkeytype/schemas/configuration";
 import { Language } from "@monkeytype/schemas/languages";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Accessor, For, JSXElement, Show } from "solid-js";
 
-import { getServerConfiguration } from "../../../ape/server-configuration";
 import { Selection } from "../../../queries/leaderboards";
 import { isLoggedIn } from "../../../signals/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
@@ -23,15 +23,14 @@ export type ModeSelect = Pick<Selection, "mode" | "mode2">;
 export function Sidebar(props: {
   selection: Accessor<Selection>;
   onSelect: (selection: Selection) => void;
+  validModeRules: ValidModeRule[];
 }): JSXElement {
-  const validLeaderboards = (): ValidLeaderboards => getValidLeaderboards();
-
   function updateSelection(patch: Partial<Selection>): void {
     props.onSelect(
       normalizeSelection(
         //@ts-expect-error this is fine
         { ...props.selection(), ...patch },
-        validLeaderboards(),
+        getValidLeaderboards(props.validModeRules),
       ),
     );
   }
@@ -76,6 +75,7 @@ export function Sidebar(props: {
           ]}
         />
       </Show>
+
       <Show when={props.selection().type !== "weekly"}>
         <Group
           selected={{
@@ -84,7 +84,7 @@ export function Sidebar(props: {
           }}
           onSelect={selectMode}
           items={getModeButtons(
-            validLeaderboards()[props.selection().type],
+            getValidLeaderboards(props.validModeRules)[props.selection().type],
             props.selection().language as Language,
           )}
         />
@@ -94,7 +94,7 @@ export function Sidebar(props: {
           selected={props.selection().language as Language}
           onSelect={selectLanguage}
           items={getLanguageButtons(
-            validLeaderboards().daily,
+            getValidLeaderboards(props.validModeRules).daily,
             props.selection().mode as Mode,
             props.selection().mode2 as string,
           )}
@@ -213,12 +213,11 @@ function getLanguageButtons(
     icon: "fa-globe",
   }));
 }
-function getValidLeaderboards(): ValidLeaderboards {
-  const dailyRulesConfig =
-    getServerConfiguration()?.dailyLeaderboards.validModeRules ?? [];
-
+function getValidLeaderboards(
+  validModeRules: ValidModeRule[],
+): ValidLeaderboards {
   //a rule can contain multiple values. create a flat list out of them
-  const dailyRules = dailyRulesConfig.flatMap((rule) => {
+  const dailyRules = validModeRules.flatMap((rule) => {
     const languages = convertRuleOption(rule.language) as Language[];
     const mode2List = convertRuleOption(rule.mode2);
 

@@ -21,6 +21,7 @@ import {
   Selection,
   SelectionSchema,
 } from "../../../queries/leaderboards";
+import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import {
   getActivePage,
   getCurrentPage,
@@ -36,7 +37,7 @@ import { Title } from "./Title";
 import { UserRank } from "./UserRank";
 
 //TODO change
-const pageName = "about";
+export const pageName = "about";
 
 export const LeaderboardUrlParamsSchema = z
   .object({
@@ -79,15 +80,15 @@ export function LeaderboardPage(): JSXElement {
 
   createEffect(() => {
     //update url after the data is loaded
-    if (query.isSuccess) updateGetParameters(selection(), page());
+    if (dataQuery.isSuccess) updateGetParameters(selection(), page());
   });
 
   createEffect(() => {
     //update url after the data is loaded
-    if (rank.isSuccess) syncLbMemory();
+    if (rankQuery.isSuccess) syncLbMemory();
   });
 
-  const query = useQuery(() => ({
+  const dataQuery = useQuery(() => ({
     ...getLeaderboardQueryOptions({
       ...selection(),
       page: page() ?? 0,
@@ -95,9 +96,14 @@ export function LeaderboardPage(): JSXElement {
     enabled: isOpen(),
   }));
 
-  const rank = useQuery(() => ({
+  const rankQuery = useQuery(() => ({
     ...getRankQueryOptions(selection()),
     enabled: isLoggedIn() && isOpen(),
+  }));
+
+  const serverConfigurationQuery = useQuery(() => ({
+    ...getServerConfigurationQueryOptions(),
+    enabled: isOpen(),
   }));
 
   const onSelectionChange = (newSelection: Selection): void => {
@@ -106,7 +112,7 @@ export function LeaderboardPage(): JSXElement {
   };
 
   const userPage = (): number | undefined => {
-    const userRank = rank.data?.friendsRank ?? rank.data?.rank;
+    const userRank = rankQuery.data?.friendsRank ?? rankQuery.data?.rank;
     if (userRank === undefined) return undefined;
     const page = Math.ceil(userRank / 50) - 1;
     return page;
@@ -116,7 +122,15 @@ export function LeaderboardPage(): JSXElement {
     <div class="content-grid grid">
       <div class="flex flex-col gap-8 lg:flex-row">
         <div class="w-full lg:w-60">
-          <Sidebar selection={selection} onSelect={onSelectionChange} />
+          <AsyncContent query={serverConfigurationQuery}>
+            {(config) => (
+              <Sidebar
+                selection={selection}
+                onSelect={onSelectionChange}
+                validModeRules={config.dailyLeaderboards.validModeRules ?? []}
+              />
+            )}
+          </AsyncContent>
         </div>
 
         <div class="flex w-full flex-1 flex-col gap-4">
@@ -131,16 +145,16 @@ export function LeaderboardPage(): JSXElement {
           />
 
           <Show when={isLoggedIn()}>
-            <AsyncContent query={rank} alwaysShowContent>
+            <AsyncContent query={rankQuery} alwaysShowContent>
               {(data) => (
                 <UserRank
                   type={selection().type === "weekly" ? "xp" : "wpm"}
                   data={data}
                   friendsOnly={selection().friendsOnly}
-                  total={query.data?.count}
+                  total={dataQuery.data?.count}
                   minWpm={
-                    query.data && "minWpm" in query.data
-                      ? (query.data.minWpm as number)
+                    dataQuery.data && "minWpm" in dataQuery.data
+                      ? (dataQuery.data.minWpm as number)
                       : undefined
                   }
                   memoryDifference={getLbMemoryDifference(
@@ -154,16 +168,18 @@ export function LeaderboardPage(): JSXElement {
 
           <TableNavigation
             type={selection().type}
-            lastPage={Math.ceil((query.data?.count ?? 0) / 50)}
+            lastPage={Math.ceil((dataQuery.data?.count ?? 0) / 50)}
             currentPage={page()}
             onPageChange={setPage}
             userPage={userPage()}
             onScrollToUser={setScrollToUser}
             isLoading={
-              query.isLoading || query.isFetching || query.isRefetching
+              dataQuery.isLoading ||
+              dataQuery.isFetching ||
+              dataQuery.isRefetching
             }
           >
-            <AsyncContent query={query} alwaysShowContent>
+            <AsyncContent query={dataQuery} alwaysShowContent>
               {(data) => (
                 <Table
                   type={selection().type === "weekly" ? "xp" : "wpm"}
@@ -182,19 +198,19 @@ export function LeaderboardPage(): JSXElement {
 
   function syncLbMemory(): void {
     if (
-      rank.data !== undefined &&
-      rank.data !== null &&
+      rankQuery.data !== undefined &&
+      rankQuery.data !== null &&
       selection !== undefined &&
       selection().type === "allTime"
     ) {
-      const diff = getLbMemoryDifference(selection(), rank.data.rank);
+      const diff = getLbMemoryDifference(selection(), rankQuery.data.rank);
 
       if (diff !== 0) {
         void updateLbMemory(
           "time",
           selection().mode2 as string,
           "english",
-          rank.data.rank,
+          rankQuery.data.rank,
           true,
         );
       }

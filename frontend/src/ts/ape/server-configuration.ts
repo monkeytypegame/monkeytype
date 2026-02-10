@@ -11,10 +11,6 @@ const {
 
 export { configurationPromise };
 
-export function getServerConfiguration(): Configuration | undefined {
-  return get();
-}
-
 export function get(): Configuration | undefined {
   return queryClient.getQueryData(
     getServerConfigurationQueryOptions().queryKey,
