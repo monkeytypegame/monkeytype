@@ -11,6 +11,7 @@ import {
 } from "solid-js";
 import { z } from "zod";
 
+import { configurationPromise as serverConfigurationPromise } from "../../../ape/server-configuration";
 import { getSnapshot, updateLbMemory } from "../../../db";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { PageWithUrlParams } from "../../../pages/page";
@@ -22,12 +23,9 @@ import {
   SelectionSchema,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import {
-  getActivePage,
-  getCurrentPage,
-  isLoggedIn,
-} from "../../../signals/core";
+import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { qsr } from "../../../utils/dom";
+import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
 
 import { Sidebar } from "./Sidebar";
@@ -298,11 +296,7 @@ function updateGetParameters(selection: Selection, page: number): void {
   if (selection.friendsOnly) {
     params.friendsOnly = true;
   }
-  // oxlint-disable-next-line typescript/no-explicit-any
-  const currentPage = getCurrentPage() as PageWithUrlParams<unknown, any>;
-  if (currentPage !== undefined && currentPage.id === pageName) {
-    currentPage.setUrlParams(params);
-  }
+  skeletonPage.setUrlParams(params);
 }
 
 export function readGetParameters(
@@ -345,3 +339,31 @@ function prefetch(): void {
     }),
   );
 }
+
+export const skeletonPage = new PageWithUrlParams({
+  id: "about",
+  element: qsr(".page.pageAbout"),
+  path: "/about",
+  urlParamsSchema: LeaderboardUrlParamsSchema,
+  loadingOptions: {
+    style: "spinner",
+    loadingMode: () => "sync",
+    loadingPromise: async () => {
+      await serverConfigurationPromise;
+    },
+  },
+
+  afterHide: async (): Promise<void> => {
+    Skeleton.remove("pageLeaderboards");
+  },
+  beforeShow: async (options): Promise<void> => {
+    Skeleton.append("pageLeaderboards", "main");
+    readGetParameters(options.urlParams);
+  },
+});
+
+/* TODO enable when moving to the correct page
+onDOMReady(async () => {
+  Skeleton.save("pageLeaderboards");
+});
+*/

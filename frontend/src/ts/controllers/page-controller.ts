@@ -6,17 +6,12 @@ import * as Friends from "../pages/friends";
 import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageLoading from "../pages/loading";
 import * as PageLogin from "../pages/login";
-import Page, {
-  LoadingOptions,
-  PageName,
-  PageWithUrlParams,
-  UrlParamsSchema,
-} from "../pages/page";
+import Page, { LoadingOptions, PageName } from "../pages/page";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
 import * as Settings from "../pages/settings";
 import * as PageTest from "../pages/test";
-import { getActivePage, setCurrentPage } from "../signals/core";
+import { getActivePage, setActivePage } from "../signals/core";
 import * as PageTransition from "../states/page-transition";
 import * as Focus from "../test/focus";
 import { onDOMReady, qsa, qsr } from "../utils/dom";
@@ -24,11 +19,7 @@ import * as Misc from "../utils/misc";
 import * as Skeleton from "../utils/skeleton";
 import * as Strings from "../utils/strings";
 
-import { z } from "zod";
-import {
-  LeaderboardUrlParamsSchema,
-  readGetParameters as lbReadGetParameters,
-} from "../components/pages/leaderboard/LeaderboardPage";
+import { skeletonPage } from "../components/pages/leaderboard/LeaderboardPage";
 
 type ChangeOptions = {
   force?: boolean;
@@ -41,12 +32,7 @@ const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
   settings: Settings.page,
-  about: solidPage("about", {
-    urlParamsSchema: LeaderboardUrlParamsSchema,
-    beforeShow: async (options) => {
-      lbReadGetParameters(options.urlParams);
-    },
-  }),
+  about: skeletonPage,
   account: Account.page,
   login: PageLogin.page,
   profile: PageProfile.page,
@@ -262,7 +248,7 @@ export async function change(
     }
 
     pages.loading.element.addClass("active");
-    setCurrentPage(pages.loading);
+    setActivePage(pages.loading.id);
     Focus.set(false);
     PageLoading.showError();
     PageLoading.updateText(
@@ -276,7 +262,7 @@ export async function change(
 
   //between
   updateTitle(nextPage);
-  setCurrentPage(nextPage);
+  setActivePage(nextPage.id);
   updateOpenGraphUrl();
   Focus.set(false);
 
@@ -311,32 +297,24 @@ export async function change(
   return true;
 }
 
-// oxlint-disable-next-line typescript/no-explicit-any
-function solidPage<U extends UrlParamsSchema | never>(
+function _solidPage(
   id: PageName,
   props?: {
     path?: string;
-    loadingOptions?: LoadingOptions;
-    urlParamsSchema?: U;
-    beforeShow?: (options: { urlParams?: z.infer<U> }) => Promise<void>;
   },
 ): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
-  return new PageWithUrlParams({
+  return new Page({
     id,
     path,
     element: qsr(`#${internalId}`),
-    beforeShow: async (options) => {
+    beforeShow: async () => {
       Skeleton.append(internalId, "main");
-      await props?.beforeShow?.(options);
     },
     afterHide: async () => {
       Skeleton.remove(internalId);
     },
-    loadingOptions: props?.loadingOptions,
-    //@ts-expect-error ignore for now
-    urlParamsSchema: props?.urlParamsSchema,
   });
 }

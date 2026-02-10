@@ -1,13 +1,7 @@
 import { createMemo, createSignal } from "solid-js";
-import Page, { PageName } from "../pages/page";
+import { PageName } from "../pages/page";
 
-export const [getCurrentPage, setCurrentPage] = createSignal<
-  Page<undefined> | undefined
->(undefined);
-export const getActivePage = createMemo<PageName>(
-  () => getCurrentPage()?.id ?? "loading",
-);
-
+export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
   text: string;
   isNew: boolean;
