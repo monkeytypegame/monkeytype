@@ -27,6 +27,7 @@ import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
+import AsyncMultiContent from "../../common/AsyncMultiContext";
 
 import { Sidebar } from "./Sidebar";
 import { Table } from "./Table";
@@ -110,7 +111,9 @@ export function LeaderboardPage(): JSXElement {
   };
 
   const userPage = (): number | undefined => {
-    const userRank = rankQuery.data?.friendsRank ?? rankQuery.data?.rank;
+    const userRank = selection().friendsOnly
+      ? rankQuery.data?.friendsRank
+      : rankQuery.data?.rank;
     if (userRank === undefined) return undefined;
     const page = Math.ceil(userRank / 50) - 1;
     return page;
@@ -143,49 +146,53 @@ export function LeaderboardPage(): JSXElement {
           />
 
           <Show when={isLoggedIn()}>
-            <AsyncContent query={rankQuery} alwaysShowContent>
-              {(data) => (
+            <AsyncMultiContent
+              query={{
+                data: dataQuery,
+                rank: rankQuery,
+                config: serverConfigurationQuery,
+              }}
+              alwaysShowContent
+            >
+              {({ data, rank, config }) => (
                 <UserRank
                   type={selection().type === "weekly" ? "xp" : "wpm"}
-                  data={data}
+                  data={rank}
                   friendsOnly={selection().friendsOnly}
-                  total={dataQuery.data?.count}
+                  total={data?.count}
                   minWpm={
-                    dataQuery.data && "minWpm" in dataQuery.data
-                      ? (dataQuery.data.minWpm as number)
+                    data && "minWpm" in data
+                      ? (data.minWpm as number)
                       : undefined
                   }
                   memoryDifference={getLbMemoryDifference(
                     selection(),
-                    data?.rank,
+                    rank?.rank,
                   )}
                   isLbOptOut={getSnapshot()?.lbOptOut ?? false}
                   isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={
-                    serverConfigurationQuery.data?.leaderboards.minTimeTyping ??
-                    0
-                  }
+                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
                   userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}
-            </AsyncContent>
+            </AsyncMultiContent>
           </Show>
 
-          <TableNavigation
-            type={selection().type}
-            lastPage={Math.ceil((dataQuery.data?.count ?? 0) / 50)}
-            currentPage={page()}
-            onPageChange={setPage}
-            userPage={userPage()}
-            onScrollToUser={setScrollToUser}
-            isLoading={
-              dataQuery.isLoading ||
-              dataQuery.isFetching ||
-              dataQuery.isRefetching
-            }
-          >
-            <AsyncContent query={dataQuery} alwaysShowContent>
-              {(data) => (
+          <AsyncContent query={dataQuery} alwaysShowContent>
+            {(data) => (
+              <TableNavigation
+                type={selection().type}
+                lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                currentPage={page()}
+                onPageChange={setPage}
+                userPage={userPage()}
+                onScrollToUser={setScrollToUser}
+                isLoading={
+                  dataQuery.isLoading ||
+                  dataQuery.isFetching ||
+                  dataQuery.isRefetching
+                }
+              >
                 <Table
                   type={selection().type === "weekly" ? "xp" : "wpm"}
                   entries={data?.entries ?? []}
@@ -193,9 +200,9 @@ export function LeaderboardPage(): JSXElement {
                   scrollToUser={scrollToUser}
                   onScrolledToUser={() => setScrollToUser(false)}
                 />
-              )}
-            </AsyncContent>
-          </TableNavigation>
+              </TableNavigation>
+            )}
+          </AsyncContent>
         </div>
       </div>
     </div>

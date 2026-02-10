@@ -27,17 +27,13 @@ export function UserRank(props: {
 }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
   const userOverride = (): JSXElement => {
-    if (
-      props.data === undefined ||
-      props.data === null ||
-      props.total === undefined
-    ) {
+    if (props.data === undefined || props.data === null) {
       return "";
     }
     const rank = props.friendsOnly
       ? (props.data.friendsRank as number)
       : props.data.rank;
-    const percentile = (rank / props.total) * 100;
+    const percentile = (rank / (props.total ?? 1)) * 100;
 
     let percentileString = `Top ${percentile.toFixed(2)}%`;
     if (rank === 1) {
@@ -75,7 +71,7 @@ export function UserRank(props: {
   return (
     <div class="flex rounded bg-sub-alt">
       <Show
-        when={props.data !== undefined}
+        when={props.data !== undefined && props.total !== undefined}
         fallback={<LoadingCircle class="w-full p-4 text-center" />}
       >
         <Conditional
