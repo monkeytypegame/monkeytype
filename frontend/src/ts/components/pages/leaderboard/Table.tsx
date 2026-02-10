@@ -153,7 +153,6 @@ function getWpmColumns({
     }),
     defineColumn("wpm", {
       header: format.typingSpeedUnit,
-
       cell: (info) =>
         wrapWithHeader(
           format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
@@ -338,7 +337,7 @@ function getXpColumns({
       },
     }),
     defineColumn("totalXp", {
-      header: "wpm",
+      header: "xp gained",
       cell: (info) =>
         wrapWithHeader(
           info.getValue() < 1000
