@@ -2,10 +2,12 @@ import {
   LeaderboardEntry,
   XpLeaderboardEntry,
 } from "@monkeytype/schemas/leaderboards";
+import { formatDuration, intervalToDuration } from "date-fns";
 import { createMemo, JSXElement, Match, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
+import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { LoadingCircle } from "../../common/LoadingCircle";
 
@@ -18,6 +20,10 @@ export function UserRank(props: {
   friendsOnly: boolean;
   total: number | undefined;
   memoryDifference: number | undefined;
+  isLbOptOut: boolean;
+  isBanned: boolean;
+  minTimeTyping: number;
+  userTimeTyping: number;
 }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
   const userOverride = (): JSXElement => {
@@ -72,31 +78,46 @@ export function UserRank(props: {
         when={props.data !== undefined}
         fallback={<LoadingCircle class="w-full p-4 text-center" />}
       >
-        <Show
-          when={props.data}
-          fallback={
+        <Conditional
+          if={props.data !== null}
+          then={
+            <Table
+              type={props.type}
+              entries={[props.data as TableEntry]}
+              friendsOnly={props.friendsOnly}
+              userOverride={userOverride}
+              hideHeader={true}
+            />
+          }
+          else={
             <div class="w-full p-4 text-center">
-              Not qualified
-              <Show when={props.minWpm}>
-                {" "}
-                (min speed required:{" "}
-                {format().typingSpeed(props.minWpm, {
-                  showDecimalPlaces: true,
-                  suffix: ` ${format().typingSpeedUnit}`,
-                })}
-                )
-              </Show>
+              <Switch fallback="not qualified">
+                <Match when={props.isLbOptOut}>
+                  You have opted out of the leaderboards.
+                </Match>
+                <Match when={props.isBanned}>Your account is banned.</Match>
+                <Match when={props.userTimeTyping < props.minTimeTyping}>
+                  Your account must have
+                  {formatDuration(
+                    intervalToDuration({
+                      start: 0,
+                      end: props.minTimeTyping * 1000,
+                    }),
+                  )}{" "}
+                  typed to be placed on the leaderboard.
+                </Match>
+                <Match when={props.minWpm}>
+                  Not qualified (min speed required:{" "}
+                  {format().typingSpeed(props.minWpm, {
+                    showDecimalPlaces: true,
+                    suffix: ` ${format().typingSpeedUnit}`,
+                  })}
+                  )
+                </Match>
+              </Switch>
             </div>
           }
-        >
-          <Table
-            type={props.type}
-            entries={[props.data as TableEntry]}
-            friendsOnly={props.friendsOnly}
-            userOverride={userOverride}
-            hideHeader={true}
-          />
-        </Show>
+        />
       </Show>
     </div>
   );

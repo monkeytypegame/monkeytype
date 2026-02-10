@@ -161,6 +161,13 @@ export function LeaderboardPage(): JSXElement {
                     selection(),
                     data?.rank,
                   )}
+                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                  isBanned={getSnapshot()?.banned ?? false}
+                  minTimeTyping={
+                    serverConfigurationQuery.data?.leaderboards.minTimeTyping ??
+                    0
+                  }
+                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}
             </AsyncContent>

@@ -90,7 +90,9 @@ function Navigation(props: {
       </Show>
       <Button
         onClick={() =>
-          props.onPageChange((old) => Math.min(old, props.lastPage) - 1)
+          props.onPageChange((old) =>
+            Math.max(0, Math.min(old, props.lastPage) - 1),
+          )
         }
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
         disabled={props.currentPage === 0}
