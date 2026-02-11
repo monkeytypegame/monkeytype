@@ -16,7 +16,8 @@ import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
-import { H1, H3 } from "../common/Headers";
+import { H1, H2, H3 } from "../common/Headers";
+import { LoadingCircle } from "../common/LoadingCircle";
 import { User } from "../common/User";
 
 qsr("nav .view-about").on("mouseenter", () => {
@@ -94,6 +95,38 @@ export function AboutPage(): JSXElement {
             />
           </li>
         </ul>
+        <Button
+          onClick={() => {
+            //
+          }}
+          disabled={true}
+          text="disabled button"
+        />
+        <Button
+          onClick={() => {
+            //
+          }}
+          ariaLabel="the answer to everything"
+          text="42"
+        />
+        <Button
+          onClick={() => {
+            //
+          }}
+          ariaLabel={{ position: "down", text: "active button" }}
+          text="active"
+          active={true}
+        />
+
+        <H1 fa={{ icon: "fa-sad-tear" }} text="first header" />
+        <H2
+          fa={{ icon: "fa-tired", variant: "regular" }}
+          text="second header"
+        />
+        <H3 fa={{ icon: "fa-tshirt" }} text="third header" />
+
+        <LoadingCircle />
+        <LoadingCircle class="text-2xl text-sub" />
       </section>
       <section class="text-center text-sub">
         Created with love by Miodec.
