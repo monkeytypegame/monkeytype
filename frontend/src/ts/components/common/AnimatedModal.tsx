@@ -42,6 +42,7 @@ type AnimatedModalProps = ParentProps<{
   afterHide?: () => void | Promise<void>;
   onEscape?: (e: KeyboardEvent) => void;
   onBackdropClick?: (e: MouseEvent) => void;
+  onScrollEnd?: (e: Event) => void;
 
   title?: string;
   modalClass?: string;
@@ -280,6 +281,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
             props.modalClass,
           )}
           ref={modalRef}
+          onScroll={(e) => props.onScrollEnd?.(e)}
         >
           <Show when={props.title !== undefined && props.title !== ""}>
             <div class="text-2xl text-sub">{props.title}</div>

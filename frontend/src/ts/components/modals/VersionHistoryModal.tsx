@@ -15,8 +15,24 @@ export function VersionHistoryModal(): JSXElement {
     enabled: isOpen(),
   }));
 
+  const scrollToLoadMore = (e: Event): void => {
+    const element = e.target as HTMLElement;
+
+    if (
+      element.scrollHeight - element.scrollTop - element.clientHeight < 10 &&
+      releases.hasNextPage &&
+      !releases.isLoading
+    ) {
+      void releases.fetchNextPage();
+    }
+  };
+
   return (
-    <AnimatedModal id="VersionHistory" modalClass="max-w-6xl">
+    <AnimatedModal
+      id="VersionHistory"
+      modalClass="max-w-6xl"
+      onScrollEnd={scrollToLoadMore}
+    >
       <AsyncContent
         query={releases}
         errorMessage="Failed to load version history"
