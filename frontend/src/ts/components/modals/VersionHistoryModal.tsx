@@ -46,7 +46,7 @@ export function VersionHistoryModal(): JSXElement {
             </div>
 
             <Button
-              onClick={async () => releases.fetchNextPage()}
+              onClick={() => void releases.fetchNextPage()}
               disabled={!releases.hasNextPage || releases.isFetching}
               fa={
                 releases.isFetchingNextPage

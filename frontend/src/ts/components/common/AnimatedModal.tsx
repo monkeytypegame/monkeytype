@@ -281,7 +281,8 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
             props.modalClass,
           )}
           ref={modalRef}
-          onScroll={(e) => props.onScrollEnd?.(e)}
+          // oxlint-disable-next-line react/no-unknown-property
+          onScrollEnd={(e) => props.onScrollEnd?.(e)}
         >
           <Show when={props.title !== undefined && props.title !== ""}>
             <div class="text-2xl text-sub">{props.title}</div>
