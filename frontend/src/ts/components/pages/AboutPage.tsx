@@ -395,7 +395,7 @@ export function AboutPage(): JSXElement {
         </div>
       </Show>
       <div></div>
-      <section>
+      <section id="supporters_title">
         <H2 fa={{ icon: "fa-hand-holding-usd" }} text="top supporters" />
         <AsyncContent
           query={supporters}
@@ -414,7 +414,7 @@ export function AboutPage(): JSXElement {
         </AsyncContent>
       </section>
       <div></div>
-      <section>
+      <section id="contributors_title">
         <H2 fa={{ icon: "fa-code-branch" }} text="contributors" />
         <AsyncContent
           query={contributors}
