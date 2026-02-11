@@ -150,9 +150,6 @@ export default function AsyncContent<T extends QueryMapping>(
 function fromQueries<T extends Record<string, unknown>>(queries: {
   [K in keyof T]: UseQueryResult<T[K]>;
 }): AsyncMap<T> {
-  if (queries === undefined) {
-    throw new Error("whoops");
-  }
   return typedKeys(queries).reduce((acc, key) => {
     const q = queries[key];
     acc[key] = {
