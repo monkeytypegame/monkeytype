@@ -556,10 +556,12 @@
     }
     // unify dote spaceing
     &.withLigatures .word.broken-ligatures {
-      display: inline-flex;
       letter {
-        width: 0.5em;
+        width: 0.4em;
       }
+    }
+    .word.broken-ligatures:not(.needs-wrap) {
+      white-space: nowrap;
     }
 
     &:not(.withLigatures) .typed,

@@ -11,14 +11,27 @@ function canBreak(wordEl: ElementWithUtils): boolean {
 function applyIfNeeded(wordEl: ElementWithUtils): void {
   if (!canBreak(wordEl)) return;
 
-  const { width } = wordEl.screenBounds();
-  wordEl.setStyle({ width: `${width}px` });
+  const letters = wordEl.qsa("letter");
+  const firstTop = Math.floor(letters[0]?.getOffsetTop() ?? 0);
+  const isWrapped = letters.some(
+    (l) => Math.floor(l.getOffsetTop()) !== firstTop,
+  );
+
+  if (!isWrapped) {
+    const { width } = wordEl.screenBounds();
+    wordEl.setStyle({ width: `${width}px` });
+    wordEl.removeClass("needs-wrap");
+  } else {
+    wordEl.setStyle({ width: "" });
+    wordEl.addClass("needs-wrap");
+  }
   wordEl.addClass("broken-ligatures");
 }
 
 function reset(wordEl: ElementWithUtils): void {
   if (!wordEl.hasClass("broken-ligatures")) return;
   wordEl.removeClass("broken-ligatures");
+  wordEl.removeClass("needs-wrap");
   wordEl.setStyle({ width: "" });
 }
 
