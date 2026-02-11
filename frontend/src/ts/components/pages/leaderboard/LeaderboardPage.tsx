@@ -27,7 +27,6 @@ import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
-import AsyncMultiContent from "../../common/AsyncMultiContext";
 
 import { Sidebar } from "./Sidebar";
 import { Table } from "./Table";
@@ -146,8 +145,8 @@ export function LeaderboardPage(): JSXElement {
           />
 
           <Show when={isLoggedIn()}>
-            <AsyncMultiContent
-              query={{
+            <AsyncContent
+              queries={{
                 data: dataQuery,
                 rank: rankQuery,
                 config: serverConfigurationQuery,
@@ -175,7 +174,7 @@ export function LeaderboardPage(): JSXElement {
                   userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}
-            </AsyncMultiContent>
+            </AsyncContent>
           </Show>
 
           <AsyncContent query={dataQuery} alwaysShowContent>
