@@ -170,6 +170,14 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     return;
   }
 
+  if (!event.repeat) {
+    //delaying because type() is called before show()
+    // meaning the first keypress of the test is not animated
+    setTimeout(() => {
+      Monkey.type(event);
+    }, 0);
+  }
+
   if (Config.layout !== "default") {
     const emulatedChar = await getCharFromEvent(event);
     if (emulatedChar !== null) {
@@ -177,14 +185,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
       event.preventDefault();
       return;
     }
-  }
-
-  if (!event.repeat) {
-    //delaying because type() is called before show()
-    // meaning the first keypress of the test is not animated
-    setTimeout(() => {
-      Monkey.type(event);
-    }, 0);
   }
 
   if (event.key === "Tab") {

@@ -53,4 +53,7 @@
   .rounded-half {
     border-radius: calc(var(--roundness) / 2);
   }
+  .has-button\:p-0:has(button) {
+    padding: 0;
+  }
 }
