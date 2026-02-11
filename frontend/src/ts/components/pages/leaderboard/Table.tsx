@@ -348,6 +348,7 @@ function getXpColumns({
         ),
       meta: {
         align: "right",
+        breakpoint: "xl",
       },
     }),
     defineColumn("timeTypedSeconds", {
@@ -360,6 +361,33 @@ function getXpColumns({
         ),
       meta: {
         align: "right",
+        breakpoint: "xl",
+      },
+    }),
+    defineColumn("totalXp", {
+      id: "rawCon",
+      header: () => (
+        <>
+          <div>xp gained</div>
+          <div class="opacity-50">time typed</div>
+        </>
+      ),
+      cell: (info) => (
+        <>
+          <div>
+            {info.getValue() < 1000
+              ? info.getValue().toFixed(0)
+              : abbreviateNumber(info.getValue())}
+          </div>
+          <div class="text-sub">
+            {" "}
+            {secondsToString(Math.round(info.getValue()), true, true, ":")}
+          </div>
+        </>
+      ),
+      meta: {
+        align: "right",
+        maxBreakpoint: "xl",
       },
     }),
 
