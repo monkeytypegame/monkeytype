@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/solid-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/solid-query";
 import { intervalToDuration } from "date-fns";
 import Ape from "../ape";
 import {
@@ -56,10 +56,12 @@ export const getSpeedHistogramQueryOptions = () =>
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export const getVersionHistoryQueryOptions = () =>
-  queryOptions({
+  infiniteQueryOptions({
     queryKey: queryKeys.versionHistory(),
     queryFn: fetchVersionHistory,
     staleTime,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: 1,
   });
 
 async function fetchSpeedHistogram(): Promise<
@@ -160,10 +162,11 @@ async function fetchTypingStats(): Promise<{
   return result;
 }
 
-async function fetchVersionHistory(): Promise<
-  { name: string; publishedAt: string; bodyHTML: string }[]
-> {
-  const releases = await getReleasesFromGitHub();
+async function fetchVersionHistory(options: { pageParam: number }): Promise<{
+  nextCursor: number | undefined;
+  releases: { name: string; publishedAt: string; bodyHTML: string }[];
+}> {
+  const releases = await getReleasesFromGitHub({ page: options.pageParam });
   const data = [];
   for (const release of releases) {
     if (release.draft || release.prerelease) continue;
@@ -193,5 +196,8 @@ async function fetchVersionHistory(): Promise<
       bodyHTML: body,
     });
   }
-  return data;
+  return {
+    nextCursor: data.length > 0 ? options.pageParam + 1 : undefined,
+    releases: data,
+  };
 }

@@ -1,15 +1,16 @@
-import { useQuery } from "@tanstack/solid-query";
+import { useInfiniteQuery } from "@tanstack/solid-query";
 import { For, JSXElement } from "solid-js";
 
 import { getVersionHistoryQueryOptions } from "../../queries/public";
 import { isModalOpen } from "../../stores/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import AsyncContent from "../common/AsyncContent";
+import { Button } from "../common/Button";
 
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
 
-  const releases = useQuery(() => ({
+  const releases = useInfiniteQuery(() => ({
     ...getVersionHistoryQueryOptions(),
     enabled: isOpen(),
   }));
@@ -21,9 +22,30 @@ export function VersionHistoryModal(): JSXElement {
         errorMessage="Failed to load version history"
       >
         {(data) => (
-          <div class="releases">
-            <For each={data}>{(release) => <ReleaseItem {...release} />}</For>
-          </div>
+          <>
+            <div class="releases">
+              <For each={data.pages.flatMap((it) => it.releases)}>
+                {(release) => <ReleaseItem {...release} />}
+              </For>
+            </div>
+
+            <Button
+              onClick={async () => releases.fetchNextPage()}
+              disabled={!releases.hasNextPage || releases.isFetching}
+              fa={
+                releases.isFetchingNextPage
+                  ? { icon: "fa-circle-notch", spin: true, fixedWidth: true }
+                  : undefined
+              }
+              text={
+                releases.isFetchingNextPage
+                  ? ""
+                  : releases.hasNextPage
+                    ? "Load More"
+                    : "Nothing more to load"
+              }
+            />
+          </>
         )}
       </AsyncContent>
     </AnimatedModal>
