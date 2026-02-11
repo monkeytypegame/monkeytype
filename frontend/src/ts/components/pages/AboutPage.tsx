@@ -460,7 +460,11 @@ export function AboutPage(): JSXElement {
       </Show>
       <div></div>
       <section>
-        <H1 fa={{ icon: "fa-hand-holding-usd" }} text="top supporters" />
+        <H1
+          id="supporters_title"
+          fa={{ icon: "fa-hand-holding-usd" }}
+          text="top supporters"
+        />
         <AsyncContent
           query={supporters}
           errorMessage="Failed to get supporters"
@@ -479,7 +483,11 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H1 fa={{ icon: "fa-code-branch" }} text="contributors" />
+        <H1
+          id="contributors_title"
+          fa={{ icon: "fa-code-branch" }}
+          text="contributors"
+        />
         <AsyncContent
           query={contributors}
           errorMessage="Failed to get contributors"
