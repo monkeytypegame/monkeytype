@@ -7,7 +7,7 @@ import {
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
-import { Config, Difficulty, FunboxName } from "@monkeytype/schemas/configs";
+import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
@@ -78,7 +78,6 @@ export type Snapshot = Omit<
   filterPresets: ResultFilters[];
   isPremium: boolean;
   streakHourOffset?: number;
-  config: Config;
   tags: SnapshotUserTag[];
   presets: SnapshotPreset[];
   results?: SnapshotResult<Mode>[];
