@@ -7,8 +7,8 @@
   },
   "overrides": [
     {
-      "jsPlugins": ["eslint-plugin-solid"],
-      "files": ["src/**/*.tsx"],
+      "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
+      "files": ["src/**/*.tsx", "src/**/*.ts"],
       "rules": {
         "solid/components-return-once": "error",
         "solid/event-handlers": "error",
@@ -32,7 +32,14 @@
             "html": "void"
           }
         ],
-        "solid/style-prop": "error"
+        "solid/style-prop": "error",
+        "@tanstack/query/exhaustive-deps": "error",
+        "@tanstack/query/no-rest-destructuring": "error",
+        "@tanstack/query/stable-query-client": "error",
+        "@tanstack/query/no-unstable-deps": "error",
+        "@tanstack/query/infinite-query-property-order": "error",
+        "@tanstack/query/no-void-query-fn": "error",
+        "@tanstack/query/mutation-property-order": "error"
       }
     }
   ]

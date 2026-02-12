@@ -45,7 +45,7 @@ export function useLocalStorage<T>(
   const [value, setValueInternal] = createSignal<T>(storage.get());
 
   // Custom setter that syncs to localStorage
-  const setValue = ((newValue: T | ((prev: T) => T)) => {
+  const setValue = (newValue: T | ((prev: T) => T)): T => {
     const resolvedValue =
       typeof newValue === "function"
         ? (newValue as (prev: T) => T)(value())
@@ -55,8 +55,8 @@ export function useLocalStorage<T>(
     if (success) {
       setValueInternal(() => resolvedValue);
     }
-    return value();
-  }) as Setter<T>;
+    return resolvedValue;
+  };
 
   // Sync changes across tabs/windows
   if (syncAcrossTabs) {
@@ -83,5 +83,5 @@ export function useLocalStorage<T>(
     });
   }
 
-  return [value, setValue];
+  return [value, setValue as Setter<T>];
 }
