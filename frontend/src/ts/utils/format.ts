@@ -23,15 +23,16 @@ export type FallbackOptions = {
   fallback?: string;
 };
 
-export class Formatting {
-  public typingSpeedUnit: TypingSpeedUnit;
-  private alwaysShowDecimalPlaces;
+type FormatConfig = Pick<
+  ConfigType,
+  "typingSpeedUnit" | "alwaysShowDecimalPlaces"
+>;
 
-  constructor(
-    config: Pick<ConfigType, "typingSpeedUnit" | "alwaysShowDecimalPlaces">,
-  ) {
-    this.typingSpeedUnit = config.typingSpeedUnit;
-    this.alwaysShowDecimalPlaces = config.alwaysShowDecimalPlaces;
+export class Formatting {
+  private config: FormatConfig;
+
+  constructor(config: FormatConfig) {
+    this.config = config;
   }
 
   typingSpeed(
@@ -41,7 +42,7 @@ export class Formatting {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     if (wpm === undefined || wpm === null) return options.fallback ?? "";
 
-    const result = getTypingSpeedUnit(this.typingSpeedUnit).fromWpm(wpm);
+    const result = getTypingSpeedUnit(this.config.typingSpeedUnit).fromWpm(wpm);
 
     return this.number(result, options);
   }
@@ -74,6 +75,10 @@ export class Formatting {
     return this.number(value, options);
   }
 
+  get typingSpeedUnit(): TypingSpeedUnit {
+    return this.config.typingSpeedUnit;
+  }
+
   private number(
     value: number | null | undefined,
     formatOptions: FormatOptions,
@@ -83,7 +88,10 @@ export class Formatting {
     }
     const suffix = formatOptions.suffix ?? "";
 
-    if (formatOptions.showDecimalPlaces ?? this.alwaysShowDecimalPlaces) {
+    if (
+      formatOptions.showDecimalPlaces ??
+      this.config.alwaysShowDecimalPlaces
+    ) {
       return Numbers.roundTo2(value).toFixed(2) + suffix;
     }
     return (formatOptions.rounding ?? Math.round)(value).toString() + suffix;

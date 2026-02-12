@@ -14,6 +14,7 @@ import {
 
 import { LeaderboardType } from "../../../queries/leaderboards";
 import { secondsToString } from "../../../utils/date-and-time";
+import { ExecReturn, SimpleModal } from "../../../utils/simple-modal";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 
@@ -66,6 +67,34 @@ function Navigation(props: {
   onScrollToUser: Setter<boolean>;
   isLoading?: boolean;
 }): JSXElement {
+  const goToPageModal = new SimpleModal({
+    id: "lbGoToPage",
+    title: "Go to page",
+    inputs: [
+      {
+        type: "number",
+        placeholder: "Page number",
+      },
+    ],
+    buttonText: "Go",
+    execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
+      const page = parseInt(pageNumber, 10);
+      if (isNaN(page) || page < 1) {
+        return {
+          status: 0,
+          message: "Invalid page number",
+        };
+      }
+
+      props.onPageChange(page - 1);
+
+      return {
+        status: 1,
+        message: "Navigating to page " + page,
+        showNotification: false,
+      };
+    },
+  });
   return (
     <div class="grid grid-flow-col items-center gap-2 justify-self-end">
       <Show when={props.isLoading}>
@@ -98,10 +127,8 @@ function Navigation(props: {
         disabled={props.currentPage === 0}
       />
       <Button
-        //TODO
-        onClick={() => props.onPageChange(() => 7)}
+        onClick={() => goToPageModal.show(undefined, {})}
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
-        disabled={true}
       />
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
