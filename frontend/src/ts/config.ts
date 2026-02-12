@@ -24,6 +24,8 @@ import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
 import { removeConfig, saveConfig } from "./ape/config";
+import Ape from "./ape";
+import { SnapshotInitError } from "./db";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -347,6 +349,47 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     const msg = createErrorMessage(e, "Failed to import settings");
     console.error(msg);
     Notifications.add(msg, -1);
+  }
+}
+
+export async function updateFromServer(): Promise<void> {
+  const remoteConfig = await getRemoteConfig();
+
+  const areConfigsEqual =
+    JSON.stringify(config) === JSON.stringify(remoteConfig);
+
+  if (config === undefined || !areConfigsEqual) {
+    console.log(
+      "no local config or local and db configs are different - applying db",
+    );
+    await applyConfig(remoteConfig);
+    saveFullConfigToLocalStorage(true);
+  }
+}
+
+async function getRemoteConfig(): Promise<ConfigSchemas.Config> {
+  const response = await Ape.configs.get();
+
+  if (response.status !== 200) {
+    throw new SnapshotInitError(
+      `${response.body.message} (config)`,
+      response.status,
+    );
+  }
+
+  const configData = response.body.data;
+  if (configData !== null && "config" in configData) {
+    throw new Error(
+      "Config data is not in the correct format. Please refresh the page or contact support.",
+    );
+  }
+
+  if (configData === undefined || configData === null) {
+    return {
+      ...getDefaultConfig(),
+    };
+  } else {
+    return migrateConfig(configData);
   }
 }
 

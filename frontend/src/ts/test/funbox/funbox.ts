@@ -23,6 +23,7 @@ import {
 import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs } from "../../utils/dom";
+import * as ConfigEvent from "../../observables/config-event";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -252,3 +253,11 @@ async function applyFunboxCSS(): Promise<boolean> {
   }
   return true;
 }
+
+ConfigEvent.subscribe(async ({ key }) => {
+  if (key === "funbox" || key === "fullConfigChangeFinished") {
+    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+      fb.functions.applyGlobalCSS();
+    }
+  }
+});
