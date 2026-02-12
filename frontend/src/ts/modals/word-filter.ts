@@ -271,10 +271,10 @@ async function setup(): Promise<void> {
 
   modalEl.qsr("button.generateButton").on("click", async () => {
     const presetName = modalEl
-      .qsr<HTMLSelectElement>(".presetInput")
+      .qsr<HTMLSelectElement>("select.presetInput")
       .getValue() as string;
     const layoutName = modalEl
-      .qsr<HTMLSelectElement>(".layoutInput")
+      .qsr<HTMLSelectElement>("select.layoutInput")
       .getValue() as string;
 
     const presetToApply = presets[presetName];
