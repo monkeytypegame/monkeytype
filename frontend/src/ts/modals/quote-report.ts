@@ -52,7 +52,9 @@ export async function show(
       });
 
       modalEl.qsr(".quote").setText(state.quoteToReport?.text as string);
-      modalEl.qsr<HTMLSelectElement>(".reason").setValue("Grammatical error");
+      modalEl
+        .qsr<HTMLSelectElement>("select.reason")
+        .setValue("Grammatical error");
       modalEl.qsr<HTMLTextAreaElement>(".comment").setValue("");
 
       state.reasonSelect = new SlimSelect({
@@ -83,7 +85,7 @@ async function submitReport(): Promise<void> {
   const quoteId = state.quoteToReport?.id.toString();
   const quoteLanguage = removeLanguageSize(Config.language);
   const reason = qsr<HTMLSelectElement>(
-    "#quoteReportModal .reason",
+    "#quoteReportModal select.reason",
   ).getValue() as QuoteReportReason;
   const comment = qsr<HTMLTextAreaElement>(
     "#quoteReportModal .comment",

@@ -39,7 +39,7 @@ async function submitQuote(): Promise<void> {
     .qsr<HTMLInputElement>(".newQuoteSource")
     .getValue() as string;
   const language = modalEl
-    .qsr<HTMLSelectElement>(".newQuoteLanguage")
+    .qsr<HTMLSelectElement>("select.newQuoteLanguage")
     .getValue() as Language;
   const captcha = CaptchaController.getResponse("submitQuote");
 
