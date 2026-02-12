@@ -254,7 +254,9 @@ export function DataTable<TData, TValue = unknown>(
           <For each={table.getRowModel().rows}>
             {(row) => (
               <TableRow
-                data-state={row.getIsSelected() && "selected"}
+                {...{
+                  "data-state": row.getIsSelected() ? "selected" : undefined,
+                }}
                 class={
                   row.getIsSelected() && props.rowSelection
                     ? props.rowSelection.class

@@ -36,7 +36,7 @@ export function H2(props: {
     <h2
       id={props.id}
       class={cn(
-        "flex place-items-center gap-4 pb-4 text-2xl text-sub",
+        "flex place-items-center gap-4 pb-4 text-2xl text-sub md:text-3xl",
         props.class,
       )}
     >
