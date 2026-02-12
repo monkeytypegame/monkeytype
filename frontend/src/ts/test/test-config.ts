@@ -67,7 +67,6 @@ export async function instantUpdate(): Promise<void> {
     qs("#testConfig .customText")?.show();
   }
 
-  updateActiveExtraButtons("quoteLength", Config.quoteLength);
   updateActiveExtraButtons("numbers", Config.numbers);
   updateActiveExtraButtons("punctuation", Config.punctuation);
 }
