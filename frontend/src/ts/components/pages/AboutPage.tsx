@@ -16,7 +16,7 @@ import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
-import { H1, H2, H3 } from "../common/Headers";
+import { H2, H3 } from "../common/Headers";
 import { LoadingCircle } from "../common/LoadingCircle";
 import { User } from "../common/User";
 
@@ -118,7 +118,6 @@ export function AboutPage(): JSXElement {
           active={true}
         />
 
-        <H1 fa={{ icon: "fa-sad-tear" }} text="first header" />
         <H2
           fa={{ icon: "fa-tired", variant: "regular" }}
           text="second header"
@@ -237,7 +236,7 @@ export function AboutPage(): JSXElement {
         </div>
       </section>
       <section>
-        <H1 fa={{ icon: "fa-info-circle" }} text="about" />
+        <H2 fa={{ icon: "fa-info-circle" }} text="about" />
         <p>
           Monkeytype is a minimalistic and customizable typing test. It features
           many test modes, an account system to save your typing speed history,
@@ -345,7 +344,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H1 fa={{ icon: "fa-life-ring" }} text="support" />
+        <H2 fa={{ icon: "fa-life-ring" }} text="support" />
         <p>
           Thanks to everyone who has supported this project. It would not be
           possible without you and your continued support.
@@ -363,7 +362,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H1 fa={{ icon: "fa-envelope" }} text="contact" />
+        <H2 fa={{ icon: "fa-envelope" }} text="contact" />
         <p>
           If you encounter a bug, have a feature request or just want to say hi
           - here are the different ways you can contact me directly.
@@ -397,7 +396,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H1 fa={{ icon: "fa-users" }} text="credits" />
+        <H2 fa={{ icon: "fa-users" }} text="credits" />
         <p>
           <Button
             type="text"
@@ -460,7 +459,7 @@ export function AboutPage(): JSXElement {
       </Show>
       <div></div>
       <section>
-        <H1
+        <H2
           id="supporters_title"
           fa={{ icon: "fa-hand-holding-usd" }}
           text="top supporters"
@@ -483,7 +482,7 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H1
+        <H2
           id="contributors_title"
           fa={{ icon: "fa-code-branch" }}
           text="contributors"
