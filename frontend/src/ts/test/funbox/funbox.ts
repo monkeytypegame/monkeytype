@@ -13,6 +13,7 @@ import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { checkCompatibility } from "@monkeytype/funbox";
 import {
+  getAllFunboxes,
   getActiveFunboxes,
   getActiveFunboxNames,
   get,
@@ -256,6 +257,11 @@ async function applyFunboxCSS(): Promise<boolean> {
 
 ConfigEvent.subscribe(async ({ key }) => {
   if (key === "funbox" || key === "fullConfigChangeFinished") {
+    const active = getActiveFunboxNames();
+    getAllFunboxes()
+      .filter((it) => !active.includes(it.name))
+      .forEach((it) => it.functions?.clearGlobal?.());
+
     for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
       fb.functions.applyGlobalCSS();
     }
