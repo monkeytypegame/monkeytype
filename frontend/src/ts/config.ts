@@ -23,7 +23,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
-import { removeConfig, saveConfig } from "./ape/config";
+import { deleteConfig, saveConfig } from "./ape/config";
 import Ape from "./ape";
 import { SnapshotInitError } from "./db";
 
@@ -299,7 +299,7 @@ export async function applyConfig(
 
 export async function resetConfig(): Promise<void> {
   await applyConfig(getDefaultConfig());
-  await removeConfig();
+  await deleteConfig();
   saveFullConfigToLocalStorage(true);
 }
 

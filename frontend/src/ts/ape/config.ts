@@ -11,7 +11,7 @@ export async function saveConfig(config: Partial<Config>): Promise<void> {
     }
   }
 }
-export async function removeConfig(): Promise<void> {
+export async function deleteConfig(): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.delete();
     if (response.status !== 200) {
