@@ -13,6 +13,7 @@ import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { checkCompatibility } from "@monkeytype/funbox";
 import {
+  getAllFunboxes,
   getActiveFunboxes,
   getActiveFunboxNames,
   get,
@@ -23,6 +24,7 @@ import {
 import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs } from "../../utils/dom";
+import * as ConfigEvent from "../../observables/config-event";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -252,3 +254,16 @@ async function applyFunboxCSS(): Promise<boolean> {
   }
   return true;
 }
+
+ConfigEvent.subscribe(async ({ key }) => {
+  if (key === "funbox") {
+    const active = getActiveFunboxNames();
+    getAllFunboxes()
+      .filter((it) => !active.includes(it.name))
+      .forEach((it) => it.functions?.clearGlobal?.());
+
+    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+      fb.functions.applyGlobalCSS();
+    }
+  }
+});
