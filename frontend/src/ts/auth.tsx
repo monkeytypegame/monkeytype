@@ -1,3 +1,4 @@
+import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import {
   GoogleAuthProvider,
@@ -10,6 +11,7 @@ import {
 
 import Ape from "./ape";
 import Config, { applyConfig, saveFullConfigToLocalStorage } from "./config";
+import { getDefaultConfig } from "./constants/default-config";
 import { navigate } from "./controllers/route-controller";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
@@ -32,6 +34,7 @@ import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import * as ConnectionState from "./states/connection";
 import { addBanner } from "./stores/banners";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
+import { migrateConfig } from "./utils/config";
 import { qs, qsa } from "./utils/dom";
 import * as Misc from "./utils/misc";
 
@@ -94,14 +97,16 @@ async function getDataAndInit(): Promise<boolean> {
       });
     }
 
+    const remoteConfig = await getRemoteConfig();
+
     const areConfigsEqual =
-      JSON.stringify(Config) === JSON.stringify(snapshot.config);
+      JSON.stringify(Config) === JSON.stringify(remoteConfig);
 
     if (Config === undefined || !areConfigsEqual) {
       console.log(
         "no local config or local and db configs are different - applying db",
       );
-      await applyConfig(snapshot.config);
+      await applyConfig(remoteConfig);
       saveFullConfigToLocalStorage(true);
 
       //funboxes might be different and they wont activate on the account page
@@ -415,6 +420,32 @@ async function signUp(): Promise<void> {
     LoginPage.updateSignupButton();
     signOut();
     return;
+  }
+}
+
+async function getRemoteConfig(): Promise<ConfigType> {
+  const response = await Ape.configs.get();
+
+  if (response.status !== 200) {
+    throw new DB.SnapshotInitError(
+      `${response.body.message} (config)`,
+      response.status,
+    );
+  }
+
+  const configData = response.body.data;
+  if (configData !== null && "config" in configData) {
+    throw new Error(
+      "Config data is not in the correct format. Please refresh the page or contact support.",
+    );
+  }
+
+  if (configData === undefined || configData === null) {
+    return {
+      ...getDefaultConfig(),
+    };
+  } else {
+    return migrateConfig(configData);
   }
 }
 

@@ -1,4 +1,3 @@
-import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
@@ -24,6 +23,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { removeConfig, saveConfig } from "./ape/config";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -47,7 +47,7 @@ let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
-    void DB.saveConfig(configToSend).then(() => {
+    void saveConfig(configToSend).then(() => {
       AccountButton.loading(false);
     });
   }
@@ -73,7 +73,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   configLS.set(config);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    void DB.saveConfig(config);
+    void saveConfig(config);
     AccountButton.loading(false);
   }
 }
@@ -297,7 +297,7 @@ export async function applyConfig(
 
 export async function resetConfig(): Promise<void> {
   await applyConfig(getDefaultConfig());
-  await DB.resetConfig();
+  await removeConfig();
   saveFullConfigToLocalStorage(true);
 }
 
