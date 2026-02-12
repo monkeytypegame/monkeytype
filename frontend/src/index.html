@@ -38,8 +38,7 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <!-- TODO revert full-width -->
-        <div class="page pageAbout hidden" id="pageAbout">
+        <div class="page pageAbout hidden full-width" id="pageAbout">
           <mount data-component="aboutpage"></mount>
         </div>
         <load src="html/pages/settings.html" />
@@ -50,7 +49,9 @@
         <load src="html/pages/404.html" />
         <load src="html/pages/account-settings.html" />
         <load src="html/pages/friends.html" />
-        <load src="html/pages/leaderboards.html" />
+        <div class="page pageLeaderboards hidden" id="pageLeaderboards">
+          <mount data-component="leaderboardpage"></mount>
+        </div>
       </main>
       <mount data-component="footer"></mount>
       <div

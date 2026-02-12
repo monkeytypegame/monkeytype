@@ -1,25 +1,23 @@
-import * as AdController from "../controllers/ad-controller";
-import * as Page404 from "../pages/404";
+import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import { getActivePage, setActivePage } from "../signals/core";
+import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
-import * as PageAccountSettings from "../pages/account-settings";
-import * as Friends from "../pages/friends";
-import * as PageLeaderboards from "../pages/leaderboards";
-import * as PageLoading from "../pages/loading";
+import * as PageTest from "../pages/test";
 import * as PageLogin from "../pages/login";
-import Page, { LoadingOptions, PageName } from "../pages/page";
+import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
-import * as Settings from "../pages/settings";
-import * as PageTest from "../pages/test";
-import { getActivePage, setActivePage } from "../signals/core";
+import * as Friends from "../pages/friends";
+import * as Page404 from "../pages/404";
+import * as PageLeaderboards from "../components/pages/leaderboard/LeaderboardPage";
+import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
+import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
+import Page, { PageName, LoadingOptions } from "../pages/page";
 import { onDOMReady, qsa, qsr } from "../utils/dom";
-import * as Misc from "../utils/misc";
 import * as Skeleton from "../utils/skeleton";
-import * as Strings from "../utils/strings";
-
-import { skeletonPage } from "../components/pages/leaderboard/LeaderboardPage";
 
 type ChangeOptions = {
   force?: boolean;
@@ -32,7 +30,7 @@ const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
   settings: Settings.page,
-  about: skeletonPage,
+  about: solidPage("about"),
   account: Account.page,
   login: PageLogin.page,
   profile: PageProfile.page,
@@ -40,7 +38,7 @@ const pages = {
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
-  leaderboards: PageLeaderboards.page,
+  leaderboards: PageLeaderboards.skeletonPage,
 };
 
 function updateOpenGraphUrl(): void {
@@ -297,12 +295,7 @@ export async function change(
   return true;
 }
 
-function _solidPage(
-  id: PageName,
-  props?: {
-    path?: string;
-  },
-): Page<undefined> {
+function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));

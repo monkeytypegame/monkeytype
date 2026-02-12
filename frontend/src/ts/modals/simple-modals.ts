@@ -41,7 +41,6 @@ import {
   UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
-import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
@@ -1234,35 +1233,6 @@ list.devGenerateData = new SimpleModal({
       hideOptions: {
         clearModalChain: true,
       },
-    };
-  },
-});
-
-list.lbGoToPage = new SimpleModal({
-  id: "lbGoToPage",
-  title: "Go to page",
-  inputs: [
-    {
-      type: "number",
-      placeholder: "Page number",
-    },
-  ],
-  buttonText: "Go",
-  execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
-    const page = parseInt(pageNumber, 10);
-    if (isNaN(page) || page < 1) {
-      return {
-        status: 0,
-        message: "Invalid page number",
-      };
-    }
-
-    goToPage(page - 1);
-
-    return {
-      status: 1,
-      message: "Navigating to page " + page,
-      showNotification: false,
     };
   },
 });

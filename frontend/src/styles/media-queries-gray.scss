@@ -2,18 +2,6 @@
 @use "./media.scss" as *;
 
 @include media-query(gray) {
-  .pageLeaderboards .content .tableAndUser {
-    .titleAndButtons {
-      grid-template-columns: 1fr;
-      gap: 0.5em;
-      .title {
-        text-align: right;
-      }
-    }
-    .rawAndConsistency {
-      display: none;
-    }
-  }
   header {
     gap: 0.25rem;
     nav .textButton {

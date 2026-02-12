@@ -14,7 +14,7 @@ import { z } from "zod";
 import { configurationPromise as serverConfigurationPromise } from "../../../ape/server-configuration";
 import { getSnapshot, updateLbMemory } from "../../../db";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { PageWithUrlParams } from "../../../pages/page";
+import { PageName, PageWithUrlParams } from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
@@ -24,7 +24,7 @@ import {
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
-import { qsr } from "../../../utils/dom";
+import { onDOMReady, qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
 
@@ -34,8 +34,7 @@ import { TableNavigation } from "./TableNavigation";
 import { Title } from "./Title";
 import { UserRank } from "./UserRank";
 
-//TODO change
-export const pageName = "about";
+const pageName: PageName = "leaderboards";
 
 export const LeaderboardUrlParamsSchema = z
   .object({
@@ -82,7 +81,7 @@ export function LeaderboardPage(): JSXElement {
   });
 
   createEffect(() => {
-    //update url after the data is loaded
+    //update lb memory after the rank is loaded
     if (rankQuery.isSuccess) syncLbMemory();
   });
 
@@ -343,9 +342,9 @@ function prefetch(): void {
 }
 
 export const skeletonPage = new PageWithUrlParams({
-  id: "about",
-  element: qsr(".page.pageAbout"),
-  path: "/about",
+  id: "leaderboards",
+  element: qsr(".page.pageLeaderboards"),
+  path: "/leaderboards",
   urlParamsSchema: LeaderboardUrlParamsSchema,
   loadingOptions: {
     style: "spinner",
@@ -364,8 +363,6 @@ export const skeletonPage = new PageWithUrlParams({
   },
 });
 
-/* TODO enable when moving to the correct page
 onDOMReady(async () => {
   Skeleton.save("pageLeaderboards");
 });
-*/
