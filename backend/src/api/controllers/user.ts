@@ -270,7 +270,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
 
   if (error) {
     if (error instanceof MonkeyError && error.status === 404) {
-      //userinfo was already deleted. We ignore this and still try to remove the  other data
+      //userinfo was already deleted. We ignore and still try to remove the other data
     } else {
       throw error;
     }

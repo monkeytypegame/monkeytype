@@ -31,7 +31,7 @@ const commands: Command[] = [
     id: "setResultSaving",
     display: "Result saving...",
     icon: "fa-save",
-    alias: "results",
+    alias: "results practice",
     subgroup,
   },
 ];

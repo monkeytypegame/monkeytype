@@ -115,6 +115,72 @@
               color: var(--error-color);
             }
           }
+          &.resultSaving {
+            .buttons {
+              justify-items: center;
+            }
+            .toggleSwitch {
+              display: inline-flex;
+              align-items: center;
+              gap: 0.75rem;
+              cursor: pointer;
+              user-select: none;
+            }
+
+            .toggleSwitch input {
+              position: absolute;
+              opacity: 0;
+              width: 0;
+              height: 0;
+            }
+
+            .toggleSwitch .track {
+              width: 3rem;
+              height: 1.6rem;
+              border-radius: 999px;
+              background: var(--sub-alt-color);
+              border: 1px solid var(--sub-color);
+              position: relative;
+              transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+            }
+
+            .toggleSwitch .track::after {
+              content: "";
+              position: absolute;
+              top: 2px;
+              left: 2px;
+              width: 1.2rem;
+              height: 1.2rem;
+              border-radius: 999px;
+              background: var(--text-color);
+              transition:
+                transform 0.2s ease,
+                background 0.2s ease;
+            }
+
+            .toggleSwitch input:checked + .track {
+              background: var(--main-color);
+              border-color: var(--main-color);
+            }
+
+            .toggleSwitch input:checked + .track::after {
+              transform: translateX(1.4rem);
+              background: var(--bg-color);
+            }
+
+            .toggleSwitch .toggleLabel {
+              color: var(--sub-color);
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              font-size: 0.75rem;
+            }
+
+            .toggleSwitch input:checked ~ .toggleLabel {
+              color: var(--main-color);
+            }
+          }
         }
         &[data-tab="apeKeys"],
         &[data-tab="blockedUsers"] {
