@@ -16,11 +16,13 @@ export function Fa(props: FaProps): JSXElement {
     <i
       class={cn(
         props.icon,
-        variant() === "solid" && "fas",
-        variant() === "regular" && "far",
-        variant() === "brand" && "fab",
-        props.fixedWidth && "fa-fw",
-        props.spin && "fa-spin",
+        {
+          fas: variant() === "solid",
+          far: variant() === "regular",
+          fab: variant() === "brand",
+          "fa-fw": props.fixedWidth,
+          "fa-spin": props.spin,
+        },
         props.class,
       )}
       style={{
