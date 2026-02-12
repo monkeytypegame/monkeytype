@@ -256,7 +256,7 @@ async function applyFunboxCSS(): Promise<boolean> {
 }
 
 ConfigEvent.subscribe(async ({ key }) => {
-  if (key === "funbox" || key === "fullConfigChangeFinished") {
+  if (key === "funbox") {
     const active = getActiveFunboxNames();
     getAllFunboxes()
       .filter((it) => !active.includes(it.name))
