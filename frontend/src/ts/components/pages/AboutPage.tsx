@@ -17,8 +17,6 @@ import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
-import { LoadingCircle } from "../common/LoadingCircle";
-import { User } from "../common/User";
 
 qsr("nav .view-about").on("mouseenter", () => {
   prefetch();
@@ -49,84 +47,6 @@ export function AboutPage(): JSXElement {
 
   return (
     <div class="content-grid grid gap-8">
-      <section>
-        {/*TODO remove after testing */}
-        <ul>
-          <li>
-            <User
-              user={{ name: "Bob", uid: "uid", badgeId: 6, isPremium: true }}
-              isFriend={true}
-            />
-          </li>
-          <li>
-            <User
-              user={{
-                name: "Miodec",
-                uid: "uid",
-                discordId: "102819690287489024",
-                discordAvatar: "a_af6c0b8ad26fdd6bcb86ed7bb40ee6e5",
-                badgeId: 1,
-              }}
-            />
-          </li>
-          <li>
-            <User
-              user={{
-                name: "Kevin",
-                uid: "uid",
-                discordId: "invalid",
-                discordAvatar: "invalid",
-
-                banned: true,
-                lbOptOut: true,
-              }}
-            />
-          </li>
-          <li>
-            <User
-              user={{
-                name: "Stuart",
-                uid: "uid",
-
-                banned: true,
-                lbOptOut: true,
-              }}
-              iconsOnly={true}
-            />
-          </li>
-        </ul>
-        <Button
-          onClick={() => {
-            //
-          }}
-          disabled={true}
-          text="disabled button"
-        />
-        <Button
-          onClick={() => {
-            //
-          }}
-          ariaLabel="the answer to everything"
-          text="42"
-        />
-        <Button
-          onClick={() => {
-            //
-          }}
-          ariaLabel={{ position: "down", text: "active button" }}
-          text="active"
-          active={true}
-        />
-
-        <H2
-          fa={{ icon: "fa-tired", variant: "regular" }}
-          text="second header"
-        />
-        <H3 fa={{ icon: "fa-tshirt" }} text="third header" />
-
-        <LoadingCircle />
-        <LoadingCircle class="text-2xl text-sub" />
-      </section>
       <section class="text-center text-sub">
         Created with love by Miodec.
         <br />
