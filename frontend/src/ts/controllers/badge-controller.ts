@@ -45,7 +45,7 @@ export const badges: Record<number, UserBadge> = {
     customStyle: {
       animation: "rgb-bg 10s linear infinite",
       background:
-        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
+        "linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%)",
     },
   },
   4: {
