@@ -1,14 +1,13 @@
 import { format } from "date-fns/format";
-import { JSXElement, createResource, For } from "solid-js";
+import { createResource, JSXElement } from "solid-js";
 
 import { isModalOpen } from "../../stores/modals";
 import { getReleasesFromGitHub } from "../../utils/json-data";
 import { AnimatedModal } from "../common/AnimatedModal";
-import AsyncContent from "../common/AsyncContent";
 
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
-  const [releases] = createResource(isOpen, async (open) => {
+  const [_releases] = createResource(isOpen, async (open) => {
     if (!open) return null;
     const releases = await getReleasesFromGitHub();
     const data = [];
@@ -45,16 +44,7 @@ export function VersionHistoryModal(): JSXElement {
 
   return (
     <AnimatedModal id="VersionHistory" modalClass="max-w-6xl">
-      <AsyncContent
-        resource={releases}
-        errorMessage="Failed to load version history"
-      >
-        {(data) => (
-          <div class="releases">
-            <For each={data}>{(release) => <ReleaseItem {...release} />}</For>
-          </div>
-        )}
-      </AsyncContent>
+      <ReleaseItem name="test" publishedAt="0" bodyHTML="<p>test</p>" />
     </AnimatedModal>
   );
 }
@@ -67,12 +57,12 @@ function ReleaseItem(props: {
   return (
     <div class="grid gap-4">
       <div class="flex place-items-center justify-between">
-        <div class="text-main text-4xl">{props.name}</div>
+        <div class="text-4xl text-main">{props.name}</div>
         <div class="text-sub">{props.publishedAt}</div>
       </div>
       {/* oxlint-disable-next-line solid/no-innerhtml */}
       <div innerHTML={props.bodyHTML}></div>
-      <div class="bg-sub-alt mt-4 mb-16 h-1 w-full rounded"></div>
+      <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
     </div>
   );
 }

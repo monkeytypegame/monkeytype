@@ -96,7 +96,7 @@ function Navigation(props: {
     },
   });
   return (
-    <div class="grid grid-flow-col items-center gap-2 justify-self-end">
+    <div class="grid grid-flow-col items-center gap-2 justify-self-end [&>button]:px-4">
       <Show when={props.isLoading}>
         <LoadingCircle />
       </Show>

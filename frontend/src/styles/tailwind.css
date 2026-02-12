@@ -56,4 +56,9 @@
   .has-button\:p-0:has(button) {
     padding: 0;
   }
+
+  .p-relaxed {
+    padding: 1em 1.5rem;
+    color: hotpink !important;
+  }
 }

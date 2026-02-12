@@ -119,90 +119,86 @@ export function LeaderboardPage(): JSXElement {
   };
 
   return (
-    <div class="content-grid grid">
-      <div class="flex flex-col gap-8 lg:flex-row">
-        <div class="w-full lg:w-60">
-          <AsyncContent query={serverConfigurationQuery}>
-            {(config) => (
-              <Sidebar
-                selection={selection}
-                onSelect={onSelectionChange}
-                validModeRules={config.dailyLeaderboards.validModeRules ?? []}
+    <div class="content-grid flex flex-col gap-8 lg:flex-row">
+      <div class="w-full lg:w-60 2xl:w-75">
+        <AsyncContent query={serverConfigurationQuery}>
+          {(config) => (
+            <Sidebar
+              selection={selection}
+              onSelect={onSelectionChange}
+              validModeRules={config.dailyLeaderboards.validModeRules ?? []}
+            />
+          )}
+        </AsyncContent>
+      </div>
+
+      <div class="flex w-full flex-1 flex-col gap-6">
+        <Title
+          selection={selection()}
+          onPreviousSelect={() =>
+            setSelection((old) => ({
+              ...old,
+              previous: !old.previous,
+            }))
+          }
+        />
+
+        <Show when={isLoggedIn()}>
+          <AsyncContent
+            queries={{
+              data: dataQuery,
+              rank: rankQuery,
+              config: serverConfigurationQuery,
+            }}
+            alwaysShowContent
+          >
+            {({ data, rank, config }) => (
+              <UserRank
+                type={selection().type === "weekly" ? "xp" : "wpm"}
+                data={rank}
+                friendsOnly={selection().friendsOnly}
+                total={data?.count}
+                minWpm={
+                  data && "minWpm" in data ? (data.minWpm as number) : undefined
+                }
+                memoryDifference={getLbMemoryDifference(
+                  selection(),
+                  rank?.rank,
+                )}
+                isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                isBanned={getSnapshot()?.banned ?? false}
+                minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
+                userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
               />
             )}
           </AsyncContent>
-        </div>
+        </Show>
 
-        <div class="flex w-full flex-1 flex-col gap-4">
-          <Title
-            selection={selection()}
-            onPreviousSelect={() =>
-              setSelection((old) => ({
-                ...old,
-                previous: !old.previous,
-              }))
-            }
-          />
-
-          <Show when={isLoggedIn()}>
-            <AsyncContent
-              queries={{
-                data: dataQuery,
-                rank: rankQuery,
-                config: serverConfigurationQuery,
-              }}
-              alwaysShowContent
+        <AsyncContent query={dataQuery} alwaysShowContent>
+          {(data) => (
+            <TableNavigation
+              type={selection().type}
+              lastPage={Math.ceil((data?.count ?? 0) / 50)}
+              currentPage={page()}
+              onPageChange={setPage}
+              userPage={userPage()}
+              onScrollToUser={setScrollToUser}
+              isLoading={
+                dataQuery.isLoading ||
+                dataQuery.isFetching ||
+                dataQuery.isRefetching
+              }
             >
-              {({ data, rank, config }) => (
-                <UserRank
-                  type={selection().type === "weekly" ? "xp" : "wpm"}
-                  data={rank}
-                  friendsOnly={selection().friendsOnly}
-                  total={data?.count}
-                  minWpm={
-                    data && "minWpm" in data
-                      ? (data.minWpm as number)
-                      : undefined
-                  }
-                  memoryDifference={getLbMemoryDifference(
-                    selection(),
-                    rank?.rank,
-                  )}
-                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                  isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
-                />
-              )}
-            </AsyncContent>
-          </Show>
-
-          <AsyncContent query={dataQuery} alwaysShowContent>
-            {(data) => (
-              <TableNavigation
-                type={selection().type}
-                lastPage={Math.ceil((data?.count ?? 0) / 50)}
-                currentPage={page()}
-                onPageChange={setPage}
-                userPage={userPage()}
-                onScrollToUser={setScrollToUser}
-                isLoading={
-                  dataQuery.isLoading ||
-                  dataQuery.isFetching ||
-                  dataQuery.isRefetching
-                }
-              >
-                <Table
-                  type={selection().type === "weekly" ? "xp" : "wpm"}
-                  entries={data?.entries ?? []}
-                  friendsOnly={selection().friendsOnly}
-                  scrollToUser={scrollToUser}
-                  onScrolledToUser={() => setScrollToUser(false)}
-                />
-              </TableNavigation>
-            )}
-          </AsyncContent>
-        </div>
+              <Table
+                type={selection().type === "weekly" ? "xp" : "wpm"}
+                entries={data?.entries ?? []}
+                friendsOnly={selection().friendsOnly}
+                scrollToUser={scrollToUser}
+                onScrolledToUser={() => setScrollToUser(false)}
+              />
+            </TableNavigation>
+          )}
+        </AsyncContent>
       </div>
     </div>
   );
