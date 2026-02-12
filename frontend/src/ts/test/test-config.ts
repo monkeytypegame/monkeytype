@@ -86,7 +86,10 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     m2 = Config.quoteLength;
   }
 
-  if (m2 !== undefined) updateActiveExtraButtons(Config.mode, m2);
+  if (m2 !== undefined) {
+    const key = Config.mode === "quote" ? "quoteLength" : Config.mode;
+    updateActiveExtraButtons(key, m2);
+  }
 
   const submenu = {
     time: "time",
