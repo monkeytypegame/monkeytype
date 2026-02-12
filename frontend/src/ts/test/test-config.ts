@@ -75,19 +75,12 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
   updateActiveModeButtons(current);
 
-  let m2;
-
-  if (Config.mode === "time") {
-    m2 = Config.time;
-  } else if (Config.mode === "words") {
-    m2 = Config.words;
-  } else if (Config.mode === "quote") {
-    m2 = Config.quoteLength;
-  }
-
-  if (m2 !== undefined) {
-    const key = Config.mode === "quote" ? "quoteLength" : Config.mode;
-    updateActiveExtraButtons(key, m2);
+  if (current === "time") {
+    updateActiveExtraButtons("time", Config.time);
+  } else if (current === "words") {
+    updateActiveExtraButtons("words", Config.words);
+  } else if (current === "quote") {
+    updateActiveExtraButtons("quoteLength", Config.quoteLength);
   }
 
   const submenu = {
