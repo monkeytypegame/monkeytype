@@ -78,7 +78,7 @@ function UserBadge(props: { id?: number }): JSXElement {
   const badge = (): UserBadgeType | undefined =>
     props.id !== undefined ? badges[props.id] : undefined;
   return (
-    <Show when={badge !== undefined}>
+    <Show when={badge() !== undefined}>
       <div
         class="rounded-md p-[0.5em] text-[0.75em]"
         aria-label={badge()?.description}

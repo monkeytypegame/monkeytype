@@ -74,8 +74,16 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
         <a
           classList={getClassList()}
           href={props.href}
-          target={props.href?.startsWith("#") ? undefined : "_blank"}
-          rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
+          target={
+            props["router-link"] || props.href?.startsWith("#")
+              ? undefined
+              : "_blank"
+          }
+          rel={
+            props["router-link"] || props.href?.startsWith("#")
+              ? undefined
+              : "noreferrer noopener"
+          }
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
         >

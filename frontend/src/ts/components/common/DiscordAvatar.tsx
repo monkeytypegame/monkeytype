@@ -6,7 +6,7 @@ import { FaSolidIcon } from "../../types/font-awesome";
 import { Fa } from "./Fa";
 
 //cache successful and missing avatars
-const [avatar, setAvatar] = createStore<Record<string, boolean>>();
+const [avatar, setAvatar] = createStore<Record<string, boolean>>({});
 
 export function DiscordAvatar(props: {
   discordId: string | undefined;

@@ -110,7 +110,8 @@ export function DataTable<TData, TValue = unknown>(
     if (!props.rowSelection || props.rowSelection.activeRow === undefined) {
       setRowSelection({});
     } else {
-      setRowSelection({ [`${props.rowSelection.activeRow()}`]: true });
+      const activeId = props.rowSelection.activeRow();
+      setRowSelection(activeId !== null ? { [activeId]: true } : {});
     }
   });
 
@@ -173,15 +174,15 @@ export function DataTable<TData, TValue = unknown>(
                               onClick={(e) => {
                                 header.column.getToggleSortingHandler()?.(e);
                               }}
-                              class="m-0 box-border flex h-full w-full cursor-pointer items-start justify-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
+                              class="m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
                               classList={{
-                                "text-left":
+                                "justify-start text-left":
                                   (header.column.columnDef.meta?.align ??
                                     "left") === "left",
-                                "text-center":
+                                "justify-center text-center":
                                   header.column.columnDef.meta?.align ===
                                   "center",
-                                "text-right":
+                                "justify-end  text-right":
                                   header.column.columnDef.meta?.align ===
                                   "right",
                               }}
