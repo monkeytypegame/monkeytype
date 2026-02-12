@@ -251,6 +251,8 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     duration: animTime / 2,
     ease: easing.out,
   });
+
+  currentEl?.setStyle({ width: "" });
 }
 
 function updateActiveModeButtons(mode: Mode): void {
