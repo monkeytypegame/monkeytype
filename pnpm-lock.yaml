@@ -282,6 +282,15 @@ importers:
       '@solidjs/meta':
         specifier: 0.29.4
         version: 0.29.4(solid-js@1.9.10)
+      '@tanstack/db':
+        specifier: 0.5.25
+        version: 0.5.25(typescript@5.9.3)
+      '@tanstack/query-db-collection':
+        specifier: 1.0.22
+        version: 1.0.22(@tanstack/query-core@5.90.20)(typescript@5.9.3)
+      '@tanstack/solid-db':
+        specifier: 0.2.5
+        version: 0.2.5(solid-js@1.9.10)(typescript@5.9.3)
       '@tanstack/solid-query':
         specifier: 5.90.23
         version: 5.90.23(solid-js@1.9.10)
@@ -3277,6 +3286,21 @@ packages:
     engines: {node: '>=8.10'}
     hasBin: true
 
+  '@solid-primitives/map@0.7.2':
+    resolution: {integrity: sha512-sXK/rS68B4oq3XXNyLrzVhLtT1pnimmMUahd2FqhtYUuyQsCfnW058ptO1s+lWc2k8F/3zQSNVkZ2ifJjlcNbQ==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/trigger@1.2.2':
+    resolution: {integrity: sha512-IWoptVc0SWYgmpBPpCMehS5b07+tpFcvw15tOQ3QbXedSYn6KP8zCjPkHNzMxcOvOicTneleeZDP7lqmz+PQ6g==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/utils@6.3.2':
+    resolution: {integrity: sha512-hZ/M/qr25QOCcwDPOHtGjxTD8w2mNyVAYvcfgwzBHq2RwNqHNdDNsMZYap20+ruRwW4A3Cdkczyoz0TSxLCAPQ==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
   '@solidjs/meta@0.29.4':
     resolution: {integrity: sha512-zdIWBGpR9zGx1p1bzIPqF5Gs+Ks/BH8R6fWhmUa/dcK1L2rUC8BAcZJzNRYBQv74kScf1TSOs0EY//Vd/I0V8g==}
     peerDependencies:
@@ -3292,8 +3316,8 @@ packages:
       '@solidjs/router':
         optional: true
 
-  '@standard-schema/spec@1.0.0':
-    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
@@ -3388,6 +3412,16 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@tanstack/db-ivm@0.1.17':
+    resolution: {integrity: sha512-DK7vm56CDxNuRAdsbiPs+gITJ+16tUtYgZg3BRTLYKGIDsy8sdIO7sQFq5zl7Y+aIKAPmMAbVp9UjJ75FTtwgQ==}
+    peerDependencies:
+      typescript: '>=4.7'
+
+  '@tanstack/db@0.5.25':
+    resolution: {integrity: sha512-VqVchs6Mm4rw2GyiOkaoD+PJw6lCJT8EI/TzPu8KWZy3QxyOlilpMvEuDTCl0LZdp1iLYlQT1NdgDg0gimV3kQ==}
+    peerDependencies:
+      typescript: '>=4.7'
+
   '@tanstack/eslint-plugin-query@5.91.4':
     resolution: {integrity: sha512-8a+GAeR7oxJ5laNyYBQ6miPK09Hi18o5Oie/jx8zioXODv/AUFLZQecKabPdpQSLmuDXEBPKFh+W5DKbWlahjQ==}
     peerDependencies:
@@ -3397,11 +3431,26 @@ packages:
       typescript:
         optional: true
 
+  '@tanstack/pacer-lite@0.2.1':
+    resolution: {integrity: sha512-3PouiFjR4B6x1c969/Pl4ZIJleof1M0n6fNX8NRiC9Sqv1g06CVDlEaXUR4212ycGFyfq4q+t8Gi37Xy+z34iQ==}
+    engines: {node: '>=18'}
+
   '@tanstack/query-core@5.90.20':
     resolution: {integrity: sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==}
 
+  '@tanstack/query-db-collection@1.0.22':
+    resolution: {integrity: sha512-feYfOIA/xgf3S/aWIhq7Oov/RE66M0wMOZUk1+oAHZ3W7x0br7JzRKFYwdTtIMtopFt8tDq3Pt2gtZVZu+S7rA==}
+    peerDependencies:
+      '@tanstack/query-core': ^5.0.0
+      typescript: '>=4.7'
+
   '@tanstack/query-devtools@5.93.0':
     resolution: {integrity: sha512-+kpsx1NQnOFTZsw6HAFCW3HkKg0+2cepGtAWXjiiSOJJ1CtQpt72EE2nyZb+AjAbLRPoeRmPJ8MtQd8r8gsPdg==}
+
+  '@tanstack/solid-db@0.2.5':
+    resolution: {integrity: sha512-tunB6Nbd2UHnPGXwprc0S4OjsP1JvwG0blmLnKgoG3bKdGyJQ8yVknHc7WWwIUdeAz4tH4x/p2RDVloqEKrnCA==}
+    peerDependencies:
+      solid-js: '>=1.9.0'
 
   '@tanstack/solid-query-devtools@5.91.3':
     resolution: {integrity: sha512-xzVwIIxQPbiublZP3RkGp8KVjt8zenv5y1YTSRarP32mLUHJgfdofvjsDvMEhhL/lomz90qa0jCIGsSxoSTyYQ==}
@@ -5722,6 +5771,10 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
+  fractional-indexing@3.2.0:
+    resolution: {integrity: sha512-PcOxmqwYCW7O2ovKRU8OoQQj2yqTfEB/yeTYk4gPid6dN5ODRfU1hXd9tTVZzax/0NkO7AxpHykvZnT1aYp/BQ==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+
   fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
@@ -5876,25 +5929,28 @@ packages:
 
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.0.3:
     resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@9.3.5:
     resolution: {integrity: sha512-e1LleDykUz2Iu+MTYdkSsuWX8lvAjAcs0Xef0lNIu0S2wOAzuTxCJtcd9S3cijlwYF18EsU3rzb8jPVobxDh9Q==}
     engines: {node: '>=16 || 14 >=14.17'}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   global-dirs@0.1.1:
     resolution: {integrity: sha512-NknMLn7F2J7aflwFOlGdNIuCDpN3VGoSoB+aap3KABFWbHVn1TCgFC+np23J8W2BiZbjfEw3BFBycSMv1AFblg==}
@@ -8866,6 +8922,9 @@ packages:
 
   sort-any@2.0.0:
     resolution: {integrity: sha512-T9JoiDewQEmWcnmPn/s9h/PH9t3d/LSWi0RgVmXSuDYeZXTZOZ1/wrK2PHaptuR1VXe3clLLt0pD6sgVOwjNEA==}
+
+  sorted-btree@1.8.1:
+    resolution: {integrity: sha512-395+XIP+wqNn3USkFSrNz7G3Ss/MXlZEqesxvzCRFwL14h6e8LukDHdLBePn5pwbm5OQ9vGu8mDyz2lLDIqamQ==}
 
   source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
@@ -13044,6 +13103,20 @@ snapshots:
       ignore: 5.3.2
       p-map: 4.0.0
 
+  '@solid-primitives/map@0.7.2(solid-js@1.9.10)':
+    dependencies:
+      '@solid-primitives/trigger': 1.2.2(solid-js@1.9.10)
+      solid-js: 1.9.10
+
+  '@solid-primitives/trigger@1.2.2(solid-js@1.9.10)':
+    dependencies:
+      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      solid-js: 1.9.10
+
+  '@solid-primitives/utils@6.3.2(solid-js@1.9.10)':
+    dependencies:
+      solid-js: 1.9.10
+
   '@solidjs/meta@0.29.4(solid-js@1.9.10)':
     dependencies:
       solid-js: 1.9.10
@@ -13053,7 +13126,7 @@ snapshots:
       '@testing-library/dom': 10.4.1
       solid-js: 1.9.10
 
-  '@standard-schema/spec@1.0.0': {}
+  '@standard-schema/spec@1.1.0': {}
 
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     dependencies:
@@ -13130,6 +13203,19 @@ snapshots:
       tailwindcss: 4.1.18
       vite: 7.1.12(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.70.0)(terser@5.46.0)(tsx@4.16.2)(yaml@2.8.1)
 
+  '@tanstack/db-ivm@0.1.17(typescript@5.9.3)':
+    dependencies:
+      fractional-indexing: 3.2.0
+      sorted-btree: 1.8.1
+      typescript: 5.9.3
+
+  '@tanstack/db@0.5.25(typescript@5.9.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@tanstack/db-ivm': 0.1.17(typescript@5.9.3)
+      '@tanstack/pacer-lite': 0.2.1
+      typescript: 5.9.3
+
   '@tanstack/eslint-plugin-query@5.91.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/utils': 8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
@@ -13139,9 +13225,26 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@tanstack/pacer-lite@0.2.1': {}
+
   '@tanstack/query-core@5.90.20': {}
 
+  '@tanstack/query-db-collection@1.0.22(@tanstack/query-core@5.90.20)(typescript@5.9.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@tanstack/db': 0.5.25(typescript@5.9.3)
+      '@tanstack/query-core': 5.90.20
+      typescript: 5.9.3
+
   '@tanstack/query-devtools@5.93.0': {}
+
+  '@tanstack/solid-db@0.2.5(solid-js@1.9.10)(typescript@5.9.3)':
+    dependencies:
+      '@solid-primitives/map': 0.7.2(solid-js@1.9.10)
+      '@tanstack/db': 0.5.25(typescript@5.9.3)
+      solid-js: 1.9.10
+    transitivePeerDependencies:
+      - typescript
 
   '@tanstack/solid-query-devtools@5.91.3(@tanstack/solid-query@5.90.23(solid-js@1.9.10))(solid-js@1.9.10)':
     dependencies:
@@ -13596,7 +13699,7 @@ snapshots:
 
   '@vitest/expect@4.0.15':
     dependencies:
-      '@standard-schema/spec': 1.0.0
+      '@standard-schema/spec': 1.1.0
       '@types/chai': 5.2.3
       '@vitest/spy': 4.0.15
       '@vitest/utils': 4.0.15
@@ -16020,6 +16123,8 @@ snapshots:
   forwarded@0.2.0: {}
 
   fraction.js@4.3.7: {}
+
+  fractional-indexing@3.2.0: {}
 
   fresh@0.5.2: {}
 
@@ -19651,6 +19756,8 @@ snapshots:
   sort-any@2.0.0:
     dependencies:
       lodash: 4.17.21
+
+  sorted-btree@1.8.1: {}
 
   source-map-js@1.2.0: {}
 
