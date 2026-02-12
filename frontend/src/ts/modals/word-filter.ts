@@ -219,7 +219,7 @@ async function filter(language: Language): Promise<string[]> {
 async function apply(set: boolean): Promise<void> {
   const language = modal
     .getModal()
-    .qsr<HTMLSelectElement>(".languageInput")
+    .qsr<HTMLSelectElement>("select.languageInput")
     .getValue() as Language;
   const filteredWords = await filter(language);
 
