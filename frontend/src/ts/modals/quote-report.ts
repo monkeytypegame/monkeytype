@@ -52,9 +52,7 @@ export async function show(
       });
 
       modalEl.qsr(".quote").setText(state.quoteToReport?.text as string);
-      modalEl
-        .qsr<HTMLSelectElement>("select.reason")
-        .setValue("Grammatical error");
+      modalEl.qsr<HTMLSelectElement>(".reason").setValue("Grammatical error");
       modalEl.qsr<HTMLTextAreaElement>(".comment").setValue("");
 
       state.reasonSelect = new SlimSelect({
