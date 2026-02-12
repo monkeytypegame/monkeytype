@@ -331,7 +331,7 @@ async function apply(): Promise<void> {
       Notifications.add("Preset updated", 1);
 
       preset.name = presetName;
-      preset.display = presetName.replaceAll(/_/g, " ");
+      preset.display = presetName.replaceAll("_", " ");
       if (updateConfig) {
         preset.config = configChanges;
         if (state.presetType === "partial") {
