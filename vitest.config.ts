@@ -47,6 +47,6 @@ function convertTests(
 function copySolidPlugin(config: UserWorkspaceConfig): void {
   if (!config.plugins) return;
   config.plugins
-    .filter((it) => it !== null && it !== undefined && it["name"] === "solid")
+    .filter((it) => it?.["name"] === "solid")
     .forEach((it) => globalPlugins.push(it));
 }
