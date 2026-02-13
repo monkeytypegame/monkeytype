@@ -488,8 +488,6 @@ function showAccountSection(): void {
 
 function updateResultSavingUI(checked: boolean): void {
   const section = qs(".pageSettings .section.resultSaving");
-  section?.qs<HTMLInputElement>("#toggleResultSaving")?.setChecked(checked);
-  section?.qs(".toggleLabel")?.setText(checked ? "on" : "off");
   section?.qsa(".resultSavingToggle")?.removeClass("active");
   section
     ?.qs(`.resultSavingToggle[data-value="${checked ? "on" : "off"}"]`)
@@ -824,11 +822,6 @@ qs(".pageSettings .section.presets")?.onChild(
     void update();
   },
 );
-
-qs(".pageSettings")?.onChild("change", "#toggleResultSaving", (event) => {
-  const checked = (event.target as HTMLInputElement).checked;
-  setResultSaving(checked);
-});
 
 qs(".pageSettings")?.onChild(
   "click",
