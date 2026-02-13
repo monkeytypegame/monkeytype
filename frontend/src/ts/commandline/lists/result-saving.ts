@@ -13,6 +13,7 @@ const subgroup: CommandsSubgroup = {
         TestState.setSaving(false);
         void ModesNotice.update();
       },
+      active: () => !TestState.savingEnabled,
     },
     {
       id: "setResultSavingOn",
@@ -22,6 +23,7 @@ const subgroup: CommandsSubgroup = {
         TestState.setSaving(true);
         void ModesNotice.update();
       },
+      active: () => TestState.savingEnabled,
     },
   ],
 };

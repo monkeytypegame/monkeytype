@@ -1,6 +1,6 @@
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { inArray, useLiveQuery } from "@tanstack/solid-db";
-import { createSignal, JSXElement, Show } from "solid-js";
+import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { resultsCollection } from "../../../collections/results";
@@ -25,29 +25,33 @@ export function AccountPage(): JSXElement {
     direction: "desc",
   });
 
+  const [modeFilter, setModeFilter] = createSignal<string[]>(["time", "words"]);
+  addToGlobal({ modeFilter, setModeFilter });
+
+  const memoFilters = createMemo(() => {
+    return {
+      mode: Object.entries(filters.mode)
+        .filter(([_, v]) => v)
+        .map(([k]) => k),
+      punctuation: Object.entries(filters.punctuation)
+        .filter(([_, v]) => v)
+        .map(([k]) => k === "on"),
+    };
+  });
+
+  const memoSorting = createMemo(() => sorting());
+
   addToGlobal({ setSorting });
   const data = useLiveQuery((q) => {
     if (!isLoggedIn()) return undefined;
     return q
       .from({ results: resultsCollection })
+      .where(({ results }) => inArray(results.mode, modeFilter()));
+    /*.where(({ results }) => inArray(results.mode, memoFilters().mode))
       .where(({ results }) =>
-        inArray(
-          results.mode,
-          Object.entries(filters.mode)
-            .filter(([_, v]) => v)
-            .map(([k]) => k),
-        ),
-      )
-      .where(({ results }) =>
-        inArray(
-          results.punctuation,
-          Object.entries(filters.punctuation)
-            .filter(([_, v]) => v)
-            .map(([k]) => k === "on"),
-        ),
-      )
-      .orderBy(({ results }) => results[sorting().field], sorting().direction)
-      .limit(10);
+        inArray(results.punctuation, memoFilters().punctuation),
+      )*/
+    //.orderBy(({ results }) => results["wpm"], sorting().direction)
   });
 
   addToGlobal({ data });
@@ -60,8 +64,9 @@ export function AccountPage(): JSXElement {
           setFilters(key, value);
         }}
       />
+      <pre>size: {data().length}</pre>
       <Table
-        data={[...data()]}
+        data={data()}
         onSortingChange={(val) => {
           console.log("### page", val);
           setSorting(val);

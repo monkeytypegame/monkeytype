@@ -1,14 +1,11 @@
 import { baseKey } from "../queries/utils/keys";
-import {
-  createCollection,
-  liveQueryCollectionOptions,
-  parseLoadSubsetOptions,
-} from "@tanstack/db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { Mode } from "@monkeytype/schemas/shared";
+import { createCollection } from "@tanstack/solid-db";
+import { addToGlobal } from "../utils/misc";
 
 const queryKeys = {
   root: () => baseKey("results", { isUserSpecific: true }),
@@ -16,12 +13,13 @@ const queryKeys = {
 
 export const resultsCollection = createCollection(
   queryCollectionOptions({
+    staleTime: 1000 * 60 * 5,
     queryKey: queryKeys.root(),
-    queryFn: async (ctx) => {
-      const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
+    queryFn: async () => {
+      //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
-        query: { limit: options.limit },
+        //query: { limit: options.limit },
       });
 
       if (response.status !== 200) {
@@ -49,7 +47,9 @@ export const resultsCollection = createCollection(
     getKey: (it) => it._id,
   }),
 );
+addToGlobal({ resultsCollection });
 
+/*
 const allResultsQuery = createCollection(
   liveQueryCollectionOptions({
     query: (q) => q.from({ results: resultsCollection }),
@@ -64,3 +64,4 @@ export async function downloadResults(): Promise<void> {
 export function getAllResults<M extends Mode>(): SnapshotResult<M>[] {
   return allResultsQuery.toArray as SnapshotResult<M>[];
 }
+*/
