@@ -282,9 +282,6 @@ importers:
       '@solidjs/meta':
         specifier: 0.29.4
         version: 0.29.4(solid-js@1.9.10)
-      '@tanstack/db':
-        specifier: 0.5.25
-        version: 0.5.25(typescript@5.9.3)
       '@tanstack/query-db-collection':
         specifier: 1.0.22
         version: 1.0.22(@tanstack/query-core@5.90.20)(typescript@5.9.3)

@@ -25,7 +25,7 @@ export function AccountPage(): JSXElement {
     direction: "desc",
   });
 
-  const [modeFilter, setModeFilter] = createSignal<string[]>(["time", "words"]);
+  const [modeFilter, setModeFilter] = createSignal<string>("time");
   addToGlobal({ modeFilter, setModeFilter });
 
   const memoFilters = createMemo(() => {
@@ -39,20 +39,15 @@ export function AccountPage(): JSXElement {
     };
   });
 
-  const memoSorting = createMemo(() => sorting());
-
   addToGlobal({ setSorting });
-  const data = useLiveQuery((q) => {
-    if (!isLoggedIn()) return undefined;
-    return q
+
+  const data = useLiveQuery((q) =>
+    q
       .from({ results: resultsCollection })
-      .where(({ results }) => inArray(results.mode, modeFilter()));
-    /*.where(({ results }) => inArray(results.mode, memoFilters().mode))
-      .where(({ results }) =>
-        inArray(results.punctuation, memoFilters().punctuation),
-      )*/
-    //.orderBy(({ results }) => results["wpm"], sorting().direction)
-  });
+      .where(({ results }) => inArray(results.mode, memoFilters().mode))
+      .orderBy(({ results }) => results[sorting().field], sorting().direction)
+      .limit(10),
+  );
 
   addToGlobal({ data });
 
@@ -64,9 +59,8 @@ export function AccountPage(): JSXElement {
           setFilters(key, value);
         }}
       />
-      <pre>size: {data().length}</pre>
       <Table
-        data={data()}
+        data={[...data()]}
         onSortingChange={(val) => {
           console.log("### page", val);
           setSorting(val);

@@ -8,12 +8,12 @@ import { createCollection } from "@tanstack/solid-db";
 import { addToGlobal } from "../utils/misc";
 
 const queryKeys = {
-  root: () => baseKey("results", { isUserSpecific: true }),
+  root: () => [...baseKey("results", { isUserSpecific: true }), Math.random()],
 };
 
 export const resultsCollection = createCollection(
   queryCollectionOptions({
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryFn: async () => {
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
@@ -25,7 +25,9 @@ export const resultsCollection = createCollection(
       if (response.status !== 200) {
         throw new Error("Error fetching results:" + response.body.message);
       }
+
       return response.body.data.map((result) => {
+        result.id = result._id;
         result.bailedOut ??= false;
         result.blindMode ??= false;
         result.lazyMode ??= false;
