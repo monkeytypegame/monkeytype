@@ -64,7 +64,6 @@ export function DataTable<TData, TValue = unknown>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
-    //oxlint-disable-next-line solid/reactivity
     key: `${props.id}Sort`,
     schema: SortingStateSchema,
     fallback: [],
