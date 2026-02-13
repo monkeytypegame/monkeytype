@@ -1,9 +1,9 @@
 import { TsRestRequest as TsRestRequestGeneric } from "@ts-rest/express";
+import type { AppRoute, AppRouter } from "@ts-rest/core";
 import { Request as ExpressRequest } from "express";
 import { Context } from "../middlewares/context";
 
-// oxlint-disable-next-line no-explicit-any
-export type TsRestRequest = TsRestRequestGeneric<any>;
+export type TsRestRequest = TsRestRequestGeneric<AppRoute | AppRouter>;
 
 export type ExpressRequestWithContext = {
   ctx: Readonly<Context>;
