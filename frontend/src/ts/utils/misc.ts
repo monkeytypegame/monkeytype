@@ -599,7 +599,6 @@ export function promiseWithResolvers<T = void>(): {
     ): Promise<T | TResult> {
       return currentPromise.catch(onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
     async finally(onfinally?: (() => void) | null): Promise<T> {
       return currentPromise.finally(onfinally);
     },
