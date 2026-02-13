@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/solid-query";
-import { For, JSXElement } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
 import { getVersionHistoryQueryOptions } from "../../queries/public";
 import { isModalOpen } from "../../stores/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import AsyncContent from "../common/AsyncContent";
-import { Button } from "../common/Button";
+import { LoadingCircle } from "../common/LoadingCircle";
 
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
@@ -45,22 +45,11 @@ export function VersionHistoryModal(): JSXElement {
               </For>
             </div>
 
-            <Button
-              onClick={() => void releases.fetchNextPage()}
-              disabled={!releases.hasNextPage || releases.isFetching}
-              fa={
-                releases.isFetchingNextPage
-                  ? { icon: "fa-circle-notch", spin: true, fixedWidth: true }
-                  : undefined
-              }
-              text={
-                releases.isFetchingNextPage
-                  ? ""
-                  : releases.hasNextPage
-                    ? "Load More"
-                    : "Nothing more to load"
-              }
-            />
+            <div class="text-center text-2xl">
+              <Show when={releases.isFetching}>
+                <LoadingCircle class="text-sub" />
+              </Show>
+            </div>
           </>
         )}
       </AsyncContent>
