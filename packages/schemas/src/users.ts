@@ -260,7 +260,7 @@ export const UserSchema = z.object({
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
   personalBests: PersonalBestsSchema,
-  lastReultHashes: z.array(z.string()).optional(), //todo: fix typo (its in the db too)
+  lastResultHashes: z.array(z.string()).optional(),
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
   timeTyping: z

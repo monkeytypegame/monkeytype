@@ -46,9 +46,6 @@ export class SnapshotInitError extends Error {
   ) {
     super(message);
     this.name = "SnapshotInitError";
-    // TODO INVESTIGATE
-    // oxlint-disable-next-line
-    this.responseCode = responseCode;
   }
 }
 

@@ -176,8 +176,6 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
-// TODO INVESTIGATE IF THIS IS NEEDED
-// oxlint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp,
 ): number {

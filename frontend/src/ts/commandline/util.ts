@@ -10,7 +10,7 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema } from "zod";
+import { z, ZodSchema, ZodFirstPartySchemaTypes } from "zod";
 
 function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
   if (schema instanceof z.ZodLiteral) {
@@ -120,8 +120,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
 
   if (values === undefined) {
     throw new Error(
-      //@ts-expect-error todo
-      `Unsupported schema type for key "${key}": ${schema._def.typeName}`,
+      `Unsupported schema type for key "${key}": ${(schema as ZodFirstPartySchemaTypes)._def.typeName}`,
     );
   }
   const list = values.map((value) =>

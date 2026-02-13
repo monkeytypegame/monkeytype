@@ -8,7 +8,7 @@ import {
 import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
 import { getFrontendUrl } from "./misc";
 import emailQueue from "../queues/email-queue";
-import * as UserDAL from "../dal/user";
+import { getPartialUser } from "../dal/user";
 import { isFirebaseError } from "./error";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
@@ -90,7 +90,7 @@ export async function revokeTokensByUid(uid: string): Promise<void> {
 export async function sendForgotPasswordEmail(email: string): Promise<void> {
   try {
     const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
-    const { name } = await UserDAL.getPartialUser(
+    const { name } = await getPartialUser(
       uid,
       "request forgot password email",
       ["name"],
