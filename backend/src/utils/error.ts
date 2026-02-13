@@ -15,12 +15,9 @@ export function isFirebaseError(err: unknown): err is FirebaseErrorParent {
     "code" in err &&
     "errorInfo" in err &&
     "codePrefix" in err &&
-    // oxlint-disable-next-line no-unsafe-member-access
     typeof err.errorInfo === "object" &&
     err.errorInfo !== null &&
-    // oxlint-disable-next-line no-unsafe-member-access
     "code" in err.errorInfo &&
-    // oxlint-disable-next-line no-unsafe-member-access
     "message" in err.errorInfo
   );
 }
