@@ -22,7 +22,7 @@ import * as AuthEvent from "../../observables/auth-event";
 import { sanitize } from "../../utils/sanitize";
 import { qs, qsa } from "../../utils/dom";
 
-export function mergeWithDefaultFilters(
+function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>,
 ): ResultFilters {
   try {
@@ -963,3 +963,7 @@ AuthEvent.subscribe((event) => {
     void load();
   }
 });
+
+export const __testing = {
+  mergeWithDefaultFilters,
+};

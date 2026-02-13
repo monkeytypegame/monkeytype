@@ -11,7 +11,10 @@ const placeholder = (): void => {
 
 export function Filters(props: {
   filters: ResultFilters;
-  onChangeFilter: (id: keyof ResultFilters, value: object) => void;
+  onChangeFilter: (
+    id: keyof ResultFilters,
+    value: Record<string, boolean>,
+  ) => void;
 }): JSXElement {
   const [isShowAdvanced, setShowAdvanced] = createSignal(true);
 
@@ -104,12 +107,14 @@ export function Filters(props: {
                   if (options.onSelect !== undefined) {
                     options.onSelect(item.id);
                   } else {
-                    // oxlint-disable-next-line typescript/no-explicit-any typescript/no-unsafe-return
-                    props.onChangeFilter(options.group, (old: any) => ({
-                      ...old,
-                      // oxlint-disable-next-line typescript/strict-boolean-expressions typescript/no-unsafe-member-access
-                      [item.id]: !old[item.id],
-                    }));
+                    props.onChangeFilter(options.group, {
+                      ...(props.filters[options.group] as Record<
+                        string,
+                        boolean
+                      >),
+                      // oxlint-disable-next-line typescript/strict-boolean-expressions
+                      [item.id]: !props.filters[options.group][item.id],
+                    });
                   }
                 }}
               />

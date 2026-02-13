@@ -130,6 +130,7 @@ export function DataTable<TData, TValue = unknown>(
       props.onSortingChange?.(sorting());
     },
 
+    //oxlint-disable-next-line solid/reactivity
     ...(props.onSortingChange
       ? { manualSorting: true }
       : { getSortedRowModel: getSortedRowModel() }),

@@ -122,5 +122,9 @@ export function replaceLegacyValues(result: DBResult): DBResult {
     };
   }
 
+  if (typeof result.mode2 === "number") {
+    result.mode2 = (result.mode2 as number).toString();
+  }
+
   return result;
 }

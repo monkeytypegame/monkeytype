@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import defaultResultFilters from "../../../src/ts/constants/default-result-filters";
-import { mergeWithDefaultFilters } from "../../../src/ts/elements/account/result-filters";
+import { __testing } from "../../../src/ts/elements/account/result-filters";
+const mergeWithDefaultFilters = __testing.mergeWithDefaultFilters;
 
 describe("result-filters.ts", () => {
   describe("mergeWithDefaultFilters", () => {
