@@ -23,7 +23,6 @@ export type SnapshotUserTag = UserTag & {
 
 export type SnapshotResult<M extends Mode> = Omit<
   Result<M>,
-  | "_id"
   | "bailedOut"
   | "blindMode"
   | "lazyMode"
@@ -38,7 +37,6 @@ export type SnapshotResult<M extends Mode> = Omit<
   | "afkDuration"
   | "tags"
 > & {
-  _id: string;
   bailedOut: boolean;
   blindMode: boolean;
   lazyMode: boolean;

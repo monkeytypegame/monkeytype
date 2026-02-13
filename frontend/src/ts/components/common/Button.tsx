@@ -1,5 +1,7 @@
 import { JSX, JSXElement, Show } from "solid-js";
 
+import { ariaLabel, AriaLabel } from "../utils/aria-label";
+
 import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
@@ -10,9 +12,7 @@ type BaseProps = {
   classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
   type?: "text" | "button";
   children?: JSXElement;
-  ariaLabel?:
-    | string
-    | { text: string; position: "up" | "down" | "left" | "right" };
+  ariaLabel?: AriaLabel;
   "router-link"?: true;
 };
 
@@ -45,17 +45,6 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     </>
   );
 
-  const ariaLabel = (): object => {
-    if (props.ariaLabel === undefined) return {};
-    if (typeof props.ariaLabel === "string") {
-      return { "aria-label": props.ariaLabel, "data-balloon-pos": "up" };
-    }
-    return {
-      "aria-label": props.ariaLabel.text,
-      "data-balloon-pos": props.ariaLabel.position,
-    };
-  };
-
   const getClassList = (): Record<string, boolean | undefined> => {
     return {
       [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
@@ -84,7 +73,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
               ? undefined
               : "noreferrer noopener"
           }
-          {...ariaLabel()}
+          {...ariaLabel(props.ariaLabel)}
           {...(props["router-link"] ? { "router-link": "" } : {})}
         >
           {content}
@@ -95,7 +84,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           classList={getClassList()}
           onClick={() => props.onClick?.()}
-          {...ariaLabel()}
+          {...ariaLabel(props.ariaLabel)}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
         >

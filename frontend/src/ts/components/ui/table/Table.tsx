@@ -8,7 +8,7 @@ const Table: Component<ComponentProps<"table">> = (props) => {
   return (
     <table
       class={cn(
-        "w-full border-separate border-spacing-0 [&>tbody>tr>td]:p-0 [&>thead>tr>th]:p-2",
+        "w-full border-separate border-spacing-0 [&>tbody>tr>td]:p-0",
         local.class,
       )}
       {...others}
@@ -55,7 +55,7 @@ const TableHead: Component<ComponentProps<"th">> = (props) => {
     <th
       aria-label={local["aria-label"]}
       class={cn(
-        "has-button:p-0 appearance-none align-bottom text-xs font-normal",
+        "has-button:p-0 appearance-none p-2 align-bottom text-xs font-normal",
         local.class,
       )}
       {...others}

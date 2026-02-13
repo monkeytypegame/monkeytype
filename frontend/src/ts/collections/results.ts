@@ -28,22 +28,22 @@ export const resultsCollection = createCollection(
         throw new Error("Error fetching results:" + response.body.message);
       }
       return response.body.data.map((result) => {
-    result.bailedOut ??= false;
-    result.blindMode ??= false;
-    result.lazyMode ??= false;
-    result.difficulty ??= "normal";
-    result.funbox ??= [];
-    result.language ??= "english";
-    result.numbers ??= false;
-    result.punctuation ??= false;
-    result.numbers ??= false;
-    result.quoteLength ??= -1;
-    result.restartCount ??= 0;
-    result.incompleteTestSeconds ??= 0;
-    result.afkDuration ??= 0;
-    result.tags ??= [];
-    return result as SnapshotResult<Mode>;
-      }),
+        result.bailedOut ??= false;
+        result.blindMode ??= false;
+        result.lazyMode ??= false;
+        result.difficulty ??= "normal";
+        result.funbox ??= [];
+        result.language ??= "english";
+        result.numbers ??= false;
+        result.punctuation ??= false;
+        result.numbers ??= false;
+        result.quoteLength ??= -1;
+        result.restartCount ??= 0;
+        result.incompleteTestSeconds ??= 0;
+        result.afkDuration ??= 0;
+        result.tags ??= [];
+        return result as SnapshotResult<Mode>;
+      });
     },
     queryClient,
     getKey: (it) => it._id,
@@ -56,11 +56,11 @@ const allResultsQuery = createCollection(
   }),
 );
 
-export async function downloadResults:Promise<void>{
-    await allResultsQuery.stateWhenReady();
-    return;
+export async function downloadResults(): Promise<void> {
+  await allResultsQuery.stateWhenReady();
+  return;
 }
 
 export function getAllResults<M extends Mode>(): SnapshotResult<M>[] {
-  return allResultsQuery.toArray
+  return allResultsQuery.toArray as SnapshotResult<M>[];
 }

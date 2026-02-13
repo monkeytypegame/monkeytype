@@ -41,8 +41,8 @@ const SortingStateSchema = z.array(
     id: z.string(),
   }),
 );
-
-export type DataTableColumnDef<TData, TValue> =
+// oxlint-disable-next-line typescript/no-explicit-any
+export type DataTableColumnDef<TData, TValue = any> =
   | ColumnDef<TData, TValue>
   | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
@@ -58,6 +58,8 @@ export type DataTableProps<TData, TValue> = {
     class: string;
     activeRow: Accessor<string | null>;
   };
+  class?: string;
+  onSortingChange?: (sorting: SortingState) => void;
 };
 
 export function DataTable<TData, TValue = unknown>(
@@ -123,8 +125,14 @@ export function DataTable<TData, TValue = unknown>(
       return props.columns;
     },
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (it) => {
+      setSorting(it);
+      props.onSortingChange?.(sorting());
+    },
+
+    ...(props.onSortingChange
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
     enableRowSelection: () => props.rowSelection !== undefined,
     getRowId: (row, index) =>
       props.rowSelection !== undefined
@@ -147,7 +155,7 @@ export function DataTable<TData, TValue = unknown>(
 
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
-      <Table id={props.id}>
+      <Table id={props.id} class={props.class}>
         <Show when={!props.hideHeader}>
           <TableHeader>
             <For each={table.getHeaderGroups()}>

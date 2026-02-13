@@ -10,11 +10,11 @@ import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
-import { AboutPage } from "./pages/AboutPage";
+import { AccountPage } from "./pages/account/AccountPage";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
-  aboutpage: () => <AboutPage />,
+  aboutpage: () => <AccountPage />,
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
