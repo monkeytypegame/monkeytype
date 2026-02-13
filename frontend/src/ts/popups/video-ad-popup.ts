@@ -43,7 +43,7 @@ export async function show(): Promise<void> {
       },
       onComplete: () => {
         // @ts-expect-error 3rd party ad code
-        // oxlint-disable no-unsafe-call no-unsafe-member-access
+        // oxlint-disable-next-line no-unsafe-call no-unsafe-member-access
         window.dataLayer.push({ event: "EG_Video" });
       },
     });
