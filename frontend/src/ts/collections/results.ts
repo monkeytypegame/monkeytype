@@ -27,6 +27,7 @@ export const resultsCollection = createCollection(
       }
 
       return response.body.data.map((result) => {
+        //@ts-expect-error without this somehow the collections is missing data
         result.id = result._id;
         result.bailedOut ??= false;
         result.blindMode ??= false;
@@ -42,6 +43,9 @@ export const resultsCollection = createCollection(
         result.incompleteTestSeconds ??= 0;
         result.afkDuration ??= 0;
         result.tags ??= [];
+        if (typeof result.mode2 === "number") {
+          result.mode2 = result.mode2.toString();
+        }
         return result as SnapshotResult<Mode>;
       });
     },
