@@ -29,14 +29,9 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 }> {
   return async (request: ApiFetcherArgs) => {
     try {
-      // ===== DEV AUTH (LOCAL ONLY) =====
-      if (import.meta.env.DEV) {
-        request.headers["Authorization"] = "Uid localuser|vishal@test.com";
-      } else {
-        const token = await getIdToken();
-        if (token !== null) {
-          request.headers["Authorization"] = `Bearer ${token}`;
-        }
+      const token = await getIdToken();
+      if (token !== null) {
+        request.headers["Authorization"] = `Bearer ${token}`;
       }
 
       const usePolyfill = AbortSignal?.timeout === undefined;

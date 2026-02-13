@@ -7,8 +7,6 @@ import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import { FirebaseError } from "firebase/app";
-import * as TestState from "../test/test-state";
-import * as ModesNotice from "../elements/modes-notice";
 
 import {
   isAuthenticated,
@@ -816,25 +814,6 @@ list.optOutOfLeaderboards = new SimpleModal({
       thisPopup.inputs = [];
       thisPopup.buttonText = "reauthenticate to opt out";
     }
-  },
-});
-
-list.toggleResultSaving = new SimpleModal({
-  id: "toggleResultSaving",
-  title: "Result saving",
-  text: "Toggle result saving. When disabled, results will not be saved (practice mode).",
-  buttonText: "toggle",
-  execFn: async (): Promise<ExecReturn> => {
-    const current = TestState.savingEnabled;
-    TestState.setSaving(!current);
-    await ModesNotice.update();
-
-    return {
-      status: 1,
-      message: !current
-        ? "Result saving enabled"
-        : "Result saving disabled (practice mode)",
-    };
   },
 });
 

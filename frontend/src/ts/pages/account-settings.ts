@@ -36,6 +36,26 @@ const state: State = {
   tab: "account",
 };
 
+function setResultSaving(checked: boolean): void {
+  TestState.setSaving(checked);
+  void ModesNotice.update();
+
+  pageElement.qs<HTMLInputElement>("#toggleResultSaving")?.setChecked(checked);
+  pageElement
+    .qs(".section.resultSaving .toggleLabel")
+    ?.setText(checked ? "on" : "off");
+  pageElement
+    .qsa(".section.resultSaving .resultSavingToggle")
+    ?.removeClass("active");
+  pageElement
+    .qs(
+      `.section.resultSaving .resultSavingToggle[data-value="${
+        checked ? "on" : "off"
+      }"]`,
+    )
+    ?.addClass("active");
+}
+
 function updateAuthenticationSections(): void {
   pageElement.qsa(".section.passwordAuthSettings button")?.addClass("hidden");
   pageElement.qsa(".section.googleAuthSettings button")?.addClass("hidden");
@@ -124,8 +144,8 @@ function updateTabs(): void {
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
     },
   );
-  pageElement.qsa("button")?.removeClass("active");
-  pageElement.qs(`button[data-tab="${state.tab}"]`)?.addClass("active");
+  pageElement.qsa(".tabs button")?.removeClass("active");
+  pageElement.qs(`.tabs button[data-tab="${state.tab}"]`)?.addClass("active");
 }
 
 function updateAccountSections(): void {
@@ -149,24 +169,14 @@ function updateAccountSections(): void {
   }
 }
 
-function updateResultSavingToggle(): void {
-  const toggle = pageElement.qs(
-    "#toggleResultSaving",
-  ) as HTMLInputElement | null;
-  if (!toggle) return;
-
-  toggle.checked = TestState.savingEnabled;
-  pageElement
-    .qs(".section.resultSaving .toggleLabel")
-    ?.setText(TestState.savingEnabled ? "on" : "off");
-}
-
 export function updateUI(): void {
   if (getActivePage() !== "accountSettings") return;
   updateAuthenticationSections();
   updateIntegrationSections();
   updateAccountSections();
-  updateResultSavingToggle();
+
+  setResultSaving(TestState.savingEnabled);
+
   void ApeKeyTable.update(updateUI);
   void BlockedUserTable.update();
   updateTabs();
@@ -256,23 +266,26 @@ qs(".pageAccountSettings")?.onChild(
     showPopup("resetPersonalBests");
   },
 );
+
 qs(".pageAccountSettings")?.onChild(
   "change",
   "#toggleResultSaving",
   (event) => {
-    const target = event.target as HTMLInputElement | null;
-    if (!target) return;
+    const checked = (event.target as HTMLInputElement).checked;
+    setResultSaving(checked);
+  },
+);
 
-    TestState.setSaving(target.checked);
-    void ModesNotice.update();
-    updateResultSavingToggle();
-
-    Notifications.add(
-      target.checked
-        ? "Result saving enabled"
-        : "Result saving disabled (practice mode)",
-      1,
-    );
+qs(".pageAccountSettings")?.onChild(
+  "click",
+  ".section.resultSaving .resultSavingToggle",
+  (event) => {
+    const value = (event.childTarget as HTMLElement).getAttribute("data-value");
+    if (value === "on") {
+      setResultSaving(true);
+    } else if (value === "off") {
+      setResultSaving(false);
+    }
   },
 );
 
