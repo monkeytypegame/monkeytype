@@ -10,7 +10,6 @@ export async function getDevOptionsModal(): Promise<
 > {
   try {
     showLoaderBar();
-    // oxlint-disable-next-line import/no-unresolved
     const module = await import("../modals/dev-options.js");
     hideLoaderBar();
     return module;
