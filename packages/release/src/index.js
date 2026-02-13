@@ -1,5 +1,3 @@
-// idk why its failing to resolve
-// oxlint-disable-next-line import/no-unresolved
 import { Octokit } from "@octokit/rest";
 import { execSync } from "child_process";
 import dotenv from "dotenv";
