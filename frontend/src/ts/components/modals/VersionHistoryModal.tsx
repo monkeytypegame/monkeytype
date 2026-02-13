@@ -45,7 +45,7 @@ export function VersionHistoryModal(): JSXElement {
               </For>
             </div>
 
-            <div class="text-center text-2xl">
+            <div class="mb-8 text-center text-2xl">
               <Show when={releases.isFetching}>
                 <LoadingCircle class="text-sub" />
               </Show>
