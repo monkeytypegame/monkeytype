@@ -31,7 +31,7 @@ export function VersionHistoryModal(): JSXElement {
     <AnimatedModal
       id="VersionHistory"
       modalClass="max-w-6xl"
-      onScrollEnd={scrollToLoadMore}
+      onScroll={scrollToLoadMore}
     >
       <AsyncContent
         query={releases}
