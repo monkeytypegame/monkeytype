@@ -5,13 +5,11 @@ import { getActivePage } from "../signals/core";
 import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";
-import * as TestState from "../test/test-state";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import { showLoaderBar } from "../signals/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import * as Notifications from "../elements/notifications";
-import * as ModesNotice from "../elements/modes-notice";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
@@ -35,26 +33,6 @@ const UrlParameterSchema = StateSchema.partial();
 const state: State = {
   tab: "account",
 };
-
-function setResultSaving(checked: boolean): void {
-  TestState.setSaving(checked);
-  void ModesNotice.update();
-
-  pageElement.qs<HTMLInputElement>("#toggleResultSaving")?.setChecked(checked);
-  pageElement
-    .qs(".section.resultSaving .toggleLabel")
-    ?.setText(checked ? "on" : "off");
-  pageElement
-    .qsa(".section.resultSaving .resultSavingToggle")
-    ?.removeClass("active");
-  pageElement
-    .qs(
-      `.section.resultSaving .resultSavingToggle[data-value="${
-        checked ? "on" : "off"
-      }"]`,
-    )
-    ?.addClass("active");
-}
 
 function updateAuthenticationSections(): void {
   pageElement.qsa(".section.passwordAuthSettings button")?.addClass("hidden");
@@ -175,8 +153,6 @@ export function updateUI(): void {
   updateIntegrationSections();
   updateAccountSections();
 
-  setResultSaving(TestState.savingEnabled);
-
   void ApeKeyTable.update(updateUI);
   void BlockedUserTable.update();
   updateTabs();
@@ -264,28 +240,6 @@ qs(".pageAccountSettings")?.onChild(
   "#resetPersonalBestsButton",
   () => {
     showPopup("resetPersonalBests");
-  },
-);
-
-qs(".pageAccountSettings")?.onChild(
-  "change",
-  "#toggleResultSaving",
-  (event) => {
-    const checked = (event.target as HTMLInputElement).checked;
-    setResultSaving(checked);
-  },
-);
-
-qs(".pageAccountSettings")?.onChild(
-  "click",
-  ".section.resultSaving .resultSavingToggle",
-  (event) => {
-    const value = (event.childTarget as HTMLElement).getAttribute("data-value");
-    if (value === "on") {
-      setResultSaving(true);
-    } else if (value === "off") {
-      setResultSaving(false);
-    }
   },
 );
 
