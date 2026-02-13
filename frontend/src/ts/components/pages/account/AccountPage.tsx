@@ -46,8 +46,8 @@ export function AccountPage(): JSXElement {
             .map(([k]) => k === "on"),
         ),
       )
-      .orderBy(({ results }) => results[sorting().field], sorting().direction);
-    //.limit(10);
+      .orderBy(({ results }) => results[sorting().field], sorting().direction)
+      .limit(10);
   });
 
   addToGlobal({ data });
