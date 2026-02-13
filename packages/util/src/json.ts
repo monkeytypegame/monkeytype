@@ -14,13 +14,13 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
   json: string,
   schema: T,
   fallbackAndMigrate?: {
-    fallback?: T;
+    fallback?: z.infer<T>;
     migrate?: (
       value: Record<string, unknown> | unknown[],
       zodIssues?: ZodIssue[],
-    ) => T;
+    ) => z.infer<T>;
   },
-): T {
+): z.infer<T> {
   const { fallback, migrate } = fallbackAndMigrate ?? {};
 
   const { data: jsonParsed, error } = tryCatchSync(
@@ -31,7 +31,9 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     if (fallback === undefined) {
       throw new Error(`Invalid JSON: ` + error.message);
     }
-    return fallback;
+    // todo fix me
+    // oxlint-disable-next-line no-unsafe-return
+    return fallback as z.infer<T>;
   }
 
   const safeParse = schema.safeParse(jsonParsed);
@@ -58,7 +60,9 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
           .join(", ")}`,
       );
     }
-    return fallback;
+    // todo fix me
+    // oxlint-disable-next-line no-unsafe-return
+    return fallback as z.infer<T>;
   }
 
   return safeParseMigrated.data as T;
