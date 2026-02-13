@@ -15,7 +15,7 @@ export function VersionHistoryModal(): JSXElement {
     enabled: isOpen(),
   }));
 
-  const scrollToLoadMore = (e: Event): void => {
+  const fetchMoreVersions = (e: Event): void => {
     const element = e.target as HTMLElement;
 
     if (
@@ -31,7 +31,7 @@ export function VersionHistoryModal(): JSXElement {
     <AnimatedModal
       id="VersionHistory"
       modalClass="max-w-6xl"
-      onScroll={scrollToLoadMore}
+      onScroll={fetchMoreVersions}
     >
       <AsyncContent
         query={releases}
