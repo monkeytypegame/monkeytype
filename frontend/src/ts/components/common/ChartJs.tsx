@@ -31,8 +31,9 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   let chart: ChartWithUpdateColors<T, TData> | undefined;
 
   onMount(() => {
-    //oxlint-disable-next-line no-non-null-assertion
-    chart = new ChartWithUpdateColors(canvasEl()!.native, {
+    const canvas = canvasEl();
+    if (canvas === undefined) return;
+    chart = new ChartWithUpdateColors(canvas.native, {
       type: props.type,
       data: props.data,
       options: props.options,
