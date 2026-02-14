@@ -31,6 +31,7 @@ export type Selection = z.infer<typeof SelectionSchema>;
 
 const queryKeys = {
   root: (options: Selection & { userSpecific?: true }) => [
+    //don't use baseKey, we require the key to have the options at the same position for user and non user specific
     options.userSpecific === true || options.friendsOnly
       ? "user"
       : "leaderboard",

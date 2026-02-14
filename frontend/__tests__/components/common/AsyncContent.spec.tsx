@@ -47,7 +47,7 @@ describe("AsyncContent", () => {
     });
 
     it("renders on resolve", async () => {
-      renderWithQuery({ result: "Test Data" });
+      const { container } = renderWithQuery({ result: "Test Data" });
 
       await waitFor(() => {
         expect(screen.getByTestId("content")).toHaveTextContent("Test Data");
@@ -207,7 +207,10 @@ describe("AsyncContent", () => {
     });
 
     it("renders on resolve", async () => {
-      renderWithQuery({ first: "First Data", second: "Second Data" });
+      const { container } = renderWithQuery({
+        first: "First Data",
+        second: "Second Data",
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId("first")).toHaveTextContent("First Data");
@@ -215,6 +218,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByTestId("second")).toHaveTextContent("Second Data");
       });
+      const preloader = container.querySelector(".preloader");
+      expect(preloader).not.toBeInTheDocument();
     });
 
     it("renders default error message on fail", async () => {

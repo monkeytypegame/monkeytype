@@ -9,7 +9,6 @@ type BaseProps = {
   class?: string;
   classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
   type?: "text" | "button";
-  active?: boolean;
   children?: JSXElement;
   ariaLabel?:
     | string
