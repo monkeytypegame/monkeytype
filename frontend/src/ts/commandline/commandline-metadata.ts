@@ -205,6 +205,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+  resultSavingEnabled: {
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
   blindMode: {
     subgroup: {
       options: "fromSchema",

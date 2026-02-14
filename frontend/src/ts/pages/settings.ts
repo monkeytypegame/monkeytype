@@ -11,7 +11,6 @@ import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import * as ModesNotice from "../elements/modes-notice";
 import { getActivePage } from "../signals/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
@@ -19,7 +18,6 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import * as TestState from "../test/test-state";
 import {
   ThemeName,
   CustomLayoutFluid,
@@ -82,6 +80,10 @@ async function initGroups(): Promise<void> {
   );
   groups["difficulty"] = new SettingsGroup("difficulty", "button");
   groups["quickRestart"] = new SettingsGroup("quickRestart", "button");
+  groups["resultSavingEnabled"] = new SettingsGroup(
+    "resultSavingEnabled",
+    "button",
+  );
   groups["showAverage"] = new SettingsGroup("showAverage", "button");
   groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
     updateCallback: () => {
@@ -483,21 +485,6 @@ function showAccountSection(): void {
   qsa(`.pageSettings .section.needsAccount`)?.show();
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
-  updateResultSavingUI(TestState.savingEnabled);
-}
-
-function updateResultSavingUI(checked: boolean): void {
-  const section = qs(".pageSettings .section.resultSaving");
-  section?.qsa(".resultSavingToggle")?.removeClass("active");
-  section
-    ?.qs(`.resultSavingToggle[data-value="${checked ? "on" : "off"}"]`)
-    ?.addClass("active");
-}
-
-function setResultSaving(checked: boolean): void {
-  TestState.setSaving(checked);
-  void ModesNotice.update();
-  updateResultSavingUI(checked);
 }
 
 function setActiveFunboxButton(): void {
@@ -823,19 +810,6 @@ qs(".pageSettings .section.presets")?.onChild(
   },
 );
 
-qs(".pageSettings")?.onChild(
-  "click",
-  ".section.resultSaving .resultSavingToggle",
-  (event) => {
-    const value = (event.childTarget as HTMLElement).getAttribute("data-value");
-    if (value === "on") {
-      setResultSaving(true);
-    } else if (value === "off") {
-      setResultSaving(false);
-    }
-  },
-);
-
 qs("#importSettingsButton")?.on("click", () => {
   ImportExportSettingsModal.show("import");
 });
@@ -1099,7 +1073,6 @@ export const page = new PageWithUrlParams({
     await update();
     // theme UI updates manually to avoid duplication
     await ThemePicker.updateThemeUI();
-    updateResultSavingUI(TestState.savingEnabled);
 
     handleHighlightSection(options.urlParams?.highlight);
   },

@@ -5,22 +5,6 @@ export let isRepeated = false;
 export let isPaceRepeat = false;
 export let isActive = false;
 export let activeChallenge: null | Challenge = null;
-const savingEnabledStorageKey = "resultSavingEnabled";
-
-function getInitialSavingEnabled(): boolean {
-  try {
-    if (typeof window === "undefined" || !("localStorage" in window)) {
-      return true;
-    }
-    const stored = window.localStorage.getItem(savingEnabledStorageKey);
-    if (stored === null) return true;
-    return stored === "true";
-  } catch {
-    return true;
-  }
-}
-
-export let savingEnabled = getInitialSavingEnabled();
 export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
@@ -44,18 +28,6 @@ export function setActive(tf: boolean): void {
 
 export function setActiveChallenge(val: null | Challenge): void {
   activeChallenge = val;
-}
-
-export function setSaving(val: boolean): void {
-  savingEnabled = val;
-  try {
-    if (typeof window === "undefined" || !("localStorage" in window)) {
-      return;
-    }
-    window.localStorage.setItem(savingEnabledStorageKey, String(val));
-  } catch {
-    // ignore storage failures (e.g., private mode)
-  }
 }
 
 export function setBailedOut(tf: boolean): void {

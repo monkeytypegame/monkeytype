@@ -1,5 +1,4 @@
-import * as TestState from "../../test/test-state";
-import * as ModesNotice from "../../elements/modes-notice";
+import Config, { setConfig } from "../../config";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
@@ -10,20 +9,18 @@ const subgroup: CommandsSubgroup = {
       display: "off",
       alias: "disabled incognito",
       exec: (): void => {
-        TestState.setSaving(false);
-        void ModesNotice.update();
+        setConfig("resultSavingEnabled", false);
       },
-      active: () => !TestState.savingEnabled,
+      active: () => !Config.resultSavingEnabled,
     },
     {
       id: "setResultSavingOn",
       display: "on",
       alias: "enabled incognito",
       exec: (): void => {
-        TestState.setSaving(true);
-        void ModesNotice.update();
+        setConfig("resultSavingEnabled", true);
       },
-      active: () => TestState.savingEnabled,
+      active: () => Config.resultSavingEnabled,
     },
   ],
 };
