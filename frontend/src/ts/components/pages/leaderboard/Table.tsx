@@ -7,6 +7,7 @@ import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement } from "solid-js";
 
+import { isFriend } from "../../../db";
 import { createEffectOn } from "../../../hooks/effects";
 import { bp } from "../../../signals/breakpoints";
 import { getConfig } from "../../../signals/config";
@@ -17,6 +18,7 @@ import { Formatting } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
+import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
 type WpmEntry = LeaderboardEntry;
@@ -53,7 +55,7 @@ export function Table(
         : {
             getRowId: (row: { uid: string }) => row.uid,
             activeRow: getUserId,
-            class: "text-main",
+            class: "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
           },
   }));
 
@@ -147,7 +149,13 @@ function getWpmColumns({
     }),
     defineColumn("uid", {
       header: "name",
-      cell: (info) => userOverride?.() ?? <User user={info.row.original} />,
+      cell: (info) =>
+        userOverride?.() ?? (
+          <User
+            user={info.row.original}
+            isFriend={isFriend(info.row.original.uid)}
+          />
+        ),
       meta: {
         cellMeta: () => ({ class: "w-full" }),
       },
@@ -438,10 +446,6 @@ function getXpColumns({
     ...it,
     enableSorting: false,
   }));
-}
-//placeholder
-function User(props: { user: { name: string } }): JSXElement {
-  return <div>{props.user.name}</div>;
 }
 
 function wrapWithHeader(
