@@ -15,25 +15,8 @@ import { qsr } from "../../utils/dom";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
-import { Fa, FaProps } from "../common/Fa";
-
-function H2(props: { text: string; fa: FaProps }): JSXElement {
-  return (
-    <h2 class="flex place-items-center gap-4 pb-4 text-4xl text-sub">
-      <Fa {...props.fa} />
-      {props.text}
-    </h2>
-  );
-}
-
-function H3(props: { text: string; fa: FaProps }): JSXElement {
-  return (
-    <h3 class="flex place-items-center gap-2 pb-2 text-sub">
-      <Fa {...props.fa} />
-      {props.text}
-    </h3>
-  );
-}
+import { Fa } from "../common/Fa";
+import { H2, H3 } from "../common/Headers";
 
 qsr("nav .view-about").on("mouseenter", () => {
   prefetch();
@@ -396,7 +379,11 @@ export function AboutPage(): JSXElement {
       </Show>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-hand-holding-usd" }} text="top supporters" />
+        <H2
+          id="supporters_title"
+          fa={{ icon: "fa-hand-holding-usd" }}
+          text="top supporters"
+        />
         <AsyncContent
           query={supporters}
           errorMessage="Failed to get supporters"
@@ -415,7 +402,11 @@ export function AboutPage(): JSXElement {
       </section>
       <div></div>
       <section>
-        <H2 fa={{ icon: "fa-code-branch" }} text="contributors" />
+        <H2
+          id="contributors_title"
+          fa={{ icon: "fa-code-branch" }}
+          text="contributors"
+        />
         <AsyncContent
           query={contributors}
           errorMessage="Failed to get contributors"

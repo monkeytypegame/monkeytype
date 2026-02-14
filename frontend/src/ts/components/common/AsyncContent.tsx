@@ -12,7 +12,7 @@ import * as Notifications from "../../elements/notifications";
 import { createErrorMessage, typedKeys } from "../../utils/misc";
 
 import { Conditional } from "./Conditional";
-import { Fa } from "./Fa";
+import { LoadingCircle } from "./LoadingCircle";
 
 type AsyncEntry<T> = {
   value: () => T | undefined;
@@ -28,6 +28,8 @@ type AsyncMap<T extends QueryMapping> = {
 
 type BaseProps = {
   errorMessage?: string;
+  ignoreError?: true;
+  loader?: JSXElement;
 };
 
 type QueryProps<T extends QueryMapping> = {
@@ -51,7 +53,7 @@ type EagerChildren<T extends QueryMapping> = {
   children: (data: { [K in keyof T]: T[K] | undefined }) => JSXElement;
 };
 
-type Props<T extends QueryMapping> = BaseProps &
+export type Props<T extends QueryMapping> = BaseProps &
   (QueryProps<T> | SingleQueryProps<T>) &
   (DeferredChildren<T> | EagerChildren<T>);
 
@@ -85,7 +87,9 @@ export default function AsyncContent<T extends QueryMapping>(
       props.errorMessage ?? "An error occurred",
     );
     console.error("AsyncMultiContent failed", message, err);
+
     Notifications.add(message, -1);
+
     return message;
   };
 
@@ -108,22 +112,20 @@ export default function AsyncContent<T extends QueryMapping>(
       .find((s) => s.isError())
       ?.error?.();
 
-  const loader = (
-    <div class="preloader p-4 text-center text-2xl text-main">
-      <Fa icon="fa-circle-notch" fixedWidth spin />
-    </div>
-  );
+  const loader = (): JSXElement =>
+    props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
 
-  const errorText = (err: unknown): JSXElement => (
-    <div class="error">{handleError(err)}</div>
-  );
+  const errorText = (err: unknown): JSXElement | undefined =>
+    props.ignoreError ? undefined : <div class="error">{handleError(err)}</div>;
 
   return (
-    <ErrorBoundary fallback={errorText}>
+    <ErrorBoundary fallback={props.ignoreError ? undefined : errorText}>
       <Switch
         fallback={
           <>
-            <Show when={isLoading() && !props.alwaysShowContent}>{loader}</Show>
+            <Show when={isLoading() && !props.alwaysShowContent}>
+              {loader()}
+            </Show>
 
             <Conditional
               if={props.alwaysShowContent === true}
@@ -137,11 +139,11 @@ export default function AsyncContent<T extends QueryMapping>(
           </>
         }
       >
-        <Match when={firstError() !== undefined}>
+        <Match when={!props.ignoreError && firstError() !== undefined}>
           {errorText(firstError())}
         </Match>
 
-        <Match when={isLoading() && !props.alwaysShowContent}>{loader}</Match>
+        <Match when={isLoading() && !props.alwaysShowContent}>{loader()}</Match>
       </Switch>
     </ErrorBoundary>
   );

@@ -1,12 +1,13 @@
 import { queryOptions } from "@tanstack/solid-query";
-import { baseKey } from "./keys";
+import { baseKey } from "./utils/keys";
 import Ape from "../ape";
 
 const queryKeys = {
   root: () => baseKey("serverConfiguration"),
 };
 
-const staleTime = 1000 * 60 * 60;
+//only refetch once on site load
+const staleTime = Infinity;
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export const getServerConfigurationQueryOptions = () =>

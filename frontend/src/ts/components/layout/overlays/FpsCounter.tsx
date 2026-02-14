@@ -54,7 +54,7 @@ export function FpsCounter(): JSX.Element {
   return (
     <Show when={isVisible()}>
       <div
-        class={"bg-sub-alt fixed top-0 left-0 z-9999 px-2 py-1"}
+        class={"fixed top-0 left-0 z-9999 bg-sub-alt px-2 py-1"}
         style={{
           color: fpsColor(),
         }}

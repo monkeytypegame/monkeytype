@@ -19,7 +19,7 @@ export function Overlays(): JSXElement {
         type="button"
         id="commandLineMobileButton"
         class={cn(
-          "bg-main text-bg fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full text-center leading-12",
+          "fixed bottom-8 left-8 z-99 hidden h-12 w-12 rounded-full bg-main text-center leading-12 text-bg",
           {
             "opacity-0": getIsScreenshotting(),
           },

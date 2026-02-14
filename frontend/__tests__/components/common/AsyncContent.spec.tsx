@@ -7,7 +7,9 @@ import {
 import { JSXElement, Show } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import AsyncContent from "../../../src/ts/components/common/AsyncContent";
+import AsyncContent, {
+  Props,
+} from "../../../src/ts/components/common/AsyncContent";
 import * as Notifications from "../../../src/ts/elements/notifications";
 
 describe("AsyncContent", () => {
@@ -25,7 +27,6 @@ describe("AsyncContent", () => {
 
       const preloader = container.querySelector(".preloader");
       expect(preloader).toBeInTheDocument();
-      expect(preloader).toHaveClass("preloader");
       expect(preloader?.querySelector("i")).toHaveClass(
         "fas",
         "fa-fw",
@@ -34,12 +35,25 @@ describe("AsyncContent", () => {
       );
     });
 
+    it("renders custom loader while pending", () => {
+      const { container } = renderWithQuery(
+        { result: "data" },
+        { loader: <span class="preloader">Loading...</span> },
+      );
+
+      const preloader = container.querySelector(".preloader");
+      expect(preloader).toBeInTheDocument();
+      expect(preloader).toHaveTextContent("Loading...");
+    });
+
     it("renders on resolve", async () => {
       renderWithQuery({ result: "Test Data" });
 
       await waitFor(() => {
         expect(screen.getByTestId("content")).toHaveTextContent("Test Data");
       });
+      const preloader = container.querySelector(".preloader");
+      expect(preloader).not.toBeInTheDocument();
     });
 
     it("renders default error message on fail", async () => {
@@ -67,6 +81,17 @@ describe("AsyncContent", () => {
         "Custom error message: Test error",
         -1,
       );
+    });
+
+    it("ignores error on fail if ignoreError is set", async () => {
+      renderWithQuery(
+        { result: new Error("Test error") },
+        { ignoreError: true, alwaysShowContent: true },
+      );
+      await waitFor(() => {
+        expect(screen.getByText(/no data/)).toBeInTheDocument();
+      });
+      expect(addNotificationMock).not.toHaveBeenCalled();
     });
 
     it("renders on pending if alwaysShowContent", async () => {
@@ -106,10 +131,7 @@ describe("AsyncContent", () => {
       query: {
         result: string | Error;
       },
-      options?: {
-        errorMessage?: string;
-        alwaysShowContent?: true;
-      },
+      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
     ): {
       container: HTMLElement;
     } {
@@ -131,6 +153,8 @@ describe("AsyncContent", () => {
             query={myQuery}
             errorMessage={options?.errorMessage}
             alwaysShowContent={options?.alwaysShowContent}
+            ignoreError={options?.ignoreError}
+            loader={options?.loader}
           >
             {(data: string | undefined) => (
               <>
@@ -163,13 +187,23 @@ describe("AsyncContent", () => {
 
       const preloader = container.querySelector(".preloader");
       expect(preloader).toBeInTheDocument();
-      expect(preloader).toHaveClass("preloader");
       expect(preloader?.querySelector("i")).toHaveClass(
         "fas",
         "fa-fw",
         "fa-spin",
         "fa-circle-notch",
       );
+    });
+
+    it("renders custom loader while pending", () => {
+      const { container } = renderWithQuery(
+        { first: "data", second: "data" },
+        { loader: <span class="preloader">Loading...</span> },
+      );
+
+      const preloader = container.querySelector(".preloader");
+      expect(preloader).toBeInTheDocument();
+      expect(preloader).toHaveTextContent("Loading...");
     });
 
     it("renders on resolve", async () => {
@@ -197,7 +231,7 @@ describe("AsyncContent", () => {
 
     it("renders custom error message on fail", async () => {
       renderWithQuery(
-        { first: new Error("Test error"), second: new Error("Test error") },
+        { first: new Error("First error"), second: new Error("Second error") },
         { errorMessage: "Custom error message" },
       );
 
@@ -205,9 +239,22 @@ describe("AsyncContent", () => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
       expect(addNotificationMock).toHaveBeenCalledWith(
-        "Custom error message: Test error",
+        "Custom error message: First error",
         -1,
       );
+    });
+
+    it("ignores error on fail if ignoreError is set", async () => {
+      renderWithQuery(
+        { first: new Error("First error"), second: new Error("Second error") },
+        { ignoreError: true, alwaysShowContent: true },
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/no data/)).toBeInTheDocument();
+      });
+
+      expect(addNotificationMock).not.toHaveBeenCalled();
     });
 
     it("renders on pending if alwaysShowContent", async () => {
@@ -261,10 +308,7 @@ describe("AsyncContent", () => {
         first: string | Error | undefined;
         second: string | Error | undefined;
       },
-      options?: {
-        errorMessage?: string;
-        alwaysShowContent?: true;
-      },
+      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
     ): {
       container: HTMLElement;
     } {
@@ -297,6 +341,8 @@ describe("AsyncContent", () => {
             queries={{ first: firstQuery, second: secondQuery }}
             errorMessage={options?.errorMessage}
             alwaysShowContent={options?.alwaysShowContent}
+            ignoreError={options?.ignoreError}
+            loader={options?.loader}
           >
             {(results: {
               first: string | undefined;

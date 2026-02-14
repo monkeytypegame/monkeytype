@@ -11,12 +11,17 @@ type BaseProps = {
   type?: "text" | "button";
   active?: boolean;
   children?: JSXElement;
+  ariaLabel?:
+    | string
+    | { text: string; position: "up" | "down" | "left" | "right" };
+  "router-link"?: true;
 };
 
 type ButtonProps = BaseProps & {
   onClick: () => void;
   href?: never;
   sameTarget?: true;
+  active?: boolean;
   disabled?: boolean;
 };
 
@@ -29,6 +34,7 @@ type AnchorProps = BaseProps & {
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = "href" in props;
   const buttonClass = isAnchor ? "button" : "";
+  const isActive = (): boolean => (!isAnchor && props.active) ?? false;
 
   const content = (
     <>
@@ -40,12 +46,24 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     </>
   );
 
+  const ariaLabel = (): object => {
+    if (props.ariaLabel === undefined) return {};
+    if (typeof props.ariaLabel === "string") {
+      return { "aria-label": props.ariaLabel, "data-balloon-pos": "up" };
+    }
+    return {
+      "aria-label": props.ariaLabel.text,
+      "data-balloon-pos": props.ariaLabel.position,
+    };
+  };
+
   const getClassList = (): Record<string, boolean | undefined> => {
     return {
       [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
       [props.class ?? ""]: props.class !== undefined,
-      "bg-main": props.active,
-      "text-bg": props.active,
+      "bg-main": isActive(),
+      "text-bg": isActive(),
+      "hover:bg-text": isActive(),
       ...props.classList,
     };
   };
@@ -57,8 +75,18 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
         <a
           classList={getClassList()}
           href={props.href}
-          target={props.href?.startsWith("#") ? undefined : "_blank"}
-          rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
+          target={
+            props["router-link"] || props.href?.startsWith("#")
+              ? undefined
+              : "_blank"
+          }
+          rel={
+            props["router-link"] || props.href?.startsWith("#")
+              ? undefined
+              : "noreferrer noopener"
+          }
+          {...ariaLabel()}
+          {...(props["router-link"] ? { "router-link": "" } : {})}
         >
           {content}
         </a>
@@ -68,6 +96,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           classList={getClassList()}
           onClick={() => props.onClick?.()}
+          {...ariaLabel()}
+          {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
         >
           {content}
