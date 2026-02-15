@@ -7,7 +7,6 @@ import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import { FirebaseError } from "firebase/app";
-
 import {
   isAuthenticated,
   getAuthenticatedUser,

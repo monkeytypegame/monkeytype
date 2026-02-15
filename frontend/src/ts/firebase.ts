@@ -187,7 +187,6 @@ export async function getIdToken(): Promise<string | null> {
   if (user === null) return null;
   return firebaseGetIdToken(user);
 }
-
 async function setPersistence(
   rememberMe: boolean,
   store = false,

@@ -52,7 +52,7 @@ export async function update(): Promise<void> {
 
   if (!Config.resultSavingEnabled) {
     testModesNotice.appendHtml(
-      `<div class="textButton" commands="resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`,
+      `<div class="textButton" commands="resultSavingEnabled" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`,
     );
   }
 

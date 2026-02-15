@@ -122,8 +122,8 @@ function updateTabs(): void {
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
     },
   );
-  pageElement.qsa(".tabs button")?.removeClass("active");
-  pageElement.qs(`.tabs button[data-tab="${state.tab}"]`)?.addClass("active");
+  pageElement.qsa("button")?.removeClass("active");
+  pageElement.qs(`button[data-tab="${state.tab}"]`)?.addClass("active");
 }
 
 function updateAccountSections(): void {
