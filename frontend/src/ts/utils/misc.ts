@@ -716,12 +716,29 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
-export function isLinux(): boolean {
+function isWindows(): boolean {
+  return isPlatform("Win");
+}
+
+function isLinux(): boolean {
   return isPlatform("Linux");
 }
 
-export function isMac(): boolean {
+function isMac(): boolean {
   return isPlatform("Mac");
+}
+
+export function getCurrentOs(): "Mac" | "Linux" | "Windows" | "Unknown" {
+  if (isMac()) {
+    return "Mac";
+  }
+  if (isLinux()) {
+    return "Linux";
+  }
+  if (isWindows()) {
+    return "Windows";
+  }
+  return "Unknown";
 }
 
 export function isMacLike(): boolean {
