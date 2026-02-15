@@ -166,7 +166,7 @@ export async function setFilterPreset(id: string): Promise<void> {
 
   // make current filter presest button active
   qsa(
-    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`,
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id="${id}"]`,
   ).addClass("active");
 }
 
