@@ -24,7 +24,6 @@ function buildApp(): express.Application {
   app.use(helmet());
 
   app.set("trust proxy", 1);
-
   app.use(compatibilityCheckMiddleware);
   app.use(contextMiddleware);
 
