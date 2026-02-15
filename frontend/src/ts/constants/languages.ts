@@ -292,6 +292,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   frisian: ["frisian", "frisian_1k"],
   pashto: ["pashto"],
   euskera: ["euskera"],
+  anky: ["anky"],
   klingon: ["klingon", "klingon_1k"],
   quenya: ["quenya"],
   lorem_ipsum: ["lorem_ipsum"],
