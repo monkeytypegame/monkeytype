@@ -22,14 +22,11 @@ function hide(): void {
   }
 }
 
-function update(event: KeyboardEvent): void {
-  if (event.key === "CapsLock" && capsState !== null) {
-    capsState = !capsState;
-  } else {
-    const modState = event.getModifierState?.("CapsLock");
-    if (modState !== undefined) {
-      capsState = modState;
-    }
+function updateFromEvent(event: KeyboardEvent): void {
+  const modState = event.getModifierState?.("CapsLock");
+
+  if (modState !== undefined) {
+    capsState = modState;
   }
 
   try {
@@ -41,8 +38,22 @@ function update(event: KeyboardEvent): void {
   } catch {}
 }
 
+function update(event: KeyboardEvent): void {
+  // Linux: CapsLock modifier state may not be updated synchronously
+  // when the CapsLock key event fires, so defer the read.
+  if (Misc.isLinux() && event.key === "CapsLock") {
+    setTimeout(() => updateFromEvent(event), 0);
+  } else {
+    updateFromEvent(event);
+  }
+}
+
 document.addEventListener("keyup", update);
 
 document.addEventListener("keydown", (event) => {
-  if (Misc.isMac()) update(event);
+  if (Misc.isMac()) {
+    update(event);
+  } else if (Misc.isLinux() && event.key === "CapsLock") {
+    update(event);
+  }
 });
