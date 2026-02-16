@@ -106,14 +106,14 @@ export const getLeaderboardQueryOptions = (
       const response = await request;
       if (response.status !== 200) {
         throw new Error(
-          `Failed to get ${selection.type} leaderboard rank: ` +
+          `Failed to get ${selection.type} leaderboard data: ` +
             response.body.message,
         );
       }
       return response.body.data;
     },
     //5 minutes for alltime, one minute for others
-    staleTime: options.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
+    staleTime: options.type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
     placeholderData: (old) => {
       if (
         old === undefined ||
@@ -180,7 +180,7 @@ export const getRankQueryOptions = (options: Selection) =>
       return response.body.data;
     },
     //5 minutes for alltime, one minute for others
-    staleTime: options.type === "allTime" ? 1000 * 60 * 60 : 1000 * 60,
+    staleTime: options.type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
   });
 
 function getSelectionFromQueryKey(queryKey: QueryKey): Selection {

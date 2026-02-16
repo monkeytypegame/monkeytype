@@ -195,7 +195,7 @@ function getWpmColumns({
       header: () => (
         <>
           <div>{format.typingSpeedUnit}</div>
-          <div class="opacity-50">accucacy</div>
+          <div class="opacity-50">accuracy</div>
         </>
       ),
       cell: (info) => (
@@ -385,7 +385,7 @@ function getXpColumns({
       },
     }),
     defineColumn("totalXp", {
-      id: "rawCon",
+      id: "xpTimeTyped",
       header: () => (
         <>
           <div>xp gained</div>
@@ -401,7 +401,12 @@ function getXpColumns({
           </div>
           <div class="text-sub">
             {" "}
-            {secondsToString(Math.round(info.getValue()), true, true, ":")}
+            {secondsToString(
+              Math.round(info.row.original.timeTypedSeconds),
+              true,
+              true,
+              ":",
+            )}
           </div>
         </>
       ),

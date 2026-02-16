@@ -150,7 +150,7 @@ function NextUpdate(props: { type: LeaderboardType }): JSXElement {
   const nextUpdate = createMemo(() => {
     const now = new Date(tick());
     if (props.type === "daily") {
-      const diff = differenceInSeconds(now, endOfDay(new UTCDateMini()));
+      const diff = differenceInSeconds(endOfDay(new UTCDateMini()), now);
       return "Next reset in: " + secondsToString(diff, true);
     } else if (props.type === "allTime") {
       const minutesToNextUpdate = 14 - (now.getMinutes() % 15);
@@ -161,7 +161,7 @@ function NextUpdate(props: { type: LeaderboardType }): JSXElement {
       const nextWeekTimestamp = endOfWeek(new UTCDateMini(), {
         weekStartsOn: 1,
       });
-      const totalSeconds = differenceInSeconds(now, nextWeekTimestamp);
+      const totalSeconds = differenceInSeconds(nextWeekTimestamp, now);
       return (
         "Next reset in: " +
         secondsToString(totalSeconds, true, true, ":", true, true)
