@@ -1,7 +1,10 @@
 import { ResultFilters, ResultFiltersSchema } from "@monkeytype/schemas/users";
 import { createSignal, JSXElement, Show } from "solid-js";
 
-import { useResultsLiveQuery } from "../../../collections/results";
+import {
+  ResultsQuery,
+  useResultsLiveQuery,
+} from "../../../collections/results";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
@@ -12,6 +15,7 @@ import { Button } from "../../common/Button";
 
 import { Filters } from "./Filters";
 import { Table } from "./Table";
+import { TestStats } from "./TestStats";
 
 export function AccountPage(): JSXElement {
   //TODO change page
@@ -34,12 +38,14 @@ export function AccountPage(): JSXElement {
     direction: "desc",
   });
 
-  const data = useResultsLiveQuery({
+  const resultsQuery: ResultsQuery = {
     enabled: () => isOpen() && isLoggedIn(),
     filters,
     sorting,
     limit,
-  });
+  };
+
+  const data = useResultsLiveQuery(resultsQuery);
 
   return (
     <Show when={isLoggedIn()}>
@@ -50,6 +56,7 @@ export function AccountPage(): JSXElement {
         }
       />
 
+      <TestStats resultsQuery={resultsQuery} />
       <Table data={[...data()]} onSortingChange={(val) => setSorting(val)} />
       <Button
         text="load more"

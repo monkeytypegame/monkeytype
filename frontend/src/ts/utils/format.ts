@@ -23,9 +23,16 @@ export type FallbackOptions = {
   fallback?: string;
 };
 
+type FormatConfig = Pick<
+  ConfigType,
+  "typingSpeedUnit" | "alwaysShowDecimalPlaces"
+>;
+
 export class Formatting {
-  constructor(private config: ConfigType) {
-    //
+  private config: FormatConfig;
+
+  constructor(config: FormatConfig) {
+    this.config = config;
   }
 
   typingSpeed(
@@ -67,6 +74,7 @@ export class Formatting {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     return this.number(value, options);
   }
+
   get typingSpeedUnit(): TypingSpeedUnit {
     return this.config.typingSpeedUnit;
   }

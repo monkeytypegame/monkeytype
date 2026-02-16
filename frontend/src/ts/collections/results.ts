@@ -2,12 +2,16 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
+  avg,
+  count,
   createCollection,
+  createLiveQueryCollection,
   inArray,
-  InitialQueryBuilder,
+  max,
+  sum,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { createMemo } from "solid-js";
+import { Accessor, createMemo } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
@@ -29,7 +33,7 @@ type ResultsQueryState = {
 };
 
 const queryKeys = {
-  root: () => [...baseKey("results", { isUserSpecific: true }), Math.random()],
+  root: () => [...baseKey("results", { isUserSpecific: true })],
 };
 
 export const resultsCollection = createCollection(
@@ -65,7 +69,11 @@ export const resultsCollection = createCollection(
         result.incompleteTestSeconds ??= 0;
         result.afkDuration ??= 0;
         result.tags ??= [];
-        return result as SnapshotResult<Mode>;
+        result.isPb ??= false;
+        return {
+          ...result,
+          words: Math.round((result.wpm / 60) * result.testDuration),
+        } as SnapshotResult<Mode>;
       });
     },
     queryClient,
@@ -73,16 +81,33 @@ export const resultsCollection = createCollection(
   }),
 );
 
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function useResultsLiveQuery(params: {
-  enabled: () => boolean;
-  filters: () => ResultFilters;
-  sorting: () => {
+export type ResultsQuery = {
+  enabled: Accessor<boolean>;
+  filters: Accessor<ResultFilters>;
+  sorting: Accessor<{
     field: ResultsSortField;
     direction: SortDirection;
-  };
-  limit: () => number;
-}) {
+  }>;
+  limit: Accessor<number>;
+};
+
+export type ResultStats = {
+  words: number;
+  restarted: number;
+  completed: number;
+  maxWpm: number;
+  avgWpm: number;
+  maxRaw: number;
+  avgRaw: number;
+  maxAcc: number;
+  avgAcc: number;
+  maxConsistency: number;
+  avgConsistency: number;
+  timeTyping: number;
+};
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useResultsLiveQuery(params: ResultsQuery) {
   const queryState = createMemo(() => {
     if (!params.enabled()) {
       return undefined;
@@ -98,22 +123,75 @@ export function useResultsLiveQuery(params: {
   return useLiveQuery((q) => {
     const state = queryState();
     if (state === undefined) return undefined;
-    return buildResultsQuery(state)(q);
+    return q
+      .from({ r: getFilteredResults(state) })
+      .orderBy(({ r }) => r[state.sortField], state.sortDirection)
+      .limit(state.limit);
   });
 }
-
-function buildResultsQuery(state: ResultsQueryState) {
-  return (q: InitialQueryBuilder) =>
+// oxlint-disable-next-line typescript/explicit-function-return-type
+function getFilteredResults(state: ResultsQueryState) {
+  return createLiveQueryCollection((q) =>
     q
       .from({ r: resultsCollection })
       .where(({ r }) => inArray(r.difficulty, state.difficulty))
       .where(({ r }) => inArray(r.isPb, state.pb))
       .where(({ r }) => inArray(r.mode, state.mode))
-      .where(({ r }) => inArray(r.mode2, state.mode2))
+      /*.where(({ r }) =>
+        or(inArray(r.mode, ["quote", "zen"]), inArray(r.mode2, state.mode2)),
+      )*/
       .where(({ r }) => inArray(r.punctuation, state.punctuation))
-      .where(({ r }) => inArray(r.numbers, state.numbers))
-      .orderBy(({ r }) => r[state.sortField], state.sortDirection)
-      .limit(state.limit);
+      .where(({ r }) => inArray(r.numbers, state.numbers)),
+  );
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useResultStatsLiveQuery(
+  params: ResultsQuery,
+  options?: { lastTen?: true },
+) {
+  const queryState = createMemo(() => {
+    if (!params.enabled()) {
+      return undefined;
+    }
+
+    return createResultsQueryState(
+      params.filters(),
+      params.sorting(),
+      params.limit(),
+    );
+  });
+
+  return useLiveQuery((q) => {
+    const state = queryState();
+    if (state === undefined) return undefined;
+
+    return (
+      options?.lastTen
+        ? q.from({
+            r: q
+              .from({ r: getFilteredResults(state) })
+              .orderBy(({ r }) => r.timestamp, "desc")
+              .limit(10),
+          })
+        : q.from({ r: getFilteredResults(state) })
+    )
+      .select(({ r }) => ({
+        words: sum(r.words),
+        completed: count(r._id),
+        restarted: sum(r.restartCount),
+        timeTyping: sum(r.testDuration),
+        maxWpm: max(r.wpm),
+        avgWpm: avg(r.wpm),
+        maxRaw: max(r.rawWpm),
+        avgRaw: avg(r.rawWpm),
+        maxAcc: max(r.acc),
+        avgAcc: avg(r.acc),
+        maxConsistency: max(r.consistency),
+        avgConsistency: avg(r.consistency),
+      }))
+      .findOne();
+  });
 }
 
 function createResultsQueryState(
