@@ -8,6 +8,8 @@ import { QueryKey, queryOptions } from "@tanstack/solid-query";
 import { z } from "zod";
 import Ape from "../ape";
 
+export const pageSize = 50;
+
 export type LeaderboardType = Selection["type"];
 const XpSelection = z.object({
   type: z.literal("weekly"),
@@ -66,32 +68,35 @@ export const getLeaderboardQueryOptions = (
 
       const selection = getSelectionFromQueryKey(ctx.queryKey);
 
+      const baseQuery = {
+        friendsOnly: selection.friendsOnly ? true : undefined,
+        pageSize,
+        page: page.page,
+      };
+
       let request;
 
       if (selection.type === "weekly") {
         request = Ape.leaderboards.getWeeklyXp({
           query: {
-            friendsOnly: selection.friendsOnly ? true : undefined,
+            ...baseQuery,
             weeksBefore: selection.previous ? 1 : undefined,
-            pageSize: 50,
-            page: page.page,
           },
         });
       } else {
-        const baseQuery: GetLeaderboardQuery = {
+        const modeQuery: GetLeaderboardQuery = {
+          ...baseQuery,
           mode: selection.mode,
           mode2: selection.mode2,
           language: selection.language,
-          friendsOnly: selection.friendsOnly ? true : undefined,
-          pageSize: 50,
-          page: page.page,
         };
+
         if (selection.type === "allTime") {
-          request = Ape.leaderboards.get({ query: baseQuery });
+          request = Ape.leaderboards.get({ query: modeQuery });
         } else {
           request = Ape.leaderboards.getDaily({
             query: {
-              ...baseQuery,
+              ...modeQuery,
               daysBefore: selection.previous ? 1 : undefined,
             },
           });
@@ -118,6 +123,8 @@ export const getLeaderboardQueryOptions = (
       ) {
         return undefined;
       }
+
+      //check the old data is of the same type
       const last = old["entries"][0];
       if (
         (options.type === "weekly" && !("totalXp" in last)) ||

@@ -163,11 +163,13 @@ function getWpmColumns({
     defineColumn("wpm", {
       header: format.typingSpeedUnit,
       cell: (info) =>
-        wrapWithHeader(
-          format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
-          format.typingSpeedUnit,
-          addHeader,
-        ),
+        wrapWithHeader({
+          value: format.typingSpeed(info.getValue(), {
+            showDecimalPlaces: true,
+          }),
+          header: format.typingSpeedUnit,
+          enabled: addHeader,
+        }),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -176,11 +178,13 @@ function getWpmColumns({
     defineColumn("acc", {
       header: "accuracy",
       cell: (info) =>
-        wrapWithHeader(
-          format.percentage(info.getValue(), { showDecimalPlaces: true }),
-          "accuracy",
-          addHeader,
-        ),
+        wrapWithHeader({
+          value: format.percentage(info.getValue(), {
+            showDecimalPlaces: true,
+          }),
+          header: "accuracy",
+          enabled: addHeader,
+        }),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -216,11 +220,13 @@ function getWpmColumns({
     defineColumn("raw", {
       header: "raw",
       cell: (info) =>
-        wrapWithHeader(
-          format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
-          "raw",
-          addHeader,
-        ),
+        wrapWithHeader({
+          value: format.typingSpeed(info.getValue(), {
+            showDecimalPlaces: true,
+          }),
+          header: "raw",
+          enabled: addHeader,
+        }),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -229,11 +235,13 @@ function getWpmColumns({
     defineColumn("consistency", {
       header: "consistency",
       cell: (info) =>
-        wrapWithHeader(
-          format.percentage(info.getValue(), { showDecimalPlaces: true }),
-          "consistency",
-          addHeader,
-        ),
+        wrapWithHeader({
+          value: format.percentage(info.getValue(), {
+            showDecimalPlaces: true,
+          }),
+          header: "consistency",
+          enabled: addHeader,
+        }),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -272,11 +280,11 @@ function getWpmColumns({
       cell: (info) =>
         info.getValue() !== undefined ? (
           addHeader ? (
-            wrapWithHeader(
-              dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
-              "date",
-              true,
-            )
+            wrapWithHeader({
+              value: dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
+              header: "date",
+              enabled: true,
+            })
           ) : (
             <>
               <div class="text-xs">
@@ -296,10 +304,12 @@ function getWpmColumns({
     }),
   ];
 
+  //remove first column if not friendsOnly
   if (!friendsOnly) {
     columns.shift();
   }
 
+  //mark each column non sortable
   return columns.map((it) => ({ ...it, enableSorting: false }));
 }
 
@@ -348,13 +358,14 @@ function getXpColumns({
     defineColumn("totalXp", {
       header: "xp gained",
       cell: (info) =>
-        wrapWithHeader(
-          info.getValue() < 1000
-            ? info.getValue().toFixed(0)
-            : abbreviateNumber(info.getValue()),
-          "xp gained",
-          addHeader,
-        ),
+        wrapWithHeader({
+          value:
+            info.getValue() < 1000
+              ? info.getValue().toFixed(0)
+              : abbreviateNumber(info.getValue()),
+          header: "xp gained",
+          enabled: addHeader,
+        }),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -363,11 +374,11 @@ function getXpColumns({
     defineColumn("timeTypedSeconds", {
       header: "time typed",
       cell: (info) =>
-        wrapWithHeader(
-          secondsToString(Math.round(info.getValue()), true, true, ":"),
-          "time typed",
-          addHeader,
-        ),
+        wrapWithHeader({
+          value: secondsToString(Math.round(info.getValue()), true, true, ":"),
+          header: "time typed",
+          enabled: addHeader,
+        }),
       meta: {
         align: "right",
         breakpoint: "xl",
@@ -405,11 +416,11 @@ function getXpColumns({
       cell: (info) =>
         info.getValue() !== undefined ? (
           addHeader ? (
-            wrapWithHeader(
-              dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
-              "last activity",
-              true,
-            )
+            wrapWithHeader({
+              value: dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
+              header: "last activity",
+              enabled: true,
+            })
           ) : (
             <>
               <div class="text-xs">
@@ -438,27 +449,29 @@ function getXpColumns({
     }),
   ];
 
+  //remove first column if not friendsOnly
   if (!friendsOnly) {
     columns.shift();
   }
 
+  //mark each column as non sortable
   return columns.map((it) => ({
     ...it,
     enableSorting: false,
   }));
 }
 
-function wrapWithHeader(
-  value: string,
-  header: string,
-  enabled?: boolean,
-): string | JSXElement {
-  return enabled ? (
+function wrapWithHeader(options: {
+  value: string;
+  header: string;
+  enabled?: boolean;
+}): string | JSXElement {
+  return options.enabled ? (
     <>
-      <div class="text-xs text-sub">{header}</div>
-      <div>{value}</div>
+      <div class="text-xs text-sub">{options.header}</div>
+      <div>{options.value}</div>
     </>
   ) : (
-    value
+    options.value
   );
 }

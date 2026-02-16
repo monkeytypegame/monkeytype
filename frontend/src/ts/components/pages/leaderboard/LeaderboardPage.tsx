@@ -36,7 +36,7 @@ import { UserRank } from "./UserRank";
 
 const pageName: PageName = "leaderboards";
 
-export const LeaderboardUrlParamsSchema = z
+const LeaderboardUrlParamsSchema = z
   .object({
     type: z.enum(["allTime", "daily", "weekly"]),
     mode: ModeSchema.optional(),
@@ -55,6 +55,7 @@ qsr(`nav .view-${pageName}`).on("mouseenter", () => {
   prefetch();
 });
 
+//used for url params so we need this global
 const [selection, setSelection] = lsSelection();
 const [page, setPage] = createSignal(0);
 
@@ -63,8 +64,8 @@ export function LeaderboardPage(): JSXElement {
 
   const [scrollToUser, setScrollToUser] = createSignal(false);
 
+  //prefetch next page
   createEffect(() => {
-    //TODO fetch previous page as well, check boundaries
     if (isOpen()) {
       void queryClient.prefetchQuery(
         getLeaderboardQueryOptions({
@@ -75,13 +76,13 @@ export function LeaderboardPage(): JSXElement {
     }
   });
 
+  //update url after the data is loaded
   createEffect(() => {
-    //update url after the data is loaded
     if (dataQuery.isSuccess) updateGetParameters(selection(), page());
   });
 
+  //update lb memory after the rank is loaded
   createEffect(() => {
-    //update lb memory after the rank is loaded
     if (rankQuery.isSuccess) syncLbMemory();
   });
 
@@ -108,12 +109,15 @@ export function LeaderboardPage(): JSXElement {
     setPage(0);
   };
 
+  /**
+   * the page that contains the user
+   */
   const userPage = (): number | undefined => {
     const userRank = selection().friendsOnly
       ? rankQuery.data?.friendsRank
       : rankQuery.data?.rank;
     if (userRank === undefined) return undefined;
-    const page = Math.ceil(userRank / 50) - 1;
+    const page = Math.ceil(userRank / (dataQuery.data?.pageSize ?? 50)) - 1;
     return page;
   };
 
@@ -135,10 +139,7 @@ export function LeaderboardPage(): JSXElement {
         <Title
           selection={selection()}
           onPreviousSelect={() =>
-            setSelection((old) => ({
-              ...old,
-              previous: !old.previous,
-            }))
+            setSelection((old) => ({ ...old, previous: !old.previous }))
           }
         />
 
