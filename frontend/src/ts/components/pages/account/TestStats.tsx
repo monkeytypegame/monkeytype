@@ -1,7 +1,7 @@
-import { createMemo, JSXElement, Show } from "solid-js";
+import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
 import {
-  ResultsQuery,
+  ResultsQueryState,
   ResultStats,
   useResultStatsLiveQuery,
 } from "../../../collections/results";
@@ -10,12 +10,12 @@ import { secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { Fa } from "../../common/Fa";
 
-export function TestStats(props: { resultsQuery: ResultsQuery }): JSXElement {
+export function TestStats(props: {
+  resultsQuery: Accessor<ResultsQueryState | undefined>;
+}): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
-  const formatWpm = (val: number): string =>
-    format().typingSpeed(val, { showDecimalPlaces: true });
-  const formatPercentage = (val: number): string =>
-    format().percentage(val, { showDecimalPlaces: true });
+  const formatWpm = (val: number): string => format().typingSpeed(val);
+  const formatPercentage = (val: number): string => format().percentage(val);
 
   const statsQuery = useResultStatsLiveQuery(props.resultsQuery);
   const last10StatsQuery = useResultStatsLiveQuery(props.resultsQuery, {
@@ -61,18 +61,14 @@ export function TestStats(props: { resultsQuery: ResultsQuery }): JSXElement {
           <div class="text-2xl leading-[1.1] md:text-3xl lg:text-5xl">
             {stats().completed}(
             {Math.floor(
-              ((stats().completed + stats().restarted) /
-                (stats().completed + 2 * stats().restarted)) *
+              (stats().completed / (stats().completed + stats().restarted)) *
                 100,
             )}
             %)
           </div>
           <div class="text-xs">
-            {(
-              stats().restarted /
-              (stats().restarted + stats().completed)
-            ).toFixed(1)}{" "}
-            restarts per completed test
+            {(stats().restarted / stats().completed).toFixed(1)} restarts per
+            completed test
           </div>
         </div>
 

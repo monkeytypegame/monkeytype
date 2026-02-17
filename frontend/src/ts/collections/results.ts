@@ -1,33 +1,39 @@
+import { ResultMinified } from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
+  and,
   avg,
   count,
   createCollection,
   createLiveQueryCollection,
+  eq,
+  gte,
   inArray,
   max,
+  not,
+  or,
   sum,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { Accessor, createMemo } from "solid-js";
+import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { ResultMinified } from "@monkeytype/schemas/results";
 
-export type SortDirection = "asc" | "desc";
-
-export type ResultsSortField = keyof SnapshotResult<Mode>;
-type ResultsQueryState = {
+type SortDirection = "asc" | "desc";
+type ResultsSortField = keyof SnapshotResult<Mode>;
+export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
   pb: SnapshotResult<Mode>["isPb"][];
   mode: SnapshotResult<Mode>["mode"][];
-  mode2: SnapshotResult<Mode>["mode2"][];
+  words: ("10" | "25" | "50" | "100" | "custom")[];
+  time: ("15" | "30" | "60" | "120" | "custom")[];
   punctuation: SnapshotResult<Mode>["punctuation"][];
   numbers: SnapshotResult<Mode>["numbers"][];
+  timestamp: SnapshotResult<Mode>["timestamp"];
   sortField: ResultsSortField;
   sortDirection: SortDirection;
   limit: number;
@@ -37,7 +43,86 @@ const queryKeys = {
   root: () => [...baseKey("results", { isUserSpecific: true })],
 };
 
-export const resultsCollection = createCollection(
+export type ResultStats = {
+  words: number;
+  restarted: number;
+  completed: number;
+  maxWpm: number;
+  avgWpm: number;
+  maxRaw: number;
+  avgRaw: number;
+  maxAcc: number;
+  avgAcc: number;
+  maxConsistency: number;
+  avgConsistency: number;
+  timeTyping: number;
+};
+
+/**
+ * get aggregated statistics for the current result selection
+ * @param queryState
+ * @param options
+ * @returns
+ */
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useResultStatsLiveQuery(
+  queryState: Accessor<ResultsQueryState | undefined>,
+  options?: { lastTen?: true },
+) {
+  return useLiveQuery((q) => {
+    const state = queryState();
+    if (state === undefined) return undefined;
+
+    return (
+      options?.lastTen
+        ? //for lastTen we need a sub-query to apply the sort+limit first and then run the aggregations
+          q.from({
+            r: q
+              .from({ r: getFilteredResults(state) })
+              .orderBy(({ r }) => r.timestamp, "desc")
+              .limit(10),
+          })
+        : q.from({ r: getFilteredResults(state) })
+    )
+      .select(({ r }) => ({
+        words: sum(r.words),
+        completed: count(r._id),
+        restarted: sum(r.restartCount),
+        timeTyping: sum(r.timeTyping),
+        maxWpm: max(r.wpm),
+        avgWpm: avg(r.wpm),
+        maxRaw: max(r.rawWpm),
+        avgRaw: avg(r.rawWpm),
+        maxAcc: max(r.acc),
+        avgAcc: avg(r.acc),
+        maxConsistency: max(r.consistency),
+        avgConsistency: avg(r.consistency),
+      }))
+      .findOne();
+  });
+}
+
+/**
+ * get list of SnapshotResults for the current result selection
+ * @param queryState
+ * @returns
+ */
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useResultsLiveQuery(
+  queryState: Accessor<ResultsQueryState | undefined>,
+) {
+  console.log("###", queryState());
+  return useLiveQuery((q) => {
+    const state = queryState();
+    if (state === undefined) return undefined;
+    return q
+      .from({ r: getFilteredResults(state) })
+      .orderBy(({ r }) => r[state.sortField], state.sortDirection)
+      .limit(state.limit);
+  });
+}
+
+const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
@@ -83,122 +168,56 @@ export const resultsCollection = createCollection(
   }),
 );
 
-export type ResultsQuery = {
-  enabled: Accessor<boolean>;
-  filters: Accessor<ResultFilters>;
-  sorting: Accessor<{
-    field: ResultsSortField;
-    direction: SortDirection;
-  }>;
-  limit: Accessor<number>;
-};
-
-export type ResultStats = {
-  words: number;
-  restarted: number;
-  completed: number;
-  maxWpm: number;
-  avgWpm: number;
-  maxRaw: number;
-  avgRaw: number;
-  maxAcc: number;
-  avgAcc: number;
-  maxConsistency: number;
-  avgConsistency: number;
-  timeTyping: number;
-};
-
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function useResultsLiveQuery(params: ResultsQuery) {
-  const queryState = createMemo(() => {
-    if (!params.enabled()) {
-      return undefined;
-    }
-
-    return createResultsQueryState(
-      params.filters(),
-      params.sorting(),
-      params.limit(),
-    );
-  });
-
-  return useLiveQuery((q) => {
-    const state = queryState();
-    if (state === undefined) return undefined;
-    return q
-      .from({ r: getFilteredResults(state) })
-      .orderBy(({ r }) => r[state.sortField], state.sortDirection)
-      .limit(state.limit);
-  });
-}
-
 // oxlint-disable-next-line typescript/explicit-function-return-type
 function getFilteredResults(state: ResultsQueryState) {
-  return createLiveQueryCollection((q) =>
-    q
+  return createLiveQueryCollection((q) => {
+    const applyMode2Filter = (
+      key: "time" | "words",
+      filter: ResultsQueryState["time"] | ResultsQueryState["words"],
+      nonCustomValues: string[],
+    ): void => {
+      if (filter.length === 5) return;
+      const isCustom = filter.includes("custom");
+      const selected = filter.filter((it) => it !== "custom");
+      query = query.where(({ r }) =>
+        or(
+          //results not matching the mode pass
+          inArray(
+            r.mode,
+            ["time", "words", "quote", "custom", "zen"].filter(
+              (it) => it !== key,
+            ),
+          ),
+          and(
+            eq(r.mode, key),
+            or(
+              //mode2 is matching the selected mode2
+              inArray(r.mode2, selected),
+              //or if custom selected are not matching any non-custom value
+              isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
+            ),
+          ),
+        ),
+      );
+    };
+
+    let query = q
       .from({ r: resultsCollection })
+      .where(({ r }) => gte(r.timestamp, state.timestamp))
       .where(({ r }) => inArray(r.difficulty, state.difficulty))
       .where(({ r }) => inArray(r.isPb, state.pb))
       .where(({ r }) => inArray(r.mode, state.mode))
-      /*.where(({ r }) =>
-        or(inArray(r.mode, ["quote", "zen"]), inArray(r.mode2, state.mode2)),
-      )*/
       .where(({ r }) => inArray(r.punctuation, state.punctuation))
-      .where(({ r }) => inArray(r.numbers, state.numbers)),
-  );
-}
+      .where(({ r }) => inArray(r.numbers, state.numbers));
 
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function useResultStatsLiveQuery(
-  params: ResultsQuery,
-  options?: { lastTen?: true },
-) {
-  const queryState = createMemo(() => {
-    if (!params.enabled()) {
-      return undefined;
-    }
+    applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
+    applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
 
-    return createResultsQueryState(
-      params.filters(),
-      params.sorting(),
-      params.limit(),
-    );
-  });
-
-  return useLiveQuery((q) => {
-    const state = queryState();
-    if (state === undefined) return undefined;
-
-    return (
-      options?.lastTen
-        ? //for lastTen we need a sub-query to apply the sort+limit first and then run the aggregations
-          q.from({
-            r: q
-              .from({ r: getFilteredResults(state) })
-              .orderBy(({ r }) => r.timestamp, "desc")
-              .limit(10),
-          })
-        : q.from({ r: getFilteredResults(state) })
-    )
-      .select(({ r }) => ({
-        words: sum(r.words),
-        completed: count(r._id),
-        restarted: sum(r.restartCount),
-        timeTyping: sum(r.timeTyping),
-        maxWpm: max(r.wpm),
-        avgWpm: avg(r.wpm),
-        maxRaw: max(r.rawWpm),
-        avgRaw: avg(r.rawWpm),
-        maxAcc: max(r.acc),
-        avgAcc: avg(r.acc),
-        maxConsistency: max(r.consistency),
-        avgConsistency: avg(r.consistency),
-      }))
-      .findOne();
+    return query;
   });
 }
 
-function createResultsQueryState(
+export function createResultsQueryState(
   filters: ResultFilters,
   sorting: { field: ResultsSortField; direction: SortDirection },
   limit: number,
@@ -207,9 +226,11 @@ function createResultsQueryState(
     difficulty: valueFilter(filters.difficulty),
     pb: boolFilter(filters.pb),
     mode: valueFilter(filters.mode),
-    mode2: [...valueFilter(filters.words), ...valueFilter(filters.time)],
+    words: valueFilter(filters.words),
+    time: valueFilter(filters.time),
     punctuation: boolFilter(filters.punctuation),
     numbers: boolFilter(filters.numbers),
+    timestamp: timestampFilter(filters.date),
     sortField: sorting.field,
     sortDirection: sorting.direction,
     limit,
@@ -228,6 +249,29 @@ function boolFilter(
   return Object.entries(val)
     .filter(([_, v]) => v)
     .map(([k]) => k === "on" || k === "yes");
+}
+
+function singleFilter<T extends string, U>(
+  val: Partial<Record<T, boolean>>,
+  mapping: Record<T, U>,
+): U | undefined {
+  const active = Object.entries(val).find(([_, v]) => v as boolean);
+  const result = active === undefined ? undefined : mapping[active[0] as T];
+  return result;
+}
+
+function timestampFilter(val: ResultFilters["date"]): number {
+  const seconds =
+    singleFilter(val, {
+      all: 0,
+      last_day: 24 * 60 * 60,
+      last_week: 7 * 24 * 60 * 60,
+      last_month: 30 * 24 * 60 * 60,
+      last_3months: 90 * 24 * 60 * 60,
+    }) ?? 0;
+
+  if (seconds === 0) return 0;
+  return Math.floor(Date.now() - seconds * 1000);
 }
 
 function calcTimeTyping(result: ResultMinified): number {
