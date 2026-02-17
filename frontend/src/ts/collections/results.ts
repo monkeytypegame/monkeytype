@@ -3,7 +3,6 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
-  and,
   avg,
   count,
   createCollection,
@@ -180,20 +179,12 @@ function getFilteredResults(state: ResultsQueryState) {
       query = query.where(({ r }) =>
         or(
           //results not matching the mode pass
-          inArray(
-            r.mode,
-            ["time", "words", "quote", "custom", "zen"].filter(
-              (it) => it !== key,
-            ),
-          ),
-          and(
-            eq(r.mode, key),
-            or(
-              //mode2 is matching one ofthe selected mode2
-              inArray(r.mode2, selected),
-              //or if custom selected are not matching any non-custom value
-              isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
-            ),
+          not(eq(r.mode, key)),
+          or(
+            //mode2 is matching one of the  selected mode2
+            inArray(r.mode2, selected),
+            //or if custom selected are not matching any non-custom value
+            isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
           ),
         ),
       );
