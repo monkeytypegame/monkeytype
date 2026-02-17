@@ -34,6 +34,7 @@ export type ResultsQueryState = {
   punctuation: SnapshotResult<Mode>["punctuation"][];
   numbers: SnapshotResult<Mode>["numbers"][];
   timestamp: SnapshotResult<Mode>["timestamp"];
+  quoteLength: SnapshotResult<Mode>["quoteLength"][];
   sortField: ResultsSortField;
   sortDirection: SortDirection;
   limit: number;
@@ -83,22 +84,20 @@ export function useResultStatsLiveQuery(
               .limit(10),
           })
         : q.from({ r: getFilteredResults(state) })
-    )
-      .select(({ r }) => ({
-        words: sum(r.words),
-        completed: count(r._id),
-        restarted: sum(r.restartCount),
-        timeTyping: sum(r.timeTyping),
-        maxWpm: max(r.wpm),
-        avgWpm: avg(r.wpm),
-        maxRaw: max(r.rawWpm),
-        avgRaw: avg(r.rawWpm),
-        maxAcc: max(r.acc),
-        avgAcc: avg(r.acc),
-        maxConsistency: max(r.consistency),
-        avgConsistency: avg(r.consistency),
-      }))
-      .findOne();
+    ).select(({ r }) => ({
+      words: sum(r.words),
+      completed: count(r._id),
+      restarted: sum(r.restartCount),
+      timeTyping: sum(r.timeTyping),
+      maxWpm: max(r.wpm),
+      avgWpm: avg(r.wpm),
+      maxRaw: max(r.rawWpm),
+      avgRaw: avg(r.rawWpm),
+      maxAcc: max(r.acc),
+      avgAcc: avg(r.acc),
+      maxConsistency: max(r.consistency),
+      avgConsistency: avg(r.consistency),
+    }));
   });
 }
 
@@ -111,7 +110,6 @@ export function useResultStatsLiveQuery(
 export function useResultsLiveQuery(
   queryState: Accessor<ResultsQueryState | undefined>,
 ) {
-  console.log("###", queryState());
   return useLiveQuery((q) => {
     const state = queryState();
     if (state === undefined) return undefined;
@@ -171,9 +169,9 @@ const resultsCollection = createCollection(
 // oxlint-disable-next-line typescript/explicit-function-return-type
 function getFilteredResults(state: ResultsQueryState) {
   return createLiveQueryCollection((q) => {
-    const applyMode2Filter = (
-      key: "time" | "words",
-      filter: ResultsQueryState["time"] | ResultsQueryState["words"],
+    const applyMode2Filter = <T extends "time" | "words">(
+      key: T,
+      filter: ResultsQueryState[T],
       nonCustomValues: string[],
     ): void => {
       if (filter.length === 5) return;
@@ -191,7 +189,7 @@ function getFilteredResults(state: ResultsQueryState) {
           and(
             eq(r.mode, key),
             or(
-              //mode2 is matching the selected mode2
+              //mode2 is matching one ofthe selected mode2
               inArray(r.mode2, selected),
               //or if custom selected are not matching any non-custom value
               isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
@@ -208,7 +206,8 @@ function getFilteredResults(state: ResultsQueryState) {
       .where(({ r }) => inArray(r.isPb, state.pb))
       .where(({ r }) => inArray(r.mode, state.mode))
       .where(({ r }) => inArray(r.punctuation, state.punctuation))
-      .where(({ r }) => inArray(r.numbers, state.numbers));
+      .where(({ r }) => inArray(r.numbers, state.numbers))
+      .where(({ r }) => inArray(r.quoteLength, state.quoteLength));
 
     applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
     applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
@@ -231,16 +230,29 @@ export function createResultsQueryState(
     punctuation: boolFilter(filters.punctuation),
     numbers: boolFilter(filters.numbers),
     timestamp: timestampFilter(filters.date),
+    quoteLength: [
+      ...valueFilter(filters.quoteLength, {
+        short: 0,
+        medium: 1,
+        long: 2,
+        thicc: 3,
+      }),
+      -1, // fallback value for results without quoteLength, set in the collection
+    ],
     sortField: sorting.field,
     sortDirection: sorting.direction,
     limit,
   };
 }
 
-function valueFilter<T extends string>(val: Partial<Record<T, boolean>>): T[] {
+function valueFilter<T extends string, U = T>(
+  val: Partial<Record<T, boolean>>,
+  mapping?: Record<T, U>,
+): U[] {
   return Object.entries(val)
     .filter(([_, v]) => v as boolean) //TODO remove as?
-    .map(([k]) => k as T);
+    .map(([k]) => k as T)
+    .map((it) => (mapping ? mapping[it] : (it as unknown as U)));
 }
 
 function boolFilter(
