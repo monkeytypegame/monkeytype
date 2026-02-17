@@ -254,24 +254,15 @@ function boolFilter(
     .map(([k]) => k === "on" || k === "yes");
 }
 
-function singleFilter<T extends string, U>(
-  val: Partial<Record<T, boolean>>,
-  mapping: Record<T, U>,
-): U | undefined {
-  const active = Object.entries(val).find(([_, v]) => v as boolean);
-  const result = active === undefined ? undefined : mapping[active[0] as T];
-  return result;
-}
-
 function timestampFilter(val: ResultFilters["date"]): number {
   const seconds =
-    singleFilter(val, {
+    valueFilter(val, {
       all: 0,
       last_day: 24 * 60 * 60,
       last_week: 7 * 24 * 60 * 60,
       last_month: 30 * 24 * 60 * 60,
       last_3months: 90 * 24 * 60 * 60,
-    }) ?? 0;
+    })[0] ?? 0;
 
   if (seconds === 0) return 0;
   return Math.floor(Date.now() - seconds * 1000);

@@ -21,7 +21,7 @@ export function Filters(props: {
   return (
     <>
       <H3 fa={{ icon: "fa-filter" }} text="filters" />
-      <div>
+      <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
         <Button text="all" onClick={placeholder} />
         <Button text="current settings" onClick={placeholder} />
         <Button
@@ -33,6 +33,7 @@ export function Filters(props: {
       </div>
 
       <ButtonGroup
+        classOverride="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
         group="date"
         items={[
           { id: "last_day", text: "last day" },
@@ -53,21 +54,27 @@ export function Filters(props: {
       />
 
       <Show when={isShowAdvanced()}>
-        <H3 fa={{ icon: "fa-tools" }} text="advanced filters" />
-        <Button text="clear filters" onClick={placeholder} />
+        <H3 fa={{ icon: "fa-tools" }} text="advanced filters" class="mt-8" />
 
-        <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
-        <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
-        <ButtonGroup text="mode" icon="fa-bars" group="mode" />
-        <ButtonGroup
-          text="quote length"
-          icon="fa-quote-right"
-          group="quoteLength"
+        <Button
+          text="clear filters"
+          onClick={placeholder}
+          class="mb-4 w-full"
         />
-        <ButtonGroup text="words" icon="fa-font" group="words" />
-        <ButtonGroup text="time" icon="fa-clock" group="time" />
-        <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
-        <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
+        <div class="gap-4 md:grid md:grid-cols-2">
+          <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
+          <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
+          <ButtonGroup text="mode" icon="fa-bars" group="mode" />
+          <ButtonGroup
+            text="quote length"
+            icon="fa-quote-right"
+            group="quoteLength"
+          />
+          <ButtonGroup text="words" icon="fa-font" group="words" />
+          <ButtonGroup text="time" icon="fa-clock" group="time" />
+          <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
+          <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
+        </div>
       </Show>
     </>
   );
@@ -81,6 +88,7 @@ export function Filters(props: {
     group: T;
     items?: { id: K; text?: string }[];
     onSelect?: (id: K) => void;
+    classOverride?: string;
   }): JSXElement {
     const items = (): { id: K; text?: string }[] =>
       options.items ??
@@ -90,14 +98,20 @@ export function Filters(props: {
       })) as { id: K; text?: string }[]);
 
     return (
-      <>
+      <div>
         <Show when={options.icon !== undefined && options.text !== undefined}>
           <H3
+            class=""
             fa={{ icon: options.icon as FaSolidIcon, fixedWidth: true }}
             text={options.text as string}
           />
         </Show>
-        <div>
+        <div
+          class={
+            options.classOverride ??
+            "flex justify-evenly gap-2 [&>button]:w-full [&>button]:last:col-span-2"
+          }
+        >
           <For each={items()}>
             {(item) => (
               <Button
@@ -121,7 +135,7 @@ export function Filters(props: {
             )}
           </For>
         </div>
-      </>
+      </div>
     );
   }
 }
