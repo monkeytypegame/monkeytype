@@ -20,7 +20,6 @@ const newFilterPresetModal = new SimpleModal({
     },
   ],
   buttonText: "add",
-  onlineOnly: true,
   execFn: async (_thisPopup, name) => {
     const status = await createFilterPreset(name);
 

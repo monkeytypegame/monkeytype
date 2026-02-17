@@ -4,7 +4,6 @@ import * as Notifications from "../elements/notifications";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 // import * as Settings from "../pages/settings";
-import * as ConnectionState from "../states/connection";
 import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";
@@ -14,13 +13,6 @@ let state = {
 };
 
 export function show(): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {

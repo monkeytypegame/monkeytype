@@ -5,7 +5,6 @@ import * as Config from "../config";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import {
   PresetNameSchema,
@@ -36,13 +35,6 @@ const state = {
 let presetNameEl: ValidatedHtmlInputElement | null = null;
 
 export function show(action: string, id?: string, name?: string): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
