@@ -16,6 +16,7 @@ import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { ResultMinified } from "@monkeytype/schemas/results";
 
 export type SortDirection = "asc" | "desc";
 
@@ -72,6 +73,7 @@ export const resultsCollection = createCollection(
         result.isPb ??= false;
         return {
           ...result,
+          timeTyping: calcTimeTyping(result),
           words: Math.round((result.wpm / 60) * result.testDuration),
         } as SnapshotResult<Mode>;
       });
@@ -129,6 +131,7 @@ export function useResultsLiveQuery(params: ResultsQuery) {
       .limit(state.limit);
   });
 }
+
 // oxlint-disable-next-line typescript/explicit-function-return-type
 function getFilteredResults(state: ResultsQueryState) {
   return createLiveQueryCollection((q) =>
@@ -168,7 +171,8 @@ export function useResultStatsLiveQuery(
 
     return (
       options?.lastTen
-        ? q.from({
+        ? //for lastTen we need a sub-query to apply the sort+limit first and then run the aggregations
+          q.from({
             r: q
               .from({ r: getFilteredResults(state) })
               .orderBy(({ r }) => r.timestamp, "desc")
@@ -180,7 +184,7 @@ export function useResultStatsLiveQuery(
         words: sum(r.words),
         completed: count(r._id),
         restarted: sum(r.restartCount),
-        timeTyping: sum(r.testDuration),
+        timeTyping: sum(r.timeTyping),
         maxWpm: max(r.wpm),
         avgWpm: avg(r.wpm),
         maxRaw: max(r.rawWpm),
@@ -224,6 +228,30 @@ function boolFilter(
   return Object.entries(val)
     .filter(([_, v]) => v)
     .map(([k]) => k === "on" || k === "yes");
+}
+
+function calcTimeTyping(result: ResultMinified): number {
+  let tt = 0;
+  if (
+    result.testDuration === undefined &&
+    result.mode2 !== "custom" &&
+    result.mode2 !== "zen"
+  ) {
+    //test finished before testDuration field was introduced - estimate
+    if (result.mode === "time") {
+      tt = parseInt(result.mode2);
+    } else if (result.mode === "words") {
+      tt = (parseInt(result.mode2) / result.wpm) * 60;
+    }
+  } else {
+    tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
+  }
+  if (result.incompleteTestSeconds !== undefined) {
+    tt += result.incompleteTestSeconds;
+  } else if (result.restartCount !== undefined && result.restartCount > 0) {
+    tt += (tt / 4) * result.restartCount;
+  }
+  return tt;
 }
 
 /*

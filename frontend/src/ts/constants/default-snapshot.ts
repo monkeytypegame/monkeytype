@@ -50,7 +50,9 @@ export type SnapshotResult<M extends Mode> = Omit<
   incompleteTestSeconds: number;
   afkDuration: number;
   tags: string[];
+  //calculated values
   words: number;
+  timeTyping: number;
 };
 
 export type Snapshot = Omit<
