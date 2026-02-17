@@ -55,6 +55,7 @@ export function AccountPage(): JSXElement {
         onChangeFilter={(key, value) =>
           setFilters({ ...filters(), [key]: value })
         }
+        onResetFilter={() => setFilters(defaultResultFilters)}
       />
 
       <TestStats resultsQuery={queryState} />

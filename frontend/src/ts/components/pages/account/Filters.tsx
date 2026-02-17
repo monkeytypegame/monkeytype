@@ -15,6 +15,7 @@ export function Filters(props: {
     id: keyof ResultFilters,
     value: Record<string, boolean>,
   ) => void;
+  onResetFilter: () => void;
 }): JSXElement {
   const [isShowAdvanced, setShowAdvanced] = createSignal(true);
 
@@ -22,7 +23,7 @@ export function Filters(props: {
     <>
       <H3 fa={{ icon: "fa-filter" }} text="filters" />
       <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
-        <Button text="all" onClick={placeholder} />
+        <Button text="all" onClick={() => props.onResetFilter()} />
         <Button text="current settings" onClick={placeholder} />
         <Button
           text="advanced"
