@@ -1,21 +1,45 @@
-import { JSXElement } from "solid-js";
+import { createSignal, JSXElement } from "solid-js";
 
 import { getFocus, getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
+import SlimSelect from "../../ui/SlimSelect";
 
 import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
+  const [state, setState] = createSignal(["initial"]);
   return (
     <footer
       class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
+      {state().join(" - ")}
+      <SlimSelect
+        settings={{
+          showSearch: false,
+        }}
+        data={[
+          {
+            text: "test1",
+            selected: true,
+          },
+          {
+            text: "test2",
+            selected: true,
+          },
+        ]}
+        multiple
+        addAllOption
+        onChange={(e) => {
+          console.log(e);
+          setState(Array.isArray(e) ? e : [e]);
+        }}
+      ></SlimSelect>
       <Keytips />
 
       <div

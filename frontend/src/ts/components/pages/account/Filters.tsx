@@ -1,5 +1,5 @@
 import { ResultFilters } from "@monkeytype/schemas/users";
-import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, For, JSXElement, Show } from "solid-js";
 
 import { getSnapshot } from "../../../db";
 import { FaSolidIcon } from "../../../types/font-awesome";
@@ -113,16 +113,12 @@ export function Filters(props: {
     group: T;
     format?: (value: K) => string;
   }): JSXElement {
-    const allSelected = createMemo(
-      () =>
-        Object.values(props.filters[options.group]).filter((it) => it === true)
-          .length === Object.keys(props.filters[options.group]).length,
-    );
     return (
       <div>
         <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
         <SlimSelect
           multiple
+          addAllOption
           onChange={(val) => {
             let selected = val as string[];
             props.onChangeFilter(
@@ -143,15 +139,12 @@ export function Filters(props: {
             scrollToTop: true,
             maxValuesShown: 4,
           }}
-          data={[
-            { value: "all", text: "all", selected: allSelected() }, //TODO move to component
-            ...Object.entries(props.filters[options.group]).map(([k, v]) => ({
-              value: k,
-              text: options.format?.(k as K) ?? k,
-              filter: k,
-              selected: v as boolean,
-            })),
-          ]}
+          data={Object.entries(props.filters[options.group]).map(([k, v]) => ({
+            value: k,
+            text: options.format?.(k as K) ?? k,
+            filter: k,
+            selected: v as boolean,
+          }))}
         />
       </div>
     );
