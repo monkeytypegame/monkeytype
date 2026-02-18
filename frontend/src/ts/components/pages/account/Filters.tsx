@@ -1,9 +1,12 @@
 import { ResultFilters } from "@monkeytype/schemas/users";
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 
+import { getSnapshot } from "../../../db";
 import { FaSolidIcon } from "../../../types/font-awesome";
+import { getLanguageDisplayString } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
+import SlimSelect from "../../ui/SlimSelect";
 
 const placeholder = (): void => {
   //
@@ -62,7 +65,7 @@ export function Filters(props: {
           onClick={placeholder}
           class="mb-4 w-full"
         />
-        <div class="gap-4 md:grid md:grid-cols-2">
+        <div class="gap-4 md:grid md:grid-cols-2 [&>div]:last:col-span-2">
           <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
           <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
           <ButtonGroup text="mode" icon="fa-bars" group="mode" />
@@ -75,10 +78,83 @@ export function Filters(props: {
           <ButtonGroup text="time" icon="fa-clock" group="time" />
           <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
           <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
+
+          <Dropdown
+            icon="fa-tag"
+            text="tags"
+            group="tags"
+            format={(tag) =>
+              getSnapshot()?.tags.find((it) => it._id === tag)?.display ?? tag
+            }
+          />
+          <Dropdown
+            icon="fa-gamepad"
+            text="funbox"
+            group="funbox"
+            format={(it) => it.replace(/_/g, " ")}
+          />
+          <Dropdown
+            icon="fa-globe-americas"
+            text="language"
+            group="language"
+            format={getLanguageDisplayString}
+          />
         </div>
       </Show>
     </>
   );
+
+  function Dropdown<
+    T extends keyof ResultFilters,
+    K extends keyof ResultFilters[T],
+  >(options: {
+    icon: FaSolidIcon;
+    text: string;
+    group: T;
+    format?: (value: K) => string;
+  }): JSXElement {
+    const allSelected = createMemo(
+      () =>
+        Object.values(props.filters[options.group]).filter((it) => it === true)
+          .length === Object.keys(props.filters[options.group]).length,
+    );
+    return (
+      <div>
+        <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
+        <SlimSelect
+          multiple
+          onChange={(val) => {
+            let selected = val as string[];
+            props.onChangeFilter(
+              options.group,
+              Object.fromEntries(
+                Object.entries(props.filters[options.group]).map(([k]) => [
+                  k,
+                  selected.includes(k),
+                ]),
+              ),
+            );
+          }}
+          settings={{
+            showSearch: true,
+            placeholderText: "select a " + options.group,
+            allowDeselect: true,
+            closeOnSelect: false,
+            scrollToTop: true,
+          }}
+          data={[
+            { value: "all", text: "all", selected: allSelected() }, //TODO move to component
+            ...Object.entries(props.filters[options.group]).map(([k, v]) => ({
+              value: k,
+              text: options.format?.(k as K) ?? k,
+              filter: k,
+              selected: v as boolean,
+            })),
+          ]}
+        />
+      </div>
+    );
+  }
 
   function ButtonGroup<
     T extends keyof ResultFilters,
@@ -102,7 +178,6 @@ export function Filters(props: {
       <div>
         <Show when={options.icon !== undefined && options.text !== undefined}>
           <H3
-            class=""
             fa={{ icon: options.icon as FaSolidIcon, fixedWidth: true }}
             text={options.text as string}
           />

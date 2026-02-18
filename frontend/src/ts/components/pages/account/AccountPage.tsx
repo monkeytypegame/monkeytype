@@ -64,6 +64,7 @@ export function AccountPage(): JSXElement {
         text="load more"
         disabled={data.isLoading}
         onClick={() => setLimit((limit) => limit + 10)}
+        class="w-full text-center"
       />
     </Show>
   );

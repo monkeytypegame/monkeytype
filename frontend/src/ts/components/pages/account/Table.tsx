@@ -5,6 +5,7 @@ import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
 import { SnapshotResult } from "../../../constants/default-snapshot";
+import { getSnapshot } from "../../../db";
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
 import { Fa, FaProps } from "../../common/Fa";
@@ -126,6 +127,24 @@ function getColumns<M extends Mode>({
             </span>
           </Show>
         </>
+      ),
+    }),
+    defineColumn("tags", {
+      header: "tags",
+      cell: (info) => (
+        <Show when={info.getValue().length > 0}>
+          <span
+            data-balloon-pos="up"
+            aria-label={info
+              .getValue()
+              .map(
+                (it) => getSnapshot()?.tags.find((tag) => tag._id === it)?.name,
+              )
+              .join(", ")}
+          >
+            <Fa icon="fa-tags" fixedWidth />
+          </span>
+        </Show>
       ),
     }),
     defineColumn("timestamp", {

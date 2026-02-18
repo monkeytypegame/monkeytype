@@ -34,6 +34,9 @@ export type ResultsQueryState = {
   numbers: SnapshotResult<Mode>["numbers"][];
   timestamp: SnapshotResult<Mode>["timestamp"];
   quoteLength: SnapshotResult<Mode>["quoteLength"][];
+  tags: SnapshotResult<Mode>["tags"];
+  funbox: SnapshotResult<Mode>["funbox"][];
+  language: SnapshotResult<Mode>["language"][];
   sortField: ResultsSortField;
   sortDirection: SortDirection;
   limit: number;
@@ -190,6 +193,8 @@ function getFilteredResults(state: ResultsQueryState) {
       );
     };
 
+    console.log("####", state.tags);
+
     let query = q
       .from({ r: resultsCollection })
       .where(({ r }) => gte(r.timestamp, state.timestamp))
@@ -198,12 +203,18 @@ function getFilteredResults(state: ResultsQueryState) {
       .where(({ r }) => inArray(r.mode, state.mode))
       .where(({ r }) => inArray(r.punctuation, state.punctuation))
       .where(({ r }) => inArray(r.numbers, state.numbers))
-      .where(({ r }) => inArray(r.quoteLength, state.quoteLength));
+      .where(({ r }) => inArray(r.quoteLength, state.quoteLength))
+      //.where(({ r }) => inArray(r.funbox, state.funbox))
+      .where(({ r }) => inArray(r.language, state.language));
 
     applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
     applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
 
-    return query;
+    return query.fn.where((row) =>
+      state.tags.some((tag) =>
+        tag === "none" ? row.r.tags.length === 0 : row.r.tags.includes(tag),
+      ),
+    );
   });
 }
 
@@ -230,6 +241,10 @@ export function createResultsQueryState(
       }),
       -1, // fallback value for results without quoteLength, set in the collection
     ],
+    tags: valueFilter(filters.tags),
+    funbox: valueFilter(filters.funbox),
+    language: valueFilter(filters.language),
+
     sortField: sorting.field,
     sortDirection: sorting.direction,
     limit,
