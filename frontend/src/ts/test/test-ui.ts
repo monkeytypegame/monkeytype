@@ -1814,7 +1814,8 @@ export function beforeTestWordChange(
   if (
     (Config.stopOnError === "letter" && (correct || correct === null)) ||
     nospaceEnabled ||
-    forceUpdateActiveWordLetters
+    forceUpdateActiveWordLetters ||
+    Config.strictSpace
   ) {
     void updateWordLetters({
       input: TestInput.input.current,
