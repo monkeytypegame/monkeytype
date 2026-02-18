@@ -22,15 +22,15 @@ export function Footer(): JSXElement {
       <SlimSelect
         settings={{
           showSearch: false,
+          allowDeselect: true,
+          closeOnSelect: false,
         }}
         data={[
           {
             text: "test1",
-            selected: true,
           },
           {
             text: "test2",
-            selected: true,
           },
         ]}
         multiple
