@@ -141,6 +141,7 @@ export function Filters(props: {
             allowDeselect: true,
             closeOnSelect: false,
             scrollToTop: true,
+            maxValuesShown: 4,
           }}
           data={[
             { value: "all", text: "all", selected: allSelected() }, //TODO move to component
