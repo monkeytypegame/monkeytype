@@ -59,6 +59,7 @@ export const ResultFiltersSchema = z.object({
   funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
+export type ResultFiltersKeys = keyof Omit<ResultFilters, "_id" | "name">;
 
 export const StreakHourOffsetSchema = z.number().min(-11).max(12).step(0.5);
 export type StreakHourOffset = z.infer<typeof StreakHourOffsetSchema>;

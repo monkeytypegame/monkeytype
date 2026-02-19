@@ -1,9 +1,12 @@
-import { ResultFilters } from "@monkeytype/schemas/users";
+import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
 import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { getSnapshot } from "../../../db";
 import { FaSolidIcon } from "../../../types/font-awesome";
-import { getLanguageDisplayString } from "../../../utils/strings";
+import {
+  getLanguageDisplayString,
+  replaceUnderscoresWithSpaces,
+} from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import SlimSelect from "../../ui/SlimSelect";
@@ -15,7 +18,7 @@ const placeholder = (): void => {
 export function Filters(props: {
   filters: ResultFilters;
   onChangeFilter: (
-    id: keyof ResultFilters,
+    id: ResultFiltersKeys,
     value: Record<string, boolean>,
   ) => void;
   onResetFilter: () => void;
@@ -91,7 +94,7 @@ export function Filters(props: {
             icon="fa-gamepad"
             text="funbox"
             group="funbox"
-            format={(it) => it.replace(/_/g, " ")}
+            format={replaceUnderscoresWithSpaces}
           />
           <Dropdown
             icon="fa-globe-americas"
@@ -105,7 +108,7 @@ export function Filters(props: {
   );
 
   function Dropdown<
-    T extends keyof ResultFilters,
+    T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],
   >(options: {
     icon: FaSolidIcon;
@@ -115,7 +118,7 @@ export function Filters(props: {
   }): JSXElement {
     const allSelected = createMemo(
       () =>
-        Object.values(props.filters[options.group]).filter((it) => it === true)
+        Object.values(props.filters[options.group]).filter((it) => it)
           .length === Object.keys(props.filters[options.group]).length,
     );
     return (
@@ -149,7 +152,7 @@ export function Filters(props: {
               value: k,
               text: options.format?.(k as K) ?? k,
               filter: k,
-              selected: v as boolean,
+              selected: v,
             })),
           ]}
         />
@@ -158,7 +161,7 @@ export function Filters(props: {
   }
 
   function ButtonGroup<
-    T extends keyof ResultFilters,
+    T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],
   >(options: {
     icon?: FaSolidIcon;

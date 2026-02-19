@@ -8,6 +8,7 @@ import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
+import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Fa, FaProps } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
@@ -119,7 +120,7 @@ function getColumns<M extends Mode>({
           <Show when={(info.row.original.funbox ?? []).length > 0}>
             <span
               aria-label={info.row.original.funbox
-                .map((it) => it.replace(/_/g, " "))
+                .map(replaceUnderscoresWithSpaces)
                 .join(", ")}
               data-balloon-pos="up"
             >

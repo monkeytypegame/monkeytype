@@ -13,6 +13,7 @@ import { isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
 import { Button } from "../../common/Button";
 
+import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { Table } from "./Table";
 import { TestStats } from "./TestStats";
@@ -55,6 +56,8 @@ export function AccountPage(): JSXElement {
         onChangeFilter={(key, value) => setFilters(key, value)}
         onResetFilter={() => setFilters(defaultResultFilters)}
       />
+
+      <Charts filters={filters} />
 
       <TestStats resultsQuery={queryState} />
       <Table data={[...data()]} onSortingChange={(val) => setSorting(val)} />
