@@ -116,14 +116,17 @@ export function Filters(props: {
     // Isolate this group's data to prevent unnecessary updates
     const groupData = createMemo(() => props.filters[options.group]);
 
-    const dropdownValues = createMemo(() =>
-      Object.keys(groupData()).map((k) => options.format?.(k as K) ?? k),
+    const dropdownOptions = createMemo(() =>
+      Object.keys(groupData()).map((k) => ({
+        value: k,
+        text: options.format?.(k as K) ?? k,
+      })),
     );
 
     const dropdownSelected = createMemo(() =>
       Object.entries(groupData())
         .filter(([, v]) => v as boolean)
-        .map(([k]) => options.format?.(k as K) ?? k),
+        .map(([k]) => k),
     );
 
     return (
@@ -152,7 +155,7 @@ export function Filters(props: {
             scrollToTop: true,
             maxValuesShown: 4,
           }}
-          values={dropdownValues()}
+          options={dropdownOptions()}
           selected={dropdownSelected()}
         />
       </div>
