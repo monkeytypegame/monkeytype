@@ -1,5 +1,5 @@
 import { ResultFilters } from "@monkeytype/schemas/users";
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, createMemo, For, JSXElement, Show } from "solid-js";
 
 import { getSnapshot } from "../../../db";
 import { FaSolidIcon } from "../../../types/font-awesome";
@@ -113,23 +113,41 @@ export function Filters(props: {
     group: T;
     format?: (value: K) => string;
   }): JSXElement {
+    // Isolate this group's data to prevent unnecessary updates
+    const groupData = createMemo(() => props.filters[options.group]);
+
+    const dropdownData = createMemo(() =>
+      Object.entries(groupData()).map(([k, v]) => ({
+        value: k,
+        text: options.format?.(k as K) ?? k,
+        filter: k,
+        selected: v as boolean,
+      })),
+    );
+
     return (
       <div>
         <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
         <SlimSelect
           multiple
           addAllOption
-          onChange={(val) => {
-            let selected = val as string[];
-            props.onChangeFilter(
-              options.group,
-              Object.fromEntries(
-                Object.entries(props.filters[options.group]).map(([k]) => [
-                  k,
-                  selected.includes(k),
-                ]),
-              ),
-            );
+          dataSetter={(updatedData) => {
+            // Start with existing filter values to preserve all keys
+            const filterMap: Record<string, boolean> = {
+              ...(props.filters[options.group] as Record<string, boolean>),
+            };
+            // Update only the keys present in this dropdown's data
+            for (const item of updatedData) {
+              if (
+                "value" in item &&
+                item.value !== undefined &&
+                item.value !== "all"
+              ) {
+                filterMap[item.value] =
+                  "selected" in item ? Boolean(item.selected) : false;
+              }
+            }
+            props.onChangeFilter(options.group, filterMap);
           }}
           settings={{
             showSearch: true,
@@ -139,12 +157,7 @@ export function Filters(props: {
             scrollToTop: true,
             maxValuesShown: 4,
           }}
-          data={Object.entries(props.filters[options.group]).map(([k, v]) => ({
-            value: k,
-            text: options.format?.(k as K) ?? k,
-            filter: k,
-            selected: v as boolean,
-          }))}
+          data={dropdownData()}
         />
       </div>
     );
