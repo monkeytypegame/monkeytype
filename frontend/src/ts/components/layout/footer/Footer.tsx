@@ -11,34 +11,110 @@ import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
-  const [state, setState] = createSignal(["initial"]);
+  // const [state, setState] = createSignal(["initial"]);
+  const [testData, setTestData] = createSignal([
+    { value: "test1", text: "test1", selected: true },
+    { value: "test2", text: "test2", selected: true },
+    { value: "test3", text: "test3", selected: false },
+  ]);
+
+  const toggleTest1 = (): void => {
+    console.log("[Footer] toggleTest1 called");
+    const current = testData();
+    console.log("[Footer] current data:", JSON.stringify(current, null, 2));
+    const item0 = current[0];
+    const item1 = current[1];
+    const item2 = current[2];
+    if (!item0 || !item1 || !item2) return;
+    const newData = [
+      { value: "test1", text: "test1", selected: !item0.selected },
+      item1,
+      item2,
+    ];
+    console.log("[Footer] setting new data:", JSON.stringify(newData, null, 2));
+    setTestData(newData);
+  };
+
+  const toggleTest2 = (): void => {
+    console.log("[Footer] toggleTest2 called");
+    const current = testData();
+    console.log("[Footer] current data:", JSON.stringify(current, null, 2));
+    const item0 = current[0];
+    const item1 = current[1];
+    const item2 = current[2];
+    if (!item0 || !item1 || !item2) return;
+    const newData = [
+      item0,
+      { value: "test2", text: "test2", selected: !item1.selected },
+      item2,
+    ];
+    console.log("[Footer] setting new data:", JSON.stringify(newData, null, 2));
+    setTestData(newData);
+  };
+
+  const toggleTest3 = (): void => {
+    console.log("[Footer] toggleTest3 called");
+    const current = testData();
+    console.log("[Footer] current data:", JSON.stringify(current, null, 2));
+    const item0 = current[0];
+    const item1 = current[1];
+    const item2 = current[2];
+    if (!item0 || !item1 || !item2) return;
+    const newData = [
+      item0,
+      item1,
+      { value: "test3", text: "test3", selected: !item2.selected },
+    ];
+    console.log("[Footer] setting new data:", JSON.stringify(newData, null, 2));
+    setTestData(newData);
+  };
+
   return (
     <footer
       class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
-      {state().join(" - ")}
+      {testData()
+        .filter((item) => item.selected)
+        .map((item) => item.value)
+        .join(" - ")}
+      <div class="mb-2 flex gap-4">
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={testData()[0]?.selected ?? false}
+            onChange={toggleTest1}
+          />
+          test1 selected
+        </label>
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={testData()[1]?.selected ?? false}
+            onChange={toggleTest2}
+          />
+          test2 selected
+        </label>
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={testData()[2]?.selected ?? false}
+            onChange={toggleTest3}
+          />
+          test3 selected
+        </label>
+      </div>
       <SlimSelect
         settings={{
           showSearch: false,
           allowDeselect: true,
           closeOnSelect: false,
         }}
-        data={[
-          {
-            text: "test1",
-          },
-          {
-            text: "test2",
-          },
-        ]}
+        data={testData()}
+        dataSetter={setTestData}
         multiple
         addAllOption
-        onChange={(e) => {
-          console.log(e);
-          setState(Array.isArray(e) ? e : [e]);
-        }}
       ></SlimSelect>
       <Keytips />
 
