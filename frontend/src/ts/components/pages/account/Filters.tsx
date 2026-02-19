@@ -40,24 +40,14 @@ export function Filters(props: {
       </div>
 
       <ButtonGroup
+        singleSelect
         classOverride="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
         group="date"
-        items={[
-          { id: "last_day", text: "last day" },
-          { id: "last_week", text: "last week" },
-          { id: "last_month", text: "last month" },
-          { id: "last_3months", text: "last 3 months" },
-          { id: "all", text: "all time" },
-        ]}
-        onSelect={(id) => {
-          const newValue = Object.fromEntries(
-            Object.entries(props.filters.date).map(([key]) => [
-              key,
-              key === id,
-            ]),
-          );
-          props.onChangeFilter("date", newValue);
-        }}
+        format={(val) =>
+          val === "last_3months"
+            ? "last 3 months"
+            : replaceUnderscoresWithSpaces(val)
+        }
       />
 
       <Show when={isShowAdvanced()}>
@@ -175,16 +165,15 @@ export function Filters(props: {
     icon?: FaSolidIcon;
     text?: string;
     group: T;
-    items?: { id: K; text?: string }[];
-    onSelect?: (id: K) => void;
+    format?: (value: K) => string;
     classOverride?: string;
+    singleSelect?: true;
   }): JSXElement {
-    const items = (): { id: K; text?: string }[] =>
-      options.items ??
-      (Object.keys(props.filters[options.group]).map((id) => ({
+    const items = (): { id: K; text: string }[] =>
+      Object.keys(props.filters[options.group]).map((id) => ({
         id,
-        text: new String(id).toString(),
-      })) as { id: K; text?: string }[]);
+        text: options.format?.(id as K) ?? new String(id).toString(),
+      })) as { id: K; text: string }[];
 
     return (
       <div>
@@ -206,8 +195,14 @@ export function Filters(props: {
                 text={item.text ?? (item.id as string)}
                 active={props.filters[options.group][item.id] === true}
                 onClick={() => {
-                  if (options.onSelect !== undefined) {
-                    options.onSelect(item.id);
+                  if (options.singleSelect) {
+                    const newValue = Object.fromEntries(
+                      Object.entries(props.filters.date).map(([key]) => [
+                        key,
+                        key === item.id,
+                      ]),
+                    );
+                    props.onChangeFilter(options.group, newValue);
                   } else {
                     props.onChangeFilter(options.group, {
                       ...(props.filters[options.group] as Record<
