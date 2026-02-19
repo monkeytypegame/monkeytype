@@ -144,16 +144,15 @@ export function Filters(props: {
             scrollToTop: true,
           }}
           onChange={(selectedValues) => {
-            // Start with existing filter values to preserve all keys
-            const filterMap: Record<string, boolean> = {
-              ...(props.filters[options.group] as Record<string, boolean>),
-            };
-            // Update only the keys present in this dropdown's data
-            const entries = Object.keys(groupData());
-            for (const key of entries) {
-              filterMap[key] = selectedValues.includes(key);
-            }
-            props.onChangeFilter(options.group, filterMap);
+            props.onChangeFilter(
+              options.group,
+              Object.fromEntries(
+                Object.entries(props.filters[options.group]).map(([k]) => [
+                  k,
+                  selectedValues.includes(k),
+                ]),
+              ),
+            );
           }}
           options={dropdownOptions()}
           selected={dropdownSelected()}
