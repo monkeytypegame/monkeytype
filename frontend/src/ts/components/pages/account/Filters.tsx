@@ -87,14 +87,19 @@ export function Filters(props: {
             text="tags"
             group="tags"
             format={(tag) =>
-              getSnapshot()?.tags.find((it) => it._id === tag)?.display ?? tag
+              tag === "none"
+                ? "no tag"
+                : (getSnapshot()?.tags.find((it) => it._id === tag)?.display ??
+                  tag)
             }
           />
           <Dropdown
             icon="fa-gamepad"
             text="funbox"
             group="funbox"
-            format={replaceUnderscoresWithSpaces}
+            format={(val) =>
+              val === "none" ? "no funbox" : replaceUnderscoresWithSpaces(val)
+            }
           />
           <Dropdown
             icon="fa-globe-americas"
@@ -162,6 +167,7 @@ export function Filters(props: {
       </div>
     );
   }
+
   function ButtonGroup<
     T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],

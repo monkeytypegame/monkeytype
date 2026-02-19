@@ -15,6 +15,7 @@ import {
   Query,
   sum,
   useLiveQuery,
+  length,
 } from "@tanstack/solid-db";
 import { Accessor } from "solid-js";
 import Ape from "../ape";
@@ -210,12 +211,11 @@ export function buildResultsQuery(state: ResultsQueryState) {
       or(
         //results not matching the mode pass
         not(eq(r.mode, key)),
-        or(
-          //mode2 is matching one of the  selected mode2
-          inArray(r.mode2, selected),
-          //or if custom selected are not matching any non-custom value
-          isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
-        ),
+
+        //mode2 is matching one of the  selected mode2
+        inArray(r.mode2, selected),
+        //or if custom selected are not matching any non-custom value
+        isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
       ),
     );
   };
@@ -229,22 +229,31 @@ export function buildResultsQuery(state: ResultsQueryState) {
     .where(({ r }) => inArray(r.punctuation, state.punctuation))
     .where(({ r }) => inArray(r.numbers, state.numbers))
     .where(({ r }) => inArray(r.quoteLength, state.quoteLength))
-    .where(({ r }) => inArray(r.language, state.language));
-
+    .where(({ r }) => inArray(r.language, state.language))
+    .where(({ r }) =>
+      or(
+        false,
+        false,
+        ...state.tags.map((tag) =>
+          tag === "none" ? eq(length(r.tags), 0) : inArray(tag, r.tags),
+        ),
+      ),
+    )
+    .where(({ r }) =>
+      or(
+        false,
+        false,
+        ...state.funbox.map((fb) =>
+          (fb as string) === "none"
+            ? eq(length(r.funbox), 0)
+            : inArray(fb, r.funbox),
+        ),
+      ),
+    );
   applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
   applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
 
-  return query.fn.where(
-    (row) =>
-      state.tags.some((tag) =>
-        tag === "none" ? row.r.tags.length === 0 : row.r.tags.includes(tag),
-      ) &&
-      state.funbox.some((fb) =>
-        (fb as string) === "none"
-          ? row.r.funbox.length === 0
-          : row.r.funbox.includes(fb),
-      ),
-  );
+  return query;
 }
 
 export function createResultsQueryState(
