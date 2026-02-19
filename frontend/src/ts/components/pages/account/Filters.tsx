@@ -134,7 +134,15 @@ export function Filters(props: {
         <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
         <SlimSelect
           multiple
-          addAllOption
+          settings={{
+            showSearch: true,
+            placeholderText: "select a " + options.group,
+            allowDeselect: true,
+            closeOnSelect: false,
+            maxValuesShown: 4,
+            addAllOption: true,
+            scrollToTop: true,
+          }}
           onChange={(selectedValues) => {
             // Start with existing filter values to preserve all keys
             const filterMap: Record<string, boolean> = {
@@ -146,14 +154,6 @@ export function Filters(props: {
               filterMap[key] = selectedValues.includes(key);
             }
             props.onChangeFilter(options.group, filterMap);
-          }}
-          settings={{
-            showSearch: true,
-            placeholderText: "select a " + options.group,
-            allowDeselect: true,
-            closeOnSelect: false,
-            scrollToTop: true,
-            maxValuesShown: 4,
           }}
           options={dropdownOptions()}
           selected={dropdownSelected()}

@@ -29,13 +29,15 @@ export type SlimSelectProps = {
   options?: Pick<Option, "value" | "text">[];
   values?: string[]; // Simple string array where value === text
   selected?: string[];
-  settings?: Config["settings"] & { scrollToTop?: boolean };
+  settings?: Config["settings"] & {
+    scrollToTop?: boolean;
+    addAllOption?: boolean;
+  };
   events?: Config["events"];
   cssClasses?: Config["cssClasses"];
   onChange?: (selected: string[]) => void;
   children?: JSX.Element;
   multiple?: boolean;
-  addAllOption?: boolean;
   ref?: (instance: SlimSelectCore | null) => void;
 };
 
@@ -91,7 +93,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
   // Prepend "all" option if configured
   const getDataWithAll = (data: Partial<Option>[]): Partial<Option>[] => {
-    if (!props.addAllOption || !props.multiple) return data;
+    if (!props.settings?.addAllOption || !props.multiple) return data;
     return [{ value: "all", text: "all", selected: false }, ...data];
   };
 
@@ -141,7 +143,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     selectedOptions: Option[],
     oldSelectedOptions: Option[],
   ): boolean | void => {
-    if (!props.addAllOption || !props.multiple || !slimSelect) return;
+    if (!props.settings?.addAllOption || !props.multiple || !slimSelect) return;
 
     const includesAllNow = selectedOptions.some((o) => o.value === "all");
     const includedAllBefore = oldSelectedOptions.some((o) => o.value === "all");
@@ -257,7 +259,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
           let newValue = newVal.map((o) => o.value);
 
-          if (props.addAllOption && Array.isArray(newValue)) {
+          if (props.settings?.addAllOption && Array.isArray(newValue)) {
             if (newValue.length === 1 && newValue[0] === "all") {
               newValue = getAllOptionValues(slimSelect.store.getData());
             } else {
@@ -342,7 +344,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       if (selectedOptions.length > 0) {
         let initialValue = selectedOptions.map((o) => o.value);
 
-        if (props.addAllOption) {
+        if (props.settings?.addAllOption) {
           if (initialValue.length === 1 && initialValue[0] === "all") {
             initialValue = getAllOptionValues(initialData);
           } else {
@@ -377,7 +379,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       currentSelected = selected;
 
       // Handle "all" selection rendering
-      if (props.addAllOption && props.multiple) {
+      if (props.settings?.addAllOption && props.multiple) {
         const options = getOptions();
         const selectedSet = new Set(selected);
         const allAreSelected =
@@ -431,7 +433,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       slimSelect.store.setData(getDataWithAll(data) as Option[]);
 
       // Handle "all" option when all items are selected
-      if (props.addAllOption && props.multiple) {
+      if (props.settings?.addAllOption && props.multiple) {
         const storeData = slimSelect.store.getData();
         const allPossibleValues = getAllOptionValues(storeData);
         const allAreSelected =

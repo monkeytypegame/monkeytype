@@ -95,12 +95,12 @@ export function Footer(): JSXElement {
           showSearch: false,
           allowDeselect: true,
           closeOnSelect: false,
+          addAllOption: true,
         }}
         values={testValues}
         selected={testSelected()}
         onChange={setTestSelected}
         multiple
-        addAllOption
       ></SlimSelect>
       <Keytips />
 
