@@ -644,6 +644,54 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         "[SlimSelect createEffect:selected] Syncing selected to SlimSelect:",
         JSON.stringify(selected, null, 2),
       );
+
+      // Check if all values are selected - show "all" visually if so
+      if (props.addAllOption && props.multiple && props.values) {
+        const allPossibleValues = props.values;
+        const selectedValues = selected ?? [];
+
+        const allAreSelected =
+          allPossibleValues.length > 0 &&
+          selectedValues.length === allPossibleValues.length &&
+          allPossibleValues.every((v) => selectedValues.includes(v));
+
+        console.log(
+          "[SlimSelect createEffect:selected] All check:",
+          JSON.stringify(
+            { allPossibleValues, selectedValues, allAreSelected },
+            null,
+            2,
+          ),
+        );
+
+        if (allAreSelected) {
+          const storeData = slimSelect.store.getData();
+          // Phase 1: Show only "all" in select box
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected = item.value === "all";
+          }
+          slimSelect.store.setData(storeData);
+          slimSelect.render.renderValues();
+
+          // Phase 2: Show all items checked in dropdown
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected =
+              item.value === "all" || allPossibleValues.includes(item.value);
+          }
+          setTimeout(() => {
+            if (!slimSelect) return;
+            slimSelect.store.setData(storeData);
+            slimSelect.render.renderOptions(storeData);
+            console.log(
+              "[SlimSelect createEffect:selected] Applied 'all' visual state",
+            );
+          }, 0);
+          return;
+        }
+      }
+
       syncSelectedToSlimSelect(selected, false);
     }
   });
