@@ -57,8 +57,10 @@ function updatePreview(): void {
   newDate.setUTCSeconds(0);
   newDate.setUTCMilliseconds(0);
 
-  newDate.setHours(newDate.getHours() - -1 * inputValue); //idk why, but it only works when i subtract (so i have to negate inputValue)
-  newDate.setMinutes(newDate.getMinutes() - -1 * ((inputValue % 1) * 60));
+  newDate.setHours(newDate.getHours() - -1 * Math.floor(inputValue)); //idk why, but it only works when i subtract (so i have to negate inputValue)
+  newDate.setMinutes(
+    newDate.getMinutes() - -1 * ((((inputValue % 1) + 1) % 1) * 60),
+  );
 
   preview?.setHtml(`
     <div class="row"><div>Current local reset time:</div><div>${date.toLocaleTimeString()}</div></div>
