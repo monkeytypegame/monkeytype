@@ -7,7 +7,7 @@ import {
 } from "../../../collections/results";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
@@ -22,7 +22,7 @@ export function AccountPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
   const [limit, setLimit] = createSignal(10);
 
-  const [filters, setFilters] = useLocalStorage({
+  const [filters, setFilters] = useLocalStorageStore({
     key: "resultFilters",
     schema: ResultFiltersSchema,
     fallback: defaultResultFilters,
@@ -43,7 +43,7 @@ export function AccountPage(): JSXElement {
       return undefined;
     }
 
-    return createResultsQueryState(filters(), sorting(), limit());
+    return createResultsQueryState(filters, sorting(), limit());
   });
 
   const data = useResultsLiveQuery(queryState);
@@ -51,10 +51,8 @@ export function AccountPage(): JSXElement {
   return (
     <Show when={isLoggedIn()}>
       <Filters
-        filters={filters()}
-        onChangeFilter={(key, value) =>
-          setFilters({ ...filters(), [key]: value })
-        }
+        filters={filters}
+        onChangeFilter={(key, value) => setFilters(key, value)}
         onResetFilter={() => setFilters(defaultResultFilters)}
       />
 
