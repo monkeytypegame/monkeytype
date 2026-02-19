@@ -33,6 +33,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   let currentValue: string | string[] | undefined = props.value;
   const instanceId = nextSlimSelectId++;
   let lastDataReference: typeof props.data | undefined = undefined;
+  let lastDataSetterUpdate: typeof props.data | undefined = undefined;
 
   // Helper to get all non-"all" option values from data
   const getAllOptionValues = (
@@ -288,6 +289,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
                 console.log(
                   "[SlimSelect beforeChange] Calling dataSetter after 'all' click",
                 );
+                lastDataSetterUpdate = updatedData;
                 props.dataSetter(updatedData);
               }
 
@@ -341,6 +343,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
                 console.log(
                   "[SlimSelect beforeChange] Calling dataSetter after switching from 'all' to individual",
                 );
+                lastDataSetterUpdate = updatedData;
                 props.dataSetter(updatedData);
               }
 
@@ -420,6 +423,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
                 console.log(
                   "[SlimSelect beforeChange] Calling dataSetter after deselecting while 'all' active",
                 );
+                lastDataSetterUpdate = updatedData;
                 props.dataSetter(updatedData);
               }
 
@@ -477,6 +481,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
                 console.log(
                   "[SlimSelect beforeChange] Calling dataSetter after deselecting 'all'",
                 );
+                lastDataSetterUpdate = updatedData;
                 props.dataSetter(updatedData);
               }
 
@@ -633,6 +638,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           console.log(
             "[SlimSelect afterChange] Calling dataSetter with updated data",
           );
+          lastDataSetterUpdate = updatedData;
           props.dataSetter(updatedData);
         }
 
@@ -871,21 +877,33 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       }
 
       if (globalActiveSlimSelectId !== undefined) {
+        // Allow updates if this is an external change (not from our dataSetter)
+        const isExternalUpdate = data !== lastDataSetterUpdate;
+        if (!isExternalUpdate) {
+          console.log(
+            "[SlimSelect createEffect:data] Skipping data update - this instance triggered via dataSetter",
+            JSON.stringify(
+              {
+                thisInstanceId: instanceId,
+                activeInstanceId: globalActiveSlimSelectId,
+              },
+              null,
+              2,
+            ),
+          );
+          return;
+        }
         console.log(
-          "[SlimSelect createEffect:data] Skipping data update - ANY instance is being interacted with",
+          "[SlimSelect createEffect:data] Allowing external update despite active instance",
           JSON.stringify(
             {
               thisInstanceId: instanceId,
               activeInstanceId: globalActiveSlimSelectId,
-              dataSelected: data
-                ?.filter((d) => "selected" in d && d.selected)
-                .map((d) => ("value" in d ? d.value : null)),
             },
             null,
             2,
           ),
         );
-        return;
       }
 
       console.log(
@@ -905,15 +923,85 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           2,
         ),
       );
+
+      console.log(
+        "[SlimSelect createEffect:data] Applying data update",
+        JSON.stringify(
+          {
+            dataSelected: data
+              ?.filter((d) => "selected" in d && d.selected)
+              .map((d) => ("value" in d ? d.value : null)),
+          },
+          null,
+          2,
+        ),
+      );
+
       //@ts-expect-error todo
       slimSelect.store.setData(getDataWithAll(data));
 
-      // Update last data reference
-      lastDataReference = data;
+      // Update last data reference AFTER all updates complete
+      let shouldUpdateLastRef = true;
 
-      // Force visual update
+      // Handle "all" option visual state when all items are selected
+      if (props.addAllOption && props.multiple) {
+        const storeData = slimSelect.store.getData();
+        const allPossibleValues = getAllOptionValues(storeData);
+        const selectedValues = data
+          .filter((item) => "value" in item && item.selected)
+          .map((item) => ("value" in item ? item.value : ""))
+          .filter((v): v is string => Boolean(v) && v !== "all");
+
+        const allAreSelected =
+          allPossibleValues.length > 0 &&
+          selectedValues.length === allPossibleValues.length;
+
+        console.log(
+          "[SlimSelect createEffect:data] All check:",
+          JSON.stringify(
+            { allPossibleValues, selectedValues, allAreSelected },
+            null,
+            2,
+          ),
+        );
+
+        if (allAreSelected) {
+          shouldUpdateLastRef = false; // Defer until setTimeout completes
+          // Phase 1: Show only "all" in select box
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected = item.value === "all";
+          }
+          slimSelect.store.setData(storeData);
+          slimSelect.render.renderValues();
+
+          // Phase 2: Show all items checked in dropdown
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected =
+              item.value === "all" || allPossibleValues.includes(item.value);
+          }
+          setTimeout(() => {
+            if (!slimSelect) return;
+            slimSelect.store.setData(storeData);
+            slimSelect.render.renderOptions(storeData);
+            lastDataReference = data;
+            console.log(
+              "[SlimSelect createEffect:data] Applied 'all' visual state",
+            );
+          }, 0);
+          return;
+        }
+      }
+
+      // Normal case: just render the incoming data
       slimSelect.render.renderValues();
       slimSelect.render.renderOptions(slimSelect.store.getData());
+
+      if (shouldUpdateLastRef) {
+        lastDataReference = data;
+      }
+
       console.log(
         "[SlimSelect createEffect:data] Rendered UI after data update",
       );
