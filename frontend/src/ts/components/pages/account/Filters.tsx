@@ -1,5 +1,5 @@
 import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
-import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, createMemo, For, JSXElement, Show } from "solid-js";
 
 import { getSnapshot } from "../../../db";
 import { FaSolidIcon } from "../../../types/font-awesome";
@@ -106,7 +106,6 @@ export function Filters(props: {
       </Show>
     </>
   );
-
   function Dropdown<
     T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],
@@ -116,50 +115,53 @@ export function Filters(props: {
     group: T;
     format?: (value: K) => string;
   }): JSXElement {
-    const allSelected = createMemo(
-      () =>
-        Object.values(props.filters[options.group]).filter((it) => it)
-          .length === Object.keys(props.filters[options.group]).length,
+    // Isolate this group's data to prevent unnecessary updates
+    const groupData = createMemo(() => props.filters[options.group]);
+
+    const dropdownOptions = createMemo(() =>
+      Object.keys(groupData()).map((k) => ({
+        value: k,
+        text: options.format?.(k as K) ?? k,
+      })),
     );
+
+    const dropdownSelected = createMemo(() =>
+      Object.entries(groupData())
+        .filter(([, v]) => v)
+        .map(([k]) => k),
+    );
+
     return (
       <div>
         <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
         <SlimSelect
           multiple
-          onChange={(val) => {
-            let selected = val as string[];
-            props.onChangeFilter(
-              options.group,
-              Object.fromEntries(
-                Object.entries(props.filters[options.group]).map(([k]) => [
-                  k,
-                  selected.includes(k),
-                ]),
-              ),
-            );
-          }}
           settings={{
             showSearch: true,
             placeholderText: "select a " + options.group,
             allowDeselect: true,
             closeOnSelect: false,
-            scrollToTop: true,
             maxValuesShown: 4,
+            addAllOption: true,
+            scrollToTop: true,
           }}
-          data={[
-            { value: "all", text: "all", selected: allSelected() }, //TODO move to component
-            ...Object.entries(props.filters[options.group]).map(([k, v]) => ({
-              value: k,
-              text: options.format?.(k as K) ?? k,
-              filter: k,
-              selected: v,
-            })),
-          ]}
+          onChange={(selectedValues) => {
+            props.onChangeFilter(
+              options.group,
+              Object.fromEntries(
+                Object.entries(props.filters[options.group]).map(([k]) => [
+                  k,
+                  selectedValues.includes(k),
+                ]),
+              ),
+            );
+          }}
+          options={dropdownOptions()}
+          selected={dropdownSelected()}
         />
       </div>
     );
   }
-
   function ButtonGroup<
     T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],

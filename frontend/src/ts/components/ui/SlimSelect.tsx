@@ -3,17 +3,41 @@ import { Optgroup, Option } from "slim-select/store";
 import { onMount, onCleanup, createEffect, createSignal } from "solid-js";
 import type { JSX, JSXElement } from "solid-js";
 
+// Helper: Check if two arrays have the same elements (unordered)
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const setA = new Set(a);
+  return b.every((item) => setA.has(item));
+}
+
+// Helper: Update SlimSelect data and trigger renders
+function updateSlimSelectData(
+  slimSelect: SlimSelectCore,
+  data: (Partial<Option> | Partial<Optgroup>)[],
+  scheduleRender = false,
+): void {
+  slimSelect.store.setData(data as Option[]);
+  if (scheduleRender) {
+    requestAnimationFrame(() => {
+      slimSelect.render.renderValues();
+      slimSelect.render.renderOptions(data as Option[]);
+    });
+  }
+}
+
 export type SlimSelectProps = {
-  data?: (Partial<Option> | Partial<Optgroup>)[];
-  settings?: Config["settings"] & { scrollToTop?: boolean };
+  options?: Pick<Option, "value" | "text">[];
+  values?: string[]; // Simple string array where value === text
+  selected?: string[];
+  settings?: Config["settings"] & {
+    scrollToTop?: boolean;
+    addAllOption?: boolean;
+  };
   events?: Config["events"];
   cssClasses?: Config["cssClasses"];
-  value?: string | string[];
-  onChange?: (value: string | string[]) => void;
+  onChange?: (selected: string[]) => void;
   children?: JSX.Element;
   multiple?: boolean;
-
-  // Solid-style instance exposure
   ref?: (instance: SlimSelectCore | null) => void;
 };
 
@@ -21,142 +45,319 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   let selectRef!: HTMLSelectElement;
   let slimSelect: SlimSelectCore | null = null;
 
+  // State tracking
   const [isInitialMount, setIsInitialMount] = createSignal(true);
-  let currentValue: string | string[] | undefined = props.value;
+  const [isInitializing, setIsInitializing] = createSignal(true);
+  let currentSelected: string[] = props.selected ?? [];
+  let lastOptionsReference: typeof props.options | undefined = undefined;
 
-  const getCleanValue = (
-    val: string | string[] | undefined,
-  ): string | string[] => {
-    if (typeof val === "string") {
-      return props.multiple ? [val] : val;
+  // Instance-scoped state to replace globals
+  let isActiveInstance = false;
+  let userChangeTimeoutId: number | undefined;
+
+  // Derive options from either 'options' or 'values' prop
+  const getOptions = (): Pick<Option, "value" | "text">[] => {
+    if (props.options) return props.options;
+    if (props.values) {
+      return props.values.map((v) => ({ value: v, text: v }));
     }
-
-    if (Array.isArray(val)) {
-      return props.multiple ? val : (val[0] as string);
-    }
-
-    return props.multiple ? [] : "";
+    return [];
   };
 
-  const syncValueToSlimSelect = (
-    val: string | string[] | undefined,
+  // Build option data with selection state
+  const buildData = (
+    options: Pick<Option, "value" | "text">[] = [],
+    selected: string[] = [],
+  ): Partial<Option>[] => {
+    const selectedSet = new Set(selected);
+    return options.map((option) => ({
+      ...option,
+      selected: selectedSet.has(option.value),
+    }));
+  };
+
+  // Extract all non-special option values from data
+  const getAllOptionValues = (
+    data: (Partial<Option> | Partial<Optgroup>)[],
+  ): string[] => {
+    const options = data.flatMap((item) =>
+      "label" in item && item.options ? item.options : [item],
+    );
+    return options
+      .filter(
+        (o): o is Partial<Option> =>
+          "value" in o && o.value !== "all" && !o.placeholder,
+      )
+      .map((o) => o.value as string);
+  };
+
+  // Prepend "all" option if configured
+  const getDataWithAll = (data: Partial<Option>[]): Partial<Option>[] => {
+    if (!props.settings?.addAllOption || !props.multiple) return data;
+    return [{ value: "all", text: "all", selected: false }, ...data];
+  };
+
+  const syncSelectedToSlimSelect = (
+    selected: string[],
     runAfterChange = false,
   ): void => {
     if (!slimSelect) return;
-    if (val === undefined) return;
+    slimSelect.setSelected(selected ?? [], runAfterChange);
+  };
 
-    const cleanValue = getCleanValue(val);
+  // Render "all" selected state (shows "all" but all items are actually selected)
+  const renderAllState = (
+    data: (Partial<Option> | Partial<Optgroup>)[],
+  ): void => {
+    if (!slimSelect) return;
 
-    const data = slimSelect.getData();
-    const options = data.flatMap((item) =>
-      "label" in item ? item.options : [item],
-    );
+    const allValues = getAllOptionValues(data);
+    const allValuesSet = new Set(allValues);
 
-    const valueExists = Array.isArray(cleanValue)
-      ? cleanValue.length > 0 &&
-        cleanValue.every((v) => options.some((o) => o.value === v))
-      : cleanValue !== "" && options.some((o) => o.value === cleanValue);
+    // First pass: show only "all" in the display
+    for (const item of data) {
+      if (!("value" in item)) continue;
+      item.selected = item.value === "all";
+    }
+    slimSelect.store.setData(data as Option[]);
+    slimSelect.render.renderValues();
 
-    if (!valueExists) {
-      if (!Array.isArray(cleanValue)) {
-        const hasPlaceholder = options.some((o) => o.placeholder);
-        if (!hasPlaceholder) {
-          const currentData = slimSelect.getData();
-          const placeholderOption: Partial<Option> = {
-            value: "",
-            text: "",
-            placeholder: true,
-          };
-          //@ts-expect-error todo
-          slimSelect.setData([placeholderOption, ...currentData]);
-        }
-      }
+    // Second pass: mark all items as selected in the data
+    for (const item of data) {
+      if (!("value" in item)) continue;
+      const isAllOrIncluded =
+        item.value === "all" ||
+        (typeof item.value === "string" && allValuesSet.has(item.value));
+      item.selected = isAllOrIncluded;
     }
 
-    slimSelect.setSelected(cleanValue, runAfterChange);
+    requestAnimationFrame(() => {
+      if (!slimSelect) return;
+      slimSelect.store.setData(data as Option[]);
+      slimSelect.render.renderOptions(data as Option[]);
+    });
+  };
+
+  // Handle "all" option selection logic
+  const handleAllSelection = (
+    selectedOptions: Option[],
+    oldSelectedOptions: Option[],
+  ): boolean | void => {
+    if (!props.settings?.addAllOption || !props.multiple || !slimSelect) return;
+
+    const includesAllNow = selectedOptions.some((o) => o.value === "all");
+    const includedAllBefore = oldSelectedOptions.some((o) => o.value === "all");
+
+    // No "all" option involvement, skip special handling
+    if (!includesAllNow && !includedAllBefore) return;
+
+    const data = slimSelect.store.getData();
+    const allValues = getAllOptionValues(data);
+    const allValuesSet = new Set(allValues);
+
+    // Case 1: User clicked "all" option
+    if (includesAllNow && !includedAllBefore) {
+      renderAllState(data);
+      if (props.onChange && !arraysEqual(allValues, currentSelected)) {
+        props.onChange(allValues);
+        currentSelected = allValues;
+      }
+      return false;
+    }
+
+    // Case 2: User clicked individual item while "all" is selected
+    if (includesAllNow && selectedOptions.length > oldSelectedOptions.length) {
+      // Switch from "all" display to showing individual selections
+      for (const item of data) {
+        if (!("value" in item)) continue;
+        item.selected = item.value !== "all" && allValuesSet.has(item.value);
+      }
+      requestAnimationFrame(() => {
+        if (!slimSelect) return;
+        updateSlimSelectData(slimSelect, data, false);
+        slimSelect.render.renderValues();
+        slimSelect.render.renderOptions(data as Option[]);
+      });
+      return false;
+    }
+
+    // Case 3: User deselected items while "all" was selected
+    if (includesAllNow && selectedOptions.length < oldSelectedOptions.length) {
+      const newSelection = selectedOptions
+        .filter((o) => o.value !== "all")
+        .map((o) => o.value);
+      const newSelectionSet = new Set(newSelection);
+
+      for (const item of data) {
+        if (!("value" in item)) continue;
+        item.selected = newSelectionSet.has(item.value);
+      }
+      requestAnimationFrame(() => {
+        if (!slimSelect) return;
+        updateSlimSelectData(slimSelect, data, false);
+        slimSelect.render.renderValues();
+        slimSelect.render.renderOptions(data as Option[]);
+      });
+
+      if (props.onChange && !arraysEqual(newSelection, currentSelected)) {
+        props.onChange(newSelection);
+        currentSelected = newSelection;
+      }
+      return false;
+    }
+
+    // Case 4: User deselected "all" option
+    if (!includesAllNow && includedAllBefore) {
+      for (const item of data) {
+        if (!("value" in item)) continue;
+        item.selected = false;
+      }
+      requestAnimationFrame(() => {
+        if (!slimSelect) return;
+        updateSlimSelectData(slimSelect, data, false);
+        slimSelect.render.renderValues();
+        slimSelect.render.renderOptions(data as Option[]);
+      });
+
+      if (props.onChange && currentSelected.length > 0) {
+        props.onChange([]);
+        currentSelected = [];
+      }
+      return false;
+    }
   };
 
   onMount(() => {
-    const config: Config = {
-      select: selectRef,
-    };
-
-    //@ts-expect-error todo
-    if (props.data) config.data = props.data;
-    if (props.settings) config.settings = props.settings;
-    if (props.cssClasses) config.cssClasses = props.cssClasses;
-
     const ogAfterChange = props.events?.afterChange;
+    const ogBeforeChange = props.events?.beforeChange;
     const ogBeforeOpen = props.events?.beforeOpen;
 
-    config.events = {
-      ...props.events,
-      afterChange: (newVal) => {
-        if (!slimSelect) return;
+    const config: Config = {
+      select: selectRef,
+      data: getDataWithAll(buildData(getOptions(), props.selected)) as Option[],
+      ...(props.settings && { settings: props.settings }),
+      ...(props.cssClasses && { cssClasses: props.cssClasses }),
+      events: {
+        ...props.events,
+        beforeChange: (selectedOptions, oldSelectedOptions) => {
+          isActiveInstance = true;
 
-        const newValue = props.multiple
-          ? newVal.map((o) => o.value)
-          : (newVal[0]?.value ?? "");
+          if (ogBeforeChange?.(selectedOptions, oldSelectedOptions) === false) {
+            return false;
+          }
 
-        const slimData = slimSelect.getData();
-        const options = slimData.flatMap((item) =>
-          "label" in item ? item.options : [item],
-        );
+          const result = handleAllSelection(
+            selectedOptions,
+            oldSelectedOptions,
+          );
+          if (result !== undefined) return result;
 
-        const currentValueExists =
-          currentValue === undefined
-            ? false
-            : Array.isArray(currentValue)
-              ? currentValue.length > 0 &&
-                currentValue.every((v) => options.some((o) => o.value === v))
-              : currentValue !== "" &&
-                options.some((o) => o.value === currentValue);
+          return true;
+        },
+        afterChange: (newVal) => {
+          if (!slimSelect) return;
 
-        const newValueIsValid = Array.isArray(newValue)
-          ? newValue.length > 0 &&
-            newValue.every((v) => options.some((o) => o.value === v))
-          : newValue !== "" && options.some((o) => o.value === newValue);
+          let newValue = newVal.map((o) => o.value);
 
-        const valueChanged =
-          Array.isArray(newValue) && Array.isArray(currentValue)
-            ? JSON.stringify([...newValue].sort()) !==
-              JSON.stringify([...(currentValue ?? [])].sort())
-            : currentValue !== newValue;
+          if (props.settings?.addAllOption && Array.isArray(newValue)) {
+            if (newValue.length === 1 && newValue[0] === "all") {
+              newValue = getAllOptionValues(slimSelect.store.getData());
+            } else {
+              newValue = newValue.filter((v) => v !== "all");
+            }
+          }
 
-        if (
-          props.onChange &&
-          valueChanged &&
-          (currentValueExists || newValueIsValid)
-        ) {
-          props.onChange(newValue);
-          currentValue = newValue;
-        }
+          const slimData = slimSelect.store.getData();
+          const options = slimData.flatMap((item) =>
+            "label" in item ? item.options : [item],
+          );
 
-        ogAfterChange?.(newVal);
-      },
-      beforeOpen: () => {
-        if (!slimSelect) return;
+          const valueChanged = !arraysEqual(newValue, currentSelected);
 
-        if (props.settings?.scrollToTop) {
-          const listElement = slimSelect.render.content.list;
-          const topListItem = listElement.children.item(0) as HTMLElement;
+          const currentValueExists =
+            currentSelected.length > 0 &&
+            currentSelected.every((v) => options.some((o) => o.value === v));
 
-          listElement.scrollTop = topListItem.offsetTop - listElement.offsetTop;
-        }
-        ogBeforeOpen?.();
+          const newValueIsValid =
+            newValue.length > 0 &&
+            newValue.every((v) => options.some((o) => o.value === v));
+
+          if (
+            props.onChange &&
+            valueChanged &&
+            (currentValueExists || newValueIsValid)
+          ) {
+            props.onChange(newValue);
+            currentSelected = newValue;
+          }
+
+          ogAfterChange?.(newVal);
+
+          // Clear active instance flag with debounce
+          if (userChangeTimeoutId !== undefined) {
+            clearTimeout(userChangeTimeoutId);
+          }
+
+          userChangeTimeoutId = setTimeout(() => {
+            requestAnimationFrame(() => {
+              isActiveInstance = false;
+              userChangeTimeoutId = undefined;
+            });
+          }, 150) as unknown as number;
+        },
+        beforeOpen: () => {
+          if (!slimSelect) return;
+
+          if (props.settings?.scrollToTop) {
+            const listElement = slimSelect.render.content.list;
+            const topListItem = listElement.children.item(0) as HTMLElement;
+            listElement.scrollTop =
+              topListItem.offsetTop - listElement.offsetTop;
+          }
+          ogBeforeOpen?.();
+        },
       },
     };
 
     slimSelect = new SlimSelectCore(config);
-
-    // expose instance
+    lastOptionsReference = props.options;
     props.ref?.(slimSelect);
 
-    if (props.value !== undefined) {
-      syncValueToSlimSelect(props.value, false);
+    if (props.selected !== undefined) {
+      syncSelectedToSlimSelect(props.selected, false);
     }
 
     setIsInitialMount(false);
+
+    // Initialize with selected values
+    requestAnimationFrame(() => {
+      if (!props.onChange || (!props.options && !props.values) || !slimSelect) {
+        setIsInitializing(false);
+        return;
+      }
+
+      const initialData = slimSelect.store.getData();
+      const selectedOptions = initialData
+        .flatMap((item) => ("label" in item ? item.options : [item]))
+        .filter((item) => item.selected);
+
+      if (selectedOptions.length > 0) {
+        let initialValue = selectedOptions.map((o) => o.value);
+
+        if (props.settings?.addAllOption) {
+          if (initialValue.length === 1 && initialValue[0] === "all") {
+            initialValue = getAllOptionValues(initialData);
+          } else {
+            initialValue = initialValue.filter((v) => v !== "all");
+          }
+        }
+
+        props.onChange(initialValue);
+        currentSelected = initialValue;
+      }
+
+      requestAnimationFrame(() => setIsInitializing(false));
+    });
   });
 
   onCleanup(() => {
@@ -165,29 +366,112 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     props.ref?.(null);
   });
 
+  // Effect: Sync external selected prop changes to SlimSelect
   createEffect(() => {
-    const value = props.value;
+    const selected = props.selected;
 
     if (isInitialMount()) {
-      currentValue = value;
+      currentSelected = selected ?? [];
       return;
     }
 
-    if (slimSelect && value !== undefined) {
-      currentValue = value;
-      syncValueToSlimSelect(value, false);
+    if (slimSelect && selected !== undefined) {
+      currentSelected = selected;
+
+      // Handle "all" selection rendering
+      if (props.settings?.addAllOption && props.multiple) {
+        const options = getOptions();
+        const selectedSet = new Set(selected);
+        const allAreSelected =
+          options.length > 0 &&
+          selected.length === options.length &&
+          options.every((opt) => selectedSet.has(opt.value));
+
+        if (allAreSelected) {
+          const storeData = slimSelect.store.getData();
+          const optionValuesSet = new Set(options.map((opt) => opt.value));
+
+          // First pass: show only "all"
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected = item.value === "all";
+          }
+          slimSelect.store.setData(storeData as Option[]);
+          slimSelect.render.renderValues();
+
+          // Second pass: mark all items selected
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected =
+              item.value === "all" || optionValuesSet.has(item.value);
+          }
+          requestAnimationFrame(() => {
+            if (!slimSelect) return;
+            slimSelect.store.setData(storeData as Option[]);
+            slimSelect.render.renderOptions(storeData as Option[]);
+          });
+          return;
+        }
+      }
+
+      syncSelectedToSlimSelect(selected, false);
     }
   });
 
+  // Effect: Handle options prop changes
   createEffect(() => {
-    const data = props.data;
+    const options = getOptions();
+    const selected = props.selected;
 
-    if (!isInitialMount() && slimSelect && data) {
-      //@ts-expect-error todo
-      slimSelect.setData(data);
+    if (!isInitialMount() && slimSelect && options.length > 0) {
+      // Skip if options haven't changed or we're still initializing or user is actively changing
+      if (options === lastOptionsReference) return;
+      if (isInitializing()) return;
+      if (isActiveInstance) return;
 
-      if (props.value !== undefined) {
-        syncValueToSlimSelect(props.value, false);
+      const data = buildData(options, selected ?? []);
+      slimSelect.store.setData(getDataWithAll(data) as Option[]);
+
+      // Handle "all" option when all items are selected
+      if (props.settings?.addAllOption && props.multiple) {
+        const storeData = slimSelect.store.getData();
+        const allPossibleValues = getAllOptionValues(storeData);
+        const allAreSelected =
+          allPossibleValues.length > 0 &&
+          (selected?.length ?? 0) === allPossibleValues.length;
+
+        if (allAreSelected) {
+          const optionValuesSet = new Set(allPossibleValues);
+          // First pass: show only "all"
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected = item.value === "all";
+          }
+          slimSelect.store.setData(storeData as Option[]);
+          slimSelect.render.renderValues();
+
+          // Second pass: mark all items selected
+          for (const item of storeData) {
+            if (!("value" in item)) continue;
+            item.selected =
+              item.value === "all" || optionValuesSet.has(item.value);
+          }
+          requestAnimationFrame(() => {
+            if (!slimSelect) return;
+            slimSelect.store.setData(storeData as Option[]);
+            slimSelect.render.renderOptions(storeData as Option[]);
+            lastOptionsReference = options;
+          });
+          return;
+        }
+      }
+
+      slimSelect.render.renderValues();
+      slimSelect.render.renderOptions(slimSelect.store.getData());
+      lastOptionsReference = options;
+
+      if (props.selected !== undefined) {
+        syncSelectedToSlimSelect(props.selected, false);
       }
     }
   });
