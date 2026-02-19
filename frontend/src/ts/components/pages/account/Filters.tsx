@@ -140,8 +140,7 @@ export function Filters(props: {
             // Update only the keys present in this dropdown's data
             const entries = Object.keys(groupData());
             for (const key of entries) {
-              const displayValue = options.format?.(key as K) ?? key;
-              filterMap[key] = selectedValues.includes(displayValue);
+              filterMap[key] = selectedValues.includes(key);
             }
             props.onChangeFilter(options.group, filterMap);
           }}
