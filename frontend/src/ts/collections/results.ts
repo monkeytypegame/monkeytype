@@ -6,13 +6,13 @@ import {
   avg,
   count,
   createCollection,
-  createLiveQueryCollection,
   eq,
   gte,
   inArray,
   max,
   not,
   or,
+  Query,
   sum,
   useLiveQuery,
 } from "@tanstack/solid-db";
@@ -22,8 +22,6 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 
-type SortDirection = "asc" | "desc";
-type ResultsSortField = keyof SnapshotResult<Mode>;
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
   pb: SnapshotResult<Mode>["isPb"][];
@@ -37,9 +35,6 @@ export type ResultsQueryState = {
   tags: SnapshotResult<Mode>["tags"];
   funbox: SnapshotResult<Mode>["funbox"];
   language: SnapshotResult<Mode>["language"][];
-  sortField: ResultsSortField;
-  sortDirection: SortDirection;
-  limit: number;
 };
 
 const queryKeys = {
@@ -81,11 +76,11 @@ export function useResultStatsLiveQuery(
         ? //for lastTen we need a sub-query to apply the sort+limit first and then run the aggregations
           q.from({
             r: q
-              .from({ r: getFilteredResults(state) })
+              .from({ r: buildResultsQuery(state) })
               .orderBy(({ r }) => r.timestamp, "desc")
               .limit(10),
           })
-        : q.from({ r: getFilteredResults(state) })
+        : q.from({ r: buildResultsQuery(state) })
     ).select(({ r }) => ({
       words: sum(r.words),
       completed: count(r._id),
@@ -109,26 +104,61 @@ export function useResultStatsLiveQuery(
  * @returns
  */
 // oxlint-disable-next-line typescript/explicit-function-return-type
-export function useResultsLiveQuery(
-  queryState: Accessor<ResultsQueryState | undefined>,
-) {
+export function useResultsLiveQuery(options: {
+  queryState: Accessor<ResultsQueryState | undefined>;
+  sorting: Accessor<{
+    field: keyof SnapshotResult<Mode>;
+    direction: "asc" | "desc";
+  }>;
+  limit: Accessor<number>;
+}) {
   return useLiveQuery((q) => {
-    const state = queryState();
+    const state = options.queryState();
+    const sorting = options.sorting();
+    const limit = options.limit();
     if (state === undefined) return undefined;
+
     return q
-      .from({ r: getFilteredResults(state) })
-      .orderBy(({ r }) => r[state.sortField], state.sortDirection)
-      .limit(state.limit);
+      .from({ r: buildResultsQuery(state) })
+      .orderBy(({ r }) => r[sorting.field], sorting.direction)
+      .limit(limit);
   });
+}
+
+function normalizeResult(
+  result: ResultMinified | SnapshotResult<Mode>,
+): SnapshotResult<Mode> {
+  //@ts-expect-error without this somehow the collections is missing data
+  result.id = result._id;
+  //results strip default values, add them back
+  result.bailedOut ??= false;
+  result.blindMode ??= false;
+  result.lazyMode ??= false;
+  result.difficulty ??= "normal";
+  result.funbox ??= [];
+  result.language ??= "english";
+  result.numbers ??= false;
+  result.punctuation ??= false;
+  result.numbers ??= false;
+  result.quoteLength ??= -1;
+  result.restartCount ??= 0;
+  result.incompleteTestSeconds ??= 0;
+  result.afkDuration ??= 0;
+  result.tags ??= [];
+  result.isPb ??= false;
+  return {
+    ...result,
+    timeTyping: calcTimeTyping(result),
+    words: Math.round((result.wpm / 60) * result.testDuration),
+  } as SnapshotResult<Mode>;
 }
 
 export async function insertLocalResult(
   result: SnapshotResult<Mode>,
 ): Promise<void> {
-  //TODO check state better
-  await resultsCollection.stateWhenReady();
-  //resultsCollection.utils.writeInsert(result);
-  resultsCollection.insert(result);
+  if (resultsCollection.isReady()) {
+    resultsCollection.insert(result);
+  }
 }
 
 export const resultsCollection = createCollection(
@@ -146,31 +176,7 @@ export const resultsCollection = createCollection(
         throw new Error("Error fetching results:" + response.body.message);
       }
 
-      return response.body.data.map((result) => {
-        //@ts-expect-error without this somehow the collections is missing data
-        result.id = result._id;
-        //results strip default values, add them back
-        result.bailedOut ??= false;
-        result.blindMode ??= false;
-        result.lazyMode ??= false;
-        result.difficulty ??= "normal";
-        result.funbox ??= [];
-        result.language ??= "english";
-        result.numbers ??= false;
-        result.punctuation ??= false;
-        result.numbers ??= false;
-        result.quoteLength ??= -1;
-        result.restartCount ??= 0;
-        result.incompleteTestSeconds ??= 0;
-        result.afkDuration ??= 0;
-        result.tags ??= [];
-        result.isPb ??= false;
-        return {
-          ...result,
-          timeTyping: calcTimeTyping(result),
-          words: Math.round((result.wpm / 60) * result.testDuration),
-        } as SnapshotResult<Mode>;
-      });
+      return response.body.data.map((result) => normalizeResult(result));
     },
     onInsert: async ({ transaction }) => {
       //call to the backend to post a result is done outside, we just  insert the result as we get it
@@ -178,7 +184,7 @@ export const resultsCollection = createCollection(
 
       resultsCollection.utils.writeBatch(() => {
         newItems.forEach((item) => {
-          resultsCollection.utils.writeInsert(item);
+          resultsCollection.utils.writeInsert(normalizeResult(item));
         });
       });
 
@@ -191,62 +197,58 @@ export const resultsCollection = createCollection(
 );
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
-function getFilteredResults(state: ResultsQueryState) {
-  return createLiveQueryCollection((q) => {
-    const applyMode2Filter = <T extends "time" | "words">(
-      key: T,
-      filter: ResultsQueryState[T],
-      nonCustomValues: string[],
-    ): void => {
-      if (filter.length === 5) return;
-      const isCustom = filter.includes("custom");
-      const selected = filter.filter((it) => it !== "custom");
-      query = query.where(({ r }) =>
+export function buildResultsQuery(state: ResultsQueryState) {
+  const applyMode2Filter = <T extends "time" | "words">(
+    key: T,
+    filter: ResultsQueryState[T],
+    nonCustomValues: string[],
+  ): void => {
+    if (filter.length === 5) return;
+    const isCustom = filter.includes("custom");
+    const selected = filter.filter((it) => it !== "custom");
+    query = query.where(({ r }) =>
+      or(
+        //results not matching the mode pass
+        not(eq(r.mode, key)),
         or(
-          //results not matching the mode pass
-          not(eq(r.mode, key)),
-          or(
-            //mode2 is matching one of the  selected mode2
-            inArray(r.mode2, selected),
-            //or if custom selected are not matching any non-custom value
-            isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
-          ),
+          //mode2 is matching one of the  selected mode2
+          inArray(r.mode2, selected),
+          //or if custom selected are not matching any non-custom value
+          isCustom ? not(inArray(r.mode2, nonCustomValues)) : false,
         ),
-      );
-    };
-
-    let query = q
-      .from({ r: resultsCollection })
-      .where(({ r }) => gte(r.timestamp, state.timestamp))
-      .where(({ r }) => inArray(r.difficulty, state.difficulty))
-      .where(({ r }) => inArray(r.isPb, state.pb))
-      .where(({ r }) => inArray(r.mode, state.mode))
-      .where(({ r }) => inArray(r.punctuation, state.punctuation))
-      .where(({ r }) => inArray(r.numbers, state.numbers))
-      .where(({ r }) => inArray(r.quoteLength, state.quoteLength))
-      .where(({ r }) => inArray(r.language, state.language));
-
-    applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
-    applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
-
-    return query.fn.where(
-      (row) =>
-        state.tags.some((tag) =>
-          tag === "none" ? row.r.tags.length === 0 : row.r.tags.includes(tag),
-        ) &&
-        state.funbox.some((fb) =>
-          (fb as string) === "none"
-            ? row.r.funbox.length === 0
-            : row.r.funbox.includes(fb),
-        ),
+      ),
     );
-  });
+  };
+
+  let query = new Query()
+    .from({ r: resultsCollection })
+    .where(({ r }) => gte(r.timestamp, state.timestamp))
+    .where(({ r }) => inArray(r.difficulty, state.difficulty))
+    .where(({ r }) => inArray(r.isPb, state.pb))
+    .where(({ r }) => inArray(r.mode, state.mode))
+    .where(({ r }) => inArray(r.punctuation, state.punctuation))
+    .where(({ r }) => inArray(r.numbers, state.numbers))
+    .where(({ r }) => inArray(r.quoteLength, state.quoteLength))
+    .where(({ r }) => inArray(r.language, state.language));
+
+  applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
+  applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
+
+  return query.fn.where(
+    (row) =>
+      state.tags.some((tag) =>
+        tag === "none" ? row.r.tags.length === 0 : row.r.tags.includes(tag),
+      ) &&
+      state.funbox.some((fb) =>
+        (fb as string) === "none"
+          ? row.r.funbox.length === 0
+          : row.r.funbox.includes(fb),
+      ),
+  );
 }
 
 export function createResultsQueryState(
   filters: ResultFilters,
-  sorting: { field: ResultsSortField; direction: SortDirection },
-  limit: number,
 ): ResultsQueryState {
   return {
     difficulty: valueFilter(filters.difficulty),
@@ -269,10 +271,6 @@ export function createResultsQueryState(
     tags: valueFilter(filters.tags),
     funbox: valueFilter(filters.funbox),
     language: valueFilter(filters.language),
-
-    sortField: sorting.field,
-    sortDirection: sorting.direction,
-    limit,
   };
 }
 
