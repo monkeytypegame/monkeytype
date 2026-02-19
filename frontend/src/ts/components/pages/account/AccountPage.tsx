@@ -1,8 +1,11 @@
 import { ResultFilters, ResultFiltersSchema } from "@monkeytype/schemas/users";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { format } from "date-fns/format";
 import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import {
   createResultsQueryState,
+  resultsCollection,
   useResultsLiveQuery,
 } from "../../../collections/results";
 import defaultResultFilters from "../../../constants/default-result-filters";
@@ -49,6 +52,13 @@ export function AccountPage(): JSXElement {
 
   const data = useResultsLiveQuery(queryState);
 
+  const lastResult = useLiveQuery((q) =>
+    q
+      .from({ r: resultsCollection })
+      .orderBy(({ r }) => r.timestamp, "desc")
+      .limit(1),
+  );
+
   return (
     <Show when={isLoggedIn()}>
       <Filters
@@ -60,6 +70,13 @@ export function AccountPage(): JSXElement {
       <Charts filters={filters} />
 
       <TestStats resultsQuery={queryState} />
+
+      <pre>
+        {" "}
+        Last result {lastResult()[0]?.wpm ?? ""} wpm on{" "}
+        {format(lastResult()[0]?.timestamp ?? 0, "yyyy-MM-dd HH:mm")}
+      </pre>
+
       <Table data={[...data()]} onSortingChange={(val) => setSorting(val)} />
       <Button
         text="load more"
