@@ -116,13 +116,14 @@ export function Filters(props: {
     // Isolate this group's data to prevent unnecessary updates
     const groupData = createMemo(() => props.filters[options.group]);
 
-    const dropdownData = createMemo(() =>
-      Object.entries(groupData()).map(([k, v]) => ({
-        value: k,
-        text: options.format?.(k as K) ?? k,
-        filter: k,
-        selected: v as boolean,
-      })),
+    const dropdownValues = createMemo(() =>
+      Object.keys(groupData()).map((k) => options.format?.(k as K) ?? k),
+    );
+
+    const dropdownSelected = createMemo(() =>
+      Object.entries(groupData())
+        .filter(([, v]) => v as boolean)
+        .map(([k]) => options.format?.(k as K) ?? k),
     );
 
     return (
@@ -131,21 +132,16 @@ export function Filters(props: {
         <SlimSelect
           multiple
           addAllOption
-          dataSetter={(updatedData) => {
+          onChange={(selectedValues) => {
             // Start with existing filter values to preserve all keys
             const filterMap: Record<string, boolean> = {
               ...(props.filters[options.group] as Record<string, boolean>),
             };
             // Update only the keys present in this dropdown's data
-            for (const item of updatedData) {
-              if (
-                "value" in item &&
-                item.value !== undefined &&
-                item.value !== "all"
-              ) {
-                filterMap[item.value] =
-                  "selected" in item ? Boolean(item.selected) : false;
-              }
+            const entries = Object.keys(groupData());
+            for (const key of entries) {
+              const displayValue = options.format?.(key as K) ?? key;
+              filterMap[key] = selectedValues.includes(displayValue);
             }
             props.onChangeFilter(options.group, filterMap);
           }}
@@ -157,7 +153,8 @@ export function Filters(props: {
             scrollToTop: true,
             maxValuesShown: 4,
           }}
-          data={dropdownData()}
+          values={dropdownValues()}
+          selected={dropdownSelected()}
         />
       </div>
     );

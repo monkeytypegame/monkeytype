@@ -9,13 +9,12 @@ let globalUserChangeTimeoutId: number | undefined;
 let nextSlimSelectId = 0;
 
 export type SlimSelectProps = {
-  data?: (Partial<Option> | Partial<Optgroup>)[];
+  values?: string[];
+  selected?: string[];
   settings?: Config["settings"] & { scrollToTop?: boolean };
   events?: Config["events"];
   cssClasses?: Config["cssClasses"];
-  value?: string | string[];
-  onChange?: (value: string | string[]) => void;
-  dataSetter?: (data: (Partial<Option> | Partial<Optgroup>)[]) => void;
+  onChange?: (selected: string[]) => void;
   children?: JSX.Element;
   multiple?: boolean;
   addAllOption?: boolean;
@@ -30,10 +29,21 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
   const [isInitialMount, setIsInitialMount] = createSignal(true);
   const [isInitializing, setIsInitializing] = createSignal(true);
-  let currentValue: string | string[] | undefined = props.value;
+  let currentSelected: string[] = props.selected ?? [];
   const instanceId = nextSlimSelectId++;
-  let lastDataReference: typeof props.data | undefined = undefined;
-  let lastDataSetterUpdate: typeof props.data | undefined = undefined;
+  let lastValuesReference: typeof props.values | undefined = undefined;
+
+  // Convert values + selected into data format for slim-select
+  const buildData = (
+    values: string[] = [],
+    selected: string[] = [],
+  ): Partial<Option>[] => {
+    return values.map((value) => ({
+      value,
+      text: value,
+      selected: selected.includes(value),
+    }));
+  };
 
   // Helper to get all non-"all" option values from data
   const getAllOptionValues = (
@@ -50,76 +60,30 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       .map((o) => o.value as string);
   };
 
-  // Inject "all" option into data if needed
-  const getDataWithAll = (
-    data?: (Partial<Option> | Partial<Optgroup>)[],
-  ): (Partial<Option> | Partial<Optgroup>)[] => {
-    if (!props.addAllOption || !props.multiple || !data) return data ?? [];
-
-    const hasAllOption = data.some((item) =>
-      "value" in item ? item.value === "all" : false,
-    );
-
-    if (hasAllOption) return data;
+  // Inject "all" option if needed
+  const getDataWithAll = (data: Partial<Option>[]): Partial<Option>[] => {
+    if (!props.addAllOption || !props.multiple) return data;
 
     const allOption: Partial<Option> = {
       value: "all",
       text: "all",
-      selected: false, // Don't auto-select "all" initially
+      selected: false,
     };
 
     return [allOption, ...data];
   };
 
-  const getCleanValue = (
-    val: string | string[] | undefined,
-  ): string | string[] => {
-    if (typeof val === "string") {
-      return props.multiple ? [val] : val;
-    }
-
-    if (Array.isArray(val)) {
-      return props.multiple ? val : (val[0] as string);
-    }
-
-    return props.multiple ? [] : "";
+  const getCleanValue = (val: string[]): string[] => {
+    return val ?? [];
   };
 
-  const syncValueToSlimSelect = (
-    val: string | string[] | undefined,
+  const syncSelectedToSlimSelect = (
+    selected: string[],
     runAfterChange = false,
   ): void => {
     if (!slimSelect) return;
-    if (val === undefined) return;
 
-    const cleanValue = getCleanValue(val);
-
-    const data = slimSelect.store.getData();
-    const options = data.flatMap((item) =>
-      "label" in item ? item.options : [item],
-    );
-
-    const valueExists = Array.isArray(cleanValue)
-      ? cleanValue.length > 0 &&
-        cleanValue.every((v) => options.some((o) => o.value === v))
-      : cleanValue !== "" && options.some((o) => o.value === cleanValue);
-
-    if (!valueExists) {
-      if (!Array.isArray(cleanValue)) {
-        const hasPlaceholder = options.some((o) => o.placeholder);
-        if (!hasPlaceholder) {
-          const currentData = slimSelect.store.getData();
-          const placeholderOption: Partial<Option> = {
-            value: "",
-            text: "",
-            placeholder: true,
-          };
-          //@ts-expect-error todo
-          slimSelect.store.setData([placeholderOption, ...currentData]);
-        }
-      }
-    }
-
+    const cleanValue = getCleanValue(selected);
     slimSelect.setSelected(cleanValue, runAfterChange);
   };
 
@@ -128,8 +92,9 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       select: selectRef,
     };
 
+    const initialData = buildData(props.values, props.selected);
     //@ts-expect-error todo
-    if (props.data) config.data = getDataWithAll(props.data);
+    config.data = getDataWithAll(initialData);
     if (props.settings) config.settings = props.settings;
     if (props.cssClasses) config.cssClasses = props.cssClasses;
 
@@ -157,7 +122,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
               })),
               addAllOption: props.addAllOption,
               multiple: props.multiple,
-              currentValue,
+              currentSelected,
               globalActiveSlimSelectIdBefore: globalActiveSlimSelectId,
             },
             null,
@@ -256,41 +221,15 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
               if (
                 props.onChange &&
                 JSON.stringify([...allValues].sort()) !==
-                  JSON.stringify(
-                    [
-                      ...(Array.isArray(currentValue) ? currentValue : []),
-                    ].sort(),
-                  )
+                  JSON.stringify([...currentSelected].sort())
               ) {
                 console.log("[SlimSelect] Calling onChange with all values");
                 props.onChange(allValues);
-                currentValue = allValues;
+                currentSelected = allValues;
               } else {
                 console.log(
                   "[SlimSelect] Skipped onChange (no change or no handler)",
                 );
-              }
-
-              // Automatic two-way binding with dataSetter
-              if (props.dataSetter && props.data) {
-                const updatedData = props.data.map((item) => {
-                  if ("label" in item && item.options) {
-                    const updatedOptions = item.options.map((opt) => {
-                      const isSelected = allValues.includes(String(opt.value));
-                      return Object.assign({}, opt, { selected: isSelected });
-                    });
-                    return Object.assign({}, item, { options: updatedOptions });
-                  } else if ("value" in item && item.value !== "all") {
-                    const isSelected = allValues.includes(String(item.value));
-                    return Object.assign({}, item, { selected: isSelected });
-                  }
-                  return item;
-                });
-                console.log(
-                  "[SlimSelect beforeChange] Calling dataSetter after 'all' click",
-                );
-                lastDataSetterUpdate = updatedData;
-                props.dataSetter(updatedData);
               }
 
               console.log("[SlimSelect] Returning false to prevent default");
@@ -324,28 +263,6 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
                   "[SlimSelect] Switched from 'all' to individual options display",
                 );
               }, 0);
-
-              // Automatic two-way binding with dataSetter (keep all selected)
-              if (props.dataSetter && props.data) {
-                const updatedData = props.data.map((item) => {
-                  if ("label" in item && item.options) {
-                    const updatedOptions = item.options.map((opt) => {
-                      const isSelected = allValues.includes(String(opt.value));
-                      return Object.assign({}, opt, { selected: isSelected });
-                    });
-                    return Object.assign({}, item, { options: updatedOptions });
-                  } else if ("value" in item && item.value !== "all") {
-                    const isSelected = allValues.includes(String(item.value));
-                    return Object.assign({}, item, { selected: isSelected });
-                  }
-                  return item;
-                });
-                console.log(
-                  "[SlimSelect beforeChange] Calling dataSetter after switching from 'all' to individual",
-                );
-                lastDataSetterUpdate = updatedData;
-                props.dataSetter(updatedData);
-              }
 
               console.log(
                 "[SlimSelect] Returning false (no onChange, just visual)",
@@ -386,45 +303,15 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
               if (
                 props.onChange &&
                 JSON.stringify([...newSelection].sort()) !==
-                  JSON.stringify(
-                    [
-                      ...(Array.isArray(currentValue) ? currentValue : []),
-                    ].sort(),
-                  )
+                  JSON.stringify([...currentSelected].sort())
               ) {
                 console.log("[SlimSelect] Calling onChange with new selection");
                 props.onChange(newSelection);
-                currentValue = newSelection;
+                currentSelected = newSelection;
               } else {
                 console.log(
                   "[SlimSelect] Skipped onChange (no change or no handler)",
                 );
-              }
-
-              // Automatic two-way binding with dataSetter
-              if (props.dataSetter && props.data) {
-                const updatedData = props.data.map((item) => {
-                  if ("label" in item && item.options) {
-                    const updatedOptions = item.options.map((opt) => {
-                      const isSelected = newSelection.includes(
-                        String(opt.value),
-                      );
-                      return Object.assign({}, opt, { selected: isSelected });
-                    });
-                    return Object.assign({}, item, { options: updatedOptions });
-                  } else if ("value" in item && item.value !== "all") {
-                    const isSelected = newSelection.includes(
-                      String(item.value),
-                    );
-                    return Object.assign({}, item, { selected: isSelected });
-                  }
-                  return item;
-                });
-                console.log(
-                  "[SlimSelect beforeChange] Calling dataSetter after deselecting while 'all' active",
-                );
-                lastDataSetterUpdate = updatedData;
-                props.dataSetter(updatedData);
               }
 
               console.log("[SlimSelect] Returning false to prevent default");
@@ -450,39 +337,14 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
               }, 0);
 
               // Manually trigger onChange
-              if (
-                props.onChange &&
-                (Array.isArray(currentValue)
-                  ? currentValue.length > 0
-                  : currentValue !== "")
-              ) {
+              if (props.onChange && currentSelected.length > 0) {
                 console.log("[SlimSelect] Calling onChange with empty array");
                 props.onChange([]);
-                currentValue = [];
+                currentSelected = [];
               } else {
                 console.log(
                   "[SlimSelect] Skipped onChange (already empty or no handler)",
                 );
-              }
-
-              // Automatic two-way binding with dataSetter
-              if (props.dataSetter && props.data) {
-                const updatedData = props.data.map((item) => {
-                  if ("label" in item && item.options) {
-                    const updatedOptions = item.options.map((opt) =>
-                      Object.assign({}, opt, { selected: false }),
-                    );
-                    return Object.assign({}, item, { options: updatedOptions });
-                  } else if ("value" in item && item.value !== "all") {
-                    return Object.assign({}, item, { selected: false });
-                  }
-                  return item;
-                });
-                console.log(
-                  "[SlimSelect beforeChange] Calling dataSetter after deselecting 'all'",
-                );
-                lastDataSetterUpdate = updatedData;
-                props.dataSetter(updatedData);
               }
 
               console.log("[SlimSelect] Returning false to prevent default");
@@ -501,7 +363,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             {
               instanceId,
               newVal: newVal.map((o) => o.value),
-              currentValue,
+              currentSelected,
               addAllOption: props.addAllOption,
               globalActiveSlimSelectId,
             },
@@ -512,9 +374,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
         if (!slimSelect) return;
 
-        let newValue = props.multiple
-          ? newVal.map((o) => o.value)
-          : (newVal[0]?.value ?? "");
+        let newValue = newVal.map((o) => o.value);
 
         console.log("[SlimSelect afterChange] Initial newValue:", newValue);
 
@@ -552,24 +412,16 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         );
 
         const currentValueExists =
-          currentValue === undefined
-            ? false
-            : Array.isArray(currentValue)
-              ? currentValue.length > 0 &&
-                currentValue.every((v) => options.some((o) => o.value === v))
-              : currentValue !== "" &&
-                options.some((o) => o.value === currentValue);
+          currentSelected.length > 0 &&
+          currentSelected.every((v) => options.some((o) => o.value === v));
 
-        const newValueIsValid = Array.isArray(newValue)
-          ? newValue.length > 0 &&
-            newValue.every((v) => options.some((o) => o.value === v))
-          : newValue !== "" && options.some((o) => o.value === newValue);
+        const newValueIsValid =
+          newValue.length > 0 &&
+          newValue.every((v) => options.some((o) => o.value === v));
 
         const valueChanged =
-          Array.isArray(newValue) && Array.isArray(currentValue)
-            ? JSON.stringify([...newValue].sort()) !==
-              JSON.stringify([...(currentValue ?? [])].sort())
-            : currentValue !== newValue;
+          JSON.stringify([...newValue].sort()) !==
+          JSON.stringify([...currentSelected].sort());
 
         console.log(
           "[SlimSelect afterChange] Validation:",
@@ -578,7 +430,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
               currentValueExists,
               newValueIsValid,
               valueChanged,
-              currentValue,
+              currentSelected,
               newValue,
             },
             null,
@@ -596,7 +448,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             newValue,
           );
           props.onChange(newValue);
-          currentValue = newValue;
+          currentSelected = newValue;
         } else {
           console.log(
             "[SlimSelect afterChange] Skipped onChange:",
@@ -606,40 +458,13 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
                 valueChanged,
                 currentValueExists,
                 newValueIsValid,
-                currentValue,
+                currentSelected,
                 newValue,
               },
               null,
               2,
             ),
           );
-        }
-
-        // Automatic two-way binding with dataSetter
-        if (props.dataSetter && props.data && valueChanged) {
-          const selectedValues = Array.isArray(newValue)
-            ? newValue
-            : [newValue];
-          const updatedData = props.data.map((item) => {
-            if ("label" in item && item.options) {
-              // Handle optgroup
-              const updatedOptions = item.options.map((opt) => {
-                const isSelected = selectedValues.includes(String(opt.value));
-                return Object.assign({}, opt, { selected: isSelected });
-              });
-              return Object.assign({}, item, { options: updatedOptions });
-            } else if ("value" in item && item.value !== "all") {
-              // Handle regular option (skip "all" option)
-              const isSelected = selectedValues.includes(String(item.value));
-              return Object.assign({}, item, { selected: isSelected });
-            }
-            return item;
-          });
-          console.log(
-            "[SlimSelect afterChange] Calling dataSetter with updated data",
-          );
-          lastDataSetterUpdate = updatedData;
-          props.dataSetter(updatedData);
         }
 
         ogAfterChange?.(newVal);
@@ -676,19 +501,19 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
     slimSelect = new SlimSelectCore(config);
 
-    // Store initial data reference
-    lastDataReference = props.data;
+    // Store initial values reference
+    lastValuesReference = props.values;
 
     // expose instance
     props.ref?.(slimSelect);
 
-    if (props.value !== undefined) {
-      syncValueToSlimSelect(props.value, false);
+    if (props.selected !== undefined) {
+      syncSelectedToSlimSelect(props.selected, false);
     }
 
     console.log(
       "[SlimSelect onMount] Setting isInitialMount to false",
-      JSON.stringify({ instanceId, currentValue }, null, 2),
+      JSON.stringify({ instanceId, currentSelected }, null, 2),
     );
     setIsInitialMount(false);
 
@@ -700,19 +525,19 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           {
             instanceId,
             hasOnChange: !!props.onChange,
-            hasData: !!props.data,
+            hasValues: !!props.values,
             hasSlimSelect: !!slimSelect,
-            currentValue,
+            currentSelected,
           },
           null,
           2,
         ),
       );
 
-      if (!props.onChange || !props.data || !slimSelect) {
+      if (!props.onChange || !props.values || !slimSelect) {
         setIsInitializing(false);
         console.log(
-          "[SlimSelect onMount setTimeout] No onChange/data/slimSelect, set isInitializing=false",
+          "[SlimSelect onMount setTimeout] No onChange/values/slimSelect, set isInitializing=false",
         );
         return;
       }
@@ -736,12 +561,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       );
 
       if (selectedOptions.length > 0) {
-        let initialValue = props.multiple
-          ? selectedOptions.map((o) => o.value)
-          : (selectedOptions[0]?.value ?? "");
+        let initialValue = selectedOptions.map((o) => o.value);
 
         // Handle "all" option
-        if (props.addAllOption && Array.isArray(initialValue)) {
+        if (props.addAllOption) {
           const hasOnlyAll =
             initialValue.length === 1 && initialValue[0] === "all";
           if (hasOnlyAll) {
@@ -758,17 +581,17 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             {
               instanceId,
               initialValue,
-              currentValueBefore: currentValue,
+              currentValueBefore: currentSelected,
             },
             null,
             2,
           ),
         );
         props.onChange(initialValue);
-        currentValue = initialValue;
+        currentSelected = initialValue;
         console.log(
-          "[SlimSelect onMount] After onChange, currentValue set to:",
-          JSON.stringify(currentValue, null, 2),
+          "[SlimSelect onMount] After onChange, currentSelected set to:",
+          JSON.stringify(currentSelected, null, 2),
         );
       }
 
@@ -790,16 +613,16 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   });
 
   createEffect(() => {
-    const value = props.value;
+    const selected = props.selected;
 
     console.log(
-      "[SlimSelect createEffect:value]",
+      "[SlimSelect createEffect:selected]",
       JSON.stringify(
         {
           instanceId,
           isInitialMount: isInitialMount(),
-          value,
-          currentValue,
+          selected,
+          currentSelected,
         },
         null,
         2,
@@ -807,50 +630,51 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     );
 
     if (isInitialMount()) {
-      currentValue = value;
+      currentSelected = selected ?? [];
       console.log(
-        "[SlimSelect createEffect:value] Initial mount, set currentValue to:",
-        JSON.stringify(currentValue, null, 2),
+        "[SlimSelect createEffect:selected] Initial mount, set currentSelected to:",
+        JSON.stringify(currentSelected, null, 2),
       );
       return;
     }
 
-    if (slimSelect && value !== undefined) {
-      currentValue = value;
+    if (slimSelect && selected !== undefined) {
+      currentSelected = selected;
       console.log(
-        "[SlimSelect createEffect:value] Syncing value to SlimSelect:",
-        JSON.stringify(value, null, 2),
+        "[SlimSelect createEffect:selected] Syncing selected to SlimSelect:",
+        JSON.stringify(selected, null, 2),
       );
-      syncValueToSlimSelect(value, false);
+      syncSelectedToSlimSelect(selected, false);
     }
   });
 
   createEffect(() => {
-    const data = props.data;
+    const values = props.values;
+    const selected = props.selected;
 
     console.log(
-      "[SlimSelect createEffect:data]",
+      "[SlimSelect createEffect:values]",
       JSON.stringify(
         {
           instanceId,
           isInitialMount: isInitialMount(),
           isInitializing: isInitializing(),
           hasSlimSelect: !!slimSelect,
-          hasData: !!data,
-          dataLength: data?.length,
+          hasValues: !!values,
+          valuesLength: values?.length,
           globalActiveSlimSelectId,
-          dataReferenceChanged: data !== lastDataReference,
+          valuesReferenceChanged: values !== lastValuesReference,
         },
         null,
         2,
       ),
     );
 
-    if (!isInitialMount() && slimSelect && data) {
-      // Skip if data reference hasn't changed
-      if (data === lastDataReference) {
+    if (!isInitialMount() && slimSelect && values) {
+      // Skip if values reference hasn't changed
+      if (values === lastValuesReference) {
         console.log(
-          "[SlimSelect createEffect:data] Skipping - data reference unchanged",
+          "[SlimSelect createEffect:values] Skipping - values reference unchanged",
           JSON.stringify(
             {
               instanceId,
@@ -864,7 +688,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
       if (isInitializing()) {
         console.log(
-          "[SlimSelect createEffect:data] Skipping data update - instance is initializing",
+          "[SlimSelect createEffect:values] Skipping update - instance is initializing",
           JSON.stringify(
             {
               instanceId,
@@ -877,24 +701,8 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       }
 
       if (globalActiveSlimSelectId !== undefined) {
-        // Allow updates if this is an external change (not from our dataSetter)
-        const isExternalUpdate = data !== lastDataSetterUpdate;
-        if (!isExternalUpdate) {
-          console.log(
-            "[SlimSelect createEffect:data] Skipping data update - this instance triggered via dataSetter",
-            JSON.stringify(
-              {
-                thisInstanceId: instanceId,
-                activeInstanceId: globalActiveSlimSelectId,
-              },
-              null,
-              2,
-            ),
-          );
-          return;
-        }
         console.log(
-          "[SlimSelect createEffect:data] Allowing external update despite active instance",
+          "[SlimSelect createEffect:values] Skipping update - another instance is active",
           JSON.stringify(
             {
               thisInstanceId: instanceId,
@@ -906,31 +714,17 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         );
       }
 
+      const data = buildData(values, selected ?? []);
+
       console.log(
-        "[SlimSelect createEffect:data] Applying data update",
+        "[SlimSelect createEffect:values] Applying update",
         JSON.stringify(
           {
             instanceId,
-            dataLength: data?.length,
-            dataPreview: data
-              ?.slice(0, 3)
-              .map((d) => ("value" in d ? d.value : "group")),
-            dataSelected: data
-              ?.filter((d) => "selected" in d && d.selected)
-              .map((d) => ("value" in d ? d.value : null)),
-          },
-          null,
-          2,
-        ),
-      );
-
-      console.log(
-        "[SlimSelect createEffect:data] Applying data update",
-        JSON.stringify(
-          {
-            dataSelected: data
-              ?.filter((d) => "selected" in d && d.selected)
-              .map((d) => ("value" in d ? d.value : null)),
+            valuesLength: values?.length,
+            selectedLength: selected?.length,
+            valuesPreview: values?.slice(0, 3),
+            selectedPreview: selected?.slice(0, 3),
           },
           null,
           2,
@@ -947,17 +741,14 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       if (props.addAllOption && props.multiple) {
         const storeData = slimSelect.store.getData();
         const allPossibleValues = getAllOptionValues(storeData);
-        const selectedValues = data
-          .filter((item) => "value" in item && item.selected)
-          .map((item) => ("value" in item ? item.value : ""))
-          .filter((v): v is string => Boolean(v) && v !== "all");
+        const selectedValues = selected ?? [];
 
         const allAreSelected =
           allPossibleValues.length > 0 &&
           selectedValues.length === allPossibleValues.length;
 
         console.log(
-          "[SlimSelect createEffect:data] All check:",
+          "[SlimSelect createEffect:values] All check:",
           JSON.stringify(
             { allPossibleValues, selectedValues, allAreSelected },
             null,
@@ -985,9 +776,9 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             if (!slimSelect) return;
             slimSelect.store.setData(storeData);
             slimSelect.render.renderOptions(storeData);
-            lastDataReference = data;
+            lastValuesReference = values;
             console.log(
-              "[SlimSelect createEffect:data] Applied 'all' visual state",
+              "[SlimSelect createEffect:values] Applied 'all' visual state",
             );
           }, 0);
           return;
@@ -999,23 +790,21 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       slimSelect.render.renderOptions(slimSelect.store.getData());
 
       if (shouldUpdateLastRef) {
-        lastDataReference = data;
+        lastValuesReference = values;
       }
 
-      console.log(
-        "[SlimSelect createEffect:data] Rendered UI after data update",
-      );
+      console.log("[SlimSelect createEffect:values] Rendered UI after update");
 
-      if (props.value !== undefined) {
+      if (props.selected !== undefined) {
         console.log(
-          "[SlimSelect createEffect:data] Syncing value after data update:",
-          JSON.stringify(props.value, null, 2),
+          "[SlimSelect createEffect:values] Syncing selected after update:",
+          JSON.stringify(props.selected, null, 2),
         );
-        syncValueToSlimSelect(props.value, false);
+        syncSelectedToSlimSelect(props.selected, false);
       }
     } else {
       console.log(
-        "[SlimSelect createEffect:data] Skipped - conditions not met",
+        "[SlimSelect createEffect:values] Skipped - conditions not met",
       );
     }
   });
