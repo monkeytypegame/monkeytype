@@ -33,6 +33,7 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import { insertLocalResult } from "./collections/results";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -967,6 +968,8 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     if (snapshot?.results !== undefined) {
       snapshot.results.unshift(data.result);
     }
+
+    void insertLocalResult(data.result);
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
     }

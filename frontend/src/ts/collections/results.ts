@@ -122,7 +122,16 @@ export function useResultsLiveQuery(
   });
 }
 
-const resultsCollection = createCollection(
+export async function insertLocalResult(
+  result: SnapshotResult<Mode>,
+): Promise<void> {
+  //TODO check state better
+  await resultsCollection.stateWhenReady();
+  //resultsCollection.utils.writeInsert(result);
+  resultsCollection.insert(result);
+}
+
+export const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
@@ -163,6 +172,19 @@ const resultsCollection = createCollection(
         } as SnapshotResult<Mode>;
       });
     },
+    onInsert: async ({ transaction }) => {
+      //call to the backend to post a result is done outside, we just  insert the result as we get it
+      const newItems = transaction.mutations.map((m) => m.modified);
+
+      resultsCollection.utils.writeBatch(() => {
+        newItems.forEach((item) => {
+          resultsCollection.utils.writeInsert(item);
+        });
+      });
+
+      //do not refetch after insert
+      return { refetch: false };
+    },
     queryClient,
     getKey: (it) => it._id,
   }),
@@ -192,8 +214,6 @@ function getFilteredResults(state: ResultsQueryState) {
         ),
       );
     };
-
-    console.log("####", state.tags);
 
     let query = q
       .from({ r: resultsCollection })
