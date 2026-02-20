@@ -81,7 +81,6 @@
         "typescript/no-unnecessary-type-assertion": "off", //1
         "typescript/strict-void-return": "off",
 
-        "dot-notion": "off",
         "prefer-nullish-coalescing": "off",
         "no-shadow": "off",
       },
