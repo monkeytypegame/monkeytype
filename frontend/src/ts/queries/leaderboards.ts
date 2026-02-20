@@ -19,7 +19,7 @@ const XpSelection = z.object({
   mode: z.never().optional(),
   mode2: z.never().optional(),
 });
-const WpmSelection = z.object({
+const SpeedSelection = z.object({
   type: z.enum(["daily", "allTime"]),
   friendsOnly: z.boolean(),
   previous: z.boolean(),
@@ -28,7 +28,7 @@ const WpmSelection = z.object({
   language: LanguageSchema,
 });
 
-export const SelectionSchema = WpmSelection.or(XpSelection);
+export const SelectionSchema = SpeedSelection.or(XpSelection);
 export type Selection = z.infer<typeof SelectionSchema>;
 
 const queryKeys = {
