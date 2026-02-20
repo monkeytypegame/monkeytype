@@ -11,6 +11,7 @@ import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
+import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 
 import { Charts } from "./Charts";
@@ -58,13 +59,22 @@ export function AccountPage(): JSXElement {
       <Charts filters={filters} />
       <TestStats queryState={queryState} />
 
-      <Table data={[...data()]} onSortingChange={(val) => setSorting(val)} />
-      <Button
-        text="load more"
-        disabled={data.isLoading}
-        onClick={() => setLimit((limit) => limit + 10)}
-        class="w-full text-center"
-      />
+      <AsyncContent collection={data}>
+        {(results) => (
+          <>
+            <Table
+              data={[...results]}
+              onSortingChange={(val) => setSorting(val)}
+            />
+            <Button
+              text="load more"
+              disabled={data.isLoading}
+              onClick={() => setLimit((limit) => limit + 10)}
+              class="w-full text-center"
+            />
+          </>
+        )}
+      </AsyncContent>
     </Show>
   );
 }

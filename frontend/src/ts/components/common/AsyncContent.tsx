@@ -1,5 +1,6 @@
 import { UseQueryResult } from "@tanstack/solid-query";
 import {
+  Accessor,
   createMemo,
   ErrorBoundary,
   JSXElement,
@@ -21,6 +22,11 @@ type AsyncEntry<T> = {
   error?: () => unknown;
 };
 
+type Collection<T> = Accessor<T> & {
+  isLoading: boolean;
+  isError: boolean;
+};
+
 type QueryMapping = Record<string, unknown> | unknown;
 type AsyncMap<T extends QueryMapping> = {
   [K in keyof T]: AsyncEntry<T[K]>;
@@ -34,12 +40,18 @@ type BaseProps = {
 
 type QueryProps<T extends QueryMapping> = {
   queries: { [K in keyof T]: UseQueryResult<T[K]> };
-  query?: never;
 };
 
 type SingleQueryProps<T> = {
   query: UseQueryResult<T>;
-  queries?: never;
+};
+
+type CollectionProps<T extends QueryMapping> = {
+  collections: { [K in keyof T]: Collection<T[K]> };
+};
+
+type SingleCollectionProps<T> = {
+  collection: Collection<T>;
 };
 
 type DeferredChildren<T extends QueryMapping> = {
@@ -54,7 +66,12 @@ type EagerChildren<T extends QueryMapping> = {
 };
 
 export type Props<T extends QueryMapping> = BaseProps &
-  (QueryProps<T> | SingleQueryProps<T>) &
+  (
+    | QueryProps<T>
+    | SingleQueryProps<T>
+    | CollectionProps<T>
+    | SingleCollectionProps<T>
+  ) &
   (DeferredChildren<T> | EagerChildren<T>);
 
 export default function AsyncContent<T extends QueryMapping>(
@@ -62,10 +79,14 @@ export default function AsyncContent<T extends QueryMapping>(
 ): JSXElement {
   //@ts-expect-error this is fine
   const source = createMemo<AsyncMap<T>>(() => {
-    if (props.query !== undefined) {
+    if ("query" in props) {
       return fromQueries({ defaultQuery: props.query });
-    } else {
+    } else if ("queries" in props) {
       return fromQueries(props.queries);
+    } else if ("collection" in props) {
+      return fromCollections({ defaultQuery: props.collection });
+    } else if ("collections" in props) {
+      return fromCollections(props.collections);
     }
   });
 
@@ -159,6 +180,20 @@ function fromQueries<T extends Record<string, unknown>>(queries: {
       isLoading: () => q.isLoading,
       isError: () => q.isError,
       error: () => q.error,
+    };
+    return acc;
+  }, {} as AsyncMap<T>);
+}
+
+function fromCollections<T extends Record<string, unknown>>(collections: {
+  [K in keyof T]: Collection<T[K]>;
+}): AsyncMap<T> {
+  return typedKeys(collections).reduce((acc, key) => {
+    const q = collections[key];
+    acc[key] = {
+      value: () => q(),
+      isLoading: () => q.isLoading,
+      isError: () => q.isError,
     };
     return acc;
   }, {} as AsyncMap<T>);
