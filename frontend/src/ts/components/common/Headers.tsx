@@ -1,7 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
-
 import { Fa, FaProps } from "./Fa";
 
 export function H2(props: {

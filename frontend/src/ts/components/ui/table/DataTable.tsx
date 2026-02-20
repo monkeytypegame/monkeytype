@@ -25,7 +25,6 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { bp } from "../../../signals/breakpoints";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
-
 import {
   Table,
   TableBody,

@@ -2,7 +2,6 @@ import { createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { FaSolidIcon } from "../../types/font-awesome";
-
 import { Fa } from "./Fa";
 
 //cache successful and missing avatars
