@@ -285,8 +285,8 @@ export function convertStringToHex(color: string): string {
   }
 
   const rgbMatch =
-    input.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/) ??
-    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+    /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/.exec(input) ??
+    /^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/.exec(input);
 
   if (rgbMatch !== null) {
     const clamp = (n: string): number =>
@@ -299,8 +299,8 @@ export function convertStringToHex(color: string): string {
   }
 
   const hslMatch =
-    input.match(/^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/) ??
-    input.match(/^(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%$/);
+    /^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/.exec(input) ??
+    /^(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%$/.exec(input);
 
   if (hslMatch) {
     const clamp = (n: string): number =>

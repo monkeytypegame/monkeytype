@@ -62,7 +62,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
   const parseLintOutput = (
     output: string,
   ): Pick<LintResult, "errorCount" | "warningCount"> => {
-    const summaryMatch = output.match(OXLINT_SUMMARY_REGEX);
+    const summaryMatch = OXLINT_SUMMARY_REGEX.exec(output);
     if (summaryMatch?.[1] !== undefined && summaryMatch?.[2] !== undefined) {
       return {
         warningCount: parseInt(summaryMatch[1], 10),
