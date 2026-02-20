@@ -23,6 +23,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
+import { getLanguage } from "../utils/json-data";
 import { qsr, ElementWithUtils } from "../utils/dom";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
@@ -30,10 +31,17 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 const pageSize = 100;
 let currentPageNumber = 1;
 let usingCustomLength = true;
+let dataBalloonDirection = "left";
 let quotes: Quote[];
 
 async function updateQuotes(): Promise<void> {
   ({ quotes } = await QuotesController.getQuotes(Config.language));
+}
+
+async function updateTooltipDirection(): Promise<void> {
+  const quotesLanguage = await getLanguage(Config.language);
+  const quotesLanguageIsRTL = quotesLanguage?.rightToLeft ?? false;
+  dataBalloonDirection = quotesLanguageIsRTL ? "right" : "left";
 }
 
 function getSearchService<T>(
@@ -186,13 +194,13 @@ function buildQuoteSearchResult(
 
     <div class="textButton report ${
       loggedOut && "hidden"
-    }" aria-label="Report quote" data-balloon-pos="left">
+    }" aria-label="Report quote" data-balloon-pos=${dataBalloonDirection}>
       <i class="fas fa-flag report"></i>
     </div>
 
     <div class="textButton favorite ${
       loggedOut && "hidden"
-    }" aria-label="Favorite quote" data-balloon-pos="left">
+    }" aria-label="Favorite quote" data-balloon-pos=${dataBalloonDirection}>
       <i class="${isFav ? "fas" : "far"} fa-heart favorite"></i>
     </div>
 
@@ -420,7 +428,8 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       });
     },
     afterAnimation: async () => {
-      void updateQuotes();
+      await updateTooltipDirection();
+      await updateQuotes();
     },
   });
 }
