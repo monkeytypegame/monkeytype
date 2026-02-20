@@ -457,9 +457,16 @@ function updateWordWrapperClasses(): void {
   const existing =
     wordsEl.native.className
       .split(/\s+/)
-      .filter((className) => !className.startsWith("highlight-")) ?? [];
+      .filter(
+        (className) =>
+          !className.startsWith("highlight-") &&
+          !className.startsWith("typed-effect-"),
+      ) ?? [];
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
+  }
+  if (Config.typedEffect !== null) {
+    existing.push("typed-effect-" + Config.typedEffect.replaceAll("_", "-"));
   }
 
   wordsEl.native.className = existing.join(" ");
@@ -1807,7 +1814,8 @@ export function beforeTestWordChange(
   if (
     (Config.stopOnError === "letter" && (correct || correct === null)) ||
     nospaceEnabled ||
-    forceUpdateActiveWordLetters
+    forceUpdateActiveWordLetters ||
+    Config.strictSpace
   ) {
     void updateWordLetters({
       input: TestInput.input.current,
@@ -2056,6 +2064,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   if (
     [
       "highlightMode",
+      "typedEffect",
       "blindMode",
       "indicateTypos",
       "tapeMode",

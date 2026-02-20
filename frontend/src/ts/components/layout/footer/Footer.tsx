@@ -12,7 +12,7 @@ import { VersionButton } from "./VersionButton";
 export function Footer(): JSXElement {
   return (
     <footer
-      class={cn("text-sub relative text-xs", {
+      class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
@@ -24,12 +24,12 @@ export function Footer(): JSXElement {
           "opacity-0": getFocus(),
         }}
       >
-        <div class="xs:grid-cols-2 grid grid-cols-1 justify-items-start sm:grid-cols-4 lg:flex">
+        <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
           <Button
             type="text"
             text="contact"
             fa={{
-              icon: "envelope",
+              icon: "fa-envelope",
               fixedWidth: true,
             }}
             onClick={() => showModal("Contact")}
@@ -38,7 +38,7 @@ export function Footer(): JSXElement {
             type="text"
             text="support"
             fa={{
-              icon: "donate",
+              icon: "fa-donate",
               fixedWidth: true,
             }}
             onClick={() => showModal("Support")}
@@ -47,7 +47,7 @@ export function Footer(): JSXElement {
             type="text"
             text="github"
             fa={{
-              icon: "code",
+              icon: "fa-code",
               fixedWidth: true,
             }}
             href="https://github.com/monkeytypegame/monkeytype"
@@ -56,7 +56,7 @@ export function Footer(): JSXElement {
             type="text"
             text="discord"
             fa={{
-              icon: "discord",
+              icon: "fa-discord",
               variant: "brand",
               fixedWidth: true,
             }}
@@ -66,7 +66,7 @@ export function Footer(): JSXElement {
             type="text"
             text="twitter"
             fa={{
-              icon: "twitter",
+              icon: "fa-twitter",
               variant: "brand",
               fixedWidth: true,
             }}
@@ -76,7 +76,7 @@ export function Footer(): JSXElement {
             type="text"
             text="terms"
             fa={{
-              icon: "file-contract",
+              icon: "fa-file-contract",
               fixedWidth: true,
             }}
             href="/terms-of-service.html"
@@ -86,7 +86,7 @@ export function Footer(): JSXElement {
             type="text"
             text="security"
             fa={{
-              icon: "shield-alt",
+              icon: "fa-shield-alt",
               fixedWidth: true,
             }}
           />
@@ -95,7 +95,7 @@ export function Footer(): JSXElement {
             type="text"
             text="privacy"
             fa={{
-              icon: "lock",
+              icon: "fa-lock",
               fixedWidth: true,
             }}
           />

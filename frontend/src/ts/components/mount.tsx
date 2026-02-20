@@ -1,8 +1,11 @@
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
+import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
 
+import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
 import { Overlays } from "./layout/overlays/Overlays";
@@ -15,11 +18,19 @@ const components: Record<string, () => JSXElement> = {
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
+  devtools: () => <DevTools />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
   for (const mountPoint of qsa(name)) {
-    render(() => component(), mountPoint.native);
+    render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          {component()}
+        </QueryClientProvider>
+      ),
+      mountPoint.native,
+    );
   }
 }
 

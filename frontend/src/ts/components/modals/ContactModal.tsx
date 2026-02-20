@@ -25,7 +25,7 @@ export function ContactModal(): JSXElement {
           text="Question"
           class={buttonClass}
           fa={{
-            icon: "question-circle",
+            icon: "fa-question-circle",
             fixedWidth: true,
           }}
         />
@@ -33,7 +33,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Feedback] "
           fa={{
-            icon: "comment-dots",
+            icon: "fa-comment-dots",
             fixedWidth: true,
           }}
           text="Feedback"
@@ -43,7 +43,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:support@monkeytype.com?subject=[Bug] "
           fa={{
-            icon: "bug",
+            icon: "fa-bug",
             fixedWidth: true,
           }}
           text="Bug Report"
@@ -53,7 +53,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:support@monkeytype.com?subject=[Account] "
           fa={{
-            icon: "user-circle",
+            icon: "fa-user-circle",
             fixedWidth: true,
           }}
           text="Account Help"
@@ -63,7 +63,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:jack@monkeytype.com?subject=[Business] "
           fa={{
-            icon: "briefcase",
+            icon: "fa-briefcase",
             fixedWidth: true,
           }}
           text="Business Inquiry"
@@ -73,7 +73,7 @@ export function ContactModal(): JSXElement {
           type="button"
           href="mailto:contact@monkeytype.com?subject=[Other] "
           fa={{
-            icon: "ellipsis-h",
+            icon: "fa-ellipsis-h",
             fixedWidth: true,
           }}
           text="Other"

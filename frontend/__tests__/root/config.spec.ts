@@ -9,7 +9,7 @@ import {
 import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
-import * as DB from "../../src/ts/db";
+import * as ApeConfig from "../../src/ts/ape/config";
 import * as AccountButton from "../../src/ts/elements/account-button";
 import * as Notifications from "../../src/ts/elements/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
@@ -31,7 +31,7 @@ describe("Config", () => {
       "isConfigValueValid",
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
-    const dbSaveConfigMock = vi.spyOn(DB, "saveConfig");
+    const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
     const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
     const notificationAddMock = vi.spyOn(Notifications, "add");
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
