@@ -42,6 +42,7 @@ const KnownFontNameSchema = z.enum(
     "Geist_Mono",
     "Iosevka",
     "Proto",
+    "Adwaita_Mono",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known font family"),

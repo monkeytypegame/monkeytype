@@ -137,4 +137,7 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
     display: "0xProto",
     fileName: "0xProto-Regular.woff2",
   },
+  Adwaita_Mono: {
+    fileName: "AdwaitaMono-Regular.woff2",
+  },
 };
