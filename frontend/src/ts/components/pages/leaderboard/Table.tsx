@@ -287,12 +287,8 @@ function getWpmColumns({
             })
           ) : (
             <>
-              <div class="text-xs">
-                {dateFormat(info.getValue(), "dd MMM yyyy")}
-              </div>
-              <div class="text-xs text-sub">
-                {dateFormat(info.getValue(), "HH:mm")}
-              </div>
+              <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
+              <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
             </>
           )
         ) : (
@@ -389,7 +385,7 @@ function getXpColumns({
       header: () => (
         <>
           <div>xp gained</div>
-          <div class="opacity-50">time typed</div>
+          <div class="whitespace-nowrap opacity-50">time typed</div>
         </>
       ),
       cell: (info) => (
@@ -428,12 +424,8 @@ function getXpColumns({
             })
           ) : (
             <>
-              <div class="text-xs">
-                {dateFormat(info.getValue(), "dd MMM yyyy")}
-              </div>
-              <div class="text-xs text-sub">
-                {dateFormat(info.getValue(), "HH:mm")}
-              </div>
+              <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
+              <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
             </>
           )
         ) : (
