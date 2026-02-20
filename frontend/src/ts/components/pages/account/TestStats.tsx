@@ -11,14 +11,14 @@ import { Formatting } from "../../../utils/format";
 import { Fa } from "../../common/Fa";
 
 export function TestStats(props: {
-  resultsQuery: Accessor<ResultsQueryState | undefined>;
+  queryState: Accessor<ResultsQueryState | undefined>;
 }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
   const formatWpm = (val: number): string => format().typingSpeed(val);
   const formatPercentage = (val: number): string => format().percentage(val);
 
-  const statsQuery = useResultStatsLiveQuery(props.resultsQuery);
-  const last10StatsQuery = useResultStatsLiveQuery(props.resultsQuery, {
+  const statsQuery = useResultStatsLiveQuery(props.queryState);
+  const last10StatsQuery = useResultStatsLiveQuery(props.queryState, {
     lastTen: true,
   });
 

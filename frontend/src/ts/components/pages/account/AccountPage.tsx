@@ -56,7 +56,7 @@ export function AccountPage(): JSXElement {
       />
 
       <Charts filters={filters} />
-      <TestStats resultsQuery={queryState} />
+      <TestStats queryState={queryState} />
 
       <Table data={[...data()]} onSortingChange={(val) => setSorting(val)} />
       <Button

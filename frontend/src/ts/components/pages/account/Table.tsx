@@ -85,6 +85,9 @@ function getColumns<M extends Mode>({
       header: "mode",
       cell: (info) =>
         `${info.getValue()} ${info.row.original.mode2 === "custom" ? "" : info.row.original.mode2}`,
+      meta: {
+        breakpoint: "md",
+      },
     }),
     defineColumn("_id", {
       header: "info",
@@ -129,6 +132,9 @@ function getColumns<M extends Mode>({
           </Show>
         </>
       ),
+      meta: {
+        breakpoint: "md",
+      },
     }),
     defineColumn("tags", {
       header: "tags",
@@ -147,6 +153,9 @@ function getColumns<M extends Mode>({
           </span>
         </Show>
       ),
+      meta: {
+        breakpoint: "md",
+      },
     }),
     defineColumn("timestamp", {
       header: "date",
