@@ -85,7 +85,7 @@ function getPlugins({
       typeAware: true,
       overlay: isDevelopment,
     }),
-    injectHTML(),
+    injectHTML() as PluginOption,
     tailwindcss(),
     solidPlugin(),
   ];
@@ -176,7 +176,7 @@ function getPlugins({
           to: `"./ts/constants/firebase-config-live"`,
         },
       },
-    ]),
+    ]) as PluginOption,
     injectPreload(),
     minifyJson(),
   ];
