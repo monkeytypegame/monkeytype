@@ -1,7 +1,6 @@
 import { JSXElement } from "solid-js";
 
 import { cn } from "../../utils/cn";
-
 import { Fa } from "./Fa";
 export function LoadingCircle(props: { class?: string }): JSXElement {
   return (

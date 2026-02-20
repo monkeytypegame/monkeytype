@@ -11,7 +11,6 @@ import {
   UserFlag,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
-
 import { Button } from "./Button";
 import { DiscordAvatar } from "./DiscordAvatar";
 import { Fa } from "./Fa";

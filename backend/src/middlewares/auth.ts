@@ -51,8 +51,7 @@ export function authenticateTsRestRequest<
   ): Promise<void> => {
     const options = {
       ...DEFAULT_OPTIONS,
-      ...((getMetadata(req)["authenticationOptions"] ??
-        {}) as EndpointMetadata),
+      ...((getMetadata(req).authenticationOptions ?? {}) as EndpointMetadata),
     };
 
     const startTime = performance.now();

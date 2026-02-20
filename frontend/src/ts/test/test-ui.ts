@@ -1345,7 +1345,7 @@ async function loadWordsHistory(): Promise<boolean> {
         Config.mode === "time" ||
         (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
         (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-      const isPartiallyCorrect = word.substring(0, input.length) === input;
+      const isPartiallyCorrect = word.startsWith(input);
 
       const shouldShowError =
         Config.mode !== "zen" &&

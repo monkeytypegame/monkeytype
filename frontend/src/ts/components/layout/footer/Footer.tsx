@@ -4,7 +4,6 @@ import { getFocus, getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
-
 import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";

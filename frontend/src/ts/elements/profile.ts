@@ -270,7 +270,7 @@ export async function update(
 
       //regular expression to get website name from url
       const regex = /^https?:\/\/(?:www\.)?([^/]+)/;
-      const websiteName = website?.match(regex)?.[1] ?? website;
+      const websiteName = regex.exec(website)?.[1] ?? website;
 
       if (website) {
         socialsEl?.appendHtml(
