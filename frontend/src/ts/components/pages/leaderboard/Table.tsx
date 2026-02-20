@@ -21,13 +21,13 @@ import { Fa } from "../../common/Fa";
 import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
-type WpmEntry = LeaderboardEntry;
+type SpeedEntry = LeaderboardEntry;
 type XpEntry = XpLeaderboardEntry;
-export type TableEntry = WpmEntry | XpEntry;
+export type TableEntry = SpeedEntry | XpEntry;
 
 export function Table(
   props: {
-    type: "wpm" | "xp";
+    type: "speed" | "xp";
     entries: TableEntry[];
     friendsOnly: boolean;
     hideHeader?: true;
@@ -59,8 +59,8 @@ export function Table(
           },
   }));
 
-  const wpmColumns = createMemo(() =>
-    getWpmColumns({
+  const speedColumns = createMemo(() =>
+    getSpeedColumns({
       friendsOnly: props.friendsOnly,
       format: new Formatting(getConfig),
       userOverride: props.userOverride,
@@ -91,11 +91,11 @@ export function Table(
 
   return (
     <Conditional
-      if={props.type === "wpm"}
+      if={props.type === "speed"}
       then={
         <DataTable
           {...commonProps()}
-          columns={wpmColumns()}
+          columns={speedColumns()}
           data={props.entries as LeaderboardEntry[]}
         />
       }
@@ -110,7 +110,7 @@ export function Table(
   );
 }
 
-function getWpmColumns({
+function getSpeedColumns({
   friendsOnly,
   format,
   userOverride,
@@ -120,8 +120,8 @@ function getWpmColumns({
   format: Formatting;
   userOverride?: Accessor<JSXElement>;
   addHeader?: boolean;
-}): DataTableColumnDef<WpmEntry>[] {
-  const defineColumn = createColumnHelper<WpmEntry>().accessor;
+}): DataTableColumnDef<SpeedEntry>[] {
+  const defineColumn = createColumnHelper<SpeedEntry>().accessor;
   const columns = [
     defineColumn("friendsRank", {
       header: () => <Fa icon="fa-user-friends" />,

@@ -154,7 +154,7 @@ export function LeaderboardPage(): JSXElement {
           >
             {({ data, rank, config }) => (
               <UserRank
-                type={selection().type === "weekly" ? "xp" : "wpm"}
+                type={selection().type === "weekly" ? "xp" : "speed"}
                 data={rank}
                 friendsOnly={selection().friendsOnly}
                 total={data?.count}
@@ -190,7 +190,7 @@ export function LeaderboardPage(): JSXElement {
               }
             >
               <Table
-                type={selection().type === "weekly" ? "xp" : "wpm"}
+                type={selection().type === "weekly" ? "xp" : "speed"}
                 entries={data?.entries ?? []}
                 friendsOnly={selection().friendsOnly}
                 scrollToUser={scrollToUser}
@@ -223,28 +223,27 @@ export function LeaderboardPage(): JSXElement {
       }
     }
   }
-}
 
-function getLbMemoryDifference(
-  selection: Selection,
-  currentRank: number | undefined,
-): number | undefined {
-  if (
-    selection.type !== "allTime" ||
-    selection.mode !== "time" ||
-    selection.language !== "english" ||
-    selection.friendsOnly ||
-    currentRank === undefined
-  ) {
-    return undefined;
+  function getLbMemoryDifference(
+    selection: Selection,
+    currentRank: number | undefined,
+  ): number | undefined {
+    if (
+      selection.type !== "allTime" ||
+      selection.mode !== "time" ||
+      selection.language !== "english" ||
+      selection.friendsOnly ||
+      currentRank === undefined
+    ) {
+      return undefined;
+    }
+    const oldRank =
+      getSnapshot()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
+    const diff = oldRank - currentRank;
+
+    return diff;
   }
-  const oldRank =
-    getSnapshot()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
-  const diff = oldRank - currentRank;
-
-  return diff;
 }
-
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
   return useLocalStorage<Selection>({
     key: "leaderboardSelector",

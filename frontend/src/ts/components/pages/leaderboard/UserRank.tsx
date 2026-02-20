@@ -14,7 +14,7 @@ import { LoadingCircle } from "../../common/LoadingCircle";
 import { Table, TableEntry } from "./Table";
 
 export function UserRank(props: {
-  type: "wpm" | "xp";
+  type: "speed" | "xp";
   data?: LeaderboardEntry | XpLeaderboardEntry | null;
   minWpm?: number;
   friendsOnly: boolean;
