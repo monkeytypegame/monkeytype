@@ -22,7 +22,7 @@ export function showIfNotClosedBefore(): void {
           </a>
         </>
       ),
-      imagePath: "./images/merch3.png",
+      imagePath: "/images/merch3.png",
       onClose: () => {
         closed.set(true);
       },
