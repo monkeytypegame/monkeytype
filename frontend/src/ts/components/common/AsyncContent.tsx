@@ -56,21 +56,6 @@ export type Props<T extends QueryMapping> = BaseProps &
   (QueryProps<T> | SingleQueryProps<T>) &
   (DeferredChildren<T> | EagerChildren<T>);
 
-function fromQueries<T extends Record<string, unknown>>(queries: {
-  [K in keyof T]: UseQueryResult<T[K]>;
-}): AsyncMap<T> {
-  return typedKeys(queries).reduce((acc, key) => {
-    const q = queries[key];
-    acc[key] = {
-      value: () => q.data,
-      isLoading: () => q.isLoading,
-      isError: () => q.isError,
-      error: () => q.error,
-    };
-    return acc;
-  }, {} as AsyncMap<T>);
-}
-
 export default function AsyncContent<T extends QueryMapping>(
   props: Props<T>,
 ): JSXElement {
@@ -161,4 +146,19 @@ export default function AsyncContent<T extends QueryMapping>(
       </Switch>
     </ErrorBoundary>
   );
+}
+
+function fromQueries<T extends Record<string, unknown>>(queries: {
+  [K in keyof T]: UseQueryResult<T[K]>;
+}): AsyncMap<T> {
+  return typedKeys(queries).reduce((acc, key) => {
+    const q = queries[key];
+    acc[key] = {
+      value: () => q.data,
+      isLoading: () => q.isLoading,
+      isError: () => q.isError,
+      error: () => q.error,
+    };
+    return acc;
+  }, {} as AsyncMap<T>);
 }

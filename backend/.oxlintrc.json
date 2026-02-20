@@ -9,15 +9,7 @@
     {
       "files": ["src/**/*.ts"],
       "rules": {
-        "import/no-cycle": "off", //todo: fix cycles and turn this on
-        "typescript/no-use-before-define": [
-          "error",
-          {
-            "functions": false,
-            "variables": false,
-            "classes": false
-          }
-        ]
+        "import/no-cycle": "off" //todo: fix cycles and turn this on
       }
     }
   ]

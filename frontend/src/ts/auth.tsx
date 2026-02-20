@@ -126,17 +126,6 @@ async function getDataAndInit(): Promise<boolean> {
   }
 }
 
-export function signOut(): void {
-  if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
-  }
-  if (!isAuthenticated()) return;
-  void authSignOut();
-}
-
 export async function loadUser(_user: UserType): Promise<void> {
   if (!(await getDataAndInit())) {
     signOut();
@@ -282,6 +271,14 @@ async function signInWithGitHub(): Promise<void> {
   return signInWithProvider(githubProvider);
 }
 
+async function addGoogleAuth(): Promise<void> {
+  return addAuthProvider("Google", gmailProvider);
+}
+
+async function addGithubAuth(): Promise<void> {
+  return addAuthProvider("GitHub", githubProvider);
+}
+
 async function addAuthProvider(
   providerName: string,
   provider: AuthProvider,
@@ -316,12 +313,15 @@ async function addAuthProvider(
   }
 }
 
-async function addGoogleAuth(): Promise<void> {
-  return addAuthProvider("Google", gmailProvider);
-}
-
-async function addGithubAuth(): Promise<void> {
-  return addAuthProvider("GitHub", githubProvider);
+export function signOut(): void {
+  if (!isAuthAvailable()) {
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
+    return;
+  }
+  if (!isAuthenticated()) return;
+  void authSignOut();
 }
 
 async function signUp(): Promise<void> {

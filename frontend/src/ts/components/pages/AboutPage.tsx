@@ -18,13 +18,6 @@ import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
 
-function prefetch(): void {
-  void queryClient.prefetchQuery(getContributorsQueryOptions());
-  void queryClient.prefetchQuery(getSupportersQueryOptions());
-  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
-}
-
 qsr("nav .view-about").on("mouseenter", () => {
   prefetch();
 });
@@ -432,4 +425,11 @@ export function AboutPage(): JSXElement {
       </section>
     </div>
   );
+}
+
+function prefetch(): void {
+  void queryClient.prefetchQuery(getContributorsQueryOptions());
+  void queryClient.prefetchQuery(getSupportersQueryOptions());
+  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
+  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
 }

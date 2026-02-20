@@ -59,29 +59,16 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const visibility = (): boolean => isModalOpen(props.id);
 
-  async function handleAfterHide(): Promise<void> {
-    await props.afterHide?.();
-    storeHideModal(props.id);
-  }
+  // Handle open/close with animations
+  createEffect(() => {
+    const isChained = isModalChained(props.id);
 
-  async function handleAfterShow(): Promise<void> {
-    await props.afterShow?.();
-  }
-
-  function focusFirstInput(): void {
-    if (modalEl() === undefined || dialogEl() === undefined) return;
-    if (props.focusFirstInput === undefined) return;
-
-    const input = modalEl()?.qs<HTMLInputElement>("input:not(.hidden)");
-    if (input) {
-      if (props.focusFirstInput === true) {
-        input.focus();
-      } else if (props.focusFirstInput === "focusAndSelect") {
-        input.focus();
-        input.select();
-      }
+    if (visibility()) {
+      void showModal(isChained);
+    } else {
+      void hideModal(isChained);
     }
-  }
+  });
 
   async function showModal(isChained: boolean): Promise<void> {
     if (dialogEl() === undefined || modalEl() === undefined) return;
@@ -224,16 +211,29 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     }
   }
 
-  // Handle open/close with animations
-  createEffect(() => {
-    const isChained = isModalChained(props.id);
+  async function handleAfterHide(): Promise<void> {
+    await props.afterHide?.();
+    storeHideModal(props.id);
+  }
 
-    if (visibility()) {
-      void showModal(isChained);
-    } else {
-      void hideModal(isChained);
+  async function handleAfterShow(): Promise<void> {
+    await props.afterShow?.();
+  }
+
+  function focusFirstInput(): void {
+    if (modalEl() === undefined || dialogEl() === undefined) return;
+    if (props.focusFirstInput === undefined) return;
+
+    const input = modalEl()?.qs<HTMLInputElement>("input:not(.hidden)");
+    if (input) {
+      if (props.focusFirstInput === true) {
+        input.focus();
+      } else if (props.focusFirstInput === "focusAndSelect") {
+        input.focus();
+        input.select();
+      }
     }
-  });
+  }
 
   const handleKeyDown = (e: KeyboardEvent): void => {
     if (e.key === "Escape" && visibility()) {

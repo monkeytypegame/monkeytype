@@ -54,12 +54,6 @@
     "typescript/no-invalid-void-type": "error",
     "typescript/unified-signatures": "error",
     "typescript/parameter-properties": "error",
-    "typescript/no-use-before-define": [
-      "error",
-      {
-        // "functions": false,
-      },
-    ],
     "typescript/dot-notation": "error",
     "typescript/no-useless-default-assignment": "error",
     "typescript/prefer-string-starts-ends-with": "error",
