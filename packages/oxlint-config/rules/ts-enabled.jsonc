@@ -64,5 +64,7 @@
     "typescript/no-useless-default-assignment": "error",
     "typescript/prefer-string-starts-ends-with": "error",
     "typescript/prefer-regexp-exec": "error",
+    "typescript/prefer-find": "error",
+    "typescript/consistent-type-exports": "error",
   },
 }
