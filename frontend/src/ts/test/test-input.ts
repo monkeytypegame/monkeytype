@@ -212,7 +212,10 @@ export const corrected = new Corrected();
 export let keypressCountHistory: number[] = [];
 let currentKeypressCount = 0;
 export let currentBurstStart = 0;
-export let missedWords: Record<string, number> = {};
+type missedWordsType = Record<string, number>;
+export let missedWords: missedWordsType = Object.create(
+  null,
+) as missedWordsType;
 export let accuracy = {
   correct: 0,
   incorrect: 0,
@@ -542,7 +545,7 @@ export function restart(): void {
     words: [],
   };
   currentBurstStart = 0;
-  missedWords = {};
+  missedWords = Object.create(null) as missedWordsType;
   accuracy = {
     correct: 0,
     incorrect: 0,
