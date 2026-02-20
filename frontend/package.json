@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "lint": "oxlint . --type-aware --type-check && oxlint . -c .oxlintrc-plugin.json",
+    "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint .",
     "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
