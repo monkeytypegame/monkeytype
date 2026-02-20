@@ -80,6 +80,7 @@
         "typescript/strict-boolean-expressions": "off", //1
         "typescript/no-unnecessary-type-assertion": "off", //1
 
+        "dot-notion": "off",
         "prefer-nullish-coalescing": "off",
         "no-shadow": "off",
       },

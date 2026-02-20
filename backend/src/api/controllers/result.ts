@@ -726,7 +726,7 @@ async function calculateXp(
   } else if (correctedEverything) {
     // corrected everything bonus
     modifier += 0.25;
-    breakdown["corrected"] = Math.round(baseXp * 0.25);
+    breakdown.corrected = Math.round(baseXp * 0.25);
   }
 
   if (mode === "quote") {

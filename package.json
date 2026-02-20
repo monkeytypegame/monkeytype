@@ -14,6 +14,7 @@
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
     "lint-pkg": "turbo run lint --filter=\"./packages/*\"",
+    "lint-fix": "turbo run lint -- --fix",
     "lint-fast": "turbo run lint-fast",
     "lint-fast-be": "turbo run lint-fast --filter @monkeytype/backend",
     "lint-fast-fe": "turbo run lint-fast --filter @monkeytype/frontend",

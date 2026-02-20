@@ -22,6 +22,21 @@ export function roundTo2(num: number): number {
 }
 
 /**
+ * Calculates the mean (average) of an array of numbers.
+ * @param array An array of numbers.
+ * @returns The mean of the input array.
+ */
+export function mean(array: number[]): number {
+  try {
+    return (
+      array.reduce((previous, current) => (current += previous)) / array.length
+    );
+  } catch (e) {
+    return 0;
+  }
+}
+
+/**
  * Calculates the standard deviation of an array of numbers.
  * @param array An array of numbers.
  * @returns The standard deviation of the input array.
@@ -32,21 +47,6 @@ export function stdDev(array: number[]): number {
     const meanValue = mean(array);
     return Math.sqrt(
       array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b) / n,
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-/**
- * Calculates the mean (average) of an array of numbers.
- * @param array An array of numbers.
- * @returns The mean of the input array.
- */
-export function mean(array: number[]): number {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
     );
   } catch (e) {
     return 0;
