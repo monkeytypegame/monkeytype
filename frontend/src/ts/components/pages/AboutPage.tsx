@@ -100,6 +100,7 @@ export function AboutPage(): JSXElement {
                     yAxisID: "count",
                     label: "Users",
                     data: data?.data ?? [],
+                    minBarLength: 2,
                   },
                 ],
               }}
