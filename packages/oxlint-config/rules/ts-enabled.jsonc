@@ -51,5 +51,6 @@
     "typescript/no-deprecated": "error",
     "typescript/prefer-includes": "error",
     "typescript/prefer-nullish-coalescing": "error",
+    "typescript/no-invalid-void-type": "error",
   },
 }

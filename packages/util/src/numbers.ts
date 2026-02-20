@@ -29,9 +29,9 @@ export function roundTo2(num: number): number {
 export function stdDev(array: number[]): number {
   try {
     const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
+    const meanValue = mean(array);
     return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n,
+      array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b) / n,
     );
   } catch (e) {
     return 0;

@@ -188,8 +188,8 @@ function applyApiRoutes(app: Application): void {
     );
   });
 
-  for (const [route, router] of Object.entries(API_ROUTE_MAP)) {
+  for (const [route, mapRouter] of Object.entries(API_ROUTE_MAP)) {
     const apiRoute = `${BASE_ROUTE}${route}`;
-    app.use(apiRoute, router);
+    app.use(apiRoute, mapRouter);
   }
 }

@@ -80,6 +80,13 @@
         "typescript/no-unnecessary-type-assertion": "off", //1
 
         "prefer-nullish-coalescing": "off",
+        "no-shadow": "off",
+      },
+    },
+    {
+      "files": ["private/script.js"],
+      "rules": {
+        "no-shadow": "off",
       },
     },
   ],

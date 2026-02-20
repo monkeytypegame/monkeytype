@@ -104,13 +104,15 @@ export async function getLiveConfiguration(): Promise<Configuration> {
   return configuration;
 }
 
-async function pushConfiguration(configuration: Configuration): Promise<void> {
+async function pushConfiguration(
+  configurationToPush: Configuration,
+): Promise<void> {
   if (serverConfigurationUpdated) {
     return;
   }
 
   try {
-    await db.collection("configuration").replaceOne({}, configuration);
+    await db.collection("configuration").replaceOne({}, configurationToPush);
     serverConfigurationUpdated = true;
   } catch (error) {
     const errorMessage = getErrorMessage(error) ?? "Unknown error";
