@@ -29,42 +29,66 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig(({ mode }): UserConfig => {
-  const env = loadEnv(mode, process.cwd(), "");
-  const useSentry = env["SENTRY"] !== undefined;
-  const isDevelopment = mode !== "production";
+function getFontsConfig(): string {
+  return (
+    "\n" +
+    Object.keys(Fonts)
+      .sort()
+      .map((name: string) => {
+        const config = Fonts[name as KnownFontName];
+        if (config.systemFont === true) return "";
+        return `"${name.replaceAll("_", " ")}": (
+        "src": "${config.fileName}",
+        "weight": ${config.weight ?? 400},
+        ),`;
+      })
+      .join("\n") +
+    "\n"
+  );
+}
 
-  if (!isDevelopment) {
-    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
-      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
-    }
-    if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
-      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
-    }
+function pad(
+  numbers: number[],
+  maxLength: number,
+  fillString: string,
+): string[] {
+  return numbers.map((number) =>
+    number.toString().padStart(maxLength, fillString),
+  );
+}
+
+function getClientVersion(isDevelopment: boolean): string {
+  if (isDevelopment) {
+    return "DEVELOPMENT_CLIENT";
   }
+  const date = new Date();
+  const versionPrefix = pad(
+    [date.getFullYear(), date.getMonth() + 1, date.getDate()],
+    2,
+    "0",
+  ).join(".");
+  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
+    ".",
+  );
+  const version = [versionPrefix, versionSuffix].join("_");
 
-  return {
-    plugins: getPlugins({ isDevelopment, useSentry: useSentry, env }),
-    build: getBuildOptions({ enableSourceMaps: useSentry }),
-    css: getCssOptions({ isDevelopment }),
-    server: {
-      open: env["SERVER_OPEN"] !== "false",
-      port: 3000,
-      host: env["BACKEND_URL"] !== undefined,
-      watch: {
-        //we rebuild the whole contracts package when a file changes
-        //so we only want to watch one file
-        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
-      },
-    },
-    clearScreen: false,
-    root: "src",
-    publicDir: "../static",
-    optimizeDeps: {
-      exclude: ["@fortawesome/fontawesome-free"],
-    },
-  };
-});
+  try {
+    const commitHash = childProcess
+      .execSync("git rev-parse --short HEAD")
+      .toString();
+
+    return `${version}_${commitHash}`.replace(/\n/g, "");
+  } catch (e) {
+    return `${version}_unknown-hash`;
+  }
+}
+
+/** Enable for font awesome v6 */
+/*
+function sassList(values) {
+  return values.map((it) => `"${it}"`).join(",");
+}
+*/
 
 function getPlugins({
   isDevelopment,
@@ -303,63 +327,39 @@ function getCssOptions({
   };
 }
 
-function getFontsConfig(): string {
-  return (
-    "\n" +
-    Object.keys(Fonts)
-      .sort()
-      .map((name: string) => {
-        const config = Fonts[name as KnownFontName];
-        if (config.systemFont === true) return "";
-        return `"${name.replaceAll("_", " ")}": (
-        "src": "${config.fileName}",
-        "weight": ${config.weight ?? 400},
-        ),`;
-      })
-      .join("\n") +
-    "\n"
-  );
-}
+export default defineConfig(({ mode }): UserConfig => {
+  const env = loadEnv(mode, process.cwd(), "");
+  const useSentry = env["SENTRY"] !== undefined;
+  const isDevelopment = mode !== "production";
 
-function pad(
-  numbers: number[],
-  maxLength: number,
-  fillString: string,
-): string[] {
-  return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString),
-  );
-}
-
-/** Enable for font awesome v6 */
-/*
-function sassList(values) {
-  return values.map((it) => `"${it}"`).join(",");
-}
-*/
-
-function getClientVersion(isDevelopment: boolean): string {
-  if (isDevelopment) {
-    return "DEVELOPMENT_CLIENT";
+  if (!isDevelopment) {
+    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
+      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
+    }
+    if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
+      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
+    }
   }
-  const date = new Date();
-  const versionPrefix = pad(
-    [date.getFullYear(), date.getMonth() + 1, date.getDate()],
-    2,
-    "0",
-  ).join(".");
-  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
-    ".",
-  );
-  const version = [versionPrefix, versionSuffix].join("_");
 
-  try {
-    const commitHash = childProcess
-      .execSync("git rev-parse --short HEAD")
-      .toString();
-
-    return `${version}_${commitHash}`.replace(/\n/g, "");
-  } catch (e) {
-    return `${version}_unknown-hash`;
-  }
-}
+  return {
+    plugins: getPlugins({ isDevelopment, useSentry: useSentry, env }),
+    build: getBuildOptions({ enableSourceMaps: useSentry }),
+    css: getCssOptions({ isDevelopment }),
+    server: {
+      open: env["SERVER_OPEN"] !== "false",
+      port: 3000,
+      host: env["BACKEND_URL"] !== undefined,
+      watch: {
+        //we rebuild the whole contracts package when a file changes
+        //so we only want to watch one file
+        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
+      },
+    },
+    clearScreen: false,
+    root: "src",
+    publicDir: "../static",
+    optimizeDeps: {
+      exclude: ["@fortawesome/fontawesome-free"],
+    },
+  };
+});

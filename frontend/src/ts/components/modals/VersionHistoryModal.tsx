@@ -7,6 +7,24 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import AsyncContent from "../common/AsyncContent";
 import { LoadingCircle } from "../common/LoadingCircle";
 
+function ReleaseItem(props: {
+  name: string;
+  publishedAt: string;
+  bodyHTML: string;
+}): JSXElement {
+  return (
+    <div class="grid gap-4">
+      <div class="flex place-items-center justify-between">
+        <div class="text-4xl text-main">{props.name}</div>
+        <div class="text-sub">{props.publishedAt}</div>
+      </div>
+      {/* oxlint-disable-next-line solid/no-innerhtml */}
+      <div innerHTML={props.bodyHTML}></div>
+      <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
+    </div>
+  );
+}
+
 export function VersionHistoryModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("VersionHistory");
 
@@ -54,23 +72,5 @@ export function VersionHistoryModal(): JSXElement {
         )}
       </AsyncContent>
     </AnimatedModal>
-  );
-}
-
-function ReleaseItem(props: {
-  name: string;
-  publishedAt: string;
-  bodyHTML: string;
-}): JSXElement {
-  return (
-    <div class="grid gap-4">
-      <div class="flex place-items-center justify-between">
-        <div class="text-4xl text-main">{props.name}</div>
-        <div class="text-sub">{props.publishedAt}</div>
-      </div>
-      {/* oxlint-disable-next-line solid/no-innerhtml */}
-      <div innerHTML={props.bodyHTML}></div>
-      <div class="mt-4 mb-16 h-1 w-full rounded bg-sub-alt"></div>
-    </div>
   );
 }

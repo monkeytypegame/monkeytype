@@ -15,41 +15,6 @@ import { Button } from "./Button";
 import { DiscordAvatar } from "./DiscordAvatar";
 import { Fa } from "./Fa";
 
-export function User(
-  props: {
-    user: SupportsFlags &
-      Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar"> & {
-        badgeId?: number;
-      };
-    showAvatar?: boolean;
-  } & UserFlagOptions,
-): JSXElement {
-  return (
-    <div class="inline-flex items-center text-sm leading-none">
-      <Show when={props.showAvatar ?? true}>
-        <DiscordAvatar
-          discordId={props.user.discordId}
-          discordAvatar={props.user.discordAvatar}
-        />
-      </Show>
-      <Button
-        type="text"
-        href={`/profile/${props.user.uid}?isUid`}
-        text={props.user.name}
-        router-link
-      />
-      <div class="flex items-center justify-center gap-2 text-sub">
-        <UserFlags
-          {...props.user}
-          isFriend={props.isFriend}
-          iconsOnly={props.iconsOnly}
-        />
-        <UserBadge id={props.user.badgeId} />
-      </div>
-    </div>
-  );
-}
-
 function UserFlags(props: SupportsFlags & UserFlagOptions): JSXElement {
   const flags = (): UserFlag[] => getMatchingFlags(props);
 
@@ -94,5 +59,40 @@ function UserBadge(props: { id?: number }): JSXElement {
         </Show>
       </div>
     </Show>
+  );
+}
+
+export function User(
+  props: {
+    user: SupportsFlags &
+      Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar"> & {
+        badgeId?: number;
+      };
+    showAvatar?: boolean;
+  } & UserFlagOptions,
+): JSXElement {
+  return (
+    <div class="inline-flex items-center text-sm leading-none">
+      <Show when={props.showAvatar ?? true}>
+        <DiscordAvatar
+          discordId={props.user.discordId}
+          discordAvatar={props.user.discordAvatar}
+        />
+      </Show>
+      <Button
+        type="text"
+        href={`/profile/${props.user.uid}?isUid`}
+        text={props.user.name}
+        router-link
+      />
+      <div class="flex items-center justify-center gap-2 text-sub">
+        <UserFlags
+          {...props.user}
+          isFriend={props.isFriend}
+          iconsOnly={props.iconsOnly}
+        />
+        <UserBadge id={props.user.badgeId} />
+      </div>
+    </div>
   );
 }

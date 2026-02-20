@@ -10,27 +10,16 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/**
- * Generate a preview file from each font in `static/webfonts` into `static/webfonts-preview`.
- * A preview file only contains the characters needed to show the preview.
- * @returns
- */
-export function fontPreview(): Plugin {
-  return {
-    name: "vite-plugin-webfonts-preview",
-    apply: "build",
-    async buildStart() {
-      const start = performance.now();
-      console.log("\nCreating webfonts preview...");
-
-      await generatePreviewFonts();
-
-      const end = performance.now();
-      console.log(
-        `Creating webfonts preview took ${Math.round(end - start)} ms`,
-      );
-    },
-  };
+async function generateSubset(
+  source: string,
+  target: string,
+  includedCharacters: string,
+): Promise<void> {
+  const font = fs.readFileSync(source);
+  const subset = await subsetFont(font, includedCharacters, {
+    targetFormat: "woff2",
+  });
+  fs.writeFileSync(target, subset);
 }
 
 async function generatePreviewFonts(debug: boolean = false): Promise<void> {
@@ -60,17 +49,29 @@ async function generatePreviewFonts(debug: boolean = false): Promise<void> {
   }
 }
 
-async function generateSubset(
-  source: string,
-  target: string,
-  includedCharacters: string,
-): Promise<void> {
-  const font = fs.readFileSync(source);
-  const subset = await subsetFont(font, includedCharacters, {
-    targetFormat: "woff2",
-  });
-  fs.writeFileSync(target, subset);
+/**
+ * Generate a preview file from each font in `static/webfonts` into `static/webfonts-preview`.
+ * A preview file only contains the characters needed to show the preview.
+ * @returns
+ */
+export function fontPreview(): Plugin {
+  return {
+    name: "vite-plugin-webfonts-preview",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating webfonts preview...");
+
+      await generatePreviewFonts();
+
+      const end = performance.now();
+      console.log(
+        `Creating webfonts preview took ${Math.round(end - start)} ms`,
+      );
+    },
+  };
 }
+
 //detect if we run this as a main
 if (import.meta.url.endsWith(process.argv[1] as string)) {
   void generatePreviewFonts(true);
