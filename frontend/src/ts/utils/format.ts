@@ -21,8 +21,9 @@ export type FallbackOptions = {
 };
 
 export class Formatting {
-  constructor(private config: ConfigType) {
-    //
+  private config: ConfigType;
+  constructor(config: ConfigType) {
+    this.config = config;
   }
 
   typingSpeed(

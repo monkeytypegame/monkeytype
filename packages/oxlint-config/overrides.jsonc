@@ -63,6 +63,7 @@
         "no-explicit-any": "off", //155
         "ban-ts-comment": "off", //9
 
+        "typescript/no-use-before-define": "off", //468
         "typescript/no-unsafe-assignment": "off", //386
         "typescript/no-unsafe-member-access": "off", //133
         "typescript/no-unsafe-argument": "off", //96

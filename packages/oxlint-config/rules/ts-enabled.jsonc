@@ -52,5 +52,13 @@
     "typescript/prefer-includes": "error",
     "typescript/prefer-nullish-coalescing": "error",
     "typescript/no-invalid-void-type": "error",
+    "typescript/unified-signatures": "error",
+    "typescript/parameter-properties": "error",
+    "typescript/no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+      },
+    ],
   },
 }

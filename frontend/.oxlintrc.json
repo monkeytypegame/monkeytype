@@ -11,6 +11,19 @@
   },
   "overrides": [
     {
+      "files": ["src/**/*.ts"],
+      "rules": {
+        "typescript/no-use-before-define": [
+          "error",
+          {
+            "functions": false,
+            "variables": false,
+            "classes": false
+          }
+        ]
+      }
+    },
+    {
       "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
       "files": ["src/**/*.tsx", "src/**/*.ts"],
       "rules": {
