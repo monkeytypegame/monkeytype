@@ -1,5 +1,5 @@
 import { intervalToDuration } from "date-fns";
-import { createResource, For, JSXElement, Show } from "solid-js";
+import { createResource, createSignal, For, JSXElement, Show } from "solid-js";
 
 import Ape from "../../ape";
 import { getConfig } from "../../signals/config";
@@ -7,6 +7,7 @@ import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { getContributorsList, getSupportersList } from "../../utils/json-data";
 import { getNumberWithMagnitude, numberWithSpaces } from "../../utils/numbers";
+import { Anime, AnimePresence } from "../common/anime";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
@@ -47,9 +48,35 @@ export function AboutPage(): JSXElement {
     open ? await fetchSpeedHistogram() : undefined,
   );
 
+  const [visible, setVisible] = createSignal(true);
+
   return (
     <Show when={isOpen}>
+      <button onClick={() => setVisible(!visible())} type="button">
+        Toggle visibility
+      </button>
+
       <div class="content-grid grid gap-8">
+        <AnimePresence exitBeforeEnter>
+          <Show when={visible()}>
+            <Anime
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, duration: 300 }}
+              exit={{ opacity: 0, duration: 300 }}
+            >
+              <div>Content with exit animation</div>
+            </Anime>
+          </Show>
+          <Show when={!visible()}>
+            <Anime
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, duration: 300 }}
+              exit={{ opacity: 0, duration: 300 }}
+            >
+              <div>ayoop</div>
+            </Anime>
+          </Show>
+        </AnimePresence>
         <section class="text-sub text-center">
           Created with love by Miodec.
           <br />
