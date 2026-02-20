@@ -1,30 +1,23 @@
 import { Difficulty } from "@monkeytype/schemas/configs";
-import { ChartData } from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
-import { useQuery } from "@tanstack/solid-query";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
-import { getSingleResultQueryOptions } from "../../../collections/results";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
 import { getConfig } from "../../../signals/config";
-import { getTheme } from "../../../signals/theme";
-import { isModalOpen, showModal } from "../../../stores/modals";
+import { showModal } from "../../../stores/modals";
 import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
-import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
-import { AnimatedModal } from "../../common/AnimatedModal";
-import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
-import { ChartJs } from "../../common/ChartJs";
 import { Fa, FaProps } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
-export type Sorting = {
-  // oxlint-disable-next-line typescript/no-explicit-any
-  field: keyof SnapshotResult<any>;
+import { MiniResultChart } from "./MiniResultChart";
+
+type Sorting = {
+  field: keyof SnapshotResult<Mode>;
   direction: "asc" | "desc";
 };
 
@@ -68,169 +61,6 @@ export function Table<M extends Mode>(props: {
         fallback=<span>No data found. Check your filters.</span>
       />
     </>
-  );
-}
-
-function MiniResultChart(props: { resultId: string | undefined }): JSXElement {
-  const query = useQuery(() => ({
-    ...getSingleResultQueryOptions(props.resultId as string),
-    enabled:
-      isModalOpen("MiniResultChartModal") && props.resultId !== undefined,
-  }));
-
-  const beginAtZero = createMemo(() => getConfig.startGraphsAtZero);
-  const typingSpeedUnit = createMemo(() =>
-    getTypingSpeedUnit(getConfig.typingSpeedUnit),
-  );
-
-  return (
-    <AnimatedModal id="MiniResultChartModal" modalClass="max-w-4xl">
-      <AsyncContent query={query}>
-        {(result) => {
-          const data = result.chartData as ChartData;
-
-          const wpm = data.wpm.map((it) => typingSpeedUnit().fromWpm(it));
-          const burst = data.burst.map((it) => typingSpeedUnit().fromWpm(it));
-
-          const maxChartVal = Math.max(
-            ...[Math.max(...wpm), Math.max(...burst)],
-          );
-          const minChartVal = beginAtZero()
-            ? 0
-            : Math.floor(Math.min(...[Math.min(...wpm), Math.min(...burst)]));
-
-          return (
-            <div class="">
-              <ChartJs
-                type="line"
-                data={{
-                  labels: data.wpm.map((_, index) => (index + 1).toString()),
-                  datasets: [
-                    {
-                      label: "wpm",
-                      data: wpm,
-                      borderWidth: 3,
-                      yAxisID: "wpm",
-                      order: 2,
-                      pointRadius: 1,
-                    },
-                    {
-                      label: "burst",
-                      data: burst,
-                      borderWidth: 3,
-                      yAxisID: "burst",
-                      order: 3,
-                      pointRadius: 1,
-                    },
-                    {
-                      label: "errors",
-                      data: data.err,
-                      pointBackgroundColor: getTheme().error,
-                      borderWidth: 2,
-                      order: 1,
-                      yAxisID: "error",
-                      type: "scatter",
-                      pointStyle: "crossRot",
-                      pointRadius: function (context): number {
-                        const index = context.dataIndex;
-                        const value = context.dataset.data[index] as number;
-                        return (value ?? 0) <= 0 ? 0 : 3;
-                      },
-                      pointHoverRadius: function (context): number {
-                        const index = context.dataIndex;
-                        const value = context.dataset.data[index] as number;
-                        return (value ?? 0) <= 0 ? 0 : 5;
-                      },
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      axis: "x",
-                      ticks: {
-                        autoSkip: true,
-                        autoSkipPadding: 20,
-                      },
-                      display: true,
-                      title: {
-                        display: false,
-                        text: "Seconds",
-                      },
-                    },
-                    wpm: {
-                      axis: "y",
-                      display: true,
-                      title: {
-                        display: true,
-                        text: typingSpeedUnit().fullUnitString,
-                      },
-                      beginAtZero: beginAtZero(),
-                      min: minChartVal,
-                      max: maxChartVal,
-                      ticks: {
-                        autoSkip: true,
-                        autoSkipPadding: 20,
-                      },
-                      grid: {
-                        display: true,
-                      },
-                    },
-                    burst: {
-                      axis: "y",
-                      display: false,
-                      title: {
-                        display: true,
-                        text: "Burst " + typingSpeedUnit().fullUnitString,
-                      },
-                      beginAtZero: beginAtZero(),
-                      min: minChartVal,
-                      max: maxChartVal,
-                      ticks: {
-                        autoSkip: true,
-                        autoSkipPadding: 20,
-                      },
-                      grid: {
-                        display: false,
-                      },
-                    },
-                    error: {
-                      display: true,
-                      position: "right",
-                      title: {
-                        display: true,
-                        text: "Errors",
-                      },
-                      beginAtZero: beginAtZero(),
-                      ticks: {
-                        precision: 0,
-                        autoSkip: true,
-                        autoSkipPadding: 20,
-                      },
-                      grid: {
-                        display: false,
-                      },
-                    },
-                  },
-                  plugins: {
-                    annotation: {
-                      annotations: [],
-                    },
-                    tooltip: {
-                      animation: { duration: 250 },
-                      mode: "index",
-                      intersect: false,
-                    },
-                  },
-                }}
-              />
-            </div>
-          );
-        }}
-      </AsyncContent>
-    </AnimatedModal>
   );
 }
 
