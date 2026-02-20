@@ -22,6 +22,7 @@ import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { queryOptions } from "@tanstack/solid-query";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -40,6 +41,7 @@ export type ResultsQueryState = {
 
 const queryKeys = {
   root: () => [...baseKey("results", { isUserSpecific: true })],
+  fullResult: (_id: string) => [...queryKeys.root(), _id],
 };
 
 export type ResultStats = {
@@ -338,6 +340,21 @@ function calcTimeTyping(result: ResultMinified): number {
   }
   return tt;
 }
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export const getSingleResultQueryOptions = (_id: string) =>
+  queryOptions({
+    queryKey: queryKeys.fullResult(_id),
+    queryFn: async () => {
+      const response = await Ape.results.getById({ params: { resultId: _id } });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to load result: ${response.body.message}`);
+      }
+      return response.body.data;
+    },
+    staleTime: Infinity,
+  });
 
 /*
 const allResultsQuery = createCollection(
