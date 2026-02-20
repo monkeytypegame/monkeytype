@@ -80,13 +80,13 @@
     "@vitest/coverage-v8": "4.0.15",
     "concurrently": "8.2.2",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.43.0",
-    "oxlint-tsgolint": "0.11.4",
+    "oxlint": "1.47.0",
+    "oxlint-tsgolint": "0.12.2",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
     "testcontainers": "11.11.0",
     "tsx": "4.16.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.0-beta",
     "vitest": "4.0.15"
   },
   "engines": {
