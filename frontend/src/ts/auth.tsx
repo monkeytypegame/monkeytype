@@ -29,7 +29,6 @@ import * as AuthEvent from "./observables/auth-event";
 import * as LoginPage from "./pages/login";
 import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import * as ConnectionState from "./states/connection";
 import { addBanner } from "./stores/banners";
 import { qs, qsa } from "./utils/dom";
 import * as Misc from "./utils/misc";
@@ -193,12 +192,6 @@ export async function signIn(email: string, password: string): Promise<void> {
     Notifications.add("Authentication uninitialized", -1);
     return;
   }
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
 
   LoginPage.showPreloader();
   LoginPage.disableInputs();
@@ -233,12 +226,6 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
   if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
-    });
-    return;
-  }
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
     });
     return;
   }
@@ -283,12 +270,6 @@ async function addAuthProvider(
   providerName: string,
   provider: AuthProvider,
 ): Promise<void> {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -331,12 +312,7 @@ async function signUp(): Promise<void> {
     });
     return;
   }
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
+
   await RegisterCaptchaModal.show();
   const captchaToken = await RegisterCaptchaModal.promise;
   if (captchaToken === undefined || captchaToken === "") {
@@ -444,11 +420,5 @@ qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
 });
 
 qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   void sendVerificationEmail();
 });

@@ -4,7 +4,6 @@ import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
@@ -19,13 +18,6 @@ import { InputIndicator } from "../elements/input-indicator";
 import { ElementWithUtils, qsr } from "../utils/dom";
 
 export function show(): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();

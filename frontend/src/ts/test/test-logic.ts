@@ -1202,21 +1202,6 @@ async function saveResult(
     return null;
   }
 
-  if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, {
-      duration: 2,
-      customTitle: "Notice",
-      important: true,
-    });
-    AccountButton.loading(false);
-    retrySaving.canRetry = true;
-    qs("#retrySavingResultButton")?.show();
-    if (!isRetrying) {
-      retrySaving.completedEvent = completedEvent;
-    }
-    return null;
-  }
-
   const result = structuredClone(completedEvent);
 
   if (result.testDuration > 122) {

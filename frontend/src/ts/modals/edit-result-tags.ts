@@ -4,7 +4,6 @@ import * as DB from "../db";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as AccountPage from "../pages/account";
-import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
@@ -28,12 +27,6 @@ export function show(
   tags: string[],
   source: "accountPage" | "resultPage",
 ): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   if (resultId === "") {
     Notifications.add(
       "Failed to show edit result tags modal: result id is empty",
