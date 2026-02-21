@@ -10,6 +10,7 @@ import {
 } from "../../queries/public";
 import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
+import { getTheme } from "../../signals/theme";
 import { showModal } from "../../stores/modals";
 import { qsr } from "../../utils/dom";
 import AsyncContent from "../common/AsyncContent";
@@ -100,6 +101,8 @@ export function AboutPage(): JSXElement {
                     yAxisID: "count",
                     label: "Users",
                     data: data?.data ?? [],
+                    backgroundColor: getTheme().main,
+                    borderColor: getTheme().main,
                   },
                 ],
               }}
