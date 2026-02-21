@@ -7,12 +7,14 @@ import {
   DefaultDataPoint,
   ScaleChartOptions,
 } from "chart.js";
+import chartTrendline from "chartjs-plugin-trendline";
 import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
 
 import { Theme } from "../../constants/themes";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getTheme } from "../../signals/theme";
 
+Chart.register(chartTrendline);
 type ChartJSProps<
   T extends ChartType = ChartType,
   TData = DefaultDataPoint<T>,

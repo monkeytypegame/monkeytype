@@ -1,6 +1,6 @@
 import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
 import { useLiveQuery } from "@tanstack/solid-db";
-import { createMemo, JSXElement } from "solid-js";
+import { Accessor, createMemo, JSXElement } from "solid-js";
 
 import {
   buildResultsQuery,
@@ -18,12 +18,13 @@ import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 
+import { DailyActivityChart } from "./DailyActivityChart";
 import { HistogramChart } from "./HistogramChart";
 import { HistoryChart } from "./HistoryChart";
 
 export function Charts(props: {
   filters: ResultFilters;
-  queryState: ResultsQueryState | undefined;
+  queryState: Accessor<ResultsQueryState | undefined>;
 }): JSXElement {
   const beginAtZero = createMemo(() => getConfig.startGraphsAtZero);
   const typingSpeedUnit = createMemo(() =>
@@ -32,9 +33,9 @@ export function Charts(props: {
   const format = createMemo(() => new Formatting(getConfig));
 
   const resultsQuery = useLiveQuery((q) => {
-    if (props.queryState === undefined) return undefined;
+    if (props.queryState() === undefined) return undefined;
     return q
-      .from({ r: buildResultsQuery(props.queryState) })
+      .from({ r: buildResultsQuery(props.queryState() as ResultsQueryState) })
       .orderBy(({ r }) => r.timestamp, "desc");
   });
 
@@ -53,6 +54,13 @@ export function Charts(props: {
           <HistogramChart
             results={results}
             typingSpeedUnit={typingSpeedUnit()}
+          />
+
+          <DailyActivityChart
+            queryState={props.queryState}
+            beginAtZero={beginAtZero()}
+            typingSpeedUnit={typingSpeedUnit()}
+            format={format()}
           />
         </>
       )}

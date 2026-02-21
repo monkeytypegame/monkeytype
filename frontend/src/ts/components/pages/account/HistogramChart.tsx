@@ -93,15 +93,11 @@ function groupIntoBuckets(
     buckets[label] = (buckets[label] ?? 0) + 1;
   }
 
-  console.log("### buckets", buckets);
-
-  const result = Object.entries(buckets)
+  return Object.entries(buckets)
     .sort(([a], [b]) => {
       const startA = Number(a.split("-")[0]);
       const startB = Number(b.split("-")[0]);
       return startA - startB;
     })
     .map(([x, y]) => ({ x, y }));
-  console.log("### results", result);
-  return result;
 }

@@ -56,7 +56,7 @@ export function AccountPage(): JSXElement {
         onResetFilter={() => setFilters(defaultResultFilters)}
       />
 
-      <Charts filters={filters} queryState={queryState()} />
+      <Charts filters={filters} queryState={queryState} />
       <TestStats queryState={queryState} />
 
       <AsyncContent collection={data}>

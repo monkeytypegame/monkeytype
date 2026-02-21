@@ -319,8 +319,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1(chart.js@3.7.1)
       chartjs-plugin-trendline:
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 3.2.0
+        version: 3.2.0
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -4479,8 +4479,8 @@ packages:
     peerDependencies:
       chart.js: '>=3.7.0'
 
-  chartjs-plugin-trendline@1.0.2:
-    resolution: {integrity: sha512-1yaWvaW3WvaikITgrc6JEyvWZWDN9Opjz65fCkgQr/dRdKuXcYzOMl45jylPiJyC9dWWL6HCYiL2HuwItjI8RQ==}
+  chartjs-plugin-trendline@3.2.0:
+    resolution: {integrity: sha512-UQ309v67EPc6KQsEIfn8YEBOclsZGvfddjbK8ZIN9QhEHQKzUrtJPpMc1F8o5G7ErgIFvmtFnt5YP9vkTPswSg==}
 
   cheerio-select@2.1.0:
     resolution: {integrity: sha512-9v9kG0LvzrlcungtnJtpGNxY+fzECQKhK4EGJX2vByejiMX84MFNQw4UxPJl3bFbTMw+Dfs37XaIkCwTZfLh4g==}
@@ -14438,7 +14438,7 @@ snapshots:
     dependencies:
       chart.js: 3.7.1
 
-  chartjs-plugin-trendline@1.0.2: {}
+  chartjs-plugin-trendline@3.2.0: {}
 
   cheerio-select@2.1.0:
     dependencies:

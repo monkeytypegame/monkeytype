@@ -9,20 +9,20 @@ import {
   eq,
   gte,
   inArray,
+  length,
   max,
   not,
   or,
   Query,
   sum,
   useLiveQuery,
-  length,
 } from "@tanstack/solid-db";
+import { queryOptions } from "@tanstack/solid-query";
 import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { queryOptions } from "@tanstack/solid-query";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -57,6 +57,7 @@ export type ResultStats = {
   maxConsistency: number;
   avgConsistency: number;
   timeTyping: number;
+  dayTimestamp?: number;
 };
 
 /**
@@ -68,23 +69,33 @@ export type ResultStats = {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useResultStatsLiveQuery(
   queryState: Accessor<ResultsQueryState | undefined>,
-  options?: { lastTen?: true },
+  options?: { lastTen?: true } | { groupByDay?: true },
 ) {
   return useLiveQuery((q) => {
     const state = queryState();
     if (state === undefined) return undefined;
 
-    return (
-      options?.lastTen
-        ? //for lastTen we need a sub-query to apply the sort+limit first and then run the aggregations
-          q.from({
-            r: q
-              .from({ r: buildResultsQuery(state) })
-              .orderBy(({ r }) => r.timestamp, "desc")
-              .limit(10),
-          })
-        : q.from({ r: buildResultsQuery(state) })
-    ).select(({ r }) => ({
+    const isLastTen =
+      options !== undefined && "lastTen" in options && options.lastTen;
+    const isGroupByDay =
+      options !== undefined && "groupByDay" in options && options.groupByDay;
+
+    let query = isLastTen
+      ? //for lastTen we need a sub-query to apply the sort+limit first and then run the aggregations
+        q.from({
+          r: q
+            .from({ r: buildResultsQuery(state) })
+            .orderBy(({ r }) => r.timestamp, "desc")
+            .limit(10),
+        })
+      : q.from({ r: buildResultsQuery(state) });
+
+    if (isGroupByDay) {
+      query = query.groupBy(({ r }) => r.dayTimestamp);
+    }
+
+    return query.select(({ r }) => ({
+      dayTimeamp: isGroupByDay ? r.dayTimestamp : undefined,
       words: sum(r.words),
       completed: count(r._id),
       restarted: sum(r.restartCount),
@@ -131,6 +142,12 @@ export function useResultsLiveQuery(options: {
 function normalizeResult(
   result: ResultMinified | SnapshotResult<Mode>,
 ): SnapshotResult<Mode> {
+  const resultDate = new Date(result.timestamp);
+  resultDate.setSeconds(0);
+  resultDate.setMinutes(0);
+  resultDate.setHours(0);
+  resultDate.setMilliseconds(0);
+
   //@ts-expect-error without this somehow the collections is missing data
   result.id = result._id;
   //results strip default values, add them back
@@ -153,6 +170,7 @@ function normalizeResult(
     ...result,
     timeTyping: calcTimeTyping(result),
     words: Math.round((result.wpm / 60) * result.testDuration),
+    dayTimestamp: resultDate.getTime(),
   } as SnapshotResult<Mode>;
 }
 

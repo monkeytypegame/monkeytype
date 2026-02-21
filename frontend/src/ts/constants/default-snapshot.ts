@@ -53,6 +53,7 @@ export type SnapshotResult<M extends Mode> = Omit<
   //calculated values
   words: number;
   timeTyping: number;
+  dayTimestamp: number;
 };
 
 export type Snapshot = Omit<

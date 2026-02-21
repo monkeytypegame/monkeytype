@@ -42,7 +42,7 @@
     "chart.js": "3.7.1",
     "chartjs-adapter-date-fns": "3.0.0",
     "chartjs-plugin-annotation": "2.2.1",
-    "chartjs-plugin-trendline": "1.0.2",
+    "chartjs-plugin-trendline": "3.2.0",
     "clsx": "2.1.1",
     "color-blend": "4.0.0",
     "damerau-levenshtein": "1.0.8",
