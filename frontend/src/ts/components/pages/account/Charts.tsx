@@ -132,14 +132,14 @@ function HistoryChart(props: {
   typingSpeedUnit: TypingSpeedUnitSettings;
   format: Formatting;
 }): JSXElement {
-  const format = props.format;
-
   const formatAccuracy = (accuracy: number): string =>
-    format.accuracy(accuracy, { showDecimalPlaces: true });
+    props.format.accuracy(accuracy, { showDecimalPlaces: true });
   const formatSpeed = (wpm: number): string =>
-    format.typingSpeed(wpm, { showDecimalPlaces: true });
-  const wpm = props.results.map((it) => props.typingSpeedUnit.fromWpm(it.wpm));
-  const acc = props.results.map((it) => it.acc);
+    props.format.typingSpeed(wpm, { showDecimalPlaces: true });
+  const wpm = createMemo(() =>
+    props.results.map((it) => props.typingSpeedUnit.fromWpm(it.wpm)),
+  );
+  const acc = createMemo(() => props.results.map((it) => it.acc));
   return (
     <div style={{ height: "400px" }}>
       <ChartJs
@@ -149,14 +149,14 @@ function HistoryChart(props: {
           datasets: [
             {
               yAxisID: "wpm",
-              data: wpm,
+              data: wpm(),
               fill: false,
               borderWidth: 0,
               order: 3,
             },
             {
               yAxisID: "wpm",
-              data: pb(wpm),
+              data: pb(wpm()),
               fill: false,
               stepped: true,
               pointRadius: 0,
@@ -166,7 +166,7 @@ function HistoryChart(props: {
             {
               yAxisID: "acc",
               fill: false,
-              data: acc,
+              data: acc(),
               pointStyle: "triangle",
               borderWidth: 0,
               pointRadius: 3.5,
@@ -174,7 +174,7 @@ function HistoryChart(props: {
             },
             {
               yAxisID: "wpm",
-              data: movingAverage(wpm, 10),
+              data: movingAverage(wpm(), 10),
               fill: false,
               pointRadius: 0,
               pointHoverRadius: 0,
@@ -182,7 +182,7 @@ function HistoryChart(props: {
             },
             {
               yAxisID: "acc",
-              data: movingAverage(acc, 10),
+              data: movingAverage(acc(), 10),
               fill: false,
               pointRadius: 0,
               pointHoverRadius: 0,
@@ -190,7 +190,7 @@ function HistoryChart(props: {
             },
             {
               yAxisID: "wpm",
-              data: movingAverage(wpm, 100),
+              data: movingAverage(wpm(), 100),
               fill: false,
               pointRadius: 0,
               pointHoverRadius: 0,
@@ -198,7 +198,7 @@ function HistoryChart(props: {
             },
             {
               yAxisID: "acc",
-              data: movingAverage(acc, 100),
+              data: movingAverage(acc(), 100),
               fill: false,
               pointRadius: 0,
               pointHoverRadius: 0,
@@ -219,9 +219,7 @@ function HistoryChart(props: {
               type: "linear",
               reverse: true,
               min: 0,
-              ticks: {
-                stepSize: 10,
-              },
+              max: wpm().length - 1,
               display: false,
               grid: {
                 display: false,
@@ -350,27 +348,26 @@ function HistoryChart(props: {
 function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
 
-  const trend = findLineByLeastSquares(
-    props.results.map((it) => it.wpm).reverse(),
-  );
-  const totalSecondsFiltered = props.results
-    .map((it) => it.timeTyping)
-    .reduce((acc, it) => acc + it, 0);
+  const trend = createMemo(() => {
+    const line = findLineByLeastSquares(
+      props.results.map((it) => it.wpm).reverse(),
+    );
+    if (line === null) return undefined;
 
-  const wpmChange = trend === null ? null : trend[1][1] - trend[0][1];
-  const wpmChangePerHour =
-    wpmChange === null ? null : wpmChange * (3600 / totalSecondsFiltered);
+    const totalSecondsFiltered = props.results
+      .map((it) => it.timeTyping)
+      .reduce((acc, it) => acc + it, 0);
+
+    const wpmChange = line[1][1] - line[0][1];
+    const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
+    const plus = wpmChangePerHour > 0 ? "+" : "";
+
+    return `Speed change per hour spent typing: ${plus}${format().typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })} ${format().typingSpeedUnit}`;
+  });
 
   return (
-    <Show when={wpmChange !== null}>
-      <div class="w-full text-center">
-        Speed change per hour spent typing:{" "}
-        {wpmChangePerHour !== null && wpmChangePerHour > 0 ? "+" : ""}
-        {format().typingSpeed(wpmChangePerHour, {
-          showDecimalPlaces: true,
-        })}{" "}
-        {format().typingSpeedUnit}
-      </div>
+    <Show when={trend() !== undefined}>
+      <div class="w-full text-center">{trend()}</div>
     </Show>
   );
 }

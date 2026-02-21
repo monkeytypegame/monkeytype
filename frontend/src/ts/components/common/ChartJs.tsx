@@ -31,12 +31,15 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   let chart: ChartWithUpdateColors<T, TData> | undefined;
 
   onMount(() => {
-    //oxlint-disable-next-line no-non-null-assertion
-    chart = new ChartWithUpdateColors(canvasEl()!.native, {
-      type: props.type,
-      data: props.data,
-      options: props.options,
-    });
+    chart = new ChartWithUpdateColors(
+      //oxlint-disable-next-line no-non-null-assertion
+      canvasEl()!.native,
+      {
+        type: props.type,
+        data: props.data,
+        options: props.options,
+      },
+    );
 
     props.onChartInit?.(chart);
   });
@@ -50,6 +53,7 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
       chart.options = props.options;
     }
     chart.update();
+    void chart.updateColors(getTheme());
   });
 
   createDebouncedEffectOn(
