@@ -1,6 +1,7 @@
 {
   "name": "chinese_traditional",
   "noLazyMode": true,
+  "bcp47": "zh-Hant",
   "words": [
     "我們",
     "可以",
