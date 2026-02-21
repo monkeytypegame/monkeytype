@@ -209,6 +209,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "behavior",
   },
+  resultSavingEnabled: {
+    icon: "fa-save",
+    displayString: "result saving",
+    changeRequiresRestart: false,
+    group: "behavior",
+  },
   blindMode: {
     icon: "fa-eye-slash",
     displayString: "blind mode",

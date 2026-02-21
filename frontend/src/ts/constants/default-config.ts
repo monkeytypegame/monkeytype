@@ -86,6 +86,7 @@ const obj: Config = {
   minAccCustom: 90,
   monkey: false,
   repeatQuotes: "off",
+  resultSavingEnabled: true,
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",

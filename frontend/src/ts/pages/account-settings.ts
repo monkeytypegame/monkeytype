@@ -152,6 +152,7 @@ export function updateUI(): void {
   updateAuthenticationSections();
   updateIntegrationSections();
   updateAccountSections();
+
   void ApeKeyTable.update(updateUI);
   void BlockedUserTable.update();
   updateTabs();
