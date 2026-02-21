@@ -67,7 +67,6 @@ export async function instantUpdate(): Promise<void> {
     qs("#testConfig .customText")?.show();
   }
 
-  updateActiveExtraButtons("quoteLength", Config.quoteLength);
   updateActiveExtraButtons("numbers", Config.numbers);
   updateActiveExtraButtons("punctuation", Config.punctuation);
 }
@@ -76,17 +75,13 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
   updateActiveModeButtons(current);
 
-  let m2;
-
-  if (Config.mode === "time") {
-    m2 = Config.time;
-  } else if (Config.mode === "words") {
-    m2 = Config.words;
-  } else if (Config.mode === "quote") {
-    m2 = Config.quoteLength;
+  if (current === "time") {
+    updateActiveExtraButtons("time", Config.time);
+  } else if (current === "words") {
+    updateActiveExtraButtons("words", Config.words);
+  } else if (current === "quote") {
+    updateActiveExtraButtons("quoteLength", Config.quoteLength);
   }
-
-  if (m2 !== undefined) updateActiveExtraButtons(Config.mode, m2);
 
   const submenu = {
     time: "time",
@@ -251,6 +246,8 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     duration: animTime / 2,
     ease: easing.out,
   });
+
+  currentEl?.setStyle({ width: "" });
 }
 
 function updateActiveModeButtons(mode: Mode): void {
