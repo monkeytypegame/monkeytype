@@ -1,19 +1,27 @@
+import { Mode } from "@monkeytype/schemas/shared";
 import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
 import { useLiveQuery } from "@tanstack/solid-db";
-import { createMemo, JSXElement } from "solid-js";
+import { format as dateFormat } from "date-fns/format";
+import { createMemo, JSXElement, Show } from "solid-js";
 
 import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
+import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
 import { getConfig } from "../../../signals/config";
 import { FaSolidIcon } from "../../../types/font-awesome";
+import { Formatting } from "../../../utils/format";
+import { findLineByLeastSquares } from "../../../utils/numbers";
 import {
   capitalizeFirstLetter,
   replaceUnderscoresWithSpaces,
 } from "../../../utils/strings";
-import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
+import {
+  get as getTypingSpeedUnit,
+  TypingSpeedUnitSettings,
+} from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
 import { ChartJs } from "../../common/ChartJs";
 import { Fa } from "../../common/Fa";
@@ -22,11 +30,34 @@ export function Charts(props: {
   filters: ResultFilters;
   queryState: ResultsQueryState | undefined;
 }): JSXElement {
+  const beginAtZero = createMemo(() => getConfig.startGraphsAtZero);
+  const typingSpeedUnit = createMemo(() =>
+    getTypingSpeedUnit(getConfig.typingSpeedUnit),
+  );
+  const format = createMemo(() => new Formatting(getConfig));
+
+  const resultsQuery = useLiveQuery((q) => {
+    if (props.queryState === undefined) return undefined;
+    return q
+      .from({ r: buildResultsQuery(props.queryState) })
+      .orderBy(({ r }) => r.timestamp, "desc");
+  });
+
   return (
-    <>
-      <FilterSummary filters={props.filters} />
-      <HistoryChart queryState={props.queryState} />
-    </>
+    <AsyncContent collection={resultsQuery}>
+      {(results) => (
+        <>
+          <FilterSummary filters={props.filters} />
+          <HistoryChart
+            results={results}
+            beginAtZero={beginAtZero()}
+            typingSpeedUnit={typingSpeedUnit()}
+            format={format()}
+          />
+          <Trend results={results} />
+        </>
+      )}
+    </AsyncContent>
   );
 }
 
@@ -96,214 +127,204 @@ function isAllSet(
 }
 
 function HistoryChart(props: {
-  queryState: ResultsQueryState | undefined;
+  results: SnapshotResult<Mode>[];
+  beginAtZero: boolean;
+  typingSpeedUnit: TypingSpeedUnitSettings;
+  format: Formatting;
 }): JSXElement {
-  const beginAtZero = createMemo(() => getConfig.startGraphsAtZero);
-  const typingSpeedUnit = createMemo(() =>
-    getTypingSpeedUnit(getConfig.typingSpeedUnit),
-  );
+  const format = props.format;
 
-  const resultsQuery = useLiveQuery((q) => {
-    if (props.queryState === undefined) return undefined;
-    return q
-      .from({ r: buildResultsQuery(props.queryState) })
-      .orderBy(({ r }) => r.timestamp, "desc");
-  });
-
+  const formatAccuracy = (accuracy: number): string =>
+    format.accuracy(accuracy, { showDecimalPlaces: true });
+  const formatSpeed = (wpm: number): string =>
+    format.typingSpeed(wpm, { showDecimalPlaces: true });
+  const wpm = props.results.map((it) => props.typingSpeedUnit.fromWpm(it.wpm));
+  const acc = props.results.map((it) => it.acc);
   return (
-    <AsyncContent collection={resultsQuery}>
-      {(results) => {
-        const wpm = results.map((it) => typingSpeedUnit().fromWpm(it.wpm));
-        const acc = results.map((it) => it.acc);
-        return (
-          <div style={{ height: "400px" }}>
-            <ChartJs
-              type="line"
-              data={{
-                labels: results.map((_, i) => i),
-                datasets: [
-                  {
-                    yAxisID: "wpm",
-                    data: wpm,
-                    fill: false,
-                    borderWidth: 0,
-                    order: 3,
-                  },
-                  {
-                    yAxisID: "wpm",
-                    data: pb(wpm),
-                    fill: false,
-                    stepped: true,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    order: 4,
-                  },
-                  {
-                    yAxisID: "acc",
-                    fill: false,
-                    data: acc,
-                    pointStyle: "triangle",
-                    borderWidth: 0,
-                    pointRadius: 3.5,
-                    order: 3,
-                  },
-                  {
-                    yAxisID: "wpm",
-                    data: movingAverage(wpm, 10),
-                    fill: false,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    order: 2,
-                  },
-                  {
-                    yAxisID: "acc",
-                    data: movingAverage(acc, 10),
-                    fill: false,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    order: 2,
-                  },
-                  {
-                    yAxisID: "wpm",
-                    data: movingAverage(wpm, 100),
-                    fill: false,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    order: 1,
-                  },
-                  {
-                    yAxisID: "acc",
-                    data: movingAverage(acc, 100),
-                    fill: false,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    order: 1,
-                  },
-                ],
-              }}
-              options={{
-                // responsive: true,
-                maintainAspectRatio: false,
-                hover: {
-                  mode: "nearest",
-                  intersect: false,
-                },
-                scales: {
-                  x: {
-                    axis: "x",
-                    type: "linear",
-                    reverse: true,
-                    min: 0,
-                    ticks: {
-                      stepSize: 10,
-                    },
-                    display: false,
-                    grid: {
-                      display: false,
-                    },
-                  },
-                  wpm: {
-                    axis: "y",
-                    type: "linear",
-                    beginAtZero: beginAtZero(),
-                    ticks: {
-                      stepSize: typingSpeedUnit().historyStepSize,
-                    },
-                    display: true,
-                    title: {
-                      display: true,
-                      text: typingSpeedUnit().fullUnitString,
-                    },
-                    position: "right",
-                  },
-                  acc: {
-                    axis: "y",
-                    beginAtZero: beginAtZero(),
-                    min: 0,
-                    max: 100,
-                    reverse: true,
-                    ticks: {
-                      stepSize: 10,
-                    },
-                    display: true,
-                    title: {
-                      display: true,
-                      text: "Accuracy",
-                    },
-                    grid: {
-                      display: false,
-                    },
-                    position: "left",
-                  },
+    <div style={{ height: "400px" }}>
+      <ChartJs
+        type="line"
+        data={{
+          labels: props.results.map((_, i) => i),
+          datasets: [
+            {
+              yAxisID: "wpm",
+              data: wpm,
+              fill: false,
+              borderWidth: 0,
+              order: 3,
+            },
+            {
+              yAxisID: "wpm",
+              data: pb(wpm),
+              fill: false,
+              stepped: true,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              order: 4,
+            },
+            {
+              yAxisID: "acc",
+              fill: false,
+              data: acc,
+              pointStyle: "triangle",
+              borderWidth: 0,
+              pointRadius: 3.5,
+              order: 3,
+            },
+            {
+              yAxisID: "wpm",
+              data: movingAverage(wpm, 10),
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              order: 2,
+            },
+            {
+              yAxisID: "acc",
+              data: movingAverage(acc, 10),
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              order: 2,
+            },
+            {
+              yAxisID: "wpm",
+              data: movingAverage(wpm, 100),
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              order: 1,
+            },
+            {
+              yAxisID: "acc",
+              data: movingAverage(acc, 100),
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              order: 1,
+            },
+          ],
+        }}
+        options={{
+          // responsive: true,
+          maintainAspectRatio: false,
+          hover: {
+            mode: "nearest",
+            intersect: false,
+          },
+          scales: {
+            x: {
+              axis: "x",
+              type: "linear",
+              reverse: true,
+              min: 0,
+              ticks: {
+                stepSize: 10,
+              },
+              display: false,
+              grid: {
+                display: false,
+              },
+            },
+            wpm: {
+              axis: "y",
+              type: "linear",
+              beginAtZero: props.beginAtZero,
+              ticks: {
+                stepSize: props.typingSpeedUnit.historyStepSize,
+              },
+              display: true,
+              title: {
+                display: true,
+                text: props.typingSpeedUnit.fullUnitString,
+              },
+              position: "right",
+            },
+            acc: {
+              axis: "y",
+              beginAtZero: props.beginAtZero,
+              min: 0,
+              max: 100,
+              reverse: true,
+              ticks: {
+                stepSize: 10,
+              },
+              display: true,
+              title: {
+                display: true,
+                text: "Accuracy",
+              },
+              grid: {
+                display: false,
+              },
+              position: "left",
+            },
+          },
+
+          plugins: {
+            annotation: {
+              annotations: [],
+            },
+            tooltip: {
+              animation: { duration: 250 },
+              // Disable the on-canvas tooltip
+              enabled: true,
+
+              intersect: false,
+              external: function (ctx): void {
+                if (ctx === undefined) return;
+                ctx.tooltip.options.displayColors = false;
+              },
+              filter: function (tooltipItem): boolean {
+                return (
+                  tooltipItem.datasetIndex !== 1 &&
+                  tooltipItem.datasetIndex !== 3 &&
+                  tooltipItem.datasetIndex !== 4 &&
+                  tooltipItem.datasetIndex !== 5 &&
+                  tooltipItem.datasetIndex !== 6
+                );
+              },
+              callbacks: {
+                title: function (): string {
+                  return "";
                 },
 
-                plugins: {
-                  annotation: {
-                    annotations: [],
-                  },
-                  tooltip: {
-                    animation: { duration: 250 },
-                    // Disable the on-canvas tooltip
-                    enabled: true,
-
-                    intersect: false,
-                    external: function (ctx): void {
-                      if (ctx === undefined) return;
-                      ctx.tooltip.options.displayColors = false;
-                    },
-                    filter: function (tooltipItem): boolean {
-                      return (
-                        tooltipItem.datasetIndex !== 1 &&
-                        tooltipItem.datasetIndex !== 3 &&
-                        tooltipItem.datasetIndex !== 4 &&
-                        tooltipItem.datasetIndex !== 5 &&
-                        tooltipItem.datasetIndex !== 6
-                      );
-                    },
-                    callbacks: {
-                      title: function (): string {
-                        return "";
-                      },
-                      /*
                 beforeLabel: function (tooltipItem): string {
+                  const result = props.results[tooltipItem.dataIndex];
+                  if (result === undefined) return "unknown";
+
                   if (tooltipItem.datasetIndex !== 0) {
-                    const resultData = tooltipItem.dataset.data[
-                      tooltipItem.dataIndex
-                    ] as AccChartData;
-                    return `error rate: ${Numbers.roundTo2(
-                      resultData.errorRate,
-                    )}%\nacc: ${Numbers.roundTo2(100 - resultData.errorRate)}%`;
+                    return `error rate: ${formatAccuracy(100 - result.acc)}\nacc: ${formatAccuracy(result.acc)}`;
                   }
-                  const resultData = tooltipItem.dataset.data[
-                    tooltipItem.dataIndex
-                  ] as HistoryChartData;
+
                   let label =
-                    `${Config.typingSpeedUnit}: ${resultData.wpm}` +
+                    `${getConfig.typingSpeedUnit}: ${formatSpeed(result.wpm)}` +
                     "\n" +
-                    `raw: ${resultData.raw}` +
+                    `raw: ${formatSpeed(result.rawWpm)}` +
                     "\n" +
-                    `acc: ${resultData.acc}` +
+                    `acc: ${formatAccuracy(result.acc)}` +
                     "\n\n" +
-                    `mode: ${resultData.mode} `;
+                    `mode: ${result.mode} `;
 
-                  if (resultData.mode === "time") {
-                    label += resultData.mode2;
-                  } else if (resultData.mode === "words") {
-                    label += resultData.mode2;
+                  if (result.mode === "time") {
+                    label += result.mode2;
+                  } else if (result.mode === "words") {
+                    label += result.mode2;
                   }
 
-                  let diff = resultData.difficulty ?? "normal";
+                  let diff = result.difficulty ?? "normal";
                   label += `\ndifficulty: ${diff}`;
 
                   label +=
                     "\n" +
-                    `punctuation: ${resultData.punctuation}` +
+                    `punctuation: ${result.punctuation}` +
                     "\n" +
-                    `language: ${resultData.language}` +
-                    `${resultData.isPb ? "\n\nnew personal best" : ""}` +
+                    `language: ${result.language}` +
+                    `${result.isPb ? "\n\nnew personal best" : ""}` +
                     "\n\n" +
-                    `date: ${format(
-                      new Date(resultData.timestamp),
+                    `date: ${dateFormat(
+                      new Date(result.timestamp),
                       "dd MMM yyyy HH:mm",
                     )}`;
 
@@ -313,20 +334,44 @@ function HistoryChart(props: {
                 label: function (): string {
                   return "";
                 },
-                afterLabel: function (tooltip): string {
-                  accountHistoryActiveIndex = tooltip.dataIndex;
+                afterLabel: function (_tooltip): string {
+                  //accountHistoryActiveIndex = tooltip.dataIndex;
                   return "";
                 },
-                                */
-                    },
-                  },
-                },
-              }}
-            />
-          </div>
-        );
-      }}
-    </AsyncContent>
+              },
+            },
+          },
+        }}
+      />
+    </div>
+  );
+}
+
+function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
+  const format = createMemo(() => new Formatting(getConfig));
+
+  const trend = findLineByLeastSquares(
+    props.results.map((it) => it.wpm).reverse(),
+  );
+  const totalSecondsFiltered = props.results
+    .map((it) => it.timeTyping)
+    .reduce((acc, it) => acc + it, 0);
+
+  const wpmChange = trend === null ? null : trend[1][1] - trend[0][1];
+  const wpmChangePerHour =
+    wpmChange === null ? null : wpmChange * (3600 / totalSecondsFiltered);
+
+  return (
+    <Show when={wpmChange !== null}>
+      <div class="w-full text-center">
+        Speed change per hour spent typing:{" "}
+        {wpmChangePerHour !== null && wpmChangePerHour > 0 ? "+" : ""}
+        {format().typingSpeed(wpmChangePerHour, {
+          showDecimalPlaces: true,
+        })}{" "}
+        {format().typingSpeedUnit}
+      </div>
+    </Show>
   );
 }
 

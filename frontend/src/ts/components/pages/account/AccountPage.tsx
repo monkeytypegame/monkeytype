@@ -49,7 +49,7 @@ export function AccountPage(): JSXElement {
   const data = useResultsLiveQuery({ queryState, sorting, limit });
 
   return (
-    <Show when={isLoggedIn()}>
+    <Show when={isLoggedIn() && isOpen()}>
       <Filters
         filters={filters}
         onChangeFilter={(key, value) => setFilters(key, value)}
