@@ -93,7 +93,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 
 function applyPreset(): void {
   const modalEl = modal.getModal();
-  const presetName = modalEl.qs<HTMLSelectElement>(".presetInput")?.getValue();
+  const presetName = modalEl
+    .qs<HTMLSelectElement>("select.presetInput")
+    ?.getValue();
 
   if (presetName !== undefined && presetName !== "" && presets[presetName]) {
     const preset = presets[presetName];

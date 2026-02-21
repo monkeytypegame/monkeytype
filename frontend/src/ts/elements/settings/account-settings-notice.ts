@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import { navigate } from "../../controllers/route-controller";
-import { qs, qsa } from "../../utils/dom";
+import { qsa } from "../../utils/dom";
 
 const ls = new LocalStorageWithSchema({
   key: "accountSettingsMessageDismissed",
@@ -13,7 +13,7 @@ if (ls.get()) {
   qsa(".pageSettings .accountSettingsNotice")?.remove();
 }
 
-qs(".pageSettings .accountSettingsNotice .dismissAndGo")?.on("click", () => {
+qsa(".pageSettings .accountSettingsNotice .dismissAndGo").on("click", () => {
   ls.set(true);
   void navigate("/account-settings");
   qsa(".pageSettings .accountSettingsNotice")?.remove();

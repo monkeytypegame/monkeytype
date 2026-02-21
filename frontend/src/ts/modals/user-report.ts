@@ -84,7 +84,7 @@ async function submitReport(): Promise<void> {
   }
 
   const reason = qsr<HTMLSelectElement>(
-    "#userReportModal .reason",
+    "#userReportModal select.reason",
   ).getValue() as ReportUserReason;
   const comment = qsr<HTMLTextAreaElement>(
     "#userReportModal .comment",
