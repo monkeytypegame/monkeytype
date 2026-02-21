@@ -637,8 +637,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get value of input or textarea
-   * @returns The value of the element, or undefined if the element is not an input or textarea.
+   * Get value of input, textarea or select
+   * @returns The value of the element, or undefined if the element is not an input, textarea or select.
    */
   getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
     if (this.hasValue()) {

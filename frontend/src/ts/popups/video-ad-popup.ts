@@ -1,5 +1,3 @@
-/* oxlint-disable no-unsafe-call */
-/* oxlint-disable no-unsafe-member-access */
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";
@@ -44,7 +42,8 @@ export async function show(): Promise<void> {
         el.show();
       },
       onComplete: () => {
-        //@ts-expect-error 3rd party ad code
+        // @ts-expect-error 3rd party ad code
+        // oxlint-disable-next-line no-unsafe-call no-unsafe-member-access
         window.dataLayer.push({ event: "EG_Video" });
       },
     });
