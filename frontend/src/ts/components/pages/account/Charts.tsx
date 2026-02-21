@@ -1,3 +1,4 @@
+import { AccountChart } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
 import { useLiveQuery } from "@tanstack/solid-db";
@@ -8,6 +9,7 @@ import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
+import Config, { setConfig } from "../../../config";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
 import { getConfig } from "../../../signals/config";
@@ -23,6 +25,7 @@ import {
   TypingSpeedUnitSettings,
 } from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
+import { Button } from "../../common/Button";
 import { ChartJs } from "../../common/ChartJs";
 import { Fa } from "../../common/Fa";
 
@@ -54,7 +57,6 @@ export function Charts(props: {
             typingSpeedUnit={typingSpeedUnit()}
             format={format()}
           />
-          <Trend results={results} />
         </>
       )}
     </AsyncContent>
@@ -140,208 +142,264 @@ function HistoryChart(props: {
     props.results.map((it) => props.typingSpeedUnit.fromWpm(it.wpm)),
   );
   const acc = createMemo(() => props.results.map((it) => it.acc));
+
+  const toggleAccountChart = (pos: number): (() => void) => {
+    return () => {
+      const newValue = [...Config.accountChart] as AccountChart;
+      newValue[pos] = newValue[pos] === "on" ? "off" : "on";
+      setConfig("accountChart", newValue);
+    };
+  };
+
   return (
-    <div style={{ height: "400px" }}>
-      <ChartJs
-        type="line"
-        data={{
-          labels: props.results.map((_, i) => i),
-          datasets: [
-            {
-              yAxisID: "wpm",
-              data: wpm(),
-              fill: false,
-              borderWidth: 0,
-              order: 3,
-            },
-            {
-              yAxisID: "wpm",
-              data: pb(wpm()),
-              fill: false,
-              stepped: true,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              order: 4,
-            },
-            {
-              yAxisID: "acc",
-              fill: false,
-              data: acc(),
-              pointStyle: "triangle",
-              borderWidth: 0,
-              pointRadius: 3.5,
-              order: 3,
-            },
-            {
-              yAxisID: "wpm",
-              data: movingAverage(wpm(), 10),
-              fill: false,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              order: 2,
-            },
-            {
-              yAxisID: "acc",
-              data: movingAverage(acc(), 10),
-              fill: false,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              order: 2,
-            },
-            {
-              yAxisID: "wpm",
-              data: movingAverage(wpm(), 100),
-              fill: false,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              order: 1,
-            },
-            {
-              yAxisID: "acc",
-              data: movingAverage(acc(), 100),
-              fill: false,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              order: 1,
-            },
-          ],
-        }}
-        options={{
-          // responsive: true,
-          maintainAspectRatio: false,
-          hover: {
-            mode: "nearest",
-            intersect: false,
-          },
-          scales: {
-            x: {
-              axis: "x",
-              type: "linear",
-              reverse: true,
-              min: 0,
-              max: wpm().length - 1,
-              display: false,
-              grid: {
-                display: false,
+    <>
+      <div style={{ height: "400px" }}>
+        <ChartJs
+          type="line"
+          data={{
+            labels: props.results.map((_, i) => i),
+            datasets: [
+              {
+                yAxisID: "wpm",
+                data: wpm(),
+                fill: false,
+                borderWidth: 0,
+                order: 3,
+                hidden: getConfig.accountChart[0] === "off",
               },
-            },
-            wpm: {
-              axis: "y",
-              type: "linear",
-              beginAtZero: props.beginAtZero,
-              ticks: {
-                stepSize: props.typingSpeedUnit.historyStepSize,
+              {
+                yAxisID: "wpm",
+                data: pb(wpm()),
+                fill: false,
+                stepped: true,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                order: 4,
+                hidden: getConfig.accountChart[0] === "off",
               },
-              display: true,
-              title: {
-                display: true,
-                text: props.typingSpeedUnit.fullUnitString,
+              {
+                yAxisID: "acc",
+                fill: false,
+                data: acc(),
+                pointStyle: "triangle",
+                borderWidth: 0,
+                pointRadius: 3.5,
+                order: 3,
+                hidden: getConfig.accountChart[1] === "off",
               },
-              position: "right",
-            },
-            acc: {
-              axis: "y",
-              beginAtZero: props.beginAtZero,
-              min: 0,
-              max: 100,
-              reverse: true,
-              ticks: {
-                stepSize: 10,
+              {
+                yAxisID: "wpm",
+                data: movingAverage(wpm(), 10),
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                order: 2,
+                hidden:
+                  getConfig.accountChart[0] === "off" ||
+                  getConfig.accountChart[2] === "off",
               },
-              display: true,
-              title: {
-                display: true,
-                text: "Accuracy",
+              {
+                yAxisID: "acc",
+                data: movingAverage(acc(), 10),
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                order: 2,
+                hidden:
+                  getConfig.accountChart[1] === "off" ||
+                  getConfig.accountChart[2] === "off",
               },
-              grid: {
-                display: false,
+              {
+                yAxisID: "wpm",
+                data: movingAverage(wpm(), 100),
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                order: 1,
+                hidden:
+                  getConfig.accountChart[0] === "off" ||
+                  getConfig.accountChart[3] === "off",
               },
-              position: "left",
-            },
-          },
-
-          plugins: {
-            annotation: {
-              annotations: [],
-            },
-            tooltip: {
-              animation: { duration: 250 },
-              // Disable the on-canvas tooltip
-              enabled: true,
-
+              {
+                yAxisID: "acc",
+                data: movingAverage(acc(), 100),
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                order: 1,
+                hidden:
+                  getConfig.accountChart[1] === "off" ||
+                  getConfig.accountChart[3] === "off",
+              },
+            ],
+          }}
+          options={{
+            // responsive: true,
+            maintainAspectRatio: false,
+            hover: {
+              mode: "nearest",
               intersect: false,
-              external: function (ctx): void {
-                if (ctx === undefined) return;
-                ctx.tooltip.options.displayColors = false;
+            },
+            scales: {
+              x: {
+                axis: "x",
+                type: "linear",
+                reverse: true,
+                min: 0,
+                max: wpm().length - 1,
+                display: false,
+                grid: {
+                  display: false,
+                },
               },
-              filter: function (tooltipItem): boolean {
-                return (
-                  tooltipItem.datasetIndex !== 1 &&
-                  tooltipItem.datasetIndex !== 3 &&
-                  tooltipItem.datasetIndex !== 4 &&
-                  tooltipItem.datasetIndex !== 5 &&
-                  tooltipItem.datasetIndex !== 6
-                );
+              wpm: {
+                axis: "y",
+                type: "linear",
+                beginAtZero: props.beginAtZero,
+                ticks: {
+                  stepSize: props.typingSpeedUnit.historyStepSize,
+                },
+                display: true,
+                title: {
+                  display: true,
+                  text: props.typingSpeedUnit.fullUnitString,
+                },
+                position: "right",
               },
-              callbacks: {
-                title: function (): string {
-                  return "";
+              acc: {
+                axis: "y",
+                beginAtZero: props.beginAtZero,
+                min:
+                  Config.accountChart[0] === "on"
+                    ? 0
+                    : Math.floor(Math.min(...acc()) / 5) * 5,
+                max: 100,
+                reverse: true,
+                ticks: {
+                  stepSize: 10,
                 },
-
-                beforeLabel: function (tooltipItem): string {
-                  const result = props.results[tooltipItem.dataIndex];
-                  if (result === undefined) return "unknown";
-
-                  if (tooltipItem.datasetIndex !== 0) {
-                    return `error rate: ${formatAccuracy(100 - result.acc)}\nacc: ${formatAccuracy(result.acc)}`;
-                  }
-
-                  let label =
-                    `${getConfig.typingSpeedUnit}: ${formatSpeed(result.wpm)}` +
-                    "\n" +
-                    `raw: ${formatSpeed(result.rawWpm)}` +
-                    "\n" +
-                    `acc: ${formatAccuracy(result.acc)}` +
-                    "\n\n" +
-                    `mode: ${result.mode} `;
-
-                  if (result.mode === "time") {
-                    label += result.mode2;
-                  } else if (result.mode === "words") {
-                    label += result.mode2;
-                  }
-
-                  let diff = result.difficulty ?? "normal";
-                  label += `\ndifficulty: ${diff}`;
-
-                  label +=
-                    "\n" +
-                    `punctuation: ${result.punctuation}` +
-                    "\n" +
-                    `language: ${result.language}` +
-                    `${result.isPb ? "\n\nnew personal best" : ""}` +
-                    "\n\n" +
-                    `date: ${dateFormat(
-                      new Date(result.timestamp),
-                      "dd MMM yyyy HH:mm",
-                    )}`;
-
-                  return label;
+                display: true,
+                title: {
+                  display: true,
+                  text: "Accuracy",
                 },
-
-                label: function (): string {
-                  return "";
+                grid: {
+                  display: false,
                 },
-                afterLabel: function (_tooltip): string {
-                  //accountHistoryActiveIndex = tooltip.dataIndex;
-                  return "";
+                position: "left",
+              },
+            },
+
+            plugins: {
+              annotation: {
+                annotations: [],
+              },
+              tooltip: {
+                animation: { duration: 250 },
+                // Disable the on-canvas tooltip
+                enabled: true,
+
+                intersect: false,
+                external: function (ctx): void {
+                  if (ctx === undefined) return;
+                  ctx.tooltip.options.displayColors = false;
+                },
+                filter: function (tooltipItem): boolean {
+                  return (
+                    tooltipItem.datasetIndex !== 1 &&
+                    tooltipItem.datasetIndex !== 3 &&
+                    tooltipItem.datasetIndex !== 4 &&
+                    tooltipItem.datasetIndex !== 5 &&
+                    tooltipItem.datasetIndex !== 6
+                  );
+                },
+                callbacks: {
+                  title: function (): string {
+                    return "";
+                  },
+
+                  beforeLabel: function (tooltipItem): string {
+                    const result = props.results[tooltipItem.dataIndex];
+                    if (result === undefined) return "unknown";
+
+                    if (tooltipItem.datasetIndex !== 0) {
+                      return `error rate: ${formatAccuracy(100 - result.acc)}\nacc: ${formatAccuracy(result.acc)}`;
+                    }
+
+                    let label =
+                      `${getConfig.typingSpeedUnit}: ${formatSpeed(result.wpm)}` +
+                      "\n" +
+                      `raw: ${formatSpeed(result.rawWpm)}` +
+                      "\n" +
+                      `acc: ${formatAccuracy(result.acc)}` +
+                      "\n\n" +
+                      `mode: ${result.mode} `;
+
+                    if (result.mode === "time") {
+                      label += result.mode2;
+                    } else if (result.mode === "words") {
+                      label += result.mode2;
+                    }
+
+                    let diff = result.difficulty ?? "normal";
+                    label += `\ndifficulty: ${diff}`;
+
+                    label +=
+                      "\n" +
+                      `punctuation: ${result.punctuation}` +
+                      "\n" +
+                      `language: ${result.language}` +
+                      `${result.isPb ? "\n\nnew personal best" : ""}` +
+                      "\n\n" +
+                      `date: ${dateFormat(
+                        new Date(result.timestamp),
+                        "dd MMM yyyy HH:mm",
+                      )}`;
+
+                    return label;
+                  },
+
+                  label: function (): string {
+                    return "";
+                  },
+                  afterLabel: function (_tooltip): string {
+                    //accountHistoryActiveIndex = tooltip.dataIndex;
+                    return "";
+                  },
                 },
               },
             },
-          },
-        }}
-      />
-    </div>
+          }}
+        />
+      </div>
+      <Trend results={props.results} />
+      <div class="grid grid-cols-4 gap-2">
+        <Button
+          fa={{ icon: "fa-tachometer-alt", fixedWidth: true }}
+          text="Speed"
+          onClick={toggleAccountChart(0)}
+          active={getConfig.accountChart[0] === "on"}
+        />
+        <Button
+          fa={{ icon: "fa-bullseye", fixedWidth: true }}
+          text="Accuracy"
+          onClick={toggleAccountChart(1)}
+          active={getConfig.accountChart[1] === "on"}
+        />
+        <Button
+          fa={{ icon: "fa-chart-line", fixedWidth: true }}
+          text="Avg of 10"
+          onClick={toggleAccountChart(2)}
+          active={getConfig.accountChart[2] === "on"}
+        />
+        <Button
+          fa={{ icon: "fa-chart-line", fixedWidth: true }}
+          text="Avg of 100"
+          onClick={toggleAccountChart(3)}
+          active={getConfig.accountChart[3] === "on"}
+        />
+      </div>
+    </>
   );
 }
 
