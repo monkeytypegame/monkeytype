@@ -38,7 +38,7 @@ If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/corey
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
-For package management, we use `pnpm` instead of `npm` or `yarn`. You can install it by running `npm i -g pnpm@9.6.0`. This will install `pnpm` globally on your machine.
+For package management, we use `pnpm` instead of `npm` or `yarn`. You can install it by running `npm i -g pnpm@10.28.1`. This will install `pnpm` globally on your machine.
 
 ### Docker (Recommended but Optional)
 
