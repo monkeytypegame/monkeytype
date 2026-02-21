@@ -18,6 +18,7 @@ import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 
+import { HistogramChart } from "./HistogramChart";
 import { HistoryChart } from "./HistoryChart";
 
 export function Charts(props: {
@@ -47,6 +48,11 @@ export function Charts(props: {
             beginAtZero={beginAtZero()}
             typingSpeedUnit={typingSpeedUnit()}
             format={format()}
+          />
+
+          <HistogramChart
+            results={results}
+            typingSpeedUnit={typingSpeedUnit()}
           />
         </>
       )}
