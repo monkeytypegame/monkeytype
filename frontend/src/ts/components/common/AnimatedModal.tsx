@@ -76,7 +76,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     await props.beforeShow?.();
 
     // Open the dialog
-    dialogEl()?.removeClass("hidden");
+    dialogEl()?.show();
     if (props.mode === "dialog") {
       dialogEl()?.native.show();
     } else {
@@ -188,13 +188,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           duration: wrapperDuration,
           onComplete: async () => {
             dialogEl()?.native.close();
-            dialogEl()?.addClass("hidden");
+            dialogEl()?.hide();
             await handleAfterHide();
           },
         });
       } else {
         dialogEl()?.native.close();
-        dialogEl()?.addClass("hidden");
+        dialogEl()?.hide();
         await handleAfterHide();
       }
     } else if (animMode === "modalOnly") {
@@ -204,7 +204,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         duration: modalAnimDuration,
         onComplete: async () => {
           dialogEl()?.native.close();
-          dialogEl()?.addClass("hidden");
+          dialogEl()?.hide();
           await handleAfterHide();
         },
       });

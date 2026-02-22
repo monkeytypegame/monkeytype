@@ -148,11 +148,11 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
 }
 
 export function hide(): void {
-  keymap.addClass("hidden");
+  keymap.hide();
 }
 
 export function show(): void {
-  keymap.removeClass("hidden");
+  keymap.show();
 }
 
 function buildRow(options: {

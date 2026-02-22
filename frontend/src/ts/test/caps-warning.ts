@@ -10,14 +10,14 @@ let visible = false;
 
 function show(): void {
   if (!visible) {
-    el.removeClass("hidden");
+    el.show();
     visible = true;
   }
 }
 
 function hide(): void {
   if (visible) {
-    el.addClass("hidden");
+    el.hide();
     visible = false;
   }
 }

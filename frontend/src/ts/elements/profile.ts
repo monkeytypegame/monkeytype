@@ -81,12 +81,12 @@ export async function update(
     if (where === "profile") {
       profileElement
         ?.qs(".lbOptOutReminder")
-        ?.removeClass("hidden")
+        ?.show()
         ?.setText(
           "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate.",
         );
     } else {
-      profileElement?.qs(".lbOptOutReminder")?.addClass("hidden");
+      profileElement?.qs(".lbOptOutReminder")?.hide();
     }
   }
 
@@ -288,15 +288,15 @@ export async function update(
   //lbs
 
   if (banned) {
-    profileElement?.qs(".leaderboardsPositions")?.addClass("hidden");
+    profileElement?.qs(".leaderboardsPositions")?.hide();
   } else {
-    profileElement?.qs(".leaderboardsPositions")?.removeClass("hidden");
+    profileElement?.qs(".leaderboardsPositions")?.show();
 
     const t15 = profile.allTimeLbs?.time?.["15"]?.["english"] ?? null;
     const t60 = profile.allTimeLbs?.time?.["60"]?.["english"] ?? null;
 
     if (t15 === null && t60 === null) {
-      profileElement?.qs(".leaderboardsPositions")?.addClass("hidden");
+      profileElement?.qs(".leaderboardsPositions")?.hide();
     } else {
       if (t15 !== null) {
         profileElement
@@ -320,39 +320,39 @@ export async function update(
   }
 
   if (profile.uid === getAuthenticatedUser()?.uid) {
-    profileElement?.qs(".userReportButton")?.addClass("hidden");
+    profileElement?.qs(".userReportButton")?.hide();
   } else {
-    profileElement?.qs(".userReportButton")?.removeClass("hidden");
+    profileElement?.qs(".userReportButton")?.show();
   }
 
   const bioAndKey = bio || keyboard;
 
   if (!bio) {
-    details?.qs(".bio")?.addClass("hidden");
+    details?.qs(".bio")?.hide();
   } else {
-    details?.qs(".bio")?.removeClass("hidden");
+    details?.qs(".bio")?.show();
   }
 
   if (!keyboard) {
-    details?.qs(".keyboard")?.addClass("hidden");
+    details?.qs(".keyboard")?.hide();
   } else {
-    details?.qs(".keyboard")?.removeClass("hidden");
+    details?.qs(".keyboard")?.show();
   }
 
   if (!bioAndKey) {
-    details?.qs(".bioAndKeyboard")?.addClass("hidden");
-    details?.qs(".sep2")?.addClass("hidden");
+    details?.qs(".bioAndKeyboard")?.hide();
+    details?.qs(".sep2")?.hide();
   } else {
-    details?.qs(".bioAndKeyboard")?.removeClass("hidden");
-    details?.qs(".sep2")?.removeClass("hidden");
+    details?.qs(".bioAndKeyboard")?.show();
+    details?.qs(".sep2")?.show();
   }
 
   if (!socials) {
-    details?.qs(".socials")?.addClass("hidden");
-    details?.qs(".sep3")?.addClass("hidden");
+    details?.qs(".socials")?.hide();
+    details?.qs(".sep3")?.hide();
   } else {
-    details?.qs(".socials")?.removeClass("hidden");
-    details?.qs(".sep3")?.removeClass("hidden");
+    details?.qs(".socials")?.show();
+    details?.qs(".sep3")?.show();
   }
 
   details?.removeClass("none");
