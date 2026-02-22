@@ -38,6 +38,7 @@ export function User(
         href={`/profile/${props.user.uid}?isUid`}
         text={props.user.name}
         router-link
+        class="text-text hover:text-main"
       />
       <div class="flex items-center justify-center gap-2 text-sub">
         <UserFlags

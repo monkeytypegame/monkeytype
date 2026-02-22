@@ -48,7 +48,7 @@ export function Table(
     id: "leaderboardTable",
     hideHeader: props.hideHeader,
     class:
-      "table-auto [&>tbody>tr>td]:whitespace-nowrap [&>tbody>tr>td]:py-2.5 [&>tbody>tr>td]:px-4 [&>thead>tr>th]:px-4 xl:[&>tbody>tr>td]:px-6 xl:[&>thead>tr>th]:px-6",
+      "table-auto [&>tbody>tr>td]:whitespace-nowrap [&>tbody>tr>td]:py-2.5 [&>tbody>tr>td]:px-4 [&>thead>tr>th]:px-4 xl:[&>tbody>tr>td]:px-6 xl:[&>tbody>tr>td]:py-1 xl:[&>thead>tr>th]:px-6",
     rowSelection:
       props.userOverride !== undefined
         ? undefined

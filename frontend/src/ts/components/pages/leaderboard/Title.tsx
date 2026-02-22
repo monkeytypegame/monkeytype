@@ -79,10 +79,11 @@ export function Title(props: {
 
   return (
     <div>
-      <H2 text={title()} class="p-0" />
+      <H2 text={title()} class="p-0 text-2xl md:text-3xl xl:text-4xl" />
       <Show when={subTitle() !== null}>
         <div class="flex items-center gap-2">
           <div
+            class="text-sub"
             data-balloon-pos="down"
             data-balloon-break
             aria-label={subTitle()?.localString}
