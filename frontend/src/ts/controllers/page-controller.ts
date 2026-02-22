@@ -10,7 +10,7 @@ import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
-import * as PageLeaderboards from "../pages/leaderboards";
+import * as PageLeaderboards from "../components/pages/leaderboard/LeaderboardPage";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
@@ -38,7 +38,7 @@ const pages = {
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
-  leaderboards: PageLeaderboards.page,
+  leaderboards: PageLeaderboards.skeletonPage,
 };
 
 function updateOpenGraphUrl(): void {

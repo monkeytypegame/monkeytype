@@ -42,7 +42,8 @@ const SortingStateSchema = z.array(
   }),
 );
 
-export type DataTableColumnDef<TData, TValue> =
+// oxlint-disable-next-line typescript/no-explicit-any
+export type DataTableColumnDef<TData, TValue = any> =
   | ColumnDef<TData, TValue>
   | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
@@ -58,9 +59,11 @@ export type DataTableProps<TData, TValue> = {
     class: string;
     activeRow: Accessor<string | null>;
   };
+  class?: string;
 };
 
-export function DataTable<TData, TValue = unknown>(
+// oxlint-disable-next-line typescript/no-explicit-any
+export function DataTable<TData, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -147,7 +150,7 @@ export function DataTable<TData, TValue = unknown>(
 
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
-      <Table id={props.id}>
+      <Table id={props.id} class={props.class}>
         <Show when={!props.hideHeader}>
           <TableHeader>
             <For each={table.getHeaderGroups()}>

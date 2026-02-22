@@ -229,24 +229,7 @@
     //   border-radius: 0.2em;
     // }
   }
-  .pageLeaderboards {
-    .content {
-      align-content: start;
-      grid-template-columns: 1fr;
-      grid-template-areas: "buttons" "table";
-      .buttons {
-        // grid-template-columns: 1fr 1fr;
-        font-size: 0.9em;
-        .buttonGroup {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-          button {
-            justify-content: center;
-          }
-        }
-      }
-    }
-  }
+
   .pageFriends {
     .content .friends table {
       td:nth-child(4),

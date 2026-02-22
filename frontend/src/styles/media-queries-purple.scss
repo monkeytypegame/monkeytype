@@ -12,33 +12,6 @@
     display: grid;
   }
 
-  .pageLeaderboards {
-    .content .bigtitle .text:after {
-      left: 0.1rem;
-      transform: none;
-    }
-    .content .tableAndUser {
-      font-size: clamp(0.7rem, 2.8vw, 0.9rem);
-      .bigUser {
-        gap: 1.5em;
-      }
-      table {
-        td {
-          padding: 0.5em;
-        }
-        .avatarNameBadge .flagsAndBadge .badge .text {
-          display: none;
-        }
-        tbody td:nth-child(2) {
-          width: 100%;
-        }
-      }
-      .bigUser {
-        padding: 0.5em;
-        padding-left: 1em;
-      }
-    }
-  }
   header {
     nav {
       font-size: 0.9rem;
