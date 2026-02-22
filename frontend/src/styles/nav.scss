@@ -197,7 +197,6 @@ nav {
 
         a,
         button {
-          justify-items: start;
           justify-content: left;
           padding-left: 0;
           border-radius: 0;
@@ -217,16 +216,10 @@ nav {
           }
         }
 
-        & .goToFriends {
-          display: grid;
-          grid-template-columns: auto 1fr auto;
-          text-align: left;
-          .notificationBubble {
-            margin-right: 0.5em;
-            position: unset;
-            box-shadow: 0 0 0 0.5em var(--sub-alt-color);
-            display: block;
-          }
+        .notificationBubble {
+          margin-right: 1.5em;
+          box-shadow: 0 0 0 0.5em var(--sub-alt-color);
+          display: block;
         }
       }
     }
