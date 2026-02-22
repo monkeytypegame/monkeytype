@@ -2,6 +2,7 @@
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src",
     "target": "ES6",
     "noImplicitAny": false,
     "strictFunctionTypes": false,

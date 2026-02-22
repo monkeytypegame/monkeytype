@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
-import Config, { applyConfig, saveFullConfigToLocalStorage } from "./config";
+import { updateFromServer as updateConfigFromServer } from "./config";
 import { navigate } from "./controllers/route-controller";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
@@ -31,7 +31,6 @@ import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import * as ConnectionState from "./states/connection";
 import { addBanner } from "./stores/banners";
-import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { qs, qsa } from "./utils/dom";
 import * as Misc from "./utils/misc";
 
@@ -94,21 +93,7 @@ async function getDataAndInit(): Promise<boolean> {
       });
     }
 
-    const areConfigsEqual =
-      JSON.stringify(Config) === JSON.stringify(snapshot.config);
-
-    if (Config === undefined || !areConfigsEqual) {
-      console.log(
-        "no local config or local and db configs are different - applying db",
-      );
-      await applyConfig(snapshot.config);
-      saveFullConfigToLocalStorage(true);
-
-      //funboxes might be different and they wont activate on the account page
-      for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
-        fb.functions.applyGlobalCSS();
-      }
-    }
+    await updateConfigFromServer();
     return true;
   } catch (error) {
     console.error(error);
