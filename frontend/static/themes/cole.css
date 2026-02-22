@@ -1,0 +1,40 @@
+@keyframes logo-color {
+  0% {
+    fill: hsl(8.37, 55.84%, 54.71%);
+  }
+  20% {
+    fill: hsl(153.08, 53.77%, 39.02%);
+  }
+  40% {
+    fill: hsl(34.67, 37.19%, 52.55%);
+  }
+  60% {
+    fill: hsl(225.15, 44.29%, 57.06%);
+  }
+  80% {
+    fill: hsl(300, 23.29%, 57.06%);
+  }
+  100% {
+    fill: hsl(8.37, 55.84%, 54.71%);
+  }
+}
+
+nav .view-start {
+  color: #cc5d4b;
+}
+
+nav .view-leaderboards {
+  color: #2e9969;
+}
+
+nav .view-about {
+  color: #6179c2;
+}
+
+nav .view-settings {
+  color: #b38d59;
+}
+
+header #logo path {
+  animation: logo-color 10s linear infinite;
+}
