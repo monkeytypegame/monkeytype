@@ -35,7 +35,7 @@ export function User(
       </Show>
       <Button
         type="text"
-        href={`/profile/${props.user.uid}?isUid`}
+        href={`/profile/${props.user.name}`}
         text={props.user.name}
         router-link
         class="text-text hover:text-main"
