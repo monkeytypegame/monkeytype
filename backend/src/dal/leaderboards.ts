@@ -85,10 +85,8 @@ export async function get(
 
     return leaderboard;
   } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.error === 175) {
+    if ((e as unknown as { error: number }).error === 175) {
       //QueryPlanKilled, collection was removed during the query
-      return false;
     }
     throw e;
   }
@@ -162,10 +160,8 @@ export async function getRank(
       return results[0] ?? null;
     }
   } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.error === 175) {
+    if ((e as unknown as { error: number }).error === 175) {
       //QueryPlanKilled, collection was removed during the query
-      return false;
     }
     throw e;
   }
@@ -393,8 +389,8 @@ async function createIndex(
       Logger.warning(`Index ${key} not matching, dropping and recreating...`);
 
       const existingIndex = (await getUsersCollection().listIndexes().toArray())
-        // oxlint-disable-next-line no-unsafe-member-access
-        .map((it) => it.name as string)
+
+        .map((it: unknown) => (it as { name: string }).name)
         .find((it) => it.startsWith(key));
 
       if (existingIndex !== undefined && existingIndex !== null) {
