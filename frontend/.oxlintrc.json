@@ -20,6 +20,7 @@
       "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
       "files": ["src/**/*.tsx", "src/**/*.ts"],
       "rules": {
+        "explicit-function-return-type": "off",
         "solid/components-return-once": "error",
         "solid/event-handlers": "error",
         "solid/imports": "error",
