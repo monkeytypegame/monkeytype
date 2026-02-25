@@ -1,4 +1,4 @@
-import { PersonalBests } from "@monkeytype/schemas/shared";
+import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import {
   RankAndCount,
   UserProfile as UserProfileType,
@@ -111,11 +111,16 @@ function PbTable<M extends "time" | "words">(props: {
   const format = createMemo(() => new Formatting(getConfig));
 
   const bests = createMemo(() =>
-    props.mode2.map((it) => {
-      const pbArray = props.pbs[it] ?? [];
-      const best = [...pbArray].sort((a, b) => b.wpm - a.wpm)?.[0];
+    props.mode2.map((mode) => {
+      const pbArray = props.pbs[mode] ?? [];
+
+      const best = pbArray.reduce<PersonalBest | undefined>(
+        (max, current) => (current.wpm > (max?.wpm ?? 0) ? current : max),
+        undefined,
+      );
+
       return {
-        mode2: it,
+        mode2: mode,
         pb: best,
       };
     }),
