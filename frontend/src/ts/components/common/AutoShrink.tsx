@@ -50,5 +50,12 @@ export function updateFontSize(element?: ElementWithUtils): void {
   const ratioAt10 = parentWidth / widthAt10;
   const fittedFontSize = ratioAt10 * 10;
   const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
+  console.log("####", {
+    parentWidth,
+    widthAt10,
+    ratioAt10,
+    fittedFontSize,
+    finalFontSize,
+  });
   element.native.style.fontSize = `${finalFontSize}px`;
 }

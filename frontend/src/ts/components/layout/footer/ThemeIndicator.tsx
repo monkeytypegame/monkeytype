@@ -5,7 +5,7 @@ import Config, { setConfig } from "../../../config";
 import * as Notifications from "../../../elements/notifications";
 import { isAuthenticated } from "../../../firebase";
 import { getThemeIndicator } from "../../../signals/core";
-import { getSnapshot } from "../../../signals/snapshot";
+import { getSnapshot } from "../../../stores/snapshot";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {

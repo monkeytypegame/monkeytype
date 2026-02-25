@@ -33,7 +33,7 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
-import { setSnapshot as setSolidSnapshot } from "./signals/snapshot";
+import { setSnapshot as setSolidSnapshot } from "./stores/snapshot";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();

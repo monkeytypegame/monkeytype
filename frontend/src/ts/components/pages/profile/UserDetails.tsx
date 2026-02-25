@@ -13,7 +13,7 @@ import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { getUserId, isLoggedIn } from "../../../signals/core";
-import { getSnapshot } from "../../../signals/snapshot";
+import { getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails, XPDetails } from "../../../utils/levels";
@@ -202,7 +202,6 @@ function AvatarAndName(props: {
   }
 
   return (
-    // <div class="grid w-full grid-cols-[5rem_1fr] items-center gap-4 self-center text-sub">
     <div
       class={cn(
         "grid w-full grid-cols-[5rem_1fr] items-center gap-4 self-center text-sub",
@@ -220,7 +219,7 @@ function AvatarAndName(props: {
         <AutoShrink class="flex text-text">
           {props.profile.name}
 
-          <div class="flex flex-row gap-1 text-sub">
+          <div class="flex flex-row gap-1 pl-1 text-sub">
             <UserFlags
               {...props.profile}
               isFriend={isFriend(props.profile.uid)}
