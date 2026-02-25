@@ -29,6 +29,8 @@
   --default-transition-duration: 0.25s;
   --duration-half: 0.125s;
 
+  --radius: var(--roundness);
+
   @keyframes loader {
     0% {
       transform: translateX(-100%) scaleX(0);
@@ -40,10 +42,6 @@
       transform: translateX(100%) scaleX(0);
     }
   }
-}
-
-@utility rounded {
-  border-radius: var(--roundness);
 }
 
 @utility rounded-double {
