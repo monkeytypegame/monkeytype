@@ -33,6 +33,7 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import { setSnapshot as setSolidSnapshot } from "./signals/snapshot";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -80,6 +81,8 @@ export function setSnapshot(
   if (options?.dispatchEvent !== false) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
+
+  setSolidSnapshot(newSnapshot);
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -251,6 +254,8 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();
     throw e;
+  } finally {
+    setSolidSnapshot(dbSnapshot);
   }
 }
 

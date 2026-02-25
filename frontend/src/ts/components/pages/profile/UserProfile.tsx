@@ -54,7 +54,10 @@ export function UserProfile(props: {
         </span>
       </Show>
 
-      <ActivityCalendar testActivity={props.profile.testActivity} />
+      <ActivityCalendar
+        testActivity={props.profile.testActivity}
+        isAccountPage={props.isAccountPage}
+      />
     </div>
   );
 }

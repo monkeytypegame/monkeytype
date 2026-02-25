@@ -105,6 +105,7 @@ export function initYearSelector(
 
   const yearSelect = getYearSelector(element);
   // oxlint-disable-next-line no-unsafe-argument
+
   yearSelect.setData(years);
   // oxlint-disable-next-line no-unsafe-call
   years.length > 1 ? yearSelect.enable() : yearSelect.disable();

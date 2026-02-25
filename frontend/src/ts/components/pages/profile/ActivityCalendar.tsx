@@ -1,58 +1,78 @@
 import { TestActivity } from "@monkeytype/schemas/users";
 import { JSXElement, onMount, Show } from "solid-js";
 
+import { getSnapshot } from "../../../db";
 import {
   clear as clearTestActivity,
   init as initTestActivity,
+  initYearSelector,
 } from "../../../elements/test-activity";
-import {
-  ModifiableTestActivityCalendar,
-  TestActivityCalendar,
-} from "../../../elements/test-activity-calendar";
+import { TestActivityCalendar } from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 export function ActivityCalendar(props: {
-  testActivity?: TestActivity | ModifiableTestActivityCalendar;
+  isAccountPage?: true;
+  testActivity?: TestActivity;
 }): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [elementRef, element] = useRefWithUtils<HTMLElement>();
 
   let calendar: TestActivityCalendar | undefined;
 
-  onMount(() => {
-    if (props.testActivity !== undefined && element() !== undefined) {
-      calendar =
-        props.testActivity instanceof ModifiableTestActivityCalendar
-          ? props.testActivity
-          : new TestActivityCalendar(
-              props.testActivity.testsByDays,
-              new Date(props.testActivity.lastDay),
-              firstDayOfTheWeek,
-            );
-      // oxlint-disable-next-line typescript/no-non-null-assertion
-      initTestActivity(element()!.native, calendar);
-
-      if (!(props.testActivity instanceof ModifiableTestActivityCalendar)) {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        const title = element()!.qsr(".top .title");
-        title.appendHtml(" in last 12 months");
-      }
-    } else {
+  const sync = () => {
+    if (props.testActivity === undefined || element() === undefined) {
       calendar = undefined;
       clearTestActivity(element()?.native);
+      return;
     }
-  });
+
+    if (props.isAccountPage) {
+      //signals cannot store classes, use the testActivity from the snapshot for now
+      calendar = getSnapshot()?.testActivity;
+    } else {
+      calendar = new TestActivityCalendar(
+        props.testActivity.testsByDays,
+        new Date(props.testActivity.lastDay),
+        firstDayOfTheWeek,
+      );
+    }
+
+    initTestActivity(
+      // oxlint-disable-next-line typescript/no-non-null-assertion
+      element()!.native,
+      calendar,
+      getSnapshot()?.addedAt !== undefined
+        ? new Date(getSnapshot()?.addedAt ?? 0)
+        : undefined,
+    );
+
+    if (props.isAccountPage) {
+      initYearSelector(
+        // oxlint-disable-next-line typescript/no-non-null-assertion
+        element()!.native,
+        "current",
+        getSnapshot()?.addedAt !== undefined
+          ? // oxlint-disable-next-line typescript/no-non-null-assertion
+            new Date(getSnapshot()!.addedAt).getFullYear()
+          : 2020,
+      );
+    } else {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
+      const title = element()!.qsr(".top .title");
+      title.appendHtml("   months");
+    }
+  };
+
+  onMount(() => sync());
 
   return (
     <div class="testActivity" ref={elementRef}>
       <div class="wrapper">
         <div class="top">
-          <Show
-            when={props.testActivity instanceof ModifiableTestActivityCalendar}
-          >
+          <Show when={props.isAccountPage}>
             <div class="year">
               <select class="yearSelect"></select>
             </div>

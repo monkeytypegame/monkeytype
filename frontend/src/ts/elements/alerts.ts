@@ -13,11 +13,9 @@ import {
   promiseAnimate,
 } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
-import { updateXp as accountPageUpdateProfile } from "./profile";
 import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
-import { getActivePage } from "../signals/core";
 import { animate } from "animejs";
 import { qs, qsr } from "../utils/dom";
 
@@ -116,11 +114,6 @@ function hide(): void {
       if (totalXpClaimed > 0) {
         const snapxp = DB.getSnapshot()?.xp ?? 0;
         void XPBar.update(snapxp, totalXpClaimed);
-
-        const activePage = getActivePage();
-        if (activePage === "account" || activePage === "profile") {
-          accountPageUpdateProfile(activePage, snapxp + totalXpClaimed, true);
-        }
 
         DB.addXp(totalXpClaimed);
       }

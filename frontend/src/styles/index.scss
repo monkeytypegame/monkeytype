@@ -18,9 +18,8 @@
 @layer custom-styles {
   @import "buttons", "404", "ads", "account", "animations", "caret",
     "commandline", "core", "fonts", "inputs", "keymap", "login", "monkey",
-    "nav", "notifications", "popups", "profile", "scroll", "settings",
-    "account-settings", "leaderboards", "test", "loading", "friends",
-    "media-queries";
+    "nav", "notifications", "popups", "scroll", "settings", "account-settings",
+    "leaderboards", "test", "loading", "friends", "media-queries";
 
   .chartCanvas {
     width: 100% !important;

@@ -7,12 +7,13 @@ import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
 import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
-import { getSnapshot, isFriend } from "../../../db";
+import { isFriend } from "../../../db";
 import * as Notifications from "../../../elements/notifications";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { getUserId, isLoggedIn } from "../../../signals/core";
+import { getSnapshot } from "../../../signals/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails, XPDetails } from "../../../utils/levels";
@@ -315,7 +316,7 @@ function BioAndKeyboard(props: {
       ></div>
       <div
         class={cn(
-          "flex h-full flex-col content-center justify-around gap-2 text-sm",
+          "flex h-full flex-col content-center justify-around gap-2 overflow-hidden text-sm",
           props.variant === "hasBioOrKeyboard" && "md:order-4",
           props.variant === "full" && "md:col-span-2 lg:order-4 lg:col-span-1",
         )}
