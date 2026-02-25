@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createSignal, JSXElement } from "solid-js";
+import { createSignal, JSXElement, Show } from "solid-js";
 
 import Page, { PageName } from "../../../pages/page";
 import { getUserProfile } from "../../../queries/profile";
@@ -7,6 +7,7 @@ import { getActivePage } from "../../../signals/core";
 import { onDOMReady, qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
+import { Fa } from "../../common/Fa";
 import { UserProfile } from "./UserProfile";
 
 const [currentName, setCurrentName] = createSignal<string | undefined>(
@@ -23,9 +24,17 @@ export function ProfilePage(): JSXElement {
   }));
 
   return (
-    <AsyncContent query={profileQuery}>
-      {(profile) => <UserProfile profile={profile} />}
-    </AsyncContent>
+    <>
+      <AsyncContent query={profileQuery} ignoreError={true}>
+        {(profile) => <UserProfile profile={profile} />}
+      </AsyncContent>
+      <Show when={profileQuery.isError}>
+        <div class="flex h-screen items-center justify-center text-6xl text-error">
+          <Fa icon="fa-times" />
+          &nbsp;User {currentName()} not found
+        </div>
+      </Show>
+    </>
   );
 }
 

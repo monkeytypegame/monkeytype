@@ -24,4 +24,8 @@ export const getUserProfile = (username: string) =>
       return response.body.data;
     },
     staleTime,
+    retry: (failureCount, error) => {
+      if (error.message.includes("User not found")) return false;
+      return failureCount < 3;
+    },
   });
