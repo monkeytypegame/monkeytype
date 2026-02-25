@@ -9,6 +9,7 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { getSnapshot, isFriend } from "../../../db";
 import * as Notifications from "../../../elements/notifications";
+import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { getUserId, isLoggedIn } from "../../../signals/core";
@@ -17,17 +18,17 @@ import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails, XPDetails } from "../../../utils/levels";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Button } from "../../common/Button";
+import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge, UserFlags } from "../../common/User";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
-export function UserDetails(props: { profile: UserProfile }): JSXElement {
+export function UserDetails(props: {
+  profile: UserProfile;
+  isAccountPage?: true;
+}): JSXElement {
   const variant = (): Variant => {
-    // return "basic";
-    // return "hasBioOrKeyboard";
-    // return "hasSocials";
-    // return "full";
     if (props.profile.banned) return "basic";
 
     const hasSocials = props.profile.details?.socialProfiles !== undefined;
@@ -71,13 +72,19 @@ export function UserDetails(props: { profile: UserProfile }): JSXElement {
       </div>
 
       <div class="flex h-full flex-col">
-        <ActionButtons profile={props.profile} />
+        <ActionButtons
+          profile={props.profile}
+          isAccountPage={props.isAccountPage}
+        />
       </div>
     </div>
   );
 }
 
-function ActionButtons(props: { profile: UserProfile }): JSXElement {
+function ActionButtons(props: {
+  profile: UserProfile;
+  isAccountPage?: true;
+}): JSXElement {
   const isUsersProfile = () =>
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
@@ -106,30 +113,76 @@ function ActionButtons(props: { profile: UserProfile }): JSXElement {
   };
 
   return (
-    <>
-      <Show when={!isUsersProfile()}>
-        <Button
-          class={cn("h-full rounded-none rounded-tr", {
-            "rounded-br": !showFriendsButton(),
-          })}
-          fa={{ icon: "fa-flag", fixedWidth: true }}
-          onClick={() =>
-            void UserReportModal.show({
-              uid: props.profile.uid as string,
-              name: props.profile.name,
-              lbOptOut: props.profile.lbOptOut ?? false,
-            })
-          }
-        />
-      </Show>
-      <Show when={showFriendsButton()}>
-        <Button
-          class="h-full rounded-none rounded-br"
-          fa={{ icon: "fa-user-plus", fixedWidth: true }}
-          onClick={() => handleAddFriend()}
-        />
-      </Show>
-    </>
+    <Conditional
+      if={props.isAccountPage === true}
+      then={
+        <>
+          <Button
+            ariaLabel={{ text: "Edit profile", position: "left" }}
+            class="h-full rounded-none rounded-tr text-sub hover:text-bg"
+            fa={{ icon: "fa-pen", fixedWidth: true }}
+            onClick={() => {
+              if (props.profile.banned === true) {
+                Notifications.add("Banned users cannot edit their profile", 0);
+                return;
+              }
+              EditProfileModal.show();
+            }}
+          />
+          <Button
+            ariaLabel={{ text: "Copy public link", position: "left" }}
+            class="h-full rounded-none rounded-br text-sub hover:text-bg"
+            fa={{ icon: "fa-link", fixedWidth: true }}
+            onClick={() => {
+              const url = `${location.origin}/profile/${props.profile.name}`;
+
+              navigator.clipboard.writeText(url).then(
+                function () {
+                  Notifications.add("URL Copied to clipboard", 0);
+                },
+                function () {
+                  alert(
+                    "Failed to copy using the Clipboard API. Here's the link: " +
+                      url,
+                  );
+                },
+              );
+            }}
+          />
+        </>
+      }
+      else={
+        <>
+          <Show when={!isUsersProfile()}>
+            <Button
+              ariaLabel={{ text: "Report user", position: "left" }}
+              class={cn(
+                "h-full rounded-none rounded-tr text-sub hover:text-bg",
+                {
+                  "rounded-br": !showFriendsButton(),
+                },
+              )}
+              fa={{ icon: "fa-flag", fixedWidth: true }}
+              onClick={() =>
+                void UserReportModal.show({
+                  uid: props.profile.uid as string,
+                  name: props.profile.name,
+                  lbOptOut: props.profile.lbOptOut ?? false,
+                })
+              }
+            />
+          </Show>
+          <Show when={showFriendsButton()}>
+            <Button
+              ariaLabel={{ text: "Send friend request", position: "left" }}
+              class="h-full rounded-none rounded-br text-sub hover:text-bg"
+              fa={{ icon: "fa-user-plus", fixedWidth: true }}
+              onClick={() => handleAddFriend()}
+            />
+          </Show>
+        </>
+      }
+    />
   );
 }
 
