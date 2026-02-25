@@ -1,16 +1,4 @@
-:root {
-  --bg-color: #fdf0d5;
-  --main-color: #8e2949;
-  --caret-color: #892948;
-  --sub-color: #d91c81;
-  --sub-alt-color: #f3e2bf;
-  --text-color: #3a3335;
-  --error-color: #5cf074;
-  --error-extra-color: #5cf074;
-  --colorful-error-color: #5cf074;
-  --colorful-error-extra-color: #5cf074;
-}
-@keyframes rgb {
+@keyframes cheesecake {
   0% {
     fill: #ff0090;
   }
@@ -44,5 +32,5 @@
 }
 
 header > div#logo > div.icon > svg path {
-  animation: 10s linear infinite 0.1s rgb;
+  animation: 10s linear infinite 0.1s cheesecake;
 }

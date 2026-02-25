@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #ffffff;
-  --main-color: #2d2076;
-  --caret-color: #fbdb8c;
-  --sub-color: #385eca;
-  --sub-alt-color: #c8cedf;
-  --text-color: #2d2076;
-  --error-color: #f2ce83;
-  --error-extra-color: #f2ce83;
-  --colorful-error-color: #f2ce83;
-  --colorful-error-extra-color: #f2ce83;
-}
-
 nav > .textButton {
   color: #f2ce83;
 }

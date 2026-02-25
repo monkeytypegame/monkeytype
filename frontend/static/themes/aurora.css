@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #011926;
-  --main-color: #00e980;
-  --caret-color: #00e980;
-  --sub-color: #245c69;
-  --sub-alt-color: #000c13;
-  --text-color: #fff;
-  --error-color: #b94da1;
-  --error-extra-color: #9b3a76;
-  --colorful-error-color: #b94da1;
-  --colorful-error-extra-color: #9b3a76;
-}
-
 @keyframes aurora {
   0% {
     color: #009fb4;

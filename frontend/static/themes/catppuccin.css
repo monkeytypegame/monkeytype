@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #1e1e2e;
-  --caret-color: #f2cdcd;
-  --main-color: #cba6f7;
-  --sub-color: #7f849c;
-  --sub-alt-color: #181825;
-  --text-color: #cdd6f4;
-  --error-color: #f38ba8;
-  --error-extra-color: #eba0ac;
-  --colorful-error-color: #f38ba8;
-  --colorful-error-extra-color: #eba0ac;
-}
-
 nav .view-start {
   color: #f38ba8;
 }

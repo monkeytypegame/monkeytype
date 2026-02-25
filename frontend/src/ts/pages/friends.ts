@@ -27,7 +27,8 @@ import * as ServerConfiguration from "../ape/server-configuration";
 import * as AuthEvent from "../observables/auth-event";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsr, onDOMReady } from "../utils/dom";
@@ -222,7 +223,7 @@ function updateFriends(): void {
 
     if (friendsTable === undefined) {
       friendsTable = new SortedTable<Friend>({
-        table: ".pageFriends .friends table",
+        table: qsr(".pageFriends .friends table"),
         data: friendsList,
         buildRow: buildFriendRow,
         persistence: new LocalStorageWithSchema({
@@ -417,7 +418,7 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
   }
   row.querySelectorAll("button").forEach((button) => (button.disabled = true));
 
-  Loader.show();
+  showLoaderBar();
   const result =
     action === "rejected"
       ? await Ape.connections.delete({
@@ -427,7 +428,7 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
           params: { id },
           body: { status: action },
         });
-  Loader.hide();
+  hideLoaderBar();
 
   if (result.status !== 200) {
     Notifications.add(

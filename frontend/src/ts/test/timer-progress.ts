@@ -40,7 +40,7 @@ export function show(): void {
       showElement(miniEl);
     } else if (Config.timerStyle === "flash_text") {
       showElement(textEl);
-    } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
+    } else if (Config.timerStyle === "mini") {
       showElement(miniEl);
     }
   });

@@ -1,7 +1,8 @@
 import Ape from "../ape";
 // import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 // import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
 import { getSnapshot, setSnapshot } from "../db";
@@ -93,12 +94,12 @@ async function apply(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
 
   const response = await Ape.users.setStreakHourOffset({
     body: { hourOffset: value },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to set streak hour offset", -1, { response });

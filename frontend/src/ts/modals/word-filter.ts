@@ -12,6 +12,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { LanguageList } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { qs, qsr } from "../utils/dom";
 
 type FilterPreset = {
   display: string;
@@ -26,7 +27,9 @@ type FilterPreset = {
     }
 );
 
-const exactMatchCheckbox = $("#wordFilterModal #exactMatchOnly");
+const exactMatchCheckbox = qs<HTMLInputElement>(
+  "#wordFilterModal #exactMatchOnly",
+);
 
 const presets: Record<string, FilterPreset> = {
   homeKeys: {
@@ -82,28 +85,29 @@ const presets: Record<string, FilterPreset> = {
 };
 
 async function initSelectOptions(): Promise<void> {
-  $("#wordFilterModal .languageInput").empty();
-  $("#wordFilterModal .layoutInput").empty();
-  $("wordFilterModal .presetInput").empty();
+  const modalEl = modal.getModal();
+  modalEl.qsr(".languageInput").empty();
+  modalEl.qsr(".layoutInput").empty();
+  modalEl.qsr(".presetInput").empty();
 
   LanguageList.forEach((language) => {
     const prettyLang = language.replace(/_/gi, " ");
-    $("#wordFilterModal .languageInput").append(`
+    modalEl.qsr(".languageInput").appendHtml(`
         <option value=${language}>${prettyLang}</option>
       `);
   });
 
   for (const layout of LayoutsList) {
     const prettyLayout = layout.replace(/_/gi, " ");
-    $("#wordFilterModal .layoutInput").append(`
+    modalEl.qsr(".layoutInput").appendHtml(`
       <option value=${layout}>${prettyLayout}</option>
     `);
   }
 
   for (const [presetId, preset] of Object.entries(presets)) {
-    $("#wordFilterModal .presetInput").append(
-      `<option value=${presetId}>${preset.display}</option>`,
-    );
+    modalEl
+      .qsr(".presetInput")
+      .appendHtml(`<option value=${presetId}>${preset.display}</option>`);
   }
 }
 
@@ -133,7 +137,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
           contentLocation: modal.getModal().native,
         },
       });
-      $("#wordFilterModal .loadingIndicator").removeClass("hidden");
+      modalEl.qs(".loadingIndicator")?.show();
       enableButtons();
     },
   });
@@ -146,8 +150,11 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 async function filter(language: Language): Promise<string[]> {
-  const exactMatchOnly = exactMatchCheckbox.is(":checked");
-  let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
+  const modalEl = modal.getModal();
+  const exactMatchOnly = exactMatchCheckbox?.isChecked() as boolean;
+  let filterin = modalEl
+    .qsr<HTMLInputElement>(".wordIncludeInput")
+    .getValue() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
   let regincl;
@@ -158,7 +165,9 @@ async function filter(language: Language): Promise<string[]> {
     regincl = new RegExp(filterin, "i");
   }
 
-  let filterout = $("#wordFilterModal .wordExcludeInput").val() as string;
+  let filterout = modalEl
+    .qsr<HTMLInputElement>(".wordExcludeInput")
+    .getValue() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
   const regexcl = new RegExp(filterout, "i");
@@ -175,8 +184,12 @@ async function filter(language: Language): Promise<string[]> {
     return [];
   }
 
-  const maxLengthInput = $("#wordFilterModal .wordMaxInput").val() as string;
-  const minLengthInput = $("#wordFilterModal .wordMinInput").val() as string;
+  const maxLengthInput = modalEl
+    .qsr<HTMLInputElement>(".wordMaxInput")
+    .getValue() as string;
+  const minLengthInput = modalEl
+    .qsr<HTMLInputElement>(".wordMinInput")
+    .getValue() as string;
   let maxLength;
   let minLength;
   if (maxLengthInput === "") {
@@ -204,7 +217,10 @@ async function filter(language: Language): Promise<string[]> {
 }
 
 async function apply(set: boolean): Promise<void> {
-  const language = $("#wordFilterModal .languageInput").val() as Language;
+  const language = modal
+    .getModal()
+    .qsr<HTMLSelectElement>(".languageInput")
+    .getValue() as Language;
   const filteredWords = await filter(language);
 
   if (filteredWords.length === 0) {
@@ -226,16 +242,18 @@ async function apply(set: boolean): Promise<void> {
 }
 
 function setExactMatchInput(disable: boolean): void {
-  const wordExcludeInputEl = $("#wordFilterModal #wordExcludeInput");
+  const wordExcludeInputEl = modal
+    .getModal()
+    .qsr<HTMLInputElement>("#wordExcludeInput");
 
   if (disable) {
-    $("#wordFilterModal #wordExcludeInput").val("");
-    wordExcludeInputEl.attr("disabled", "disabled");
+    wordExcludeInputEl.setValue("");
+    wordExcludeInputEl.disable();
   } else {
-    wordExcludeInputEl.removeAttr("disabled");
+    wordExcludeInputEl.enable();
   }
 
-  exactMatchCheckbox.prop("checked", disable);
+  exactMatchCheckbox?.setChecked(disable);
 }
 
 function disableButtons(): void {
@@ -249,9 +267,15 @@ function enableButtons(): void {
 async function setup(): Promise<void> {
   await initSelectOptions();
 
-  $("#wordFilterModal button.generateButton").on("click", async () => {
-    const presetName = $("#wordFilterModal .presetInput").val() as string;
-    const layoutName = $("#wordFilterModal .layoutInput").val() as string;
+  const modalEl = modal.getModal();
+
+  modalEl.qsr("button.generateButton").on("click", async () => {
+    const presetName = modalEl
+      .qsr<HTMLSelectElement>(".presetInput")
+      .getValue() as string;
+    const layoutName = modalEl
+      .qsr<HTMLSelectElement>(".layoutInput")
+      .getValue() as string;
 
     const presetToApply = presets[presetName];
 
@@ -262,7 +286,7 @@ async function setup(): Promise<void> {
 
     const layout = await JSONData.getLayout(layoutName);
 
-    $("#wordIncludeInput").val(
+    qsr<HTMLInputElement>("#wordIncludeInput").setValue(
       presetToApply
         .getIncludeString(layout)
         .map((x) => x[0])
@@ -274,7 +298,7 @@ async function setup(): Promise<void> {
     } else {
       setExactMatchInput(false);
       if (presetToApply.getExcludeString !== undefined) {
-        $("#wordExcludeInput").val(
+        qsr<HTMLInputElement>("#wordExcludeInput").setValue(
           presetToApply
             .getExcludeString(layout)
             .map((x) => x[0])
@@ -284,20 +308,20 @@ async function setup(): Promise<void> {
     }
   });
 
-  exactMatchCheckbox.on("change", () => {
-    setExactMatchInput(exactMatchCheckbox.is(":checked"));
+  exactMatchCheckbox?.on("change", () => {
+    setExactMatchInput(exactMatchCheckbox.isChecked() as boolean);
   });
 
-  $("#wordFilterModal button.addButton").on("click", () => {
-    $("#wordFilterModal .loadingIndicator").removeClass("hidden");
+  modalEl.qsr("button.addButton").on("click", () => {
+    modalEl.qs(".loadingIndicator")?.show();
     disableButtons();
     setTimeout(() => {
       void apply(false);
     }, 0);
   });
 
-  $("#wordFilterModal button.setButton").on("click", () => {
-    $("#wordFilterModal .loadingIndicator").removeClass("hidden");
+  modalEl.qsr("button.setButton").on("click", () => {
+    modalEl.qs(".loadingIndicator")?.show();
     disableButtons();
     setTimeout(() => {
       void apply(true);

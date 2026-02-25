@@ -1,7 +1,6 @@
 import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/about";
 import "./event-handlers/settings";
 import "./event-handlers/account";
 import "./event-handlers/leaderboards";
@@ -27,13 +26,11 @@ import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
 import "./controllers/route-controller";
-import "./pages/about";
 import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
-import "./elements/fps-counter";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as Focus from "./test/focus";
 import { fetchLatestVersion } from "./utils/version";
@@ -100,9 +97,6 @@ addToGlobal({
 });
 
 if (isDevEnvironment()) {
-  void import("jquery").then((jq) => {
-    addToGlobal({ $: jq.default });
-  });
   void getDevOptionsModal().then((module) => {
     module.appendButton();
   });

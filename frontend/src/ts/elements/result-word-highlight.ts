@@ -5,6 +5,7 @@
 
 import * as Misc from "../utils/misc";
 import * as TestState from "../test/test-state";
+import { qsr } from "../utils/dom";
 
 const PADDING_X = 16;
 const PADDING_Y = 12;
@@ -22,8 +23,8 @@ type Line = {
 // Array of Line objects
 let lines: Line[] = [];
 
-// JQuery collection of all word elements
-let wordEls: JQuery;
+// collection of all word elements
+let wordEls: HTMLElement[];
 
 // Dictionary mapping word indices to line indices
 let wordIndexToLineIndexDict: Record<number, number> = {};
@@ -196,9 +197,9 @@ async function init(): Promise<boolean> {
     );
   }
 
-  RWH_el = $("#resultWordsHistory")[0] as HTMLElement;
+  RWH_el = qsr("#resultWordsHistory").native;
   RWH_rect = RWH_el.getBoundingClientRect();
-  wordEls = $(RWH_el).find(".words .word[input]");
+  wordEls = qsr("#resultWordsHistory").qsa(".words .word[input]").native;
 
   // remove non-input words
   if (wordEls.length === 0) {

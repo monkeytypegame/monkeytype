@@ -4,7 +4,7 @@
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
-    "lint": "oxlint . --type-aware --type-check && oxlint -c .oxlintrc-plugin.json",
+    "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
@@ -80,13 +80,13 @@
     "@vitest/coverage-v8": "4.0.15",
     "concurrently": "8.2.2",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.39.0",
-    "oxlint-tsgolint": "0.11.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.14.2",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
     "testcontainers": "11.11.0",
     "tsx": "4.16.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.0-beta",
     "vitest": "4.0.15"
   },
   "engines": {

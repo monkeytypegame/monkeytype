@@ -2,7 +2,7 @@
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "node", "jquery"],
+    "types": ["vite/client", "node"],
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "allowUmdGlobalAccess": true,

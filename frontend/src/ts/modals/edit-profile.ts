@@ -1,7 +1,8 @@
 import Ape from "../ape";
 import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
@@ -101,13 +102,17 @@ function hydrateInputs(): void {
     </button>`,
   );
 
-  $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
-    const selectionId = $(currentTarget).attr("selection-id") as string;
-    currentSelectedBadgeId = parseInt(selectionId, 10);
+  badgeIdsSelect
+    ?.qsa(".badgeSelectionItem")
+    ?.on("click", ({ currentTarget }) => {
+      const selectionId = (currentTarget as HTMLElement).getAttribute(
+        "selection-id",
+      ) as string;
+      currentSelectedBadgeId = parseInt(selectionId, 10);
 
-    badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
-    $(currentTarget).addClass("selected");
-  });
+      badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
+      (currentTarget as HTMLElement).classList.add("selected");
+    });
 
   indicators.forEach((it) => it.hide());
 }
@@ -170,14 +175,14 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.users.updateProfile({
     body: {
       ...updates,
       selectedBadgeId: currentSelectedBadgeId,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
     Notifications.add("Failed to update profile", -1, { response });

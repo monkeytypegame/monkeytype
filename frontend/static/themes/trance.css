@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #00021b;
-  --main-color: #e51376;
-  --caret-color: #e51376;
-  --sub-color: #3c4c79;
-  --sub-alt-color: #18214c;
-  --text-color: #fff;
-  --error-color: #02d3b0;
-  --error-extra-color: #3f887c;
-  --colorful-error-color: #02d3b0;
-  --colorful-error-extra-color: #3f887c;
-}
-
 @keyframes trance {
   0% {
     color: #e51376;

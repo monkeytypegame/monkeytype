@@ -12,7 +12,7 @@ import {
 import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
-import * as Loader from "../../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
@@ -70,9 +70,9 @@ export async function goToNextWord({
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
     setAwaitingNextWord(true);
-    Loader.show();
+    showLoaderBar();
     await TestLogic.addWord();
-    Loader.hide();
+    hideLoaderBar();
     setAwaitingNextWord(false);
   } else {
     void TestLogic.addWord();

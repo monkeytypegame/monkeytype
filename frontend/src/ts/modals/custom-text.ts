@@ -1,4 +1,3 @@
-import { ElementWithUtils } from "../utils/dom";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -14,8 +13,7 @@ import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CustomTextMode } from "@monkeytype/schemas/util";
-
-const popup = "#customTextModal .modal";
+import { qs, ElementWithUtils } from "../utils/dom";
 
 type State = {
   textarea: string;
@@ -55,114 +53,127 @@ const state: State = {
 };
 
 function updateUI(): void {
-  $(`${popup} .inputs .group[data-id="mode"] button`).removeClass("active");
-  $(
-    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`,
-  ).addClass("active");
+  const modalEl = modal.getModal();
+  modalEl.qsa(`.inputs .group[data-id="mode"] button`)?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`,
+    )
+    ?.addClass("active");
 
-  $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass("hidden");
-  $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
-    "hidden",
-  );
+  modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.hide();
+  modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.hide();
 
-  $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
-    state.customTextLimits.word,
-  );
-  $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
-    state.customTextLimits.time,
-  );
-  $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
-    state.customTextLimits.section,
-  );
+  modalEl
+    .qs<HTMLInputElement>(`.inputs .group[data-id="limit"] input.words`)
+    ?.setValue(state.customTextLimits.word);
+  modalEl
+    .qs<HTMLInputElement>(`.inputs .group[data-id="limit"] input.time`)
+    ?.setValue(state.customTextLimits.time);
+  modalEl
+    .qs<HTMLInputElement>(`.inputs .group[data-id="limit"] input.sections`)
+    ?.setValue(state.customTextLimits.section);
   if (state.customTextLimits.word !== "") {
-    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
-      "hidden",
-    );
+    modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.show();
   }
   if (state.customTextLimits.section !== "") {
-    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
-      "hidden",
-    );
+    modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.show();
   }
 
   if (state.customTextPipeDelimiter) {
-    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
-      "hidden",
-    );
-    $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass(
-      "hidden",
-    );
+    modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.show();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.hide();
   } else {
-    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
-      "hidden",
-    );
-    $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
-      "hidden",
-    );
+    modalEl.qs(`.inputs .group[data-id="limit"] input.words`)?.show();
+    modalEl.qs(`.inputs .group[data-id="limit"] input.sections`)?.hide();
   }
 
   if (state.customTextMode === "simple") {
-    $(`${popup} .inputs .group[data-id="limit"]`).addClass("disabled");
-    $(`${popup} .inputs .group[data-id="limit"] input`).val("");
-    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", true);
+    modalEl.qs(`.inputs .group[data-id="limit"]`)?.addClass("disabled");
+    modalEl
+      .qsa<HTMLInputElement>(`.inputs .group[data-id="limit"] input`)
+      ?.setValue("");
+    modalEl.qsa(`.inputs .group[data-id="limit"] input`)?.disable();
   } else {
-    $(`${popup} .inputs .group[data-id="limit"]`).removeClass("disabled");
-    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", false);
+    modalEl.qs(`.inputs .group[data-id="limit"]`)?.removeClass("disabled");
+    modalEl.qsa(`.inputs .group[data-id="limit"] input`)?.enable();
   }
 
-  $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
-  $(
-    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`,
-  ).addClass("active");
+  modalEl.qsa(`.inputs .group[data-id="fancy"] button`)?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`,
+    )
+    ?.addClass("active");
 
-  $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
-  $(
-    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`,
-  ).addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="control"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`,
+    )
+    ?.addClass("active");
 
-  $(`${popup} .inputs .group[data-id="zeroWidth"] button`).removeClass(
-    "active",
-  );
-  $(
-    `${popup} .inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`,
-  ).addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="zeroWidth"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`,
+    )
+    ?.addClass("active");
 
-  $(`${popup} .inputs .group[data-id="delimiter"] button`).removeClass(
-    "active",
-  );
-  $(
-    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`,
-  ).addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="delimiter"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`,
+    )
+    ?.addClass("active");
 
-  $(`${popup} .inputs .group[data-id="newlines"] button`).removeClass("active");
-  $(
-    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`,
-  ).addClass("active");
+  modalEl
+    .qsa(`.inputs .group[data-id="newlines"] button`)
+    ?.removeClass("active");
+  modalEl
+    .qs(
+      `.inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`,
+    )
+    ?.addClass("active");
 
-  $(`${popup} textarea`).val(state.textarea);
+  modalEl.qs<HTMLTextAreaElement>(`textarea`)?.setValue(state.textarea);
 
   if (state.longCustomTextWarning) {
-    $(`${popup} .longCustomTextWarning`).removeClass("hidden");
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
-    $(`${popup} .delimiterCheck input`).prop("checked", false);
-    $(`${popup} .typographyCheck`).prop("checked", true);
-    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
-    $(`${popup} .inputs`).addClass("disabled");
+    modalEl.qs(`.longCustomTextWarning`)?.show();
+    modalEl
+      .qs<HTMLInputElement>(`.randomWordsCheckbox input`)
+      ?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.delimiterCheck input`)?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.typographyCheck`)?.setChecked(true);
+    modalEl
+      .qs<HTMLInputElement>(`.replaceNewlineWithSpace input`)
+      ?.setChecked(false);
+    modalEl.qs(`.inputs`)?.addClass("disabled");
   } else {
-    $(`${popup} .longCustomTextWarning`).addClass("hidden");
-    $(`${popup} .inputs`).removeClass("disabled");
+    modalEl.qs(`.longCustomTextWarning`)?.hide();
+    modalEl.qs(`.inputs`)?.removeClass("disabled");
   }
 
   if (state.challengeWarning) {
-    $(`${popup} .challengeWarning`).removeClass("hidden");
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
-    $(`${popup} .delimiterCheck input`).prop("checked", false);
-    $(`${popup} .typographyCheck`).prop("checked", true);
-    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
-    $(`${popup} .inputs`).addClass("disabled");
+    modalEl.qs(`.challengeWarning`)?.show();
+    modalEl
+      .qs<HTMLInputElement>(`.randomWordsCheckbox input`)
+      ?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.delimiterCheck input`)?.setChecked(false);
+    modalEl.qs<HTMLInputElement>(`.typographyCheck`)?.setChecked(true);
+    modalEl
+      .qs<HTMLInputElement>(`.replaceNewlineWithSpace input`)
+      ?.setChecked(false);
+    modalEl.qs(`.inputs`)?.addClass("disabled");
   } else {
-    $(`${popup} .challengeWarning`).addClass("hidden");
-    $(`${popup} .inputs`).removeClass("disabled");
+    modalEl.qs(`.challengeWarning`)?.hide();
+    modalEl.qs(`.inputs`)?.removeClass("disabled");
   }
 }
 
@@ -219,7 +230,7 @@ async function beforeAnimation(
 
 async function afterAnimation(): Promise<void> {
   if (!state.challengeWarning && !state.longCustomTextWarning) {
-    $(`${popup} textarea`).trigger("focus");
+    modal.getModal().qs(`textarea`)?.focus();
   }
 }
 
@@ -239,7 +250,7 @@ function hide(): void {
 }
 
 function handleFileOpen(): void {
-  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  const file = qs<HTMLInputElement>("#fileInput")?.native.files?.[0];
   if (file) {
     if (file.type !== "text/plain") {
       Notifications.add("File is not a text file", -1, {
@@ -255,7 +266,7 @@ function handleFileOpen(): void {
       const content = readerEvent.target?.result as string;
       state.textarea = content;
       updateUI();
-      $(`#fileInput`).val("");
+      qs<HTMLInputElement>(`#fileInput`)?.setValue("");
     };
     reader.onerror = (): void => {
       Notifications.add("Failed to read file", -1, {
@@ -522,7 +533,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       return;
     }
     if (e.code === "Enter" && e.ctrlKey) {
-      $(`${popup} .button.apply`).trigger("click");
+      modal.getModal().qs(`.button.apply`)?.dispatch("click");
     }
     if (
       CustomTextState.isCustomTextLong() &&

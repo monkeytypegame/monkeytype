@@ -3,16 +3,14 @@ import * as Notifications from "./elements/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import * as Loader from "./elements/loader";
-
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
-import { Config, Difficulty } from "@monkeytype/schemas/configs";
+import { Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
   Mode2,
@@ -26,7 +24,6 @@ import {
   SnapshotResult,
   SnapshotUserTag,
 } from "./constants/default-snapshot";
-import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
@@ -41,10 +38,8 @@ let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 export class SnapshotInitError extends Error {
-  constructor(
-    message: string,
-    public responseCode: number,
-  ) {
+  public responseCode: number;
+  constructor(message: string, responseCode: number) {
     super(message);
     this.name = "SnapshotInitError";
     // TODO INVESTIGATE
@@ -99,10 +94,9 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       ? Ape.connections.get()
       : { status: 200, body: { message: "", data: [] } };
 
-    const [userResponse, configResponse, presetsResponse, connectionsResponse] =
+    const [userResponse, presetsResponse, connectionsResponse] =
       await Promise.all([
         Ape.users.get(),
-        Ape.configs.get(),
         Ape.presets.get(),
         connectionsRequest,
       ]);
@@ -111,12 +105,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       throw new SnapshotInitError(
         `${userResponse.body.message} (user)`,
         userResponse.status,
-      );
-    }
-    if (configResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${configResponse.body.message} (config)`,
-        configResponse.status,
       );
     }
     if (presetsResponse.status !== 200) {
@@ -133,7 +121,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     }
 
     const userData = userResponse.body.data;
-    const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
     const connectionsData = connectionsResponse.body.data;
 
@@ -141,12 +128,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       throw new SnapshotInitError(
         `Request was successful but user data is null`,
         200,
-      );
-    }
-
-    if (configData !== null && "config" in configData) {
-      throw new Error(
-        "Config data is not in the correct format. Please refresh the page or contact support.",
       );
     }
 
@@ -202,14 +183,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
-    }
-
-    if (configData === undefined || configData === null) {
-      snap.config = {
-        ...getDefaultConfig(),
-      };
-    } else {
-      snap.config = migrateConfig(configData);
     }
 
     snap.customThemes = userData.customThemes ?? [];
@@ -875,6 +848,15 @@ export async function saveLocalTagPB<M extends Mode>(
   return;
 }
 
+export function deleteLocalTag(tagId: string): void {
+  getSnapshot()?.results?.forEach((result) => {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      result.tags.splice(tagIndex, 1);
+    }
+  });
+}
+
 export async function updateLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
@@ -965,24 +947,6 @@ export async function updateLbMemory<M extends Mode>(
       });
     }
     setSnapshot(snapshot);
-  }
-}
-
-export async function saveConfig(config: Partial<Config>): Promise<void> {
-  if (isAuthenticated()) {
-    const response = await Ape.configs.save({ body: config });
-    if (response.status !== 200) {
-      Notifications.add("Failed to save config", -1, { response });
-    }
-  }
-}
-
-export async function resetConfig(): Promise<void> {
-  if (isAuthenticated()) {
-    const response = await Ape.configs.delete();
-    if (response.status !== 200) {
-      Notifications.add("Failed to reset config", -1, { response });
-    }
   }
 }
 
@@ -1101,11 +1065,11 @@ export async function getTestActivityCalendar(
       return undefined;
     }
 
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add("Error getting test activities", -1, { response });
-      Loader.hide();
+      hideLoaderBar();
       return undefined;
     }
 
@@ -1125,7 +1089,7 @@ export async function getTestActivityCalendar(
         true,
       );
     }
-    Loader.hide();
+    hideLoaderBar();
   }
 
   return dbSnapshot.testActivityByYear[yearString];

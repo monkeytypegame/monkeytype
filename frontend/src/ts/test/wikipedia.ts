@@ -1,4 +1,4 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
@@ -261,7 +261,7 @@ export async function getSection(
   language: Language,
 ): Promise<JSONData.Section> {
   // console.log("Getting section");
-  Loader.show();
+  showLoaderBar();
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
@@ -285,7 +285,7 @@ export async function getSection(
 
   return new Promise((res, rej) => {
     if (randomPostReq.status !== 200) {
-      Loader.hide();
+      hideLoaderBar();
       rej(randomPostReq.status);
     }
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
@@ -300,7 +300,7 @@ export async function getSection(
           );
           const page = parsedResponse.query.pages[pageid.toString()];
           if (!page) {
-            Loader.hide();
+            hideLoaderBar();
             rej("Page not found");
             return;
           }
@@ -339,10 +339,10 @@ export async function getSection(
             sectionObj.author,
             words,
           );
-          Loader.hide();
+          hideLoaderBar();
           res(section);
         } else {
-          Loader.hide();
+          hideLoaderBar();
           rej(sectionReq.status);
         }
       }
