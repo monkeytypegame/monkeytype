@@ -34,13 +34,15 @@ export function show(): void {
   requestDebouncedAnimationFrame("timer-progress.show", () => {
     if (Config.mode !== "zen" && Config.timerStyle === "bar") {
       showElement(barOpacityEl);
-    } else if (Config.timerStyle === "text") {
+    } else if (
+      Config.timerStyle === "text" ||
+      Config.timerStyle === "flash_text"
+    ) {
       showElement(textEl);
-    } else if (Config.timerStyle === "flash_mini") {
-      showElement(miniEl);
-    } else if (Config.timerStyle === "flash_text") {
-      showElement(textEl);
-    } else if (Config.timerStyle === "mini") {
+    } else if (
+      Config.timerStyle === "mini" ||
+      Config.timerStyle === "flash_mini"
+    ) {
       showElement(miniEl);
     }
   });
