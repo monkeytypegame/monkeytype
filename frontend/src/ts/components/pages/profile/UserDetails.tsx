@@ -16,7 +16,7 @@ import { getUserId, isLoggedIn } from "../../../signals/core";
 import { getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
-import { formatXp, getXpDetails, XPDetails } from "../../../utils/levels";
+import { formatXp, getXpDetails } from "../../../utils/levels";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";
@@ -29,7 +29,7 @@ export function UserDetails(props: {
   profile: UserProfile;
   isAccountPage?: true;
 }): JSXElement {
-  const variant = (): Variant => {
+  const variant = () => {
     if (props.profile.banned) return "basic";
 
     const hasSocials = props.profile.details?.socialProfiles !== undefined;
@@ -191,7 +191,7 @@ function AvatarAndName(props: {
   profile: UserProfile;
   variant: Variant;
 }): JSXElement {
-  const accountAgeHint = (): string => {
+  const accountAgeHint = () => {
     const creationDate = new Date(props.profile.addedAt);
     const diffDays = differenceInDays(new Date(), creationDate);
     return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
@@ -259,8 +259,8 @@ function AvatarAndName(props: {
 }
 
 function LevelAndBar(props: { xp?: number }): JSXElement {
-  const xpDetails = (): XPDetails => getXpDetails(props.xp ?? 0);
-  const bar = (): string =>
+  const xpDetails = () => getXpDetails(props.xp ?? 0);
+  const bar = () =>
     ((xpDetails().levelCurrentXp / xpDetails().levelMaxXp) * 100).toFixed(2) +
     "%";
 

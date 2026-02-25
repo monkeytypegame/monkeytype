@@ -16,7 +16,7 @@ const [currentName, setCurrentName] = createSignal<string | undefined>(
 
 const pageName: PageName = "profile";
 export function ProfilePage(): JSXElement {
-  const isOpen: () => boolean = () => getActivePage() === pageName;
+  const isOpen = () => getActivePage() === pageName;
 
   const profileQuery = useQuery(() => ({
     ...getUserProfile(currentName() as string),

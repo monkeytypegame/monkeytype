@@ -15,7 +15,7 @@ const [getName, setName] = createSignal<string | undefined>(undefined);
 export function ProfileSearchPage(): JSXElement {
   const [isValid, setValid] = createSignal(false);
 
-  const goToPage = (): void => {
+  const goToPage = () => {
     if (isValid()) {
       NavigationEvent.dispatch(`/profile/${getName()}`, {});
     }
