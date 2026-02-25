@@ -111,10 +111,14 @@ function PbTable<M extends "time" | "words">(props: {
   const format = createMemo(() => new Formatting(getConfig));
 
   const bests = createMemo(() =>
-    props.mode2.map((it) => ({
-      mode2: it,
-      pb: (props.pbs[it] ?? []).sort((a, b) => b.wpm - a.wpm)[0],
-    })),
+    props.mode2.map((it) => {
+      const pbArray = props.pbs[it] ?? [];
+      const best = [...pbArray].sort((a, b) => b.wpm - a.wpm)?.[0];
+      return {
+        mode2: it,
+        pb: best,
+      };
+    }),
   );
 
   return (

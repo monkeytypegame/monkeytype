@@ -217,13 +217,15 @@ function AvatarAndName(props: {
       />
 
       <div class="flex h-full flex-col gap-1 text-xs [&>div]:w-fit">
-        <AutoShrink class="flex text-text [&>div]:px-1 [&>div>i]:text-sub">
+        <AutoShrink class="flex text-text">
           {props.profile.name}
 
-          <UserFlags
-            {...props.profile}
-            isFriend={isFriend(props.profile.uid)}
-          />
+          <div class="flex flex-row gap-1 text-sub">
+            <UserFlags
+              {...props.profile}
+              isFriend={isFriend(props.profile.uid)}
+            />
+          </div>
         </AutoShrink>
         <UserBadge
           id={props.profile.inventory?.badges.find((it) => it.selected)?.id}

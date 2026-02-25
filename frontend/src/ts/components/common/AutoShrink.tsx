@@ -12,7 +12,7 @@ export function AutoShrink(
   const [ref, el] = useRefWithUtils<HTMLElement>();
 
   createEffect(() => {
-    updateFontSize(el());
+    requestAnimationFrame(() => updateFontSize(el()));
   });
 
   const throttledEvent = throttle(1000, () => {
