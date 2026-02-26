@@ -245,7 +245,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       }
       return false;
     }
-    return;
+    return undefined;
   };
 
   onMount(() => {
