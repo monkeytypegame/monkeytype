@@ -1,4 +1,10 @@
-import { createEffect, JSXElement, onMount } from "solid-js";
+import {
+  splitProps,
+  createEffect,
+  JSXElement,
+  onCleanup,
+  onMount,
+} from "solid-js";
 
 import {
   ValidatedHtmlInputElement,
@@ -16,20 +22,26 @@ export function ValidatedInput<T = string>(
   // Refs are assigned by SolidJS via the ref attribute
   const [inputRef, inputEl] = useRefWithUtils<HTMLInputElement>();
 
+  let validatedInput: ValidatedHtmlInputElement | undefined;
+
   createEffect(() => {
     validatedInput?.setValue(props.value ?? null);
   });
-
-  let validatedInput: ValidatedHtmlInputElement | undefined;
 
   onMount(() => {
     const element = inputEl();
     if (element === undefined) return;
 
-    validatedInput = new ValidatedHtmlInputElement(element, {
-      ...props,
-    });
+    const [_, others] = splitProps(props, ["value", "class", "placeholder"]);
+    validatedInput = new ValidatedHtmlInputElement(
+      element,
+      others as ValidationOptions<T>,
+    );
+
+    validatedInput.setValue(props.value ?? null);
   });
+
+  onCleanup(() => validatedInput?.remove());
   return (
     <input
       ref={inputRef}
