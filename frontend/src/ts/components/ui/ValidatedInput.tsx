@@ -23,8 +23,10 @@ export function ValidatedInput<T = string>(
   let validatedInput: ValidatedHtmlInputElement | undefined;
 
   onMount(() => {
-    // oxlint-disable-next-line typescript/no-non-null-assertion
-    validatedInput = new ValidatedHtmlInputElement(inputEl()!, {
+    const element = inputEl();
+    if (element === undefined) return;
+
+    validatedInput = new ValidatedHtmlInputElement(element, {
       ...props,
     });
   });
