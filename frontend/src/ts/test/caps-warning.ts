@@ -56,7 +56,16 @@ document.addEventListener("keyup", (event) => {
 document.addEventListener("keydown", (event) => {
   if (os === "Mac") {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
-    capsState = isCapsLockOn(event);
+    if (navigator.maxTouchPoints > 1) {
+      // IPad doesn't send caps state on any keypress which isn't Caps Lock,
+      // So only change caps state when Caps Lock is pressed
+      if (event.key === "CapsLock") {
+        capsState = true;
+      }
+    } else {
+      capsState = isCapsLockOn(event);
+    }
+
     updateCapsWarningVisibility();
   } else if (os === "Linux") {
     /* Linux sends the correct state before Caps Lock is toggled only on keydown,
