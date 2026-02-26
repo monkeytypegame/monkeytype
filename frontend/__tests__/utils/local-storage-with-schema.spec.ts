@@ -95,11 +95,12 @@ describe("local-storage-with-schema.ts", () => {
       });
 
       it("should not set if value has not changed", () => {
-        getItemMock.mockReturnValue(JSON.stringify(defaultObject));
+        ls.set(defaultObject);
+        setItemMock.mockReset();
 
         ls.set(defaultObject);
 
-        expect(setItemMock).not.toHaveBeenCalledOnce();
+        expect(setItemMock).not.toHaveBeenCalled();
       });
     });
 

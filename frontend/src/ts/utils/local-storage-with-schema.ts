@@ -92,9 +92,9 @@ export class LocalStorageWithSchema<T> {
       console.debug(`LS ${this.key} Parsing to set in localStorage`);
       const parsed = this.schema.parse(data);
       const newValue = JSON.stringify(parsed);
-      if (newValue !== window.localStorage.getItem(this.key)) {
+      if (newValue !== JSON.stringify(this.cache)) {
         console.debug(`LS ${this.key} Setting in localStorage`);
-        window.localStorage.setItem(this.key, JSON.stringify(parsed));
+        window.localStorage.setItem(this.key, newValue);
         this.cache = parsed;
       }
       return true;
