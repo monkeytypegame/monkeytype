@@ -383,10 +383,12 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           }
         }
 
-        if (props.multiple) {
-          props.onChange(initialValue);
-        } else {
-          props.onChange(initialValue[0]);
+        if (initialValue.length > 0 && props.onChange !== undefined) {
+          if (props.multiple) {
+            props.onChange(initialValue);
+          } else {
+            props.onChange(initialValue[0] ?? "");
+          }
         }
         currentSelected = initialValue;
       }
