@@ -60,7 +60,9 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         ? props.selected
         : [props.selected];
 
-  // oxlint-disable-next-line solid/reactivity seems to work?!
+  // Since currentSelected is a plain let used for comparison (not reactive state), this is intentional.
+  // The value gets manually updated throughout the handlers and effects, so the initial untracked call is fine.
+  // oxlint-disable-next-line solid/reactivity
   let currentSelected: string[] = getSelected();
 
   let lastOptionsReference: typeof props.options | undefined = undefined;
