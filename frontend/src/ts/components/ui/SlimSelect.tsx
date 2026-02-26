@@ -158,7 +158,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   const handleAllSelection = (
     selectedOptions: Option[],
     oldSelectedOptions: Option[],
-  ) => {
+  ): false | undefined => {
     if (!props.settings?.addAllOption || !props.multiple || !slimSelect) return;
 
     const includesAllNow = selectedOptions.some((o) => o.value === "all");
@@ -247,7 +247,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       }
       return false;
     }
-    return undefined;
+    return;
   };
 
   onMount(() => {
