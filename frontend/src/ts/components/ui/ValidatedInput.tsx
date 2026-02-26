@@ -17,6 +17,7 @@ export function ValidatedInput<T = string>(
     value?: string;
     placeholder?: string;
     class?: string;
+    onInput?: (value: T) => void;
   },
 ): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -49,6 +50,7 @@ export function ValidatedInput<T = string>(
       class={props.class}
       placeholder={props.placeholder}
       value={props.value ?? ""}
+      onInput={(e) => props.onInput?.(e.target.value as T)}
     />
   );
 }
