@@ -16,11 +16,11 @@ export type UseLocalStorageOptions<T extends object> = {
 
 /**
  * SolidJS hook for reactive localStorage with Zod schema validation.
- * Wraps LocalStorageWithSchema in a reactive SolidJS signal.
+ * Wraps LocalStorageWithSchema in a reactive SolidJS store.
  *
  * @example
  * ```tsx
- * const [state, setState] = useLocalStorage({
+ * const [state, setState] = useLocalStorageStore({
  *   key: "myKey",
  *   schema: z.object({value:z.string()}),
  *   fallback: {value:"default"},
@@ -43,14 +43,11 @@ export function useLocalStorageStore<T extends object>(
   });
 
   // Create store with initial value from storage
-  const [value, setValue] = createStore<T>(storage.get());
+  const [value, setValue] = createStore<T>(structuredClone(storage.get()));
 
   // Persist entire store to localStorage whenever it changes
   createEffect(() => {
-    const success = storage.set(value);
-    if (!success) {
-      console.error(`LS ${key} failed to persist store`);
-    }
+    storage.set(value);
   });
 
   // Sync changes across tabs/windows
