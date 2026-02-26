@@ -191,12 +191,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         if (!("value" in item)) continue;
         item.selected = item.value !== "all" && allValuesSet.has(item.value);
       }
-      requestAnimationFrame(() => {
-        if (!slimSelect) return;
-        updateSlimSelectData(slimSelect, data, false);
-        slimSelect.render.renderValues();
-        slimSelect.render.renderOptions(data as Option[]);
-      });
+      updateSlimSelectData(slimSelect, data, true);
       return false;
     }
 
@@ -211,12 +206,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         if (!("value" in item)) continue;
         item.selected = newSelectionSet.has(item.value);
       }
-      requestAnimationFrame(() => {
-        if (!slimSelect) return;
-        updateSlimSelectData(slimSelect, data, false);
-        slimSelect.render.renderValues();
-        slimSelect.render.renderOptions(data as Option[]);
-      });
+      updateSlimSelectData(slimSelect, data, true);
 
       if (
         props.onChange &&
@@ -234,12 +224,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         if (!("value" in item)) continue;
         item.selected = false;
       }
-      requestAnimationFrame(() => {
-        if (!slimSelect) return;
-        updateSlimSelectData(slimSelect, data, false);
-        slimSelect.render.renderValues();
-        slimSelect.render.renderOptions(data as Option[]);
-      });
+      updateSlimSelectData(slimSelect, data, true);
 
       if (props.onChange && currentSelected.length > 0) {
         props.onChange([]);
@@ -425,28 +410,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           options.every((opt) => selectedSet.has(opt.value));
 
         if (allAreSelected) {
-          const storeData = slimSelect.store.getData();
-          const optionValuesSet = new Set(options.map((opt) => opt.value));
-
-          // First pass: show only "all"
-          for (const item of storeData) {
-            if (!("value" in item)) continue;
-            item.selected = item.value === "all";
-          }
-          slimSelect.store.setData(storeData as Option[]);
-          slimSelect.render.renderValues();
-
-          // Second pass: mark all items selected
-          for (const item of storeData) {
-            if (!("value" in item)) continue;
-            item.selected =
-              item.value === "all" || optionValuesSet.has(item.value);
-          }
-          requestAnimationFrame(() => {
-            if (!slimSelect) return;
-            slimSelect.store.setData(storeData as Option[]);
-            slimSelect.render.renderOptions(storeData as Option[]);
-          });
+          renderAllState(slimSelect.store.getData());
           return;
         }
       }
@@ -478,27 +442,8 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           (selected?.length ?? 0) === allPossibleValues.length;
 
         if (allAreSelected) {
-          const optionValuesSet = new Set(allPossibleValues);
-          // First pass: show only "all"
-          for (const item of storeData) {
-            if (!("value" in item)) continue;
-            item.selected = item.value === "all";
-          }
-          slimSelect.store.setData(storeData as Option[]);
-          slimSelect.render.renderValues();
-
-          // Second pass: mark all items selected
-          for (const item of storeData) {
-            if (!("value" in item)) continue;
-            item.selected =
-              item.value === "all" || optionValuesSet.has(item.value);
-          }
-          requestAnimationFrame(() => {
-            if (!slimSelect) return;
-            slimSelect.store.setData(storeData as Option[]);
-            slimSelect.render.renderOptions(storeData as Option[]);
-            lastOptionsReference = options;
-          });
+          renderAllState(storeData);
+          lastOptionsReference = options;
           return;
         }
       }
