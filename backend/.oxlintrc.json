@@ -1,7 +1,8 @@
 {
   "ignorePatterns": ["node_modules", "__migration__", "dist", ".turbo"],
   "extends": [
-    "../packages/oxlint-config/index.jsonc"
+    "../packages/oxlint-config/index.jsonc",
+    "../packages/oxlint-config/plugin.jsonc"
     // "@monkeytype/oxlint-config"
   ],
   "overrides": [

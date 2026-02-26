@@ -320,11 +320,8 @@ export function areCharactersVisuallyEqual(
 }
 
 export function toHex(buffer: ArrayBuffer): string {
-  // @ts-expect-error modern browsers
   if (Uint8Array.prototype.toHex !== undefined) {
-    // @ts-expect-error modern browsers
-    // oxlint-disable-next-line no-unsafe-call
-    return new Uint8Array(buffer).toHex() as string;
+    return new Uint8Array(buffer).toHex();
   }
   const hashArray = Array.from(new Uint8Array(buffer));
   const hashHex = hashArray
