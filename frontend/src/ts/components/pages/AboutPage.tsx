@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
 import { queryClient } from "../../queries";
 import {
@@ -17,7 +17,6 @@ import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
-import SlimSelect from "../ui/SlimSelect";
 
 qsr("nav .view-about").on("mouseenter", () => {
   prefetch();
@@ -46,28 +45,9 @@ export function AboutPage(): JSXElement {
     enabled: isOpen(),
   }));
 
-  const [getSingle, setSingle] = createSignal("a");
-  const [getMulti, setMulti] = createSignal(["a", "b"]);
-
   return (
     <div class="content-grid grid gap-8">
       <section class="text-center text-sub">
-        <SlimSelect
-          values={["a", "b", "c"]}
-          selected={getSingle()}
-          onChange={setSingle}
-        />
-        <SlimSelect
-          multiple
-          values={["a", "b", "c"]}
-          selected={getMulti()}
-          onChange={setMulti}
-          settings={{
-            allowDeselect: true,
-            addAllOption: true,
-            scrollToTop: true,
-          }}
-        />
         Created with love by Miodec.
         <br />
         <a href="#supporters_title">Supported</a> and{" "}
