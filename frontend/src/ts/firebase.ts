@@ -86,6 +86,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     console.error("Firebase failed to initialize", e);
     setUserId(null);
     await callback(false, null);
+    setUserId(null);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
