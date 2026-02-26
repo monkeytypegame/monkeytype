@@ -156,13 +156,21 @@ export function AboutPage(): JSXElement {
                       animation: { duration: 250 },
                       intersect: false,
                       mode: "index",
+                      callbacks: {
+                        afterLabel: (context) => {
+                          return (
+                            (context.raw as { topPercentage?: string })
+                              .topPercentage ?? ""
+                          );
+                        },
+                      },
                     },
                   },
                 }}
               />
               <div class="text-right text-xs text-sub">
-                distribution of {numberOfHistogramRecords(data?.data)} time 60
-                leaderboard results (wpm)
+                distribution of time 60 leaderboard results (wpm) <br />
+                {numberOfHistogramRecords(data?.data)} total results
               </div>
             </>
           )}
