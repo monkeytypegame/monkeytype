@@ -4,12 +4,7 @@ import SlimSelectCore, { Config } from "slim-select";
 import { Optgroup, Option } from "slim-select/store";
 import { onMount, onCleanup, createEffect, createSignal } from "solid-js";
 
-// Helper: Check if two arrays have the same elements (unordered)
-function arraysEqual(a: string[], b: string[]): boolean {
-  if (a.length !== b.length) return false;
-  const setA = new Set(a);
-  return b.every((item) => setA.has(item));
-}
+import { areUnsortedArraysEqual } from "../../utils/arrays";
 
 // Helper: Update SlimSelect data and trigger renders
 function updateSlimSelectData(
@@ -177,7 +172,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     // Case 1: User clicked "all" option
     if (includesAllNow && !includedAllBefore) {
       renderAllState(data);
-      if (props.onChange && !arraysEqual(allValues, currentSelected)) {
+      if (
+        props.onChange &&
+        !areUnsortedArraysEqual(allValues, currentSelected)
+      ) {
         props.onChange(allValues);
         currentSelected = allValues;
       }
@@ -218,7 +216,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         slimSelect.render.renderOptions(data as Option[]);
       });
 
-      if (props.onChange && !arraysEqual(newSelection, currentSelected)) {
+      if (
+        props.onChange &&
+        !areUnsortedArraysEqual(newSelection, currentSelected)
+      ) {
         props.onChange(newSelection);
         currentSelected = newSelection;
       }
@@ -292,7 +293,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             "label" in item ? item.options : [item],
           );
 
-          const valueChanged = !arraysEqual(newValue, currentSelected);
+          const valueChanged = !areUnsortedArraysEqual(
+            newValue,
+            currentSelected,
+          );
 
           const currentValueExists =
             currentSelected.length > 0 &&
