@@ -9,7 +9,7 @@ import { onDOMReady, qs, qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
-import { ValidatedInput } from "../../common/ValidatedInput";
+import { ValidatedInput } from "../../ui/ValidatedInput";
 const [getName, setName] = createSignal<string | undefined>(undefined);
 
 export function ProfileSearchPage(): JSXElement {
