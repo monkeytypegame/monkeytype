@@ -316,7 +316,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             if (props.multiple) {
               props.onChange(newValue);
             } else {
-              props.onChange(newValue[0]);
+              props.onChange(newValue[0] ?? "");
             }
 
             currentSelected = newValue;
