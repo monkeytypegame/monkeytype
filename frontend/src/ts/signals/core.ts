@@ -1,4 +1,4 @@
-import { createMemo, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { PageName } from "../pages/page";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
@@ -32,5 +32,5 @@ export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
 const [userId, setUserId] = createSignal<string | null>(null);
 export { setUserId };
-export const getUserId = createMemo(() => userId());
-export const isLoggedIn = createMemo(() => getUserId() !== null);
+export const getUserId = () => userId();
+export const isLoggedIn = () => getUserId() !== null;
