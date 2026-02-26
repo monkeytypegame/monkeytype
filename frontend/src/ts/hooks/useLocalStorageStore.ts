@@ -2,7 +2,7 @@ import { createEffect } from "solid-js";
 import { createStore, reconcile, SetStoreFunction } from "solid-js/store";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-export type UseLocalStorageOptions<T extends object> = {
+export type UseLocalStorageStoreOptions<T extends object> = {
   key: LocalStorageWithSchema<T>["key"];
   schema: LocalStorageWithSchema<T>["schema"];
   fallback: LocalStorageWithSchema<T>["fallback"];
@@ -30,7 +30,7 @@ export type UseLocalStorageOptions<T extends object> = {
  * ```
  */
 export function useLocalStorageStore<T extends object>(
-  options: UseLocalStorageOptions<T>,
+  options: UseLocalStorageStoreOptions<T>,
 ): [T, SetStoreFunction<T>] {
   const { key, schema, fallback, migrate, syncAcrossTabs = true } = options;
 
