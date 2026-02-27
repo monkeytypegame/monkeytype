@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Accessor, Setter } from "solid-js";
+import { createSignal, Accessor, Setter, onCleanup } from "solid-js";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 export type UseLocalStorageOptions<T> = {
@@ -60,26 +60,21 @@ export function useLocalStorage<T>(
 
   // Sync changes across tabs/windows
   if (syncAcrossTabs) {
-    createEffect(() => {
-      const handleStorageChange = (e: StorageEvent): void => {
-        if (e.key === key && e.newValue !== null) {
-          console.debug(`LS ${key} Storage event detected from another tab`);
-          try {
-            const parsed = schema.parse(JSON.parse(e.newValue));
-            setValueInternal(() => parsed);
-          } catch (error) {
-            console.error(
-              `LS ${key} Failed to parse storage event value`,
-              error,
-            );
-          }
+    const handleStorageChange = (e: StorageEvent): void => {
+      if (e.key === key && e.newValue !== null) {
+        console.debug(`LS ${key} Storage event detected from another tab`);
+        try {
+          const parsed = schema.parse(JSON.parse(e.newValue));
+          setValueInternal(() => parsed);
+        } catch (error) {
+          console.error(`LS ${key} Failed to parse storage event value`, error);
         }
-      };
+      }
+    };
 
-      window.addEventListener("storage", handleStorageChange);
-      return () => {
-        window.removeEventListener("storage", handleStorageChange);
-      };
+    window.addEventListener("storage", handleStorageChange);
+    onCleanup(() => {
+      window.removeEventListener("storage", handleStorageChange);
     });
   }
 

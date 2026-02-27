@@ -1,8 +1,8 @@
-import { createEffect } from "solid-js";
+import { createEffect, onCleanup } from "solid-js";
 import { createStore, reconcile, SetStoreFunction } from "solid-js/store";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-export type UseLocalStorageOptions<T extends object> = {
+export type UseLocalStorageStoreOptions<T extends object> = {
   key: LocalStorageWithSchema<T>["key"];
   schema: LocalStorageWithSchema<T>["schema"];
   fallback: LocalStorageWithSchema<T>["fallback"];
@@ -16,11 +16,11 @@ export type UseLocalStorageOptions<T extends object> = {
 
 /**
  * SolidJS hook for reactive localStorage with Zod schema validation.
- * Wraps LocalStorageWithSchema in a reactive SolidJS signal.
+ * Wraps LocalStorageWithSchema in a reactive SolidJS store.
  *
  * @example
  * ```tsx
- * const [state, setState] = useLocalStorage({
+ * const [state, setState] = useLocalStorageStore({
  *   key: "myKey",
  *   schema: z.object({value:z.string()}),
  *   fallback: {value:"default"},
@@ -30,7 +30,7 @@ export type UseLocalStorageOptions<T extends object> = {
  * ```
  */
 export function useLocalStorageStore<T extends object>(
-  options: UseLocalStorageOptions<T>,
+  options: UseLocalStorageStoreOptions<T>,
 ): [T, SetStoreFunction<T>] {
   const { key, schema, fallback, migrate, syncAcrossTabs = true } = options;
 
@@ -43,38 +43,37 @@ export function useLocalStorageStore<T extends object>(
   });
 
   // Create store with initial value from storage
-  const [value, setValue] = createStore<T>(storage.get());
+  const [value, setValue] = createStore<T>(structuredClone(storage.get()));
+
+  // Guard to prevent redundant persist during cross-tab sync
+  let isSyncing = false;
 
   // Persist entire store to localStorage whenever it changes
   createEffect(() => {
-    const success = storage.set(value);
-    if (!success) {
-      console.error(`LS ${key} failed to persist store`);
+    if (!isSyncing) {
+      storage.set(value);
     }
   });
 
   // Sync changes across tabs/windows
   if (syncAcrossTabs) {
-    createEffect(() => {
-      const handleStorageChange = (e: StorageEvent): void => {
-        if (e.key === key && e.newValue !== null) {
-          console.debug(`LS ${key} Storage event detected from another tab`);
-          try {
-            const parsed = schema.parse(JSON.parse(e.newValue));
-            setValue(reconcile(parsed));
-          } catch (error) {
-            console.error(
-              `LS ${key} Failed to parse storage event value`,
-              error,
-            );
-          }
+    const handleStorageChange = (e: StorageEvent): void => {
+      if (e.key === key && e.newValue !== null) {
+        console.debug(`LS ${key} Storage event detected from another tab`);
+        try {
+          const parsed = schema.parse(JSON.parse(e.newValue));
+          isSyncing = true;
+          setValue(reconcile(parsed));
+          isSyncing = false;
+        } catch (error) {
+          console.error(`LS ${key} Failed to parse storage event value`, error);
         }
-      };
+      }
+    };
 
-      window.addEventListener("storage", handleStorageChange);
-      return () => {
-        window.removeEventListener("storage", handleStorageChange);
-      };
+    window.addEventListener("storage", handleStorageChange);
+    onCleanup(() => {
+      window.removeEventListener("storage", handleStorageChange);
     });
   }
 
