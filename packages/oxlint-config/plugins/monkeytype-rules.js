@@ -21,7 +21,7 @@ const plugin = {
     }),
     "prefer-arrow-in-component": defineRule({
       meta: {
-        fixable: "code",
+        hasSuggestions: true,
       },
       createOnce(context) {
         const isPascalCase = (name) => /^[A-Z][a-zA-Z0-9]*$/.test(name);
@@ -59,26 +59,31 @@ const plugin = {
               const fnName = node.id.name;
               context.report({
                 node,
-                message: `Use \`const ${fnName} = ...\` arrow function instead of function declaration inside a SolidJS component.`,
-                fix(fixer) {
-                  const fullText = context.sourceCode.getText(node);
-                  const nodeStart = node.range?.[0] ?? node.start;
-                  const afterName =
-                    (node.id.range?.[1] ?? node.id.end) - nodeStart;
-                  const bodyStart =
-                    (node.body.range?.[0] ?? node.body.start) - nodeStart;
+                message: `\`${fnName}\` should be a const arrow function`,
+                suggest: [
+                  {
+                    desc: `Convert to const arrow function (note: removes hoisting)`,
+                    fix(fixer) {
+                      const fullText = context.sourceCode.getText(node);
+                      const nodeStart = node.range?.[0] ?? node.start;
+                      const afterName =
+                        (node.id.range?.[1] ?? node.id.end) - nodeStart;
+                      const bodyStart =
+                        (node.body.range?.[0] ?? node.body.start) - nodeStart;
 
-                  const paramsAndReturn = fullText
-                    .slice(afterName, bodyStart)
-                    .trimEnd();
-                  const body = fullText.slice(bodyStart);
-                  const asyncPrefix = node.async ? "async " : "";
+                      const paramsAndReturn = fullText
+                        .slice(afterName, bodyStart)
+                        .trimEnd();
+                      const body = fullText.slice(bodyStart);
+                      const asyncPrefix = node.async ? "async " : "";
 
-                  return fixer.replaceText(
-                    node,
-                    `const ${fnName} = ${asyncPrefix}${paramsAndReturn} => ${body}`,
-                  );
-                },
+                      return fixer.replaceText(
+                        node,
+                        `const ${fnName} = ${asyncPrefix}${paramsAndReturn} => ${body}`,
+                      );
+                    },
+                  },
+                ],
               });
             }
           },
