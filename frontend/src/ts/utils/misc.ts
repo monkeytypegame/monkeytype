@@ -706,15 +706,15 @@ export function triggerResize(): void {
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
   Required<Pick<T, K>>;
 
-//function isPlatform(searchTerm: string | RegExp): boolean {
-// oxlint-disable-next-line no-deprecated
-//const platform = navigator.platform;
-//if (typeof searchTerm === "string") {
-//return platform.includes(searchTerm);
-//} else {
-//return searchTerm.test(platform);
-//}
-//}
+function isPlatform(searchTerm: string | RegExp): boolean {
+  //oxlint-disable-next-line no-deprecated
+  const platform = navigator.platform;
+  if (typeof searchTerm === "string") {
+    return platform.includes(searchTerm);
+  } else {
+    return searchTerm.test(platform);
+  }
+}
 
 //function isWindows(): boolean {
 //return isPlatform("Win");
@@ -728,9 +728,9 @@ export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
 //return isPlatform("Mac");
 //}
 
-//function isMacLike(): boolean {
-//return isPlatform(/Mac|iPod|iPhone|iPad/);
-//}
+export function isMacLike(): boolean {
+  return isPlatform(/Mac|iPod|iPhone|iPad/);
+}
 
 export function scrollToCenterOrTop(el: HTMLElement | null): void {
   if (!el) return;
