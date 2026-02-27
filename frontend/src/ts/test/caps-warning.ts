@@ -42,12 +42,18 @@ document.addEventListener("keyup", (event) => {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
     if (event.key === "CapsLock") {
       capsState = false;
+    } else {
+      // IPad doesn't send caps state on any keypress which isn't Caps Lock,
+      // So don't update caps state on any keypress which isn't Caps Lock.
+      if (navigator.maxTouchPoints <= 1) {
+        capsState = isCapsLockOn(event);
+      }
     }
   } else if (os === "Windows") {
-    // Windows always sends the correct state on keyup (for Caps Lock and for regular keys)
+    // Windows always sends the correct state on keyup (for Caps Lock and for regular keys).
     capsState = isCapsLockOn(event);
   } else if (event.key !== "CapsLock") {
-    // Linux sends the correct state on keyup if key isn't Caps Lock
+    // Linux sends the correct state on keyup if key isn't Caps Lock.
     capsState = isCapsLockOn(event);
   }
   updateCapsWarningVisibility();
@@ -56,20 +62,13 @@ document.addEventListener("keyup", (event) => {
 document.addEventListener("keydown", (event) => {
   if (os === "Mac") {
     // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
-    if (navigator.maxTouchPoints > 1) {
-      // IPad doesn't send caps state on any keypress which isn't Caps Lock,
-      // So only change caps state when Caps Lock is pressed
-      if (event.key === "CapsLock") {
-        capsState = true;
-      }
-    } else {
-      capsState = isCapsLockOn(event);
+    if (event.key === "CapsLock") {
+      capsState = true;
+      updateCapsWarningVisibility();
     }
-
-    updateCapsWarningVisibility();
   } else if (os === "Linux") {
     /* Linux sends the correct state before Caps Lock is toggled only on keydown,
-     * so we invert the modifier state
+     * so we invert the modifier state.
      */
     if (event.key === "CapsLock") {
       capsState = !isCapsLockOn(event);
