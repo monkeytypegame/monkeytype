@@ -1,11 +1,10 @@
+import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
-import { getSnapshot } from "../db";
-import { queryClient } from "../queries";
-import { baseKey } from "../queries/utils/keys";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
-import { addToGlobal } from "../utils/misc";
+import { queryClient } from "../queries";
+import { baseKey } from "../queries/utils/keys";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
@@ -19,17 +18,8 @@ export const resultFilterPresetsCollection = createCollection(
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      const fromSnapshot = getSnapshot()?.filterPresets;
-      if (fromSnapshot !== undefined) return fromSnapshot;
-
-      const response = await Ape.users.get();
-      if (response.status !== 200) {
-        throw new Error(
-          `Failed to load result filter presets: ${response.body.message}`,
-        );
-      }
-
-      return response.body.data.resultFilterPresets ?? [];
+      //return emtpy array. We load the user with the snapshot and fill the collection from there
+      return [] as ResultFilters[];
     },
     onInsert: async ({ transaction }) => {
       const newItems = transaction.mutations.map((m) => m.modified);
@@ -38,6 +28,10 @@ export const resultFilterPresetsCollection = createCollection(
         newItems.map(async (it) => {
           const response = await Ape.users.addResultFilterPreset({ body: it });
           if (response.status !== 200) {
+            Notifications.add(
+              `Failed to insert result filter presets: ${response.body.message}`,
+              -1,
+            );
             throw new Error(
               `Failed to insert result filter presets: ${response.body.message}`,
             );
@@ -63,11 +57,11 @@ export const resultFilterPresetsCollection = createCollection(
           });
           if (response.status !== 200) {
             Notifications.add(
-              "Error deleting filter preset: " + response.body.message,
+              `Failed to delete result filter presets: ${response.body.message}`,
               -1,
             );
             throw new Error(
-              "Error deleting filter preset: " + response.body.message,
+              `Failed to delete result filter presets: ${response.body.message}`,
             );
           }
         }),
@@ -83,5 +77,3 @@ export const resultFilterPresetsCollection = createCollection(
     },
   }),
 );
-
-addToGlobal({ rc: resultFilterPresetsCollection });

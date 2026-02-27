@@ -34,6 +34,7 @@ import {
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { insertLocalResult } from "./collections/results";
+import { resultFilterPresetsCollection } from "./collections/result-filter-presets";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -167,7 +168,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
-    snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium ?? false;
     snap.allTimeLbs = userData.allTimeLbs;
 
@@ -246,6 +246,16 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     }
 
     snap.connections = convertConnections(connectionsData);
+
+    if (userData.resultFilterPresets !== undefined) {
+      void resultFilterPresetsCollection.stateWhenReady().then(() => {
+        resultFilterPresetsCollection.utils.writeBatch(() => {
+          (userData.resultFilterPresets ?? []).forEach((it) =>
+            resultFilterPresetsCollection.utils.writeInsert(it),
+          );
+        });
+      });
+    }
 
     dbSnapshot = snap;
     return dbSnapshot;

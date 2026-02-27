@@ -77,7 +77,7 @@ export type Snapshot = Omit<
   inboxUnreadSize: number;
   streak: number;
   maxStreak: number;
-  filterPresets: ResultFilters[];
+  filterPresets: ResultFilters[]; //TODO remove
   isPremium: boolean;
   streakHourOffset?: number;
   tags: SnapshotUserTag[];
