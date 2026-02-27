@@ -17,12 +17,6 @@ import { Dynamic } from "solid-js/web";
 import { applyReducedMotion } from "../../../utils/misc";
 import { AnimePresenceContext } from "./AnimePresence";
 
-export type AnimePresenceAPI = {
-  exit?: AnimationParams;
-  playExitAnimation: () => Promise<void>;
-  cancelExitAnimation: () => void;
-};
-
 /**
  * Props for the Anime component
  *

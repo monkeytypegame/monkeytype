@@ -1,5 +1,6 @@
 import { resolveFirst } from "@solid-primitives/refs";
 import { createSwitchTransition } from "@solid-primitives/transition-group";
+import { AnimationParams } from "animejs";
 import {
   JSXElement,
   ParentProps,
@@ -12,7 +13,11 @@ import {
   onMount,
 } from "solid-js";
 
-import type { AnimePresenceAPI } from "./Anime";
+export type AnimePresenceAPI = {
+  exit?: AnimationParams;
+  playExitAnimation: () => Promise<void>;
+  cancelExitAnimation: () => void;
+};
 
 export type PresenceContextState = {
   initial: boolean;
