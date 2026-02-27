@@ -1,7 +1,15 @@
-import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
+import { QuoteLength } from "@monkeytype/schemas/configs";
+import {
+  ResultFilters,
+  ResultFiltersGroupItem,
+  ResultFiltersKeys,
+} from "@monkeytype/schemas/users";
 import { createSignal, createMemo, For, JSXElement, Show } from "solid-js";
+import { SetStoreFunction } from "solid-js/store";
 
+import defaultResultFilters from "../../../constants/default-result-filters";
 import { getSnapshot } from "../../../db";
+import { getConfig } from "../../../signals/config";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import {
   getLanguageDisplayString,
@@ -17,21 +25,29 @@ const placeholder = (): void => {
 
 export function Filters(props: {
   filters: ResultFilters;
-  onChangeFilter: (
-    id: ResultFiltersKeys,
-    value: Record<string, boolean>,
-  ) => void;
-  onResetFilter: () => void;
-  onClearFilter: () => void;
+  onChangeFilters: SetStoreFunction<ResultFilters>;
 }): JSXElement {
   const [isShowAdvanced, setShowAdvanced] = createSignal(true);
+
+  const setFilter = (
+    key: ResultFiltersKeys,
+    value: Record<string, boolean>,
+  ) => {
+    props.onChangeFilters(key, value);
+  };
 
   return (
     <>
       <H3 fa={{ icon: "fa-filter" }} text="filters" />
       <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
-        <Button text="all" onClick={() => props.onResetFilter()} />
-        <Button text="current settings" onClick={placeholder} />
+        <Button
+          text="all"
+          onClick={() => props.onChangeFilters(defaultResultFilters)}
+        />
+        <Button
+          text="current settings"
+          onClick={() => props.onChangeFilters(fromCurrentSettings())}
+        />
         <Button
           text="advanced"
           active={isShowAdvanced()}
@@ -56,7 +72,7 @@ export function Filters(props: {
 
         <Button
           text="clear filters"
-          onClick={props.onClearFilter}
+          onClick={() => props.onChangeFilters(noFilters())}
           class="mb-4 w-full"
         />
         <div class="gap-4 md:grid md:grid-cols-2 [&>div]:last:col-span-2">
@@ -142,7 +158,7 @@ export function Filters(props: {
             scrollToTop: true,
           }}
           onChange={(selectedValues) => {
-            props.onChangeFilter(
+            setFilter(
               options.group,
               Object.fromEntries(
                 Object.entries(props.filters[options.group]).map(([k]) => [
@@ -203,9 +219,9 @@ export function Filters(props: {
                         key === item.id,
                       ]),
                     );
-                    props.onChangeFilter(options.group, newValue);
+                    setFilter(options.group, newValue);
                   } else {
-                    props.onChangeFilter(options.group, {
+                    setFilter(options.group, {
                       ...(props.filters[options.group] as Record<
                         string,
                         boolean
@@ -222,4 +238,91 @@ export function Filters(props: {
       </div>
     );
   }
+}
+
+function noFilters(): ResultFilters {
+  const filters = structuredClone(defaultResultFilters);
+  Object.entries(filters)
+    .filter(([key, value]) => key !== "date" && typeof value === "object")
+    .map(([_, value]) => value as Record<string, boolean>)
+    .forEach((group) =>
+      Object.keys(group).forEach((it) => (group[it] = false)),
+    );
+
+  return filters;
+}
+
+function fromCurrentSettings(): ResultFilters {
+  const filters = noFilters();
+
+  filters.pb.no = true;
+  filters.pb.yes = true;
+
+  filters.difficulty[getConfig.difficulty] = true;
+  filters.mode[getConfig.mode] = true;
+  if (getConfig.mode === "time") {
+    if ([15, 30, 60, 120].includes(getConfig.time)) {
+      const configTime = `${getConfig.time}` as keyof typeof filters.time;
+      filters.time[configTime] = true;
+    } else {
+      filters.time.custom = true;
+    }
+  } else if (getConfig.mode === "words") {
+    if ([10, 25, 50, 100, 200].includes(getConfig.words)) {
+      const configWords = `${getConfig.words}` as keyof typeof filters.words;
+      filters.words[configWords] = true;
+    } else {
+      filters.words.custom = true;
+    }
+  } else if (getConfig.mode === "quote") {
+    const filterName: ResultFiltersGroupItem<"quoteLength">[] = [
+      "short",
+      "medium",
+      "long",
+      "thicc",
+    ];
+    filterName.forEach((ql, index) => {
+      if (getConfig.quoteLength.includes(index as QuoteLength)) {
+        filters.quoteLength[ql] = true;
+      } else {
+        filters.quoteLength[ql] = false;
+      }
+    });
+  }
+  if (getConfig.punctuation) {
+    filters.punctuation.on = true;
+  } else {
+    filters.punctuation.off = true;
+  }
+  if (getConfig.numbers) {
+    filters.numbers.on = true;
+  } else {
+    filters.numbers.off = true;
+  }
+  if (getConfig.mode === "quote" && /english.*/.test(getConfig.language)) {
+    filters.language["english"] = true;
+  } else {
+    filters.language[getConfig.language] = true;
+  }
+
+  if (getConfig.funbox.length === 0) {
+    filters.funbox["none"] = true;
+  } else {
+    for (const f of getConfig.funbox) {
+      filters.funbox[f] = true;
+    }
+  }
+
+  filters.tags["none"] = true;
+
+  getSnapshot()?.tags?.forEach((tag) => {
+    if (tag.active === true) {
+      filters.tags["none"] = false;
+      filters.tags[tag._id] = true;
+    }
+  });
+
+  filters.date.all = true;
+
+  return filters;
 }

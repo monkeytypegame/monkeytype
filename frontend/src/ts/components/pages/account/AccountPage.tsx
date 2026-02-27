@@ -49,12 +49,7 @@ export function AccountPage(): JSXElement {
 
   return (
     <Show when={isLoggedIn() && isOpen()}>
-      <Filters
-        filters={filters}
-        onChangeFilter={(key, value) => setFilters(key, value)}
-        onResetFilter={() => setFilters(defaultResultFilters)}
-        onClearFilter={() => setFilters(noFilters())}
-      />
+      <Filters filters={filters} onChangeFilters={setFilters} />
 
       <Charts filters={filters} queryState={queryState} />
       <TestStats queryState={queryState} />
@@ -111,16 +106,4 @@ function migrateFilterStorage(unknown: unknown): ResultFilters {
   } catch (e) {
     return defaultResultFilters;
   }
-}
-
-function noFilters(): ResultFilters {
-  const filters = structuredClone(defaultResultFilters);
-  Object.entries(filters)
-    .filter(([key, value]) => key !== "date" && typeof value === "object")
-    .map(([_, value]) => value as Record<string, boolean>)
-    .forEach((group) =>
-      Object.keys(group).forEach((it) => (group[it] = false)),
-    );
-
-  return filters;
 }
