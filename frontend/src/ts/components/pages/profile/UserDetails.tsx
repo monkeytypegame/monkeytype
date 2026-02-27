@@ -35,8 +35,10 @@ export function UserDetails(props: {
 
     const hasSocials = props.profile.details?.socialProfiles !== undefined;
     const hasBioOrKeyboard =
-      props.profile.details?.bio !== undefined ||
-      props.profile.details?.keyboard !== undefined;
+      (props.profile.details?.bio !== undefined &&
+        props.profile.details?.bio !== "") ||
+      (props.profile.details?.keyboard !== undefined &&
+        props.profile.details?.keyboard !== "");
     if (!hasSocials && !hasBioOrKeyboard) return "basic";
     if (hasSocials && !hasBioOrKeyboard) return "hasSocials";
     if (!hasSocials && hasBioOrKeyboard) return "hasBioOrKeyboard";
