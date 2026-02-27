@@ -205,7 +205,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
-  resultSavingEnabled: {
+  resultSaving: {
     subgroup: {
       options: "fromSchema",
       alias: (val) => (val ? "enabled" : "disabled"),

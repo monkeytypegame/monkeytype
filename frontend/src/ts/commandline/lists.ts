@@ -100,7 +100,7 @@ export const commands: CommandsSubgroup = {
 
     //behavior
     ...buildCommands(
-      "resultSavingEnabled",
+      "resultSaving",
       "difficulty",
       "quickRestart",
       "repeatQuotes",

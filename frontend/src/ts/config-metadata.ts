@@ -209,7 +209,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "behavior",
   },
-  resultSavingEnabled: {
+  resultSaving: {
     icon: "fa-save",
     displayString: "result saving",
     changeRequiresRestart: false,
