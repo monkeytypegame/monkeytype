@@ -409,7 +409,7 @@ function Socials(props: {
       ></div>
       <div
         class={cn(
-          "grid h-full place-items-center",
+          "grid h-full md:place-content-center",
           props.variant === "full" && "lg:order-6",
         )}
       >
