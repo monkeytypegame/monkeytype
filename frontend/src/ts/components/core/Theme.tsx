@@ -7,7 +7,6 @@ import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../signals/loader-bar";
 import { getTheme } from "../../signals/theme";
-
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {

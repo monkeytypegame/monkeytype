@@ -56,6 +56,10 @@ export const LanguageGroups: Record<string, Language[]> = {
   marathi: ["marathi"],
   chinese: [
     "chinese_traditional",
+    "chinese_traditional_1k",
+    "chinese_traditional_5k",
+    "chinese_traditional_10k",
+    "chinese_traditional_50k",
     "chinese_simplified",
     "chinese_simplified_1k",
     "chinese_simplified_5k",
