@@ -147,6 +147,7 @@ describe("AsyncContent", () => {
         }));
 
         return (
+          //@ts-expect-error generic children, fine for tests
           <AsyncContent
             query={myQuery}
             errorMessage={options?.errorMessage}
@@ -335,6 +336,7 @@ describe("AsyncContent", () => {
         }));
 
         return (
+          //@ts-expect-error generic children, fine for tests
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
             errorMessage={options?.errorMessage}
