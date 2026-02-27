@@ -1120,7 +1120,7 @@ qs(".pageAccount")?.onChild(
         (it) => it._id === result._id,
       );
       if (dbResult !== undefined) {
-        dbResult["chartData"] = result.chartData;
+        dbResult.chartData = result.chartData;
       }
 
       if (response.body.data.chartData === "toolong") {

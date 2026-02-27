@@ -7,7 +7,6 @@ import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
-
 import { AccountButton } from "./AccountButton";
 
 export function Nav(): JSXElement {
@@ -19,7 +18,10 @@ export function Nav(): JSXElement {
     >
       <Button
         type="text"
-        icon="fas fa-fw fa-keyboard"
+        fa={{
+          icon: "fa-keyboard",
+          fixedWidth: true,
+        }}
         routerLink="/"
         onClick={() => {
           if (getActivePage() === "test") restart();
@@ -27,15 +29,35 @@ export function Nav(): JSXElement {
       />
       <Button
         type="text"
-        icon="fas fa-fw fa-crown"
+        fa={{
+          icon: "fa-crown",
+          fixedWidth: true,
+        }}
         routerLink="/leaderboards"
       />
-      <Button type="text" icon="fas fa-fw fa-info" routerLink="/about" />
-      <Button type="text" icon="fas fa-fw fa-cog" routerLink="/settings" />
+      <Button
+        type="text"
+        fa={{
+          icon: "fa-info",
+          fixedWidth: true,
+        }}
+        routerLink="/about"
+      />
+      <Button
+        type="text"
+        fa={{
+          icon: "fa-cog",
+          fixedWidth: true,
+        }}
+        routerLink="/settings"
+      />
       <div class="grow"></div>
       <Button
         type="text"
-        icon="fas fa-fw fa-bell"
+        fa={{
+          icon: "fa-bell",
+          fixedWidth: true,
+        }}
         onClick={() => {
           void showAlerts();
         }}

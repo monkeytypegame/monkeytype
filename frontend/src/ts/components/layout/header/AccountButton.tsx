@@ -32,7 +32,7 @@ export function AccountButton(): JSXElement {
         then={
           <button
             type="button"
-            class="textButton hover:text-text text-sub hover:[&>.level]:bg-text flex items-center gap-1.5 transition-colors duration-125"
+            class="textButton flex items-center gap-1.5 text-sub transition-colors duration-125 hover:text-text hover:[&>.level]:bg-text"
           >
             {/* <div ref={accountButtonRef}>
               <i class="fas fa-fw fa-user"></i>
@@ -63,13 +63,21 @@ export function AccountButton(): JSXElement {
               </Show>
             </Presence>
             <div class="text-xs">{getAuthenticatedUser()?.name}</div>
-            <div class="level hover:bg-text bg-sub text-bg rounded-half px-[0.5em] py-[0.1em] text-[0.7em] transition-colors duration-125">
+            <div class="level rounded-half bg-sub px-[0.5em] py-[0.1em] text-[0.7em] text-bg transition-colors duration-125 hover:bg-text">
               {getLevelFromTotalXp(getAuthenticatedUser()?.xp ?? 0)}
             </div>
           </button>
         }
         else={
-          <Button type="text" icon="far fa-fw fa-user" routerLink="/login" />
+          <Button
+            type="text"
+            fa={{
+              icon: "fa-user",
+              variant: "regular",
+              fixedWidth: true,
+            }}
+            routerLink="/login"
+          />
         }
       />
     </div>

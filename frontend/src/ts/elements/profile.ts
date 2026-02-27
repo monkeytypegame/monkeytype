@@ -56,21 +56,19 @@ export async function update(
   const avatar = details?.qs(".avatarAndName .avatar");
   avatar?.replaceWith(getAvatarElement(profile, { size: 256 }));
 
+  let badgeMainHtml = "";
+  let badgeRestHtml = "";
   if (profile.inventory?.badges && !banned) {
-    let mainHtml = "";
-    let restHtml = "";
-
     for (const badge of profile.inventory.badges) {
       if (badge.selected === true) {
-        mainHtml = getHTMLById(badge.id);
+        badgeMainHtml = getHTMLById(badge.id);
       } else {
-        restHtml += getHTMLById(badge.id, true);
+        badgeRestHtml += getHTMLById(badge.id, true);
       }
     }
-
-    details?.qs(".badges")?.empty().appendHtml(mainHtml);
-    details?.qs(".allBadges")?.empty().appendHtml(restHtml);
   }
+  details?.qs(".badges")?.empty().appendHtml(badgeMainHtml);
+  details?.qs(".allBadges")?.empty().appendHtml(badgeRestHtml);
 
   details?.qs(".name")?.setText(profile.name);
   details
@@ -272,7 +270,7 @@ export async function update(
 
       //regular expression to get website name from url
       const regex = /^https?:\/\/(?:www\.)?([^/]+)/;
-      const websiteName = website?.match(regex)?.[1] ?? website;
+      const websiteName = regex.exec(website)?.[1] ?? website;
 
       if (website) {
         socialsEl?.appendHtml(

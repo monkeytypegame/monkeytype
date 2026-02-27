@@ -55,6 +55,10 @@ export const LanguageSchema = z.enum(
     "chinese_simplified_10k",
     "chinese_simplified_50k",
     "chinese_traditional",
+    "chinese_traditional_1k",
+    "chinese_traditional_5k",
+    "chinese_traditional_10k",
+    "chinese_traditional_50k",
     "russian",
     "russian_1k",
     "russian_5k",
@@ -430,6 +434,7 @@ export const LanguageSchema = z.enum(
     "code_abap_1k",
     "code_yoptascript",
     "code_cuda",
+    "kinyarwanda",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),

@@ -2,8 +2,8 @@ import { render } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { ScrollToTop } from "../../src/ts/components/layout/footer/ScrollToTop";
-import * as CoreSignals from "../../src/ts/signals/core";
+import { ScrollToTop } from "../../../../src/ts/components/layout/footer/ScrollToTop";
+import * as CoreSignals from "../../../../src/ts/signals/core";
 
 describe("ScrollToTop", () => {
   const getActivePageMock = vi.spyOn(CoreSignals, "getActivePage");
@@ -31,7 +31,7 @@ describe("ScrollToTop", () => {
 
     expect(container).toHaveClass("content-grid", "ScrollToTop");
     expect(button).toHaveClass("breakout");
-    expect(button).toContainHTML(`<i class="fas fa-angle-double-up"></i>`);
+    expect(button.querySelector("i")).toHaveClass("fas", "fa-angle-double-up");
   });
 
   it("renders invisible when scrollY is 0", () => {
