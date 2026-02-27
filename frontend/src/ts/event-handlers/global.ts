@@ -103,6 +103,7 @@ window.onerror = function (message, url, line, column, error): void {
       duration: 5,
       important: true,
     });
+    console.error({ message, url, line, column, error });
   }
 };
 

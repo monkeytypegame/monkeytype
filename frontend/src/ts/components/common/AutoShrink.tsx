@@ -28,6 +28,8 @@ export function AutoShrink(
     const fittedFontSize = (parentWidth / widthAt10) * 10;
     const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
 
+    resizeObserver?.disconnect();
+
     element.style.fontSize = `${finalFontSize}px`;
   };
 

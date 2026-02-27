@@ -10,7 +10,6 @@ import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
-import * as PageProfileSearch from "../components/pages/profile/ProfileSearchPage";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
 import * as PageLeaderboards from "../pages/leaderboards";
@@ -19,7 +18,7 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions, PageProperties } from "../pages/page";
-import { onDOMReady, qsa, qsr } from "../utils/dom";
+import { onDOMReady, qs, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 
 type ChangeOptions = {
@@ -41,7 +40,14 @@ const pages = {
       setSelectedProfileName(options.params?.["uidOrName"]);
     },
   }),
-  profileSearch: PageProfileSearch.page,
+  profileSearch: solidPage("profileSearch", {
+    beforeShow: async () => {
+      setSelectedProfileName(undefined);
+    },
+    afterShow: async () => {
+      qs(".page.pageProfileSearch input")?.focus();
+    },
+  }),
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
@@ -307,6 +313,7 @@ function solidPage(
   props?: {
     path?: string;
     beforeShow?: PageProperties<undefined>["beforeShow"];
+    afterShow?: PageProperties<undefined>["afterShow"];
   },
 ): Page<undefined> {
   const path = props?.path ?? `/${id}`;
@@ -323,5 +330,6 @@ function solidPage(
     afterHide: async () => {
       Skeleton.remove(internalId);
     },
+    afterShow: props?.afterShow,
   });
 }

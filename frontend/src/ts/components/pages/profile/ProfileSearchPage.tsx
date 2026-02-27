@@ -2,11 +2,8 @@ import { UserNameSchema } from "@monkeytype/schemas/users";
 import { createSignal, JSXElement } from "solid-js";
 
 import * as NavigationEvent from "../../../observables/navigation-event";
-import Page from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
-import { onDOMReady, qs, qsr } from "../../../utils/dom";
-import * as Skeleton from "../../../utils/skeleton";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { ValidatedInput } from "../../ui/ValidatedInput";
@@ -69,23 +66,3 @@ export function ProfileSearchPage(): JSXElement {
     </div>
   );
 }
-
-export const page = new Page({
-  id: "profileSearch",
-  element: qsr(".page.pageProfileSearch"),
-  path: "/profile",
-  afterHide: async (): Promise<void> => {
-    Skeleton.remove("pageProfileSearch");
-  },
-  beforeShow: async (): Promise<void> => {
-    Skeleton.append("pageProfileSearch", "main");
-    setName(undefined);
-  },
-  afterShow: async (): Promise<void> => {
-    qs(".page.pageProfileSearch input")?.focus();
-  },
-});
-
-onDOMReady(() => {
-  Skeleton.add("pageProfileSearch");
-});
