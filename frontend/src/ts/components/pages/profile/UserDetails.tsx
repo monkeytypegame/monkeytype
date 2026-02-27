@@ -369,19 +369,19 @@ function TypingStats(props: {
       >
         <div class="flex flex-col">
           <div class="text-em-sm text-sub">tests started</div>
-          <div class="text-em-2xl leading-6">
+          <div class="text-em-2xl leading-8">
             {props.typingStats.startedTests}
           </div>
         </div>
         <div class="flex flex-col">
           <div class="text-em-sm text-sub">tests completed</div>
-          <div class="text-em-2xl leading-6">
+          <div class="text-em-2xl leading-8">
             {props.typingStats.completedTests}
           </div>
         </div>
         <div class="flex flex-col">
           <div class="text-em-sm text-sub">time typing</div>
-          <div class="text-em-2xl leading-6">
+          <div class="text-em-2xl leading-8">
             {secondsToString(
               Math.round(props.typingStats.timeTyping ?? 0),
               true,
