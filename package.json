@@ -14,6 +14,7 @@
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
     "lint-pkg": "turbo run lint --filter=\"./packages/*\"",
+    "lint-fix": "turbo run lint -- --fix",
     "lint-fast": "turbo run lint-fast",
     "lint-fast-be": "turbo run lint-fast --filter @monkeytype/backend",
     "lint-fast-fe": "turbo run lint-fast --filter @monkeytype/frontend",
@@ -47,7 +48,7 @@
     "hotfix-dry": "monkeytype-release --hotfix --dry",
     "format-check": "oxfmt . --check",
     "format-fix": "oxfmt .",
-    "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
+    "lint-json-assets": "turbo lint-json --filter @monkeytype/frontend",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
     "check-assets-languages": "turbo check-assets --filter @monkeytype/frontend  -- languages",
@@ -65,11 +66,11 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxfmt": "0.32.0",
-    "oxlint": "1.47.0",
-    "oxlint-tsgolint": "0.12.2",
+    "oxfmt": "0.35.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.14.2",
     "prettier": "3.7.1",
-    "turbo": "2.5.6",
+    "turbo": "2.7.5",
     "vitest": "4.0.15"
   },
   "lint-staged": {
@@ -81,7 +82,7 @@
     ]
   },
   "engines": {
-    "node": "24.11.0 || 22.21.0"
+    "node": ">=24.0.0 <25"
   },
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@10.28.1"
 }

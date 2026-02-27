@@ -219,7 +219,7 @@ async function filter(language: Language): Promise<string[]> {
 async function apply(set: boolean): Promise<void> {
   const language = modal
     .getModal()
-    .qsr<HTMLSelectElement>(".languageInput")
+    .qsr<HTMLSelectElement>("select.languageInput")
     .getValue() as Language;
   const filteredWords = await filter(language);
 
@@ -271,10 +271,10 @@ async function setup(): Promise<void> {
 
   modalEl.qsr("button.generateButton").on("click", async () => {
     const presetName = modalEl
-      .qsr<HTMLSelectElement>(".presetInput")
+      .qsr<HTMLSelectElement>("select.presetInput")
       .getValue() as string;
     const layoutName = modalEl
-      .qsr<HTMLSelectElement>(".layoutInput")
+      .qsr<HTMLSelectElement>("select.layoutInput")
       .getValue() as string;
 
     const presetToApply = presets[presetName];

@@ -70,7 +70,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     }
   });
 
-  async function showModal(isChained: boolean): Promise<void> {
+  const showModal = async (isChained: boolean): Promise<void> => {
     if (dialogEl() === undefined || modalEl() === undefined) return;
 
     await props.beforeShow?.();
@@ -153,9 +153,9 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           },
         });
     }
-  }
+  };
 
-  async function hideModal(isChained: boolean): Promise<void> {
+  const hideModal = async (isChained: boolean): Promise<void> => {
     // Guard: only hide if visible and not already animating
     if (dialogEl() === undefined || modalEl() === undefined) return;
 
@@ -209,18 +209,18 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         },
       });
     }
-  }
+  };
 
-  async function handleAfterHide(): Promise<void> {
+  const handleAfterHide = async (): Promise<void> => {
     await props.afterHide?.();
     storeHideModal(props.id);
-  }
+  };
 
-  async function handleAfterShow(): Promise<void> {
+  const handleAfterShow = async (): Promise<void> => {
     await props.afterShow?.();
-  }
+  };
 
-  function focusFirstInput(): void {
+  const focusFirstInput = (): void => {
     if (modalEl() === undefined || dialogEl() === undefined) return;
     if (props.focusFirstInput === undefined) return;
 
@@ -233,7 +233,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         input.select();
       }
     }
-  }
+  };
 
   const handleKeyDown = (e: KeyboardEvent): void => {
     if (e.key === "Escape" && visibility()) {

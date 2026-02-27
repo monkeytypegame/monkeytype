@@ -1,7 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
-
 import { Fa, FaProps } from "./Fa";
 
 export function H2(props: {
@@ -26,6 +25,7 @@ export function H2(props: {
   );
 }
 
+// oxlint-disable-next-line monkeytype-rules/one-component-per-file
 export function H3(props: {
   id?: string;
   class?: string;
