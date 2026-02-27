@@ -28,7 +28,7 @@ button.text.active,
   color: var(--main-color);
 }
 
-button:hover,
+button:not(.textButton):hover,
 .button:hover,
 input[type="button"]:hover,
 input[type="reset"]:hover,

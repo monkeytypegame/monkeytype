@@ -11,6 +11,7 @@ import {
 } from "../../../stores/banners";
 import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
+import { Fa } from "../../common/Fa";
 
 function Banner(props: BannerType): JSXElement {
   const remove = (): void => {
@@ -26,7 +27,7 @@ function Banner(props: BannerType): JSXElement {
   return (
     <div
       class={cn(
-        "content-grid text-bg [&_a]:text-bg [&_a]:hover:text-text w-full [&_a]:underline",
+        "content-grid w-full text-bg [&_a]:text-bg [&_a]:underline [&_a]:hover:text-text",
         {
           "bg-error": props.level === "error",
           "bg-sub": props.level === "notice",
@@ -60,12 +61,12 @@ function Banner(props: BannerType): JSXElement {
           else={
             <button
               type="button"
-              class="text text-bg hover:text-text -mr-2 self-center"
+              class="text -mr-2 self-center text-bg hover:text-text"
               onClick={() => {
                 remove();
               }}
             >
-              <i class="fas fa-fw fa-times"></i>
+              <Fa icon="fa-times" fixedWidth />
             </button>
           }
         />
@@ -95,7 +96,7 @@ export function Banners(): JSXElement {
   createEffectOn(() => getBanners().length, setGlobalOffsetSignal);
 
   return (
-    <div ref={ref} class="fixed top-0 left-0 z-[1000] w-full">
+    <div ref={ref} class="fixed top-0 left-0 z-1000 w-full">
       <For each={getBanners()}>{(banner) => <Banner {...banner} />}</For>
     </div>
   );
