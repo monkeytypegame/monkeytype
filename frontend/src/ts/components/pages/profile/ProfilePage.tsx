@@ -24,17 +24,15 @@ export function ProfilePage(): JSXElement {
   }));
 
   return (
-    <>
+    <div class="flex h-full items-center justify-center text-lg text-error">
       <AsyncContent query={profileQuery} ignoreError={true}>
         {(profile) => <UserProfile profile={profile} />}
       </AsyncContent>
       <Show when={profileQuery.isError}>
-        <div class="flex h-screen items-center justify-center text-6xl text-error">
-          <Fa icon="fa-times" />
-          &nbsp;User {currentName()} not found
-        </div>
+        <Fa icon="fa-times" />
+        &nbsp;User {currentName()} not found
       </Show>
-    </>
+    </div>
   );
 }
 
