@@ -22,7 +22,7 @@ export function ProfileSearchPage(): JSXElement {
   };
 
   return (
-    <div class="grid min-h-screen place-items-center">
+    <div class="grid min-h-full place-items-center">
       <form
         class="inline-grid w-96 gap-2"
         onSubmit={(e) => {
