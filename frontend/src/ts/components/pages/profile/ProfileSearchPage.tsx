@@ -87,5 +87,5 @@ export const page = new Page({
 });
 
 onDOMReady(() => {
-  Skeleton.save("pageProfileSearch");
+  Skeleton.add("pageProfileSearch");
 });

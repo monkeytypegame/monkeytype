@@ -51,5 +51,5 @@ export const page = new Page({
 });
 
 onDOMReady(() => {
-  Skeleton.save("pageProfile");
+  Skeleton.add("pageProfile");
 });
