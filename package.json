@@ -57,7 +57,7 @@
     "update-oxc": "pnpm up -D -r oxlint@latest oxfmt@latest oxlint-tsgolint@latest"
   },
   "dependencies": {
-    "@leonabcd123/modern-caps-lock": "2.0.0"
+    "@leonabcd123/modern-caps-lock": "2.0.2"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",

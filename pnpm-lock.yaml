@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@leonabcd123/modern-caps-lock':
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: 2.0.2
+        version: 2.0.2
     devDependencies:
       '@commitlint/cli':
         specifier: 17.7.1
@@ -2526,8 +2526,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@leonabcd123/modern-caps-lock@2.0.0':
-    resolution: {integrity: sha512-vFwXLRCZS9AaWRuSrkuvUNYWLe1iLRSpa+QdNZZAC4yR57V44TGBHOtMa+XYVxw3mZ1rmXHOstrWe7YhHDA2cg==}
+  '@leonabcd123/modern-caps-lock@2.0.2':
+    resolution: {integrity: sha512-gpCXtZGlmTn5cN3ILuALInsbVDtwqPZC36RNCzHhP2BFpHGDm+ByFGMscQblnOSGJJbfAoRA3/hFL8P0lDoNeA==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -7403,10 +7403,6 @@ packages:
 
   minimatch@5.1.6:
     resolution: {integrity: sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==}
-    engines: {node: '>=10'}
-
-  minimatch@5.1.9:
-    resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
     engines: {node: '>=10'}
 
   minimatch@6.2.0:
@@ -12524,7 +12520,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@leonabcd123/modern-caps-lock@2.0.0': {}
+  '@leonabcd123/modern-caps-lock@2.0.2': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
@@ -17889,10 +17885,6 @@ snapshots:
       brace-expansion: 1.1.12
 
   minimatch@5.1.6:
-    dependencies:
-      brace-expansion: 2.0.2
-
-  minimatch@5.1.9:
     dependencies:
       brace-expansion: 2.0.2
 
