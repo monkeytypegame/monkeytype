@@ -10,6 +10,27 @@ export function AutoShrink(
 
   let resizeObserver: ResizeObserver | undefined;
 
+  const updateFontSize = (element: HTMLElement) => {
+    const parent = element.parentElement;
+    if (!parent) return;
+
+    const parentWidth = parent.clientWidth;
+    if (parentWidth === 0) return;
+
+    const upperLimit = convertRemToPixels(2);
+
+    // Temporarily set base size for measurement
+    element.style.fontSize = "10px";
+
+    const widthAt10 = element.clientWidth;
+    if (widthAt10 === 0) return;
+
+    const fittedFontSize = (parentWidth / widthAt10) * 10;
+    const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
+
+    element.style.fontSize = `${finalFontSize}px`;
+  };
+
   onMount(() => {
     const element = el()?.native;
     if (!element) return;
@@ -35,25 +56,4 @@ export function AutoShrink(
       {props.children}
     </div>
   );
-
-  function updateFontSize(element: HTMLElement): void {
-    const parent = element.parentElement;
-    if (!parent) return;
-
-    const parentWidth = parent.clientWidth;
-    if (parentWidth === 0) return;
-
-    const upperLimit = convertRemToPixels(2);
-
-    // Temporarily set base size for measurement
-    element.style.fontSize = "10px";
-
-    const widthAt10 = element.clientWidth;
-    if (widthAt10 === 0) return;
-
-    const fittedFontSize = (parentWidth / widthAt10) * 10;
-    const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
-
-    element.style.fontSize = `${finalFontSize}px`;
-  }
 }

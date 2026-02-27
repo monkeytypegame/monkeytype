@@ -198,9 +198,8 @@ function AvatarAndName(props: {
     return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   };
 
-  function formatStreak(length: number): string {
-    return `${length} ${length === 1 ? "day" : "days"}`;
-  }
+  const formatStreak = (length: number) =>
+    `${length} ${length === 1 ? "day" : "days"}`;
 
   return (
     <div
