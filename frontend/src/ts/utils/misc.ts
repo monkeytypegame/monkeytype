@@ -706,44 +706,31 @@ export function triggerResize(): void {
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
   Required<Pick<T, K>>;
 
-function isPlatform(searchTerm: string | RegExp): boolean {
-  // oxlint-disable-next-line no-deprecated
-  const platform = navigator.platform;
-  if (typeof searchTerm === "string") {
-    return platform.includes(searchTerm);
-  } else {
-    return searchTerm.test(platform);
-  }
-}
+//function isPlatform(searchTerm: string | RegExp): boolean {
+// oxlint-disable-next-line no-deprecated
+//const platform = navigator.platform;
+//if (typeof searchTerm === "string") {
+//return platform.includes(searchTerm);
+//} else {
+//return searchTerm.test(platform);
+//}
+//}
 
-function isWindows(): boolean {
-  return isPlatform("Win");
-}
+//function isWindows(): boolean {
+//return isPlatform("Win");
+//}
 
-function isLinux(): boolean {
-  return isPlatform("Linux");
-}
+//function isLinux(): boolean {
+//return isPlatform("Linux");
+//}
 
-function isMac(): boolean {
-  return isPlatform("Mac");
-}
+//function isMac(): boolean {
+//return isPlatform("Mac");
+//}
 
-export function getCurrentOs(): "Mac" | "Linux" | "Windows" | "Unknown" {
-  if (isMac()) {
-    return "Mac";
-  }
-  if (isLinux()) {
-    return "Linux";
-  }
-  if (isWindows()) {
-    return "Windows";
-  }
-  return "Unknown";
-}
-
-export function isMacLike(): boolean {
-  return isPlatform(/Mac|iPod|iPhone|iPad/);
-}
+//function isMacLike(): boolean {
+//return isPlatform(/Mac|iPod|iPhone|iPad/);
+//}
 
 export function scrollToCenterOrTop(el: HTMLElement | null): void {
   if (!el) return;
