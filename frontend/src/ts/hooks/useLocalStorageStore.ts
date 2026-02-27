@@ -1,7 +1,8 @@
-import { createSignal, Accessor, Setter, onCleanup } from "solid-js";
+import { createEffect, onCleanup } from "solid-js";
+import { createStore, reconcile, SetStoreFunction } from "solid-js/store";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-export type UseLocalStorageOptions<T> = {
+export type UseLocalStorageStoreOptions<T extends object> = {
   key: LocalStorageWithSchema<T>["key"];
   schema: LocalStorageWithSchema<T>["schema"];
   fallback: LocalStorageWithSchema<T>["fallback"];
@@ -15,22 +16,22 @@ export type UseLocalStorageOptions<T> = {
 
 /**
  * SolidJS hook for reactive localStorage with Zod schema validation.
- * Wraps LocalStorageWithSchema in a reactive SolidJS signal.
+ * Wraps LocalStorageWithSchema in a reactive SolidJS store.
  *
  * @example
  * ```tsx
- * const [value, setValue] = useLocalStorage({
+ * const [state, setState] = useLocalStorageStore({
  *   key: "myKey",
- *   schema: z.string(),
- *   fallback: "default",
+ *   schema: z.object({value:z.string()}),
+ *   fallback: {value:"default"},
  * });
  *
- * return <div onClick={() => setValue("new value")}>{value()}</div>;
+ * return <div onClick={() => setState("value", "new value")}>{state.value}</div>;
  * ```
  */
-export function useLocalStorage<T>(
-  options: UseLocalStorageOptions<T>,
-): [Accessor<T>, Setter<T>] {
+export function useLocalStorageStore<T extends object>(
+  options: UseLocalStorageStoreOptions<T>,
+): [T, SetStoreFunction<T>] {
   const { key, schema, fallback, migrate, syncAcrossTabs = true } = options;
 
   // Create the underlying localStorage manager
@@ -41,22 +42,18 @@ export function useLocalStorage<T>(
     migrate,
   });
 
-  // Create signal with initial value from storage
-  const [value, setValueInternal] = createSignal<T>(storage.get());
+  // Create store with initial value from storage
+  const [value, setValue] = createStore<T>(structuredClone(storage.get()));
 
-  // Custom setter that syncs to localStorage
-  const setValue = (newValue: T | ((prev: T) => T)): T => {
-    const resolvedValue =
-      typeof newValue === "function"
-        ? (newValue as (prev: T) => T)(value())
-        : newValue;
+  // Guard to prevent redundant persist during cross-tab sync
+  let isSyncing = false;
 
-    const success = storage.set(resolvedValue);
-    if (success) {
-      setValueInternal(() => resolvedValue);
+  // Persist entire store to localStorage whenever it changes
+  createEffect(() => {
+    if (!isSyncing) {
+      storage.set(value);
     }
-    return resolvedValue;
-  };
+  });
 
   // Sync changes across tabs/windows
   if (syncAcrossTabs) {
@@ -65,7 +62,9 @@ export function useLocalStorage<T>(
         console.debug(`LS ${key} Storage event detected from another tab`);
         try {
           const parsed = schema.parse(JSON.parse(e.newValue));
-          setValueInternal(() => parsed);
+          isSyncing = true;
+          setValue(reconcile(parsed));
+          isSyncing = false;
         } catch (error) {
           console.error(`LS ${key} Failed to parse storage event value`, error);
         }
@@ -78,5 +77,5 @@ export function useLocalStorage<T>(
     });
   }
 
-  return [value, setValue as Setter<T>];
+  return [value, setValue];
 }
