@@ -94,7 +94,7 @@ export function ActivityCalendar(props: {
             <div class="year">
               <SlimSelect
                 options={yearOptions()}
-                selected={[selectedYear()]}
+                selected={selectedYear()}
                 settings={{ showSearch: false }}
                 onChange={setSelectedYear}
                 events={{

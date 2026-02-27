@@ -21,7 +21,8 @@ import { AutoShrink } from "../../common/AutoShrink";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
-import { UserBadge, UserFlags } from "../../common/User";
+import { UserBadge } from "../../common/UserBadge";
+import { UserFlags } from "../../common/UserFlags";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
