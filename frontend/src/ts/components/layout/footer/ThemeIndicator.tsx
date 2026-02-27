@@ -42,7 +42,7 @@ export function ThemeIndicator(): JSXElement {
     >
       <div class="relative">
         <Show when={getThemeIndicator().isFavorite}>
-          <div class="bg-bg absolute top-[-0.5em] right-[-0.5em] flex rounded-full p-[0.25em]">
+          <div class="absolute top-[-0.5em] right-[-0.5em] flex rounded-full bg-bg p-[0.25em]">
             <Fa icon="fa-star" size={0.5} />
           </div>
         </Show>

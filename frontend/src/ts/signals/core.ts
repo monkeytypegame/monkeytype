@@ -29,3 +29,6 @@ export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
 export const [getFocus, setFocus] = createSignal(false);
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
+
+export const [getUserId, setUserId] = createSignal<string | null>(null);
+export const isLoggedIn = () => getUserId() !== null;

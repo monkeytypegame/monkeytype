@@ -1,8 +1,7 @@
 import { Configuration } from "@monkeytype/schemas/configuration";
-import Ape from ".";
 import { promiseWithResolvers } from "../utils/misc";
-
-let config: Configuration | undefined = undefined;
+import { queryClient } from "../queries";
+import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
 
 const {
   promise: configurationPromise,
@@ -13,19 +12,16 @@ const {
 export { configurationPromise };
 
 export function get(): Configuration | undefined {
-  return config;
+  return queryClient.getQueryData(
+    getServerConfigurationQueryOptions().queryKey,
+  );
 }
 
 export async function sync(): Promise<void> {
-  const response = await Ape.configuration.get();
-
-  if (response.status !== 200) {
-    const message = `Could not fetch configuration: ${response.body.message}`;
-    console.error(message);
-    reject(message);
-    return;
-  } else {
-    config = response.body.data ?? undefined;
+  try {
+    await queryClient.fetchQuery(getServerConfigurationQueryOptions());
     resolve(true);
+  } catch (e) {
+    reject(e);
   }
 }
