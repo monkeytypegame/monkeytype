@@ -3,25 +3,75 @@ import {
   ResultFilters,
   ResultFiltersGroupItem,
   ResultFiltersKeys,
+  ResultFiltersSchema,
 } from "@monkeytype/schemas/users";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, createMemo, For, JSXElement, Show } from "solid-js";
-import { SetStoreFunction } from "solid-js/store";
+import { SetStoreFunction, unwrap } from "solid-js/store";
+import { z } from "zod";
 
+import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { getSnapshot } from "../../../db";
+import { IsValidResponse } from "../../../elements/input-validation";
 import { getConfig } from "../../../signals/config";
 import { FaSolidIcon } from "../../../types/font-awesome";
+import { SimpleModal } from "../../../utils/simple-modal";
 import {
   getLanguageDisplayString,
+  replaceSpacesWithUnderscores,
   replaceUnderscoresWithSpaces,
 } from "../../../utils/strings";
+import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import SlimSelect from "../../ui/SlimSelect";
 
-const placeholder = (): void => {
-  //
+const presetNameValidation = async (
+  tagName: string,
+): Promise<IsValidResponse> => {
+  const validationResult = ResultFiltersSchema.shape.name.safeParse(
+    replaceSpacesWithUnderscores(tagName),
+  );
+  if (validationResult.success) return true;
+  return validationResult.error.errors.map((err) => err.message).join(", ");
 };
+const newFilterPresetModal = new SimpleModal({
+  id: "newFilterPresetModal",
+  title: "New Filter Preset",
+  inputs: [
+    {
+      placeholder: "Preset Name",
+      type: "text",
+      initVal: "",
+      validation: {
+        schema: z
+          .string()
+          .regex(/^[0-9a-zA-Z\ .-]+$/)
+          .max(16),
+        isValid: presetNameValidation,
+        debounceDelay: 0,
+      },
+    },
+  ],
+  buttonText: "add",
+  onlineOnly: true,
+  execFn: async (thisPopup, name) => {
+    const filters = thisPopup.context as ResultFilters;
+
+    try {
+      const tx = resultFilterPresetsCollection.insert({
+        ...structuredClone(filters),
+        name: replaceSpacesWithUnderscores(name),
+      });
+      await tx.isPersisted.promise;
+      return { status: 1, message: "Filter preset created" };
+    } catch (e) {
+      let message: string = "Error creating filter preset";
+      return { status: -1, message, alwaysHide: true };
+    }
+  },
+});
 
 export function Filters(props: {
   filters: ResultFilters;
@@ -36,8 +86,20 @@ export function Filters(props: {
     props.onChangeFilters(key, value);
   };
 
+  const presetsQuery = useLiveQuery((q) =>
+    q.from({ presets: resultFilterPresetsCollection }),
+  );
+
   return (
     <>
+      <AsyncContent collection={presetsQuery}>
+        {(presets) => (
+          <FilterPresets
+            presets={presets}
+            onChangeFilters={props.onChangeFilters}
+          />
+        )}
+      </AsyncContent>
       <H3 fa={{ icon: "fa-filter" }} text="filters" />
       <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
         <Button
@@ -53,7 +115,14 @@ export function Filters(props: {
           active={isShowAdvanced()}
           onClick={() => setShowAdvanced((old) => !old)}
         />
-        <Button text="save as preset" onClick={placeholder} />
+        <Button
+          text="save as preset"
+          onClick={() =>
+            newFilterPresetModal.show(undefined, {
+              context: { ...unwrap(props.filters), _id: "tmp" },
+            })
+          }
+        />
       </div>
 
       <ButtonGroup
@@ -118,6 +187,36 @@ export function Filters(props: {
       </Show>
     </>
   );
+
+  function FilterPresets(props: {
+    presets: ResultFilters[];
+    onChangeFilters: SetStoreFunction<ResultFilters>;
+  }): JSXElement {
+    return (
+      <Show when={props.presets.length > 0}>
+        <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
+        <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
+          <For each={props.presets}>
+            {(preset) => (
+              <div class="flex w-full flex-row gap-2">
+                <Button
+                  class="w-full"
+                  text={replaceUnderscoresWithSpaces(preset.name)}
+                  onClick={() => props.onChangeFilters(preset)}
+                />
+                <Button
+                  fa={{ icon: "fa-trash", fixedWidth: true }}
+                  onClick={() =>
+                    resultFilterPresetsCollection.delete(preset._id)
+                  }
+                />
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+    );
+  }
   function Dropdown<
     T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],

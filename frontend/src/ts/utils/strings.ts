@@ -366,6 +366,10 @@ export function replaceUnderscoresWithSpaces(text: string): string {
   return text.replace(/_/g, " ");
 }
 
+export function replaceSpacesWithUnderscores(text: string): string {
+  return text.replace(/ /g, "_");
+}
+
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,

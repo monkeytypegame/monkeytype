@@ -182,7 +182,7 @@ export async function insertLocalResult(
   }
 }
 
-export const resultsCollection = createCollection(
+const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
@@ -373,20 +373,3 @@ export const getSingleResultQueryOptions = (_id: string) =>
     },
     staleTime: Infinity,
   });
-
-/*
-const allResultsQuery = createCollection(
-  liveQueryCollectionOptions({
-    query: (q) => q.from({ results: resultsCollection }),
-  }),
-);
-
-export async function downloadResults(): Promise<void> {
-  await allResultsQuery.stateWhenReady();
-  return;
-}
-
-export function getAllResults<M extends Mode>(): SnapshotResult<M>[] {
-  return allResultsQuery.toArray as SnapshotResult<M>[];
-}
-*/
