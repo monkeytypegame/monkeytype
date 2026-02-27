@@ -5,7 +5,7 @@ function canBreak(wordEl: ElementWithUtils): boolean {
   if (Config.typedEffect !== "dots") return false;
   if (wordEl.hasClass("broken-ligatures")) return false;
 
-  return !!wordEl.native.closest(".withLigatures");
+  return wordEl.getParent()?.hasClass("withLigatures") ?? false;
 }
 
 function applyIfNeeded(wordEl: ElementWithUtils): void {
