@@ -3,17 +3,25 @@ import {
   UserProfile,
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
+import {
+  getCurrentDayTimestamp,
+  isToday as dateIsToday,
+  isYesterday as dateIsYesterday,
+} from "@monkeytype/util/date-and-time";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
+import { Snapshot } from "../../../constants/default-snapshot";
 import { isFriend } from "../../../db";
 import * as Notifications from "../../../elements/notifications";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { getUserId, isLoggedIn } from "../../../signals/core";
-import { getSnapshot } from "../../../stores/snapshot";
+import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -59,7 +67,11 @@ export function UserDetails(props: {
             "sm:grid-cols-2 md:grid-cols-[1fr_auto_1fr_auto] lg:grid-cols-[17.5rem_auto_auto_auto_1fr_auto_auto] xl:lg:grid-cols-[17.5rem_auto_1fr_auto_2fr_auto_auto]",
         )}
       >
-        <AvatarAndName profile={props.profile} variant={variant()} />
+        <AvatarAndName
+          profile={props.profile}
+          variant={variant()}
+          isAccountPage={props.isAccountPage}
+        />
         <Show when={variant() === "full" || variant() === "hasBioOrKeyboard"}>
           <BioAndKeyboard details={props.profile.details} variant={variant()} />
         </Show>
@@ -193,6 +205,7 @@ function ActionButtons(props: {
 function AvatarAndName(props: {
   profile: UserProfile;
   variant: Variant;
+  isAccountPage?: true;
 }): JSXElement {
   const accountAgeHint = () => {
     const creationDate = new Date(props.profile.addedAt);
@@ -202,6 +215,50 @@ function AvatarAndName(props: {
 
   const formatStreak = (length: number) =>
     `${length} ${length === 1 ? "day" : "days"}`;
+
+  const extraStreakText = () => {
+    if (!props.isAccountPage) return "";
+    let hoverText = "";
+
+    const lastResult = getLastResult();
+    if (lastResult === undefined) return "";
+
+    const streakOffset = (props.profile as Snapshot).streakHourOffset;
+
+    const dayInMilis = 1000 * 60 * 60 * 24;
+
+    let target = getCurrentDayTimestamp(streakOffset) + dayInMilis;
+    if (target < Date.now()) {
+      target += dayInMilis;
+    }
+    const timeDif = formatDistanceToNowStrict(target);
+
+    if (lastResult !== undefined) {
+      //check if the last result is from today
+      const isToday = dateIsToday(lastResult.timestamp, streakOffset);
+      const isYesterday = dateIsYesterday(lastResult.timestamp, streakOffset);
+
+      const offsetString = isSafeNumber(streakOffset)
+        ? `(${streakOffset > 0 ? "+" : ""}${streakOffset} offset)`
+        : "";
+
+      if (isToday) {
+        hoverText += `\nClaimed today: yes`;
+        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
+      } else if (isYesterday) {
+        hoverText += `\nClaimed today: no`;
+        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      } else {
+        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
+        hoverText += `\nIt will be removed from your profile on the next result save`;
+      }
+
+      if (streakOffset === undefined) {
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
+      }
+    }
+    return hoverText;
+  };
 
   return (
     <div
@@ -242,12 +299,12 @@ function AvatarAndName(props: {
           <span aria-label={accountAgeHint()} data-balloon-pos="up">
             Joined {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}
           </span>
-          <Show when={props.profile.streak ?? 0 > 1}>
+          <Show when={(props.profile.streak ?? 0) > 1}>
             <span
-              aria-label={
-                "Longest streak: " + formatStreak(props.profile.maxStreak)
-              }
+              aria-label={`Longest streak: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
               data-balloon-pos="up"
+              data-balloon-break=""
+              data-balloon-length="large"
             >
               Current streak {formatStreak(props.profile.streak)}
             </span>

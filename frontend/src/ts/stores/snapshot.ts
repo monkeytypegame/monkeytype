@@ -1,5 +1,7 @@
 import { createStore, reconcile } from "solid-js/store";
-import { Snapshot } from "../constants/default-snapshot";
+import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
+import { createSignal } from "solid-js";
+import { Mode } from "@monkeytype/schemas/shared";
 
 const [snapshot, updateSnapshot] = createStore<{
   value: Snapshot | undefined;
@@ -19,3 +21,7 @@ export function setSnapshot(newValue: Snapshot | undefined) {
 export function getSnapshot() {
   return snapshot.value;
 }
+
+export const [getLastResult, setLastResult] = createSignal<
+  SnapshotResult<Mode> | undefined
+>(undefined);
