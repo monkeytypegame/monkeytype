@@ -22,6 +22,7 @@ export function Filters(props: {
     value: Record<string, boolean>,
   ) => void;
   onResetFilter: () => void;
+  onClearFilter: () => void;
 }): JSXElement {
   const [isShowAdvanced, setShowAdvanced] = createSignal(true);
 
@@ -55,7 +56,7 @@ export function Filters(props: {
 
         <Button
           text="clear filters"
-          onClick={placeholder}
+          onClick={props.onClearFilter}
           class="mb-4 w-full"
         />
         <div class="gap-4 md:grid md:grid-cols-2 [&>div]:last:col-span-2">

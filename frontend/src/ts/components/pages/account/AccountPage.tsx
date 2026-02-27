@@ -13,7 +13,6 @@ import { isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
-
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { Table } from "./Table";
@@ -54,6 +53,7 @@ export function AccountPage(): JSXElement {
         filters={filters}
         onChangeFilter={(key, value) => setFilters(key, value)}
         onResetFilter={() => setFilters(defaultResultFilters)}
+        onClearFilter={() => setFilters(noFilters())}
       />
 
       <Charts filters={filters} queryState={queryState} />
@@ -68,7 +68,7 @@ export function AccountPage(): JSXElement {
             />
             <Button
               text="load more"
-              disabled={data.isLoading}
+              disabled={data.isLoading || data().length < limit() + 10}
               onClick={() => setLimit((limit) => limit + 10)}
               class="w-full text-center"
             />
@@ -111,4 +111,16 @@ function migrateFilterStorage(unknown: unknown): ResultFilters {
   } catch (e) {
     return defaultResultFilters;
   }
+}
+
+function noFilters(): ResultFilters {
+  const filters = structuredClone(defaultResultFilters);
+  Object.entries(filters)
+    .filter(([key, value]) => key !== "date" && typeof value === "object")
+    .map(([_, value]) => value as Record<string, boolean>)
+    .forEach((group) =>
+      Object.keys(group).forEach((it) => (group[it] = false)),
+    );
+
+  return filters;
 }
