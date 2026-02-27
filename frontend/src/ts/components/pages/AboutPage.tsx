@@ -13,6 +13,7 @@ import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { qsr } from "../../utils/dom";
 import { AnimatedShow, Anime, AnimePresence } from "../common/anime";
+import { AnimeGroupTest } from "../common/anime/AnimeGroupTest";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
@@ -53,6 +54,9 @@ export function AboutPage(): JSXElement {
       <button onClick={() => setVisible(!visible())} type="button">
         Toggle visibility
       </button>
+      <Show when={visible()}>
+        <AnimeGroupTest />
+      </Show>
       <AnimePresence exitBeforeEnter>
         <Show when={visible()}>
           <Anime

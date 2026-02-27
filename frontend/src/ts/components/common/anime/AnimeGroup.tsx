@@ -57,6 +57,13 @@ export type AnimeGroupProps = ParentProps<{
   class?: string;
 
   /**
+   * Exit animation applied to children as they are removed from the DOM.
+   * The component intercepts the removal, plays this animation, then
+   * finalizes the removal once complete.
+   */
+  exit?: AnimationParams;
+
+  /**
    * CSS styles for the wrapper element.
    */
   style?: string | Record<string, string>;
@@ -143,6 +150,8 @@ export type AnimeGroupProps = ParentProps<{
 export function AnimeGroup(props: AnimeGroupProps): JSXElement {
   let containerElement: HTMLElement | undefined;
   let animations: JSAnimation[] = [];
+  const initializedChildren = new WeakSet<HTMLElement>();
+  const exitingChildren = new WeakSet<HTMLElement>();
 
   const applyInitialState = (
     element: HTMLElement,
@@ -175,14 +184,7 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
     }
   };
 
-  const animateChildren = (): void => {
-    if (!containerElement) return;
-
-    // Clear previous animations
-    animations.forEach((anim) => anim.pause());
-    animations = [];
-
-    const children = Array.from(containerElement.children) as HTMLElement[];
+  const animateChildSet = (children: HTMLElement[]): void => {
     const total = children.length;
 
     children.forEach((child, index) => {
@@ -213,7 +215,19 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
 
       const animation = animejsAnimate(child, animParams);
       animations.push(animation);
+      initializedChildren.add(child);
     });
+  };
+
+  const animateChildren = (): void => {
+    if (!containerElement) return;
+
+    // Clear previous animations
+    animations.forEach((anim) => anim.pause());
+    animations = [];
+
+    const children = Array.from(containerElement.children) as HTMLElement[];
+    animateChildSet(children);
   };
 
   // Animate on mount and when children change
@@ -224,11 +238,59 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
     animateChildren();
 
     const childObserver = new MutationObserver((mutations) => {
+      const newChildren: HTMLElement[] = [];
+
       for (const mutation of mutations) {
-        if (mutation.type === "childList") {
-          animateChildren();
-          break;
+        if (mutation.type !== "childList") continue;
+
+        // Entrance: only animate truly new nodes
+        for (const node of mutation.addedNodes) {
+          if (
+            node instanceof HTMLElement &&
+            !initializedChildren.has(node) &&
+            !exitingChildren.has(node)
+          ) {
+            newChildren.push(node);
+          }
         }
+
+        // Exit: intercept removed nodes, re-insert, animate, then finalize removal
+        if (props.exit) {
+          for (const node of mutation.removedNodes) {
+            if (!(node instanceof HTMLElement)) continue;
+            if (exitingChildren.has(node)) continue; // already animating out
+
+            exitingChildren.add(node);
+
+            // Re-insert at original position using the recorded next sibling
+            const refNode = mutation.nextSibling;
+            if (refNode !== null && el.contains(refNode)) {
+              el.insertBefore(node, refNode);
+            } else {
+              el.appendChild(node);
+            }
+
+            const exitParams: AnimationParams = { ...props.exit };
+            if (
+              (props.respectReducedMotion ?? true) &&
+              typeof exitParams.duration === "number"
+            ) {
+              exitParams.duration = applyReducedMotion(exitParams.duration);
+            }
+
+            const anim = animejsAnimate(node, {
+              ...exitParams,
+              onComplete: () => {
+                node.remove();
+              },
+            });
+            animations.push(anim);
+          }
+        }
+      }
+
+      if (newChildren.length > 0) {
+        animateChildSet(newChildren);
       }
     });
 
