@@ -207,6 +207,7 @@ async function initGroups(): Promise<void> {
   groups["liveAccStyle"] = new SettingsGroup("liveAccStyle", "button");
   groups["liveBurstStyle"] = new SettingsGroup("liveBurstStyle", "button");
   groups["highlightMode"] = new SettingsGroup("highlightMode", "button");
+  groups["typedEffect"] = new SettingsGroup("typedEffect", "button");
   groups["tapeMode"] = new SettingsGroup("tapeMode", "button");
   groups["tapeMargin"] = new SettingsGroup("tapeMargin", "input", {
     validation: { schema: true, inputValueConvert: Number },
