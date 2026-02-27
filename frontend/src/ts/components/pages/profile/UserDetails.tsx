@@ -407,7 +407,12 @@ function Socials(props: {
           props.variant === "full" && "md:hidden lg:order-5 lg:block",
         )}
       ></div>
-      <div class={cn("h-full", props.variant === "full" && "lg:order-6")}>
+      <div
+        class={cn(
+          "grid h-full place-items-center",
+          props.variant === "full" && "lg:order-6",
+        )}
+      >
         <div
           class={cn(
             "text-sm text-sub md:hidden",
