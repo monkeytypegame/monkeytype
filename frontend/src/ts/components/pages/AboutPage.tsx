@@ -73,7 +73,66 @@ export function AboutPage(): JSXElement {
           </Anime>
         </Show>
       </AnimePresence>
-      <AnimatedShow when={visible()}>asdfasdfasdf</AnimatedShow>
+      <div>
+        <AnimatedShow slide when={visible()}>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum eius
+          dolorum, vitae, consequatur, ipsum voluptatum voluptatibus pariatur
+          illo dignissimos omnis atque reiciendis blanditiis perferendis numquam
+          debitis eligendi repellat iusto repellendus voluptatem eos soluta nemo
+          provident beatae quia? Veniam labore reprehenderit veritatis illo,
+          error consequuntur dolores alias commodi dignissimos sint ex itaque
+          odit, ipsa recusandae illum unde magni tempore quas eaque nisi dolor.
+          Vero numquam saepe aut ab ipsam officiis error. Quibusdam quasi quia
+          architecto reprehenderit harum corporis, atque, quidem aliquid quod
+          velit iste. Sequi atque commodi laudantium vero velit quaerat eius
+          rerum tempore culpa porro praesentium tempora nostrum eaque facere sed
+          dolores quia assumenda, fugiat ad molestias nesciunt maxime soluta.
+          Necessitatibus ratione hic sequi iure nisi in, cumque quas, inventore
+          sapiente velit at corrupti est sint reprehenderit ipsam eius cum nihil
+          molestiae? Repellendus eius corporis, officia expedita maiores
+          voluptatem cupiditate fugit ducimus quae eaque? Eum sed ullam fuga
+          eaque, non aliquid tempore dolores atque obcaecati temporibus animi
+          veritatis veniam facilis minima, aspernatur neque molestias
+          consectetur sint fugiat consequuntur quae similique eius? Ipsum velit
+          illo unde dolor, reprehenderit dolorem esse incidunt porro odio
+          dolorum numquam deleniti aperiam ad eius neque ratione repellat nisi,
+          itaque voluptates. Alias consequuntur facilis maxime amet sunt error
+          reprehenderit illum possimus dolore officiis odio enim saepe, dicta
+          quas deserunt minima fugiat quaerat. Ipsam alias harum neque a
+          eligendi laborum explicabo. Fuga architecto labore, unde nam eligendi
+          aspernatur eius minima blanditiis eos id soluta, voluptatem iure qui
+          assumenda exercitationem! Ex laborum, sint quia porro praesentium
+          ratione earum, et adipisci quod quo, maxime laudantium pariatur!
+          Itaque eos debitis rem aperiam cum, quidem molestias optio nam quae
+          cumque voluptates magnam omnis cupiditate reiciendis quibusdam sed eum
+          ea vel quisquam ducimus, perspiciatis in, rerum reprehenderit. Natus
+          mollitia laborum similique libero, sapiente necessitatibus dolores
+          iusto tempore sit fugiat. Odit praesentium eveniet quos eius voluptas
+          maxime hic nobis numquam ipsum impedit expedita repellat corporis
+          facere pariatur, incidunt inventore minima non tempore quis rerum
+          tempora placeat laudantium aliquid! Ullam dignissimos facilis
+          provident. Sint, assumenda ipsam quae porro possimus ullam ducimus
+          rerum asperiores maxime debitis nihil eaque voluptatum blanditiis est
+          dicta reprehenderit accusamus aspernatur nostrum voluptas doloremque
+          veniam recusandae quibusdam! Animi asperiores voluptate, quaerat
+          sapiente ea et provident atque doloremque tempora ducimus commodi,
+          quis molestiae nostrum quasi numquam! Cumque molestiae fuga harum
+          nobis! Vel, laboriosam deserunt alias incidunt officiis illo ullam
+          ipsam rerum, consequuntur cum asperiores id soluta iure voluptate ex
+          eligendi et. Eius provident illo ut accusamus facere reiciendis et
+          perspiciatis sit iusto quis omnis, possimus recusandae. Placeat,
+          perspiciatis quaerat consequuntur consequatur sint aliquid cupiditate
+          recusandae, et error quibusdam magnam fugit neque modi tenetur dolore,
+          ex aliquam provident. Quaerat, possimus impedit nemo consectetur id
+          iure amet necessitatibus debitis saepe aperiam sint eaque numquam
+          atque facilis iusto, minima placeat, dolore ipsam quibusdam fugiat
+          molestias repellat nobis! Accusantium animi accusamus tenetur alias
+          autem illum esse rerum possimus voluptatem natus. Quos necessitatibus
+          dicta odit qui facilis placeat quaerat, blanditiis atque minus minima
+          sint modi asperiores! Praesentium deserunt consequatur fugiat tempora
+          ipsam perferendis veritatis sapiente iusto aut architecto?
+        </AnimatedShow>
+      </div>
 
       <section class="text-center text-sub">
         Created with love by Miodec.

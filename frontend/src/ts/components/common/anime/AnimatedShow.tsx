@@ -1,3 +1,4 @@
+import { AnimationParams } from "animejs";
 import { JSXElement, ParentProps, Show } from "solid-js";
 
 import { Anime } from "./Anime";
@@ -13,37 +14,47 @@ import { AnimePresence } from "./AnimePresence";
  *   <div>Fades in and out automatically</div>
  * </AnimatedShow>
  * ```
- *
- * @example
- * Custom animations:
- * ```tsx
- * <AnimatedShow
- *   when={visible()}
- *   initial={{ opacity: 0, translateY: -10 }}
- *   animate={{ opacity: 1, translateY: 0, duration: 400 }}
- *   exit={{ opacity: 0, translateY: -10, duration: 300 }}
- * >
- *   <div>Slides in and out</div>
- * </AnimatedShow>
- * ```
  */
 export function AnimatedShow(
   props: ParentProps<{
     when: boolean;
-    fallback?: JSXElement;
+    slide?: true;
+    duration?: number;
   }>,
 ): JSXElement {
+  const duration = () => props.duration ?? 250;
+
   return (
-    <AnimePresence exitBeforeEnter>
-      <Show when={props.when} fallback={props.fallback}>
-        <Anime
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, duration: 125 }}
-          exit={{ opacity: 0, duration: 125 }}
-        >
-          {props.children}
-        </Anime>
-      </Show>
-    </AnimePresence>
+    <Show
+      when={props.slide}
+      fallback={
+        <AnimePresence exitBeforeEnter>
+          <Show when={props.when}>
+            <Anime
+              initial={{ opacity: 0 } as Partial<AnimationParams>}
+              animate={{ opacity: 1, duration: duration() } as AnimationParams}
+              exit={{ opacity: 0, duration: duration() } as AnimationParams}
+            >
+              {props.children}
+            </Anime>
+          </Show>
+        </AnimePresence>
+      }
+    >
+      <AnimePresence exitBeforeEnter>
+        <Show when={props.when}>
+          <Anime
+            initial={{ height: 0 } as Partial<AnimationParams>}
+            animate={
+              { height: "auto", duration: duration() } as AnimationParams
+            }
+            exit={{ height: 0, duration: duration() } as AnimationParams}
+            style={{ overflow: "hidden" }}
+          >
+            {props.children}
+          </Anime>
+        </Show>
+      </AnimePresence>
+    </Show>
   );
 }

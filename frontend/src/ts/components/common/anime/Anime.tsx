@@ -206,6 +206,12 @@ export function Anime(props: AnimeProps): JSXElement {
       currentAnimation = undefined;
     }
 
+    // If height is currently "auto", snap it to a pixel value so anime.js can
+    // interpolate from a concrete number during the exit animation.
+    if (element.style.height === "auto") {
+      element.style.height = `${element.offsetHeight}px`;
+    }
+
     // Apply reduced motion if enabled
     const exitParams =
       local.respectReducedMotion &&
@@ -256,13 +262,37 @@ export function Anime(props: AnimeProps): JSXElement {
       currentAnimation = undefined;
     }
 
+    // Resolve height: "auto" by measuring the element's natural height
+    let resolvedParams = params;
+    if (params["height"] === "auto") {
+      const currentH = element.offsetHeight;
+      element.style.height = "auto";
+      const targetH = element.offsetHeight;
+      element.style.height = `${currentH}px`;
+      const originalOnComplete = params.onComplete;
+      resolvedParams = {
+        ...params,
+        height: targetH,
+        onComplete: (anim: JSAnimation) => {
+          // Restore auto so the element can resize naturally after animation
+          if (element) element.style.height = "auto";
+          if (typeof originalOnComplete === "function") {
+            originalOnComplete(anim);
+          }
+        },
+      };
+    }
+
     // Apply reduced motion if enabled
     const animParams =
       local.respectReducedMotion &&
-      params.duration !== undefined &&
-      typeof params.duration === "number"
-        ? { ...params, duration: applyReducedMotion(params.duration) }
-        : params;
+      resolvedParams.duration !== undefined &&
+      typeof resolvedParams.duration === "number"
+        ? {
+            ...resolvedParams,
+            duration: applyReducedMotion(resolvedParams.duration),
+          }
+        : resolvedParams;
 
     currentAnimation = animejsAnimate(element, animParams);
     return currentAnimation;
