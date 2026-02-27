@@ -22,7 +22,7 @@
         "react/no-unknown-property": [
           "error",
           {
-            "ignore": ["class", "classList", "innerHTML"],
+            "ignore": ["class", "classList", "innerHTML", "onScrollEnd"],
           },
         ],
         "react/jsx-no-comment-textnodes": "error",

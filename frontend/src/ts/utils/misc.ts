@@ -429,9 +429,9 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function isPasswordStrong(password: string): boolean {
-  const hasCapital = !!password.match(/[A-Z]/);
-  const hasNumber = !!password.match(/[\d]/);
-  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const hasCapital = !!/[A-Z]/.exec(password);
+  const hasNumber = !!/[\d]/.exec(password);
+  const hasSpecial = !!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.exec(password);
   const isLong = password.length >= 8;
   const isShort = password.length <= 64;
   return hasCapital && hasNumber && hasSpecial && isLong && isShort;

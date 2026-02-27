@@ -135,6 +135,8 @@ async function handleWeeklyXpLeaderboardResults(
   }[] = [];
 
   allResults?.entries.forEach((entry) => {
+    // just in case, gonna ignore this error
+    // oxlint-disable-next-line typescript/no-useless-default-assignment
     const { uid, name, rank = maxRankToGet, totalXp, timeTypedSeconds } = entry;
 
     const xp = Math.round(totalXp);
