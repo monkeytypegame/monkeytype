@@ -4,7 +4,7 @@ import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { convertRemToPixels } from "../../utils/numbers";
 
 export function AutoShrink(
-  props: ParentProps & { class?: string },
+  props: ParentProps & { class?: string; upperLimitRem: number },
 ): JSXElement {
   const [ref, el] = useRefWithUtils<HTMLElement>();
 
@@ -17,7 +17,7 @@ export function AutoShrink(
     const parentWidth = parent.clientWidth;
     if (parentWidth === 0) return;
 
-    const upperLimit = convertRemToPixels(2);
+    const upperLimit = convertRemToPixels(props.upperLimitRem);
 
     // Temporarily set base size for measurement
     element.style.fontSize = "10px";

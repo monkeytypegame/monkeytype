@@ -217,8 +217,8 @@ function AvatarAndName(props: {
         discordId={props.profile.discordId}
       />
 
-      <div class="flex h-full flex-col gap-1 text-xs [&>div]:w-fit">
-        <AutoShrink class="flex text-text">
+      <div class="flex h-min flex-col gap-1 text-xs [&>div]:w-fit">
+        <AutoShrink upperLimitRem={2} class="flex text-text">
           {props.profile.name}
 
           <div class="flex flex-row gap-1 pl-1 text-sub">
