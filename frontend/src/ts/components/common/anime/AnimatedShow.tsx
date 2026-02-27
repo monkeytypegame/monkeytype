@@ -6,12 +6,24 @@ import { AnimePresence } from "./AnimePresence";
 
 /**
  * A convenient wrapper around AnimePresence + Anime for simple show/hide animations.
- * Automatically wraps children in an `<Anime>` element with configurable enter/exit animations.
+ * Animations (initial/animate/exit) are hardcoded — use `<AnimePresence>` + `<Anime>` directly
+ * if you need custom animation parameters.
+ *
+ * @prop when - Controls visibility
+ * @prop slide - If true, animates height instead of opacity
+ * @prop duration - Animation duration in ms (default: 250)
  *
  * @example
  * ```tsx
  * <AnimatedShow when={visible()}>
  *   <div>Fades in and out automatically</div>
+ * </AnimatedShow>
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <AnimatedShow when={visible()} slide duration={400}>
+ *   <div>Slides open/closed</div>
  * </AnimatedShow>
  * ```
  */

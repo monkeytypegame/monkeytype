@@ -9,7 +9,7 @@ import {
   type Accessor,
   batch,
   onCleanup,
-  createEffect,
+  onMount,
 } from "solid-js";
 
 import type { AnimePresenceAPI } from "./Anime";
@@ -45,9 +45,8 @@ export type AnimePresenceProps = ParentProps<{
 
   /**
    * Enable list mode for animating multiple children (e.g., with For loops).
-   * When true, uses list transition logic to handle exit animations for lists.
-   * When false or undefined, uses single-child transition logic (for Show, Switch, etc.).
-   * @default undefined (auto-detect based on children)
+   * - `"list"`: uses MutationObserver to handle exit animations for dynamic lists.
+   * - `"single"`: uses single-child transition logic (for Show, Switch, etc.).
    */
   mode?: "list" | "single";
 }>;
@@ -93,7 +92,7 @@ export type AnimePresenceProps = ParentProps<{
  * ```tsx
  * const [currentView, setCurrentView] = createSignal<"a" | "b">("a");
  *
- * <AnimePresence mode="wait">
+ * <AnimePresence exitBeforeEnter>
  *   <Show when={currentView() === "a"}>
  *     <Anime exit={{ opacity: 0, translateX: -100, duration: 300 }}>
  *       <div>View A</div>
@@ -179,6 +178,7 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
   const handleMutations = (mutations: MutationRecord[]): void => {
     for (const mutation of mutations) {
       for (const removed of Array.from(mutation.removedNodes)) {
+        if (removed.nodeType !== Node.ELEMENT_NODE) continue;
         const element = removed as HTMLElement;
 
         // Check if this element has exit animation registered
@@ -233,11 +233,8 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
   // List mode: Watch for DOM changes in the container
   // oxlint-disable-next-line solid/reactivity -- mode controls component structure at mount time; treated as stable
   if (props.mode === "list") {
-    createEffect(() => {
+    onMount(() => {
       if (!containerRef) return;
-
-      // Disconnect any previous observer before creating a new one
-      observer?.disconnect();
 
       // Set up observer to watch for child removals
       observer = new MutationObserver(handleMutations);

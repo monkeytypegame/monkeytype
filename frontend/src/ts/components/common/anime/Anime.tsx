@@ -333,14 +333,12 @@ export function Anime(props: AnimeProps): JSXElement {
 
   // Handle reactive animation updates
   createEffect(() => {
-    if (!hasInitialized) return;
-
-    // Track reactive dependencies
+    // Always read reactive params so dependencies are tracked
     const animationParams = local.animate ?? local.animation;
 
-    if (animationParams) {
-      applyAnimation(animationParams);
-    }
+    if (!hasInitialized || !animationParams) return;
+
+    applyAnimation(animationParams);
   });
 
   // Cleanup on unmount — always pause enter animation; AnimePresence handles exit timing

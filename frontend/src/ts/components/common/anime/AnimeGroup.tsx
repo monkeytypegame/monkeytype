@@ -3,7 +3,7 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
-import { JSXElement, ParentProps, createEffect, onCleanup } from "solid-js";
+import { JSXElement, ParentProps, onCleanup, onMount } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 import { applyReducedMotion } from "../../../utils/misc";
@@ -217,10 +217,26 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
   };
 
   // Animate on mount and when children change
-  createEffect(() => {
-    if (containerElement) {
-      animateChildren();
-    }
+  onMount(() => {
+    const el = containerElement;
+    if (!el) return;
+
+    animateChildren();
+
+    const childObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "childList") {
+          animateChildren();
+          break;
+        }
+      }
+    });
+
+    childObserver.observe(el, { childList: true });
+
+    onCleanup(() => {
+      childObserver.disconnect();
+    });
   });
 
   // Cleanup on unmount
@@ -262,6 +278,8 @@ export function createStagger(options: {
   const { base, ease = "linear", from = "start" } = options;
 
   return (index: number, total: number): number => {
+    if (total <= 1) return 0;
+
     // Calculate normalized position (0 to 1)
     let position: number;
 
