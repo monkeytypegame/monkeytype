@@ -21,5 +21,13 @@
         "monkeytype-rules/no-testing-access": "off",
       },
     },
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "monkeytype-rules/prefer-arrow-in-component": "error",
+        "monkeytype-rules/one-component-per-file": "error",
+        "monkeytype-rules/component-pascal-case": "error",
+      },
+    },
   ],
 }

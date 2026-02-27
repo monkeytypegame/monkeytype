@@ -5,7 +5,6 @@ export let isRepeated = false;
 export let isPaceRepeat = false;
 export let isActive = false;
 export let activeChallenge: null | Challenge = null;
-export let savingEnabled = true;
 export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
@@ -29,10 +28,6 @@ export function setActive(tf: boolean): void {
 
 export function setActiveChallenge(val: null | Challenge): void {
   activeChallenge = val;
-}
-
-export function setSaving(val: boolean): void {
-  savingEnabled = val;
 }
 
 export function setBailedOut(tf: boolean): void {

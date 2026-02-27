@@ -37,6 +37,9 @@
     "@monkeytype/frontend#check-assets": {
       "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
     },
+    "@monkeytype/frontend#lint-json": {
+      "dependsOn": ["^parallel"]
+    },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],
       "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SENTRY"],

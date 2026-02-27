@@ -42,10 +42,10 @@ export function show(
     return;
   }
 
-  state["resultId"] = resultId;
-  state["startingTags"] = [...tags];
-  state["tags"] = [...tags];
-  state["source"] = source;
+  state.resultId = resultId;
+  state.startingTags = [...tags];
+  state.tags = [...tags];
+  state.source = source;
 
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
