@@ -716,13 +716,17 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
-export function isLinux(): boolean {
-  return isPlatform("Linux");
-}
+//function isWindows(): boolean {
+//return isPlatform("Win");
+//}
 
-export function isMac(): boolean {
-  return isPlatform("Mac");
-}
+//function isLinux(): boolean {
+//return isPlatform("Linux");
+//}
+
+//function isMac(): boolean {
+//return isPlatform("Mac");
+//}
 
 export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);

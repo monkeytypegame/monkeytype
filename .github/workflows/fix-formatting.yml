@@ -1,7 +1,7 @@
 name: Fix formatting
 
 env:
-  PNPM_VERSION: "9.6.0"
+  PNPM_VERSION: "10.28.1"
   NODE_VERSION: "24.11.0"
 
 permissions:

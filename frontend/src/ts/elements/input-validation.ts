@@ -119,11 +119,11 @@ export function createInputEventHandler<T>(
 
       if (!schemaResult.success) {
         callback({
-          status: "failed",
-          errorMessage: schemaResult.error.errors
-            .map((err) => err.message)
-            .join(", "),
           success: false,
+          status: "failed",
+          errorMessage:
+            schemaResult.error.errors.map((err) => err.message).join(", ") +
+            ".",
         });
         return;
       }

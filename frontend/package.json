@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@leonabcd123/modern-caps-lock": "2.0.3",
     "@monkeytype/contracts": "workspace:*",
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",
@@ -125,6 +126,6 @@
     "baseline widely available and > 0.002%"
   ],
   "engines": {
-    "node": "24.11.0 || 22.21.0"
+    "node": ">=24.0.0 <25"
   }
 }
