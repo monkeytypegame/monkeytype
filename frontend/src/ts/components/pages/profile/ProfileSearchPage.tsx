@@ -1,6 +1,7 @@
 import { UserNameSchema } from "@monkeytype/schemas/users";
-import { createSignal, JSXElement, Show } from "solid-js";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
+import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import * as NavigationEvent from "../../../observables/navigation-event";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
@@ -17,12 +18,22 @@ export function ProfileSearchPage(): JSXElement {
   const [isValid, setValid] = createSignal(false);
   const isOpen = () => getActivePage() === "profileSearch";
 
+  // Refs are assigned by SolidJS via the ref attribute
+  const [inputRef, inputEl] = useRefWithUtils<HTMLElement>();
+
   const goToPage = () => {
     if (isValid()) {
       NavigationEvent.dispatch(`/profile/${getSelectedProfileName()}`, {});
     }
   };
 
+  createEffect(() => {
+    if (isOpen()) {
+      requestAnimationFrame(() => {
+        inputEl()?.qs("input")?.focus({ preventScroll: true });
+      });
+    }
+  });
   return (
     <Show when={isOpen()}>
       <div class="grid min-h-full place-items-center">
@@ -38,7 +49,7 @@ export function ProfileSearchPage(): JSXElement {
           </div>
 
           <div class="flex w-full gap-2 text-xl">
-            <div class="flex-1 text-center">
+            <div class="flex-1 text-center" ref={inputRef}>
               <ValidatedInput
                 placeholder="username"
                 schema={UserNameSchema}

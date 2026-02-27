@@ -18,14 +18,16 @@ export function ProfilePage(): JSXElement {
   }));
 
   return (
-    <div class="flex h-full items-center justify-center text-lg">
-      <AsyncContent query={profileQuery} ignoreError={true}>
-        {(profile) => <UserProfile profile={profile} />}
-      </AsyncContent>
-      <Show when={profileQuery.isError}>
-        <Fa icon="fa-times" />
-        &nbsp;User {getSelectedProfileName()} not found
-      </Show>
-    </div>
+    <Show when={isOpen}>
+      <div class="flex h-full items-center justify-center text-lg">
+        <AsyncContent query={profileQuery} ignoreError={true}>
+          {(profile) => <UserProfile profile={profile} />}
+        </AsyncContent>
+        <Show when={profileQuery.isError}>
+          <Fa icon="fa-times" />
+          &nbsp;User {getSelectedProfileName()} not found
+        </Show>
+      </div>
+    </Show>
   );
 }

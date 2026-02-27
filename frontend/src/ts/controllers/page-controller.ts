@@ -18,7 +18,7 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions, PageProperties } from "../pages/page";
-import { onDOMReady, qs, qsa, qsr } from "../utils/dom";
+import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 
 type ChangeOptions = {
@@ -40,14 +40,7 @@ const pages = {
       setSelectedProfileName(options.params?.["uidOrName"]);
     },
   }),
-  profileSearch: solidPage("profileSearch", {
-    beforeShow: async () => {
-      setSelectedProfileName(undefined);
-    },
-    afterShow: async () => {
-      qs(".page.pageProfileSearch input")?.focus();
-    },
-  }),
+  profileSearch: solidPage("profileSearch"),
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
@@ -313,7 +306,6 @@ function solidPage(
   props?: {
     path?: string;
     beforeShow?: PageProperties<undefined>["beforeShow"];
-    afterShow?: PageProperties<undefined>["afterShow"];
   },
 ): Page<undefined> {
   const path = props?.path ?? `/${id}`;
@@ -330,6 +322,5 @@ function solidPage(
     afterHide: async () => {
       Skeleton.remove(internalId);
     },
-    afterShow: props?.afterShow,
   });
 }
