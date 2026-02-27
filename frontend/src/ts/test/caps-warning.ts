@@ -1,13 +1,11 @@
 import Config from "../config";
 import { qsr } from "../utils/dom";
-import { getCurrentOs } from "../utils/misc";
+import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
 
 const el = qsr("#capsWarning");
+let visible = false;
 
 export let capsState = false;
-const os = getCurrentOs();
-
-let visible = false;
 
 function show(): void {
   if (!visible) {
@@ -33,45 +31,7 @@ function updateCapsWarningVisibility(): void {
   } catch {}
 }
 
-function isCapsLockOn(event: KeyboardEvent): boolean {
-  return event.getModifierState("CapsLock");
-}
-
-document.addEventListener("keyup", (event) => {
-  if (os === "Mac") {
-    // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
-    if (event.key === "CapsLock") {
-      capsState = false;
-    } else {
-      // IPad doesn't send caps state on any keypress which isn't Caps Lock,
-      // So don't update caps state on any keypress which isn't Caps Lock.
-      if (navigator.maxTouchPoints <= 1) {
-        capsState = isCapsLockOn(event);
-      }
-    }
-  } else if (os === "Windows") {
-    // Windows always sends the correct state on keyup (for Caps Lock and for regular keys).
-    capsState = isCapsLockOn(event);
-  } else if (event.key !== "CapsLock") {
-    // Linux sends the correct state on keyup if key isn't Caps Lock.
-    capsState = isCapsLockOn(event);
-  }
+onCapsLockChange((currentCapsState: boolean) => {
+  capsState = currentCapsState;
   updateCapsWarningVisibility();
-});
-
-document.addEventListener("keydown", (event) => {
-  if (os === "Mac") {
-    // macOS sends only keydown when enabling Caps Lock and only keyup when disabling.
-    if (event.key === "CapsLock") {
-      capsState = true;
-      updateCapsWarningVisibility();
-    }
-  } else if (os === "Linux") {
-    /* Linux sends the correct state before Caps Lock is toggled only on keydown,
-     * so we invert the modifier state.
-     */
-    if (event.key === "CapsLock") {
-      capsState = !isCapsLockOn(event);
-    }
-  }
 });

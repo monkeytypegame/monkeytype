@@ -55,6 +55,9 @@
     "knip": "knip",
     "update-oxc": "pnpm up -D -r oxlint@latest oxfmt@latest oxlint-tsgolint@latest"
   },
+  "dependencies": {
+    "@leonabcd123/modern-caps-lock": "1.0.1"
+  },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
