@@ -321,7 +321,7 @@ qs(".pageSettings")?.onChild("click", ".section.themes .theme.button", (e) => {
   }
 });
 
-function handleColorInput(props: {
+function handleColorInput(options: {
   convertColor: boolean;
 }): (e: Event) => void {
   return (e) => {
@@ -332,7 +332,7 @@ function handleColorInput(props: {
 
     let color: string;
 
-    if (props.convertColor) {
+    if (options.convertColor) {
       try {
         color = Colors.convertStringToHex(target.value);
       } catch {

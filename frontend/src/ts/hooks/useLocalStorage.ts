@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Accessor, Setter } from "solid-js";
+import { createSignal, Accessor, Setter, onCleanup } from "solid-js";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 export type UseLocalStorageOptions<T> = {
@@ -45,7 +45,7 @@ export function useLocalStorage<T>(
   const [value, setValueInternal] = createSignal<T>(storage.get());
 
   // Custom setter that syncs to localStorage
-  const setValue = ((newValue: T | ((prev: T) => T)) => {
+  const setValue = (newValue: T | ((prev: T) => T)): T => {
     const resolvedValue =
       typeof newValue === "function"
         ? (newValue as (prev: T) => T)(value())
@@ -55,33 +55,28 @@ export function useLocalStorage<T>(
     if (success) {
       setValueInternal(() => resolvedValue);
     }
-    return value();
-  }) as Setter<T>;
+    return resolvedValue;
+  };
 
   // Sync changes across tabs/windows
   if (syncAcrossTabs) {
-    createEffect(() => {
-      const handleStorageChange = (e: StorageEvent): void => {
-        if (e.key === key && e.newValue !== null) {
-          console.debug(`LS ${key} Storage event detected from another tab`);
-          try {
-            const parsed = schema.parse(JSON.parse(e.newValue));
-            setValueInternal(() => parsed);
-          } catch (error) {
-            console.error(
-              `LS ${key} Failed to parse storage event value`,
-              error,
-            );
-          }
+    const handleStorageChange = (e: StorageEvent): void => {
+      if (e.key === key && e.newValue !== null) {
+        console.debug(`LS ${key} Storage event detected from another tab`);
+        try {
+          const parsed = schema.parse(JSON.parse(e.newValue));
+          setValueInternal(() => parsed);
+        } catch (error) {
+          console.error(`LS ${key} Failed to parse storage event value`, error);
         }
-      };
+      }
+    };
 
-      window.addEventListener("storage", handleStorageChange);
-      return () => {
-        window.removeEventListener("storage", handleStorageChange);
-      };
+    window.addEventListener("storage", handleStorageChange);
+    onCleanup(() => {
+      window.removeEventListener("storage", handleStorageChange);
     });
   }
 
-  return [value, setValue];
+  return [value, setValue as Setter<T>];
 }
