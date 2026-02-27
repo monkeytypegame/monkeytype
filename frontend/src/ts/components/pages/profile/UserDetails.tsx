@@ -423,7 +423,7 @@ function Socials(props: {
         </div>
         <div
           class={cn(
-            "flex gap-2 text-2xl text-text md:flex-col lg:h-full lg:flex-col lg:justify-around [&>a]:text-text [&>a]:hover:text-main",
+            "flex gap-2 text-2xl text-text md:flex-col lg:h-full lg:flex-col lg:justify-around [&>a]:p-0 [&>a]:text-text [&>a]:hover:text-main",
             props.variant === "full" && "md:flex-row",
           )}
         >
@@ -432,7 +432,7 @@ function Socials(props: {
               type="text"
               fa={{ icon: "fa-github", variant: "brand", fixedWidth: true }}
               href={`https://github.com/${props.socials?.github}`}
-              class="p-0"
+              ariaLabel={{ text: props.socials?.github ?? "", position: "up" }}
             />
           </Show>
           <Show when={props.socials?.twitter}>
@@ -440,7 +440,7 @@ function Socials(props: {
               type="text"
               fa={{ icon: "fa-twitter", variant: "brand", fixedWidth: true }}
               href={`https://x.com/${props.socials?.twitter}`}
-              class="p-0"
+              ariaLabel={{ text: props.socials?.twitter ?? "", position: "up" }}
             />
           </Show>
           <Show when={props.socials?.website}>
@@ -448,7 +448,7 @@ function Socials(props: {
               type="text"
               fa={{ icon: "fa-globe", fixedWidth: true }}
               href={props.socials?.website ?? ""}
-              class="p-0"
+              ariaLabel={{ text: props.socials?.website ?? "", position: "up" }}
             />
           </Show>
         </div>
