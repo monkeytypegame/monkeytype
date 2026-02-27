@@ -21,7 +21,7 @@ export function SupportModal(): JSXElement {
         not be possible without you and your continued support.{" "}
         <Fa icon="fa-heart" />
       </div>
-      <div class="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div class="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
         <Button
           type="button"
           onClick={() => {

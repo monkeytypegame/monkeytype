@@ -13,6 +13,17 @@ declare module "@tanstack/solid-table" {
     breakpoint?: BreakpointKey;
 
     /**
+     * define maximal breakpoint for the column to be visible.
+     * If not set, the column is always visible
+     */
+    maxBreakpoint?: BreakpointKey;
+
+    /**
+     * align header and cells, default: `left`
+     */
+    align?: "left" | "right" | "center";
+
+    /**
      * additional attributes to be set on the table cell.
      * Can be used to define mouse-overs with `aria-label` and `data-balloon-pos`
      */
@@ -24,9 +35,9 @@ declare module "@tanstack/solid-table" {
         }) => JSX.HTMLAttributes<HTMLTableCellElement>);
 
     /**
-     * additional attributes to be set on the header if it is sortable
+     * additional attributes to be set on the header
      * Can be used to define mouse-overs with `aria-label` and `data-balloon-pos`
      */
-    sortableHeaderMeta?: JSX.HTMLAttributes;
+    headerMeta?: JSX.HTMLAttributes;
   }
 }
