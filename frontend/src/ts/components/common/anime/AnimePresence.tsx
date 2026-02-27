@@ -131,27 +131,6 @@ export type AnimePresenceProps = ParentProps<{
  * </AnimePresence>
  * ```
  */
-/**
- * AnimePresence enables exit animations for components using the `<Anime>` component.
- *
- * When a child component is removed from the tree, AnimePresence delays its unmounting
- * to allow exit animations (defined via the `exit` prop on `<Anime>`) to complete.
- *
- * @example
- * ```tsx
- * <AnimePresence>
- *   <Show when={toggle()}>
- *     <Anime
- *       initial={{ opacity: 0 }}
- *       animate={{ opacity: 1, duration: 300 }}
- *       exit={{ opacity: 0, duration: 300 }}
- *     >
- *       <div>Content</div>
- *     </Anime>
- *   </Show>
- * </AnimePresence>
- * ```
- */
 export function AnimePresence(props: AnimePresenceProps): JSXElement {
   const [mount, setMount] = createSignal(true);
 
