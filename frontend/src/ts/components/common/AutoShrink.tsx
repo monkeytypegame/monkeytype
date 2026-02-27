@@ -1,30 +1,33 @@
-import { createEffect, JSXElement, onCleanup, ParentProps } from "solid-js";
-import { throttle } from "throttle-debounce";
+import { JSXElement, onCleanup, onMount, ParentProps } from "solid-js";
 
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
-import { ElementWithUtils } from "../../utils/dom";
 import { convertRemToPixels } from "../../utils/numbers";
 
 export function AutoShrink(
   props: ParentProps & { class?: string },
 ): JSXElement {
-  // Refs are assigned by SolidJS via the ref attribute
   const [ref, el] = useRefWithUtils<HTMLElement>();
 
-  createEffect(() => {
-    requestAnimationFrame(() => updateFontSize(el()));
-  });
+  let resizeObserver: ResizeObserver | undefined;
 
-  const throttledEvent = throttle(1000, () => {
-    if (el()?.native.isConnected) {
-      updateFontSize(el());
-    }
-  });
+  onMount(() => {
+    const element = el()?.native;
+    if (!element) return;
 
-  window.addEventListener("resize", throttledEvent);
+    const parent = element.parentElement;
+    if (!parent) return;
+
+    resizeObserver = new ResizeObserver(() => {
+      updateFontSize(element);
+    });
+
+    resizeObserver.observe(parent);
+
+    updateFontSize(element);
+  });
 
   onCleanup(() => {
-    window.removeEventListener("resize", throttledEvent);
+    resizeObserver?.disconnect();
   });
 
   return (
@@ -32,30 +35,25 @@ export function AutoShrink(
       {props.children}
     </div>
   );
-}
 
-export function updateFontSize(element?: ElementWithUtils): void {
-  if (element === undefined) return;
-  //dont run this function in safari because OH MY GOD IT IS SO SLOW
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  if (isSafari) return;
+  function updateFontSize(element: HTMLElement): void {
+    const parent = element.parentElement;
+    if (!parent) return;
 
-  const parent = element?.getParent();
-  const upperLimit = convertRemToPixels(2);
-  if (!parent) return;
+    const parentWidth = parent.clientWidth;
+    if (parentWidth === 0) return;
 
-  element.native.style.fontSize = `10px`;
-  const parentWidth = parent.native.clientWidth;
-  const widthAt10 = element.native.clientWidth;
-  const ratioAt10 = parentWidth / widthAt10;
-  const fittedFontSize = ratioAt10 * 10;
-  const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
-  console.log("####", {
-    parentWidth,
-    widthAt10,
-    ratioAt10,
-    fittedFontSize,
-    finalFontSize,
-  });
-  element.native.style.fontSize = `${finalFontSize}px`;
+    const upperLimit = convertRemToPixels(2);
+
+    // Temporarily set base size for measurement
+    element.style.fontSize = "10px";
+
+    const widthAt10 = element.clientWidth;
+    if (widthAt10 === 0) return;
+
+    const fittedFontSize = (parentWidth / widthAt10) * 10;
+    const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
+
+    element.style.fontSize = `${finalFontSize}px`;
+  }
 }
