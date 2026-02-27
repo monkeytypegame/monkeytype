@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@leonabcd123/modern-caps-lock": "2.0.3",
     "@monkeytype/contracts": "workspace:*",
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",

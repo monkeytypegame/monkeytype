@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@leonabcd123/modern-caps-lock':
-        specifier: 2.0.2
-        version: 2.0.2
     devDependencies:
       '@commitlint/cli':
         specifier: 17.7.1
@@ -265,6 +261,9 @@ importers:
       '@date-fns/utc':
         specifier: 1.2.0
         version: 1.2.0
+      '@leonabcd123/modern-caps-lock':
+        specifier: 2.0.3
+        version: 2.0.3
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
@@ -2526,8 +2525,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@leonabcd123/modern-caps-lock@2.0.2':
-    resolution: {integrity: sha512-gpCXtZGlmTn5cN3ILuALInsbVDtwqPZC36RNCzHhP2BFpHGDm+ByFGMscQblnOSGJJbfAoRA3/hFL8P0lDoNeA==}
+  '@leonabcd123/modern-caps-lock@2.0.3':
+    resolution: {integrity: sha512-g4wPe1tHAR7hxOrvUwzxCrxBD+pjI1vEe+STXgsL2jQS95MXxge7h4afKXTLKguOtPc6gqK0Ljle4FLI60rWhw==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -12520,7 +12519,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@leonabcd123/modern-caps-lock@2.0.2': {}
+  '@leonabcd123/modern-caps-lock@2.0.3': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
@@ -16774,7 +16773,7 @@ snapshots:
 
   http-proxy-agent@7.0.2:
     dependencies:
-      agent-base: 7.1.1
+      agent-base: 7.1.4
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
