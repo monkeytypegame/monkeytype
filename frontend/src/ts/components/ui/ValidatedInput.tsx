@@ -4,6 +4,7 @@ import {
   JSXElement,
   onCleanup,
   onMount,
+  Accessor,
 } from "solid-js";
 
 import {
@@ -14,7 +15,7 @@ import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 
 export function ValidatedInput<T = string>(
   props: ValidationOptions<T> & {
-    value?: string;
+    value?: Accessor<string | undefined>;
     placeholder?: string;
     class?: string;
     onInput?: (value: T) => void;
@@ -26,7 +27,7 @@ export function ValidatedInput<T = string>(
   let validatedInput: ValidatedHtmlInputElement | undefined;
 
   createEffect(() => {
-    validatedInput?.setValue(props.value ?? null);
+    validatedInput?.setValue(props.value?.() ?? null);
   });
 
   onMount(() => {
@@ -38,8 +39,7 @@ export function ValidatedInput<T = string>(
       element,
       others as ValidationOptions<T>,
     );
-
-    validatedInput.setValue(props.value ?? null);
+    validatedInput.setValue(props.value?.() ?? null);
   });
 
   onCleanup(() => validatedInput?.remove());
@@ -49,7 +49,7 @@ export function ValidatedInput<T = string>(
       type="text"
       class={props.class}
       placeholder={props.placeholder}
-      value={props.value ?? ""}
+      value={props.value?.() ?? ""}
       onInput={(e) => props.onInput?.(e.target.value as T)}
     />
   );
