@@ -12,7 +12,7 @@ import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { qsr } from "../../utils/dom";
-import { Anime, AnimePresence } from "../common/anime";
+import { AnimatedShow, Anime, AnimePresence } from "../common/anime";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
@@ -46,7 +46,7 @@ export function AboutPage(): JSXElement {
     enabled: isOpen(),
   }));
 
-  const [visible, setVisible] = createSignal(true);
+  const [visible, setVisible] = createSignal(false);
 
   return (
     <div class="content-grid grid gap-8">
@@ -73,6 +73,8 @@ export function AboutPage(): JSXElement {
           </Anime>
         </Show>
       </AnimePresence>
+      <AnimatedShow when={visible()}>asdfasdfasdf</AnimatedShow>
+
       <section class="text-center text-sub">
         Created with love by Miodec.
         <br />

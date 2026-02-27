@@ -1,4 +1,3 @@
-import type { AnimePresenceAPI } from "./Anime";
 import { resolveFirst } from "@solid-primitives/refs";
 import { createSwitchTransition } from "@solid-primitives/transition-group";
 import {
@@ -9,10 +8,11 @@ import {
   type Context,
   type Accessor,
   batch,
-  Show,
   onCleanup,
   createEffect,
 } from "solid-js";
+
+import type { AnimePresenceAPI } from "./Anime";
 
 export type PresenceContextState = {
   initial: boolean;
@@ -231,9 +231,13 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
   };
 
   // List mode: Watch for DOM changes in the container
+  // oxlint-disable-next-line solid/reactivity -- mode controls component structure at mount time; treated as stable
   if (props.mode === "list") {
     createEffect(() => {
       if (!containerRef) return;
+
+      // Disconnect any previous observer before creating a new one
+      observer?.disconnect();
 
       // Set up observer to watch for child removals
       observer = new MutationObserver(handleMutations);
@@ -244,7 +248,7 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
       observer?.disconnect();
     });
 
-    state.initial = true;
+    // oxlint-disable-next-line solid/components-return-once -- early return is intentional; mode is structural
     return (
       <AnimePresenceContext.Provider value={state}>
         <div ref={setContainerRef} style={{ display: "contents" }}>
@@ -282,12 +286,16 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
                   currentlyExiting = { element: htmlEl, api, done };
 
                   // Listen for animation completion event, similar to solid-motionone
-                  htmlEl.addEventListener("animecomplete", () => {
-                    done();
-                    if (currentlyExiting?.element === htmlEl) {
-                      currentlyExiting = null;
-                    }
-                  });
+                  htmlEl.addEventListener(
+                    "animecomplete",
+                    () => {
+                      done();
+                      if (currentlyExiting?.element === htmlEl) {
+                        currentlyExiting = null;
+                      }
+                    },
+                    { once: true },
+                  );
                   void api.playExitAnimation().then(() => {
                     exitRegistry.delete(htmlEl);
                   });
@@ -319,25 +327,5 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
     </AnimePresenceContext.Provider>
   );
 
-  state.initial = true;
   return render;
-}
-
-/**
- * A simpler alternative to AnimePresence for basic show/hide animations.
- * This component handles a single child with enter/exit animations.
- */
-export function AnimatedShow(
-  props: ParentProps<{
-    when: boolean;
-    fallback?: JSXElement;
-  }>,
-): JSXElement {
-  return (
-    <AnimePresence exitBeforeEnter>
-      <Show when={props.when} fallback={props.fallback}>
-        {props.children}
-      </Show>
-    </AnimePresence>
-  );
 }

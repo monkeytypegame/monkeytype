@@ -141,11 +141,6 @@ export type AnimeGroupProps = ParentProps<{
  * ```
  */
 export function AnimeGroup(props: AnimeGroupProps): JSXElement {
-  const stagger = props.stagger ?? 50;
-  const direction = props.direction ?? "forward";
-  const respectReducedMotion = props.respectReducedMotion ?? true;
-  const Component = props.as ?? "div";
-
   let containerElement: HTMLElement | undefined;
   let animations: JSAnimation[] = [];
 
@@ -153,22 +148,12 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
     element: HTMLElement,
     params: Partial<AnimationParams>,
   ): void => {
-    Object.entries(params).forEach(([key, value]) => {
-      if (key === "duration" || key === "easing" || key === "delay") return;
-
-      // Handle array values (take the first value as initial)
-      const initialValue = Array.isArray(value) ? value[0] : value;
-
-      if (typeof initialValue === "number") {
-        element.style[parseInt(key)] = String(initialValue);
-      } else if (typeof initialValue === "string") {
-        element.style[parseInt(key)] = initialValue;
-      }
-    });
+    animejsAnimate(element, { ...params, duration: 0 });
   };
 
   const calculateStaggerDelay = (index: number, total: number): number => {
     let baseDelay: number;
+    const stagger = props.stagger ?? 50;
 
     if (typeof stagger === "function") {
       baseDelay = stagger(index, total);
@@ -177,6 +162,7 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
     }
 
     // Apply direction
+    const direction = props.direction ?? "forward";
     if (direction === "reverse") {
       return baseDelay * (total - 1 - index);
     } else if (direction === "center") {
@@ -218,7 +204,7 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
 
       // Apply reduced motion if enabled
       if (
-        respectReducedMotion &&
+        (props.respectReducedMotion ?? true) &&
         animParams.duration !== undefined &&
         typeof animParams.duration === "number"
       ) {
@@ -232,10 +218,8 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
 
   // Animate on mount and when children change
   createEffect(() => {
-    // This effect tracks the resolved children
     if (containerElement) {
-      // Use setTimeout to ensure DOM is updated with new children
-      setTimeout(() => animateChildren(), 0);
+      animateChildren();
     }
   });
 
@@ -247,7 +231,7 @@ export function AnimeGroup(props: AnimeGroupProps): JSXElement {
 
   return (
     <Dynamic
-      component={Component as keyof HTMLElementTagNameMap}
+      component={props.as ?? "div"}
       ref={(el: HTMLElement) => (containerElement = el)}
       class={props.class}
       style={props.style}

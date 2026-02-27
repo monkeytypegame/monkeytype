@@ -15,7 +15,6 @@ import {
 import { Dynamic } from "solid-js/web";
 
 import { applyReducedMotion } from "../../../utils/misc";
-
 import { AnimePresenceContext } from "./AnimePresence";
 
 export type AnimePresenceAPI = {
@@ -314,11 +313,9 @@ export function Anime(props: AnimeProps): JSXElement {
     }
   });
 
-  // Cleanup on unmount
+  // Cleanup on unmount — always pause enter animation; AnimePresence handles exit timing
   onCleanup(() => {
-    // Only cleanup if not managed by AnimePresence
-    // (AnimePresence will handle exit animation timing)
-    if (!presenceContext && currentAnimation) {
+    if (currentAnimation) {
       currentAnimation.pause();
       currentAnimation = undefined;
     }
