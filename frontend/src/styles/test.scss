@@ -564,7 +564,7 @@
       white-space: nowrap;
     }
 
-    &:not(.withLigatures) .typed,
+    &:not(.withLigatures) .word.typed,
     &.withLigatures .word.broken-ligatures.typed {
       letter {
         color: var(--bg-color);
@@ -586,7 +586,7 @@
     }
 
     @media (prefers-reduced-motion) {
-      &:not(.withLigatures) .typed,
+      &:not(.withLigatures) .word.typed,
       &.withLigatures .word.broken-ligatures.typed {
         letter {
           animation: none !important;
