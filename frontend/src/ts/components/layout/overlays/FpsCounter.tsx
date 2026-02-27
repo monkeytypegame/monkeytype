@@ -18,7 +18,7 @@ export function FpsCounter(): JSX.Element {
   let frameCount = 0;
   let startTime: number;
 
-  function loop(timestamp: number): void {
+  const loop = (timestamp: number): void => {
     if (stopLoop) return;
     const elapsedTime = timestamp - startTime;
     frameCount++;
@@ -31,7 +31,7 @@ export function FpsCounter(): JSX.Element {
     }
 
     window.requestAnimationFrame(loop);
-  }
+  };
 
   createEffect(() => {
     if (isVisible()) {
@@ -54,7 +54,7 @@ export function FpsCounter(): JSX.Element {
   return (
     <Show when={isVisible()}>
       <div
-        class={"bg-sub-alt fixed top-0 left-0 z-9999 px-2 py-1"}
+        class={"fixed top-0 left-0 z-9999 bg-sub-alt px-2 py-1"}
         style={{
           color: fpsColor(),
         }}
