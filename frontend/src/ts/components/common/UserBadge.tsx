@@ -12,7 +12,7 @@ export function UserBadge(props: { id?: number; iconOnly?: true }): JSXElement {
   return (
     <Show when={badge() !== undefined}>
       <div
-        class="rounded-half text-[0.9em]"
+        class="rounded-[0.5em] text-[0.9em]"
         aria-label={badge()?.description}
         data-balloon-pos="right"
         style={{
