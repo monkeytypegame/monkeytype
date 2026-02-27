@@ -78,6 +78,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
       if (!ignoreAuthCallback) {
         setUserId(user?.uid ?? null);
         await callback(true, user);
+        setUserId(user?.uid ?? null);
       }
     });
   } catch (e) {
@@ -86,6 +87,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     console.error("Firebase failed to initialize", e);
     setUserId(null);
     await callback(false, null);
+    setUserId(null);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
