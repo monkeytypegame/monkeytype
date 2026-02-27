@@ -5,14 +5,12 @@ import {
 } from "@monkeytype/schemas/users";
 import { formatDate } from "date-fns/format";
 import { createMemo, For, JSXElement, Show } from "solid-js";
-import { createStore } from "solid-js/store";
 
 import * as PbTablesModal from "../../../modals/pb-tables";
 import { getConfig } from "../../../signals/config";
 import { Formatting } from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { ActivityCalendar } from "./ActivityCalendar";
 import { UserDetails } from "./UserDetails";
 
@@ -105,9 +103,6 @@ function PbTable<M extends "time" | "words">(props: {
   pbs: PersonalBests[M];
   isAccountPage?: true;
 }): JSXElement {
-  const [showDetails, setShowDetails] = createStore<Record<string, boolean>>(
-    {},
-  );
   const format = createMemo(() => new Formatting(getConfig));
 
   const bests = createMemo(() =>
@@ -131,51 +126,39 @@ function PbTable<M extends "time" | "words">(props: {
       <div class="grid grid-cols-2 gap-8 p-4 md:grid-cols-4">
         <For each={bests()}>
           {(item) => (
-            <div
-              class="flex flex-col items-center gap-2 text-xs"
-              classList={{
-                "-m-2 leading-none": showDetails[item.mode2],
-              }}
-              onMouseEnter={() => setShowDetails(item.mode2, true)}
-              onMouseLeave={() => setShowDetails(item.mode2, false)}
-            >
-              <Conditional
-                if={!showDetails[item.mode2]}
-                then={
-                  <>
-                    <div class="text-xs text-sub">
-                      {item.mode2} {props.mode === "time" ? "seconds" : "words"}
-                    </div>
-                    <div class="text-4xl">
-                      {format().typingSpeed(item.pb?.wpm, {
-                        showDecimalPlaces: false,
-                      })}
-                    </div>
-                    <div class="text-xl">
-                      {format().accuracy(item.pb?.acc, {
-                        showDecimalPlaces: false,
-                      })}
-                    </div>
-                  </>
-                }
-                else={
-                  <>
-                    <div class="text-xs text-sub">
-                      {item.mode2} {props.mode === "time" ? "seconds" : "words"}
-                    </div>
-                    <div>
-                      {format().typingSpeed(item.pb?.wpm)}{" "}
-                      {format().typingSpeedUnit}
-                    </div>
-                    <div>{format().typingSpeed(item.pb?.raw)} raw</div>
-                    <div>{format().accuracy(item.pb?.acc)} acc</div>
-                    <div>{format().percentage(item.pb?.consistency)} con</div>
-                    <div class="text-sub">
-                      {formatDate(item.pb?.timestamp ?? 0, "dd MMM yyyy")}
-                    </div>
-                  </>
-                }
-              />
+            <div class="grid items-center">
+              <div class="col-start-1 row-start-1 text-center">
+                <div class="text-xs text-sub">
+                  {item.mode2} {props.mode === "time" ? "seconds" : "words"}
+                </div>
+                <div class="text-4xl">
+                  {format().typingSpeed(item.pb?.wpm, {
+                    showDecimalPlaces: false,
+                  })}
+                </div>
+                <div class="text-xl">
+                  {format().accuracy(item.pb?.acc, {
+                    showDecimalPlaces: false,
+                  })}
+                </div>
+              </div>
+              <Show when={item.pb !== undefined}>
+                <div class="col-start-1 row-start-1 grid bg-sub-alt text-center text-xs opacity-0 transition-opacity hover:opacity-100">
+                  <div class="text-sub">
+                    {item.mode2} {props.mode === "time" ? "seconds" : "words"}
+                  </div>
+                  <div>
+                    {format().typingSpeed(item.pb?.wpm)}{" "}
+                    {format().typingSpeedUnit}
+                  </div>
+                  <div>{format().typingSpeed(item.pb?.raw)} raw</div>
+                  <div>{format().accuracy(item.pb?.acc)} acc</div>
+                  <div>{format().percentage(item.pb?.consistency)} con</div>
+                  <div class="text-sub">
+                    {formatDate(item.pb?.timestamp ?? 0, "dd MMM yyyy")}
+                  </div>
+                </div>
+              </Show>
             </div>
           )}
         </For>
