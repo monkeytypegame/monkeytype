@@ -24,8 +24,10 @@ export function ProfilePage(): JSXElement {
           {(profile) => <UserProfile profile={profile} />}
         </AsyncContent>
         <Show when={profileQuery.isError}>
-          <Fa icon="fa-times" />
-          &nbsp;User {getSelectedProfileName()} not found
+          <div class="flex items-baseline gap-2 text-error">
+            <Fa icon="fa-times" />
+            <span>User {getSelectedProfileName()} not found</span>
+          </div>
         </Show>
       </div>
     </Show>
