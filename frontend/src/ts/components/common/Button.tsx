@@ -58,12 +58,11 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   const getClasses = (): string => {
     return cn(
-      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-2.5 rounded border-0 text-center leading-[1.25] text-text transition-all duration-125 ease-in-out select-none",
+      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-colors transition-opacity duration-125 ease-in-out select-none",
       "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
       {
-        "bg-sub-alt px-0.5 py-2.5 hover:bg-text hover:text-bg":
-          props.type !== "text",
-        "bg-transparent p-2 text-sub hover:text-text": props.type === "text",
+        "bg-sub-alt hover:bg-text hover:text-bg": props.type !== "text",
+        "bg-transparent text-sub hover:text-text": props.type === "text",
         [props.class ?? ""]: props.class !== undefined,
         "bg-main text-bg hover:bg-text": isActive(),
 
