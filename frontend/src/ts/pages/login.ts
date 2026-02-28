@@ -214,6 +214,7 @@ qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
     Notifications.add("You are offline", 0);
     return;
   }
+
   const rememberMe =
     qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
     false;
@@ -256,29 +257,6 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
   disableInputs();
   disableSignUpButton();
   const data = await signIn(email, password, rememberMe);
-  hidePreloader();
-
-  if (!data.success) {
-    Notifications.add(data.message, -1);
-    enableInputs();
-    enableSignUpButton();
-  }
-});
-
-qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0);
-    return;
-  }
-
-  const rememberMe =
-    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
-    false;
-
-  showPreloader();
-  disableInputs();
-  disableSignUpButton();
-  const data = await signInWithGoogle(rememberMe);
   hidePreloader();
 
   if (!data.success) {
