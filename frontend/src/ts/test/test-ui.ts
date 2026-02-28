@@ -48,6 +48,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
+import * as Ligatures from "./break-ligatures";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -141,6 +142,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
+          Ligatures.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
         }
@@ -157,6 +159,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
+    Ligatures.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
@@ -2073,11 +2076,15 @@ ConfigEvent.subscribe(({ key, newValue }) => {
       "colorfulMode",
       "showAllLines",
       "fontSize",
+      "fontFamily",
       "maxLineWidth",
       "tapeMargin",
     ].includes(key)
   ) {
-    updateWordWrapperClasses();
+    if (key !== "fontFamily") updateWordWrapperClasses();
+    if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
+      Ligatures.update(key, wordsEl);
+    }
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();
