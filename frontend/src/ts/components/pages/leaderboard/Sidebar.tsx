@@ -25,7 +25,7 @@ export function Sidebar(props: {
   onSelect: (selection: Selection) => void;
   validModeRules: ValidModeRule[];
 }): JSXElement {
-  function updateSelection(patch: Partial<Selection>) {
+  const updateSelection = (patch: Partial<Selection>) => {
     props.onSelect(
       normalizeSelection(
         //@ts-expect-error this is fine
@@ -33,22 +33,22 @@ export function Sidebar(props: {
         getValidLeaderboards(props.validModeRules),
       ),
     );
-  }
+  };
 
-  function selectType(type: Selection["type"]) {
+  const selectType = (type: Selection["type"]) => {
     updateSelection({ type });
-  }
+  };
 
-  function selectMode(value: ModeSelect) {
+  const selectMode = (value: ModeSelect) => {
     updateSelection({ mode: value.mode, mode2: value.mode2 });
-  }
+  };
 
-  function selectLanguage(language: Language) {
+  const selectLanguage = (language: Language) => {
     updateSelection({ language });
-  }
-  function selectFriendsOnly(friendsOnly: boolean) {
+  };
+  const selectFriendsOnly = (friendsOnly: boolean) => {
     updateSelection({ friendsOnly });
-  }
+  };
 
   return (
     <>

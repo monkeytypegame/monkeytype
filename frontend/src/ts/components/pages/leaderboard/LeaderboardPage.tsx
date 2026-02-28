@@ -120,6 +120,47 @@ export function LeaderboardPage(): JSXElement {
     return page;
   };
 
+  const syncLbMemory = () => {
+    if (
+      rankQuery.data !== undefined &&
+      rankQuery.data !== null &&
+      selection !== undefined &&
+      selection().type === "allTime"
+    ) {
+      const diff = getLbMemoryDifference(selection(), rankQuery.data.rank);
+
+      if (diff !== 0) {
+        void updateLbMemory(
+          "time",
+          selection().mode2 as string,
+          "english",
+          rankQuery.data.rank,
+          true,
+        );
+      }
+    }
+  };
+
+  const getLbMemoryDifference = (
+    selection: Selection,
+    currentRank: number | undefined,
+  ): number | undefined => {
+    if (
+      selection.type !== "allTime" ||
+      selection.mode !== "time" ||
+      selection.language !== "english" ||
+      selection.friendsOnly ||
+      currentRank === undefined
+    ) {
+      return undefined;
+    }
+    const oldRank =
+      getSnapshot()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
+    const diff = oldRank - currentRank;
+
+    return diff;
+  };
+
   return (
     <div class="content-grid flex flex-col gap-8 lg:flex-row">
       <div class="w-full lg:w-60 2xl:w-75">
@@ -201,47 +242,6 @@ export function LeaderboardPage(): JSXElement {
       </div>
     </div>
   );
-
-  function syncLbMemory(): void {
-    if (
-      rankQuery.data !== undefined &&
-      rankQuery.data !== null &&
-      selection !== undefined &&
-      selection().type === "allTime"
-    ) {
-      const diff = getLbMemoryDifference(selection(), rankQuery.data.rank);
-
-      if (diff !== 0) {
-        void updateLbMemory(
-          "time",
-          selection().mode2 as string,
-          "english",
-          rankQuery.data.rank,
-          true,
-        );
-      }
-    }
-  }
-
-  function getLbMemoryDifference(
-    selection: Selection,
-    currentRank: number | undefined,
-  ): number | undefined {
-    if (
-      selection.type !== "allTime" ||
-      selection.mode !== "time" ||
-      selection.language !== "english" ||
-      selection.friendsOnly ||
-      currentRank === undefined
-    ) {
-      return undefined;
-    }
-    const oldRank =
-      getSnapshot()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
-    const diff = oldRank - currentRank;
-
-    return diff;
-  }
 }
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
   return useLocalStorage<Selection>({
