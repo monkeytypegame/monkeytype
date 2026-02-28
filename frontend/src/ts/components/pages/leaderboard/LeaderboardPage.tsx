@@ -87,6 +87,15 @@ export function LeaderboardPage(): JSXElement {
     if (rankQuery.isSuccess) syncLbMemory();
   });
 
+  //if connections are disabled, friendsOnly cannot be true
+  createEffect(() => {
+    const connectionsEnabled =
+      serverConfigurationQuery.data?.connections.enabled;
+    if (connectionsEnabled === false && selection().friendsOnly) {
+      setSelection((old) => ({ ...old, friendsOnly: false }));
+    }
+  });
+
   const dataQuery = useQuery(() => ({
     ...getLeaderboardQueryOptions({
       ...selection(),
@@ -109,15 +118,6 @@ export function LeaderboardPage(): JSXElement {
     setSelection(newSelection);
     setPage(0);
   };
-
-  //if connections are disabled, friendsOnly cannot be true
-  createEffect(() => {
-    const connectionsEnabled =
-      serverConfigurationQuery.data?.connections.enabled;
-    if (connectionsEnabled === false && selection().friendsOnly) {
-      setSelection((old) => ({ ...old, friendsOnly: false }));
-    }
-  });
 
   /**
    * the page that contains the user
