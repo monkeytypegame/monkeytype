@@ -2,9 +2,7 @@ import { defineConfig, Options } from "tsup";
 
 export function extendConfig(
   customizer?: (options: Options) => Options,
-  // tsup uses MaybePromise which is not exported
-  // oxlint-disable-next-line no-explicit-any
-): (options: Options) => any {
+): (options: Options) => unknown {
   return (options) => {
     const overrideOptions = customizer?.(options);
     const config: Options = {
