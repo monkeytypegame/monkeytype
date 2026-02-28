@@ -20,6 +20,7 @@ import {
 } from "../../../stores/leaderboard-selection";
 import { qsr } from "../../../utils/dom";
 import AsyncContent from "../../common/AsyncContent";
+import { Conditional } from "../../common/Conditional";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Navigation } from "./Navigation";
 import { NextUpdate } from "./NextUpdate";
@@ -214,38 +215,48 @@ export function LeaderboardPage(): JSXElement {
           }
         >
           {(data) => (
-            <div class="grid gap-2">
-              <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
-                <NextUpdate type={getSelection().type} />
-                <Navigation
-                  isLoading={
-                    dataQuery.isLoading ||
-                    dataQuery.isFetching ||
-                    dataQuery.isRefetching
-                  }
-                  lastPage={Math.ceil((data?.count ?? 0) / 50)}
-                  userPage={userPage()}
-                  currentPage={getPage()}
-                  onPageChange={setPage}
-                  onScrollToUser={setScrollToUser}
-                />
-              </div>
-              <Table
-                type={getSelection().type === "weekly" ? "xp" : "speed"}
-                entries={data?.entries ?? []}
-                friendsOnly={getSelection().friendsOnly}
-                scrollToUser={scrollToUser}
-                onScrolledToUser={() => setScrollToUser(false)}
-              />
-              <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
-                <Navigation
-                  lastPage={Math.ceil((data?.count ?? 0) / 50)}
-                  currentPage={getPage()}
-                  onPageChange={setPage}
-                  onScrollToUser={setScrollToUser}
-                />
-              </div>
-            </div>
+            <Conditional
+              if={data.entries.length === 0}
+              then={
+                <div class="flex flex-col items-center gap-4 pt-8">
+                  <div class="text-xl">No entries found</div>
+                </div>
+              }
+              else={
+                <div class="grid gap-2">
+                  <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
+                    <NextUpdate type={getSelection().type} />
+                    <Navigation
+                      isLoading={
+                        dataQuery.isLoading ||
+                        dataQuery.isFetching ||
+                        dataQuery.isRefetching
+                      }
+                      lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                      userPage={userPage()}
+                      currentPage={getPage()}
+                      onPageChange={setPage}
+                      onScrollToUser={setScrollToUser}
+                    />
+                  </div>
+                  <Table
+                    type={getSelection().type === "weekly" ? "xp" : "speed"}
+                    entries={data?.entries ?? []}
+                    friendsOnly={getSelection().friendsOnly}
+                    scrollToUser={scrollToUser}
+                    onScrolledToUser={() => setScrollToUser(false)}
+                  />
+                  <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
+                    <Navigation
+                      lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                      currentPage={getPage()}
+                      onPageChange={setPage}
+                      onScrollToUser={setScrollToUser}
+                    />
+                  </div>
+                </div>
+              }
+            />
           )}
         </AsyncContent>
       </div>
