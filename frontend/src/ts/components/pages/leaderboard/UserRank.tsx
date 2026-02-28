@@ -25,6 +25,7 @@ export function UserRank(props: {
   userTimeTyping: number;
 }): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
+
   const userOverride = () => {
     if (props.data === undefined || props.data === null) {
       return "";
@@ -67,6 +68,7 @@ export function UserRank(props: {
       </>
     );
   };
+
   return (
     <div class="flex rounded bg-sub-alt">
       <Show

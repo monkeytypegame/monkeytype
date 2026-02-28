@@ -286,10 +286,10 @@ function getSpeedColumns({
               enabled: true,
             })
           ) : (
-            <>
+            <div class="text-xs">
               <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
               <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
-            </>
+            </div>
           )
         ) : (
           ""
