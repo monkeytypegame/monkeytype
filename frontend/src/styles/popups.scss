@@ -915,13 +915,28 @@ body.darkMode {
         padding: 0.5rem 0.5rem;
       }
 
+      .modesticky {
+        position: sticky;
+        top: calc(1rem - 2px);
+        background-color: transparent;
+        z-index: 2;
+      }
+
       thead {
         color: var(--sub-color);
         font-size: 0.75rem;
+        position: sticky;
+        top: -2rem;
+        background-color: var(--bg-color) !important;
+        z-index: 3;
       }
 
       tbody tr:nth-child(odd) td {
         background: var(--sub-alt-color);
+      }
+
+      tbody tr:nth-child(even) td {
+        background: var(--bg-color);
       }
 
       td.infoIcons span {

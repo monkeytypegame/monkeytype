@@ -52,8 +52,18 @@ function update(mode: Mode): void {
     }
     modalEl.qs("table tbody")?.appendHtml(
       `
+      ${
+        mode2memory === pb.mode2
+          ? ""
+          : `
+        <tr>
+          <td class="modesticky">${pb.mode2}</td>
+          ${'<td class="modesticky"></td>'.repeat(8)}
+        </tr>
+        `
+      }
       <tr>
-        <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
+        <td></td>
         <td>
           ${Format.typingSpeed(pb.wpm)}
           <br />
