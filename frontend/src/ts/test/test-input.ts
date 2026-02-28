@@ -213,6 +213,7 @@ export let keypressCountHistory: number[] = [];
 let currentKeypressCount = 0;
 export let currentBurstStart = 0;
 type MissedWordsType = Record<string, number>;
+// We're using Object.create(null) to make sure that __proto__ won't have any special meaning (so if a user mistypes the word __proto__ it will appear correctly in the practise words test
 export let missedWords: MissedWordsType = Object.create(
   null,
 ) as MissedWordsType;
