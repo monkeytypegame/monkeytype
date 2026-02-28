@@ -1,13 +1,15 @@
 import { createEffect, JSXElement, Show } from "solid-js";
-import { Motion, Presence } from "solid-motionone";
 
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { useSwapAnimation } from "../../../hooks/useSwapAnimation";
 import { getAccountButtonSpinner } from "../../../signals/header";
 import { getAuthenticatedUser, isAuthenticated } from "../../../signals/user";
 import { getLevelFromTotalXp } from "../../../utils/levels";
+import { Anime, AnimePresence } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";
+import { DiscordAvatar } from "../../common/DiscordAvatar";
+import { Fa } from "../../common/Fa";
 
 export function AccountButton(): JSXElement {
   const [_accountButtonRef, accountButtonEl] = useRefWithUtils();
@@ -34,34 +36,34 @@ export function AccountButton(): JSXElement {
             type="button"
             class="textButton flex items-center gap-1.5 text-sub transition-colors duration-125 hover:text-text hover:[&>.level]:bg-text"
           >
-            {/* <div ref={accountButtonRef}>
-              <i class="fas fa-fw fa-user"></i>
-            </div>
-            <div ref={spinnerRef}>
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-            </div> */}
-            <Presence exitBeforeEnter>
-              <Show when={!getAccountButtonSpinner()}>
-                <Motion
+            <AnimePresence exitBeforeEnter>
+              <Show when={true}>
+                <Anime
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  animate={{ opacity: 1, duration: 125 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.125 }}
+                  class="grid items-center"
                 >
-                  <i class="fas fa-fw fa-user"></i>
-                </Motion>
+                  <DiscordAvatar
+                    size={64}
+                    discordId={getAuthenticatedUser()?.discordId}
+                    discordAvatar={getAuthenticatedUser()?.discordAvatar}
+                    fallbackIcon={{
+                      icon: "fa-user",
+                    }}
+                  />
+                </Anime>
               </Show>
-              <Show when={getAccountButtonSpinner()}>
-                <Motion
+              <Show when={true}>
+                <Anime
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  animate={{ opacity: 1, duration: 125 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.125 }}
                 >
-                  <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-                </Motion>
+                  <Fa icon={"fa-circle-notch"} spin={true} />
+                </Anime>
               </Show>
-            </Presence>
+            </AnimePresence>
             <div class="text-xs">{getAuthenticatedUser()?.name}</div>
             <div class="level rounded-half bg-sub px-[0.5em] py-[0.1em] text-[0.7em] text-bg transition-colors duration-125 hover:bg-text">
               {getLevelFromTotalXp(getAuthenticatedUser()?.xp ?? 0)}

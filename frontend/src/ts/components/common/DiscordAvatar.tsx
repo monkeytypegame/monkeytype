@@ -1,8 +1,7 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { FaSolidIcon } from "../../types/font-awesome";
-import { Fa } from "./Fa";
+import { Fa, FaProps } from "./Fa";
 
 //cache successful and missing avatars
 const [avatar, setAvatar] = createStore<Record<string, boolean>>({});
@@ -11,27 +10,29 @@ export function DiscordAvatar(props: {
   discordId: string | undefined;
   discordAvatar: string | undefined;
   size?: number;
-  missingIcon?: FaSolidIcon;
+  fallbackIcon?: FaProps;
 }): JSXElement {
   const cacheKey = (): string => `${props.discordId}/${props.discordAvatar}`;
   const [showSpinner, setShowSpinner] = createSignal(true);
   return (
-    <div class="relative inline-flex h-[1em] w-[1em] shrink-0 items-center justify-center text-lg">
+    <div class="grid h-[1.25em] w-[1.25em] items-center justify-center">
       <Show
         when={
           props.discordId !== undefined &&
           props.discordAvatar !== undefined &&
           avatar[cacheKey()] !== false
         }
-        fallback={<Fa icon={props.missingIcon ?? "fa-user-circle"} />}
+        fallback={
+          <Fa {...(props.fallbackIcon ?? { icon: "fa-user-circle" })} />
+        }
       >
         <>
           <Show when={showSpinner()}>
-            <Fa icon={"fa-circle-notch"} spin={true} class="absolute inset-0" />
+            <Fa icon={"fa-circle-notch"} spin={true} class="absolute" />
           </Show>
           <img
             src={`https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`}
-            class="relative h-full w-full rounded-full object-cover"
+            class="rounded-full"
             onLoad={() => {
               setAvatar(cacheKey(), true);
               setShowSpinner(false);

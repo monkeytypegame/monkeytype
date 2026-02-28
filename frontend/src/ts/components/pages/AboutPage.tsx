@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { spring } from "motion";
-import { createSignal, For, JSXElement, Show } from "solid-js";
-import { Motion } from "solid-motionone";
+import { For, JSXElement, Show } from "solid-js";
 
 // import { queryClient } from "../../queries";
 import {
@@ -47,27 +45,8 @@ export function AboutPage(): JSXElement {
     enabled: isOpen(),
   }));
 
-  const [test, setTest] = createSignal(true);
-
   return (
     <div class="content-grid grid gap-8">
-      <button type="button" onClick={() => setTest(!test())}>
-        Toggle
-      </button>
-      <Motion
-        animate={{ opacity: test() ? 1 : 0 }}
-        hover={{ scale: 2 }}
-        class="w-min"
-      >
-        Hello
-      </Motion>
-      <Motion
-        animate={{ marginLeft: test() ? "500px" : "0px" }}
-        class="h-8 w-8 rounded bg-main"
-        transition={{
-          easing: spring({ stiffness: 250, damping: 25 }),
-        }}
-      />
       <section class="text-center text-sub">
         Created with love by Miodec.
         <br />
