@@ -27,9 +27,10 @@ import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { onDOMReady, qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
+import { Navigation } from "./Navigation";
+import { NextUpdate } from "./NextUpdate";
 import { Sidebar } from "./Sidebar";
 import { Table } from "./Table";
-import { TableNavigation } from "./TableNavigation";
 import { Title } from "./Title";
 import { UserRank } from "./UserRank";
 
@@ -175,7 +176,7 @@ export function LeaderboardPage(): JSXElement {
         </AsyncContent>
       </div>
 
-      <div class="flex w-full flex-1 flex-col gap-6">
+      <div class="flex w-full flex-1 flex-col gap-8">
         <Title
           selection={selection()}
           onPreviousSelect={() =>
@@ -216,19 +217,24 @@ export function LeaderboardPage(): JSXElement {
 
         <AsyncContent query={dataQuery} alwaysShowContent>
           {(data) => (
-            <TableNavigation
-              type={selection().type}
-              lastPage={Math.ceil((data?.count ?? 0) / 50)}
-              currentPage={page()}
-              onPageChange={setPage}
-              userPage={userPage()}
-              onScrollToUser={setScrollToUser}
-              isLoading={
-                dataQuery.isLoading ||
-                dataQuery.isFetching ||
-                dataQuery.isRefetching
-              }
-            >
+            <div class="grid gap-2">
+              <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
+                <div>
+                  <NextUpdate type={selection().type} />
+                </div>
+                <Navigation
+                  isLoading={
+                    dataQuery.isLoading ||
+                    dataQuery.isFetching ||
+                    dataQuery.isRefetching
+                  }
+                  lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                  userPage={userPage()}
+                  currentPage={page()}
+                  onPageChange={setPage}
+                  onScrollToUser={setScrollToUser}
+                />
+              </div>
               <Table
                 type={selection().type === "weekly" ? "xp" : "speed"}
                 entries={data?.entries ?? []}
@@ -236,7 +242,15 @@ export function LeaderboardPage(): JSXElement {
                 scrollToUser={scrollToUser}
                 onScrolledToUser={() => setScrollToUser(false)}
               />
-            </TableNavigation>
+              <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
+                <Navigation
+                  lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                  currentPage={page()}
+                  onPageChange={setPage}
+                  onScrollToUser={setScrollToUser}
+                />
+              </div>
+            </div>
           )}
         </AsyncContent>
       </div>
