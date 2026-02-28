@@ -5,6 +5,7 @@ import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
+import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { DiscordAvatar } from "./DiscordAvatar";
 import { UserBadge } from "./UserBadge";
@@ -12,6 +13,7 @@ import { UserFlags } from "./UserFlags";
 
 export function User(
   props: {
+    class?: string;
     user: SupportsFlags &
       Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar"> & {
         badgeId?: number;
@@ -20,7 +22,9 @@ export function User(
   } & UserFlagOptions,
 ): JSXElement {
   return (
-    <div class="inline-flex items-center text-sm leading-none">
+    <div
+      class={cn("inline-flex items-center text-sm leading-none", props.class)}
+    >
       <Show when={props.showAvatar ?? true}>
         <DiscordAvatar
           discordId={props.user.discordId}
@@ -40,7 +44,7 @@ export function User(
           isFriend={props.isFriend}
           iconsOnly={props.iconsOnly}
         />
-        <UserBadge id={props.user.badgeId} />
+        <UserBadge id={props.user.badgeId} class="text-[0.7em]" />
       </div>
     </div>
   );

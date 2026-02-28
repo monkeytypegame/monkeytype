@@ -31,7 +31,7 @@ export function TableNavigation(
 ): JSXElement {
   return (
     <>
-      <div class="grid grid-cols-2 items-center justify-between text-base">
+      <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
         <div>
           <NextUpdate type={props.type} />
         </div>
@@ -47,7 +47,7 @@ export function TableNavigation(
 
       {props.children}
 
-      <div class="grid grid-cols-1 items-center justify-between text-base">
+      <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
         <Navigation
           lastPage={props.lastPage}
           currentPage={props.currentPage}
@@ -95,8 +95,11 @@ function Navigation(props: {
       };
     },
   });
+
+  const buttonClass = () => "px-3 sm:px-4 text-em-base";
+
   return (
-    <div class="grid grid-flow-col items-center gap-2 justify-self-end [&>button]:px-4">
+    <div class="grid grid-flow-col items-center gap-2 justify-self-end">
       <Show when={props.isLoading}>
         <LoadingCircle />
       </Show>
@@ -104,6 +107,7 @@ function Navigation(props: {
         onClick={() => props.onPageChange(0)}
         fa={{ icon: "fa-crown", fixedWidth: true }}
         disabled={props.currentPage === 0}
+        class={buttonClass()}
       />
       <Show when={props.userPage !== undefined}>
         <Button
@@ -115,6 +119,7 @@ function Navigation(props: {
           disabled={
             props.userPage === undefined || props.currentPage === props.userPage
           }
+          class={buttonClass()}
         />
       </Show>
       <Button
@@ -124,15 +129,18 @@ function Navigation(props: {
         }}
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
         disabled={props.currentPage === 0}
+        class={buttonClass()}
       />
       <Button
         onClick={() => goToPageModal.show(undefined, {})}
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
+        class={buttonClass()}
       />
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
         disabled={props.currentPage + 1 >= props.lastPage}
+        class={buttonClass()}
       />
     </div>
   );

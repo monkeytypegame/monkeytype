@@ -4,15 +4,20 @@ import {
   badges,
   UserBadge as UserBadgeType,
 } from "../../controllers/badge-controller";
+import { cn } from "../../utils/cn";
 import { Fa } from "./Fa";
 
-export function UserBadge(props: { id?: number; iconOnly?: true }): JSXElement {
+export function UserBadge(props: {
+  id?: number;
+  iconOnly?: true;
+  class?: string;
+}): JSXElement {
   const badge = (): UserBadgeType | undefined =>
     props.id !== undefined ? badges[props.id] : undefined;
   return (
     <Show when={badge() !== undefined}>
       <div
-        class="rounded-[0.5em] text-[0.9em]"
+        class={cn("rounded-[0.5em] text-[0.9em]", props.class)}
         aria-label={badge()?.description}
         data-balloon-pos="right"
         style={{

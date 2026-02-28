@@ -12,6 +12,7 @@ import { createEffectOn } from "../../../hooks/effects";
 import { bp } from "../../../signals/breakpoints";
 import { getConfig } from "../../../signals/config";
 import { getUserId } from "../../../signals/core";
+import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { qs } from "../../../utils/dom";
 import { Formatting } from "../../../utils/format";
@@ -47,8 +48,12 @@ export function Table(
   const commonProps = createMemo(() => ({
     id: "leaderboardTable",
     hideHeader: props.hideHeader,
-    class:
-      "table-auto [&>tbody>tr>td]:whitespace-nowrap [&>tbody>tr>td]:py-2.5 [&>tbody>tr>td]:px-4 [&>thead>tr>th]:px-4 xl:[&>tbody>tr>td]:px-6 xl:[&>tbody>tr>td]:py-1 xl:[&>thead>tr>th]:px-6",
+    class: cn(
+      "table-auto [&>tbody>tr>td]:py-3 [&>tbody>tr>td]:whitespace-nowrap [&>thead>tr>th]:align-middle",
+      "[&>tbody>tr>td]:px-3 [&>tbody>tr>td]:text-[0.9em] [&>thead>tr>th]:px-3 [&>thead>tr>th]:text-[0.8em]",
+      "sm:[&>tbody>tr>td]:px-4 sm:[&>tbody>tr>td]:text-[1em] sm:[&>thead>tr>th]:px-4 sm:[&>thead>tr>th]:text-[1em]",
+      "xl:[&>tbody>tr>td]:px-6 xl:[&>thead>tr>th]:px-6",
+    ),
     rowSelection:
       props.userOverride !== undefined
         ? undefined
@@ -154,6 +159,7 @@ function getSpeedColumns({
           <User
             user={info.row.original}
             isFriend={isFriend(info.row.original.uid)}
+            class="text-[1em]"
           />
         ),
       meta: {
