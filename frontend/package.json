@@ -103,7 +103,7 @@
     "solid-js": "1.9.10",
     "subset-font": "2.3.0",
     "tailwindcss": "4.1.18",
-    "tsx": "4.16.2",
+    "tsx": "4.21.0",
     "typescript": "6.0.0-beta",
     "unplugin-inject-preload": "3.0.0",
     "vite": "7.1.12",
