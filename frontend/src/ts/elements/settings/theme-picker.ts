@@ -150,13 +150,13 @@ export async function fillCustomButtons(): Promise<void> {
 
   if (!isAuthenticated()) {
     saveButton?.setText("save");
-    addButton?.addClass("hidden");
+    addButton?.hide();
     customThemesEl?.setStyle({ marginBottom: "0" });
     return;
   }
 
   saveButton?.setText("save as new");
-  addButton?.removeClass("hidden");
+  addButton?.show();
 
   const customThemes = DB.getSnapshot()?.customThemes ?? [];
 

@@ -33,7 +33,7 @@ function getTotalXpToReachLevel(level: number): number {
   return (49 * Math.pow(level, 2) + 53 * level - 102) / 2;
 }
 
-type XPDetails = {
+export type XPDetails = {
   level: number;
   levelCurrentXp: number;
   levelMaxXp: number;

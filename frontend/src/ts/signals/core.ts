@@ -32,3 +32,7 @@ export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
 export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isLoggedIn = () => getUserId() !== null;
+
+export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
+  string | undefined
+>(undefined);

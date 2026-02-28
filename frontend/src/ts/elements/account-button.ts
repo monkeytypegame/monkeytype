@@ -15,8 +15,8 @@ const accountButtonAndMenuEl = nav.qsr(".accountButtonAndMenu");
 const loginButtonEl = nav.qsr(".textButton.view-login");
 
 export function hide(): void {
-  accountButtonAndMenuEl.addClass("hidden");
-  loginButtonEl.addClass("hidden");
+  accountButtonAndMenuEl.hide();
+  loginButtonEl.hide();
 }
 
 export function loading(state: boolean): void {
