@@ -65,7 +65,7 @@
     "zod-urlsearchparams": "0.0.16"
   },
   "devDependencies": {
-    "@eslint/json": "0.14.0",
+    "@eslint/json": "1.0.1",
     "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
