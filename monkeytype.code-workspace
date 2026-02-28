@@ -46,6 +46,7 @@
     "oxc.typeAware": true,
     "typescript.format.enable": false,
     "oxc.fmt.configPath": ".oxfmtrc-editor.json",
+    "oxc.fixKind": "safe_fix_or_suggestion",
     "[json]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
