@@ -14,6 +14,7 @@ import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
+import { addGithubAuth, addGoogleAuth } from "../auth";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -244,6 +245,14 @@ qs(".pageAccountSettings")?.onChild(
 
 qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
   showPopup("updateName");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
+  void addGoogleAuth();
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
+  void addGithubAuth();
 });
 
 AuthEvent.subscribe((event) => {
