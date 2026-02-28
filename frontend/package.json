@@ -30,6 +30,8 @@
     "@monkeytype/util": "workspace:*",
     "@sentry/browser": "9.14.0",
     "@sentry/vite-plugin": "3.3.1",
+    "@solid-primitives/refs": "1.1.2",
+    "@solid-primitives/transition-group": "1.1.2",
     "@solidjs/meta": "0.29.4",
     "@tanstack/solid-query": "5.90.23",
     "@tanstack/solid-query-devtools": "5.91.3",
