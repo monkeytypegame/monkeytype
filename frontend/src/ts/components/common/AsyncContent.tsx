@@ -10,7 +10,6 @@ import {
 
 import * as Notifications from "../../elements/notifications";
 import { createErrorMessage, typedKeys } from "../../utils/misc";
-
 import { Conditional } from "./Conditional";
 import { LoadingCircle } from "./LoadingCircle";
 
@@ -93,16 +92,16 @@ export default function AsyncContent<T extends QueryMapping>(
     return message;
   };
 
-  function allResolved(
+  const allResolved = (
     data: ReturnType<typeof value>,
-  ): data is { [K in keyof T]: T[K] } {
+  ): data is { [K in keyof T]: T[K] } => {
     //single query
     if (data === undefined || data === null) {
       return false;
     }
 
     return Object.values(data).every((v) => v !== undefined && v !== null);
-  }
+  };
 
   const isLoading = (): boolean =>
     Object.values(source() as AsyncEntry<unknown>[]).some((s) => s.isLoading());

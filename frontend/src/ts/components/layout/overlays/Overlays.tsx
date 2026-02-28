@@ -5,7 +5,6 @@ import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
 import { ScrollToTop } from "../footer/ScrollToTop";
-
 import { Banners } from "./Banners";
 import { FpsCounter } from "./FpsCounter";
 import { LoaderBar } from "./LoaderBar";
