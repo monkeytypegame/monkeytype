@@ -208,7 +208,6 @@ list.updateEmail = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (
     _thisPopup,
     password,
@@ -272,7 +271,6 @@ list.removeGoogleAuth = new SimpleModal({
       initVal: "",
     },
   ],
-  onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
@@ -326,7 +324,6 @@ list.removeGithubAuth = new SimpleModal({
       initVal: "",
     },
   ],
-  onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
@@ -379,7 +376,6 @@ list.removePasswordAuth = new SimpleModal({
       label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
     },
   ],
-  onlineOnly: true,
   buttonText: "reauthenticate to remove",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
@@ -442,7 +438,6 @@ list.updateName = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (_thisPopup, password, newName): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
@@ -516,7 +511,6 @@ list.updatePassword = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (
     _thisPopup,
     previousPass,
@@ -600,7 +594,6 @@ list.addPasswordAuth = new SimpleModal({
     },
   ],
   buttonText: "reauthenticate to add",
-  onlineOnly: true,
   execFn: async (
     _thisPopup,
     email,
@@ -679,7 +672,6 @@ list.deleteAccount = new SimpleModal({
   ],
   text: "This is the last time you can change your mind. After pressing the button everything is gone.",
   buttonText: "delete",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
@@ -728,7 +720,6 @@ list.resetAccount = new SimpleModal({
   ],
   text: "This is the last time you can change your mind. After pressing the button everything is gone.",
   buttonText: "reset",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
@@ -780,7 +771,6 @@ list.optOutOfLeaderboards = new SimpleModal({
   ],
   text: "Are you sure you want to opt out of leaderboards?",
   buttonText: "opt out",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
@@ -842,7 +832,6 @@ list.resetPersonalBests = new SimpleModal({
     },
   ],
   buttonText: "reset",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
@@ -896,7 +885,6 @@ list.resetSettings = new SimpleModal({
   title: "Reset settings",
   text: "Are you sure you want to reset all your settings?",
   buttonText: "reset",
-  onlineOnly: true,
   execFn: async (): Promise<ExecReturn> => {
     await resetConfig();
     await FileStorage.deleteFile("LocalBackgroundFile");
@@ -919,7 +907,6 @@ list.revokeAllTokens = new SimpleModal({
   ],
   text: "Are you sure you want to do this? This will log you out of all devices.",
   buttonText: "revoke all",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
@@ -961,7 +948,6 @@ list.unlinkDiscord = new SimpleModal({
   title: "Unlink Discord",
   text: "Are you sure you want to unlink your Discord account?",
   buttonText: "unlink",
-  onlineOnly: true,
   execFn: async (): Promise<ExecReturn> => {
     const snap = DB.getSnapshot();
     if (!snap) {
@@ -1069,7 +1055,6 @@ list.updateCustomTheme = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (_thisPopup, name, updateColors): Promise<ExecReturn> => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
@@ -1130,7 +1115,6 @@ list.deleteCustomTheme = new SimpleModal({
   title: "Delete custom theme",
   text: "Are you sure?",
   buttonText: "delete",
-  onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
     void ThemePicker.fillCustomButtons();

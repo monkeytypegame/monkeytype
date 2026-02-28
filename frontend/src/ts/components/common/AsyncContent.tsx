@@ -92,16 +92,16 @@ export default function AsyncContent<T extends QueryMapping>(
     return message;
   };
 
-  function allResolved(
+  const allResolved = (
     data: ReturnType<typeof value>,
-  ): data is { [K in keyof T]: T[K] } {
+  ): data is { [K in keyof T]: T[K] } => {
     //single query
     if (data === undefined || data === null) {
       return false;
     }
 
     return Object.values(data).every((v) => v !== undefined && v !== null);
-  }
+  };
 
   const isLoading = (): boolean =>
     Object.values(source() as AsyncEntry<unknown>[]).some((s) => s.isLoading());
@@ -112,7 +112,7 @@ export default function AsyncContent<T extends QueryMapping>(
       ?.error?.();
 
   const loader = (): JSXElement =>
-    props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
+    props.loader ?? <LoadingCircle class="p-4 text-4xl" />;
 
   const errorText = (err: unknown): JSXElement | undefined =>
     props.ignoreError ? undefined : <div class="error">{handleError(err)}</div>;

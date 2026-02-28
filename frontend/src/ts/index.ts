@@ -4,6 +4,7 @@ import "./event-handlers/test";
 import "./event-handlers/settings";
 import "./event-handlers/account";
 import "./event-handlers/login";
+import "./event-handlers/nav";
 
 import "./modals/google-sign-up";
 

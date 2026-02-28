@@ -12,6 +12,7 @@ import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
 import { qsr } from "../../utils/dom";
+import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
@@ -44,6 +45,14 @@ export function AboutPage(): JSXElement {
     ...getSpeedHistogramQueryOptions(),
     enabled: isOpen(),
   }));
+
+  const numberOfHistogramRecords = (data?: { y: number }[]) => {
+    if (data === undefined) return "";
+    const sum = getNumberWithMagnitude(
+      data.reduce((sum, it) => (sum += it.y), 0),
+    );
+    return `${sum.roundedTo2} ${sum.orderOfMagnitude}`;
+  };
 
   return (
     <div class="content-grid grid gap-8">
@@ -91,69 +100,81 @@ export function AboutPage(): JSXElement {
           errorMessage="Failed to get global speed stats for histogram"
         >
           {(data) => (
-            <ChartJs
-              type="bar"
-              data={{
-                labels: data?.labels ?? [],
-                datasets: [
-                  {
-                    yAxisID: "count",
-                    label: "Users",
-                    data: data?.data ?? [],
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                hover: {
-                  mode: "nearest",
-                  intersect: false,
-                },
-                scales: {
-                  x: {
-                    axis: "x",
-                    bounds: "ticks",
-                    display: true,
-                    title: {
-                      display: false,
-                      text: "Bucket",
+            <>
+              <ChartJs
+                type="bar"
+                data={{
+                  labels: data?.labels ?? [],
+                  datasets: [
+                    {
+                      yAxisID: "count",
+                      label: "Users",
+                      data: data?.data ?? [],
+                      minBarLength: 2,
                     },
-                    offset: true,
-                  },
-                  count: {
-                    axis: "y",
-                    beginAtZero: true,
-                    min: 0,
-                    ticks: {
-                      autoSkip: true,
-                      autoSkipPadding: 20,
-                      stepSize: 10,
-                    },
-                    display: true,
-                    title: {
-                      display: true,
-                      text: "Users",
-                    },
-                  },
-                },
-                plugins: {
-                  annotation: {
-                    annotations: [],
-                  },
-                  tooltip: {
-                    animation: { duration: 250 },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  hover: {
+                    mode: "nearest",
                     intersect: false,
-                    mode: "index",
                   },
-                },
-              }}
-            />
+                  scales: {
+                    x: {
+                      axis: "x",
+                      bounds: "ticks",
+                      display: true,
+                      title: {
+                        display: false,
+                        text: "Bucket",
+                      },
+                      offset: true,
+                    },
+                    count: {
+                      axis: "y",
+                      beginAtZero: true,
+                      min: 0,
+                      ticks: {
+                        autoSkip: true,
+                        autoSkipPadding: 20,
+                        stepSize: 10,
+                      },
+                      display: true,
+                      title: {
+                        display: true,
+                        text: "Users",
+                      },
+                    },
+                  },
+                  plugins: {
+                    annotation: {
+                      annotations: [],
+                    },
+                    tooltip: {
+                      animation: { duration: 250 },
+                      intersect: false,
+                      mode: "index",
+                      callbacks: {
+                        afterLabel: (context) => {
+                          return (
+                            (context.raw as { topPercentage?: string })
+                              .topPercentage ?? ""
+                          );
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+              <div class="text-right text-xs text-sub">
+                distribution of time 60 leaderboard results (wpm) <br />
+                {numberOfHistogramRecords(data?.data)} total results
+              </div>
+            </>
           )}
         </AsyncContent>
-        <div class="text-right text-xs text-sub">
-          distribution of time 60 leaderboard results (wpm)
-        </div>
       </section>
       <section>
         <H2 fa={{ icon: "fa-info-circle" }} text="about" />

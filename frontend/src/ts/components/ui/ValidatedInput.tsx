@@ -38,7 +38,6 @@ export function ValidatedInput<T = string>(
       element,
       others as ValidationOptions<T>,
     );
-
     validatedInput.setValue(props.value ?? null);
   });
 

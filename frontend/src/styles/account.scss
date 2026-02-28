@@ -31,39 +31,6 @@
     cursor: pointer;
   }
 
-  .timePbTable,
-  .wordsPbTable {
-    .sub {
-      opacity: 0.5;
-    }
-    td {
-      text-align: right;
-    }
-    tbody td:nth-child(1) {
-      font-size: 1.5rem;
-      border-radius: var(--roundness) 0 0 var(--roundness);
-    }
-    tbody td:last-child {
-      border-radius: 0 var(--roundness) var(--roundness) 0;
-    }
-  }
-
-  .showAllTimePbs,
-  .showAllWordsPbs {
-    margin-top: 1rem;
-  }
-
-  .doublegroup {
-    display: grid;
-    grid-auto-flow: column;
-    gap: 1rem;
-    .titleAndTable {
-      .title {
-        color: var(--sub-color);
-      }
-    }
-  }
-
   .triplegroup {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -481,8 +448,11 @@
     grid-area: top;
     display: grid;
     grid-template-columns: 15rem 1fr max-content;
-    grid-template-areas: "year title legend";
+    grid-template-areas: "title title legend";
     gap: 1rem;
+    &:has(.year) {
+      grid-template-areas: "year title legend";
+    }
   }
 
   .ss-main {

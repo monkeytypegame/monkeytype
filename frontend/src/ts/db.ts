@@ -1,7 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
-import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
@@ -33,6 +32,10 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import {
+  setLastResult,
+  setSnapshot as setSolidSnapshot,
+} from "./stores/snapshot";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -42,8 +45,6 @@ export class SnapshotInitError extends Error {
   constructor(message: string, responseCode: number) {
     super(message);
     this.name = "SnapshotInitError";
-    // TODO INVESTIGATE
-    // oxlint-disable-next-line
     this.responseCode = responseCode;
   }
 }
@@ -80,6 +81,8 @@ export function setSnapshot(
   if (options?.dispatchEvent !== false) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
+
+  setSolidSnapshot(newSnapshot);
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -251,6 +254,8 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();
     throw e;
+  } finally {
+    setSolidSnapshot(dbSnapshot);
   }
 }
 
@@ -262,10 +267,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     dbSnapshot.results !== undefined &&
     (offset === undefined || dbSnapshot.results.length > offset)
   ) {
-    return false;
-  }
-
-  if (!ConnectionState.get()) {
     return false;
   }
 
@@ -309,6 +310,8 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   } else {
     dbSnapshot.results = results;
   }
+
+  setLastResult(results[0]);
   return true;
 }
 
@@ -965,6 +968,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     if (snapshot?.results !== undefined) {
       snapshot.results.unshift(data.result);
     }
+    setLastResult(data.result);
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
     }
@@ -1061,10 +1065,6 @@ export async function getTestActivityCalendar(
   }
 
   if (dbSnapshot.testActivityByYear === undefined) {
-    if (!ConnectionState.get()) {
-      return undefined;
-    }
-
     showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
