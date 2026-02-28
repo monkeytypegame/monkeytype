@@ -386,5 +386,5 @@ export const skeletonPage = new PageWithUrlParams({
 });
 
 onDOMReady(async () => {
-  Skeleton.save("pageLeaderboards");
+  Skeleton.add("pageLeaderboards");
 });

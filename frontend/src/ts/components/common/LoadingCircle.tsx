@@ -12,7 +12,9 @@ export function LoadingCircle(props: {
     <Conditional
       if={props.mode === "icon" || props.mode === undefined}
       then={
-        <div class={cn("preloader text-main", props.class)}>
+        <div
+          class={cn("preloader grid place-items-center text-main", props.class)}
+        >
           <Fa icon="fa-circle-notch" fixedWidth spin />
         </div>
       }

@@ -87,7 +87,7 @@ export function Navigation(props: {
   return (
     <div class="grid grid-flow-col items-center gap-2 justify-self-end">
       <Show when={props.isLoading}>
-        <LoadingCircle />
+        <LoadingCircle class="text-xl text-sub" />
       </Show>
       <Button
         onClick={() => props.onPageChange(0)}

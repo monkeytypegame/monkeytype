@@ -73,7 +73,7 @@ export function UserRank(props: {
     <div class="flex rounded bg-sub-alt">
       <Show
         when={props.data !== undefined && props.total !== undefined}
-        fallback={<LoadingCircle class="w-full p-4 text-center" />}
+        fallback={<LoadingCircle class="w-full p-4 text-center text-2xl" />}
       >
         <Conditional
           if={props.data !== null}
