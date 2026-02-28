@@ -120,7 +120,7 @@ function Group<T>(props: {
             onClick={() => props.onSelect(item.id)}
             fa={{ icon: item.icon }}
             text={item.text}
-            class="justify-start"
+            class="justify-start px-[0.75em]"
             active={isEqual(item.id, props.selected)}
           />
         )}
