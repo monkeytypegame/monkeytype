@@ -288,7 +288,7 @@ async function apply(): Promise<void> {
     });
 
     if (response.status !== 200 || response.body.data === null) {
-      Notifications.add("Failed to add preset" + response.body.message, -1);
+      Notifications.add("Failed to add preset: " + response.body.message, -1);
     } else {
       Notifications.add("Preset added", 1, {
         duration: 2,

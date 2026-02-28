@@ -654,8 +654,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       );
       if (isSafari) {
         //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-        const versionMatch = navigator.userAgent.match(
-          /.*Version\/([0-9]*)\.([0-9]*).*/,
+        const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(
+          navigator.userAgent,
         );
         const mainVersion =
           versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
