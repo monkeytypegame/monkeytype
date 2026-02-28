@@ -215,6 +215,7 @@ function getSpeedColumns({
       meta: {
         align: "right",
         maxBreakpoint: "xl",
+        headerClass: "text-error",
       },
     }),
     defineColumn("raw", {

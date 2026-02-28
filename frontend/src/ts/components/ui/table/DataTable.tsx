@@ -23,6 +23,7 @@ import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { bp } from "../../../signals/breakpoints";
+import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import {
@@ -176,18 +177,21 @@ export function DataTable<TData, TValue = any>(
                               onClick={(e) => {
                                 header.column.getToggleSortingHandler()?.(e);
                               }}
-                              class="m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
-                              classList={{
-                                "justify-start text-left":
-                                  (header.column.columnDef.meta?.align ??
-                                    "left") === "left",
-                                "justify-center text-center":
-                                  header.column.columnDef.meta?.align ===
-                                  "center",
-                                "justify-end  text-right":
-                                  header.column.columnDef.meta?.align ===
-                                  "right",
-                              }}
+                              class={cn(
+                                "m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt",
+                                {
+                                  "justify-start text-left":
+                                    (header.column.columnDef.meta?.align ??
+                                      "left") === "left",
+                                  "justify-center text-center":
+                                    header.column.columnDef.meta?.align ===
+                                    "center",
+                                  "justify-end text-right":
+                                    header.column.columnDef.meta?.align ===
+                                    "right",
+                                },
+                                header.column.columnDef.meta?.headerClass,
+                              )}
                               {...(header.column.columnDef.meta?.headerMeta ??
                                 {})}
                             >
@@ -224,16 +228,20 @@ export function DataTable<TData, TValue = any>(
                         else={
                           <TableHead
                             colSpan={header.colSpan}
-                            classList={{
-                              "text-left":
-                                (header.column.columnDef.meta?.align ??
-                                  "left") === "left",
-                              "text-center":
-                                header.column.columnDef.meta?.align ===
-                                "center",
-                              "text-right":
-                                header.column.columnDef.meta?.align === "right",
-                            }}
+                            class={cn(
+                              {
+                                "text-left":
+                                  (header.column.columnDef.meta?.align ??
+                                    "left") === "left",
+                                "text-center":
+                                  header.column.columnDef.meta?.align ===
+                                  "center",
+                                "text-right":
+                                  header.column.columnDef.meta?.align ===
+                                  "right",
+                              },
+                              header.column.columnDef.meta?.headerClass,
+                            )}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
                           >
