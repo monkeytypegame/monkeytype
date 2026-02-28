@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "lint": "oxlint . --type-aware --type-check && oxlint . -c .oxlintrc-plugin.json",
+    "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint .",
     "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
@@ -23,12 +23,15 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@leonabcd123/modern-caps-lock": "2.0.3",
     "@monkeytype/contracts": "workspace:*",
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",
     "@monkeytype/util": "workspace:*",
     "@sentry/browser": "9.14.0",
     "@sentry/vite-plugin": "3.3.1",
+    "@solid-primitives/refs": "1.1.2",
+    "@solid-primitives/transition-group": "1.1.2",
     "@solidjs/meta": "0.29.4",
     "@tanstack/solid-query": "5.90.23",
     "@tanstack/solid-query-devtools": "5.91.3",
@@ -93,8 +96,8 @@
     "madge": "8.0.0",
     "magic-string": "0.30.17",
     "normalize.css": "8.0.1",
-    "oxlint": "1.47.0",
-    "oxlint-tsgolint": "0.12.2",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.14.2",
     "postcss": "8.4.31",
     "sass": "1.70.0",
     "solid-js": "1.9.10",
@@ -127,6 +130,6 @@
     "not dead"
   ],
   "engines": {
-    "node": "24.11.0 || 22.21.0"
+    "node": ">=24.0.0 <25"
   }
 }

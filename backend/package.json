@@ -4,7 +4,7 @@
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
-    "lint": "oxlint . --type-aware --type-check && oxlint -c .oxlintrc-plugin.json",
+    "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "@redocly/cli": "2.0.5",
+    "@redocly/cli": "2.15.1",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
@@ -80,8 +80,8 @@
     "@vitest/coverage-v8": "4.0.15",
     "concurrently": "8.2.2",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.47.0",
-    "oxlint-tsgolint": "0.12.2",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.14.2",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
     "testcontainers": "11.11.0",
@@ -90,6 +90,6 @@
     "vitest": "4.0.15"
   },
   "engines": {
-    "node": "24.11.0 || 22.21.0"
+    "node": ">=24.0.0 <25"
   }
 }
