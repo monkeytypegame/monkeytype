@@ -69,7 +69,7 @@ function _buildCommandForConfigKey<
 
     const inputCommand = buildInputCommand({
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
-      isPartOfSubgruop: "subgroup" in commandMeta,
+      isPartOfSubgroup: "subgroup" in commandMeta,
       inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
       configMeta: configMeta as unknown as ConfigMetadata<
         keyof ConfigSchemas.Config
@@ -201,13 +201,13 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
-  isPartOfSubgruop,
+  isPartOfSubgroup,
   inputProps,
   configMeta,
   schema,
 }: {
   key: K;
-  isPartOfSubgruop: boolean;
+  isPartOfSubgroup: boolean;
   inputProps?: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodSchema;
@@ -216,7 +216,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
 
   const displayString =
     inputProps?.display ??
-    (isPartOfSubgruop
+    (isPartOfSubgroup
       ? "custom..."
       : `${capitalizeFirstLetter(configMeta.displayString ?? key)}...`);
 

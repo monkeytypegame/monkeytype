@@ -1,12 +1,11 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
 import { qsr } from "../utils/dom";
+import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
 
 const el = qsr("#capsWarning");
+let visible = false;
 
 export let capsState = false;
-
-let visible = false;
 
 function show(): void {
   if (!visible) {
@@ -22,16 +21,7 @@ function hide(): void {
   }
 }
 
-function update(event: KeyboardEvent): void {
-  if (event.key === "CapsLock" && capsState !== null) {
-    capsState = !capsState;
-  } else {
-    const modState = event.getModifierState?.("CapsLock");
-    if (modState !== undefined) {
-      capsState = modState;
-    }
-  }
-
+function updateCapsWarningVisibility(): void {
   try {
     if (Config.capsLockWarning && capsState) {
       show();
@@ -41,8 +31,7 @@ function update(event: KeyboardEvent): void {
   } catch {}
 }
 
-document.addEventListener("keyup", update);
-
-document.addEventListener("keydown", (event) => {
-  if (Misc.isMac()) update(event);
+onCapsLockChange((currentCapsState: boolean) => {
+  capsState = currentCapsState;
+  updateCapsWarningVisibility();
 });
