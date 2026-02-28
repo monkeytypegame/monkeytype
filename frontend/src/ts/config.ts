@@ -1,4 +1,3 @@
-import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
@@ -24,6 +23,9 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { deleteConfig, saveConfig } from "./ape/config";
+import Ape from "./ape";
+import { SnapshotInitError } from "./db";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -47,7 +49,7 @@ let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
-    void DB.saveConfig(configToSend).then(() => {
+    void saveConfig(configToSend).then(() => {
       AccountButton.loading(false);
     });
   }
@@ -73,7 +75,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   configLS.set(config);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    void DB.saveConfig(config);
+    void saveConfig(config);
     AccountButton.loading(false);
   }
 }
@@ -297,7 +299,7 @@ export async function applyConfig(
 
 export async function resetConfig(): Promise<void> {
   await applyConfig(getDefaultConfig());
-  await DB.resetConfig();
+  await deleteConfig();
   saveFullConfigToLocalStorage(true);
 }
 
@@ -347,6 +349,47 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     const msg = createErrorMessage(e, "Failed to import settings");
     console.error(msg);
     Notifications.add(msg, -1);
+  }
+}
+
+export async function updateFromServer(): Promise<void> {
+  const remoteConfig = await getRemoteConfig();
+
+  const areConfigsEqual =
+    JSON.stringify(config) === JSON.stringify(remoteConfig);
+
+  if (config === undefined || !areConfigsEqual) {
+    console.log(
+      "no local config or local and db configs are different - applying db",
+    );
+    await applyConfig(remoteConfig);
+    saveFullConfigToLocalStorage(true);
+  }
+}
+
+async function getRemoteConfig(): Promise<ConfigSchemas.Config> {
+  const response = await Ape.configs.get();
+
+  if (response.status !== 200) {
+    throw new SnapshotInitError(
+      `${response.body.message} (config)`,
+      response.status,
+    );
+  }
+
+  const configData = response.body.data;
+  if (configData !== null && "config" in configData) {
+    throw new Error(
+      "Config data is not in the correct format. Please refresh the page or contact support.",
+    );
+  }
+
+  if (configData === undefined || configData === null) {
+    return {
+      ...getDefaultConfig(),
+    };
+  } else {
+    return migrateConfig(configData);
   }
 }
 
