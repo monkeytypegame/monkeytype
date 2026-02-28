@@ -1,31 +1,24 @@
-import { LanguageSchema } from "@monkeytype/schemas/languages";
-import { ModeSchema } from "@monkeytype/schemas/shared";
 import { useQuery } from "@tanstack/solid-query";
-import {
-  Accessor,
-  createEffect,
-  createSignal,
-  JSXElement,
-  Setter,
-  Show,
-} from "solid-js";
-import { z } from "zod";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
-import { configurationPromise as serverConfigurationPromise } from "../../../ape/server-configuration";
 import { getSnapshot, updateLbMemory } from "../../../db";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { PageName, PageWithUrlParams } from "../../../pages/page";
+import { updateGetParameters } from "../../../pages/leaderboard";
+import { PageName } from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
   Selection,
-  SelectionSchema,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
-import { onDOMReady, qsr } from "../../../utils/dom";
-import * as Skeleton from "../../../utils/skeleton";
+import {
+  getPage,
+  getSelection,
+  setPage,
+  setSelection,
+} from "../../../stores/leaderboard-selection";
+import { qsr } from "../../../utils/dom";
 import AsyncContent from "../../common/AsyncContent";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Navigation } from "./Navigation";
@@ -37,28 +30,11 @@ import { UserRank } from "./UserRank";
 
 const pageName: PageName = "leaderboards";
 
-const LeaderboardUrlParamsSchema = z
-  .object({
-    type: z.enum(["allTime", "daily", "weekly"]),
-    mode: ModeSchema.optional(),
-    mode2: z.string().optional(),
-    language: LanguageSchema.optional(),
-    yesterday: z.boolean().optional(),
-    lastWeek: z.boolean().optional(),
-    friendsOnly: z.boolean().optional(),
-    page: z.number().optional(),
-    goToUserPage: z.boolean().optional(),
-  })
-  .partial();
-type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
-
 qsr(`nav .view-${pageName}`).on("mouseenter", () => {
   prefetch();
 });
 
 //used for url params so we need this global
-const [selection, setSelection] = lsSelection();
-const [page, setPage] = createSignal(0);
 
 export function LeaderboardPage(): JSXElement {
   const isOpen = () => getActivePage() === pageName;
@@ -70,8 +46,8 @@ export function LeaderboardPage(): JSXElement {
     if (isOpen()) {
       void queryClient.prefetchQuery(
         getLeaderboardQueryOptions({
-          ...selection(),
-          page: page() + 1,
+          ...getSelection(),
+          page: getPage() + 1,
         }),
       );
     }
@@ -79,7 +55,7 @@ export function LeaderboardPage(): JSXElement {
 
   //update url after the data is loaded
   createEffect(() => {
-    if (dataQuery.isSuccess) updateGetParameters(selection(), page());
+    if (dataQuery.isSuccess) updateGetParameters(getSelection(), getPage());
   });
 
   //update lb memory after the rank is loaded
@@ -91,21 +67,21 @@ export function LeaderboardPage(): JSXElement {
   createEffect(() => {
     const connectionsEnabled =
       serverConfigurationQuery.data?.connections.enabled;
-    if (connectionsEnabled === false && selection().friendsOnly) {
+    if (connectionsEnabled === false && getSelection().friendsOnly) {
       setSelection((old) => ({ ...old, friendsOnly: false }));
     }
   });
 
   const dataQuery = useQuery(() => ({
     ...getLeaderboardQueryOptions({
-      ...selection(),
-      page: page() ?? 0,
+      ...getSelection(),
+      page: getPage() ?? 0,
     }),
     enabled: isOpen(),
   }));
 
   const rankQuery = useQuery(() => ({
-    ...getRankQueryOptions(selection()),
+    ...getRankQueryOptions(getSelection()),
     enabled: isLoggedIn() && isOpen(),
   }));
 
@@ -123,7 +99,7 @@ export function LeaderboardPage(): JSXElement {
    * the page that contains the user
    */
   const userPage = () => {
-    const userRank = selection().friendsOnly
+    const userRank = getSelection().friendsOnly
       ? rankQuery.data?.friendsRank
       : rankQuery.data?.rank;
     if (userRank === undefined) return undefined;
@@ -135,15 +111,15 @@ export function LeaderboardPage(): JSXElement {
     if (
       rankQuery.data !== undefined &&
       rankQuery.data !== null &&
-      selection !== undefined &&
-      selection().type === "allTime"
+      getSelection !== undefined &&
+      getSelection().type === "allTime"
     ) {
-      const diff = getLbMemoryDifference(selection(), rankQuery.data.rank);
+      const diff = getLbMemoryDifference(getSelection(), rankQuery.data.rank);
 
       if (diff !== 0) {
         void updateLbMemory(
           "time",
-          selection().mode2 as string,
+          getSelection().mode2 as string,
           "english",
           rankQuery.data.rank,
           true,
@@ -178,7 +154,7 @@ export function LeaderboardPage(): JSXElement {
         <AsyncContent query={serverConfigurationQuery}>
           {(config) => (
             <Sidebar
-              selection={selection}
+              selection={getSelection}
               onSelect={onSelectionChange}
               validModeRules={config.dailyLeaderboards.validModeRules ?? []}
               connectionsEnabled={config.connections.enabled}
@@ -189,7 +165,7 @@ export function LeaderboardPage(): JSXElement {
 
       <div class="flex w-full flex-1 flex-col gap-8">
         <Title
-          selection={selection()}
+          selection={getSelection()}
           onPreviousSelect={() =>
             setSelection((old) => ({ ...old, previous: !old.previous }))
           }
@@ -206,15 +182,15 @@ export function LeaderboardPage(): JSXElement {
           >
             {({ data, rank, config }) => (
               <UserRank
-                type={selection().type === "weekly" ? "xp" : "speed"}
+                type={getSelection().type === "weekly" ? "xp" : "speed"}
                 data={rank}
-                friendsOnly={selection().friendsOnly}
+                friendsOnly={getSelection().friendsOnly}
                 total={data?.count}
                 minWpm={
                   data && "minWpm" in data ? (data.minWpm as number) : undefined
                 }
                 memoryDifference={getLbMemoryDifference(
-                  selection(),
+                  getSelection(),
                   rank?.rank,
                 )}
                 isLbOptOut={getSnapshot()?.lbOptOut ?? false}
@@ -240,7 +216,7 @@ export function LeaderboardPage(): JSXElement {
           {(data) => (
             <div class="grid gap-2">
               <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
-                <NextUpdate type={selection().type} />
+                <NextUpdate type={getSelection().type} />
                 <Navigation
                   isLoading={
                     dataQuery.isLoading ||
@@ -249,22 +225,22 @@ export function LeaderboardPage(): JSXElement {
                   }
                   lastPage={Math.ceil((data?.count ?? 0) / 50)}
                   userPage={userPage()}
-                  currentPage={page()}
+                  currentPage={getPage()}
                   onPageChange={setPage}
                   onScrollToUser={setScrollToUser}
                 />
               </div>
               <Table
-                type={selection().type === "weekly" ? "xp" : "speed"}
+                type={getSelection().type === "weekly" ? "xp" : "speed"}
                 entries={data?.entries ?? []}
-                friendsOnly={selection().friendsOnly}
+                friendsOnly={getSelection().friendsOnly}
                 scrollToUser={scrollToUser}
                 onScrolledToUser={() => setScrollToUser(false)}
               />
               <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                 <Navigation
                   lastPage={Math.ceil((data?.count ?? 0) / 50)}
-                  currentPage={page()}
+                  currentPage={getPage()}
                   onPageChange={setPage}
                   onScrollToUser={setScrollToUser}
                 />
@@ -275,88 +251,6 @@ export function LeaderboardPage(): JSXElement {
       </div>
     </div>
   );
-}
-function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
-  return useLocalStorage<Selection>({
-    key: "leaderboardSelector",
-    schema: SelectionSchema,
-    fallback: {
-      type: "allTime",
-      mode: "time",
-      mode2: "15",
-      language: "english",
-      friendsOnly: false,
-      previous: false,
-    },
-    migrate: (value) => {
-      if (value === null || typeof value !== "object") {
-        return {} as Selection;
-      }
-      const result = value as Selection;
-      if ("lastWeek" in result) {
-        delete result["lastWeek"];
-        result.previous = true;
-      } else if ("yesterday" in result) {
-        delete result["yesterday"];
-        result.previous = true;
-      }
-
-      if (result.type === "weekly") {
-        delete result.mode;
-        delete result.mode2;
-        delete result.language;
-      }
-      return result;
-    },
-  });
-}
-
-function updateGetParameters(selection: Selection, page: number): void {
-  const params: LeaderboardUrlParams = {
-    type: selection.type,
-    mode: selection.mode,
-    mode2: selection.mode2,
-    language: selection.language,
-    page: page + 1,
-  };
-
-  if (selection.type === "weekly" && selection.previous) {
-    params.lastWeek = true;
-  }
-  if (selection.type === "daily" && selection.previous) {
-    params.yesterday = true;
-  }
-  if (selection.friendsOnly) {
-    params.friendsOnly = true;
-  }
-  skeletonPage.setUrlParams(params);
-}
-
-export function readGetParameters(
-  params: LeaderboardUrlParams | undefined,
-): void {
-  if (params === undefined || params.type === undefined) return;
-
-  let newSelection: Partial<Selection> = {
-    type: params.type,
-    friendsOnly: params.friendsOnly ?? false,
-  };
-
-  if (params.type === "weekly") {
-    newSelection.previous = params.lastWeek ?? false;
-  } else {
-    newSelection.mode = params.mode ?? "time";
-    newSelection.mode2 = params.mode2 ?? "15";
-    newSelection.language = params.language ?? "english";
-    newSelection.previous =
-      (params.type === "daily" && params.yesterday) ?? false;
-  }
-
-  setSelection({ ...selection(), ...newSelection } as Selection);
-
-  if (params.page !== undefined) {
-    setPage(params.page - 1);
-  }
 }
 
 function prefetch(): void {
@@ -372,29 +266,3 @@ function prefetch(): void {
     }),
   );
 }
-
-export const skeletonPage = new PageWithUrlParams({
-  id: "leaderboards",
-  element: qsr(".page.pageLeaderboards"),
-  path: "/leaderboards",
-  urlParamsSchema: LeaderboardUrlParamsSchema,
-  loadingOptions: {
-    style: "spinner",
-    loadingMode: () => "sync",
-    loadingPromise: async () => {
-      await serverConfigurationPromise;
-    },
-  },
-
-  afterHide: async (): Promise<void> => {
-    Skeleton.remove("pageLeaderboards");
-  },
-  beforeShow: async (options): Promise<void> => {
-    Skeleton.append("pageLeaderboards", "main");
-    readGetParameters(options.urlParams);
-  },
-});
-
-onDOMReady(async () => {
-  Skeleton.add("pageLeaderboards");
-});
