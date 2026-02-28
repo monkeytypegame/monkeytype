@@ -80,6 +80,7 @@ async function initGroups(): Promise<void> {
   );
   groups["difficulty"] = new SettingsGroup("difficulty", "button");
   groups["quickRestart"] = new SettingsGroup("quickRestart", "button");
+  groups["resultSaving"] = new SettingsGroup("resultSaving", "button");
   groups["showAverage"] = new SettingsGroup("showAverage", "button");
   groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
     updateCallback: () => {

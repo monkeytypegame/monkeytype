@@ -14,6 +14,7 @@ import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
+import { addGithubAuth, addGoogleAuth } from "../auth";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -120,6 +121,8 @@ function updateTabs(): void {
     async () => {
       pageElement.qsa(".tab")?.removeClass("active");
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
+      if (state.tab === "apeKeys") void ApeKeyTable.update(updateUI);
+      if (state.tab === "blockedUsers") void BlockedUserTable.update();
     },
   );
   pageElement.qsa("button")?.removeClass("active");
@@ -152,8 +155,6 @@ export function updateUI(): void {
   updateAuthenticationSections();
   updateIntegrationSections();
   updateAccountSections();
-  void ApeKeyTable.update(updateUI);
-  void BlockedUserTable.update();
   updateTabs();
   page.setUrlParams(state);
 }
@@ -244,6 +245,14 @@ qs(".pageAccountSettings")?.onChild(
 
 qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
   showPopup("updateName");
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
+  void addGoogleAuth();
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
+  void addGithubAuth();
 });
 
 AuthEvent.subscribe((event) => {

@@ -25,6 +25,7 @@ export function H2(props: {
   );
 }
 
+// oxlint-disable-next-line monkeytype-rules/one-component-per-file
 export function H3(props: {
   id?: string;
   class?: string;
