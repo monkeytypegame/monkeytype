@@ -176,8 +176,6 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
-// TODO INVESTIGATE IF THIS IS NEEDED
-// oxlint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp,
 ): number {
@@ -596,13 +594,11 @@ export function promiseWithResolvers<T = void>(): {
     ): Promise<TResult1 | TResult2> {
       return currentPromise.then(onfulfilled, onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
     async catch<TResult = never>(
       onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
     ): Promise<T | TResult> {
       return currentPromise.catch(onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
     async finally(onfinally?: (() => void) | null): Promise<T> {
       return currentPromise.finally(onfinally);
     },

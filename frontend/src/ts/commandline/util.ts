@@ -10,7 +10,7 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema } from "zod";
+import { z, ZodSchema, ZodFirstPartySchemaTypes } from "zod";
 
 function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
   if (schema instanceof z.ZodLiteral) {
@@ -28,7 +28,6 @@ function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
 }
 
 export function buildCommandForConfigKey<
-  // oxlint-disable-next-line no-unnecessary-type-parameters
   K extends keyof CommandlineConfigMetadataObject,
 >(key: K): Command {
   const configMeta = configMetadata[key];
@@ -69,7 +68,7 @@ function _buildCommandForConfigKey<
 
     const inputCommand = buildInputCommand({
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
-      isPartOfSubgruop: "subgroup" in commandMeta,
+      isPartOfSubgroup: "subgroup" in commandMeta,
       inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
       configMeta: configMeta as unknown as ConfigMetadata<
         keyof ConfigSchemas.Config
@@ -120,8 +119,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
 
   if (values === undefined) {
     throw new Error(
-      //@ts-expect-error todo
-      `Unsupported schema type for key "${key}": ${schema._def.typeName}`,
+      `Unsupported schema type for key "${key}": ${(schema as ZodFirstPartySchemaTypes)._def.typeName}`,
     );
   }
   const list = values.map((value) =>
@@ -201,13 +199,13 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
-  isPartOfSubgruop,
+  isPartOfSubgroup,
   inputProps,
   configMeta,
   schema,
 }: {
   key: K;
-  isPartOfSubgruop: boolean;
+  isPartOfSubgroup: boolean;
   inputProps?: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodSchema;
@@ -216,7 +214,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
 
   const displayString =
     inputProps?.display ??
-    (isPartOfSubgruop
+    (isPartOfSubgroup
       ? "custom..."
       : `${capitalizeFirstLetter(configMeta.displayString ?? key)}...`);
 

@@ -166,7 +166,7 @@ export async function setFilterPreset(id: string): Promise<void> {
 
   // make current filter presest button active
   qsa(
-    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`,
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id="${id}"]`,
   ).addClass("active");
 }
 
@@ -528,19 +528,6 @@ for (const el of qsa(`
   `)) {
   el.onChild("click", "button", (e) => {
     const childTarget = e.childTarget as HTMLElement;
-    const group = (e.target as HTMLElement).parentElement?.getAttribute(
-      "group",
-    ) as ResultFiltersGroup | null;
-    if (group === null) {
-      throw new Error("Cannot find group of target.");
-    }
-
-    const filter = childTarget.getAttribute("filter") as ResultFiltersGroupItem<
-      typeof group
-    > | null;
-    if (filter === null) {
-      throw new Error("Cannot find filter of target.");
-    }
 
     if (childTarget.classList.contains("allFilters")) {
       Misc.typedKeys(getFilters()).forEach((group) => {
@@ -564,14 +551,30 @@ for (const el of qsa(`
           setAllFilters(group, false);
         }
       });
-    } else if ((e.target as HTMLElement).tagName === "BUTTON") {
-      if (e.shiftKey) {
-        setAllFilters(group, false);
-        filters[group][filter] =
-          true as ResultFilters[typeof group][typeof filter];
-      } else {
-        toggle(group, filter);
-        // filters[group][filter] = !filters[group][filter];
+    } else {
+      const group = (e.target as HTMLElement).parentElement?.getAttribute(
+        "group",
+      ) as ResultFiltersGroup | null;
+      if (group === null) {
+        throw new Error("Cannot find group of target.");
+      }
+
+      const filter = childTarget.getAttribute(
+        "filter",
+      ) as ResultFiltersGroupItem<typeof group> | null;
+      if (filter === null) {
+        throw new Error("Cannot find filter of target.");
+      }
+
+      if ((e.target as HTMLElement).tagName === "BUTTON") {
+        if (e.shiftKey) {
+          setAllFilters(group, false);
+          filters[group][filter] =
+            true as ResultFilters[typeof group][typeof filter];
+        } else {
+          toggle(group, filter);
+          // filters[group][filter] = !filters[group][filter];
+        }
       }
     }
     updateActive();

@@ -86,7 +86,6 @@ const addFriendModal = new SimpleModal({
     },
   ],
   buttonText: "request",
-  onlineOnly: true,
   execFn: async (_thisPopup, receiverName) => {
     const result = await addFriend(receiverName);
 
