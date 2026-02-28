@@ -198,6 +198,56 @@ const plugin = {
         };
       },
     }),
+    "no-mixed-nullish-coalescing": defineRule({
+      createOnce(context) {
+        /**
+         * Returns true for expression node types that, when combined with ??
+         * without explicit parentheses, create confusing/ambiguous precedence.
+         * Excluded: UnaryExpression (clearly bound to its operand),
+         *           LogicalExpression with ?? (same operator, unambiguous).
+         */
+        const isParenthesized = (node, source) => {
+          // OXC strips ParenthesizedExpression from the AST before visiting,
+          // so check the raw source surrounding the node's range instead.
+          const start = node.range?.[0] ?? node.start;
+          const end = node.range?.[1] ?? node.end;
+          return source[start - 1] === "(" && source[end] === ")";
+        };
+
+        const isMixedOperatorNode = (node, source) => {
+          if (isParenthesized(node, source)) return false;
+          return (
+            node.type === "BinaryExpression" ||
+            (node.type === "LogicalExpression" && node.operator !== "??") ||
+            node.type === "ConditionalExpression"
+          );
+        };
+
+        return {
+          LogicalExpression(node) {
+            if (node.operator !== "??") return;
+
+            const source = context.sourceCode.getText();
+
+            if (isMixedOperatorNode(node.left, source)) {
+              context.report({
+                node: node.left,
+                message:
+                  "Nullish coalescing (`??`) mixed with other operators without explicit parentheses. Extract to a helper variable or wrap in parentheses for clarity.",
+              });
+            }
+
+            if (isMixedOperatorNode(node.right, source)) {
+              context.report({
+                node: node.right,
+                message:
+                  "Nullish coalescing (`??`) mixed with other operators without explicit parentheses. Extract to a helper variable or wrap in parentheses for clarity.",
+              });
+            }
+          },
+        };
+      },
+    }),
     "component-pascal-case": defineRule({
       createOnce(context) {
         const isPascalCase = (name) => /^[A-Z][a-zA-Z0-9]*$/.test(name);
