@@ -11,7 +11,6 @@ import { addBanner } from "../stores/banners";
 import { secondsToString } from "../utils/date-and-time";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { isDevEnvironment } from "../utils/misc";
-
 import * as Alerts from "./alerts";
 
 const confirmedPSAs = new LocalStorageWithSchema({

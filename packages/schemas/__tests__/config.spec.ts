@@ -31,44 +31,44 @@ describe("config schema", () => {
       {
         name: "tiff",
         input: `https://example.com/path/image.tiff`,
-        expectedError: "Unsupported image format.",
+        expectedError: "Unsupported image format",
       },
       {
         name: "non-url",
         input: `test`,
-        expectedError: "Needs to be an URI.",
+        expectedError: "Needs to be an URI",
       },
       {
         name: "single quotes",
         input: `https://example.com/404.jpg?q=alert('1')`,
-        expectedError: "May not contain quotes.",
+        expectedError: "May not contain quotes",
       },
       {
         name: "double quotes",
         input: `https://example.com/404.jpg?q=alert("1")`,
-        expectedError: "May not contain quotes.",
+        expectedError: "May not contain quotes",
       },
       {
         name: "back tick",
         input: `https://example.com/404.jpg?q=alert(\`1\`)`,
-        expectedError: "May not contain quotes.",
+        expectedError: "May not contain quotes",
       },
       {
         name: "javascript url",
         input: `javascript:alert('asdf');//https://example.com/img.jpg`,
-        expectedError: "Unsupported protocol.",
+        expectedError: "Unsupported protocol",
       },
       {
         name: "data url",
         input: `data:image/gif;base64,data`,
-        expectedError: "Unsupported protocol.",
+        expectedError: "Unsupported protocol",
       },
       {
         name: "long url",
         input: `https://example.com/path/image.jpeg?q=${new Array(2048)
           .fill("x")
           .join()}`,
-        expectedError: "URL is too long.",
+        expectedError: "URL is too long",
       },
     ])(`$name`, ({ input, expectedError }) => {
       const parsed = CustomBackgroundSchema.safeParse(input);

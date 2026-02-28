@@ -123,7 +123,7 @@ describe("LeaderboardsDal", () => {
       //GIVEN
       const stats = pb(100, 90, 2);
       //@ts-ignore
-      stats["consistency"] = undefined;
+      stats.consistency = undefined;
 
       await createUser(lbBests(stats));
 
