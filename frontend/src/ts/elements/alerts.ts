@@ -5,7 +5,6 @@ import * as DB from "../db";
 import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
 import {
   applyReducedMotion,
   createErrorMessage,
@@ -157,15 +156,6 @@ async function show(): Promise<void> {
 }
 
 async function getAccountAlerts(): Promise<void> {
-  if (!ConnectionState.get()) {
-    accountAlertsListEl.setHtml(`
-    <div class="nothing">
-    You are offline
-    </div>
-    `);
-    return;
-  }
-
   const inboxResponse = await Ape.users.getInbox();
 
   if (inboxResponse.status === 503) {

@@ -1,7 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
-import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
@@ -42,8 +41,6 @@ export class SnapshotInitError extends Error {
   constructor(message: string, responseCode: number) {
     super(message);
     this.name = "SnapshotInitError";
-    // TODO INVESTIGATE
-    // oxlint-disable-next-line
     this.responseCode = responseCode;
   }
 }
@@ -262,10 +259,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     dbSnapshot.results !== undefined &&
     (offset === undefined || dbSnapshot.results.length > offset)
   ) {
-    return false;
-  }
-
-  if (!ConnectionState.get()) {
     return false;
   }
 
@@ -1061,10 +1054,6 @@ export async function getTestActivityCalendar(
   }
 
   if (dbSnapshot.testActivityByYear === undefined) {
-    if (!ConnectionState.get()) {
-      return undefined;
-    }
-
     showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {

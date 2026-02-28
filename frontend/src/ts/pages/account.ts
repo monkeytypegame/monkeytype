@@ -15,7 +15,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import { format } from "date-fns/format";
-import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
@@ -972,12 +971,6 @@ async function fillContent(): Promise<void> {
 
 export async function downloadResults(offset?: number): Promise<void> {
   const results = await DB.getUserResults(offset);
-  if (!results && !ConnectionState.get()) {
-    Notifications.add("Could not get results - you are offline", -1, {
-      duration: 5,
-    });
-    return;
-  }
 
   TodayTracker.addAllFromToday();
   if (results) {
@@ -1197,12 +1190,6 @@ qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
 });
 
 qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   qs(".sendVerificationEmail")?.disable();
   await sendVerificationEmail();
   qs(".sendVerificationEmail")?.enable();

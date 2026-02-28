@@ -30,7 +30,6 @@ const actionModals: Record<Action, SimpleModal> = {
         validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
-    onlineOnly: true,
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
       const tagName = cleanTagName(propTagName);
@@ -73,7 +72,6 @@ const actionModals: Record<Action, SimpleModal> = {
         validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
-    onlineOnly: true,
     buttonText: "save",
     beforeInitFn: (_thisPopup) => {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
@@ -109,7 +107,6 @@ const actionModals: Record<Action, SimpleModal> = {
   remove: new SimpleModal({
     id: "removeTag",
     title: "Delete tag",
-    onlineOnly: true,
     buttonText: "delete",
     beforeInitFn: (_thisPopup) => {
       _thisPopup.text = `Are you sure you want to delete tag ${_thisPopup.parameters[0]} ?`;
@@ -141,7 +138,6 @@ const actionModals: Record<Action, SimpleModal> = {
   clearPb: new SimpleModal({
     id: "clearTagPb",
     title: "Clear personal bests",
-    onlineOnly: true,
     buttonText: "clear",
     beforeInitFn: (_thisPopup) => {
       _thisPopup.text = `Are you sure you want to clear personal bests for tag ${_thisPopup.parameters[0]} ?`;
