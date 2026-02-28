@@ -268,7 +268,7 @@ function AvatarAndName(props: {
       )}
     >
       <DiscordAvatar
-        class="text-[5rem] text-sub"
+        class="h-full w-full place-self-center"
         size={256}
         discordAvatar={props.profile.discordAvatar}
         discordId={props.profile.discordId}
