@@ -12,6 +12,9 @@ import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { signIn, signInWithGitHub, signInWithGoogle, signUp } from "../auth";
+import * as Notifications from "../elements/notifications";
+import * as ConnectionState from "../states/connection";
 
 let registerForm: {
   name?: string;
@@ -204,6 +207,118 @@ new ValidatedHtmlInputElement(passwordVerifyInputEl, {
         : undefined;
     updateSignupButton();
   },
+});
+
+qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0);
+    return;
+  }
+
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
+
+  showPreloader();
+  disableInputs();
+  disableSignUpButton();
+  const data = await signInWithGoogle(rememberMe);
+  hidePreloader();
+
+  if (!data.success) {
+    Notifications.add(data.message, -1);
+    enableInputs();
+    enableSignUpButton();
+  }
+});
+
+qs(".pageLogin .login form")?.on("submit", async (e) => {
+  e.preventDefault();
+
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0);
+    return;
+  }
+
+  const email =
+    qsa<HTMLInputElement>(".pageLogin .login input")?.[0]?.getValue() ?? "";
+  const password =
+    qsa<HTMLInputElement>(".pageLogin .login input")?.[1]?.getValue() ?? "";
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
+
+  if (email === "" || password === "") {
+    Notifications.add("Please fill in all fields", 0);
+    return;
+  }
+
+  showPreloader();
+  disableInputs();
+  disableSignUpButton();
+  const data = await signIn(email, password, rememberMe);
+  hidePreloader();
+
+  if (!data.success) {
+    Notifications.add(data.message, -1);
+    enableInputs();
+    enableSignUpButton();
+  }
+});
+
+qs(".pageLogin .login button.signInWithGitHub")?.on("click", async () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0);
+    return;
+  }
+
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
+
+  showPreloader();
+  disableInputs();
+  disableSignUpButton();
+  const data = await signInWithGitHub(rememberMe);
+  hidePreloader();
+
+  if (!data.success) {
+    Notifications.add(data.message, -1);
+    enableInputs();
+    enableSignUpButton();
+  }
+});
+
+qs(".pageLogin .register form")?.on("submit", async (e) => {
+  e.preventDefault();
+
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0);
+    return;
+  }
+
+  const signupData = getSignupData();
+  if (signupData === false) {
+    Notifications.add("Please fill in all fields", 0);
+    return;
+  }
+
+  showPreloader();
+  disableInputs();
+  disableSignUpButton();
+
+  const data = await signUp(
+    signupData.name,
+    signupData.email,
+    signupData.password,
+  );
+
+  hidePreloader();
+  if (!data.success) {
+    Notifications.add(data.message, -1);
+    enableInputs();
+    enableSignUpButton();
+  }
 });
 
 export const page = new Page({

@@ -35,6 +35,7 @@ import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
 import { qs, qsa, qsr, ElementWithUtils, onDOMReady } from "../utils/dom";
+import { sendVerificationEmail } from "../auth";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1113,7 +1114,7 @@ qs(".pageAccount")?.onChild(
         (it) => it._id === result._id,
       );
       if (dbResult !== undefined) {
-        dbResult["chartData"] = result.chartData;
+        dbResult.chartData = result.chartData;
       }
 
       if (response.body.data.chartData === "toolong") {
@@ -1186,6 +1187,18 @@ qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   await downloadResults(offset);
   await fillContent();
   hideLoaderBar();
+});
+
+qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
+    return;
+  }
+  qs(".sendVerificationEmail")?.disable();
+  await sendVerificationEmail();
+  qs(".sendVerificationEmail")?.enable();
 });
 
 ConfigEvent.subscribe(({ key }) => {
