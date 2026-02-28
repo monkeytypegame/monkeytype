@@ -110,6 +110,15 @@ export function LeaderboardPage(): JSXElement {
     setPage(0);
   };
 
+  //if connections are disabled, friendsOnly cannot be true
+  createEffect(() => {
+    const connectionsEnabled =
+      serverConfigurationQuery.data?.connections.enabled;
+    if (connectionsEnabled === false && selection().friendsOnly) {
+      setSelection((old) => ({ ...old, friendsOnly: false }));
+    }
+  });
+
   /**
    * the page that contains the user
    */
@@ -172,6 +181,7 @@ export function LeaderboardPage(): JSXElement {
               selection={selection}
               onSelect={onSelectionChange}
               validModeRules={config.dailyLeaderboards.validModeRules ?? []}
+              connectionsEnabled={config.connections.enabled}
             />
           )}
         </AsyncContent>

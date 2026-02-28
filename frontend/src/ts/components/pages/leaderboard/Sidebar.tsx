@@ -24,6 +24,7 @@ export function Sidebar(props: {
   selection: Accessor<Selection>;
   onSelect: (selection: Selection) => void;
   validModeRules: ValidModeRule[];
+  connectionsEnabled: boolean;
 }): JSXElement {
   const updateSelection = (patch: Partial<Selection>) => {
     props.onSelect(
@@ -65,7 +66,7 @@ export function Sidebar(props: {
           { id: "daily", text: "daily", icon: "fa-sun" },
         ]}
       />
-      <Show when={isLoggedIn()}>
+      <Show when={isLoggedIn() && props.connectionsEnabled}>
         <Group
           selected={props.selection().friendsOnly}
           onSelect={selectFriendsOnly}
