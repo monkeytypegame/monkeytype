@@ -32,8 +32,9 @@ export function DiscordAvatar(props: {
           <>
             <Show when={showSpinner()}>
               <LoadingCircle
+                color="sub"
                 mode="svg"
-                class="col-start-1 row-start-1 h-full w-full fill-sub"
+                class="col-start-1 row-start-1 h-full w-full"
               />
             </Show>
             <img
