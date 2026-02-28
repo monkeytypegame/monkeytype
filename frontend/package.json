@@ -84,10 +84,10 @@
     "@types/subset-font": "1.4.3",
     "@types/throttle-debounce": "5.0.2",
     "@vitest/coverage-v8": "4.0.15",
-    "autoprefixer": "10.4.20",
+    "autoprefixer": "10.4.27",
     "concurrently": "8.2.2",
     "eslint": "9.39.1",
-    "eslint-plugin-compat": "6.0.2",
+    "eslint-plugin-compat": "7.0.0",
     "eslint-plugin-solid": "0.14.5",
     "firebase-tools": "13.15.1",
     "fontawesome-subset": "4.4.0",
@@ -98,7 +98,7 @@
     "normalize.css": "8.0.1",
     "oxlint": "1.50.0",
     "oxlint-tsgolint": "0.14.2",
-    "postcss": "8.4.31",
+    "postcss": "8.5.6",
     "sass": "1.70.0",
     "solid-js": "1.9.10",
     "subset-font": "2.3.0",
@@ -125,9 +125,7 @@
     ]
   },
   "browserslist": [
-    "defaults",
-    "not op_mini all",
-    "not dead"
+    "baseline widely available and > 0.002%"
   ],
   "engines": {
     "node": ">=24.0.0 <25"

@@ -47,6 +47,7 @@ function convertTests(
 function copySolidPlugin(config: UserWorkspaceConfig): void {
   if (!config.plugins) return;
   config.plugins
-    .filter((it) => it?.["name"] === "solid")
+    //@ts-expect-error this is fine
+    .filter((it) => it?.name === "solid")
     .forEach((it) => globalPlugins.push(it));
 }

@@ -167,9 +167,7 @@ function updatePendingConnections(): void {
         (item) => `<tr data-id="${
           item._id
         }" data-receiver-uid="${getReceiverUid(item)}">
-        <td><a href="${location.origin}/profile/${
-          item.initiatorUid
-        }?isUid" router-link>${item.initiatorName}</a></td>
+        <td><a href="${location.origin}/profile/${item.initiatorName}" router-link>${item.initiatorName}</a></td>
         <td>
           <span data-balloon-pos="up" aria-label="since ${format(
             item.lastModified,
@@ -262,9 +260,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td>
           <div class="avatarNameBadge">
             <div class="avatarPlaceholder"></div>
-              <a href="${location.origin}/profile/${
-                entry.uid
-              }?isUid" class="entryName" uid=${entry.uid} router-link>${
+              <a href="${location.origin}/profile/${entry.name}" class="entryName" uid=${entry.uid} router-link>${
                 entry.name
               }</a>            <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}

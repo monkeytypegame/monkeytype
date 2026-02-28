@@ -1,20 +1,11 @@
-import SlimSelect from "slim-select";
-import { DataObjectPartial } from "slim-select/store";
-import { getTestActivityCalendar } from "../db";
-import * as ServerConfiguration from "../ape/server-configuration";
-import * as DB from "../db";
 import {
   TestActivityCalendar,
   TestActivityMonth,
 } from "./test-activity-calendar";
-import { safeNumber } from "@monkeytype/util/numbers";
-
-let yearSelector: SlimSelect | undefined = undefined;
 
 export function init(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
-  userSignUpDate?: Date,
 ): void {
   if (calendar === undefined) {
     clear(element);
@@ -22,14 +13,6 @@ export function init(
   }
   element.classList.remove("hidden");
 
-  if (element.querySelector(".yearSelect") !== null) {
-    yearSelector = getYearSelector(element);
-    initYearSelector(
-      element,
-      "current",
-      safeNumber(userSignUpDate?.getFullYear()) ?? 2022,
-    );
-  }
   updateLabels(element, calendar.firstDayOfWeek);
   update(element, calendar);
 }
@@ -39,7 +22,10 @@ export function clear(element?: HTMLElement): void {
   element?.querySelector(".activity")?.replaceChildren();
 }
 
-function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
+export function update(
+  element: HTMLElement,
+  calendar?: TestActivityCalendar,
+): void {
   const container = element.querySelector(".activity");
 
   if (container === null) {
@@ -76,40 +62,6 @@ function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
   }
 }
 
-export function initYearSelector(
-  element: HTMLElement,
-  selectedYear: number | "current",
-  startYear: number,
-): void {
-  const currentYear = new Date().getFullYear();
-  const years: DataObjectPartial[] = [
-    {
-      text: "last 12 months",
-      value: "current",
-      selected: selectedYear === "current",
-    },
-  ];
-  for (let year = currentYear; year >= startYear; year--) {
-    if (
-      years.length < 2 ||
-      (ServerConfiguration.get()?.users.premium.enabled &&
-        DB.getSnapshot()?.isPremium)
-    ) {
-      years.push({
-        text: year.toString(),
-        value: year.toString(),
-        selected: year === selectedYear,
-      });
-    }
-  }
-
-  const yearSelect = getYearSelector(element);
-  // oxlint-disable-next-line no-unsafe-argument
-  yearSelect.setData(years);
-  // oxlint-disable-next-line no-unsafe-call
-  years.length > 1 ? yearSelect.enable() : yearSelect.disable();
-}
-
 function updateMonths(months: TestActivityMonth[]): void {
   const element = document.querySelector(".testActivity .months");
 
@@ -123,31 +75,6 @@ function updateMonths(months: TestActivityMonth[]): void {
         `<div style="grid-column: span ${month.weeks}">${month.text}</div>`,
     )
     .join("");
-}
-
-function getYearSelector(element: HTMLElement): SlimSelect {
-  if (yearSelector !== undefined) return yearSelector;
-  yearSelector = new SlimSelect({
-    select: element.querySelector(".yearSelect") as Element,
-    settings: {
-      showSearch: false,
-    },
-    events: {
-      afterChange: async (newVal): Promise<void> => {
-        // oxlint-disable-next-line no-unsafe-call
-        yearSelector?.disable();
-        const selected = newVal[0]?.value as string;
-        const activity = await getTestActivityCalendar(selected);
-        update(element, activity);
-        // oxlint-disable-next-line no-unsafe-call
-        if ((yearSelector?.getData() ?? []).length > 1) {
-          // oxlint-disable-next-line no-unsafe-call
-          yearSelector?.enable();
-        }
-      },
-    },
-  });
-  return yearSelector;
 }
 
 const daysDisplay = [

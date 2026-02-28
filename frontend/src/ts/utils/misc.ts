@@ -739,7 +739,8 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   });
 }
 
-export function formatTopPercentage(lbRank: RankAndCount): string {
+export function formatTopPercentage(lbRank?: RankAndCount): string {
+  if (lbRank === undefined) return "";
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";

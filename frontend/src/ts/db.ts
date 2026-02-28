@@ -32,6 +32,10 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import {
+  setLastResult,
+  setSnapshot as setSolidSnapshot,
+} from "./stores/snapshot";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -77,6 +81,8 @@ export function setSnapshot(
   if (options?.dispatchEvent !== false) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
+
+  setSolidSnapshot(newSnapshot);
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -248,6 +254,8 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();
     throw e;
+  } finally {
+    setSolidSnapshot(dbSnapshot);
   }
 }
 
@@ -302,6 +310,8 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   } else {
     dbSnapshot.results = results;
   }
+
+  setLastResult(results[0]);
   return true;
 }
 
@@ -958,6 +968,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     if (snapshot?.results !== undefined) {
       snapshot.results.unshift(data.result);
     }
+    setLastResult(data.result);
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
     }

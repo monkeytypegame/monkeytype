@@ -5,7 +5,6 @@ import * as DB from "../db";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
-import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
 import {
   Badge,
@@ -27,13 +26,7 @@ export function show(): void {
 }
 
 function hide(): void {
-  void modal.hide({
-    afterAnimation: async () => {
-      const snapshot = DB.getSnapshot();
-      if (!snapshot) return;
-      void Profile.update("account", snapshot);
-    },
-  });
+  void modal.hide();
 }
 
 const bioInput = qsr<HTMLTextAreaElement>("#editProfileModal .bio");
@@ -189,6 +182,8 @@ async function updateProfile(): Promise<void> {
       delete badge.selected;
     }
   });
+
+  DB.setSnapshot(snapshot);
 
   Notifications.add("Profile updated", 1);
 

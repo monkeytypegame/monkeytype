@@ -10,10 +10,16 @@ import Config, { setConfig } from "../config";
 import * as Notifications from "../elements/notifications";
 import { ElementWithUtils } from "../utils/dom";
 
-export type ValidationResult = {
-  status: "checking" | "success" | "failed" | "warning";
-  errorMessage?: string;
-};
+export type ValidationResult =
+  | {
+      status: "checking" | "failed" | "warning";
+      errorMessage?: string;
+      success: false;
+    }
+  | {
+      status: "success";
+      success: true;
+    };
 
 export type IsValidResponse = true | string | { warning: string };
 
@@ -77,17 +83,19 @@ export function createInputEventHandler<T>(
             }
 
             if (result === true) {
-              callback({ status: "success" });
+              callback({ status: "success", success: true });
             } else {
               if (typeof result === "object" && "warning" in result) {
                 callback({
                   status: "warning",
                   errorMessage: result.warning,
+                  success: false,
                 });
               } else {
                 callback({
                   status: "failed",
                   errorMessage: result,
+                  success: false,
                 });
               }
             }
@@ -104,13 +112,14 @@ export function createInputEventHandler<T>(
       checkValue = inputValueConvert(currentValue);
     }
 
-    callback({ status: "checking" });
+    callback({ status: "checking", success: false });
 
     if (validation.schema !== undefined) {
       const schemaResult = validation.schema.safeParse(checkValue);
 
       if (!schemaResult.success) {
         callback({
+          success: false,
           status: "failed",
           errorMessage:
             schemaResult.error.errors
@@ -126,7 +135,7 @@ export function createInputEventHandler<T>(
     }
 
     if (callIsValid === undefined) {
-      callback({ status: "success" });
+      callback({ status: "success", success: true });
       //call original handler if defined
       originalInput.oninput?.(e as InputEvent);
       return;
@@ -154,6 +163,7 @@ export class ValidatedHtmlInputElement<
   private indicator: InputIndicator;
   private currentStatus: ValidationResult = {
     status: "checking",
+    success: false,
   };
 
   constructor(
@@ -212,7 +222,7 @@ export class ValidatedHtmlInputElement<
   override setValue(val: string | null): this {
     if (val === null) {
       this.indicator.hide();
-      this.currentStatus = { status: "checking" };
+      this.currentStatus = { status: "checking", success: false };
     } else {
       super.setValue(val);
       this.dispatch("input");
