@@ -4,6 +4,7 @@ import { Accessor, createSignal, Setter } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Selection, SelectionSchema } from "../queries/leaderboards";
+import { get as getServerConfiguration } from "../ape/server-configuration";
 
 export const LeaderboardUrlParamsSchema = z
   .object({
@@ -20,8 +21,20 @@ export const LeaderboardUrlParamsSchema = z
   .partial();
 export type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
 
-export const [getSelection, setSelection] = lsSelection();
+const [getSelectionLs, setSelection] = lsSelection();
 export const [getPage, setPage] = createSignal(0);
+
+export const getSelection = () => {
+  if (
+    getServerConfiguration()?.connections.enabled === false &&
+    getSelectionLs().friendsOnly
+  ) {
+    setSelection((old) => ({ ...old, friendsOnly: false }));
+  }
+  return getSelectionLs();
+};
+
+export { setSelection };
 
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
   return useLocalStorage<Selection>({
@@ -56,31 +69,4 @@ function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
       return result;
     },
   });
-}
-
-export function readGetParameters(
-  params: LeaderboardUrlParams | undefined,
-): void {
-  if (params === undefined || params.type === undefined) return;
-
-  let newSelection: Partial<Selection> = {
-    type: params.type,
-    friendsOnly: params.friendsOnly ?? false,
-  };
-
-  if (params.type === "weekly") {
-    newSelection.previous = params.lastWeek ?? false;
-  } else {
-    newSelection.mode = params.mode ?? "time";
-    newSelection.mode2 = params.mode2 ?? "15";
-    newSelection.language = params.language ?? "english";
-    newSelection.previous =
-      (params.type === "daily" && params.yesterday) ?? false;
-  }
-
-  setSelection({ ...getSelection(), ...newSelection } as Selection);
-
-  if (params.page !== undefined) {
-    setPage(params.page - 1);
-  }
 }

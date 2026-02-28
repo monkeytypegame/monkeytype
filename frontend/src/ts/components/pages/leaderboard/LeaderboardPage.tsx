@@ -56,20 +56,15 @@ export function LeaderboardPage(): JSXElement {
 
   //update url after the data is loaded
   createEffect(() => {
-    if (dataQuery.isSuccess) updateGetParameters(getSelection(), getPage());
+    if (isOpen() && dataQuery.isSuccess) {
+      updateGetParameters(getSelection(), getPage());
+    }
   });
 
   //update lb memory after the rank is loaded
   createEffect(() => {
-    if (rankQuery.isSuccess) syncLbMemory();
-  });
-
-  //if connections are disabled, friendsOnly cannot be true
-  createEffect(() => {
-    const connectionsEnabled =
-      serverConfigurationQuery.data?.connections.enabled;
-    if (connectionsEnabled === false && getSelection().friendsOnly) {
-      setSelection((old) => ({ ...old, friendsOnly: false }));
+    if (isOpen() && rankQuery.isSuccess) {
+      syncLbMemory();
     }
   });
 
@@ -150,117 +145,121 @@ export function LeaderboardPage(): JSXElement {
   };
 
   return (
-    <div class="content-grid flex flex-col gap-8 lg:flex-row">
-      <div class="w-full lg:w-60 2xl:w-75">
-        <AsyncContent query={serverConfigurationQuery}>
-          {(config) => (
-            <Sidebar
-              selection={getSelection}
-              onSelect={onSelectionChange}
-              validModeRules={config.dailyLeaderboards.validModeRules ?? []}
-              connectionsEnabled={config.connections.enabled}
-            />
-          )}
-        </AsyncContent>
-      </div>
-
-      <div class="flex w-full flex-1 flex-col gap-8">
-        <Title
-          selection={getSelection()}
-          onPreviousSelect={() =>
-            setSelection((old) => ({ ...old, previous: !old.previous }))
-          }
-        />
-
-        <Show when={isLoggedIn() && !dataQuery.isLoading}>
-          <AsyncContent
-            queries={{
-              data: dataQuery,
-              rank: rankQuery,
-              config: serverConfigurationQuery,
-            }}
-            alwaysShowContent
-          >
-            {({ data, rank, config }) => (
-              <UserRank
-                type={getSelection().type === "weekly" ? "xp" : "speed"}
-                data={rank}
-                friendsOnly={getSelection().friendsOnly}
-                total={data?.count}
-                minWpm={
-                  data && "minWpm" in data ? (data.minWpm as number) : undefined
-                }
-                memoryDifference={getLbMemoryDifference(
-                  getSelection(),
-                  rank?.rank,
-                )}
-                isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                isBanned={getSnapshot()?.banned ?? false}
-                minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+    <Show when={isOpen()}>
+      <div class="content-grid flex flex-col gap-8 lg:flex-row">
+        <div class="w-full lg:w-60 2xl:w-75">
+          <AsyncContent query={serverConfigurationQuery}>
+            {(config) => (
+              <Sidebar
+                selection={getSelection}
+                onSelect={onSelectionChange}
+                validModeRules={config.dailyLeaderboards.validModeRules ?? []}
+                connectionsEnabled={config.connections.enabled}
               />
             )}
           </AsyncContent>
-        </Show>
+        </div>
 
-        <AsyncContent
-          query={dataQuery}
-          loader={
-            <>
-              <div class="h-1 w-full rounded bg-sub-alt"></div>
-              <div class="flex justify-center pt-4 text-4xl">
-                <LoadingCircle />
-              </div>
-            </>
-          }
-        >
-          {(data) => (
-            <Conditional
-              if={data.entries.length === 0}
-              then={
-                <div class="flex flex-col items-center gap-4 pt-8">
-                  <div class="text-xl">No entries found</div>
+        <div class="flex w-full flex-1 flex-col gap-8">
+          <Title
+            selection={getSelection()}
+            onPreviousSelect={() =>
+              setSelection((old) => ({ ...old, previous: !old.previous }))
+            }
+          />
+
+          <Show when={isLoggedIn() && !dataQuery.isLoading}>
+            <AsyncContent
+              queries={{
+                data: dataQuery,
+                rank: rankQuery,
+                config: serverConfigurationQuery,
+              }}
+              alwaysShowContent
+            >
+              {({ data, rank, config }) => (
+                <UserRank
+                  type={getSelection().type === "weekly" ? "xp" : "speed"}
+                  data={rank}
+                  friendsOnly={getSelection().friendsOnly}
+                  total={data?.count}
+                  minWpm={
+                    data && "minWpm" in data
+                      ? (data.minWpm as number)
+                      : undefined
+                  }
+                  memoryDifference={getLbMemoryDifference(
+                    getSelection(),
+                    rank?.rank,
+                  )}
+                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                  isBanned={getSnapshot()?.banned ?? false}
+                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
+                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+                />
+              )}
+            </AsyncContent>
+          </Show>
+
+          <AsyncContent
+            query={dataQuery}
+            loader={
+              <>
+                <div class="h-1 w-full rounded bg-sub-alt"></div>
+                <div class="flex justify-center pt-4 text-4xl">
+                  <LoadingCircle />
                 </div>
-              }
-              else={
-                <div class="grid gap-2">
-                  <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
-                    <NextUpdate type={getSelection().type} />
-                    <Navigation
-                      isLoading={
-                        dataQuery.isLoading ||
-                        dataQuery.isFetching ||
-                        dataQuery.isRefetching
-                      }
-                      lastPage={Math.ceil((data?.count ?? 0) / 50)}
-                      userPage={userPage()}
-                      currentPage={getPage()}
-                      onPageChange={setPage}
-                      onScrollToUser={setScrollToUser}
-                    />
+              </>
+            }
+          >
+            {(data) => (
+              <Conditional
+                if={data.entries.length === 0}
+                then={
+                  <div class="flex flex-col items-center gap-4 pt-8">
+                    <div class="text-xl">No entries found</div>
                   </div>
-                  <Table
-                    type={getSelection().type === "weekly" ? "xp" : "speed"}
-                    entries={data?.entries ?? []}
-                    friendsOnly={getSelection().friendsOnly}
-                    scrollToUser={scrollToUser}
-                    onScrolledToUser={() => setScrollToUser(false)}
-                  />
-                  <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
-                    <Navigation
-                      lastPage={Math.ceil((data?.count ?? 0) / 50)}
-                      currentPage={getPage()}
-                      onPageChange={setPage}
-                      onScrollToUser={setScrollToUser}
+                }
+                else={
+                  <div class="grid gap-2">
+                    <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
+                      <NextUpdate type={getSelection().type} />
+                      <Navigation
+                        isLoading={
+                          dataQuery.isLoading ||
+                          dataQuery.isFetching ||
+                          dataQuery.isRefetching
+                        }
+                        lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                        userPage={userPage()}
+                        currentPage={getPage()}
+                        onPageChange={setPage}
+                        onScrollToUser={setScrollToUser}
+                      />
+                    </div>
+                    <Table
+                      type={getSelection().type === "weekly" ? "xp" : "speed"}
+                      entries={data?.entries ?? []}
+                      friendsOnly={getSelection().friendsOnly}
+                      scrollToUser={scrollToUser}
+                      onScrolledToUser={() => setScrollToUser(false)}
                     />
+                    <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
+                      <Navigation
+                        lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                        currentPage={getPage()}
+                        onPageChange={setPage}
+                        onScrollToUser={setScrollToUser}
+                      />
+                    </div>
                   </div>
-                </div>
-              }
-            />
-          )}
-        </AsyncContent>
+                }
+              />
+            )}
+          </AsyncContent>
+        </div>
       </div>
-    </div>
+    </Show>
   );
 }
 
