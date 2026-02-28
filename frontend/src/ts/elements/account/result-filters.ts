@@ -900,14 +900,14 @@ function tagDropdownUpdate(snapshot: Snapshot): void {
   );
 
   if (snapshot.tags.length === 0) {
-    tagsSection?.addClass("hidden");
+    tagsSection?.hide();
     if (groupSelects["tags"]) {
       groupSelects["tags"].destroy();
       delete groupSelects["tags"];
     }
     setFilter("tags", "none", true);
   } else {
-    tagsSection?.removeClass("hidden");
+    tagsSection?.show();
 
     updateTagsDropdownOptions();
 

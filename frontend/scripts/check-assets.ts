@@ -183,7 +183,7 @@ async function validateQuotes(): Promise<void> {
     //check schema
     const schema = QuoteDataSchema.extend({
       language: LanguageSchema
-        //icelandic only exists as icelandic_1k, language in quote file is stipped of its size
+        //icelandic only exists as icelandic_1k, language in quote file is stripped of its size
         .or(z.literal("icelandic")),
     });
     problems.addValidation(quotefilename, schema.safeParse(quoteData));
@@ -198,14 +198,21 @@ async function validateQuotes(): Promise<void> {
     }
 
     //check quote length
-    quoteData.quotes
-      .filter((quote) => quote.text.length !== quote.length)
-      .forEach((quote) =>
+    quoteData.quotes.forEach((quote) => {
+      if (quote.text.length !== quote.length) {
         problems.add(
           quotefilename,
           `ID ${quote.id}: expected length ${quote.text.length}`,
-        ),
-      );
+        );
+      }
+
+      if (quote.text.length < 60) {
+        problems.add(
+          quotefilename,
+          `ID ${quote.id}: length too short (under 60 characters)`,
+        );
+      }
+    });
 
     //check groups
     let last = -1;

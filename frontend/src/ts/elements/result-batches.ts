@@ -6,11 +6,11 @@ import { getTheme } from "../signals/theme";
 import { qs } from "../utils/dom";
 
 export function hide(): void {
-  qs(".pageAccount .resultBatches")?.addClass("hidden");
+  qs(".pageAccount .resultBatches")?.hide();
 }
 
 export function show(): void {
-  qs(".pageAccount .resultBatches")?.removeClass("hidden");
+  qs(".pageAccount .resultBatches")?.show();
 }
 
 export async function update(): Promise<void> {

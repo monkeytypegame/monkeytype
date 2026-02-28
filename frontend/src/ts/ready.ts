@@ -31,12 +31,12 @@ onDOMReady(async () => {
   void ServerConfiguration.sync().then(() => {
     if (!ServerConfiguration.get()?.users.signUp) {
       AccountButton.hide();
-      qs(".register")?.addClass("hidden");
-      qs(".login")?.addClass("hidden");
-      qs(".disabledNotification")?.removeClass("hidden");
+      qs(".register")?.hide();
+      qs(".login")?.hide();
+      qs(".disabledNotification")?.show();
     }
     if (!ServerConfiguration.get()?.connections.enabled) {
-      qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
+      qs(".accountButtonAndMenu .goToFriends")?.hide();
     }
   });
 
