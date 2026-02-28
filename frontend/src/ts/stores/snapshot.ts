@@ -3,11 +3,15 @@ import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
 import { createSignal } from "solid-js";
 import { Mode } from "@monkeytype/schemas/shared";
 
+type MiniSnapshot = Omit<
+  Snapshot,
+  "results" | "tags" | "presets" | "filterPresets"
+>;
 const [snapshot, updateSnapshot] = createStore<{
-  value: Snapshot | undefined;
+  value: MiniSnapshot | undefined;
 }>({ value: undefined });
 
-export function setSnapshot(newValue: Snapshot | undefined) {
+export function setSnapshot(newValue: MiniSnapshot | undefined) {
   if (newValue === undefined) {
     updateSnapshot("value", undefined);
   } else {
