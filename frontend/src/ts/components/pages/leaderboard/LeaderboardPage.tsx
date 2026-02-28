@@ -27,6 +27,7 @@ import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { onDOMReady, qsr } from "../../../utils/dom";
 import * as Skeleton from "../../../utils/skeleton";
 import AsyncContent from "../../common/AsyncContent";
+import { LoadingCircle } from "../../common/LoadingCircle";
 import { Navigation } from "./Navigation";
 import { NextUpdate } from "./NextUpdate";
 import { Sidebar } from "./Sidebar";
@@ -184,7 +185,7 @@ export function LeaderboardPage(): JSXElement {
           }
         />
 
-        <Show when={isLoggedIn()}>
+        <Show when={isLoggedIn() && !dataQuery.isLoading}>
           <AsyncContent
             queries={{
               data: dataQuery,
@@ -215,7 +216,17 @@ export function LeaderboardPage(): JSXElement {
           </AsyncContent>
         </Show>
 
-        <AsyncContent query={dataQuery} alwaysShowContent>
+        <AsyncContent
+          query={dataQuery}
+          loader={
+            <>
+              <div class="h-1 w-full rounded bg-sub-alt"></div>
+              <div class="flex justify-center pt-4 text-4xl">
+                <LoadingCircle />
+              </div>
+            </>
+          }
+        >
           {(data) => (
             <div class="grid gap-2">
               <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
