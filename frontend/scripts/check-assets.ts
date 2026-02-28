@@ -224,7 +224,9 @@ async function validateQuotes(): Promise<void> {
       currentLanguageQuotes !== null &&
       currentLanguageQuotes.quotes.length < quoteData.quotes.length
     ) {
-      idOfFirstAddedQuote = currentLanguageQuotes.quotes.length + 1;
+      idOfFirstAddedQuote =
+        (currentLanguageQuotes.quotes[currentLanguageQuotes.quotes.length - 1]
+          ?.id ?? -1) + 1;
     }
 
     //check quote length
