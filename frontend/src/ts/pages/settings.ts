@@ -885,8 +885,11 @@ qs(
 });
 
 qsa(".pageSettings .quickNav .links a")?.on("click", (e) => {
-  const target = e.currentTarget as HTMLElement;
-  const settingsGroup = target.innerText;
+  const target = e.currentTarget as HTMLAnchorElement;
+  const href = target.getAttribute("href") ?? "";
+  if (!href.startsWith("#group_")) return;
+  const settingsGroup = href.slice("#group_".length);
+  if (settingsGroup === "") return;
   const isClosed = qs(
     `.pageSettings .settingsGroup.${settingsGroup}`,
   )?.hasClass("slideup");

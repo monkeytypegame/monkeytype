@@ -122,8 +122,13 @@ export function createInputEventHandler<T>(
           success: false,
           status: "failed",
           errorMessage:
-            schemaResult.error.errors.map((err) => err.message).join(", ") +
-            ".",
+            schemaResult.error.errors
+              .map((err) =>
+                err.message.at(-1) === "."
+                  ? err.message.slice(0, -1)
+                  : err.message,
+              )
+              .join(", ") + ".",
         });
         return;
       }

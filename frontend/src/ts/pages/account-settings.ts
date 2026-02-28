@@ -36,9 +36,9 @@ const state: State = {
 };
 
 function updateAuthenticationSections(): void {
-  pageElement.qsa(".section.passwordAuthSettings button")?.addClass("hidden");
-  pageElement.qsa(".section.googleAuthSettings button")?.addClass("hidden");
-  pageElement.qsa(".section.githubAuthSettings button")?.addClass("hidden");
+  pageElement.qsa(".section.passwordAuthSettings button")?.hide();
+  pageElement.qsa(".section.googleAuthSettings button")?.hide();
+  pageElement.qsa(".section.githubAuthSettings button")?.hide();
 
   const user = getAuthenticatedUser();
   if (user === null) return;

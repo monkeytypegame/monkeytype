@@ -1,5 +1,6 @@
 import { JSX, JSXElement, Show } from "solid-js";
 
+import { cn } from "../../utils/cn";
 import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
@@ -32,7 +33,6 @@ type AnchorProps = BaseProps & {
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = "href" in props;
-  const buttonClass = isAnchor ? "button" : "";
   const isActive = (): boolean => (!isAnchor && props.active) ?? false;
 
   const content = (
@@ -56,15 +56,23 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     };
   };
 
-  const getClassList = (): Record<string, boolean | undefined> => {
-    return {
-      [(props.type ?? "button") === "text" ? "textButton" : buttonClass]: true,
-      [props.class ?? ""]: props.class !== undefined,
-      "bg-main": isActive(),
-      "text-bg": isActive(),
-      "hover:bg-text": isActive(),
-      ...props.classList,
-    };
+  const getClasses = (): string => {
+    return cn(
+      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-colors transition-opacity duration-125 ease-in-out select-none",
+      "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
+      {
+        "bg-sub-alt hover:bg-text hover:text-bg": props.type !== "text",
+        "bg-transparent text-sub hover:text-text": props.type === "text",
+        [props.class ?? ""]: props.class !== undefined,
+        "bg-main text-bg hover:bg-text": isActive(),
+
+        ...props.classList,
+      },
+      {
+        "opacity-[0.33]": props.disabled,
+        "bg-text text-bg": isActive() && props.disabled,
+      },
+    );
   };
 
   return (
@@ -72,7 +80,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       if={isAnchor}
       then={
         <a
-          classList={getClassList()}
+          class={getClasses()}
           href={props.href}
           target={
             props["router-link"] || props.href?.startsWith("#")
@@ -93,7 +101,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       else={
         <button
           type="button"
-          classList={getClassList()}
+          class={getClasses()}
           onClick={() => props.onClick?.()}
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}

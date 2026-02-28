@@ -221,8 +221,8 @@ export async function setup(challengeName: string): Promise<boolean> {
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
-      qs("header .config")?.removeClass("hidden");
-      qs(".page.pageTest")?.removeClass("hidden");
+      qs("header .config")?.show();
+      qs(".page.pageTest")?.show();
     }, 250);
     return false;
   }
@@ -236,8 +236,8 @@ export async function setup(challengeName: string): Promise<boolean> {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
       setTimeout(() => {
-        qs("header .config")?.removeClass("hidden");
-        qs(".page.pageTest")?.removeClass("hidden");
+        qs("header .config")?.show();
+        qs(".page.pageTest")?.show();
       }, 250);
       return false;
     }
@@ -378,8 +378,8 @@ export async function setup(challengeName: string): Promise<boolean> {
     }
     ManualRestart.set();
     notitext = challenge.message;
-    qs("header .config")?.removeClass("hidden");
-    qs(".page.pageTest")?.removeClass("hidden");
+    qs("header .config")?.show();
+    qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
       Notifications.add(`Challenge '${challenge.display}' loaded.`, 0);
