@@ -219,9 +219,7 @@ export function LeaderboardPage(): JSXElement {
           {(data) => (
             <div class="grid gap-2">
               <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
-                <div>
-                  <NextUpdate type={selection().type} />
-                </div>
+                <NextUpdate type={selection().type} />
                 <Navigation
                   isLoading={
                     dataQuery.isLoading ||
