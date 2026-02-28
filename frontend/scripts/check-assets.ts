@@ -149,6 +149,25 @@ async function validateLayouts(): Promise<void> {
   }
 }
 
+async function fetchQuotes(language: string): Promise<QuoteData | null> {
+  const url = `https://raw.githubusercontent.com/monkeytypegame/monkeytype/refs/heads/master/frontend/static/quotes/${language}.json`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const quoteJsonData = (await response.json()) as QuoteData;
+    return quoteJsonData;
+  } catch (error) {
+    console.error(
+      `Failed to get quotes: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return null;
+  }
+}
+
 async function validateQuotes(): Promise<void> {
   const problems = new Problems<string, never>("Quotes", {});
 
@@ -197,6 +216,17 @@ async function validateQuotes(): Promise<void> {
       );
     }
 
+    // check if pr added quotes in this language
+    let idOfFirstAddedQuote = 0;
+    const currentLanguageQuotes = await fetchQuotes(quotefilename);
+
+    if (
+      currentLanguageQuotes !== null &&
+      currentLanguageQuotes.quotes.length < quoteData.quotes.length
+    ) {
+      idOfFirstAddedQuote = currentLanguageQuotes.quotes.length + 1;
+    }
+
     //check quote length
     quoteData.quotes.forEach((quote) => {
       if (quote.text.length !== quote.length) {
@@ -206,12 +236,13 @@ async function validateQuotes(): Promise<void> {
         );
       }
 
-      if (quote.text.length < 60) {
-        // TODO: too many quotes trigger this
-        // problems.add(
-        //   quotefilename,
-        //   `ID ${quote.id}: length too short (under 60 characters)`,
-        // );
+      if (idOfFirstAddedQuote > 0 && quote.id >= idOfFirstAddedQuote) {
+        if (quote.text.length < 60) {
+          problems.add(
+            quotefilename,
+            `ID ${quote.id}: length too short (under 60 characters)`,
+          );
+        }
       }
     });
 
