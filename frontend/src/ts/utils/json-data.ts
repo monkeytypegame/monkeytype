@@ -245,8 +245,10 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
  * Fetches the list of releases from GitHub.
  * @returns A promise that resolves to the list of releases.
  */
-export async function getReleasesFromGitHub(): Promise<GithubRelease[]> {
-  return cachedFetchJson(
-    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5",
+export async function getReleasesFromGitHub(options?: {
+  page?: number;
+}): Promise<GithubRelease[]> {
+  return fetchJson(
+    `https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5&page=${options?.page ?? 1}`,
   );
 }

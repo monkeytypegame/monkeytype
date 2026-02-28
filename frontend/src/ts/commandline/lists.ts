@@ -1,7 +1,6 @@
 import MinBurstCommands from "./lists/min-burst";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
-import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundCommands from "./lists/custom-background";
@@ -98,10 +97,10 @@ export const commands: CommandsSubgroup = {
     //account
     ...TagsCommands,
     ...PresetsCommands,
-    ...ResultSavingCommands,
 
     //behavior
     ...buildCommands(
+      "resultSaving",
       "difficulty",
       "quickRestart",
       "repeatQuotes",
@@ -379,7 +378,6 @@ const lists = {
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
   tags: TagsCommands[0]?.subgroup,
-  resultSaving: ResultSavingCommands[0]?.subgroup,
   ads: adsCommands[0]?.subgroup,
 };
 
