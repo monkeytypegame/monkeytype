@@ -262,8 +262,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0
       '@leonabcd123/modern-caps-lock':
-        specifier: 2.0.3
-        version: 2.0.3
+        specifier: 2.2.2
+        version: 2.2.2
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
@@ -2519,8 +2519,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@leonabcd123/modern-caps-lock@2.0.3':
-    resolution: {integrity: sha512-g4wPe1tHAR7hxOrvUwzxCrxBD+pjI1vEe+STXgsL2jQS95MXxge7h4afKXTLKguOtPc6gqK0Ljle4FLI60rWhw==}
+  '@leonabcd123/modern-caps-lock@2.2.2':
+    resolution: {integrity: sha512-0e8onO4ovdeVj9d/1Ddl1q7nq/p+PNsLscp1yOXQLOiyANUCLq41/H8qh5RDZAOs6j9yNzyxlP5h4o8u2HCwFA==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -10545,7 +10545,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.29.0
       '@babel/helper-validator-option': 7.27.1
-      browserslist: 4.28.0
+      browserslist: 4.28.1
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -11727,7 +11727,7 @@ snapshots:
 
   '@eslint/eslintrc@3.3.3':
     dependencies:
-      ajv: 6.12.6
+      ajv: 6.14.0
       debug: 4.4.3
       espree: 10.4.0
       globals: 14.0.0
@@ -12485,7 +12485,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@leonabcd123/modern-caps-lock@2.0.3': {}
+  '@leonabcd123/modern-caps-lock@2.2.2': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
