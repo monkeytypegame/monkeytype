@@ -25,7 +25,7 @@ export function useVisibilityAnimation(options: {
         duration: applyReducedMotion(125),
         ...options.showAnimationOptions,
         onBegin: (self) => {
-          el.removeClass("hidden");
+          el.show();
           options.showAnimationOptions?.onBegin?.(self);
         },
       });
@@ -36,7 +36,7 @@ export function useVisibilityAnimation(options: {
         duration: applyReducedMotion(125),
         ...options.hideAnimationOptions,
         onComplete: (self) => {
-          el.addClass("hidden");
+          el.hide();
           options.hideAnimationOptions?.onComplete?.(self);
         },
       });

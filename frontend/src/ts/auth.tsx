@@ -27,7 +27,6 @@ import { showPopup } from "./modals/simple-modals-base";
 import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import * as ConnectionState from "./states/connection";
 import { addBanner } from "./stores/banners";
 import * as Misc from "./utils/misc";
 
@@ -244,12 +243,6 @@ async function addAuthProvider(
   providerName: string,
   provider: AuthProvider,
 ): Promise<void> {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,

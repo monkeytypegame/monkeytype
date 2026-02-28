@@ -20,7 +20,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
 
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cuase issues but worth investigating
+  // into a snapshot result - might not cause issues but worth investigating
   const result = structuredClone(
     notSignedInLastResult,
   ) as unknown as SnapshotResult<Mode>;

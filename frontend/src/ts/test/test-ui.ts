@@ -606,7 +606,7 @@ export function updateWordsWrapperHeight(force = false): void {
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
-  wordsWrapperEl.removeClass("hidden");
+  wordsWrapperEl.show();
 
   const wordComputedStyle = window.getComputedStyle(activeWordEl.native);
   const wordMargin =
@@ -1465,7 +1465,7 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 
 export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
-    qsa("#resultWordsHistory .heatmapLegend")?.removeClass("hidden");
+    qsa("#resultWordsHistory .heatmapLegend")?.show();
 
     let burstlist = [...TestInput.burstHistory];
 
@@ -1569,7 +1569,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       });
     }
   } else {
-    qs("#resultWordsHistory .heatmapLegend")?.addClass("hidden");
+    qs("#resultWordsHistory .heatmapLegend")?.hide();
     qsa("#resultWordsHistory .words .word")?.removeClass("heatmapInherit");
     qsa("#resultWordsHistory .words .word")?.setStyle({ color: "" });
 
@@ -1688,9 +1688,9 @@ function updateLiveStatsColor(value: TimerColor): void {
 
 function showHideTestRestartButton(showHide: boolean): void {
   if (showHide) {
-    qs(".pageTest #restartTestButton")?.removeClass("hidden");
+    qs(".pageTest #restartTestButton")?.show();
   } else {
-    qs(".pageTest #restartTestButton")?.addClass("hidden");
+    qs(".pageTest #restartTestButton")?.hide();
   }
 }
 
@@ -1882,8 +1882,8 @@ export function onTestStart(): void {
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
-  qs("#result")?.addClass("hidden");
-  qs("#typingTest")?.setStyle({ opacity: "0" }).removeClass("hidden");
+  qs("#result")?.hide();
+  qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
