@@ -1190,12 +1190,6 @@ qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
 });
 
 qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   qs(".sendVerificationEmail")?.disable();
   await sendVerificationEmail();
   qs(".sendVerificationEmail")?.enable();
