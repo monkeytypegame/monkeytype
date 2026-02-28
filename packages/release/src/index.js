@@ -261,12 +261,20 @@ const main = async () => {
     const name = readlineSync.question(
       "Enter preview channel name (default: preview): ",
     );
-    const channelName = name.trim() ?? "preview";
+    let channelName = name.trim();
+
+    if (channelName === "") {
+      channelName = "preview";
+    }
 
     const expirationTime = readlineSync.question(
       "Enter expiration time (e.g., 2h, default: 1d): ",
     );
-    const expires = expirationTime.trim() ?? "1d";
+    let expires = expirationTime.trim();
+
+    if (expires === "") {
+      expires = "1d";
+    }
 
     console.log(
       `Deploying frontend preview to channel "${channelName}" with expiration "${expires}"...`,
