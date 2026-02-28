@@ -195,7 +195,7 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    if (TestState.savingEnabled) {
+    if (Config.resultSaving) {
       TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
       TestInput.pushAfkToHistory();
@@ -1192,7 +1192,7 @@ async function saveResult(
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
   AccountButton.loading(true);
 
-  if (!TestState.savingEnabled) {
+  if (!Config.resultSaving) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,
       customTitle: "Notice",
@@ -1355,7 +1355,7 @@ export function fail(reason: string): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);
-  if (!TestState.savingEnabled) return;
+  if (!Config.resultSaving) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
   let tt = Numbers.roundTo2(testSeconds - afkseconds);
