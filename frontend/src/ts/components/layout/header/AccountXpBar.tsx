@@ -29,7 +29,6 @@ export function AccountXpBar(_props: Props): JSXElement {
 
   const [getShowBar, setShowBar] = createSignal(false);
   const [getShowBreakdown, setShowBreakdown] = createSignal(false);
-  const [getTotal, setTotal] = createSignal(0);
   const [getBreakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>(
     [],
   );
@@ -37,11 +36,18 @@ export function AccountXpBar(_props: Props): JSXElement {
   const [getBarAnimationDuration, setBarAnimationDuration] = createSignal(0);
   const [getBarAnimationEase, setBarAnimationEase] = createSignal("out(5)");
 
+  const [getAnimationTick, setAnimationTick] = createSignal(0);
+  const [getTotal, _setTotal] = createSignal(0);
+  const setTotal = (value: number): void => {
+    _setTotal(value);
+    setAnimationTick((t) => t + 1);
+  };
+
   let canSkip = true;
   let skipped = false;
 
   const flashAnimation = createMemo(() => {
-    getTotal(); // track dependency
+    getAnimationTick(); // trigger on every total update, even if value unchanged
     const rand = (Math.random() * 2 - 1) / 4;
     const rand2 = (Math.random() + 1) / 2;
     return {
