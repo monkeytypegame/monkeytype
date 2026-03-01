@@ -15,10 +15,10 @@ type BaseProps = {
     | string
     | { text: string; position: "up" | "down" | "left" | "right" };
   "router-link"?: true;
+  onClick?: () => void;
 };
 
 type ButtonProps = BaseProps & {
-  onClick: () => void;
   href?: never;
   sameTarget?: true;
   active?: boolean;
@@ -27,7 +27,7 @@ type ButtonProps = BaseProps & {
 
 type AnchorProps = BaseProps & {
   href: string;
-  onClick?: never;
+  // onClick?: never;
   disabled?: never;
 };
 

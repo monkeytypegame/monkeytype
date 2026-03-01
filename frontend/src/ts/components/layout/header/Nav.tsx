@@ -22,7 +22,8 @@ export function Nav(): JSXElement {
           icon: "fa-keyboard",
           fixedWidth: true,
         }}
-        routerLink="/"
+        router-link
+        href="/"
         onClick={() => {
           if (getActivePage() === "test") restart();
         }}
@@ -33,7 +34,8 @@ export function Nav(): JSXElement {
           icon: "fa-crown",
           fixedWidth: true,
         }}
-        routerLink="/leaderboards"
+        router-link
+        href="/leaderboards"
       />
       <Button
         type="text"
@@ -41,7 +43,8 @@ export function Nav(): JSXElement {
           icon: "fa-info",
           fixedWidth: true,
         }}
-        routerLink="/about"
+        href="/about"
+        router-link
       />
       <Button
         type="text"
@@ -49,7 +52,8 @@ export function Nav(): JSXElement {
           icon: "fa-cog",
           fixedWidth: true,
         }}
-        routerLink="/settings"
+        href="/settings"
+        router-link
       />
       <div class="grow"></div>
       <Button
