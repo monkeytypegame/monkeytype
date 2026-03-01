@@ -85,6 +85,11 @@ export function Nav(): JSXElement {
         level={getLevelFromTotalXp(getSnapshot()?.xp ?? 0)}
         showSpinner={getSpinner()}
         onClick={() => alert("hi")}
+        flags={{
+          banned: getSnapshot()?.banned,
+          lbOptOut: getSnapshot()?.lbOptOut,
+          isPremium: getSnapshot()?.isPremium,
+        }}
       />
     </nav>
   );
