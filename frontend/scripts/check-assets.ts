@@ -217,16 +217,14 @@ async function validateQuotes(): Promise<void> {
     }
 
     // check if pr added quotes in this language
-    let idOfFirstAddedQuote = 0;
-    const currentLanguageQuotes = await fetchQuotes(quotefilename);
+    let addedQuotesToThisLanguage = false;
+    const currentLanguageData = await fetchQuotes(quotefilename);
 
     if (
-      currentLanguageQuotes !== null &&
-      currentLanguageQuotes.quotes.length < quoteData.quotes.length
+      currentLanguageData !== null &&
+      currentLanguageData.quotes.length < quoteData.quotes.length
     ) {
-      idOfFirstAddedQuote =
-        (currentLanguageQuotes.quotes[currentLanguageQuotes.quotes.length - 1]
-          ?.id ?? -1) + 1;
+      addedQuotesToThisLanguage = true;
     }
 
     //check quote length
@@ -238,7 +236,11 @@ async function validateQuotes(): Promise<void> {
         );
       }
 
-      if (idOfFirstAddedQuote > 0 && quote.id >= idOfFirstAddedQuote) {
+      if (
+        addedQuotesToThisLanguage &&
+        currentLanguageData !== null &&
+        !currentLanguageData.quotes.includes(quote)
+      ) {
         if (quote.text.length < 60) {
           problems.add(
             quotefilename,
