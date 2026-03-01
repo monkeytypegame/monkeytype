@@ -445,7 +445,8 @@ header {
     nav {
       color: transparent;
 
-      * {
+      .textButton,
+      button {
         color: transparent !important;
         background: transparent !important;
       }
