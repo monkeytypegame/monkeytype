@@ -2,6 +2,7 @@ import {
   AccessorFnColumnDef,
   AccessorKeyColumnDef,
   ColumnDef,
+  ColumnMeta,
   createSolidTable,
   flexRender,
   getCoreRowModel,
@@ -22,6 +23,7 @@ import {
 import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { BreakpointKey } from "../../../signals/breakpoints";
 import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
@@ -122,6 +124,26 @@ export function DataTable<TData, TValue = any>(
     },
   });
 
+  const columnVisibility = (
+    meta:
+      | undefined
+      | Pick<ColumnMeta<unknown, unknown>, "breakpoint" | "maxBreakpoint">,
+  ): string => {
+    const mapBreakpoint = (bp: BreakpointKey | undefined) =>
+      bp === undefined ? undefined : bp === "xxl" ? "2xl" : bp.toString();
+    const visible =
+      meta?.breakpoint !== undefined
+        ? `${mapBreakpoint(meta?.breakpoint)}:table-cell hidden`
+        : "";
+
+    const result = cn(
+      visible,
+      meta?.maxBreakpoint && meta?.maxBreakpoint + ":hidden",
+    );
+    console.log("### meta", meta, result);
+    return result;
+  };
+
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
       <Table id={props.id} class={props.class}>
@@ -144,13 +166,8 @@ export function DataTable<TData, TValue = any>(
                                   ? "descending"
                                   : "none"
                             }
-                            class={cn(
-                              "hidden",
-                              (header.column.columnDef.meta?.breakpoint ??
-                                "xxs") + ":table-cell",
-                              header.column.columnDef.meta?.maxBreakpoint &&
-                                header.column.columnDef.meta?.maxBreakpoint +
-                                  ":hidden",
+                            class={columnVisibility(
+                              header.column.columnDef.meta,
                             )}
                           >
                             <button
@@ -222,13 +239,7 @@ export function DataTable<TData, TValue = any>(
                                   header.column.columnDef.meta?.align ===
                                   "right",
                               },
-                              "hidden",
-                              (header.column.columnDef.meta?.breakpoint ??
-                                "xxs") + ":table-cell",
-                              header.column.columnDef.meta?.maxBreakpoint &&
-                                header.column.columnDef.meta?.maxBreakpoint +
-                                  ":hidden",
-                              header.column.columnDef.meta?.headerClass,
+                              columnVisibility(header.column.columnDef.meta),
                             )}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
@@ -287,14 +298,8 @@ export function DataTable<TData, TValue = any>(
                             "text-right":
                               cell.column.columnDef.meta?.align === "right",
                           },
-                          "hidden",
-                          (cell.column.columnDef.meta?.breakpoint ?? "xxs") +
-                            ":table-cell",
-                          cell.column.columnDef.meta?.maxBreakpoint &&
-                            cell.column.columnDef.meta?.maxBreakpoint +
-                              ":hidden",
-
-                          cellClass,
+                          columnVisibility(cell.column.columnDef.meta),
+                          cellClass.class,
                         )}
                       >
                         {flexRender(
