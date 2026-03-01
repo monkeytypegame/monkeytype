@@ -22,9 +22,12 @@ export function Nav(): JSXElement {
 
   return (
     <nav
-      class={cn("flex w-full items-center gap-1 transition-opacity md:gap-2", {
-        "opacity-0": getFocus(),
-      })}
+      class={cn(
+        "z-5 flex w-full items-center gap-1 transition-opacity md:gap-2",
+        {
+          "opacity-0": getFocus(),
+        },
+      )}
     >
       <Button
         type="text"
