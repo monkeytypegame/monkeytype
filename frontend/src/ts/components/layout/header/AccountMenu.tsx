@@ -1,5 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
+import { get } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
 import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { AnimeShow } from "../../common/anime";
@@ -27,21 +28,22 @@ export function AccountMenu(props: Props): JSXElement {
           href="/account"
           router-link
         />
-        {/* TODO: hide when connections are disabled */}
-        <Button
-          text="Friends"
-          class={buttonClass}
-          fa={{
-            icon: "fa-user-friends",
-            fixedWidth: true,
-          }}
-          href="/friends"
-          router-link
-        >
-          <Show when={props.showFriendsNotificationBubble}>
-            <div class="absolute right-2 h-1.5 w-1.5 rounded-full bg-main ring-3 ring-sub-alt"></div>
-          </Show>
-        </Button>
+        <Show when={get()?.connections.enabled}>
+          <Button
+            text="Friends"
+            class={buttonClass}
+            fa={{
+              icon: "fa-user-friends",
+              fixedWidth: true,
+            }}
+            href="/friends"
+            router-link
+          >
+            <Show when={props.showFriendsNotificationBubble}>
+              <div class="absolute right-2 h-1.5 w-1.5 rounded-full bg-main ring-3 ring-sub-alt"></div>
+            </Show>
+          </Button>
+        </Show>
         <Button
           text="Public profile"
           class={buttonClass}
