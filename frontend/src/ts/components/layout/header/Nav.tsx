@@ -14,6 +14,7 @@ import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
 import { AccountMenu } from "./AccountMenu";
+import { AccountXpBar } from "./AccountXpBar";
 
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
@@ -113,6 +114,7 @@ export function Nav(): JSXElement {
                 hideNameOnSmallScreens={true}
               />
             </Button>
+            <AccountXpBar percent={50} />
             <AccountMenu show={showMenu()} />
           </div>
         }
