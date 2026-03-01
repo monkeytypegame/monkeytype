@@ -11,10 +11,12 @@ import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
+import { AccountMenu } from "./AccountMenu";
 
 export function Nav(): JSXElement {
   const [getSpinner, setSpinner] = createSignal(false);
   const [getLoggedIn, setLoggedIn] = createSignal(true);
+  const [showMenu, setShowMenu] = createSignal(false);
 
   return (
     <nav
@@ -83,19 +85,26 @@ export function Nav(): JSXElement {
         exitBeforeEnter
         if={getSnapshot() !== undefined}
         then={
-          <Button
-            type="text"
-            onClick={() => signOut()}
-            class="hover:[&_.level]:bg-text hover:[&_svg]:fill-text"
+          <div
+            class="relative"
+            onMouseEnter={() => setShowMenu(true)}
+            onMouseLeave={() => setShowMenu(false)}
           >
-            <User
-              user={getSnapshot() as MiniSnapshot}
-              showAvatar={true}
-              showLevel={true}
-              iconsOnly={true}
-              showSpinner={getSpinner()}
-            />
-          </Button>
+            <Button
+              type="text"
+              onClick={() => signOut()}
+              class="hover:[&_.level]:bg-text hover:[&_svg]:fill-text"
+            >
+              <User
+                user={getSnapshot() as MiniSnapshot}
+                showAvatar={true}
+                showLevel={true}
+                iconsOnly={true}
+                showSpinner={getSpinner()}
+              />
+            </Button>
+            <AccountMenu show={showMenu()} />
+          </div>
         }
         else={
           <Button
