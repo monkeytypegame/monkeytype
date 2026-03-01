@@ -18,6 +18,8 @@ import { AccountMenu } from "./AccountMenu";
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
 
+  const buttonClass = cn("aspect-square");
+
   return (
     <nav
       class={cn("flex w-full items-center gap-1 transition-opacity md:gap-2", {
@@ -32,6 +34,7 @@ export function Nav(): JSXElement {
         }}
         router-link
         href="/"
+        class={buttonClass}
         onClick={() => {
           if (getActivePage() === "test") restart();
         }}
@@ -43,6 +46,7 @@ export function Nav(): JSXElement {
           fixedWidth: true,
         }}
         router-link
+        class={buttonClass}
         href="/leaderboards"
       />
       <Button
@@ -51,6 +55,7 @@ export function Nav(): JSXElement {
           icon: "fa-info",
           fixedWidth: true,
         }}
+        class={buttonClass}
         href="/about"
         router-link
       />
@@ -60,6 +65,7 @@ export function Nav(): JSXElement {
           icon: "fa-cog",
           fixedWidth: true,
         }}
+        class={buttonClass}
         href="/settings"
         router-link
       />
@@ -73,7 +79,7 @@ export function Nav(): JSXElement {
         onClick={() => {
           void showAlerts();
         }}
-        class="relative"
+        class={cn(buttonClass, "relative")}
       >
         <NotificationBubble show={getNotificationBubble} />
       </Button>
@@ -88,7 +94,10 @@ export function Nav(): JSXElement {
           >
             <Button
               type="text"
-              class="hover:[&_.level]:bg-text hover:[&_svg]:fill-text"
+              class={cn(
+                "h-full",
+                "hover:[&_.level]:bg-text hover:[&_svg]:fill-text",
+              )}
               href="/account"
               router-link
             >
