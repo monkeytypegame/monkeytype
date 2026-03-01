@@ -333,7 +333,7 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
         {xpDetails().level}
       </div>
       <div
-        class="h-2 flex-1 rounded bg-sub"
+        class="h-2 flex-1 rounded bg-bg"
         data-balloon-pos="up"
         aria-label={bar()}
       >
