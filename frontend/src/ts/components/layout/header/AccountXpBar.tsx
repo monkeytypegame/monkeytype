@@ -16,6 +16,7 @@ type Props = {
 
 type ShowData = {
   addedXp: number;
+  resultingXp: number;
   breakdown?: XpBreakdown;
 };
 
@@ -45,6 +46,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
   let canSkip = true;
   let skipped = false;
+  let runId = 0;
 
   const flashAnimation = createMemo(() => {
     getAnimationTick(); // trigger on every total update, even if value unchanged
@@ -65,6 +67,7 @@ export function AccountXpBar(_props: Props): JSXElement {
   const skipBreakdown = async (): Promise<void> => {
     if (skipped || !canSkip) return;
 
+    const myId = runId; // capture before first await
     const data = getData();
     if (!data) return;
 
@@ -76,39 +79,51 @@ export function AccountXpBar(_props: Props): JSXElement {
     setBreakdownItems([]);
     setTotal(data.addedXp);
     await sleep(3000);
+    if (runId !== myId) return;
     setShowBar(false);
   };
 
   createEffectOn(getData, async (data) => {
+    const myId = ++runId;
+    const isStale = (): boolean => runId !== myId;
     if (data !== null) {
       skipped = false;
       canSkip = true;
       const breakdown = data.breakdown;
       const promises = [];
       if (breakdown) {
-        promises.push(runBreakdown(breakdown));
+        promises.push(runBreakdown(breakdown, isStale));
         setShowBreakdown(true);
       } else {
         setTotal(data.addedXp);
       }
-      const currentXp = getSnapshot()?.xp ?? 0;
       setShowBar(true);
       await sleep(125);
-      promises.push(fullBarAnimation(currentXp, currentXp + data.addedXp));
+      if (isStale()) return;
+
+      promises.push(
+        fullBarAnimation(
+          data.resultingXp - data.addedXp,
+          data.resultingXp,
+          isStale,
+        ),
+      );
       if (skipped) return;
       await Promise.all(promises);
       canSkip = false;
-      console.log("All animations completed");
       await sleep(4000);
-      if (skipped) return;
-      console.log("Hiding breakdown and bar");
+      if (isStale() || skipped) return;
       setShowBreakdown(false);
       await sleep(1000);
+      if (isStale() || skipped) return;
       setShowBar(false);
     }
   });
 
-  const runBreakdown = async (breakdown: XpBreakdown): Promise<void> => {
+  const runBreakdown = async (
+    breakdown: XpBreakdown,
+    isStale: () => boolean,
+  ): Promise<void> => {
     const delay = 500;
     setBreakdownItems([]);
     let total = breakdown.base ?? 0;
@@ -118,13 +133,13 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.fullAccuracy)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.fullAccuracy;
       setTotal(total);
       addItem("perfect", breakdown.fullAccuracy);
     } else if (isSafeNumber(breakdown.corrected)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.corrected;
       setTotal(total);
       addItem("clean", breakdown.corrected);
@@ -132,21 +147,21 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.quote)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.quote;
       setTotal(total);
       addItem("quote", breakdown.quote);
     } else {
       if (isSafeNumber(breakdown.punctuation)) {
         await sleep(delay);
-        if (skipped) return;
+        if (isStale() || skipped) return;
         total += breakdown.punctuation;
         setTotal(total);
         addItem("punctuation", breakdown.punctuation);
       }
       if (isSafeNumber(breakdown.numbers)) {
         await sleep(delay);
-        if (skipped) return;
+        if (isStale() || skipped) return;
         total += breakdown.numbers;
         setTotal(total);
         addItem("numbers", breakdown.numbers);
@@ -155,7 +170,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.funbox)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.funbox;
       setTotal(total);
       addItem("funbox", breakdown.funbox);
@@ -163,7 +178,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.streak)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.streak;
       setTotal(total);
       addItem("streak", breakdown.streak);
@@ -171,7 +186,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.accPenalty) && breakdown.accPenalty > 0) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total -= breakdown.accPenalty;
       setTotal(total);
       addItem("accuracy penalty", -breakdown.accPenalty);
@@ -179,7 +194,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.incomplete) && breakdown.incomplete > 0) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.incomplete;
       setTotal(total);
       addItem("incomplete tests", breakdown.incomplete);
@@ -187,7 +202,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.configMultiplier)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total *= breakdown.configMultiplier;
       setTotal(total);
       addItem("global multiplier", `x${breakdown.configMultiplier}`);
@@ -195,7 +210,7 @@ export function AccountXpBar(_props: Props): JSXElement {
 
     if (isSafeNumber(breakdown.daily)) {
       await sleep(delay);
-      if (skipped) return;
+      if (isStale() || skipped) return;
       total += breakdown.daily;
       setTotal(total);
       addItem("daily bonus", breakdown.daily);
@@ -205,35 +220,41 @@ export function AccountXpBar(_props: Props): JSXElement {
   const animateBar = async (
     percent: number,
     duration: number,
+    isStale: () => boolean,
   ): Promise<void> => {
+    if (isStale()) return;
     setBarAnimationDuration(duration);
     setBarPercent(percent);
     await sleep(duration);
-    setBarAnimationDuration(0);
+    if (!isStale()) setBarAnimationDuration(0);
   };
 
   const fullBarAnimation = async (
     fromXp: number,
     toXp: number,
+    isStale: () => boolean,
   ): Promise<void> => {
     const prevDetails = getXpDetails(fromXp);
     const newDetails = getXpDetails(toXp);
+
+    console.log(prevDetails, newDetails);
 
     const startingLevel = prevDetails.levelFloat;
     const endingLevel = newDetails.levelFloat;
 
     const difference = newDetails.levelFloat - prevDetails.levelFloat;
 
-    await animateBar(prevDetails.levelProgressPercent, 0);
+    await animateBar(prevDetails.levelProgressPercent, 0, isStale);
+    if (isStale()) return;
 
     if (endingLevel % 1 === 0) {
       // Exact level up, animate to 100% then reset to 0% for next level
       setBarAnimationEase("out(5)");
-      await animateBar(100, 1000);
+      await animateBar(100, 1000, isStale);
     } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
       // Same level, just animate to the new percentage
       setBarAnimationEase("out(5)");
-      await animateBar(newDetails.levelProgressPercent, 1000);
+      await animateBar(newDetails.levelProgressPercent, 1000, isStale);
     } else {
       // Multiple levels gained, animate to 100% for each intermediate level
       const quickSpeed = Math.min(1000 / difference, 200);
@@ -246,29 +267,27 @@ export function AccountXpBar(_props: Props): JSXElement {
       setBarAnimationEase("linear");
 
       do {
-        // if (skip) return;
+        if (isStale()) return;
 
         if (firstOneDone) {
-          // void flashLevel();
-          await animateBar(0, 0);
+          await animateBar(0, 0, isStale);
           decrement = 1;
         }
 
-        await animateBar(100, animationDuration);
+        await animateBar(100, animationDuration, isStale);
 
         toAnimate -= decrement;
         firstOneDone = true;
       } while (toAnimate > 1);
 
-      // if (skip) return;
+      if (isStale()) return;
 
-      // void flashLevel();
-      await animateBar(0, 0);
+      await animateBar(0, 0, isStale);
 
-      // if (skip) return;
+      if (isStale()) return;
 
       setBarAnimationEase("out(5)");
-      await animateBar(newDetails.levelProgressPercent, 1000);
+      await animateBar(newDetails.levelProgressPercent, 1000, isStale);
     }
   };
 
@@ -277,18 +296,21 @@ export function AccountXpBar(_props: Props): JSXElement {
       <div class="absolute -left-100 flex gap-2 text-xs">
         <Button
           onClick={() => {
+            const snapshot = getSnapshot();
+
+            if (!snapshot) return;
+
             const totalFakeXp = 1000;
+            const resultingXp = snapshot.xp + totalFakeXp;
 
             const data: ShowData = {
               addedXp: totalFakeXp,
+              resultingXp: resultingXp,
             };
 
-            const snapshot = getSnapshot();
-            if (!snapshot) return;
-            const currentXp = snapshot.xp ?? 0;
             setSnapshot({
               ...snapshot,
-              xp: currentXp + totalFakeXp,
+              xp: resultingXp,
             });
             setData(data);
           }}
@@ -296,6 +318,10 @@ export function AccountXpBar(_props: Props): JSXElement {
         />
         <Button
           onClick={() => {
+            const snapshot = getSnapshot();
+
+            if (!snapshot) return;
+
             const fakeBreakdown = {
               base: 100,
               quote: 10,
@@ -309,18 +335,17 @@ export function AccountXpBar(_props: Props): JSXElement {
             };
 
             const totalFakeXp = 10270;
+            const resultingXp = snapshot.xp + totalFakeXp;
 
             const data: ShowData = {
               addedXp: totalFakeXp,
               breakdown: fakeBreakdown,
+              resultingXp: resultingXp,
             };
 
-            const snapshot = getSnapshot();
-            if (!snapshot) return;
-            const currentXp = snapshot.xp ?? 0;
             setSnapshot({
               ...snapshot,
-              xp: currentXp + totalFakeXp,
+              xp: resultingXp,
             });
             setData(data);
           }}

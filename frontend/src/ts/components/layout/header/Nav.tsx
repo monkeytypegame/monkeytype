@@ -1,4 +1,4 @@
-import { createSignal, JSXElement } from "solid-js";
+import { createEffect, createSignal, JSXElement } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
 import { getActivePage, getFocus } from "../../../signals/core";
@@ -13,6 +13,7 @@ import {
 } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
+import { getXpDetails } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
@@ -24,6 +25,15 @@ export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
 
   const buttonClass = cn("aspect-square");
+
+  createEffect(() => {
+    console.log(
+      "User level:",
+      getSnapshot()?.xp,
+      "XP details:",
+      getSnapshot() ? getXpDetails(getSnapshot()?.xp ?? 0) : "N/A",
+    );
+  });
 
   return (
     <nav

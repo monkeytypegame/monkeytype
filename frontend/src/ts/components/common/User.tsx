@@ -1,13 +1,14 @@
 import { User as UserType } from "@monkeytype/schemas/users";
-import { JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement, Show } from "solid-js";
 
 import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
+import { getTheme } from "../../signals/theme";
 import { cn } from "../../utils/cn";
 import { getLevelFromTotalXp } from "../../utils/levels";
-import { AnimeConditional } from "./anime";
+import { Anime, AnimeConditional } from "./anime";
 import { Button } from "./Button";
 import { Conditional } from "./Conditional";
 import { DiscordAvatar } from "./DiscordAvatar";
@@ -29,6 +30,23 @@ type Props = {
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
+  const level = createMemo(() => getLevelFromTotalXp(props.user.xp ?? 0));
+  const theme = getTheme();
+
+  //todo: problem, this doesnt flash in sync with the bar animation
+  const flashAnimation = createMemo(() => {
+    level(); // rerun only when level changes
+    const rand = (Math.random() * 2 - 1) / 4;
+    const rand2 = (Math.random() + 1) / 2;
+    return {
+      scale: [1 + 0.5 * rand2, 1],
+      backgroundColor: [theme.main, theme.sub],
+      rotate: [10 * rand, 0],
+      duration: 2000,
+      ease: "out(5)",
+    };
+  });
+
   return (
     <div class={cn("grid grid-flow-col place-items-center gap-2", props.class)}>
       <Show when={props.showAvatar ?? true}>
@@ -77,9 +95,12 @@ export function User(props: Props): JSXElement {
         <UserBadge id={props.user.badgeId} />
       </div>
       <Show when={props.showLevel ?? false}>
-        <div class="level rounded-half bg-sub px-[0.5em] py-[0.1em] text-[0.7em] text-bg transition-colors duration-125">
-          {getLevelFromTotalXp(props.user.xp ?? 0)}
-        </div>
+        <Anime
+          animation={flashAnimation()}
+          class="level rounded-half bg-sub px-[0.5em] py-[0.1em] text-[0.7em] text-bg"
+        >
+          {level()}
+        </Anime>
       </Show>
     </div>
   );
