@@ -1,10 +1,14 @@
 import { JSXElement } from "solid-js";
 
+import { Anime } from "./anime";
+
 type Props = {
   percent: number;
   fill: "main" | "text";
   bg: "bg" | "sub-alt";
   showPercentageOnHover?: boolean;
+  animationDuration?: number;
+  animationEase?: string;
 };
 
 export function Bar(props: Props): JSXElement {
@@ -18,12 +22,15 @@ export function Bar(props: Props): JSXElement {
           }
         : {})}
     >
-      <div
-        class={`h-[0.5em] rounded bg-${props.fill}`}
-        style={{
+      <Anime
+        animation={{
           width: props.percent + "%",
+          duration: props.animationDuration ?? 0,
+          ease: props.animationEase ?? "out(2)",
         }}
-      ></div>
+      >
+        <div class={`h-[0.5em] rounded bg-${props.fill}`}></div>
+      </Anime>
     </div>
   );
 }

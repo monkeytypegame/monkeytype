@@ -3,30 +3,41 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createMemo, createSignal, For, JSXElement } from "solid-js";
 
 import { createEffectOn } from "../../../hooks/effects";
+import { getSnapshot, setSnapshot } from "../../../stores/snapshot";
+import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
+
+type Props = {
+  xp: number;
+};
+
+type ShowData = {
+  addedXp: number;
+  breakdown?: XpBreakdown;
+};
 
 type BreakdownItem = {
   label: string;
   amount: number | string;
 };
 
-type Props = {
-  percent: number;
-};
+export function AccountXpBar(_props: Props): JSXElement {
+  const [getData, setData] = createSignal<ShowData | null>(null);
 
-export function AccountXpBar(props: Props): JSXElement {
-  const [getXpBreakdownData, setXpBreakdownData] =
-    createSignal<XpBreakdown | null>(null);
-
+  const [getShowBar, setShowBar] = createSignal(false);
   const [getShowBreakdown, setShowBreakdown] = createSignal(false);
   const [getTotal, setTotal] = createSignal(0);
   const [getBreakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>(
     [],
   );
+  const [getBarPercent, setBarPercent] = createSignal(0);
+  const [getBarAnimationDuration, setBarAnimationDuration] = createSignal(0);
+  const [getBarAnimationEase, setBarAnimationEase] = createSignal("out(5)");
 
+  let canSkip = true;
   let skipped = false;
 
   const flashAnimation = createMemo(() => {
@@ -46,26 +57,48 @@ export function AccountXpBar(props: Props): JSXElement {
   };
 
   const skipBreakdown = async (): Promise<void> => {
-    if (skipped) return;
-    const breakdown = getXpBreakdownData();
+    if (skipped || !canSkip) return;
+
+    const data = getData();
+    if (!data) return;
+
+    const breakdown = data.breakdown;
     if (!getShowBreakdown() || !breakdown) return;
 
     skipped = true;
-    setBreakdownItems([]);
-    const total = Object.values(breakdown).reduce((sum, val) => {
-      if (isSafeNumber(val)) return sum + val;
-      return sum;
-    }, 0);
-    setTotal(total);
-    await sleep(3000);
     setShowBreakdown(false);
+    setBreakdownItems([]);
+    setTotal(data.addedXp);
+    await sleep(3000);
+    setShowBar(false);
   };
 
-  createEffectOn(getShowBreakdown, (show) => {
-    const breakdown = getXpBreakdownData();
-    if (!breakdown) return;
-    if (show) {
-      void runBreakdown(breakdown);
+  createEffectOn(getData, async (data) => {
+    if (data !== null) {
+      skipped = false;
+      canSkip = true;
+      const breakdown = data.breakdown;
+      const promises = [];
+      if (breakdown) {
+        promises.push(runBreakdown(breakdown));
+        setShowBreakdown(true);
+      } else {
+        setTotal(data.addedXp);
+      }
+      const currentXp = getSnapshot()?.xp ?? 0;
+      setShowBar(true);
+      await sleep(125);
+      promises.push(fullBarAnimation(currentXp, currentXp + data.addedXp));
+      if (skipped) return;
+      await Promise.all(promises);
+      canSkip = false;
+      console.log("All animations completed");
+      await sleep(4000);
+      if (skipped) return;
+      console.log("Hiding breakdown and bar");
+      setShowBreakdown(false);
+      await sleep(1000);
+      setShowBar(false);
     }
   });
 
@@ -162,54 +195,158 @@ export function AccountXpBar(props: Props): JSXElement {
       setTotal(total);
       addItem("daily bonus", breakdown.daily);
     }
+  };
 
-    await sleep(3000);
-    if (skipped) return;
+  const animateBar = async (
+    percent: number,
+    duration: number,
+  ): Promise<void> => {
+    setBarAnimationDuration(duration);
+    setBarPercent(percent);
+    await sleep(duration);
+    setBarAnimationDuration(0);
+  };
 
-    setShowBreakdown(false);
+  const fullBarAnimation = async (
+    fromXp: number,
+    toXp: number,
+  ): Promise<void> => {
+    const prevDetails = getXpDetails(fromXp ?? 0);
+    const newDetails = getXpDetails(toXp ?? 0);
+
+    const startingLevel = prevDetails.levelFloat;
+    const endingLevel = newDetails.levelFloat;
+
+    const difference = newDetails.levelFloat - prevDetails.levelFloat;
+
+    await animateBar(prevDetails.levelProgressPercent, 0);
+
+    if (endingLevel % 1 === 0) {
+      // Exact level up, animate to 100% then reset to 0% for next level
+      setBarAnimationEase("out(5)");
+      await animateBar(100, 1000);
+    } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
+      // Same level, just animate to the new percentage
+      setBarAnimationEase("out(5)");
+      await animateBar(newDetails.levelProgressPercent, 1000);
+    } else {
+      // Multiple levels gained, animate to 100% for each intermediate level
+      const quickSpeed = Math.min(1000 / difference, 200);
+      let toAnimate = difference;
+
+      let firstOneDone = false;
+      let animationDuration = quickSpeed;
+      let decrement = 1 - (startingLevel % 1);
+
+      setBarAnimationEase("linear");
+
+      do {
+        // if (skip) return;
+
+        if (firstOneDone) {
+          // void flashLevel();
+          await animateBar(0, 0);
+          decrement = 1;
+        }
+
+        await animateBar(100, animationDuration);
+
+        toAnimate -= decrement;
+        firstOneDone = true;
+      } while (toAnimate > 1);
+
+      // if (skip) return;
+
+      // void flashLevel();
+      await animateBar(0, 0);
+
+      // if (skip) return;
+
+      setBarAnimationEase("out(5)");
+      await animateBar(newDetails.levelProgressPercent, 1000);
+    }
   };
 
   return (
     <>
-      <Button
-        class="absolute -left-100"
-        onClick={() => {
-          setXpBreakdownData({
-            base: 100,
-            fullAccuracy: 20,
-            quote: 10,
-            corrected: 5,
-            punctuation: 5,
-            numbers: 5,
-            funbox: 5,
-            streak: 10,
-            incomplete: 10,
-            daily: 20,
-            accPenalty: 5,
-            configMultiplier: 2,
-          });
-          setShowBreakdown(true);
-        }}
-        text="XP Breakdown"
-      />
-      <Button
-        class="absolute -left-60"
-        onClick={skipBreakdown}
-        text="Skip breakdown"
-      />
-      <AnimeShow when={getShowBreakdown()}>
+      <div class="absolute -left-100 flex gap-2 text-xs">
+        <Button
+          onClick={() => {
+            const totalFakeXp = 1000;
+
+            const data: ShowData = {
+              addedXp: totalFakeXp,
+            };
+
+            const snapshot = getSnapshot();
+            if (!snapshot) return;
+            const currentXp = snapshot.xp ?? 0;
+            setSnapshot({
+              ...snapshot,
+              xp: currentXp + totalFakeXp,
+            });
+            setData(data);
+          }}
+          text="Simple XP"
+        />
+        <Button
+          onClick={() => {
+            const fakeBreakdown = {
+              base: 100,
+              quote: 10,
+              corrected: 5,
+              funbox: 5,
+              streak: 10,
+              incomplete: 10,
+              accPenalty: 5,
+              configMultiplier: 2,
+              daily: 10000,
+            };
+
+            const totalFakeXp = 10270;
+
+            const data: ShowData = {
+              addedXp: totalFakeXp,
+              breakdown: fakeBreakdown,
+            };
+
+            const snapshot = getSnapshot();
+            if (!snapshot) return;
+            const currentXp = snapshot.xp ?? 0;
+            setSnapshot({
+              ...snapshot,
+              xp: currentXp + totalFakeXp,
+            });
+            setData(data);
+          }}
+          text="XP Breakdown"
+        />
+        <Button onClick={skipBreakdown} text="Skip breakdown" />
+      </div>
+      <AnimeShow when={getShowBar()}>
         <div class="absolute top-full right-0 mt-1 w-full">
           <div class="text-[0.5em]">
-            <Bar fill="main" bg="sub-alt" percent={props.percent} />
+            <Bar
+              fill="main"
+              bg="sub-alt"
+              percent={getBarPercent()}
+              animationDuration={getBarAnimationDuration()}
+              animationEase={getBarAnimationEase()}
+            />
           </div>
         </div>
-        <div class="absolute top-full right-0 mt-2 grid justify-end p-1 text-right text-sm backdrop-blur-sm">
+      </AnimeShow>
+      {/* <Show when={getShowBreakdown() || getShowBar()}> */}
+      <div class="absolute top-full right-0 mt-2 grid justify-end p-1 text-right text-sm backdrop-blur-sm">
+        <AnimeShow when={getShowBar()}>
           <Anime
             animation={flashAnimation()}
-            class="w-max justify-self-end py-2 text-base font-bold text-main"
+            class="w-max justify-self-end py-1 text-base font-bold text-main"
           >
             +{getTotal()}
           </Anime>
+        </AnimeShow>
+        <AnimeShow when={getShowBreakdown()}>
           <AnimePresence mode="list">
             <For each={getBreakdownItems()} fallback={null}>
               {(item) => (
@@ -237,8 +374,9 @@ export function AccountXpBar(props: Props): JSXElement {
               )}
             </For>
           </AnimePresence>
-        </div>
-      </AnimeShow>
+        </AnimeShow>
+      </div>
+      {/* </Show> */}
     </>
   );
 }

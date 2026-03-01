@@ -6,7 +6,11 @@ import {
   getAccountButtonSpinner,
   getNotificationBubble,
 } from "../../../signals/header";
-import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
+import {
+  getSnapshot,
+  MiniSnapshot,
+  setSnapshot,
+} from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { AnimeConditional } from "../../common/anime";
@@ -30,6 +34,50 @@ export function Nav(): JSXElement {
         },
       )}
     >
+      <Button
+        text="10xp"
+        onClick={() => {
+          const snapshot = getSnapshot();
+          if (!snapshot) return;
+          setSnapshot({
+            ...snapshot,
+            xp: snapshot.xp + 10,
+          });
+        }}
+      />
+      <Button
+        text="100xp"
+        onClick={() => {
+          const snapshot = getSnapshot();
+          if (!snapshot) return;
+          setSnapshot({
+            ...snapshot,
+            xp: snapshot.xp + 100,
+          });
+        }}
+      />
+      <Button
+        text="1000xp"
+        onClick={() => {
+          const snapshot = getSnapshot();
+          if (!snapshot) return;
+          setSnapshot({
+            ...snapshot,
+            xp: snapshot.xp + 1000,
+          });
+        }}
+      />
+      <Button
+        text="10000xp"
+        onClick={() => {
+          const snapshot = getSnapshot();
+          if (!snapshot) return;
+          setSnapshot({
+            ...snapshot,
+            xp: snapshot.xp + 100000,
+          });
+        }}
+      />
       <Button
         type="text"
         fa={{
@@ -112,7 +160,7 @@ export function Nav(): JSXElement {
                 hideNameOnSmallScreens={true}
               />
             </Button>
-            <AccountXpBar percent={50} />
+            <AccountXpBar xp={getSnapshot()?.xp ?? 0} />
             <AccountMenu show={showMenu()} />
           </div>
         }

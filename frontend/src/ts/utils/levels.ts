@@ -35,8 +35,10 @@ function getTotalXpToReachLevel(level: number): number {
 
 export type XPDetails = {
   level: number;
+  levelFloat: number;
   levelCurrentXp: number;
   levelMaxXp: number;
+  levelProgressPercent: number;
 };
 
 /**
@@ -47,10 +49,16 @@ export type XPDetails = {
  */
 export function getXpDetails(totalXp: number): XPDetails {
   const level = getLevelFromTotalXp(totalXp);
+  const currentLevelXp = totalXp - getTotalXpToReachLevel(level);
+  const levelMaxXp = getLevelMaxXp(level);
+  const progress = levelMaxXp > 0 ? currentLevelXp / levelMaxXp : 0;
+  const levelFloat = level + progress;
   return {
     level,
-    levelCurrentXp: totalXp - getTotalXpToReachLevel(level),
-    levelMaxXp: getLevelMaxXp(level),
+    levelFloat,
+    levelCurrentXp: currentLevelXp,
+    levelMaxXp: levelMaxXp,
+    levelProgressPercent: (progress > 1 ? 1 : progress) * 100,
   };
 }
 
