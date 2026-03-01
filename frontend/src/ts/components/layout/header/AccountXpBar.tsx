@@ -18,26 +18,20 @@ type Props = {
 };
 
 export function AccountXpBar(props: Props): JSXElement {
+  const [getXpBreakdownData, setXpBreakdownData] =
+    createSignal<XpBreakdown | null>(null);
+
   const [getShowBar, setShowBar] = createSignal(false);
   const [getShowBreakdown, setShowBreakdown] = createSignal(false);
-  const [getXpBreakdown, setXpBreakdown] = createSignal<XpBreakdown | null>(
-    null,
+  const [getTotal, setTotal] = createSignal(0);
+  const [getBreakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>(
+    [],
   );
-  const [displayTotal, setDisplayTotal] = createSignal(0);
-  // const [breakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>([]);
-  const [breakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>([
-    {
-      label: "time typing",
-      amount: 100,
-    },
-    {
-      label: "very long breakdown item",
-      amount: 20,
-    },
-  ]);
+
+  let skipped = false;
 
   const flashAnimation = createMemo(() => {
-    displayTotal(); // track dependency
+    getTotal(); // track dependency
     const rand = (Math.random() * 2 - 1) / 4;
     const rand2 = (Math.random() + 1) / 2;
     return {
@@ -48,16 +42,28 @@ export function AccountXpBar(props: Props): JSXElement {
     };
   });
 
-  const flash = (total: number): void => {
-    setDisplayTotal(total);
-  };
-
   const addItem = (label: string, amount: number | string): void => {
     setBreakdownItems((items) => [...items, { label, amount }]);
   };
 
+  const skipBreakdown = async (): Promise<void> => {
+    const breakdown = getXpBreakdownData();
+    if (!getShowBreakdown() || !breakdown) return;
+
+    skipped = true;
+    setBreakdownItems([]);
+    const total = Object.values(breakdown).reduce((sum, val) => {
+      if (isSafeNumber(val)) return sum + val;
+      return sum;
+    }, 0);
+    setTotal(total);
+    await sleep(3000);
+    setShowBar(false);
+    setShowBreakdown(false);
+  };
+
   createEffectOn(getShowBreakdown, (show) => {
-    const breakdown = getXpBreakdown();
+    const breakdown = getXpBreakdownData();
     if (!breakdown) return;
     if (show) {
       void runBreakdown(breakdown);
@@ -66,87 +72,100 @@ export function AccountXpBar(props: Props): JSXElement {
 
   const runBreakdown = async (breakdown: XpBreakdown): Promise<void> => {
     const delay = 500;
+    skipped = false;
     setBreakdownItems([]);
     let total = breakdown.base ?? 0;
-    setDisplayTotal(total);
+    setTotal(total);
 
     addItem("time typing", breakdown.base ?? 0);
 
     if (isSafeNumber(breakdown.fullAccuracy)) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.fullAccuracy;
-      flash(total);
+      setTotal(total);
       addItem("perfect", breakdown.fullAccuracy);
     } else if (isSafeNumber(breakdown.corrected)) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.corrected;
-      flash(total);
+      setTotal(total);
       addItem("clean", breakdown.corrected);
     }
 
     if (isSafeNumber(breakdown.quote)) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.quote;
-      flash(total);
+      setTotal(total);
       addItem("quote", breakdown.quote);
     } else {
       if (isSafeNumber(breakdown.punctuation)) {
         await sleep(delay);
+        if (skipped) return;
         total += breakdown.punctuation;
-        flash(total);
+        setTotal(total);
         addItem("punctuation", breakdown.punctuation);
       }
       if (isSafeNumber(breakdown.numbers)) {
         await sleep(delay);
+        if (skipped) return;
         total += breakdown.numbers;
-        flash(total);
+        setTotal(total);
         addItem("numbers", breakdown.numbers);
       }
     }
 
     if (isSafeNumber(breakdown.funbox)) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.funbox;
-      flash(total);
+      setTotal(total);
       addItem("funbox", breakdown.funbox);
     }
 
     if (isSafeNumber(breakdown.streak)) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.streak;
-      flash(total);
+      setTotal(total);
       addItem("streak", breakdown.streak);
     }
 
     if (isSafeNumber(breakdown.accPenalty) && breakdown.accPenalty > 0) {
       await sleep(delay);
+      if (skipped) return;
       total -= breakdown.accPenalty;
-      flash(total);
+      setTotal(total);
       addItem("accuracy penalty", -breakdown.accPenalty);
     }
 
     if (isSafeNumber(breakdown.incomplete) && breakdown.incomplete > 0) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.incomplete;
-      flash(total);
+      setTotal(total);
       addItem("incomplete tests", breakdown.incomplete);
     }
 
     if (isSafeNumber(breakdown.configMultiplier)) {
       await sleep(delay);
+      if (skipped) return;
       total *= breakdown.configMultiplier;
-      flash(total);
+      setTotal(total);
       addItem("global multiplier", `x${breakdown.configMultiplier}`);
     }
 
     if (isSafeNumber(breakdown.daily)) {
       await sleep(delay);
+      if (skipped) return;
       total += breakdown.daily;
-      flash(total);
+      setTotal(total);
       addItem("daily bonus", breakdown.daily);
     }
 
     await sleep(3000);
+    if (skipped) return;
 
     setShowBreakdown(false);
     setShowBar(false);
@@ -157,7 +176,7 @@ export function AccountXpBar(props: Props): JSXElement {
       <Button
         class="absolute -left-100"
         onClick={() => {
-          setXpBreakdown({
+          setXpBreakdownData({
             base: 100,
             fullAccuracy: 20,
             quote: 10,
@@ -176,6 +195,11 @@ export function AccountXpBar(props: Props): JSXElement {
         }}
         text="XP Breakdown"
       />
+      <Button
+        class="absolute -left-60"
+        onClick={skipBreakdown}
+        text="Skip breakdown"
+      />
       <AnimeShow when={getShowBar()}>
         <div class="absolute top-full right-0 mt-1 w-full">
           <div class="text-[0.5em]">
@@ -189,10 +213,10 @@ export function AccountXpBar(props: Props): JSXElement {
             animation={flashAnimation()}
             class="w-max justify-self-end py-2 text-base font-bold text-main"
           >
-            +{displayTotal()}
+            +{getTotal()}
           </Anime>
           <AnimePresence mode="list">
-            <For each={breakdownItems()} fallback={null}>
+            <For each={getBreakdownItems()} fallback={null}>
               {(item) => (
                 <Anime
                   initial={{ opacity: 0, marginLeft: -25 }}
