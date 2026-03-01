@@ -1,9 +1,11 @@
 import { createSignal, JSXElement } from "solid-js";
 
-import { signOut } from "../../../auth";
 import { showAlerts } from "../../../elements/alerts";
 import { getActivePage, getFocus } from "../../../signals/core";
-import { getNotificationBubble } from "../../../signals/header";
+import {
+  getAccountButtonSpinner,
+  getNotificationBubble,
+} from "../../../signals/header";
 import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
@@ -14,20 +16,14 @@ import { User } from "../../common/User";
 import { AccountMenu } from "./AccountMenu";
 
 export function Nav(): JSXElement {
-  const [getSpinner, setSpinner] = createSignal(false);
-  const [getLoggedIn, setLoggedIn] = createSignal(true);
   const [showMenu, setShowMenu] = createSignal(false);
 
   return (
     <nav
-      class={cn("flex w-full items-center gap-2 transition-opacity", {
+      class={cn("flex w-full items-center gap-1 transition-opacity md:gap-2", {
         "opacity-0": getFocus(),
       })}
     >
-      <Button onClick={() => setSpinner(!getSpinner())}>toggle spinner</Button>
-      <Button onClick={() => setLoggedIn(!getLoggedIn())}>
-        toggle logged in
-      </Button>
       <Button
         type="text"
         fa={{
@@ -92,15 +88,17 @@ export function Nav(): JSXElement {
           >
             <Button
               type="text"
-              onClick={() => signOut()}
               class="hover:[&_.level]:bg-text hover:[&_svg]:fill-text"
+              href="/account"
+              router-link
             >
               <User
                 user={getSnapshot() as MiniSnapshot}
                 showAvatar={true}
                 showLevel={true}
                 iconsOnly={true}
-                showSpinner={getSpinner()}
+                showSpinner={getAccountButtonSpinner()}
+                hideNameOnSmallScreens={true}
               />
             </Button>
             <AccountMenu show={showMenu()} />

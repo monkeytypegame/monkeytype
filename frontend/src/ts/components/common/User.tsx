@@ -25,6 +25,7 @@ type Props = {
   showLevel?: boolean;
   showSpinner?: boolean;
   class?: string;
+  hideNameOnSmallScreens?: boolean;
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
@@ -47,7 +48,11 @@ export function User(props: Props): JSXElement {
           />
         </div>
       </Show>
-      <div class="text-xs transition-colors duration-125">
+      <div
+        class={cn("text-xs transition-colors duration-125", {
+          "hidden sm:block": props.hideNameOnSmallScreens,
+        })}
+      >
         <Conditional
           if={props.linkToProfile ?? false}
           then={
