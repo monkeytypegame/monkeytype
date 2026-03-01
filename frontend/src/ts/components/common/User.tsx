@@ -28,18 +28,11 @@ type Props = {
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
-  const animeProps = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, duration: 125 },
-    exit: { opacity: 0, duration: 125 },
-  };
-
   return (
     <div class={cn("grid grid-flow-col place-items-center gap-2", props.class)}>
       <Show when={props.showAvatar ?? true}>
         <div class="w-[1.25em]">
           <AnimeConditional
-            {...animeProps}
             exitBeforeEnter
             if={props.showSpinner ?? false}
             then={<Fa icon={"fa-circle-notch"} spin={true} />}

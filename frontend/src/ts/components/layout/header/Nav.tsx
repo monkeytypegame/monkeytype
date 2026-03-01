@@ -16,12 +16,6 @@ export function Nav(): JSXElement {
   const [getSpinner, setSpinner] = createSignal(false);
   const [getLoggedIn, setLoggedIn] = createSignal(true);
 
-  const animeProps = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, duration: 125 },
-    exit: { opacity: 0, duration: 125 },
-  };
-
   return (
     <nav
       class={cn("flex w-full items-center gap-2 transition-opacity", {
@@ -86,7 +80,6 @@ export function Nav(): JSXElement {
         <NotificationBubble show={getNotificationBubble} />
       </Button>
       <AnimeConditional
-        {...animeProps}
         exitBeforeEnter
         if={getSnapshot() !== undefined}
         then={
