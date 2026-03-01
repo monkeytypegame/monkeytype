@@ -17,7 +17,7 @@ type MappedSetters<T, S extends SettersMap<T>> = {
 export function createSignalWithSetters<T, S extends SettersMap<T>>(
   defaultValue: T,
   setters: S,
-): [() => T, MappedSetters<T, S>] {
+): [() => T, MappedSetters<T, S> & { set: OriginalSetter<T> }] {
   const [get, _set] = createSignal<T>(defaultValue);
   const mapped = Object.fromEntries(
     Object.entries(setters).map(([key, setter]) => [
@@ -25,5 +25,5 @@ export function createSignalWithSetters<T, S extends SettersMap<T>>(
       (...args: never[]) => setter(_set, ...args),
     ]),
   ) as unknown as MappedSetters<T, S>;
-  return [get, mapped];
+  return [get, { set: _set, ...mapped }];
 }
