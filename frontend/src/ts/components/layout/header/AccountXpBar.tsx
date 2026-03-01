@@ -2,6 +2,7 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createMemo, createSignal, For, JSXElement } from "solid-js";
 
+import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
 import { setAnimatedLevel } from "../../../signals/animated-level";
 import { getSnapshot, setSnapshot } from "../../../stores/snapshot";
@@ -39,11 +40,12 @@ export function AccountXpBar(_props: Props): JSXElement {
   const [getBarAnimationEase, setBarAnimationEase] = createSignal("out(5)");
 
   const [getAnimationTick, setAnimationTick] = createSignal(0);
-  const [getTotal, _setTotal] = createSignal(0);
-  const setTotal = (value: number): void => {
-    _setTotal(value);
-    setAnimationTick((t) => t + 1);
-  };
+  const [getTotal, { setTotal }] = createSignalWithSetters(0, {
+    setTotal: (set, value: number) => {
+      set(value);
+      setAnimationTick((t) => t + 1);
+    },
+  });
 
   let canSkip = true;
   let skipped = false;
