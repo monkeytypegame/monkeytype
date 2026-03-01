@@ -10,7 +10,7 @@ import { cn } from "../../../utils/cn";
 import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
-import { UserButton } from "./UserButton";
+import { User } from "../../common/User";
 
 export function Nav(): JSXElement {
   const [getSpinner, setSpinner] = createSignal(false);
@@ -90,14 +90,19 @@ export function Nav(): JSXElement {
         exitBeforeEnter
         if={getSnapshot() !== undefined}
         then={
-          <UserButton
-            user={{
-              ...(getSnapshot() as MiniSnapshot),
-            }}
-            loggedIn={getLoggedIn()}
-            showSpinner={getSpinner()}
+          <Button
+            type="text"
             onClick={() => signOut()}
-          />
+            class="hover:[&_.level]:bg-text hover:[&_svg]:fill-text"
+          >
+            <User
+              user={getSnapshot() as MiniSnapshot}
+              showAvatar={true}
+              showLevel={true}
+              iconsOnly={true}
+              showSpinner={getSpinner()}
+            />
+          </Button>
         }
         else={
           <Button
