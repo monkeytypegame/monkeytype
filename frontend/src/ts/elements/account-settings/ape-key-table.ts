@@ -18,7 +18,6 @@ const editApeKey = new SimpleModal({
     },
   ],
   buttonText: "edit",
-  onlineOnly: true,
   execFn: async (_thisPopup, input) => {
     const response = await Ape.apeKeys.save({
       params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
@@ -48,7 +47,6 @@ const deleteApeKeyModal = new SimpleModal({
   title: "Delete Ape key",
   text: "Are you sure?",
   buttonText: "delete",
-  onlineOnly: true,
   execFn: async (_thisPopup) => {
     const response = await Ape.apeKeys.delete({
       params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
@@ -112,10 +110,10 @@ const viewApeKey = new SimpleModal({
     modalEl.qs("textarea")?.setStyle({
       height: "110px",
     });
-    modalEl.qs(".submitButton")?.addClass("hidden");
+    modalEl.qs(".submitButton")?.hide();
     setTimeout(() => {
       _thisPopup.canClose = true;
-      modalEl.qs(".submitButton")?.removeClass("hidden");
+      modalEl.qs(".submitButton")?.show();
     }, 5000);
   },
 });
@@ -131,7 +129,6 @@ const generateApeKey = new SimpleModal({
     },
   ],
   buttonText: "generate",
-  onlineOnly: true,
   execFn: async (thisPopup, name) => {
     const response = await Ape.apeKeys.add({ body: { name, enabled: false } });
     if (response.status !== 200) {

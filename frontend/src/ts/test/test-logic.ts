@@ -1012,14 +1012,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       duration: 1,
     });
     dontSave = true;
-  } else if (afkDetected) {
-    Notifications.add("Test invalid - AFK detected", 0);
-    TestStats.setInvalid();
-    dontSave = true;
-  } else if (TestState.isRepeated) {
-    Notifications.add("Test invalid - repeated", 0);
-    TestStats.setInvalid();
-    dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
@@ -1042,6 +1034,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     TestStats.setInvalid();
     tooShort = true;
+    dontSave = true;
+  } else if (afkDetected) {
+    Notifications.add("Test invalid - AFK detected", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (TestState.isRepeated) {
+    Notifications.add("Test invalid - repeated", 0);
+    TestStats.setInvalid();
     dontSave = true;
   } else if (
     completedEvent.wpm < 0 ||
@@ -1202,22 +1202,6 @@ async function saveResult(
     });
     AccountButton.loading(false);
     setAccountButtonSpinner(false);
-    return null;
-  }
-
-  if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, {
-      duration: 2,
-      customTitle: "Notice",
-      important: true,
-    });
-    AccountButton.loading(false);
-    setAccountButtonSpinner(false);
-    retrySaving.canRetry = true;
-    qs("#retrySavingResultButton")?.show();
-    if (!isRetrying) {
-      retrySaving.completedEvent = completedEvent;
-    }
     return null;
   }
 

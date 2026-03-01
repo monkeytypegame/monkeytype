@@ -112,7 +112,7 @@ export default function AsyncContent<T extends QueryMapping>(
       ?.error?.();
 
   const loader = (): JSXElement =>
-    props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
+    props.loader ?? <LoadingCircle class="p-4 text-4xl" />;
 
   const errorText = (err: unknown): JSXElement | undefined =>
     props.ignoreError ? undefined : <div class="error">{handleError(err)}</div>;

@@ -67,7 +67,7 @@ export type LoadingOptions = {
     }
 );
 
-type PageProperties<T> = {
+export type PageProperties<T> = {
   id: PageName;
   display?: string;
   element: ElementWithUtils;

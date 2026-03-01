@@ -48,6 +48,6 @@ function copySolidPlugin(config: UserWorkspaceConfig): void {
   if (!config.plugins) return;
   config.plugins
     //@ts-expect-error this is fine
-    .filter((it) => it["name"] === "solid")
+    .filter((it) => it?.name === "solid")
     .forEach((it) => globalPlugins.push(it));
 }

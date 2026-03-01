@@ -1,5 +1,7 @@
-import { JSX, JSXElement, Match, Show, Switch } from "solid-js";
+import { JSX, JSXElement, Show } from "solid-js";
 
+import { cn } from "../../utils/cn";
+import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
 type BaseProps = {
@@ -13,36 +15,25 @@ type BaseProps = {
     | string
     | { text: string; position: "up" | "down" | "left" | "right" };
   "router-link"?: true;
-  ref?: (el: HTMLElement) => void;
 };
 
 type ButtonProps = BaseProps & {
   onClick: () => void;
   href?: never;
-  routerLink?: never;
+  sameTarget?: true;
   active?: boolean;
   disabled?: boolean;
 };
 
 type AnchorProps = BaseProps & {
-  onClick?: never;
   href: string;
-  routerLink?: never;
-};
-
-type RouterProps = BaseProps & {
-  onClick?: () => void;
-  href?: never;
-  routerLink: string;
+  onClick?: never;
   disabled?: never;
 };
 
-export function Button(
-  props: ButtonProps | AnchorProps | RouterProps,
-): JSXElement {
+export function Button(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = "href" in props;
-  const isActive = (): boolean =>
-    (!isAnchor && "active" in props && props.active) ?? false;
+  const isActive = (): boolean => (!isAnchor && props.active) ?? false;
 
   const content = (
     <>
@@ -65,24 +56,31 @@ export function Button(
     };
   };
 
-  const getClassList = (
-    defaultClass: string,
-  ): Record<string, boolean | undefined> => {
-    return {
-      [(props.type ?? "button") === "text" ? "textButton" : defaultClass]: true,
-      [props.class ?? ""]: props.class !== undefined,
-      "bg-main": isActive(),
-      "text-bg": isActive(),
-      "hover:bg-text": isActive(),
-      ...props.classList,
-    };
+  const getClasses = (): string => {
+    return cn(
+      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-colors transition-opacity duration-125 ease-in-out select-none",
+      "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
+      {
+        "bg-sub-alt hover:bg-text hover:text-bg": props.type !== "text",
+        "bg-transparent text-sub hover:text-text": props.type === "text",
+        [props.class ?? ""]: props.class !== undefined,
+        "bg-main text-bg hover:bg-text": isActive(),
+
+        ...props.classList,
+      },
+      {
+        "opacity-[0.33]": props.disabled,
+        "bg-text text-bg": isActive() && props.disabled,
+      },
+    );
   };
 
   return (
-    <Switch>
-      <Match when={"href" in props}>
+    <Conditional
+      if={isAnchor}
+      then={
         <a
-          classList={getClassList("")}
+          class={getClasses()}
           href={props.href}
           target={
             props["router-link"] || props.href?.startsWith("#")
@@ -96,39 +94,22 @@ export function Button(
           }
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
-          ref={props.ref}
         >
           {content}
         </a>
-      </Match>
-      <Match when={"routerLink" in props}>
-        <a
-          classList={getClassList("")}
-          href={props.routerLink}
-          router-link
-          onClick={() => {
-            props.onClick?.();
-          }}
-          ref={props.ref}
-        >
-          {content}
-        </a>
-      </Match>
-      <Match when={"onClick" in props}>
+      }
+      else={
         <button
           type="button"
-          classList={getClassList("")}
-          onClick={() => {
-            props.onClick?.();
-          }}
-          ref={props.ref}
+          class={getClasses()}
+          onClick={() => props.onClick?.()}
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
-          disabled={("disabled" in props && props.disabled) ?? false}
+          disabled={props.disabled ?? false}
         >
           {content}
         </button>
-      </Match>
-    </Switch>
+      }
+    />
   );
 }

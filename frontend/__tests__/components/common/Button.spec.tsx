@@ -141,21 +141,6 @@ describe("Button component", () => {
     expect(button).not.toHaveClass("button");
   });
 
-  it("applies textButton class when type is text", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        text="Hello"
-        type="text"
-      />
-    ));
-
-    const button = container.querySelector("button");
-    expect(button).toHaveClass("textButton");
-  });
-
   it("applies custom class when class prop is provided", () => {
     const { container } = render(() => (
       <Button

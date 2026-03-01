@@ -259,7 +259,7 @@ export async function applyCustomBackground(): Promise<void> {
   // hide the filter section initially and always
   qs(
     ".pageSettings .section[data-config-name='customBackgroundFilter']",
-  )?.addClass("hidden");
+  )?.hide();
 
   if (backgroundUrl === "") {
     qs("#words")?.removeClass("noErrorBorder");
@@ -282,7 +282,7 @@ export async function applyCustomBackground(): Promise<void> {
       // show the filter section only if the image loads successfully
       qs(
         ".pageSettings .section[data-config-name='customBackgroundFilter']",
-      )?.removeClass("hidden");
+      )?.show();
     };
 
     container?.replaceChildren(img);

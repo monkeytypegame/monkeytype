@@ -123,6 +123,7 @@ export const LanguageSchema = z.enum(
     "turkish_1k",
     "turkish_5k",
     "irish",
+    "irish_1k",
     "italian",
     "italian_1k",
     "italian_7k",

@@ -15,8 +15,8 @@ import * as AuthEvent from "../observables/auth-event";
 // const loginButtonEl = nav?.qsr(".textButton.view-login");
 
 export function hide(): void {
-  // accountButtonAndMenuEl.addClass("hidden");
-  // loginButtonEl.addClass("hidden");
+  // accountButtonAndMenuEl.hide();
+  // loginButtonEl.hide();
 }
 
 export function loading(_state: boolean): void {

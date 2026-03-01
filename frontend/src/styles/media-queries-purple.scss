@@ -147,40 +147,7 @@
       display: none;
     }
   }
-  .profile .pbsWords,
-  .profile .pbsTime {
-    font-size: 0.9rem;
-  }
-  .profile {
-    .pbsWords,
-    .pbsTime {
-      grid-template-columns: 1fr 1fr;
-    }
-    .details.none .typingStats,
-    .details.soc .typingStats,
-    .details.bioAndKey .typingStats,
-    .details.both .typingStats {
-      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    }
-    .details.bioAndKey {
-      grid-template-areas:
-        "avAndName"
-        "bioAndKey"
-        "typingStats";
-      grid-template-columns: 1fr;
-    }
-    .details.both {
-      grid-template-areas:
-        "avAndName"
-        "bioAndKey"
-        "typingStats"
-        "socials";
-      grid-template-columns: 1fr;
-    }
-    .leaderboardsPositions {
-      grid-template-areas: "title" "t15" "t60";
-    }
-  }
+
   #keymap .row {
     height: 1.25rem;
   }
