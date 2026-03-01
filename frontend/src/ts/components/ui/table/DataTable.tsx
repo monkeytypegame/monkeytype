@@ -2,7 +2,6 @@ import {
   AccessorFnColumnDef,
   AccessorKeyColumnDef,
   ColumnDef,
-  ColumnMeta,
   createSolidTable,
   flexRender,
   getCoreRowModel,
@@ -12,6 +11,7 @@ import {
 import {
   Accessor,
   createEffect,
+  createMemo,
   createSignal,
   For,
   JSXElement,
@@ -23,7 +23,6 @@ import {
 import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { BreakpointKey } from "../../../signals/breakpoints";
 import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
@@ -124,25 +123,48 @@ export function DataTable<TData, TValue = any>(
     },
   });
 
-  const columnVisibility = (
-    meta:
-      | undefined
-      | Pick<ColumnMeta<unknown, unknown>, "breakpoint" | "maxBreakpoint">,
-  ): string => {
-    const mapBreakpoint = (bp: BreakpointKey | undefined) =>
-      bp === undefined ? undefined : bp === "xxl" ? "2xl" : bp.toString();
-    const visible =
-      meta?.breakpoint !== undefined
-        ? `${mapBreakpoint(meta?.breakpoint)}:table-cell hidden`
-        : "";
+  //create column visibility classes once, make them accessible via the column.id
+  const columnVisibility = createMemo(() => {
+    return Object.fromEntries(
+      table.getAllColumns().map((it) => {
+        const breakpoint =
+          it.columnDef.meta?.breakpoint === "xxl"
+            ? "2xl"
+            : it.columnDef.meta?.breakpoint;
+        const maxBreakpoint =
+          it.columnDef.meta?.maxBreakpoint === "xxl"
+            ? "2xl"
+            : it.columnDef.meta?.maxBreakpoint;
 
-    const result = cn(
-      visible,
-      meta?.maxBreakpoint && meta?.maxBreakpoint + ":hidden",
+        // 🚨 Tailwind does not generate CSS for dynamically constructed class names.
+        const classes = {
+          hidden: false,
+          "xxs:table-cell": false,
+          "xs:table-cell": false,
+          "md:table-cell": false,
+          "lg:table-cell": false,
+          "xl:table-cell": false,
+          "xxl:table-cell": false,
+          "xxs:hidden": false,
+          "xs:hidden": false,
+          "md:hidden": false,
+          "lg:hidden": false,
+          "xl:hidden": false,
+          "xxl:hidden": false,
+        };
+        if (breakpoint !== undefined) {
+          classes.hidden = true;
+          //@ts-expect-error shhhh
+          classes[`${breakpoint}:table-cell`] = true;
+        }
+        if (maxBreakpoint !== undefined) {
+          //@ts-expect-error shhhh
+          classes[`${maxBreakpoint}:hidden`] = true;
+        }
+        return [it.id, classes];
+      }),
     );
-    console.log("### meta", meta, result);
-    return result;
-  };
+  });
 
   return (
     <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
@@ -166,9 +188,7 @@ export function DataTable<TData, TValue = any>(
                                   ? "descending"
                                   : "none"
                             }
-                            class={columnVisibility(
-                              header.column.columnDef.meta,
-                            )}
+                            class={cn(columnVisibility()[header.column.id])}
                           >
                             <button
                               type="button"
@@ -239,7 +259,7 @@ export function DataTable<TData, TValue = any>(
                                   header.column.columnDef.meta?.align ===
                                   "right",
                               },
-                              columnVisibility(header.column.columnDef.meta),
+                              columnVisibility()[header.column.id],
                             )}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
@@ -298,7 +318,7 @@ export function DataTable<TData, TValue = any>(
                             "text-right":
                               cell.column.columnDef.meta?.align === "right",
                           },
-                          columnVisibility(cell.column.columnDef.meta),
+                          columnVisibility()[cell.column.id],
                           cellClass.class,
                         )}
                       >
