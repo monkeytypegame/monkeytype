@@ -149,30 +149,36 @@ export function Nav(): JSXElement {
         exitBeforeEnter
         if={getSnapshot() !== undefined}
         then={
-          <div class="relative">
-            <Button
-              type="text"
-              class={cn(
-                "h-full",
-                "hover:[&_.level]:bg-text hover:[&_svg]:fill-text",
-              )}
-              href="/account"
-              router-link
+          <>
+            <div
+              class="relative"
               onMouseEnter={() => setShowMenu(true)}
               onMouseLeave={() => setShowMenu(false)}
             >
-              <User
-                user={getSnapshot() as MiniSnapshot}
-                showAvatar={true}
-                showLevel={true}
-                iconsOnly={true}
-                showSpinner={getAccountButtonSpinner()}
-                hideNameOnSmallScreens={true}
-              />
-            </Button>
-            <AccountXpBar xp={getSnapshot()?.xp ?? 0} />
-            <AccountMenu show={showMenu()} />
-          </div>
+              <Button
+                type="text"
+                class={cn(
+                  "h-full",
+                  "hover:[&_.level]:bg-text hover:[&_svg]:fill-text",
+                )}
+                href="/account"
+                router-link
+              >
+                <User
+                  user={getSnapshot() as MiniSnapshot}
+                  showAvatar={true}
+                  showLevel={true}
+                  iconsOnly={true}
+                  showSpinner={getAccountButtonSpinner()}
+                  hideNameOnSmallScreens={true}
+                />
+              </Button>
+              <AccountMenu show={showMenu()} />
+            </div>
+            <div class="relative">
+              <AccountXpBar xp={getSnapshot()?.xp ?? 0} />
+            </div>
+          </>
         }
         else={
           <Button
