@@ -11,18 +11,17 @@ import {
 import {
   Accessor,
   createEffect,
-  createMemo,
   createSignal,
   For,
   JSXElement,
   Match,
   Show,
+  splitProps,
   Switch,
 } from "solid-js";
 import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { bp } from "../../../signals/breakpoints";
 import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
@@ -86,28 +85,6 @@ export function DataTable<TData, TValue = any>(
         : [],
   });
 
-  const columnVisibility = createMemo(() => {
-    const current = bp();
-    const result = Object.fromEntries(
-      props.columns.map((col, index) => {
-        col.id =
-          col.id ??
-          ("accessorKey" in col && col.accessorKey !== null
-            ? String(col.accessorKey)
-            : `__col_${index}`);
-
-        const visible =
-          current[col.meta?.breakpoint ?? "xxs"] &&
-          (col.meta?.maxBreakpoint === undefined ||
-            !current[col.meta?.maxBreakpoint]);
-
-        return [col.id, visible];
-      }),
-    );
-
-    return result;
-  });
-
   const [rowSelection, setRowSelection] = createSignal({});
   createEffect(() => {
     if (!props.rowSelection || props.rowSelection.activeRow === undefined) {
@@ -139,9 +116,6 @@ export function DataTable<TData, TValue = any>(
       get sorting() {
         return sorting();
       },
-      get columnVisibility() {
-        return columnVisibility();
-      },
       get rowSelection() {
         return rowSelection();
       },
@@ -170,6 +144,14 @@ export function DataTable<TData, TValue = any>(
                                   ? "descending"
                                   : "none"
                             }
+                            class={cn(
+                              "hidden",
+                              (header.column.columnDef.meta?.breakpoint ??
+                                "xxs") + ":table-cell",
+                              header.column.columnDef.meta?.maxBreakpoint &&
+                                header.column.columnDef.meta?.maxBreakpoint +
+                                  ":hidden",
+                            )}
                           >
                             <button
                               type="button"
@@ -240,6 +222,12 @@ export function DataTable<TData, TValue = any>(
                                   header.column.columnDef.meta?.align ===
                                   "right",
                               },
+                              "hidden",
+                              (header.column.columnDef.meta?.breakpoint ??
+                                "xxs") + ":table-cell",
+                              header.column.columnDef.meta?.maxBreakpoint &&
+                                header.column.columnDef.meta?.maxBreakpoint +
+                                  ":hidden",
                               header.column.columnDef.meta?.headerClass,
                             )}
                             {...(header.column.columnDef.meta?.headerMeta ??
@@ -276,25 +264,38 @@ export function DataTable<TData, TValue = any>(
               >
                 <For each={row.getVisibleCells()}>
                   {(cell) => {
-                    const cellMeta =
+                    const [cellClass, cellMeta] = splitProps(
                       typeof cell.column.columnDef.meta?.cellMeta === "function"
                         ? cell.column.columnDef.meta.cellMeta({
                             value: cell.getValue(),
                             row: cell.row.original,
                           })
-                        : (cell.column.columnDef.meta?.cellMeta ?? {});
+                        : (cell.column.columnDef.meta?.cellMeta ?? {}),
+                      ["class"],
+                    );
                     return (
                       <TableCell
                         {...cellMeta}
-                        classList={{
-                          "text-left":
-                            (cell.column.columnDef.meta?.align ?? "left") ===
-                            "left",
-                          "text-center":
-                            cell.column.columnDef.meta?.align === "center",
-                          "text-right":
-                            cell.column.columnDef.meta?.align === "right",
-                        }}
+                        class={cn(
+                          "",
+                          {
+                            "text-left":
+                              (cell.column.columnDef.meta?.align ?? "left") ===
+                              "left",
+                            "text-center":
+                              cell.column.columnDef.meta?.align === "center",
+                            "text-right":
+                              cell.column.columnDef.meta?.align === "right",
+                          },
+                          "hidden",
+                          (cell.column.columnDef.meta?.breakpoint ?? "xxs") +
+                            ":table-cell",
+                          cell.column.columnDef.meta?.maxBreakpoint &&
+                            cell.column.columnDef.meta?.maxBreakpoint +
+                              ":hidden",
+
+                          cellClass,
+                        )}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
