@@ -91,11 +91,7 @@ export function Nav(): JSXElement {
         exitBeforeEnter
         if={getSnapshot() !== undefined}
         then={
-          <div
-            class="relative"
-            onMouseEnter={() => setShowMenu(true)}
-            onMouseLeave={() => setShowMenu(false)}
-          >
+          <div class="relative">
             <Button
               type="text"
               class={cn(
@@ -104,6 +100,8 @@ export function Nav(): JSXElement {
               )}
               href="/account"
               router-link
+              onMouseEnter={() => setShowMenu(true)}
+              onMouseLeave={() => setShowMenu(false)}
             >
               <User
                 user={getSnapshot() as MiniSnapshot}

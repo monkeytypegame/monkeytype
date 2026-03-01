@@ -16,6 +16,8 @@ type BaseProps = {
     | { text: string; position: "up" | "down" | "left" | "right" };
   "router-link"?: true;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
 type ButtonProps = BaseProps & {
@@ -94,6 +96,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           }
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
+          onMouseEnter={() => props.onMouseEnter?.()}
+          onMouseLeave={() => props.onMouseLeave?.()}
         >
           {content}
         </a>
@@ -103,6 +107,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           class={getClasses()}
           onClick={() => props.onClick?.()}
+          onMouseEnter={() => props.onMouseEnter?.()}
+          onMouseLeave={() => props.onMouseLeave?.()}
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
