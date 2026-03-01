@@ -1,19 +1,27 @@
 import { createSignal, JSXElement } from "solid-js";
 
+import { signOut } from "../../../auth";
 import { showAlerts } from "../../../elements/alerts";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { getNotificationBubble } from "../../../signals/header";
-import { getSnapshot } from "../../../stores/snapshot";
+import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
-import { getLevelFromTotalXp } from "../../../utils/levels";
+import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { UserButton } from "./UserButton";
 
 export function Nav(): JSXElement {
   const [getSpinner, setSpinner] = createSignal(false);
-  const [getLoggedIn, setLoggedIn] = createSignal(false);
+  const [getLoggedIn, setLoggedIn] = createSignal(true);
+
+  const animeProps = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, duration: 125 },
+    exit: { opacity: 0, duration: 125 },
+  };
+
   return (
     <nav
       class={cn("flex w-full items-center gap-2 transition-opacity", {
@@ -77,19 +85,32 @@ export function Nav(): JSXElement {
       >
         <NotificationBubble show={getNotificationBubble} />
       </Button>
-      <UserButton
-        loggedIn={getLoggedIn()}
-        discordId={getSnapshot()?.discordId}
-        discordAvatar={getSnapshot()?.discordAvatar + "a"}
-        name={getSnapshot()?.name ?? "Loading..."}
-        level={getLevelFromTotalXp(getSnapshot()?.xp ?? 0)}
-        showSpinner={getSpinner()}
-        onClick={() => alert("hi")}
-        flags={{
-          banned: getSnapshot()?.banned,
-          lbOptOut: getSnapshot()?.lbOptOut,
-          isPremium: getSnapshot()?.isPremium,
-        }}
+      <AnimeConditional
+        {...animeProps}
+        exitBeforeEnter
+        if={getSnapshot() !== undefined}
+        then={
+          <UserButton
+            user={{
+              ...(getSnapshot() as MiniSnapshot),
+            }}
+            loggedIn={getLoggedIn()}
+            showSpinner={getSpinner()}
+            onClick={() => signOut()}
+          />
+        }
+        else={
+          <Button
+            type="text"
+            href="/login"
+            fa={{
+              icon: "fa-user",
+              variant: "regular",
+              fixedWidth: true,
+            }}
+            router-link
+          />
+        }
       />
     </nav>
   );

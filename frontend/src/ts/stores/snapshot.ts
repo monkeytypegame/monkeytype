@@ -3,7 +3,7 @@ import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
 import { createSignal } from "solid-js";
 import { Mode } from "@monkeytype/schemas/shared";
 
-type MiniSnapshot = Omit<
+export type MiniSnapshot = Omit<
   Snapshot,
   "results" | "tags" | "presets" | "filterPresets"
 >;
