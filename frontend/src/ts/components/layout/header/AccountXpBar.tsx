@@ -21,7 +21,6 @@ export function AccountXpBar(props: Props): JSXElement {
   const [getXpBreakdownData, setXpBreakdownData] =
     createSignal<XpBreakdown | null>(null);
 
-  const [getShowBar, setShowBar] = createSignal(false);
   const [getShowBreakdown, setShowBreakdown] = createSignal(false);
   const [getTotal, setTotal] = createSignal(0);
   const [getBreakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>(
@@ -47,6 +46,7 @@ export function AccountXpBar(props: Props): JSXElement {
   };
 
   const skipBreakdown = async (): Promise<void> => {
+    if (skipped) return;
     const breakdown = getXpBreakdownData();
     if (!getShowBreakdown() || !breakdown) return;
 
@@ -58,7 +58,6 @@ export function AccountXpBar(props: Props): JSXElement {
     }, 0);
     setTotal(total);
     await sleep(3000);
-    setShowBar(false);
     setShowBreakdown(false);
   };
 
@@ -168,7 +167,6 @@ export function AccountXpBar(props: Props): JSXElement {
     if (skipped) return;
 
     setShowBreakdown(false);
-    setShowBar(false);
   };
 
   return (
@@ -191,7 +189,6 @@ export function AccountXpBar(props: Props): JSXElement {
             configMultiplier: 2,
           });
           setShowBreakdown(true);
-          setShowBar(true);
         }}
         text="XP Breakdown"
       />
@@ -200,14 +197,12 @@ export function AccountXpBar(props: Props): JSXElement {
         onClick={skipBreakdown}
         text="Skip breakdown"
       />
-      <AnimeShow when={getShowBar()}>
+      <AnimeShow when={getShowBreakdown()}>
         <div class="absolute top-full right-0 mt-1 w-full">
           <div class="text-[0.5em]">
             <Bar fill="main" bg="sub-alt" percent={props.percent} />
           </div>
         </div>
-      </AnimeShow>
-      <AnimeShow when={getShowBreakdown()}>
         <div class="absolute top-full right-0 mt-2 grid justify-end p-1 text-right text-sm backdrop-blur-sm">
           <Anime
             animation={flashAnimation()}
