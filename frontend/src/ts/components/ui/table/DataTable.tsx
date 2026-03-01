@@ -144,13 +144,13 @@ export function DataTable<TData, TValue = any>(
           "md:table-cell": false,
           "lg:table-cell": false,
           "xl:table-cell": false,
-          "xxl:table-cell": false,
+          "2xl:table-cell": false,
           "xxs:hidden": false,
           "xs:hidden": false,
           "md:hidden": false,
           "lg:hidden": false,
           "xl:hidden": false,
-          "xxl:hidden": false,
+          "2xl:hidden": false,
         };
         if (breakpoint !== undefined) {
           classes.hidden = true;
