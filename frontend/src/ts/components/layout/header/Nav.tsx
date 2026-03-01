@@ -13,6 +13,7 @@ import { UserButton } from "./UserButton";
 
 export function Nav(): JSXElement {
   const [getSpinner, setSpinner] = createSignal(false);
+  const [getLoggedIn, setLoggedIn] = createSignal(false);
   return (
     <nav
       class={cn("flex w-full items-center gap-2 transition-opacity", {
@@ -20,6 +21,9 @@ export function Nav(): JSXElement {
       })}
     >
       <Button onClick={() => setSpinner(!getSpinner())}>toggle spinner</Button>
+      <Button onClick={() => setLoggedIn(!getLoggedIn())}>
+        toggle logged in
+      </Button>
       <Button
         type="text"
         fa={{
@@ -74,7 +78,7 @@ export function Nav(): JSXElement {
         <NotificationBubble show={getNotificationBubble} />
       </Button>
       <UserButton
-        loggedIn={true}
+        loggedIn={getLoggedIn()}
         discordId={getSnapshot()?.discordId}
         discordAvatar={getSnapshot()?.discordAvatar + "a"}
         name={getSnapshot()?.name ?? "Loading..."}
