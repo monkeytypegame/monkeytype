@@ -3,8 +3,8 @@ import { JSXElement } from "solid-js";
 import { getIsScreenshotting } from "../../../signals/core";
 import { getAccountButtonSpinner } from "../../../signals/header";
 import { getAuthenticatedUser, isAuthenticated } from "../../../signals/user";
+import { getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
-
 import { Logo } from "./Logo";
 import { Nav } from "./Nav";
 
@@ -23,6 +23,11 @@ export function Header(): JSXElement {
         <div>{getAccountButtonSpinner() ? "Loading..." : "not loading"}</div>
         <div>{isAuthenticated() ? "authenticated" : "not authenticated"}</div>
         <div>{JSON.stringify(getAuthenticatedUser())}</div>
+      </div>
+      <div class="flex flex-col gap-4">
+        <div>
+          {getSnapshot() ? "Snapshot is defined" : "Snapshot is NOT defined"}
+        </div>
       </div>
     </>
   );

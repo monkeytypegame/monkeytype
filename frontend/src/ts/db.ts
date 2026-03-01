@@ -36,7 +36,7 @@ import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
 } from "./stores/snapshot";
-import { setAuthenticatedUser } from "./signals/user";
+// import { setAuthenticatedUser } from "./signals/user";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -252,13 +252,13 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     dbSnapshot = snap;
 
-    setAuthenticatedUser({
-      uid: dbSnapshot.uid,
-      name: dbSnapshot.name,
-      discordAvatar: dbSnapshot.discordAvatar,
-      discordId: dbSnapshot.discordId,
-      xp: dbSnapshot.xp,
-    });
+    // setAuthenticatedUser({
+    //   uid: dbSnapshot.uid,
+    //   name: dbSnapshot.name,
+    //   discordAvatar: dbSnapshot.discordAvatar,
+    //   discordId: dbSnapshot.discordId,
+    //   xp: dbSnapshot.xp,
+    // });
 
     return dbSnapshot;
   } catch (e) {

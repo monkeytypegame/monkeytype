@@ -1,21 +1,25 @@
-import { JSXElement } from "solid-js";
+import { createSignal, JSXElement } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { getNotificationBubble } from "../../../signals/header";
+import { getSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
+import { getLevelFromTotalXp } from "../../../utils/levels";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
-import { AccountButton } from "./AccountButton";
+import { UserButton } from "./UserButton";
 
 export function Nav(): JSXElement {
+  const [getSpinner, setSpinner] = createSignal(false);
   return (
     <nav
       class={cn("flex w-full items-center gap-2 transition-opacity", {
         "opacity-0": getFocus(),
       })}
     >
+      <Button onClick={() => setSpinner(!getSpinner())}>toggle spinner</Button>
       <Button
         type="text"
         fa={{
@@ -69,7 +73,15 @@ export function Nav(): JSXElement {
       >
         <NotificationBubble show={getNotificationBubble} />
       </Button>
-      <AccountButton />
+      <UserButton
+        loggedIn={true}
+        discordId={getSnapshot()?.discordId}
+        discordAvatar={getSnapshot()?.discordAvatar + "a"}
+        name={getSnapshot()?.name ?? "Loading..."}
+        level={getLevelFromTotalXp(getSnapshot()?.xp ?? 0)}
+        showSpinner={getSpinner()}
+        onClick={() => alert("hi")}
+      />
     </nav>
   );
 }
