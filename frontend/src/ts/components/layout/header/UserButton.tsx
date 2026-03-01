@@ -19,7 +19,7 @@ type Props = {
 export function UserButton(props: Props): JSXElement {
   const animeProps = {
     initial: { opacity: 0 },
-    animate: { opacity: 1, duration: 125 },
+    animate: { opacity: 1, duration: 1250 },
     exit: { opacity: 0, duration: 125 },
   };
 
@@ -29,18 +29,18 @@ export function UserButton(props: Props): JSXElement {
       onClick={props.onClick}
       class="grid hover:[&_.level]:bg-text [&_svg]:transition-colors [&_svg]:duration-125 hover:[&_svg]:fill-text"
     >
-      <AnimeSwitch>
-        <AnimeMatch {...animeProps} when={props.showSpinner}>
+      <AnimeSwitch exitBeforeEnter animeProps={animeProps}>
+        <AnimeMatch when={props.showSpinner}>
           <Fa icon={"fa-circle-notch"} spin={true} />
         </AnimeMatch>
-        <AnimeMatch {...animeProps} when={props.loggedIn}>
+        <AnimeMatch when={props.loggedIn}>
           <DiscordAvatar
             size={64}
             discordId={props.discordId}
             discordAvatar={props.discordAvatar}
           />
         </AnimeMatch>
-        <AnimeMatch {...animeProps} when={!props.loggedIn}>
+        <AnimeMatch when={!props.loggedIn}>
           <Fa
             icon="fa-user"
             variant="regular"
