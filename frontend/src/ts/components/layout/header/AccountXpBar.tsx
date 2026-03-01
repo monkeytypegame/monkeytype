@@ -104,7 +104,6 @@ export function AccountXpBar(_props: Props): JSXElement {
 
   const runBreakdown = async (breakdown: XpBreakdown): Promise<void> => {
     const delay = 500;
-    skipped = false;
     setBreakdownItems([]);
     let total = breakdown.base ?? 0;
     setTotal(total);
@@ -211,8 +210,8 @@ export function AccountXpBar(_props: Props): JSXElement {
     fromXp: number,
     toXp: number,
   ): Promise<void> => {
-    const prevDetails = getXpDetails(fromXp ?? 0);
-    const newDetails = getXpDetails(toXp ?? 0);
+    const prevDetails = getXpDetails(fromXp);
+    const newDetails = getXpDetails(toXp);
 
     const startingLevel = prevDetails.levelFloat;
     const endingLevel = newDetails.levelFloat;
