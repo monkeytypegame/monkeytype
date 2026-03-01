@@ -445,10 +445,11 @@ header {
     nav {
       color: transparent;
 
-      .textButton,
-      button {
+      * {
         color: transparent !important;
+        background: transparent !important;
       }
+
       .avatar,
       .levelAndBar {
         opacity: 0 !important;
