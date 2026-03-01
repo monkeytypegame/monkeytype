@@ -5,6 +5,15 @@ import { AnimeGroup } from "./AnimeGroup";
 
 let nextId = 1;
 
+/**
+ * Interactive demo/test component for `<AnimeGroup>`.
+ *
+ * Renders a list of items with staggered entrance and exit animations.
+ * Buttons allow adding and removing list items at runtime to exercise the
+ * `MutationObserver`-based exit animation logic in `AnimeGroup`.
+ *
+ * This component is intended for development/testing purposes only.
+ */
 export function AnimeGroupTest(): JSXElement {
   const [items, setItems] = createSignal<{ id: number; label: string }[]>([
     { id: nextId++, label: "Item 1" },

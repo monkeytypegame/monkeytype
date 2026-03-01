@@ -4,6 +4,38 @@ import { Conditional } from "../Conditional";
 import { Anime, AnimeProps } from "./Anime";
 import { AnimePresence } from "./AnimePresence";
 
+/**
+ * A convenience wrapper that renders animated `if/then/else` conditionals.
+ *
+ * Combines `<AnimePresence>` + `<Conditional>` + `<Anime>` into a single
+ * component. Both branches are wrapped in `<Anime>` so they fade in/out
+ * automatically. Use `animeProps` to customise the animation; the fallback
+ * is a quick 125 ms opacity fade.
+ *
+ * @example
+ * ```tsx
+ * <AnimeConditional
+ *   if={isLoggedIn()}
+ *   then={<Dashboard />}
+ *   else={<LoginForm />}
+ *   exitBeforeEnter
+ * />
+ * ```
+ *
+ * @example
+ * Custom animation:
+ * ```tsx
+ * <AnimeConditional
+ *   if={open()}
+ *   then={<Panel />}
+ *   animeProps={{
+ *     initial: { opacity: 0, translateY: -8 },
+ *     animate: { opacity: 1, translateY: 0, duration: 200 },
+ *     exit:    { opacity: 0, translateY: -8, duration: 150 },
+ *   }}
+ * />
+ * ```
+ */
 export function AnimeConditional(
   props: ParentProps<{
     exitBeforeEnter?: boolean;
@@ -13,6 +45,7 @@ export function AnimeConditional(
     animeProps?: AnimeProps;
   }>,
 ): JSXElement {
+  /** Fallback animation used when no `animeProps` are provided. */
   const defaultAnimeProps = {
     initial: { opacity: 0 },
     animate: { opacity: 1, duration: 125 },
