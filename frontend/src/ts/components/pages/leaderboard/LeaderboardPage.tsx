@@ -147,7 +147,7 @@ export function LeaderboardPage(): JSXElement {
   return (
     <Show when={isOpen()}>
       <div class="content-grid flex flex-col gap-8 lg:flex-row">
-        <div class="w-full lg:w-60 2xl:w-75">
+        <div class="w-full shrink-0 lg:w-60 2xl:w-75">
           <AsyncContent query={serverConfigurationQuery}>
             {(config) => (
               <Sidebar
