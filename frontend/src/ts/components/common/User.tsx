@@ -1,10 +1,14 @@
 import { User as UserType } from "@monkeytype/schemas/users";
-import { createMemo, JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement, onMount, Show } from "solid-js";
 
 import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
+import {
+  getAnimatedLevel,
+  setAnimatedLevel,
+} from "../../signals/animated-level";
 import { getTheme } from "../../signals/theme";
 import { cn } from "../../utils/cn";
 import { getLevelFromTotalXp } from "../../utils/levels";
@@ -30,12 +34,14 @@ type Props = {
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
-  const level = createMemo(() => getLevelFromTotalXp(props.user.xp ?? 0));
   const theme = getTheme();
 
-  //todo: problem, this doesnt flash in sync with the bar animation
+  onMount(() => {
+    setAnimatedLevel(getLevelFromTotalXp(props.user.xp ?? 0));
+  });
+
   const flashAnimation = createMemo(() => {
-    level(); // rerun only when level changes
+    getAnimatedLevel();
     const rand = (Math.random() * 2 - 1) / 4;
     const rand2 = (Math.random() + 1) / 2;
     return {
@@ -99,7 +105,7 @@ export function User(props: Props): JSXElement {
           animation={flashAnimation()}
           class="level rounded-half bg-sub px-[0.5em] py-[0.1em] text-[0.7em] text-bg"
         >
-          {level()}
+          {getAnimatedLevel()}
         </Anime>
       </Show>
     </div>

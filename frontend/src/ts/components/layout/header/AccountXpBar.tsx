@@ -3,6 +3,7 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createMemo, createSignal, For, JSXElement } from "solid-js";
 
 import { createEffectOn } from "../../../hooks/effects";
+import { setAnimatedLevel } from "../../../signals/animated-level";
 import { getSnapshot, setSnapshot } from "../../../stores/snapshot";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
@@ -251,6 +252,7 @@ export function AccountXpBar(_props: Props): JSXElement {
       // Exact level up, animate to 100% then reset to 0% for next level
       setBarAnimationEase("out(5)");
       await animateBar(100, 1000, isStale);
+      setAnimatedLevel(Math.floor(endingLevel));
     } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
       // Same level, just animate to the new percentage
       setBarAnimationEase("out(5)");
@@ -263,6 +265,7 @@ export function AccountXpBar(_props: Props): JSXElement {
       let firstOneDone = false;
       let animationDuration = quickSpeed;
       let decrement = 1 - (startingLevel % 1);
+      let currentLevel = Math.floor(startingLevel);
 
       setBarAnimationEase("linear");
 
@@ -275,6 +278,8 @@ export function AccountXpBar(_props: Props): JSXElement {
         }
 
         await animateBar(100, animationDuration, isStale);
+        currentLevel += 1;
+        setAnimatedLevel(currentLevel);
 
         toAnimate -= decrement;
         firstOneDone = true;
