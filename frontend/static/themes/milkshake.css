@@ -1,23 +1,21 @@
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: #f19dac;
 }
 
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   color: #f6f4a0;
 }
 
-nav > .textButton:nth-child(3) {
+[data-nav-item="about"] {
   color: #73e4d0;
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   color: #61cfe6;
 }
 
-nav > .textButton:nth-child(5) {
-  color: #ba96db;
-}
-
-nav > .textButton:nth-child(6) {
+[data-nav-item="alerts"],
+[data-nav-item="account"],
+[data-nav-item="login"] {
   color: #ba96db;
 }
