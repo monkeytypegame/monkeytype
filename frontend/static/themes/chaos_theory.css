@@ -120,6 +120,19 @@ nav {
   background: #fc76d9;
 }
 
+nav .notificationBubble {
+  box-shadow: none;
+  background: var(--color-bg);
+  padding-right: 0.2em;
+  right: 0.85em;
+  left: 2.75em;
+}
+
+nav .level {
+  background: var(--color-bg);
+  color: var(--main-color);
+}
+
 [data-nav-item="alerts"] {
   background: #fc76d9;
 }

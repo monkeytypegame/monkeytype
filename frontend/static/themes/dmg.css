@@ -22,6 +22,19 @@ header.focus nav:after {
   background: var(--main-color);
 }
 
+nav .notificationBubble {
+  box-shadow: none;
+  background: var(--color-sub);
+  padding-right: 0.2em;
+  right: 0.85em;
+  left: 2.75em;
+}
+
+nav .level {
+  background: var(--color-bg);
+  color: var(--main-color);
+}
+
 body.crtmode [data-nav-item] {
   box-shadow:
     3px 0 1px var(--crt-main-color-glow),
