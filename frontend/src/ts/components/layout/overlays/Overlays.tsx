@@ -5,6 +5,7 @@ import { getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/misc";
+import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { ScrollToTop } from "../footer/ScrollToTop";
 import { Banners } from "./Banners";
@@ -37,25 +38,29 @@ export function Overlays(): JSXElement {
       <LoaderBar />
       <FpsCounter />
       <Show when={isDevEnvironment()}>
-        <div id="devButtons">
-          <a
-            class="button configureAPI"
+        <div class="fixed top-30 left-0 z-10000 flex w-max flex-col gap-2 text-xs">
+          <Button
             href={`${envConfig.backendUrl}/configure/`}
-            target="_blank"
-            aria-label="Configure API"
-            data-balloon-pos="right"
-          >
-            <i class="fas fa-fw fa-server"></i>
-          </a>
-          <button
-            type="button"
-            class="button"
-            aria-label="Dev options"
-            data-balloon-pos="right"
+            ariaLabel={{
+              text: "Configure server",
+              position: "right",
+            }}
+            fa={{
+              icon: "fa-server",
+            }}
+            class="rounded-tl-none rounded-bl-none p-2"
+          />
+          <Button
+            ariaLabel={{
+              text: "Dev options",
+              position: "right",
+            }}
             onClick={() => showModal("DevOptions")}
-          >
-            <i class="fas fa-fw fa-flask"></i>
-          </button>
+            fa={{
+              icon: "fa-flask",
+            }}
+            class="rounded-tl-none rounded-bl-none p-2"
+          />
         </div>
       </Show>
     </>
