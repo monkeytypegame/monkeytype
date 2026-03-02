@@ -1,13 +1,13 @@
-nav > .textButton:nth-child(1),
-nav > .textButton:nth-child(2),
-nav > .textButton:nth-child(3),
-nav > .textButton:nth-child(4) {
+[data-nav-item="test"],
+[data-nav-item="leaderboards"],
+[data-nav-item="about"],
+[data-nav-item="settings"] {
   color: #f79777;
 }
 
-nav > .textButton:nth-child(1):hover,
-nav > .textButton:nth-child(2):hover,
-nav > .textButton:nth-child(3):hover,
-nav > .textButton:nth-child(4):hover {
+[data-nav-item="test"]:hover,
+[data-nav-item="leaderboards"]:hover,
+[data-nav-item="about"]:hover,
+[data-nav-item="settings"]:hover {
   color: #ffca99;
 }
