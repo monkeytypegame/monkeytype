@@ -29,8 +29,6 @@ onDOMReady(async () => {
 
   void ServerConfiguration.sync().then(() => {
     if (!ServerConfiguration.get()?.users.signUp) {
-      // todo figure out what to do here with the new solid header
-      // AccountButton.hide();
       qs(".register")?.hide();
       qs(".login")?.hide();
       qs(".disabledNotification")?.show();
