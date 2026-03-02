@@ -2,21 +2,15 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createMemo, createSignal, For, JSXElement } from "solid-js";
 
-import { addXp } from "../../../db";
 import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
 import { setAnimatedLevel } from "../../../signals/animated-level";
-import {
-  getSkipBreakdownEvent,
-  getXpBarData,
-  skipBreakdown,
-} from "../../../signals/xp-bar";
+import { getSkipBreakdownEvent, getXpBarData } from "../../../signals/xp-bar";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
 import { Bar } from "../../common/Bar";
-import { Button } from "../../common/Button";
 
 type BreakdownItem = {
   label: string;
@@ -294,33 +288,6 @@ export function AccountXpBar(): JSXElement {
 
   return (
     <>
-      <div class="absolute -left-100 flex gap-2 text-xs">
-        <Button
-          onClick={() => {
-            addXp(1000);
-          }}
-          text="Simple XP"
-        />
-        <Button
-          onClick={() => {
-            const fakeBreakdown = {
-              base: 100,
-              quote: 10,
-              corrected: 5,
-              funbox: 5,
-              streak: 10,
-              incomplete: 10,
-              accPenalty: 5,
-              configMultiplier: 2,
-              daily: 10000,
-            };
-            const totalFakeXp = 10270;
-            addXp(totalFakeXp, fakeBreakdown);
-          }}
-          text="XP Breakdown"
-        />
-        <Button onClick={skipBreakdown} text="Skip breakdown" />
-      </div>
       <AnimeShow when={getShowBar()}>
         <div class="absolute top-full right-0 mt-1 w-full">
           <div class="text-[0.5em]">
