@@ -13,7 +13,6 @@ import {
 } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { MonkeyMail } from "@monkeytype/schemas/users";
-import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
 import { animate } from "animejs";
 import { qsr } from "../utils/dom";
@@ -112,9 +111,6 @@ function hide(): void {
       }
 
       if (totalXpClaimed > 0) {
-        const snapxp = DB.getSnapshot()?.xp ?? 0;
-        void XPBar.update(snapxp, totalXpClaimed);
-
         DB.addXp(totalXpClaimed);
       }
     },

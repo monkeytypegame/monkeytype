@@ -9,7 +9,6 @@ import Ape from "../ape";
 import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import {
@@ -72,8 +71,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
       snapshot.discordAvatar = discordAvatar;
     }
 
-    DB.setSnapshot(snapshot);
-    AccountButton.updateAvatar(snapshot);
+    DB.setSnapshot(snapshot); //todo check if solid reacts correctly
   }
 }
 
