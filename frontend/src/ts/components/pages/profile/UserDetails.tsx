@@ -320,7 +320,7 @@ function AvatarAndName(props: {
 
 function LevelAndBar(props: { xp?: number }): JSXElement {
   const xpDetails = () => getXpDetails(props.xp ?? 0);
-  const bar = () => (xpDetails().levelCurrentXp / xpDetails().levelMaxXp) * 100;
+  const bar = () => xpDetails().levelProgressPercent;
 
   return (
     <div class="col-span-2 flex w-full items-center gap-2">
