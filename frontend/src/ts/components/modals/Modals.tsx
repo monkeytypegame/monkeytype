@@ -5,7 +5,7 @@ import { ContactModal } from "./ContactModal";
 import { SupportModal } from "./SupportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
-const DevOptionsModal = lazy(() =>
+const DevOptionsModal = lazy(async () =>
   import("./DevOptionsModal").then((m) => ({ default: m.DevOptionsModal })),
 );
 
