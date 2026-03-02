@@ -3,6 +3,7 @@ import { JSXElement } from "solid-js";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
+import { isDevEnvironment } from "../../../utils/misc";
 
 export function Logo(): JSXElement {
   return (
@@ -47,7 +48,7 @@ export function Logo(): JSXElement {
             },
           )}
         >
-          monkey see
+          {isDevEnvironment() ? "localhost" : "monkey see"}
         </div>
         <div
           class={cn("-mt-[0.11em] text-text transition-colors duration-250", {

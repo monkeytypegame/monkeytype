@@ -1,6 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
-import { get } from "../../../ape/server-configuration";
+import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
 import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { AnimeShow } from "../../common/anime";
@@ -31,7 +31,7 @@ export function AccountMenu(props: Props): JSXElement {
         href="/account"
         router-link
       />
-      <Show when={get()?.connections.enabled}>
+      <Show when={getServerConfiguration()?.connections.enabled}>
         <Button
           text="Friends"
           class={buttonClass + " relative"}

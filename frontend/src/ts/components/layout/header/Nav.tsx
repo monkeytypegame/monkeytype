@@ -1,6 +1,8 @@
-import { createEffect, createSignal, JSXElement } from "solid-js";
+import { useQuery } from "@tanstack/solid-query";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
+import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
 import {
   getAccountButtonSpinner,
@@ -18,7 +20,6 @@ import { AccountXpBar } from "./AccountXpBar";
 
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
-
   const buttonClass = cn("aspect-square");
 
   createEffect(() => {
@@ -26,6 +27,24 @@ export function Nav(): JSXElement {
       setShowMenu(false);
     }
   });
+
+  const showFriendsNotificationBubble = (): boolean => {
+    const friends = getSnapshot()?.connections;
+
+    if (friends !== undefined) {
+      const pendingFriendRequests = Object.values(friends).filter(
+        (it) => it === "incoming",
+      ).length;
+      if (pendingFriendRequests > 0) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
+  const showLoginButton = (): boolean =>
+    serverConfig.data?.users.signUp ?? true;
 
   return (
     <nav
@@ -140,11 +159,13 @@ export function Nav(): JSXElement {
                   iconsOnly={true}
                   showSpinner={getAccountButtonSpinner()}
                   hideNameOnSmallScreens={true}
-                  showNotificationBubble={true}
+                  showNotificationBubble={showFriendsNotificationBubble()}
                 />
               </Button>
-              {/* todo: connect notification bubbles in the user and account menu */}
-              <AccountMenu show={showMenu()} />
+              <AccountMenu
+                show={showMenu()}
+                showFriendsNotificationBubble={showFriendsNotificationBubble()}
+              />
             </div>
             <div class="relative">
               <AccountXpBar />
@@ -152,19 +173,21 @@ export function Nav(): JSXElement {
           </>
         }
         else={
-          <Button
-            type="text"
-            href="/login"
-            dataset={{
-              "data-nav-item": "login",
-            }}
-            fa={{
-              icon: "fa-user",
-              variant: "regular",
-              fixedWidth: true,
-            }}
-            router-link
-          />
+          <Show when={showLoginButton()}>
+            <Button
+              type="text"
+              href="/login"
+              dataset={{
+                "data-nav-item": "login",
+              }}
+              fa={{
+                icon: "fa-user",
+                variant: "regular",
+                fixedWidth: true,
+              }}
+              router-link
+            />
+          </Show>
         }
       />
     </nav>

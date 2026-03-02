@@ -35,9 +35,6 @@ onDOMReady(async () => {
       qs(".login")?.hide();
       qs(".disabledNotification")?.show();
     }
-    if (!ServerConfiguration.get()?.connections.enabled) {
-      qs(".accountButtonAndMenu .goToFriends")?.hide();
-    }
   });
 
   MonkeyPower.init();

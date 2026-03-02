@@ -71,7 +71,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
       snapshot.discordAvatar = discordAvatar;
     }
 
-    DB.setSnapshot(snapshot); //todo check if solid reacts correctly
+    DB.setSnapshot(snapshot);
   }
 }
 
