@@ -1,8 +1,10 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, Show } from "solid-js";
+import { envConfig } from "virtual:env-config";
 
 import { getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
+import { isDevEnvironment } from "../../../utils/misc";
 import { Fa } from "../../common/Fa";
 import { ScrollToTop } from "../footer/ScrollToTop";
 import { Banners } from "./Banners";
@@ -34,6 +36,28 @@ export function Overlays(): JSXElement {
       <MediaQueryDebugger />
       <LoaderBar />
       <FpsCounter />
+      <Show when={isDevEnvironment()}>
+        <div id="devButtons">
+          <a
+            class="button configureAPI"
+            href={`${envConfig.backendUrl}/configure/`}
+            target="_blank"
+            aria-label="Configure API"
+            data-balloon-pos="right"
+          >
+            <i class="fas fa-fw fa-server"></i>
+          </a>
+          <button
+            type="button"
+            class="button"
+            aria-label="Dev options"
+            data-balloon-pos="right"
+            onClick={() => showModal("DevOptions")}
+          >
+            <i class="fas fa-fw fa-flask"></i>
+          </button>
+        </div>
+      </Show>
     </>
   );
 }
