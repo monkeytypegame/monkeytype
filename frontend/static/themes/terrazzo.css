@@ -3,59 +3,59 @@ header.focus nav > .textButton {
   background: none;
 }
 
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   background: var(--sub-color);
   color: var(--bg-color);
   border-radius: calc(var(--roundness) * 2) calc(var(--roundness) * 1.3)
     calc(var(--roundness) * 1.7) calc(var(--roundness) * 1);
 }
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   background: #9a7a61;
   color: var(--bg-color);
   border-radius: calc(var(--roundness) * 1.2) calc(var(--roundness) * 1.7)
     calc(var(--roundness) * 2.1) calc(var(--roundness) * 1);
   transform: rotateY(9deg);
 }
-nav > .textButton:nth-child(3) {
+[data-nav-item="about"] {
   background: var(--main-color);
   color: var(--bg-color);
   border-radius: calc(var(--roundness) * 2.8) calc(var(--roundness) * 0.6)
     calc(var(--roundness) * 2) calc(var(--roundness) * 1.6);
   transform: rotateY(-3deg);
 }
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   background: var(--text-color);
   color: var(--bg-color);
   border-radius: calc(var(--roundness) * 0.8) calc(var(--roundness) * 2.4)
     calc(var(--roundness) * 0.8) calc(var(--roundness) * 2.8);
 }
 
-nav > .textButton:nth-child(1):hover,
-nav > .textButton:nth-child(2):hover,
-nav > .textButton:nth-child(3):hover,
-nav > .textButton:nth-child(4):hover {
+[data-nav-item="test"]:hover,
+[data-nav-item="leaderboards"]:hover,
+[data-nav-item="about"]:hover,
+[data-nav-item="settings"]:hover {
   opacity: 0.8;
 }
 
-body.crtmode nav > .textButton:nth-child(1) {
+body.crtmode [data-nav-item="test"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, var(--sub-color) 20%, transparent),
     -3px 0 color-mix(in srgb, var(--sub-color) 30%, transparent),
     0 0 3px;
 }
-body.crtmode nav > .textButton:nth-child(2) {
+body.crtmode [data-nav-item="leaderboards"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #9a7a61 20%, transparent),
     -3px 0 color-mix(in srgb, #9a7a61 30%, transparent),
     0 0 3px;
 }
-body.crtmode nav > .textButton:nth-child(3) {
+body.crtmode [data-nav-item="about"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, var(--main-color) 20%, transparent),
     -3px 0 color-mix(in srgb, var(--main-color) 30%, transparent),
     0 0 3px;
 }
-body.crtmode nav > .textButton:nth-child(4) {
+body.crtmode [data-nav-item="settings"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, var(--text-color) 20%, transparent),
     -3px 0 color-mix(in srgb, var(--text-color) 30%, transparent),

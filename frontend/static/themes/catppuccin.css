@@ -1,27 +1,27 @@
-nav .view-start {
+[data-nav-item="test"] {
   color: #f38ba8;
 }
 
-nav .view-leaderboards {
+[data-nav-item="leaderboards"] {
   color: #fab387;
 }
 
-nav .view-about {
+[data-nav-item="about"] {
   color: #f9e2af;
 }
 
-nav .view-settings {
+[data-nav-item="settings"] {
   color: #a6e3a1;
 }
 
-nav .view-account {
+[data-nav-item="account"] {
   color: #89dceb;
 }
 
-nav .showAlerts {
+[data-nav-item="alerts"] {
   color: #89b4fa;
 }
 
-nav .signInOut {
+[data-nav-item="login"] {
   color: #b4befe;
 }

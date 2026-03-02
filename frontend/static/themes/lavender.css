@@ -1,15 +1,15 @@
-nav .textButton {
+[data-nav-item] {
   border-radius: 10rem !important;
   background: var(--text-color);
   color: var(--main-color);
 }
 
-nav .textButton:hover {
+[data-nav-item]:hover {
   color: var(--bg-color);
   background: var(--text-color);
 }
 
-body.crtmode nav .textButton {
+body.crtmode [data-nav-item] {
   box-shadow:
     3px 0 1px var(--crt-text-color-glow),
     -3px 0 var(--crt-text-color-glow),
