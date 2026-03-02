@@ -4,47 +4,6 @@ import { ExecReturn, SimpleModal } from "../../../utils/simple-modal";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 
-// export function TableNavigation(
-//   props: {
-//     type: LeaderboardType;
-//     lastPage: number;
-//     userPage?: number;
-//     currentPage: number;
-//     onPageChange: Setter<number>;
-//     onScrollToUser: Setter<boolean>;
-//     isLoading?: boolean;
-//   } & ParentProps,
-// ): JSXElement {
-//   return (
-//     <div class="grid gap-2">
-//       <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
-//         <div>
-//           <NextUpdate type={props.type} />
-//         </div>
-//         <Navigation
-//           isLoading={props.isLoading}
-//           lastPage={props.lastPage}
-//           userPage={props.userPage}
-//           currentPage={props.currentPage}
-//           onPageChange={props.onPageChange}
-//           onScrollToUser={props.onScrollToUser}
-//         />
-//       </div>
-
-//       {props.children}
-
-//       <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
-//         <Navigation
-//           lastPage={props.lastPage}
-//           currentPage={props.currentPage}
-//           onPageChange={props.onPageChange}
-//           onScrollToUser={props.onScrollToUser}
-//         />
-//       </div>
-//     </div>
-//   );
-// }
-
 export function Navigation(props: {
   lastPage: number;
   userPage?: number;
@@ -121,6 +80,7 @@ export function Navigation(props: {
         onClick={() => goToPageModal.show(undefined, {})}
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
         class={buttonClass()}
+        disabled={props.lastPage <= 1}
       />
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
