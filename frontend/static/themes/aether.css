@@ -14,8 +14,8 @@
   color: #6744a1;
 }
 
-[data-nav-item="account"],
 [data-nav-item="alerts"],
+[data-nav-item="account"],
 [data-nav-item="login"] {
   color: #393c73;
 }

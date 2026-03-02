@@ -11,6 +11,10 @@ kbd {
   color: var(--error-color);
 }
 
+[data-nav-item="alerts"] {
+  color: var(--color-alt);
+}
+
 [data-nav-item="settings"] {
   color: var(--caret-color);
 }
