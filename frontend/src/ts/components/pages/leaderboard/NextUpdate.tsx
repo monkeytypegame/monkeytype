@@ -8,7 +8,7 @@ import {
   onCleanup,
 } from "solid-js";
 
-import { LeaderboardType } from "../../../queries/leaderboards";
+import { LeaderboardType } from "../../../stores/leaderboard-selection";
 import { secondsToString } from "../../../utils/date-and-time";
 
 export function NextUpdate(props: { type: LeaderboardType }): JSXElement {

@@ -2,34 +2,14 @@ import {
   GetLeaderboardQuery,
   GetLeaderboardRankQuery,
 } from "@monkeytype/contracts/leaderboards";
-import { LanguageSchema } from "@monkeytype/schemas/languages";
-import { ModeSchema } from "@monkeytype/schemas/shared";
 import { QueryKey, queryOptions } from "@tanstack/solid-query";
-import { z } from "zod";
 import Ape from "../ape";
-
-export const pageSize = 50;
-
-export type LeaderboardType = Selection["type"];
-const XpSelection = z.object({
-  type: z.literal("weekly"),
-  friendsOnly: z.boolean(),
-  previous: z.boolean(),
-  language: z.never().optional(),
-  mode: z.never().optional(),
-  mode2: z.never().optional(),
-});
-const SpeedSelection = z.object({
-  type: z.enum(["daily", "allTime"]),
-  friendsOnly: z.boolean(),
-  previous: z.boolean(),
-  mode: ModeSchema,
-  mode2: z.string(),
-  language: LanguageSchema,
-});
-
-export const SelectionSchema = SpeedSelection.or(XpSelection);
-export type Selection = z.infer<typeof SelectionSchema>;
+import {
+  LeaderboardType,
+  pageSize,
+  Selection,
+  setPage,
+} from "../stores/leaderboard-selection";
 
 const queryKeys = {
   root: (options: Selection & { userSpecific?: true }) => [
@@ -111,7 +91,10 @@ export const getLeaderboardQueryOptions = (
         );
       }
 
-      return { ...response.body.data, type: selection.type };
+      if (response.body.data.entries.length === 0 && page.page !== 0) {
+        setPage(Math.floor(response.body.data.count / pageSize));
+      }
+      return response.body.data;
     },
     //5 minutes for alltime, one minute for others
     staleTime: options.type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,

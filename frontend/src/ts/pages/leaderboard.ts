@@ -1,7 +1,7 @@
-import { Selection } from "../queries/leaderboards";
 import {
   LeaderboardUrlParams,
   LeaderboardUrlParamsSchema,
+  Selection,
   setPage,
   setSelection,
 } from "../stores/leaderboard-selection";

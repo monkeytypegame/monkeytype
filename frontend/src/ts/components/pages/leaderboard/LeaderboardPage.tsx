@@ -8,13 +8,13 @@ import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
-  Selection,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
 import {
   getPage,
   getSelection,
+  Selection,
   setPage,
   setSelection,
 } from "../../../stores/leaderboard-selection";

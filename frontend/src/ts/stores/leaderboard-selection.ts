@@ -3,8 +3,31 @@ import { ModeSchema } from "@monkeytype/schemas/shared";
 import { Accessor, createSignal, Setter } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { Selection, SelectionSchema } from "../queries/leaderboards";
+
 import { get as getServerConfiguration } from "../ape/server-configuration";
+
+export const pageSize = 50;
+
+export type LeaderboardType = Selection["type"];
+const XpSelection = z.object({
+  type: z.literal("weekly"),
+  friendsOnly: z.boolean(),
+  previous: z.boolean(),
+  language: z.never().optional(),
+  mode: z.never().optional(),
+  mode2: z.never().optional(),
+});
+const SpeedSelection = z.object({
+  type: z.enum(["daily", "allTime"]),
+  friendsOnly: z.boolean(),
+  previous: z.boolean(),
+  mode: ModeSchema,
+  mode2: z.string(),
+  language: LanguageSchema,
+});
+
+export const SelectionSchema = SpeedSelection.or(XpSelection);
+export type Selection = z.infer<typeof SelectionSchema>;
 
 export const LeaderboardUrlParamsSchema = z
   .object({

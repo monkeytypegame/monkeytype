@@ -3,8 +3,8 @@ import { Language } from "@monkeytype/schemas/languages";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Accessor, For, JSXElement, Show } from "solid-js";
 
-import { Selection } from "../../../queries/leaderboards";
 import { isLoggedIn } from "../../../signals/core";
+import { Selection } from "../../../stores/leaderboard-selection";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Button } from "../../common/Button";
 

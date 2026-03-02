@@ -11,7 +11,7 @@ import {
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { Selection } from "../../../queries/leaderboards";
+import { Selection } from "../../../stores/leaderboard-selection";
 import { capitalizeFirstLetter } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
