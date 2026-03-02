@@ -84,6 +84,6 @@ body.crtmode header.focus [data-nav-item] {
     -3px 0 var(--crt-sub-color-glow);
 }
 
-body.crtmode header.focus [data-viewnav-item="account"] {
+body.crtmode header.focus [data-nav-item="account"] {
   box-shadow: none;
 }
