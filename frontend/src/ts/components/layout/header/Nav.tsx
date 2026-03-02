@@ -45,6 +45,9 @@ export function Nav(): JSXElement {
         router-link
         href="/"
         class={buttonClass}
+        dataset={{
+          "data-nav-item": "test",
+        }}
         onClick={() => {
           if (getActivePage() === "test") restart();
         }}
@@ -56,6 +59,9 @@ export function Nav(): JSXElement {
           fixedWidth: true,
         }}
         router-link
+        dataset={{
+          "data-nav-item": "leaderboards",
+        }}
         class={buttonClass}
         href="/leaderboards"
       />
@@ -66,6 +72,9 @@ export function Nav(): JSXElement {
           fixedWidth: true,
         }}
         class={buttonClass}
+        dataset={{
+          "data-nav-item": "about",
+        }}
         href="/about"
         router-link
       />
@@ -77,6 +86,9 @@ export function Nav(): JSXElement {
         }}
         class={buttonClass}
         href="/settings"
+        dataset={{
+          "data-nav-item": "settings",
+        }}
         router-link
       />
       <div class="grow"></div>
@@ -85,6 +97,9 @@ export function Nav(): JSXElement {
         fa={{
           icon: "fa-bell",
           fixedWidth: true,
+        }}
+        dataset={{
+          "data-nav-item": "alerts",
         }}
         onClick={() => {
           void showAlerts();
@@ -114,6 +129,9 @@ export function Nav(): JSXElement {
                 )}
                 href="/account"
                 router-link
+                dataset={{
+                  "data-nav-item": "account",
+                }}
               >
                 <User
                   user={getSnapshot() as MiniSnapshot}
@@ -137,6 +155,9 @@ export function Nav(): JSXElement {
           <Button
             type="text"
             href="/login"
+            dataset={{
+              "data-nav-item": "login",
+            }}
             fa={{
               icon: "fa-user",
               variant: "regular",

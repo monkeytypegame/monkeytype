@@ -18,6 +18,7 @@ type BaseProps = {
   onClick?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  dataset?: Record<string, string>;
 };
 
 type ButtonProps = BaseProps & {
@@ -98,6 +99,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {...(props["router-link"] ? { "router-link": "" } : {})}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
+          {...props.dataset}
         >
           {content}
         </a>
@@ -112,6 +114,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
+          {...props.dataset}
         >
           {content}
         </button>
