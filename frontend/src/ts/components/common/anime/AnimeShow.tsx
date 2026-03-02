@@ -32,6 +32,7 @@ export function AnimeShow(
     when: boolean;
     slide?: true;
     duration?: number;
+    class?: string;
   }>,
 ): JSXElement {
   const duration = () => props.duration ?? 125;
@@ -46,6 +47,7 @@ export function AnimeShow(
               initial={{ opacity: 0 } as Partial<AnimationParams>}
               animate={{ opacity: 1, duration: duration() } as AnimationParams}
               exit={{ opacity: 0, duration: duration() } as AnimationParams}
+              class={props.class}
             >
               {props.children}
             </Anime>
@@ -62,6 +64,7 @@ export function AnimeShow(
             }
             exit={{ height: 0, duration: duration() } as AnimationParams}
             style={{ overflow: "hidden" }}
+            class={props.class}
           >
             {props.children}
           </Anime>
