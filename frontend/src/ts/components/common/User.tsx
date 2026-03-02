@@ -51,6 +51,8 @@ export function User(props: Props): JSXElement {
   const [flashAnimation, setFlashAnimation] = createSignal<
     AnimationParams | undefined
   >(undefined);
+  const [isAnimating, setIsAnimating] = createSignal(false);
+  let levelEl: HTMLElement | undefined;
 
   createEffect(
     on(
@@ -64,6 +66,11 @@ export function User(props: Props): JSXElement {
           rotate: [10 * rand, 0],
           duration: 2000,
           ease: "out(5)",
+          onBegin: () => setIsAnimating(true),
+          onComplete: () => {
+            setIsAnimating(false);
+            if (levelEl) levelEl.style.backgroundColor = "";
+          },
         });
       },
       { defer: true },
@@ -119,8 +126,12 @@ export function User(props: Props): JSXElement {
       </div>
       <Show when={props.showLevel ?? false}>
         <Anime
+          ref={(el) => (levelEl = el)}
           animation={flashAnimation()}
-          class="level rounded-half bg-sub px-[0.5em] py-[0.1em] text-[0.7em] text-bg"
+          class={cn(
+            "level rounded-half bg-(--unhoveredcolor) px-[0.5em] py-[0.1em] text-[0.7em] text-bg [--unhoveredcolor:var(--color-sub)]",
+            { "transition-colors duration-125": !isAnimating() },
+          )}
         >
           {getAnimatedLevel()}
         </Anime>
