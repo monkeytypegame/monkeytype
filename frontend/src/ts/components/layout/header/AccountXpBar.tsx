@@ -40,7 +40,7 @@ export function AccountXpBar(_props: Props): JSXElement {
   const [getBarAnimationEase, setBarAnimationEase] = createSignal("out(5)");
 
   const [getAnimationTick, setAnimationTick] = createSignal(0);
-  const [getTotal, { setTotal }] = createSignalWithSetters(0, {
+  const [getTotal, { setTotal }] = createSignalWithSetters(0)({
     setTotal: (set, value: number) => {
       set(value);
       setAnimationTick((t) => t + 1);

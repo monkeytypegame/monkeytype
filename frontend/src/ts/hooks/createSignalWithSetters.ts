@@ -14,16 +14,17 @@ type MappedSetters<T, S extends SettersMap<T>> = {
   [K in keyof S]: (...args: SetterArgs<T, S[K]>) => void;
 };
 
-export function createSignalWithSetters<T, S extends SettersMap<T>>(
-  defaultValue: T,
-  setters: S,
-): [() => T, MappedSetters<T, S> & { set: OriginalSetter<T> }] {
-  const [get, _set] = createSignal<T>(defaultValue);
-  const mapped = Object.fromEntries(
-    Object.entries(setters).map(([key, setter]) => [
-      key,
-      (...args: never[]) => setter(_set, ...args),
-    ]),
-  ) as unknown as MappedSetters<T, S>;
-  return [get, { set: _set, ...mapped }];
+export function createSignalWithSetters<T>(defaultValue: T) {
+  return function <S extends SettersMap<T>>(
+    setters: S,
+  ): [() => T, MappedSetters<T, S>] {
+    const [get, _set] = createSignal<T>(defaultValue);
+    const mapped = Object.fromEntries(
+      Object.entries(setters).map(([key, setter]) => [
+        key,
+        (...args: never[]) => setter(_set, ...args),
+      ]),
+    ) as unknown as MappedSetters<T, S>;
+    return [get, mapped];
+  };
 }
