@@ -93,7 +93,7 @@ export function DevOptionsModal(): JSXElement {
           })
           .catch((error: unknown) => {
             Notifications.add("Quick login failed.", -1, {
-              details: error,
+              details: error instanceof Error ? error : String(error),
             });
           })
           .finally(() => {
