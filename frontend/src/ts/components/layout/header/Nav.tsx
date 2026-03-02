@@ -91,7 +91,10 @@ export function Nav(): JSXElement {
         }}
         class={cn(buttonClass, "relative")}
       >
-        <NotificationBubble show={getNotificationBubble} />
+        <NotificationBubble
+          variant="fromCorner"
+          show={getNotificationBubble()}
+        />
       </Button>
       <AnimeConditional
         exitBeforeEnter
@@ -119,8 +122,10 @@ export function Nav(): JSXElement {
                   iconsOnly={true}
                   showSpinner={getAccountButtonSpinner()}
                   hideNameOnSmallScreens={true}
+                  showNotificationBubble={true}
                 />
               </Button>
+              {/* todo: connect notification bubbles in the user and account menu */}
               <AccountMenu show={showMenu()} />
             </div>
             <div class="relative">

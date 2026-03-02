@@ -5,6 +5,7 @@ import { signOut } from "../../../auth";
 import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
+import { NotificationBubble } from "../../common/NotificationBubble";
 
 type Props = {
   show: boolean;
@@ -33,7 +34,7 @@ export function AccountMenu(props: Props): JSXElement {
       <Show when={get()?.connections.enabled}>
         <Button
           text="Friends"
-          class={buttonClass}
+          class={buttonClass + " relative"}
           fa={{
             icon: "fa-user-friends",
             fixedWidth: true,
@@ -41,9 +42,11 @@ export function AccountMenu(props: Props): JSXElement {
           href="/friends"
           router-link
         >
-          <Show when={props.showFriendsNotificationBubble}>
-            <div class="absolute right-2 h-1.5 w-1.5 rounded-full bg-main ring-3 ring-sub-alt"></div>
-          </Show>
+          <NotificationBubble
+            show={props.showFriendsNotificationBubble ?? false}
+            variant="center"
+            class="right-2 left-auto"
+          />
         </Button>
       </Show>
       <Button

@@ -25,6 +25,7 @@ import { Button } from "./Button";
 import { Conditional } from "./Conditional";
 import { DiscordAvatar } from "./DiscordAvatar";
 import { Fa } from "./Fa";
+import { NotificationBubble } from "./NotificationBubble";
 import { UserBadge } from "./UserBadge";
 import { UserFlags } from "./UserFlags";
 
@@ -39,6 +40,7 @@ type Props = {
   showSpinner?: boolean;
   class?: string;
   hideNameOnSmallScreens?: boolean;
+  showNotificationBubble?: boolean;
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
@@ -80,7 +82,12 @@ export function User(props: Props): JSXElement {
   return (
     <div class={cn("grid grid-flow-col place-items-center gap-2", props.class)}>
       <Show when={props.showAvatar ?? true}>
-        <div class="w-[1.25em]">
+        <div class="relative w-[1.25em]">
+          <NotificationBubble
+            variant="atCorner"
+            show={props.showNotificationBubble ?? false}
+            class="m-0.5"
+          />
           <AnimeConditional
             exitBeforeEnter
             if={props.showSpinner ?? false}
