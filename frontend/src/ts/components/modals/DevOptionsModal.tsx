@@ -13,6 +13,7 @@ import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
 import { toggleCaretDebug } from "../../utils/caret";
+import { createErrorMessage } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
@@ -92,9 +93,10 @@ export function DevOptionsModal(): JSXElement {
             }
           })
           .catch((error: unknown) => {
-            Notifications.add("Quick login failed.", -1, {
-              details: error instanceof Error ? error : String(error),
-            });
+            Notifications.add(
+              createErrorMessage(error, "Quick login failed"),
+              -1,
+            );
           })
           .finally(() => {
             hideLoaderBar();
