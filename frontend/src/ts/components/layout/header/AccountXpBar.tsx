@@ -228,8 +228,6 @@ export function AccountXpBar(): JSXElement {
     const prevDetails = getXpDetails(fromXp);
     const newDetails = getXpDetails(toXp);
 
-    console.log(prevDetails, newDetails);
-
     const startingLevel = prevDetails.levelFloat;
     const endingLevel = newDetails.levelFloat;
 
