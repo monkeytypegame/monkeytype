@@ -11,10 +11,20 @@ type Props = {
   animationEase?: string;
 };
 
+const bgClassMap: Record<Props["bg"], string> = {
+  bg: "bg-bg",
+  "sub-alt": "bg-sub-alt",
+};
+
+const fillClassMap: Record<Props["fill"], string> = {
+  main: "bg-main",
+  text: "bg-text",
+};
+
 export function Bar(props: Props): JSXElement {
   return (
     <div
-      class={`h-[0.5em] flex-1 rounded bg-${props.bg}`}
+      class={`h-[0.5em] flex-1 rounded ${bgClassMap[props.bg]}`}
       {...((props.showPercentageOnHover ?? false)
         ? {
             "data-balloon-pos": "up",
@@ -29,7 +39,7 @@ export function Bar(props: Props): JSXElement {
           ease: props.animationEase ?? "out(2)",
         }}
       >
-        <div class={`h-[0.5em] rounded bg-${props.fill}`}></div>
+        <div class={`h-[0.5em] rounded ${fillClassMap[props.fill]}`}></div>
       </Anime>
     </div>
   );
