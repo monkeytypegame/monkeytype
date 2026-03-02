@@ -49,7 +49,7 @@ let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     setAccountButtonSpinner(true);
-    void saveConfig(configToSend).then(() => {
+    void saveConfig(configToSend).finally(() => {
       setAccountButtonSpinner(false);
     });
   }

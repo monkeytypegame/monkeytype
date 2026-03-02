@@ -1189,15 +1189,12 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
-  setAccountButtonSpinner(true);
-
   if (!Config.resultSaving) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,
       customTitle: "Notice",
       important: true,
     });
-    setAccountButtonSpinner(false);
     return null;
   }
 
@@ -1213,6 +1210,8 @@ async function saveResult(
   result.hash = objectHash(result);
 
   console.trace();
+
+  setAccountButtonSpinner(true);
 
   const response = await Ape.results.add({ body: { result } });
 
