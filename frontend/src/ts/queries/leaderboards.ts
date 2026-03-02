@@ -110,31 +110,11 @@ export const getLeaderboardQueryOptions = (
             response.body.message,
         );
       }
-      return response.body.data;
+
+      return { ...response.body.data, type: selection.type };
     },
     //5 minutes for alltime, one minute for others
     staleTime: options.type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
-    placeholderData: (old) => {
-      if (
-        old === undefined ||
-        old.entries === undefined ||
-        old.entries.length === 0 ||
-        old.entries[0] === undefined
-      ) {
-        return undefined;
-      }
-
-      //check the old data is of the same type
-      const last = old.entries[0];
-      if (
-        (options.type === "weekly" && !("totalXp" in last)) ||
-        (options.type !== "weekly" && !("wpm" in last))
-      ) {
-        return undefined;
-      }
-
-      return old;
-    },
   });
 
 // oxlint-disable-next-line typescript/explicit-function-return-type

@@ -176,6 +176,7 @@ export function LeaderboardPage(): JSXElement {
                 config: serverConfigurationQuery,
               }}
               alwaysShowContent
+              errorClass="rounded bg-sub-alt p-4"
             >
               {({ data, rank, config }) => (
                 <UserRank
