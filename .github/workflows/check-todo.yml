@@ -1,0 +1,20 @@
+name: PR Todo Checker
+
+on:
+  pull_request_review_comment:
+    types: [edited, deleted]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  find_todos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Todos
+        uses: phntmxyz/pr_todo_checker@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
