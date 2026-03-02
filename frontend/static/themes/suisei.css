@@ -37,23 +37,27 @@ header.focus #logo .text {
   color: transparent;
   padding-bottom: 0.1em;
 }
-header.focus nav > .textButton,
-header.focus nav > .showAlerts {
+header.focus [data-nav-item] {
   background: none;
 }
-header nav > .textButton,
-header nav > .showAlerts {
+[data-nav-item] {
   border-radius: 150px 150px 32px 32px;
   background-color: var(--sub-alt-color);
   color: var(--main-color);
 }
-header nav > .textButton:hover,
-header nav > .showAlerts:hover {
+[data-nav-item]:hover {
   animation: suisei-pulse 800ms ease-out infinite;
   color: var(--main-color);
   background-color: var(--sub-alt-color);
 }
-header nav > .view-leaderboards,
-header nav > .view-leaderboards:hover {
+
+[data-nav-item="leaderboards"],
+[data-nav-item="leaderboards"]:hover {
+  color: var(--sub-color);
+}
+
+[data-nav-item="account"],
+[data-nav-item="account"]:hover {
+  background: none;
   color: var(--sub-color);
 }

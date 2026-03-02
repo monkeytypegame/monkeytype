@@ -59,7 +59,7 @@ header #logo .icon {
   align-content: right;
 }
 
-header.focus nav .textButton,
+header.focus [data-nav-item],
 header.focus nav:before,
 header.focus nav:after {
   background: var(--sub-color);
@@ -94,97 +94,93 @@ nav {
   gap: 0.5rem;
 }
 
-nav > .textButton {
+[data-nav-item] {
   border-radius: 10rem i !important;
   color: var(--bg-color);
   transition: 0.5s;
 }
 
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   background: #ab92e1;
 }
 
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   background: #f3ea5d;
 }
 
-nav > .textButton:nth-child(3) {
+[data-nav-item="about"] {
   background: #7ae1bf;
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   background: #ff5869;
 }
 
-nav > .textButton:nth-child(5) {
+[data-nav-item="account"] {
   background: #fc76d9;
 }
 
-nav > .textButton:nth-child(6) {
+nav .notificationBubble {
+  box-shadow: none;
+  background: var(--color-bg);
+  padding-right: 0.2em;
+  right: 0.85em;
+  left: 2.75em;
+}
+
+nav .level {
+  background: var(--color-bg);
+  color: var(--main-color);
+}
+
+[data-nav-item="alerts"] {
   background: #fc76d9;
 }
 
-nav > .textButton:nth-child(7) {
+[data-nav-item="login"] {
   background: #ab92e1;
 }
 
-nav > .textButton:nth-child(8) {
-  background: #f3ea5d;
-}
-
-body.crtmode nav .textButton:nth-child(1) {
+body.crtmode [data-nav-item="test"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
     -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
     0 0 3px;
 }
 
-body.crtmode nav .textButton:nth-child(2) {
+body.crtmode [data-nav-item="leaderboards"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
     -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent),
     0 0 3px;
 }
 
-body.crtmode nav .textButton:nth-child(3) {
+body.crtmode [data-nav-item="about"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #7ae1bf 20%, transparent),
     -3px 0 color-mix(in srgb, #7ae1bf 30%, transparent),
     0 0 3px;
 }
 
-body.crtmode nav .textButton:nth-child(4) {
+body.crtmode [data-nav-item="settings"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #ff5869 20%, transparent),
     -3px 0 color-mix(in srgb, #ff5869 30%, transparent),
     0 0 3px;
 }
 
-body.crtmode nav .textButton:nth-child(5) {
+body.crtmode [data-nav-item="account"],
+body.crtmode [data-nav-item="alerts"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
     -3px 0 color-mix(in srgb, #fc76d9 30%, transparent),
     0 0 3px;
 }
 
-body.crtmode nav .textButton:nth-child(6) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
-    -3px 0 color-mix(in srgb, #fc76d9 30%, transparent),
-    0 0 3px;
-}
-
-body.crtmode nav .textButton:nth-child(7) {
+body.crtmode [data-nav-item="login"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
     -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
-    0 0 3px;
-}
-
-body.crtmode nav .textButton:nth-child(8) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
-    -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent),
     0 0 3px;
 }
 
@@ -194,7 +190,7 @@ body.crtmode #caret {
     drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
 }
 
-body.crtmode header.focus nav .textButton {
+body.crtmode header.focus [data-nav-item] {
   box-shadow:
     3px 0 1px var(--crt-sub-color-glow),
     -3px 0 var(--crt-sub-color-glow);

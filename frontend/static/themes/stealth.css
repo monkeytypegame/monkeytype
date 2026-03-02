@@ -1,4 +1,4 @@
-nav .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   color: #e25303;
 }
 #liveStatsTextTop {

@@ -1,15 +1,28 @@
-nav .textButton {
+[data-nav-item] {
   border-radius: 10rem !important;
   background: var(--text-color);
   color: var(--main-color);
 }
 
-nav .textButton:hover {
+[data-nav-item]:hover {
   color: var(--bg-color);
   background: var(--text-color);
 }
 
-body.crtmode nav .textButton {
+nav .notificationBubble {
+  box-shadow: none;
+  background: var(--color-bg);
+  padding-right: 0.2em;
+  right: 0.85em;
+  left: 2.75em;
+}
+
+nav .level {
+  background: var(--color-bg);
+  color: var(--text-color);
+}
+
+body.crtmode [data-nav-item] {
   box-shadow:
     3px 0 1px var(--crt-text-color-glow),
     -3px 0 var(--crt-text-color-glow),

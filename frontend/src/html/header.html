@@ -49,6 +49,7 @@
     <a
       id="startTestButton"
       class="textButton view-start"
+      data-nav-item="test"
       href="/"
       onclick="this.blur()"
       router-link
@@ -60,6 +61,7 @@
     </a>
     <a
       class="textButton view-leaderboards"
+      data-nav-item="leaderboards"
       href="/leaderboards"
       onclick="this.blur()"
       router-link
@@ -71,6 +73,7 @@
     </a>
     <a
       class="textButton view-about"
+      data-nav-item="about"
       href="/about"
       onclick="this.blur()"
       router-link
@@ -82,6 +85,7 @@
     </a>
     <a
       class="textButton view-settings"
+      data-nav-item="settings"
       href="/settings"
       onclick="this.blur()"
       router-link
@@ -92,7 +96,11 @@
       </div>
     </a>
     <div class="spacer"></div>
-    <button class="text showAlerts" onclick="this.blur()">
+    <button
+      class="text showAlerts"
+      onclick="this.blur()"
+      data-nav-item="alerts"
+    >
       <div class="icon">
         <i class="fas fa-fw fa-bell"></i>
       </div>
@@ -100,6 +108,7 @@
     </button>
     <a
       class="textButton view-login"
+      data-nav-item="login"
       href="/login"
       onclick="this.blur()"
       router-link
@@ -109,6 +118,7 @@
     <div class="accountButtonAndMenu hidden">
       <a
         class="textButton view-account"
+        data-nav-item="account"
         href="/account"
         onclick="this.blur()"
         router-link

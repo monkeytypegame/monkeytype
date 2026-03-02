@@ -31,6 +31,6 @@
   }
 }
 
-header > div#logo > div.icon > svg path {
+header .icon > svg path {
   animation: 10s linear infinite 0.1s cheesecake;
 }

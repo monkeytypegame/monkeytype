@@ -1,20 +1,21 @@
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: #a6bf50;
 }
 
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   color: #c3921a;
 }
 
-nav > .textButton:nth-child(3) {
+[data-nav-item="about"] {
   color: #b92221;
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   color: #88b6ce;
 }
 
-nav > .textButton:nth-child(5),
-nav > .textButton:nth-child(6) {
+[data-nav-item="alerts"],
+[data-nav-item="account"],
+[data-nav-item="login"] {
   color: #661968;
 }

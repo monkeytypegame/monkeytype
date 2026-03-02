@@ -28,8 +28,7 @@ header #logo .text {
 
 header .config .group .buttons .textButton.active,
 #result .stats .group,
-nav .textButton:hover,
-nav button.text:hover,
+[data-nav-item]:hover,
 header .config .group .buttons .textButton:hover,
 footer .textButton:hover,
 footer button.text:hover,

@@ -3,14 +3,18 @@ kbd {
   background-color: var(--main-color);
 }
 
-nav > .textButton {
+[data-nav-item] {
   color: var(--main-color);
 }
 
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: var(--error-color);
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="alerts"] {
+  color: var(--color-alt);
+}
+
+[data-nav-item="settings"] {
   color: var(--caret-color);
 }
