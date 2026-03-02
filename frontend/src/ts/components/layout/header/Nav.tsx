@@ -6,14 +6,9 @@ import {
   getAccountButtonSpinner,
   getNotificationBubble,
 } from "../../../signals/header";
-import {
-  getSnapshot,
-  MiniSnapshot,
-  setSnapshot,
-} from "../../../stores/snapshot";
+import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
-import { getXpDetails } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
@@ -32,15 +27,6 @@ export function Nav(): JSXElement {
     }
   });
 
-  createEffect(() => {
-    console.log(
-      "User level:",
-      getSnapshot()?.xp,
-      "XP details:",
-      getSnapshot() ? getXpDetails(getSnapshot()?.xp ?? 0) : "N/A",
-    );
-  });
-
   return (
     <nav
       class={cn(
@@ -50,50 +36,6 @@ export function Nav(): JSXElement {
         },
       )}
     >
-      <Button
-        text="10xp"
-        onClick={() => {
-          const snapshot = getSnapshot();
-          if (!snapshot) return;
-          setSnapshot({
-            ...snapshot,
-            xp: snapshot.xp + 10,
-          });
-        }}
-      />
-      <Button
-        text="100xp"
-        onClick={() => {
-          const snapshot = getSnapshot();
-          if (!snapshot) return;
-          setSnapshot({
-            ...snapshot,
-            xp: snapshot.xp + 100,
-          });
-        }}
-      />
-      <Button
-        text="1000xp"
-        onClick={() => {
-          const snapshot = getSnapshot();
-          if (!snapshot) return;
-          setSnapshot({
-            ...snapshot,
-            xp: snapshot.xp + 1000,
-          });
-        }}
-      />
-      <Button
-        text="10000xp"
-        onClick={() => {
-          const snapshot = getSnapshot();
-          if (!snapshot) return;
-          setSnapshot({
-            ...snapshot,
-            xp: snapshot.xp + 100000,
-          });
-        }}
-      />
       <Button
         type="text"
         fa={{
@@ -182,7 +124,7 @@ export function Nav(): JSXElement {
               <AccountMenu show={showMenu()} />
             </div>
             <div class="relative">
-              <AccountXpBar xp={getSnapshot()?.xp ?? 0} />
+              <AccountXpBar />
             </div>
           </>
         }

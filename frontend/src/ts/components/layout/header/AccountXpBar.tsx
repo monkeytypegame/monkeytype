@@ -5,6 +5,7 @@ import { createMemo, createSignal, For, JSXElement } from "solid-js";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
 import { setAnimatedLevel } from "../../../signals/animated-level";
+import { getXpBarData, setXpBarData, XpBarData } from "../../../signals/xp-bar";
 import { getSnapshot, setSnapshot } from "../../../stores/snapshot";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
@@ -12,24 +13,12 @@ import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 
-type Props = {
-  xp: number;
-};
-
-type ShowData = {
-  addedXp: number;
-  resultingXp: number;
-  breakdown?: XpBreakdown;
-};
-
 type BreakdownItem = {
   label: string;
   amount: number | string;
 };
 
-export function AccountXpBar(_props: Props): JSXElement {
-  const [getData, setData] = createSignal<ShowData | null>(null);
-
+export function AccountXpBar(): JSXElement {
   const [getShowBar, setShowBar] = createSignal(false);
   const [getShowBreakdown, setShowBreakdown] = createSignal(false);
   const [getBreakdownItems, setBreakdownItems] = createSignal<BreakdownItem[]>(
@@ -71,7 +60,7 @@ export function AccountXpBar(_props: Props): JSXElement {
     if (skipped || !canSkip) return;
 
     const myId = runId; // capture before first await
-    const data = getData();
+    const data = getXpBarData();
     if (!data) return;
 
     const breakdown = data.breakdown;
@@ -86,7 +75,7 @@ export function AccountXpBar(_props: Props): JSXElement {
     setShowBar(false);
   };
 
-  createEffectOn(getData, async (data) => {
+  createEffectOn(getXpBarData, async (data) => {
     const myId = ++runId;
     const isStale = (): boolean => runId !== myId;
     if (data !== null) {
@@ -310,7 +299,7 @@ export function AccountXpBar(_props: Props): JSXElement {
             const totalFakeXp = 1000;
             const resultingXp = snapshot.xp + totalFakeXp;
 
-            const data: ShowData = {
+            const data: XpBarData = {
               addedXp: totalFakeXp,
               resultingXp: resultingXp,
             };
@@ -319,7 +308,7 @@ export function AccountXpBar(_props: Props): JSXElement {
               ...snapshot,
               xp: resultingXp,
             });
-            setData(data);
+            setXpBarData(data);
           }}
           text="Simple XP"
         />
@@ -344,7 +333,7 @@ export function AccountXpBar(_props: Props): JSXElement {
             const totalFakeXp = 10270;
             const resultingXp = snapshot.xp + totalFakeXp;
 
-            const data: ShowData = {
+            const data: XpBarData = {
               addedXp: totalFakeXp,
               breakdown: fakeBreakdown,
               resultingXp: resultingXp,
@@ -354,7 +343,7 @@ export function AccountXpBar(_props: Props): JSXElement {
               ...snapshot,
               xp: resultingXp,
             });
-            setData(data);
+            setXpBarData(data);
           }}
           text="XP Breakdown"
         />
