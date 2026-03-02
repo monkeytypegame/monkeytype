@@ -3,6 +3,7 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createMemo, createSignal, For, JSXElement } from "solid-js";
 
 import { addXp } from "../../../db";
+import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
 import { setAnimatedLevel } from "../../../signals/animated-level";
@@ -32,11 +33,11 @@ export function AccountXpBar(): JSXElement {
   const [getBarAnimationDuration, setBarAnimationDuration] = createSignal(0);
   const [getBarAnimationEase, setBarAnimationEase] = createSignal("out(5)");
 
-  const [getAnimationTick, setAnimationTick] = createSignal(0);
+  const [getAnimationEvent, fireAnimationEvent] = createEvent();
   const [getTotal, { setTotal }] = createSignalWithSetters(0)({
     setTotal: (set, value: number) => {
       set(value);
-      setAnimationTick((t) => t + 1);
+      fireAnimationEvent();
     },
   });
 
@@ -45,7 +46,7 @@ export function AccountXpBar(): JSXElement {
   let runId = 0;
 
   const flashAnimation = createMemo(() => {
-    getAnimationTick(); // trigger on every total update, even if value unchanged
+    getAnimationEvent(); // trigger on every total update, even if value unchanged
     const rand = (Math.random() * 2 - 1) / 4;
     const rand2 = (Math.random() + 1) / 2;
     return {
