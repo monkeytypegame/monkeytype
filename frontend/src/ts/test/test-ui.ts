@@ -64,6 +64,7 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../signals/theme";
+import { skipBreakdown } from "../signals/xp-bar";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1917,6 +1918,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
       void ThemeController.randomizeTheme();
     }
     void XPBar.skipBreakdown();
+    skipBreakdown();
   }
 
   currentTestLine = 0;

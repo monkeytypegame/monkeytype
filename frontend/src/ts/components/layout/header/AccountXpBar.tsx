@@ -6,7 +6,11 @@ import { addXp } from "../../../db";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
 import { setAnimatedLevel } from "../../../signals/animated-level";
-import { getXpBarData } from "../../../signals/xp-bar";
+import {
+  getSkipBreakdownEvent,
+  getXpBarData,
+  skipBreakdown,
+} from "../../../signals/xp-bar";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
@@ -56,7 +60,7 @@ export function AccountXpBar(): JSXElement {
     setBreakdownItems((items) => [...items, { label, amount }]);
   };
 
-  const skipBreakdown = async (): Promise<void> => {
+  createEffectOn(getSkipBreakdownEvent, async () => {
     if (skipped || !canSkip) return;
 
     const myId = runId; // capture before first await
@@ -73,7 +77,7 @@ export function AccountXpBar(): JSXElement {
     await sleep(3000);
     if (runId !== myId) return;
     setShowBar(false);
-  };
+  });
 
   createEffectOn(getXpBarData, async (data) => {
     const myId = ++runId;

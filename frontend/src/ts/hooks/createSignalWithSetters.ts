@@ -12,6 +12,8 @@ type SetterArgs<T, S extends SetterFn<T>> = S extends (
 type SettersMap<T> = Record<string, SetterFn<T>>;
 type MappedSetters<T, S extends SettersMap<T>> = {
   [K in keyof S]: (...args: SetterArgs<T, S[K]>) => void;
+} & {
+  set: OriginalSetter<T>;
 };
 
 export function createSignalWithSetters<T>(defaultValue: T) {
@@ -25,6 +27,6 @@ export function createSignalWithSetters<T>(defaultValue: T) {
         (...args: never[]) => setter(_set, ...args),
       ]),
     ) as unknown as MappedSetters<T, S>;
-    return [get, mapped];
+    return [get, { ...mapped, set: _set }];
   };
 }

@@ -966,6 +966,7 @@ export async function updateLbMemory<M extends Mode>(
 
 export type SaveLocalResultData = {
   xp?: number;
+  xpBreakdown?: XpBreakdown;
   streak?: number;
   result?: SnapshotResult<Mode>;
   isPb?: boolean;
@@ -1030,6 +1031,11 @@ export function saveLocalResult(data: SaveLocalResultData): void {
 
   setSnapshot(snapshot, {
     dispatchEvent: false,
+  });
+  setXpBarData({
+    addedXp: data.xp ?? 0,
+    resultingXp: snapshot.xp ?? 0,
+    breakdown: data.xpBreakdown,
   });
 }
 

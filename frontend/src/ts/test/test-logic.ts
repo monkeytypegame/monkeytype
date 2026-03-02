@@ -46,7 +46,7 @@ import {
   CompletedEvent,
   CompletedEventCustomText,
 } from "@monkeytype/schemas/results";
-import * as XPBar from "../elements/xp-bar";
+// import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -1257,14 +1257,15 @@ async function saveResult(
   const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
-    const snapxp = DB.getSnapshot()?.xp ?? 0;
+    // const snapxp = DB.getSnapshot()?.xp ?? 0;
 
-    void XPBar.update(
-      snapxp,
-      data.xp,
-      TestState.resultVisible ? data.xpBreakdown : undefined,
-    );
+    // void XPBar.update(
+    //   snapxp,
+    //   data.xp,
+    //   TestState.resultVisible ? data.xpBreakdown : undefined,
+    // );
     localDataToSave.xp = data.xp;
+    localDataToSave.xpBreakdown = data.xpBreakdown;
   }
 
   if (data.streak !== undefined) {
