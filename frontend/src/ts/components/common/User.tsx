@@ -1,5 +1,13 @@
 import { User as UserType } from "@monkeytype/schemas/users";
-import { createMemo, JSXElement, onMount, Show } from "solid-js";
+import { AnimationParams } from "animejs";
+import {
+  createEffect,
+  createSignal,
+  JSXElement,
+  on,
+  onMount,
+  Show,
+} from "solid-js";
 
 import {
   SupportsFlags,
@@ -40,18 +48,27 @@ export function User(props: Props): JSXElement {
     setAnimatedLevel(getLevelFromTotalXp(props.user.xp ?? 0));
   });
 
-  const flashAnimation = createMemo(() => {
-    getAnimatedLevel();
-    const rand = (Math.random() * 2 - 1) / 4;
-    const rand2 = (Math.random() + 1) / 2;
-    return {
-      scale: [1 + 0.5 * rand2, 1],
-      backgroundColor: [theme.main, theme.sub],
-      rotate: [10 * rand, 0],
-      duration: 2000,
-      ease: "out(5)",
-    };
-  });
+  const [flashAnimation, setFlashAnimation] = createSignal<
+    AnimationParams | undefined
+  >(undefined);
+
+  createEffect(
+    on(
+      getAnimatedLevel,
+      () => {
+        const rand = (Math.random() * 2 - 1) / 4;
+        const rand2 = (Math.random() + 1) / 2;
+        setFlashAnimation({
+          scale: [1 + 0.5 * rand2, 1],
+          backgroundColor: [theme.main, theme.sub],
+          rotate: [10 * rand, 0],
+          duration: 2000,
+          ease: "out(5)",
+        });
+      },
+      { defer: true },
+    ),
+  );
 
   return (
     <div class={cn("grid grid-flow-col place-items-center gap-2", props.class)}>
