@@ -19,7 +19,7 @@ nav .notificationBubble {
 
 nav .level {
   background: var(--color-bg);
-  color: var(--main-color);
+  color: var(--text-color);
 }
 
 body.crtmode [data-nav-item] {
