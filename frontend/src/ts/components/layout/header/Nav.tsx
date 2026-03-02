@@ -186,6 +186,7 @@ export function Nav(): JSXElement {
                 fixedWidth: true,
               }}
               router-link
+              class={buttonClass}
             />
           </Show>
         }
