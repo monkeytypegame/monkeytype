@@ -27,6 +27,12 @@ export function Nav(): JSXElement {
   const buttonClass = cn("aspect-square");
 
   createEffect(() => {
+    if (getSnapshot() === undefined) {
+      setShowMenu(false);
+    }
+  });
+
+  createEffect(() => {
     console.log(
       "User level:",
       getSnapshot()?.xp,
