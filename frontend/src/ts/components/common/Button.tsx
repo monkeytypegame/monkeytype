@@ -97,6 +97,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           }
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
+          onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
           {...props.dataset}
