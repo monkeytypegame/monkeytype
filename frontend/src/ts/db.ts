@@ -36,7 +36,8 @@ import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
 } from "./stores/snapshot";
-// import { setAuthenticatedUser } from "./signals/user";
+import { setXpBarData } from "./signals/xp-bar";
+import { XpBreakdown } from "@monkeytype/schemas/results";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -1032,7 +1033,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   });
 }
 
-export function addXp(xp: number): void {
+export function addXp(xp: number, breakdown?: XpBreakdown): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -1040,6 +1041,11 @@ export function addXp(xp: number): void {
   snapshot.xp += xp;
   setSnapshot(snapshot, {
     dispatchEvent: false,
+  });
+  setXpBarData({
+    addedXp: xp,
+    resultingXp: snapshot.xp,
+    breakdown: breakdown,
   });
 }
 

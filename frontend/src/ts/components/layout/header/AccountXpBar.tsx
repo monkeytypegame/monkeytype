@@ -2,11 +2,11 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { createMemo, createSignal, For, JSXElement } from "solid-js";
 
+import { addXp } from "../../../db";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
 import { setAnimatedLevel } from "../../../signals/animated-level";
-import { getXpBarData, setXpBarData, XpBarData } from "../../../signals/xp-bar";
-import { getSnapshot, setSnapshot } from "../../../stores/snapshot";
+import { getXpBarData } from "../../../signals/xp-bar";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
@@ -292,32 +292,12 @@ export function AccountXpBar(): JSXElement {
       <div class="absolute -left-100 flex gap-2 text-xs">
         <Button
           onClick={() => {
-            const snapshot = getSnapshot();
-
-            if (!snapshot) return;
-
-            const totalFakeXp = 1000;
-            const resultingXp = snapshot.xp + totalFakeXp;
-
-            const data: XpBarData = {
-              addedXp: totalFakeXp,
-              resultingXp: resultingXp,
-            };
-
-            setSnapshot({
-              ...snapshot,
-              xp: resultingXp,
-            });
-            setXpBarData(data);
+            addXp(1000);
           }}
           text="Simple XP"
         />
         <Button
           onClick={() => {
-            const snapshot = getSnapshot();
-
-            if (!snapshot) return;
-
             const fakeBreakdown = {
               base: 100,
               quote: 10,
@@ -329,21 +309,8 @@ export function AccountXpBar(): JSXElement {
               configMultiplier: 2,
               daily: 10000,
             };
-
             const totalFakeXp = 10270;
-            const resultingXp = snapshot.xp + totalFakeXp;
-
-            const data: XpBarData = {
-              addedXp: totalFakeXp,
-              breakdown: fakeBreakdown,
-              resultingXp: resultingXp,
-            };
-
-            setSnapshot({
-              ...snapshot,
-              xp: resultingXp,
-            });
-            setXpBarData(data);
+            addXp(totalFakeXp, fakeBreakdown);
           }}
           text="XP Breakdown"
         />
