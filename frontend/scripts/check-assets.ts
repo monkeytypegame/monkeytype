@@ -222,7 +222,9 @@ async function validateQuotes(): Promise<void> {
 
     if (
       currentLanguageData !== null &&
-      currentLanguageData.quotes.length < quoteData.quotes.length
+      (currentLanguageData.quotes.length < quoteData.quotes.length ||
+        JSON.stringify(currentLanguageData.quotes) !==
+          JSON.stringify(quoteData.quotes))
     ) {
       addedQuotesToThisLanguage = true;
     }
