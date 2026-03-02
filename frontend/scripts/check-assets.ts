@@ -239,7 +239,9 @@ async function validateQuotes(): Promise<void> {
       if (
         addedQuotesToThisLanguage &&
         currentLanguageData !== null &&
-        !currentLanguageData.quotes.includes(quote)
+        !currentLanguageData.quotes.some(
+          (langQuote) => langQuote.text === quote.text,
+        )
       ) {
         if (quote.text.length < 60) {
           problems.add(
