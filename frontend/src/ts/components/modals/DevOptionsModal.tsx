@@ -85,9 +85,20 @@ export function DevOptionsModal(): JSXElement {
           envConfig.quickLoginEmail,
           envConfig.quickLoginPassword,
           true,
-        ).then(() => {
-          hideLoaderBar();
-        });
+        )
+          .then((result) => {
+            if (!result.success) {
+              Notifications.add(result.message, -1);
+            }
+          })
+          .catch((error: unknown) => {
+            Notifications.add("Quick login failed.", -1, {
+              details: error,
+            });
+          })
+          .finally(() => {
+            hideLoaderBar();
+          });
         hideModal("DevOptions");
       },
     },

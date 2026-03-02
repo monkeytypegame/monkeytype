@@ -1,9 +1,13 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, Show, lazy } from "solid-js";
 
+import { isDevEnvironment } from "../../utils/misc";
 import { ContactModal } from "./ContactModal";
-import { DevOptionsModal } from "./DevOptionsModal";
 import { SupportModal } from "./SupportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
+
+const DevOptionsModal = lazy(() =>
+  import("./DevOptionsModal").then((m) => ({ default: m.DevOptionsModal })),
+);
 
 export function Modals(): JSXElement {
   return (
@@ -11,7 +15,9 @@ export function Modals(): JSXElement {
       <VersionHistoryModal />
       <ContactModal />
       <SupportModal />
-      <DevOptionsModal />
+      <Show when={isDevEnvironment()}>
+        <DevOptionsModal />
+      </Show>
     </>
   );
 }
