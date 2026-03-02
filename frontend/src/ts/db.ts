@@ -1024,11 +1024,13 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   setSnapshot(snapshot, {
     dispatchEvent: false,
   });
-  setXpBarData({
-    addedXp: data.xp ?? 0,
-    resultingXp: snapshot.xp ?? 0,
-    breakdown: data.xpBreakdown,
-  });
+  if (data.xp !== undefined) {
+    setXpBarData({
+      addedXp: data.xp,
+      resultingXp: snapshot.xp,
+      breakdown: data.xpBreakdown,
+    });
+  }
 }
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
