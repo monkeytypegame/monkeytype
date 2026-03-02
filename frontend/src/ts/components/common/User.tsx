@@ -44,8 +44,6 @@ type Props = {
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
-  const theme = getTheme();
-
   onMount(() => {
     setAnimatedLevel(getLevelFromTotalXp(props.user.xp ?? 0));
   });
@@ -60,6 +58,7 @@ export function User(props: Props): JSXElement {
     on(
       getAnimatedLevel,
       () => {
+        const theme = getTheme();
         const rand = (Math.random() * 2 - 1) / 4;
         const rand2 = (Math.random() + 1) / 2;
         setFlashAnimation({
