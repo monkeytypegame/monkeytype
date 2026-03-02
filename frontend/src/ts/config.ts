@@ -1,7 +1,6 @@
 import * as Notifications from "./elements/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
-import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
   canSetConfigWithCurrentFunboxes,
@@ -49,11 +48,9 @@ let config: Config = {
 let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
-    AccountButton.loading(true);
     setAccountButtonSpinner(true);
     void saveConfig(configToSend).then(() => {
       setAccountButtonSpinner(false);
-      AccountButton.loading(false);
     });
   }
   configToSend = {} as Config;
@@ -78,10 +75,8 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   configLS.set(config);
   if (!noDbCheck) {
     setAccountButtonSpinner(true);
-    AccountButton.loading(true);
     void saveConfig(config).finally(() => {
       setAccountButtonSpinner(false);
-      AccountButton.loading(false);
     });
   }
 }

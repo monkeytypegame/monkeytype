@@ -253,14 +253,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     dbSnapshot = snap;
 
-    // setAuthenticatedUser({
-    //   uid: dbSnapshot.uid,
-    //   name: dbSnapshot.name,
-    //   discordAvatar: dbSnapshot.discordAvatar,
-    //   discordId: dbSnapshot.discordId,
-    //   xp: dbSnapshot.xp,
-    // });
-
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();

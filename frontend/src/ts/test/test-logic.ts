@@ -18,7 +18,6 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
-import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
@@ -46,7 +45,6 @@ import {
   CompletedEvent,
   CompletedEventCustomText,
 } from "@monkeytype/schemas/results";
-// import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -1191,7 +1189,6 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
-  AccountButton.loading(true);
   setAccountButtonSpinner(true);
 
   if (!Config.resultSaving) {
@@ -1200,7 +1197,6 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
     setAccountButtonSpinner(false);
     return null;
   }
@@ -1220,7 +1216,6 @@ async function saveResult(
 
   const response = await Ape.results.add({ body: { result } });
 
-  AccountButton.loading(false);
   setAccountButtonSpinner(false);
 
   if (response.status !== 200) {
@@ -1257,13 +1252,6 @@ async function saveResult(
   const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
-    // const snapxp = DB.getSnapshot()?.xp ?? 0;
-
-    // void XPBar.update(
-    //   snapxp,
-    //   data.xp,
-    //   TestState.resultVisible ? data.xpBreakdown : undefined,
-    // );
     localDataToSave.xp = data.xp;
     localDataToSave.xpBreakdown = data.xpBreakdown;
   }
