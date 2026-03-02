@@ -9,6 +9,9 @@ on:
 jobs:
   find_todos:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # to comment on PRs
+      contents: read
 
     steps:
       - name: Checkout code
