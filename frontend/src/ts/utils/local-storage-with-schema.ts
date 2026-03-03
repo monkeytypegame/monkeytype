@@ -32,7 +32,7 @@ export class LocalStorageWithSchema<T> {
   public get(): T {
     if (this.cache !== undefined) {
       console.debug(`LS ${this.key} Got cached value:`, this.cache);
-      return this.cache;
+      return structuredClone(this.cache);
     }
 
     console.debug(`LS ${this.key} Getting value from localStorage`);
@@ -41,7 +41,7 @@ export class LocalStorageWithSchema<T> {
     if (value === null) {
       console.debug(`LS ${this.key} No value found, returning fallback`);
       this.cache = this.fallback;
-      return this.cache;
+      return structuredClone(this.cache);
     }
 
     let migrated = false;
@@ -56,13 +56,13 @@ export class LocalStorageWithSchema<T> {
               `LS ${this.key} Migrating from old format to new format`,
             );
             this.cache = this.migrate(oldData, zodIssues);
-            return this.cache;
+            return structuredClone(this.cache);
           } else {
             console.debug(
               `LS ${this.key} No migration function provided, returning fallback`,
             );
             this.cache = this.fallback;
-            return this.cache;
+            return structuredClone(this.cache);
           }
         },
       }),
@@ -74,7 +74,7 @@ export class LocalStorageWithSchema<T> {
       );
       window.localStorage.setItem(this.key, JSON.stringify(this.fallback));
       this.cache = this.fallback;
-      return this.cache;
+      return structuredClone(this.cache);
     }
 
     if (migrated || parsed === this.fallback) {
@@ -84,7 +84,7 @@ export class LocalStorageWithSchema<T> {
 
     console.debug(`LS ${this.key} Got value:`, parsed);
     this.cache = parsed;
-    return this.cache;
+    return structuredClone(this.cache);
   }
 
   public set(data: T): boolean {
