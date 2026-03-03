@@ -3,7 +3,6 @@ import * as ResultFilters from "../elements/account/result-filters";
 import * as ChartController from "../controllers/chart-controller";
 import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
-import * as PbTables from "../elements/account/pb-tables";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
@@ -13,9 +12,7 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as Profile from "../elements/profile";
 import { format } from "date-fns/format";
-import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
@@ -25,7 +22,6 @@ import { getAuthenticatedUser } from "../firebase";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
-import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/schemas/results";
 import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
@@ -36,6 +32,7 @@ import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
 import { SortedTableWithLimit } from "../utils/sorted-table";
 import { qs, qsa, qsr, ElementWithUtils, onDOMReady } from "../utils/dom";
+import { sendVerificationEmail } from "../auth";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -48,7 +45,6 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
-let testActivityEl: HTMLElement | null;
 let historyTable: SortedTableWithLimit<SnapshotResult<Mode>>;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -210,14 +206,6 @@ async function fillContent(): Promise<void> {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
-  PbTables.update(snapshot.personalBests);
-  void Profile.update("account", snapshot);
-
-  TestActivity.init(
-    testActivityEl as HTMLElement,
-    snapshot.testActivity,
-    new Date(snapshot.addedAt),
-  );
   void ResultBatches.update();
 
   chartData = [];
@@ -964,19 +952,10 @@ async function fillContent(): Promise<void> {
   ChartController.accountHistogram.update();
   Focus.set(false);
   qs(".page.pageAccount")?.setStyle({ height: "unset" }); //weird safari fix
-  setTimeout(() => {
-    Profile.updateNameFontSize("account");
-  }, 0);
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
   const results = await DB.getUserResults(offset);
-  if (!results && !ConnectionState.get()) {
-    Notifications.add("Could not get results - you are offline", -1, {
-      duration: 5,
-    });
-    return;
-  }
 
   TodayTracker.addAllFromToday();
   if (results) {
@@ -1168,22 +1147,6 @@ qs(".pageAccount .content .group.aboveHistory .exportCSV")?.on("click", () => {
   void Misc.downloadResultsCSV(filteredResults);
 });
 
-qs(".pageAccount .profile")?.onChild("click", ".details .copyLink", () => {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  const { name } = snapshot;
-  const url = `${location.origin}/profile/${name}`;
-
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 0);
-    },
-    function () {
-      alert("Failed to copy using the Clipboard API. Here's the link: " + url);
-    },
-  );
-});
-
 qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length ?? 0;
 
@@ -1193,6 +1156,12 @@ qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   await downloadResults(offset);
   await fillContent();
   hideLoaderBar();
+});
+
+qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
+  qs(".sendVerificationEmail")?.disable();
+  await sendVerificationEmail();
+  qs(".sendVerificationEmail")?.enable();
 });
 
 ConfigEvent.subscribe(({ key }) => {
@@ -1236,20 +1205,9 @@ export const page = new Page<undefined>({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
-    const snapshot = DB.getSnapshot();
     await ResultFilters.appendDropdowns(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
-
-    testActivityEl = document.querySelector(
-      ".page.pageAccount .testActivity",
-    ) as HTMLElement;
-
-    TestActivity.initYearSelector(
-      testActivityEl,
-      "current",
-      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020,
-    );
 
     historyTable ??= new SortedTableWithLimit<SnapshotResult<Mode>>({
       limit: 10,

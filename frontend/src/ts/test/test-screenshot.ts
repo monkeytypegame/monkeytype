@@ -36,7 +36,7 @@ function revert(): void {
   if (revertCookie) qs("#cookiesModal")?.show();
   if (revealReplay) qs("#resultReplay")?.show();
   if (!isAuthenticated()) {
-    qs(".pageTest .loginTip")?.removeClass("hidden");
+    qs(".pageTest .loginTip")?.show();
   }
   qs("html")?.setStyle({ scrollBehavior: "smooth" });
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {

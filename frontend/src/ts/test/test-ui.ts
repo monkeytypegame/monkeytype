@@ -48,6 +48,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
+import * as Ligatures from "./break-ligatures";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -141,6 +142,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
+          Ligatures.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
         }
@@ -157,6 +159,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
+    Ligatures.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
@@ -603,7 +606,7 @@ export function updateWordsWrapperHeight(force = false): void {
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
-  wordsWrapperEl.removeClass("hidden");
+  wordsWrapperEl.show();
 
   const wordComputedStyle = window.getComputedStyle(activeWordEl.native);
   const wordMargin =
@@ -1462,7 +1465,7 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 
 export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
-    qsa("#resultWordsHistory .heatmapLegend")?.removeClass("hidden");
+    qsa("#resultWordsHistory .heatmapLegend")?.show();
 
     let burstlist = [...TestInput.burstHistory];
 
@@ -1566,7 +1569,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       });
     }
   } else {
-    qs("#resultWordsHistory .heatmapLegend")?.addClass("hidden");
+    qs("#resultWordsHistory .heatmapLegend")?.hide();
     qsa("#resultWordsHistory .words .word")?.removeClass("heatmapInherit");
     qsa("#resultWordsHistory .words .word")?.setStyle({ color: "" });
 
@@ -1685,9 +1688,9 @@ function updateLiveStatsColor(value: TimerColor): void {
 
 function showHideTestRestartButton(showHide: boolean): void {
   if (showHide) {
-    qs(".pageTest #restartTestButton")?.removeClass("hidden");
+    qs(".pageTest #restartTestButton")?.show();
   } else {
-    qs(".pageTest #restartTestButton")?.addClass("hidden");
+    qs(".pageTest #restartTestButton")?.hide();
   }
 }
 
@@ -1879,8 +1882,8 @@ export function onTestStart(): void {
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
-  qs("#result")?.addClass("hidden");
-  qs("#typingTest")?.setStyle({ opacity: "0" }).removeClass("hidden");
+  qs("#result")?.hide();
+  qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
   TestConfig.show();
   Focus.set(false);
@@ -2073,11 +2076,15 @@ ConfigEvent.subscribe(({ key, newValue }) => {
       "colorfulMode",
       "showAllLines",
       "fontSize",
+      "fontFamily",
       "maxLineWidth",
       "tapeMargin",
     ].includes(key)
   ) {
-    updateWordWrapperClasses();
+    if (key !== "fontFamily") updateWordWrapperClasses();
+    if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
+      Ligatures.update(key, wordsEl);
+    }
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();

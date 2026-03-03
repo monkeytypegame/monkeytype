@@ -7,7 +7,8 @@ import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 
 export function SupportModal(): JSXElement {
-  const buttonClass = "p-4 flex flex-col text-md";
+  const buttonClass =
+    "p-4 flex flex-col text-md h-full justify-center items-center";
   const iconScale = 2;
 
   return (

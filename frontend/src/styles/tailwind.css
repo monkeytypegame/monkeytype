@@ -15,6 +15,7 @@
 
   /* decide on rem or em */
   --spacing: 0.25rem;
+  --em-spacing: 0.25em;
 
   --breakpoint-*: initial;
   --breakpoint-2xl: 1617px;
@@ -27,6 +28,8 @@
 
   --default-transition-duration: 0.25s;
   --duration-half: 0.125s;
+
+  --radius: var(--roundness);
 
   @keyframes loader {
     0% {
@@ -41,18 +44,49 @@
   }
 }
 
+@utility rounded-double {
+  border-radius: calc(var(--roundness) * 2);
+}
+
+@utility rounded-half {
+  border-radius: calc(var(--roundness) / 2);
+}
+
+@utility debug {
+  border: 1px dashed hotpink !important;
+}
+
+@utility text-em-xs {
+  font-size: 0.75em;
+  line-height: var(--text-xs--line-height);
+}
+
+@utility text-em-sm {
+  font-size: 0.875em;
+  line-height: var(--text-sm--line-height);
+}
+
+@utility text-em-base {
+  font-size: 1em;
+  line-height: var(--text-base--line-height);
+}
+
+@utility text-em-lg {
+  font-size: 1.125em;
+  line-height: var(--text-lg--line-height);
+}
+
+@utility text-em-xl {
+  font-size: 1.25em;
+  line-height: var(--text-xl--line-height);
+}
+
+@utility text-em-2xl {
+  font-size: 1.5em;
+  line-height: var(--text-2xl--line-height);
+}
+
 @layer utilities {
-  .rounded {
-    border-radius: var(--roundness);
-  }
-
-  .rounded-double {
-    border-radius: calc(var(--roundness) * 2);
-  }
-
-  .rounded-half {
-    border-radius: calc(var(--roundness) / 2);
-  }
   .has-button\:p-0:has(button) {
     padding: 0;
   }

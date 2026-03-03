@@ -4,47 +4,39 @@ nav {
   gap: 0.5rem;
 }
 
-header.focus nav > .textButton,
+header.focus [data-nav-item],
 header.focus nav:before,
 header.focus nav:after {
   background: var(--bg-color);
 }
 
-nav > .textButton:nth-child(1),
-nav > .textButton:nth-child(2),
-nav > .textButton:nth-child(3),
-nav > .textButton:nth-child(4) {
+[data-nav-item="test"],
+[data-nav-item="leaderboards"],
+[data-nav-item="about"],
+[data-nav-item="settings"] {
   border-radius: rem !important;
   color: #191f28 !important;
   background: #c69f68;
 }
-
-nav > .textButton:nth-child(1):hover,
-nav
-  > .textButton:nth-child(2):hover
-  nav
-  > .textButton:nth-child(3):hover
-  nav
-  > .textButton:nth-child(4):hover {
+[data-nav-item="test"]:hover,
+[data-nav-item="leaderboards"]:hover,
+[data-nav-item="about"]:hover,
+[data-nav-item="settings"]:hover {
   border-radius: rem !important;
   color: #4b5975 !important;
   transition: 0.25s;
 }
 
-header.focus nav > .textButton.discord::after {
-  border-color: transparent;
-}
-
-body.crtmode nav > .textButton:nth-child(1),
-body.crtmode nav > .textButton:nth-child(2),
-body.crtmode nav > .textButton:nth-child(3),
-body.crtmode nav > .textButton:nth-child(4) {
+body.crtmode [data-nav-item="test"],
+body.crtmode [data-nav-item="leaderboards"],
+body.crtmode [data-nav-item="about"],
+body.crtmode [data-nav-item="settings"] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
     -3px 0 color-mix(in srgb, #c69f68 30%, transparent),
     0 0 3px;
 }
 
-body.crtmode header.focus nav > .textButton {
+body.crtmode header.focus [data-nav-item] {
   box-shadow: none;
 }

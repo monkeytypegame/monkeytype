@@ -4,7 +4,6 @@ import { format as dateFormat } from "date-fns/format";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
 import {
   IsValidResponse,
   ValidatedHtmlInputElement,
@@ -112,7 +111,6 @@ type SimpleModalOptions = {
   beforeInitFn?: (thisPopup: SimpleModal) => void;
   beforeShowFn?: (thisPopup: SimpleModal) => void;
   canClose?: boolean;
-  onlineOnly?: boolean;
   hideCallsExec?: boolean;
   showLabels?: boolean;
   afterClickAway?: () => void;
@@ -133,7 +131,6 @@ export class SimpleModal {
   beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
   beforeShowFn: ((thisPopup: SimpleModal) => void) | undefined;
   canClose: boolean;
-  onlineOnly: boolean;
   hideCallsExec: boolean;
   showLabels: boolean;
   afterClickAway: (() => void) | undefined;
@@ -152,7 +149,6 @@ export class SimpleModal {
     this.beforeInitFn = options.beforeInitFn;
     this.beforeShowFn = options.beforeShowFn;
     this.canClose = options.canClose ?? true;
-    this.onlineOnly = options.onlineOnly ?? false;
     this.hideCallsExec = options.hideCallsExec ?? false;
     this.showLabels = options.showLabels ?? false;
     this.afterClickAway = options.afterClickAway;
@@ -408,10 +404,6 @@ export class SimpleModal {
   }
 
   show(parameters: string[] = [], showOptions: ShowOptions): void {
-    if (this.onlineOnly && !ConnectionState.get()) {
-      Notifications.add("You are offline", 0, { duration: 2 });
-      return;
-    }
     activePopup = this;
     this.parameters = parameters;
     void modal.show({

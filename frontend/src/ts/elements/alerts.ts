@@ -5,7 +5,6 @@ import * as DB from "../db";
 import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
 import {
   applyReducedMotion,
   createErrorMessage,
@@ -13,11 +12,9 @@ import {
   promiseAnimate,
 } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
-import { updateXp as accountPageUpdateProfile } from "./profile";
 import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
-import { getActivePage } from "../signals/core";
 import { animate } from "animejs";
 import { qs, qsr } from "../utils/dom";
 
@@ -117,11 +114,6 @@ function hide(): void {
         const snapxp = DB.getSnapshot()?.xp ?? 0;
         void XPBar.update(snapxp, totalXpClaimed);
 
-        const activePage = getActivePage();
-        if (activePage === "account" || activePage === "profile") {
-          accountPageUpdateProfile(activePage, snapxp + totalXpClaimed, true);
-        }
-
         DB.addXp(totalXpClaimed);
       }
     },
@@ -157,15 +149,6 @@ async function show(): Promise<void> {
 }
 
 async function getAccountAlerts(): Promise<void> {
-  if (!ConnectionState.get()) {
-    accountAlertsListEl.setHtml(`
-    <div class="nothing">
-    You are offline
-    </div>
-    `);
-    return;
-  }
-
   const inboxResponse = await Ape.users.getInbox();
 
   if (inboxResponse.status === 503) {
