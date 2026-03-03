@@ -13,10 +13,7 @@ import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
-import {
-  getAnimatedLevel,
-  setAnimatedLevel,
-} from "../../signals/animated-level";
+import { getAnimatedLevel, setAnimatedLevel } from "../../signals/header";
 import { getTheme } from "../../signals/theme";
 import { cn } from "../../utils/cn";
 import { getLevelFromTotalXp } from "../../utils/levels";

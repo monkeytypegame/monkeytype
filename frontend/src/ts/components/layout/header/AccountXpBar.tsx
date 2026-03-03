@@ -5,8 +5,11 @@ import { createMemo, createSignal, For, JSXElement } from "solid-js";
 import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
-import { setAnimatedLevel } from "../../../signals/animated-level";
-import { getSkipBreakdownEvent, getXpBarData } from "../../../signals/xp-bar";
+import {
+  getSkipBreakdownEvent,
+  getXpBarData,
+  setAnimatedLevel,
+} from "../../../signals/header";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
