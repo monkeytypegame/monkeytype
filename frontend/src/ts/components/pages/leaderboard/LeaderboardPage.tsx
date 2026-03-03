@@ -14,6 +14,7 @@ import { getActivePage, isLoggedIn } from "../../../signals/core";
 import {
   getPage,
   getSelection,
+  pageSize,
   Selection,
   setPage,
   setSelection,
@@ -99,7 +100,7 @@ export function LeaderboardPage(): JSXElement {
       ? rankQuery.data?.friendsRank
       : rankQuery.data?.rank;
     if (userRank === undefined) return undefined;
-    const page = Math.ceil(userRank / (dataQuery.data?.pageSize ?? 50)) - 1;
+    const page = Math.ceil(userRank / pageSize) - 1;
     return page;
   };
 
@@ -231,7 +232,7 @@ export function LeaderboardPage(): JSXElement {
                           dataQuery.isFetching ||
                           dataQuery.isRefetching
                         }
-                        lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                        lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
                         userPage={userPage()}
                         currentPage={getPage()}
                         onPageChange={setPage}
@@ -247,7 +248,7 @@ export function LeaderboardPage(): JSXElement {
                     />
                     <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                       <Navigation
-                        lastPage={Math.ceil((data?.count ?? 0) / 50)}
+                        lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
                         currentPage={getPage()}
                         onPageChange={setPage}
                         onScrollToUser={setScrollToUser}
