@@ -60,6 +60,7 @@ function hide(): void {
 
       if (mailToMarkRead.length === 0 && mailToDelete.length === 0) return;
 
+      /*
       const updateResponse = await Ape.users.updateInbox({
         body: {
           mailIdsToMarkRead:
@@ -74,6 +75,7 @@ function hide(): void {
         Notifications.add(`Failed to update inbox: ${message}`, -1);
         return;
       }
+        */
 
       const rewardsClaimed = accountAlerts
         .filter((ie) => {

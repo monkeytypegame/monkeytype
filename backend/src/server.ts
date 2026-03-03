@@ -2,6 +2,7 @@ import "dotenv/config";
 import * as db from "./init/db";
 import jobs from "./jobs";
 import {
+  getCachedConfiguration,
   getLiveConfiguration,
   updateFromConfigurationFile,
 } from "./init/configuration";
@@ -19,6 +20,8 @@ import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 import { createIndicies as connectionsDbSetup } from "./dal/connections";
 import { getErrorMessage } from "./utils/error";
+import { addToInbox } from "./dal/user";
+import { buildMonkeyMail } from "./utils/monkey-mail";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -83,7 +86,7 @@ async function bootServer(port: number): Promise<Server> {
     recordServerVersion(version);
 
     //TODO remove
-    /*
+
     void addToInbox(
       "8nhwgE5AdBZdfTuFiXW71p2HsQ73",
       [
@@ -112,7 +115,6 @@ async function bootServer(port: number): Promise<Server> {
       ],
       (await getCachedConfiguration()).users.inbox,
     );
-    */
   } catch (error) {
     Logger.error("Failed to boot server");
     const message = getErrorMessage(error);
