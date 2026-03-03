@@ -1,4 +1,4 @@
-import { JSXElement, ParentProps } from "solid-js";
+import { Accessor, JSXElement, ParentProps } from "solid-js";
 
 import { Conditional } from "../Conditional";
 import { Anime, AnimeProps } from "./Anime";
@@ -36,11 +36,11 @@ import { AnimePresence } from "./AnimePresence";
  * />
  * ```
  */
-export function AnimeConditional(
+export function AnimeConditional<T>(
   props: ParentProps<{
     exitBeforeEnter?: boolean;
-    if: boolean;
-    then: JSXElement;
+    if: T;
+    then: JSXElement | ((value: Accessor<NonNullable<T>>) => JSXElement);
     else?: JSXElement;
     animeProps?: AnimeProps;
   }>,
@@ -56,16 +56,16 @@ export function AnimeConditional(
     <AnimePresence exitBeforeEnter={props.exitBeforeEnter}>
       <Conditional
         if={props.if}
-        then={
+        then={(value) => (
           <Anime
             initial={props.animeProps?.initial ?? defaultAnimeProps.initial}
             animate={props.animeProps?.animate ?? defaultAnimeProps.animate}
             animation={props.animeProps?.animation}
             exit={props.animeProps?.exit ?? defaultAnimeProps.exit}
           >
-            {props.then}
+            {typeof props.then === "function" ? props.then(value) : props.then}
           </Anime>
-        }
+        )}
         else={
           <Anime
             initial={props.animeProps?.initial ?? defaultAnimeProps.initial}

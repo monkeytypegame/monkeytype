@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createEffect, createSignal, JSXElement, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  JSXElement,
+  Show,
+} from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
 import { queryClient } from "../../../queries";
@@ -12,7 +18,7 @@ import {
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { getAccountButtonSpinner } from "../../../signals/header";
-import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
+import { getSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { AnimeConditional } from "../../common/anime";
@@ -31,7 +37,7 @@ export function Nav(): JSXElement {
     }
   });
 
-  const showFriendsNotificationBubble = (): boolean => {
+  const showFriendsNotificationBubble = createMemo((): boolean => {
     const friends = getSnapshot()?.connections;
 
     if (friends !== undefined) {
@@ -43,14 +49,14 @@ export function Nav(): JSXElement {
       }
     }
     return false;
-  };
+  });
 
-  const showAlertsNotificationBubble = (): boolean => {
+  const showAlertsNotificationBubble = createMemo((): boolean => {
     const snapshot = getSnapshot();
     if (snapshot === undefined) return false;
 
     return snapshot.inboxUnreadSize > 0;
-  };
+  });
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
   const showLoginButton = (): boolean =>
@@ -148,8 +154,8 @@ export function Nav(): JSXElement {
       </Button>
       <AnimeConditional
         exitBeforeEnter
-        if={getSnapshot() !== undefined}
-        then={
+        if={getSnapshot()}
+        then={(snap) => (
           <>
             <div
               class="relative"
@@ -169,7 +175,7 @@ export function Nav(): JSXElement {
                 }}
               >
                 <User
-                  user={getSnapshot() as MiniSnapshot}
+                  user={snap()}
                   showAvatar={true}
                   showLevel={true}
                   iconsOnly={true}
@@ -187,7 +193,7 @@ export function Nav(): JSXElement {
               <AccountXpBar />
             </div>
           </>
-        }
+        )}
         else={
           <Show when={showLoginButton()}>
             <Button
