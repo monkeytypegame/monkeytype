@@ -63,7 +63,7 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../signals/theme";
-import { skipBreakdown } from "../signals/xp-bar";
+import { skipBreakdown } from "../signals/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,

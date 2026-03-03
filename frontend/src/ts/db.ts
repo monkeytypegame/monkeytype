@@ -36,8 +36,8 @@ import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
 } from "./stores/snapshot";
-import { setXpBarData } from "./signals/xp-bar";
 import { XpBreakdown } from "@monkeytype/schemas/results";
+import { setXpBarData } from "./signals/header";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
