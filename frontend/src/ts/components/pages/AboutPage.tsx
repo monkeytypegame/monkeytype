@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
-// import { queryClient } from "../../queries";
 import {
   getContributorsQueryOptions,
   getSpeedHistogramQueryOptions,
@@ -11,17 +10,12 @@ import {
 import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
-// import { qsr } from "../../utils/dom";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
-
-// qsr("nav .view-about").on("mouseenter", () => {
-//   prefetch();
-// });
 
 export function AboutPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "about";
@@ -447,10 +441,3 @@ export function AboutPage(): JSXElement {
     </div>
   );
 }
-
-// function prefetch(): void {
-//   void queryClient.prefetchQuery(getContributorsQueryOptions());
-//   void queryClient.prefetchQuery(getSupportersQueryOptions());
-//   void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-//   void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
-// }
