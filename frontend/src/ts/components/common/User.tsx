@@ -27,16 +27,16 @@ import { UserBadge } from "./UserBadge";
 import { UserFlags } from "./UserFlags";
 
 type Props = {
+  class?: string;
   user: SupportsFlags &
     Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar" | "xp"> & {
       badgeId?: number;
     };
   showAvatar?: boolean;
+  hideNameOnSmallScreens?: boolean;
   linkToProfile?: boolean;
   showLevel?: boolean;
   showSpinner?: boolean;
-  class?: string;
-  hideNameOnSmallScreens?: boolean;
   showNotificationBubble?: boolean;
 } & UserFlagOptions;
 
