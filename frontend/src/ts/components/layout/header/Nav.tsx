@@ -8,12 +8,18 @@ import {
 } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
+import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
-import { getAccountButtonSpinner } from "../../../signals/header";
+import {
+  getAccountButtonSpinner,
+  getAnimatedLevel,
+  setAnimatedLevel,
+} from "../../../signals/header";
 import { getSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
+import { getLevelFromTotalXp } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
@@ -25,10 +31,19 @@ import { AccountXpBar } from "./AccountXpBar";
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
   const buttonClass = cn("aspect-square");
+
   createEffect(() => {
     if (getSnapshot() === undefined) {
       setShowMenu(false);
     }
+  });
+
+  createEffectOn(getSnapshot, (snapshot) => {
+    if (snapshot === undefined) {
+      setAnimatedLevel(0);
+      return;
+    }
+    setAnimatedLevel(getLevelFromTotalXp(snapshot.xp ?? 0));
   });
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
@@ -168,10 +183,10 @@ export function Nav(): JSXElement {
                 <User
                   user={snap()}
                   showAvatar={true}
-                  showLevel={true}
                   iconsOnly={true}
-                  showSpinner={getAccountButtonSpinner()}
                   hideNameOnSmallScreens={true}
+                  level={getAnimatedLevel()}
+                  showSpinner={getAccountButtonSpinner()}
                   showNotificationBubble={showFriendsNotificationBubble()}
                 />
               </Button>

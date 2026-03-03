@@ -1,22 +1,13 @@
 import { User as UserType } from "@monkeytype/schemas/users";
 import { AnimationParams } from "animejs";
-import {
-  createEffect,
-  createSignal,
-  JSXElement,
-  on,
-  onMount,
-  Show,
-} from "solid-js";
+import { createEffect, createSignal, JSXElement, on, Show } from "solid-js";
 
 import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
-import { getAnimatedLevel, setAnimatedLevel } from "../../signals/header";
 import { getTheme } from "../../signals/theme";
 import { cn } from "../../utils/cn";
-import { getLevelFromTotalXp } from "../../utils/levels";
 import { Anime, AnimeConditional } from "./anime";
 import { Button } from "./Button";
 import { Conditional } from "./Conditional";
@@ -35,16 +26,12 @@ type Props = {
   showAvatar?: boolean;
   hideNameOnSmallScreens?: boolean;
   linkToProfile?: boolean;
-  showLevel?: boolean;
+  level?: number;
   showSpinner?: boolean;
   showNotificationBubble?: boolean;
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
-  onMount(() => {
-    setAnimatedLevel(getLevelFromTotalXp(props.user.xp ?? 0));
-  });
-
   const [flashAnimation, setFlashAnimation] = createSignal<
     AnimationParams | undefined
   >(undefined);
@@ -53,7 +40,7 @@ export function User(props: Props): JSXElement {
 
   createEffect(
     on(
-      getAnimatedLevel,
+      () => props.level,
       () => {
         const theme = getTheme();
         const rand = (Math.random() * 2 - 1) / 4;
@@ -127,7 +114,7 @@ export function User(props: Props): JSXElement {
         />
         <UserBadge id={props.user.badgeId} />
       </div>
-      <Show when={props.showLevel ?? false}>
+      <Show when={props.level !== undefined}>
         <Anime
           ref={(el) => (levelEl = el)}
           animation={flashAnimation()}
@@ -136,7 +123,7 @@ export function User(props: Props): JSXElement {
             { "transition-colors duration-125": !isAnimating() },
           )}
         >
-          {getAnimatedLevel()}
+          {props.level}
         </Anime>
       </Show>
     </div>
