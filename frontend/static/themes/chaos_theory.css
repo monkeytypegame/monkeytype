@@ -19,10 +19,6 @@ header #logo .icon {
   direction: rtl;
 }
 
-/* footer .leftright .right .current-theme .text { */
-/* font-family: "Comic Sans MS", "Comic Sans", cursive; */
-/* } */
-
 #caret {
   background-image: url(https://i.imgur.com/yN31JmJ.png) !important;
   background-color: transparent !important;
@@ -80,12 +76,12 @@ header.focus #logo:after {
   direction: ltr;
 }
 
-footer .leftright .right .current-theme .fas.fa-fw.fa-palette {
+footer .textButton .fa-palette {
   transform: rotateY(0deg);
   transition: 0.5s;
 }
 
-footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
+footer .textButton:hover .fa-palette {
   transform: rotateY(180deg);
   transition: 0.5s;
 }

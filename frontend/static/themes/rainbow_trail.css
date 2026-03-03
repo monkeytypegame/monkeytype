@@ -69,11 +69,11 @@ button.text:hover,
   transition: all 1s ease;
 }
 
-.current-theme.textButton {
+footer .textButton {
   animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
 }
 
-.current-theme.textButton:hover {
+footer .textButton:hover {
   -webkit-text-fill-color: initial;
 }
 
