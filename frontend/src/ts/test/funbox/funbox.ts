@@ -16,7 +16,6 @@ import {
   getAllFunboxes,
   getActiveFunboxes,
   getActiveFunboxNames,
-  get,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
@@ -35,11 +34,6 @@ export function toggleScript(...params: string[]): void {
 }
 
 export function setFunbox(funbox: FunboxName[]): boolean {
-  if (funbox.length === 0) {
-    for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
-      fb.functions.clearGlobal();
-    }
-  }
   FunboxMemory.load();
   setConfig("funbox", funbox);
   return true;
@@ -60,12 +54,6 @@ export function toggleFunbox(funbox: FunboxName): void {
   }
   FunboxMemory.load();
   configToggleFunbox(funbox, false);
-
-  if (!getActiveFunboxNames().includes(funbox)) {
-    get(funbox).functions?.clearGlobal?.();
-  } else {
-    get(funbox).functions?.applyGlobalCSS?.();
-  }
 }
 
 export async function clear(): Promise<boolean> {
