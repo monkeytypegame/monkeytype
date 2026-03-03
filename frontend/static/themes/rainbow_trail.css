@@ -69,11 +69,11 @@ button.text:hover,
   transition: all 1s ease;
 }
 
-footer .textButton {
+footer .textButton:has(.fa-palette) {
   animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
 }
 
-footer .textButton:hover {
+footer .textButton:has(.fa-palette):hover {
   -webkit-text-fill-color: initial;
 }
 
