@@ -16,7 +16,6 @@ import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as AuthEvent from "../observables/auth-event";
 import { animate } from "animejs";
 import { qsr } from "../utils/dom";
-import { setNotificationBubble } from "../signals/header";
 
 const alertsPopupEl = qsr("#alertsPopup");
 const accountAlertsListEl = alertsPopupEl.qsr(".accountAlerts .list");
@@ -48,7 +47,6 @@ const state: State = {
 };
 
 function hide(): void {
-  setNotificationBubble(false);
   DB.updateInboxUnreadSize(0);
   void modal.hide({
     afterAnimation: async () => {
@@ -467,12 +465,7 @@ NotificationEvent.subscribe((message, level, options) => {
 });
 
 AuthEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
-    const snapshot = DB.getSnapshot();
-    setNotificationBubble((snapshot?.inboxUnreadSize ?? 0) > 0);
-  }
   if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
-    setNotificationBubble(false);
     accountAlerts = [];
     mailToMarkRead = [];
     mailToDelete = [];

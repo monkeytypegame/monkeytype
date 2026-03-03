@@ -4,10 +4,7 @@ import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 import { showAlerts } from "../../../elements/alerts";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
-import {
-  getAccountButtonSpinner,
-  getNotificationBubble,
-} from "../../../signals/header";
+import { getAccountButtonSpinner } from "../../../signals/header";
 import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
@@ -21,7 +18,6 @@ import { AccountXpBar } from "./AccountXpBar";
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
   const buttonClass = cn("aspect-square");
-
   createEffect(() => {
     if (getSnapshot() === undefined) {
       setShowMenu(false);
@@ -40,6 +36,13 @@ export function Nav(): JSXElement {
       }
     }
     return false;
+  };
+
+  const showAlertsNotificationBubble = (): boolean => {
+    const snapshot = getSnapshot();
+    if (snapshot === undefined) return false;
+
+    return snapshot.inboxUnreadSize > 0;
   };
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
@@ -127,7 +130,7 @@ export function Nav(): JSXElement {
       >
         <NotificationBubble
           variant="fromCorner"
-          show={getNotificationBubble()}
+          show={showAlertsNotificationBubble()}
         />
       </Button>
       <AnimeConditional
