@@ -48,6 +48,7 @@ export function Logo(): JSXElement {
               "text-transparent": getFocus(),
             },
           )}
+          data-ui-element="subLogo"
         >
           {isDevEnvironment() ? "localhost" : "monkey see"}
         </div>

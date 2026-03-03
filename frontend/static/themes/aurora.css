@@ -42,18 +42,10 @@
   animation: aurora-bg 5s linear infinite;
 }
 
-header.focus .button.discord::after,
-header .button.discord.dotHidden::after {
-  animation-name: none !important;
-}
-
 #logo .bottom,
-header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 [data-nav-item]:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
+footer button:hover,
 a:not(.button):hover {
   animation: aurora 5s linear infinite;
 }

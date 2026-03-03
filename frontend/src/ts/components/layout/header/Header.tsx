@@ -12,7 +12,7 @@ export function Header(): JSXElement {
         "opacity-0": getIsScreenshotting(),
       })}
       data-ui-element="header"
-      data-focus={getFocus() ? "" : undefined}
+      data-focused={getFocus() ? "" : undefined}
     >
       <Logo />
       <Nav />

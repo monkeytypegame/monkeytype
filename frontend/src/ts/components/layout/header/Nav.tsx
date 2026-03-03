@@ -32,7 +32,7 @@ export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
   const buttonClass = () =>
     cn("aspect-square transition-opacity", {
-      "opacity-[var(--nav-focus-opacity)]": getFocus(),
+      "opacity-(--nav-focus-opacity)": getFocus(),
     });
 
   createEffect(() => {
@@ -152,6 +152,7 @@ export function Nav(): JSXElement {
         <NotificationBubble
           variant="fromCorner"
           show={showAlertsNotificationBubble()}
+          data-ui-element="notificationBubble"
         />
       </Button>
       <AnimeConditional
@@ -169,12 +170,11 @@ export function Nav(): JSXElement {
                 class={cn(
                   "h-full",
                   "hover:[&_.level]:bg-text hover:[&_svg]:fill-text",
+                  { "opacity-(--nav-focus-opacity)": getFocus() },
                 )}
                 href="/account"
                 router-link
-                dataset={{
-                  "data-nav-item": "account",
-                }}
+                data-nav-item="account"
               >
                 <User
                   user={snap()}

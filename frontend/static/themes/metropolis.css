@@ -1,4 +1,4 @@
-header #logo .bottom {
+[data-ui-element="logo"] h1 {
   color: #f4bc46;
 }
 

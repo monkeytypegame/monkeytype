@@ -70,6 +70,7 @@ export function User(props: Props): JSXElement {
             variant="atCorner"
             show={props.showNotificationBubble ?? false}
             class="m-0.5"
+            data-ui-element="notificationBubble"
           />
           <AnimeConditional
             exitBeforeEnter
@@ -119,9 +120,10 @@ export function User(props: Props): JSXElement {
           ref={(el) => (levelEl = el)}
           animation={flashAnimation()}
           class={cn(
-            "level rounded-half bg-(--unhoveredcolor) px-[0.5em] py-[0.1em] text-[0.7em] text-bg [--unhoveredcolor:var(--color-sub)]",
+            "rounded-half bg-(--unhoveredcolor) px-[0.5em] py-[0.1em] text-[0.7em] text-bg [--unhoveredcolor:var(--color-sub)]",
             { "transition-colors duration-125": !isAnimating() },
           )}
+          data-ui-element="userLevel"
         >
           {props.level}
         </Anime>
