@@ -371,6 +371,40 @@ async function updateResults(searchText: string): Promise<void> {
 
 let lengthSelect: SlimSelect | undefined = undefined;
 
+function initLengthSelect(): void {
+  lengthSelect = new SlimSelect({
+    select: "#quoteSearchModal .quoteLengthFilter",
+
+    settings: {
+      showSearch: false,
+      placeholderText: "filter by length",
+      contentLocation: modal.getModal().native,
+    },
+    data: [
+      {
+        text: "short",
+        value: "0",
+      },
+      {
+        text: "medium",
+        value: "1",
+      },
+      {
+        text: "long",
+        value: "2",
+      },
+      {
+        text: "thicc",
+        value: "3",
+      },
+      {
+        text: "custom",
+        value: "4",
+      },
+    ],
+  });
+}
+
 export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
@@ -395,37 +429,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         modalEl.qsr(".goToQuoteApprove").hide();
       }
 
-      lengthSelect = new SlimSelect({
-        select: "#quoteSearchModal .quoteLengthFilter",
-
-        settings: {
-          showSearch: false,
-          placeholderText: "filter by length",
-          contentLocation: modal.getModal().native,
-        },
-        data: [
-          {
-            text: "short",
-            value: "0",
-          },
-          {
-            text: "medium",
-            value: "1",
-          },
-          {
-            text: "long",
-            value: "2",
-          },
-          {
-            text: "thicc",
-            value: "3",
-          },
-          {
-            text: "custom",
-            value: "4",
-          },
-        ],
-      });
+      initLengthSelect();
     },
     afterAnimation: async () => {
       await updateTooltipDirection();
@@ -588,4 +592,9 @@ const modal = new AnimatedModal({
   dialogId: "quoteSearchModal",
   setup,
   cleanup,
+  showOptionsWhenInChain: {
+    beforeAnimation: async (): Promise<void> => {
+      initLengthSelect();
+    },
+  },
 });
