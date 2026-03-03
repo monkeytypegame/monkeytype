@@ -16,6 +16,7 @@ export function Logo(): JSXElement {
         "box-sizing": "content-box",
         "font-family": "Lexend Deca ,sans-serif",
       }}
+      data-ui-element="logo"
       onClick={() => {
         if (getActivePage() === "test") restart();
       }}
@@ -42,7 +43,7 @@ export function Logo(): JSXElement {
       <div class="hidden h-6 place-content-center text-[2rem] leading-0 sm:grid">
         <div
           class={cn(
-            "sublogo -mt-[1.65em] pl-[0.5em] text-[0.315em] leading-0 text-sub transition-colors duration-125",
+            "sublogo -mt-[1.65em] hidden pl-[0.5em] text-[0.315em] leading-0 text-sub transition-colors duration-125 lg:block",
             {
               "text-transparent": getFocus(),
             },

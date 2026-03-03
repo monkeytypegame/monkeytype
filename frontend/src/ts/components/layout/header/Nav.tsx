@@ -30,7 +30,10 @@ import { AccountXpBar } from "./AccountXpBar";
 
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
-  const buttonClass = cn("aspect-square");
+  const buttonClass = () =>
+    cn("aspect-square transition-opacity", {
+      "opacity-[var(--nav-focus-opacity)]": getFocus(),
+    });
 
   createEffect(() => {
     if (getSnapshot() === undefined) {
@@ -72,14 +75,7 @@ export function Nav(): JSXElement {
     serverConfig.data?.users.signUp ?? true;
 
   return (
-    <nav
-      class={cn(
-        "z-5 flex w-full items-center gap-1 transition-opacity md:gap-2",
-        {
-          "opacity-0": getFocus(),
-        },
-      )}
-    >
+    <nav class={cn("z-5 flex w-full items-center gap-1 md:gap-2")}>
       <Button
         type="text"
         fa={{
@@ -88,7 +84,7 @@ export function Nav(): JSXElement {
         }}
         router-link
         href="/"
-        class={buttonClass}
+        class={buttonClass()}
         dataset={{
           "data-nav-item": "test",
         }}
@@ -106,7 +102,7 @@ export function Nav(): JSXElement {
         dataset={{
           "data-nav-item": "leaderboards",
         }}
-        class={buttonClass}
+        class={buttonClass()}
         href="/leaderboards"
       />
       <Button
@@ -115,7 +111,7 @@ export function Nav(): JSXElement {
           icon: "fa-info",
           fixedWidth: true,
         }}
-        class={buttonClass}
+        class={buttonClass()}
         dataset={{
           "data-nav-item": "about",
         }}
@@ -131,7 +127,7 @@ export function Nav(): JSXElement {
           icon: "fa-cog",
           fixedWidth: true,
         }}
-        class={buttonClass}
+        class={buttonClass()}
         href="/settings"
         dataset={{
           "data-nav-item": "settings",
@@ -151,7 +147,7 @@ export function Nav(): JSXElement {
         onClick={() => {
           void showAlerts();
         }}
-        class={cn(buttonClass, "relative")}
+        class={cn(buttonClass(), "relative")}
       >
         <NotificationBubble
           variant="fromCorner"
@@ -214,7 +210,7 @@ export function Nav(): JSXElement {
                 fixedWidth: true,
               }}
               router-link
-              class={buttonClass}
+              class={buttonClass()}
             />
           </Show>
         }

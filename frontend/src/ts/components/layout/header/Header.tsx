@@ -1,6 +1,6 @@
 import { JSXElement } from "solid-js";
 
-import { getIsScreenshotting } from "../../../signals/core";
+import { getFocus, getIsScreenshotting } from "../../../signals/core";
 import { cn } from "../../../utils/cn";
 import { Logo } from "./Logo";
 import { Nav } from "./Nav";
@@ -11,6 +11,8 @@ export function Header(): JSXElement {
       class={cn("flex place-items-center gap-2", {
         "opacity-0": getIsScreenshotting(),
       })}
+      data-ui-element="header"
+      data-focus={getFocus() ? "" : undefined}
     >
       <Logo />
       <Nav />
