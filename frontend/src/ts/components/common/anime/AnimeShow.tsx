@@ -15,26 +15,27 @@ import { AnimePresence } from "./AnimePresence";
  *
  * @example
  * ```tsx
- * <AnimatedShow when={visible()}>
+ * <AnimeShow when={visible()}>
  *   <div>Fades in and out automatically</div>
- * </AnimatedShow>
+ * </AnimeShow>
  * ```
  *
  * @example
  * ```tsx
- * <AnimatedShow when={visible()} slide duration={400}>
+ * <AnimeShow when={visible()} slide duration={400}>
  *   <div>Slides open/closed</div>
- * </AnimatedShow>
+ * </AnimeShow>
  * ```
  */
-export function AnimatedShow(
+export function AnimeShow(
   props: ParentProps<{
     when: boolean;
     slide?: true;
     duration?: number;
+    class?: string;
   }>,
 ): JSXElement {
-  const duration = () => props.duration ?? 250;
+  const duration = () => props.duration ?? 125;
 
   return (
     <Show
@@ -46,6 +47,7 @@ export function AnimatedShow(
               initial={{ opacity: 0 } as Partial<AnimationParams>}
               animate={{ opacity: 1, duration: duration() } as AnimationParams}
               exit={{ opacity: 0, duration: duration() } as AnimationParams}
+              class={props.class}
             >
               {props.children}
             </Anime>
@@ -62,6 +64,7 @@ export function AnimatedShow(
             }
             exit={{ height: 0, duration: duration() } as AnimationParams}
             style={{ overflow: "hidden" }}
+            class={props.class}
           >
             {props.children}
           </Anime>
