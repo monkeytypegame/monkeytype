@@ -2,6 +2,13 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
+import { queryClient } from "../../../queries";
+import {
+  getContributorsQueryOptions,
+  getSpeedHistogramQueryOptions,
+  getSupportersQueryOptions,
+  getTypingStatsQueryOptions,
+} from "../../../queries/public";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { getAccountButtonSpinner } from "../../../signals/header";
@@ -99,6 +106,12 @@ export function Nav(): JSXElement {
         }}
         href="/about"
         router-link
+        onMouseEnter={() => {
+          void queryClient.prefetchQuery(getContributorsQueryOptions());
+          void queryClient.prefetchQuery(getSupportersQueryOptions());
+          void queryClient.prefetchQuery(getTypingStatsQueryOptions());
+          void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+        }}
       />
       <Button
         type="text"
