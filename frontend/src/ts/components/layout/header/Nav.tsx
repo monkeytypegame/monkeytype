@@ -8,13 +8,6 @@ import {
 } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
-import { queryClient } from "../../../queries";
-import {
-  getContributorsQueryOptions,
-  getSpeedHistogramQueryOptions,
-  getSupportersQueryOptions,
-  getTypingStatsQueryOptions,
-} from "../../../queries/public";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { getAccountButtonSpinner } from "../../../signals/header";
@@ -25,6 +18,7 @@ import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
+import { prefetchAboutPage } from "../../pages/AboutPage";
 import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
@@ -113,10 +107,7 @@ export function Nav(): JSXElement {
         href="/about"
         router-link
         onMouseEnter={() => {
-          void queryClient.prefetchQuery(getContributorsQueryOptions());
-          void queryClient.prefetchQuery(getSupportersQueryOptions());
-          void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-          void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+          prefetchAboutPage();
         }}
       />
       <Button

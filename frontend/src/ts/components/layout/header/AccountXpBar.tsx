@@ -302,7 +302,6 @@ export function AccountXpBar(): JSXElement {
           </div>
         </div>
       </AnimeShow>
-      {/* <Show when={getShowBreakdown() || getShowBar()}> */}
       <div class="absolute top-full right-0 mt-2 grid min-w-full justify-end rounded-b text-right text-sm backdrop-blur-sm">
         <AnimeShow when={getShowBar()}>
           <Anime
@@ -342,7 +341,6 @@ export function AccountXpBar(): JSXElement {
           </AnimePresence>
         </AnimeShow>
       </div>
-      {/* </Show> */}
     </>
   );
 }
