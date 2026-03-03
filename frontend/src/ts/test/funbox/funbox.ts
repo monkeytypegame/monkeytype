@@ -22,7 +22,7 @@ import {
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { qs } from "../../utils/dom";
+import { qs, qsa } from "../../utils/dom";
 import * as ConfigEvent from "../../observables/config-event";
 
 export function toggleScript(...params: string[]): void {
@@ -66,7 +66,7 @@ export async function clear(): Promise<boolean> {
       ?.join(" ") ?? "",
   );
 
-  qs(".funBoxTheme")?.remove();
+  qsa(".funBoxTheme").remove();
 
   qs("#wordsWrapper")?.show();
   MemoryTimer.reset();
@@ -232,7 +232,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  qs(".funBoxTheme")?.remove();
+  qsa(".funBoxTheme").remove();
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
     const css = document.createElement("link");
     css.classList.add("funBoxTheme");
