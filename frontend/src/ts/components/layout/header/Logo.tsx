@@ -50,13 +50,13 @@ export function Logo(): JSXElement {
         >
           {isDevEnvironment() ? "localhost" : "monkey see"}
         </div>
-        <div
+        <h1
           class={cn("-mt-[0.11em] text-text transition-colors duration-250", {
             "text-sub": getFocus(),
           })}
         >
           monkeytype
-        </div>
+        </h1>
       </div>
     </a>
   );
