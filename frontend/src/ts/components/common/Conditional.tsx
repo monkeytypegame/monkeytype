@@ -7,9 +7,9 @@ export function Conditional<T>(props: {
 }): JSXElement {
   return (
     <Show when={props.if} fallback={props.else}>
-      {(value) =>
-        typeof props.then === "function" ? props.then(value) : props.then
-      }
+      {typeof props.then === "function"
+        ? props.then
+        : () => props.then as JSXElement}
     </Show>
   );
 }
