@@ -5,7 +5,8 @@ export type ModalId =
   | "Contact"
   | "Support"
   | "Commandline"
-  | "DevOptions";
+  | "DevOptions"
+  | "Alerts";
 
 export type ModalVisibility = {
   visible: boolean;

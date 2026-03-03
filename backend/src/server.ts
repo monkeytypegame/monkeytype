@@ -81,6 +81,38 @@ async function bootServer(port: number): Promise<Server> {
     await connectionsDbSetup();
 
     recordServerVersion(version);
+
+    //TODO remove
+    /*
+    void addToInbox(
+      "8nhwgE5AdBZdfTuFiXW71p2HsQ73",
+      [
+        buildMonkeyMail({
+          subject: "Badge",
+          body: "Congratulations for reaching a 365 day streak! You have been awarded a special badge. Now, go touch some grass.",
+          rewards: [
+            {
+              type: "badge",
+              item: {
+                id: 14,
+              },
+            },
+          ],
+        }),
+        buildMonkeyMail({
+          subject: "Daily leaderboard placement",
+          body: `Congratulations Bob`,
+          rewards: [
+            {
+              type: "xp",
+              item: Math.round(1000),
+            },
+          ],
+        }),
+      ],
+      (await getCachedConfiguration()).users.inbox,
+    );
+    */
   } catch (error) {
     Logger.error("Failed to boot server");
     const message = getErrorMessage(error);
