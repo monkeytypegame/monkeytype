@@ -54,3 +54,37 @@ export const Center = meta.story({
     show: true,
   },
 });
+
+export const AllVariants = meta.story({
+  decorators: [
+    () => (
+      <div style={{ display: "flex", gap: "32px" }}>
+        {(["fromCorner", "atCorner", "center"] as const).map((variant) => (
+          <div
+            style={{
+              display: "flex",
+              "flex-direction": "column",
+              "align-items": "center",
+              gap: "8px",
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                width: "48px",
+                height: "48px",
+                "background-color": "var(--sub-alt-color)",
+                "border-radius": "8px",
+              }}
+            >
+              <NotificationBubble variant={variant} show />
+            </div>
+            <div style={{ "font-size": "12px", color: "var(--sub-color)" }}>
+              {variant}
+            </div>
+          </div>
+        ))}
+      </div>
+    ),
+  ],
+});

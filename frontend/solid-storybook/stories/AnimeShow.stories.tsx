@@ -1,5 +1,5 @@
 import preview from "#.storybook/preview";
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 
 import { AnimeShow } from "../../src/ts/components/common/anime/AnimeShow";
 
@@ -43,5 +43,51 @@ export const SlideToggle = meta.story({
         This content slides in and out
       </div>
     ),
+  },
+});
+
+export const InteractiveDemo = meta.story({
+  render: () => {
+    const [show, setShow] = createSignal(true);
+    return (
+      <div>
+        <button
+          style={{
+            padding: "8px 16px",
+            cursor: "pointer",
+            "background-color": "var(--sub-alt-color)",
+            color: "var(--text-color)",
+            border: "none",
+            "border-radius": "8px",
+            "margin-bottom": "16px",
+          }}
+          onClick={() => setShow((prev) => !prev)}
+        >
+          Toggle ({show() ? "visible" : "hidden"})
+        </button>
+        <div style={{ display: "flex", gap: "24px" }}>
+          <div>
+            <div style={{ "font-size": "12px", color: "var(--sub-color)" }}>
+              Fade
+            </div>
+            <AnimeShow when={show()}>
+              <div style={{ color: "var(--text-color)", padding: "16px" }}>
+                Fade content
+              </div>
+            </AnimeShow>
+          </div>
+          <div>
+            <div style={{ "font-size": "12px", color: "var(--sub-color)" }}>
+              Slide
+            </div>
+            <AnimeShow when={show()} slide duration={250}>
+              <div style={{ color: "var(--text-color)", padding: "16px" }}>
+                Slide content
+              </div>
+            </AnimeShow>
+          </div>
+        </div>
+      </div>
+    );
   },
 });
