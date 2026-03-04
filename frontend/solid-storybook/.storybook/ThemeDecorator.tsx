@@ -32,7 +32,5 @@ export function ThemeDecorator(
     theme.colorfulErrorExtra,
   );
 
-  document.body.classList.add("text-text");
-
   return Story();
 }
