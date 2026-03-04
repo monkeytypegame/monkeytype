@@ -11,7 +11,7 @@ const [snapshot, updateSnapshot] = createStore<{
   value: MiniSnapshot | undefined;
 }>({ value: undefined });
 
-export function setSnapshot(newValue: MiniSnapshot | undefined) {
+export function setSnapshot(newValue: MiniSnapshot | undefined): void {
   if (newValue === undefined) {
     updateSnapshot("value", undefined);
   } else {
@@ -22,7 +22,7 @@ export function setSnapshot(newValue: MiniSnapshot | undefined) {
   }
 }
 
-export function getSnapshot() {
+export function getSnapshot(): MiniSnapshot | undefined {
   return snapshot.value;
 }
 
