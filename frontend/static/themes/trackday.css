@@ -1,11 +1,11 @@
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: #e0513e;
 }
 
-nav > .textButton:nth-child(3) {
-  color: #cfcfcf;
+[data-nav-item="leaderboards"] {
+  color: #ccc500;
 }
 
-nav > .textButton:nth-child(2) {
-  color: #ccc500;
+[data-nav-item="about"] {
+  color: #cfcfcf;
 }
