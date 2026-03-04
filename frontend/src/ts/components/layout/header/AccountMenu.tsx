@@ -19,7 +19,10 @@ export function AccountMenu(props: Props): JSXElement {
   return (
     <AnimeShow when={props.show} class="absolute right-0 z-1000 w-auto text-xs">
       <div class="h-2"></div>
-      <div class="overflow-hidden rounded bg-sub-alt ring-6 ring-bg">
+      <div
+        class="overflow-hidden rounded bg-sub-alt ring-6 ring-bg"
+        data-ui-element="accountMenu"
+      >
         <Button
           text="User stats"
           class={buttonClass}

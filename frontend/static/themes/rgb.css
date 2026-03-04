@@ -103,3 +103,8 @@ header [data-ui-element="logo"] svg path,
 header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
   animation: rgb-fill 5s linear infinite;
 }
+
+[data-ui-element="accountMenu"] a:hover,
+[data-ui-element="accountMenu"] button:hover {
+  animation: none;
+}

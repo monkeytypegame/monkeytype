@@ -54,6 +54,11 @@ a:not(.button):hover {
   animation: fire 5s linear infinite;
 }
 
+[data-ui-element="accountMenu"] a:hover,
+[data-ui-element="accountMenu"] button:hover {
+  animation: none;
+}
+
 [data-ui-element="logo"]:hover svg {
   color: transparent;
   animation: fire 5s linear infinite;
