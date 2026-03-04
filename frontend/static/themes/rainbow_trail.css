@@ -1,4 +1,4 @@
-header #logo .text {
+header [data-ui-element="logo"] .text {
   background: linear-gradient(
     90deg,
     #60b6ce,
@@ -20,7 +20,7 @@ header #logo .text {
 }
 
 /* fix logo clipping */
-header #logo .icon {
+header [data-ui-element="logo"] .icon {
   padding-bottom: 0.05em;
 }
 nav {
@@ -32,7 +32,7 @@ header {
 }
 /*  */
 
-header #logo .top,
+header [data-ui-element="logo"] .top,
 .view-account .levelAndBar .level,
 [aria-label][data-balloon-pos]::after {
   -webkit-text-fill-color: initial;

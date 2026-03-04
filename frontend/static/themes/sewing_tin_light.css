@@ -6,7 +6,7 @@
   color: #c6915e;
 }
 
-header #logo .text {
+header [data-ui-element="logo"] .text {
   background-color: #ffffff; /* fallback */
   background: -webkit-linear-gradient(
     #2d2076,
@@ -25,7 +25,7 @@ header #logo .text {
 }
 
 /* fix logo clipping */
-header #logo .icon {
+header [data-ui-element="logo"] .icon {
   padding-bottom: 0.05em;
 }
 nav {
@@ -37,7 +37,7 @@ header {
 }
 /*  */
 
-header #logo .text .top {
+header [data-ui-element="logo"] .text .top {
   /* prevent it from being transparent */
   -webkit-text-fill-color: #385eca;
 }

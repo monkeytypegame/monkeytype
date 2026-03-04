@@ -98,6 +98,6 @@ a:not(.button):hover,
   --untyped-letter-animation: rgb 5s linear infinite;
 }
 
-header #logo path {
+header [data-ui-element="logo"] path {
   animation: rgb-fill 5s linear infinite;
 }

@@ -59,12 +59,12 @@ header:not(.focus) #logo .text {
   animation: phantom-glow 3s infinite alternate;
 }
 
-header #logo .text .top {
+header [data-ui-element="logo"] .text .top {
   color: inherit;
   animation: none;
 }
 
-header #logo .icon {
+header [data-ui-element="logo"] .icon {
   color: var(--main-color) !important;
 }
 
