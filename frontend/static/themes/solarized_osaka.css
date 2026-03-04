@@ -3,14 +3,6 @@
   --untyped-letter-color: #586e75;
 }
 
-header #logo {
-  color: var(--text-color);
-}
-
-header #logo .icon {
-  color: var(--text-color) !important;
-}
-
 kbd {
   color: var(--text-color);
   background-color: var(--sub-alt-color);
