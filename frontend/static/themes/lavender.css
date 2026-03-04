@@ -1,12 +1,9 @@
 [data-nav-item] {
   border-radius: 10rem !important;
-  background: var(--text-color);
-  color: var(--main-color);
-}
-
-[data-nav-item]:hover {
-  color: var(--bg-color);
-  background: var(--text-color);
+  --themable-button-bg: var(--text-color);
+  --themable-button-text: var(--main-color);
+  --themable-button-hover-bg: var(--text-color);
+  --themable-button-hover-text: var(--bg-color);
 }
 
 [data-nav-item="alerts"],
@@ -29,4 +26,14 @@ body.crtmode [data-nav-item] {
     3px 0 1px var(--crt-text-color-glow),
     -3px 0 var(--crt-text-color-glow),
     0 0 3px;
+}
+
+header[data-focused] {
+  [data-nav-item="test"],
+  [data-nav-item="leaderboards"],
+  [data-nav-item="about"],
+  [data-nav-item="settings"] {
+    /* --themable-button-bg: var(--sub-color); */
+    --nav-focus-opacity: 0.5;
+  }
 }

@@ -24,6 +24,9 @@ header[data-focused] {
     background: var(--sub-color);
     transform: rotateY(180deg);
   }
+  & [data-nav-item="account"] {
+    --themable-button-bg: var(--sub-color);
+  }
 }
 
 #words .incorrect.extra {

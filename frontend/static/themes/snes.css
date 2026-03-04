@@ -65,6 +65,16 @@ header[data-focused] nav:after {
   }
 }
 
+header[data-focused] {
+  [data-nav-item="test"],
+  [data-nav-item="leaderboards"],
+  [data-nav-item="about"],
+  [data-nav-item="settings"] {
+    --themable-button-bg: var(--sub-alt-color);
+    --nav-focus-opacity: 0.5;
+  }
+}
+
 body.crtmode {
   & [data-nav-item="test"] {
     box-shadow:
