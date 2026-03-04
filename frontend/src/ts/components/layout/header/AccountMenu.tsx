@@ -2,7 +2,7 @@ import { JSXElement, Show } from "solid-js";
 
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
-import { getSnapshot, MiniSnapshot } from "../../../stores/snapshot";
+import { getSnapshot } from "../../../stores/snapshot";
 import { AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
@@ -58,7 +58,7 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-globe-americas",
             fixedWidth: true,
           }}
-          href={"/profile/" + (getSnapshot() as MiniSnapshot).name}
+          href={"/profile/" + (getSnapshot()?.name ?? "")}
           router-link
         />
         <Button

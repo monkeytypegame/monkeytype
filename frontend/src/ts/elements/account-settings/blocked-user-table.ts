@@ -96,6 +96,7 @@ element.onChild("click", "table button.delete", async (e) => {
 
       // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
       delete snapshot.connections[uid];
+      DB.setSnapshot(snapshot);
     }
   }
 });
