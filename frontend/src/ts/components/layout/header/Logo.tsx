@@ -24,7 +24,7 @@ export function Logo(): JSXElement {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="-680 -1030 300 180"
-        class={cn("fill-main transition-colors", {
+        class={cn("fill-[currentColor] transition-colors", {
           "fill-current": getFocus(),
         })}
       >
