@@ -1,5 +1,5 @@
 import { AnimationParams } from "animejs";
-import { For, JSXElement, onMount } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
 import {
   getFocus,
@@ -8,13 +8,11 @@ import {
 } from "../../../signals/core";
 import {
   Notification,
-  pushNotification,
   getNotifications,
   removeNotification,
   clearAllNotifications,
 } from "../../../stores/notifications";
 import { cn } from "../../../utils/cn";
-import { isDevEnvironment } from "../../../utils/misc";
 import { Anime } from "../../common/anime/Anime";
 import { AnimePresence } from "../../common/anime/AnimePresence";
 import { AnimeShow } from "../../common/anime/AnimeShow";
@@ -116,29 +114,6 @@ export function Notifications(): JSXElement {
       (n) => n.duration === 0 && (!focus || n.important),
     ).length;
   };
-
-  onMount(() => {
-    if (!isDevEnvironment()) return;
-    clearAllNotifications();
-    pushNotification({
-      message: "This is a notice notification (debug)",
-      level: 0,
-      important: true,
-      duration: 0,
-    });
-    pushNotification({
-      message: "This is a success notification (debug)",
-      level: 1,
-      important: false,
-      duration: 0,
-    });
-    pushNotification({
-      message: "This is an error notification (debug)",
-      level: -1,
-      important: false,
-      duration: 0,
-    });
-  });
 
   return (
     <div
