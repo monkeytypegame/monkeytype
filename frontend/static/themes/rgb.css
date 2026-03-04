@@ -61,10 +61,9 @@
   }
 }
 
-.button.discord::after,
-.pageSettings .section .buttons .button.active,
+.pageSettings .section .buttons button.active,
 .pageSettings .section.languages .buttons .language.active,
-.pageAccount .group.filterButtons .buttons .button.active {
+.pageAccount .group.filterButtons .buttons button.active {
   animation: rgb-bg 5s linear infinite;
 }
 
@@ -72,20 +71,22 @@
   animation: rgb-bg 5s linear infinite !important;
 }
 
-header.focus .button.discord::after,
-header .button.discord.dotHidden::after {
-  animation-name: none !important;
+header[data-focused] {
+  & [data-ui-element="logoSubtext"] {
+    animation: none;
+  }
+  & [data-ui-element="logo"] svg path {
+    animation: none;
+  }
 }
 
-#logo .bottom,
-header .config .group .buttons .textButton.active,
+[data-ui-element="logoSubtext"],
 #result .stats .group .bottom,
 [data-nav-item]:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
-a:not(.button):hover,
-#words.flipped .word {
+footer button:hover,
+#words.flipped .word,
+footer a:hover,
+a:not(.button):not([data-ui-variant="button"]):hover {
   animation: rgb 5s linear infinite;
 }
 
@@ -98,6 +99,12 @@ a:not(.button):hover,
   --untyped-letter-animation: rgb 5s linear infinite;
 }
 
-header #logo path {
+header [data-ui-element="logo"] svg path,
+header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
   animation: rgb-fill 5s linear infinite;
+}
+
+[data-ui-element="accountMenu"] a:hover,
+[data-ui-element="accountMenu"] button:hover {
+  animation: none;
 }

@@ -24,7 +24,7 @@ export function SupportModal(): JSXElement {
       </div>
       <div class="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
         <Button
-          type="button"
+          variant="button"
           onClick={() => {
             setCommandlineSubgroup("ads");
             showModal("Commandline");
@@ -38,7 +38,7 @@ export function SupportModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="https://ko-fi.com/monkeytype"
           fa={{
             icon: "fa-donate",
@@ -49,7 +49,7 @@ export function SupportModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="https://www.patreon.com/monkeytype"
           fa={{
             variant: "brand",
@@ -61,7 +61,7 @@ export function SupportModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="https://monkeytype.store"
           fa={{
             icon: "fa-tshirt",

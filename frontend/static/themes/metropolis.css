@@ -1,4 +1,4 @@
-header #logo .bottom {
+[data-ui-element="logo"] h1 {
   color: #f4bc46;
 }
 
@@ -6,5 +6,5 @@ header #logo .bottom {
 [data-nav-item="leaderboards"],
 [data-nav-item="about"],
 [data-nav-item="settings"] {
-  color: #d44729;
+  --themable-button-text: #d44729;
 }
