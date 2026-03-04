@@ -3,10 +3,12 @@ import { createStore } from "solid-js/store";
 import * as Misc from "../utils/misc";
 import { CommonResponsesType } from "@monkeytype/contracts/util/api";
 
+export type NotificationLevel = -1 | 0 | 1;
+
 export type Notification = {
   id: number;
   message: string;
-  level: number;
+  level: NotificationLevel;
   important: boolean;
   duration: number;
   customTitle?: string;
@@ -18,7 +20,7 @@ export type NotificationHistoryEntry = {
   id: string;
   title: string;
   message: string;
-  level: number;
+  level: NotificationLevel;
   details?: string | object;
 };
 
@@ -80,7 +82,7 @@ export type AddNotificationOptions = {
 
 export function addNotification(
   message: string,
-  level = 0,
+  level: NotificationLevel = 0,
   options: AddNotificationOptions = {},
 ): void {
   let details = options.details;

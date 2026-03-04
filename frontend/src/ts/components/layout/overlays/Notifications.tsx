@@ -11,7 +11,7 @@ import {
   pushNotification,
   getNotifications,
   removeNotification,
-  clearAllNotifications as clearAll,
+  clearAllNotifications,
 } from "../../../stores/notifications";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/misc";
@@ -55,8 +55,7 @@ const exitAnimation = {
 
 function NotificationItem(props: { notification: Notification }): JSXElement {
   const config = (): (typeof levelConfig)[keyof typeof levelConfig] =>
-    levelConfig[props.notification.level as keyof typeof levelConfig] ??
-    levelConfig[0];
+    levelConfig[props.notification.level] ?? levelConfig[0];
 
   const iconProps = (): FaProps =>
     props.notification.customIcon !== undefined
@@ -82,9 +81,8 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
         animate={enterAnimate}
         exit={exitAnimation}
         class={cn(
-          "mb-4 cursor-pointer overflow-hidden rounded-xl border-2 border-solid backdrop-blur-[15px] select-none",
-          "text-white relative grid",
-          "shadow-[0px_8px_24px_0px_rgba(0,0,0,0.08)]",
+          "mb-4 cursor-pointer overflow-hidden rounded-double border-2 border-solid backdrop-blur-[15px] select-none",
+          "relative grid text-[white]",
           "transition-[background] duration-125",
           "border-(--notif-border) bg-(--notif-bg) hover:bg-(--notif-bg-hover)",
           props.notification.important && "important",
@@ -99,8 +97,8 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
           class="p-4 text-sm"
           onClick={() => removeNotification(props.notification.id)}
         >
-          <div class="text-white/60 pb-2 font-medium">
-            <Fa {...iconProps()} class="text-white/60 mr-2 inline" />
+          <div class="pb-2 opacity-75">
+            <Fa {...iconProps()} class="mr-2 inline" />
             {title()}
           </div>
           {/* oxlint-disable-next-line solid/no-innerhtml -- notification message contains escaped HTML */}
@@ -112,11 +110,16 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
 }
 
 export function Notifications(): JSXElement {
-  const stickyCount = (): number =>
-    getNotifications().filter((n) => n.duration === 0).length;
+  const stickyCount = (): number => {
+    const focus = getFocus();
+    return getNotifications().filter(
+      (n) => n.duration === 0 && (!focus || n.important),
+    ).length;
+  };
 
   onMount(() => {
     if (!isDevEnvironment()) return;
+    clearAllNotifications();
     pushNotification({
       message: "This is a notice notification (debug)",
       level: 0,
@@ -149,7 +152,7 @@ export function Notifications(): JSXElement {
         <button
           type="button"
           class="text-white mb-4 w-full overflow-hidden text-xs"
-          onClick={() => clearAll()}
+          onClick={() => clearAllNotifications()}
         >
           <Fa icon="fa-times" class="mr-1" />
           Clear all

@@ -52,7 +52,7 @@ export function DevOptionsModal(): JSXElement {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
         setLocalMediaQueryDebugLevel(next);
-        addNotification(`Setting media query debug level to ${next}`, 5);
+        addNotification(`Setting media query debug level to ${next}`, 0);
         setMediaQueryDebugLevel(next);
       },
     },
