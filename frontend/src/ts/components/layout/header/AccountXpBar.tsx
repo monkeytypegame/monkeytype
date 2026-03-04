@@ -287,60 +287,80 @@ export function AccountXpBar(): JSXElement {
     }
   };
 
+  const XPBar = () => (
+    <AnimeShow when={getShowBar()}>
+      <div class="absolute top-full right-0 mt-1 w-full">
+        <div class="text-[0.5em]">
+          <Bar
+            fill="main"
+            bg="sub-alt"
+            percent={getBarPercent()}
+            animationDuration={getBarAnimationDuration()}
+            animationEase={getBarAnimationEase()}
+          />
+        </div>
+      </div>
+    </AnimeShow>
+  );
+
+  const Total = () => (
+    <AnimeShow when={getShowBar()}>
+      <Anime
+        animation={flashAnimation()}
+        class="w-max justify-self-end p-2 text-base font-bold text-main"
+      >
+        +{getTotal()}
+      </Anime>
+    </AnimeShow>
+  );
+
+  const Breakdown = () => (
+    <AnimeShow when={getShowBreakdown()} class="mb-2">
+      <AnimePresence mode="list">
+        <For each={getBreakdownItems()} fallback={null}>
+          {(item) => (
+            <Anime
+              initial={{ opacity: 0, marginRight: 10 }}
+              animate={{ opacity: 1, marginRight: 0, duration: 125 }}
+              exit={{ opacity: 0, marginRight: 10, duration: 125 }}
+              class="flex justify-end gap-4 px-2 text-xs"
+            >
+              <span class="w-max text-text">{item.label}</span>
+              <span
+                class={
+                  typeof item.amount === "number" && item.amount < 0
+                    ? "text-error"
+                    : "text-main"
+                }
+              >
+                {typeof item.amount === "string"
+                  ? item.amount
+                  : item.amount >= 0
+                    ? `+${item.amount}`
+                    : `${item.amount}`}
+              </span>
+            </Anime>
+          )}
+        </For>
+      </AnimePresence>
+    </AnimeShow>
+  );
+
+  const BlurredBackground = (props: {
+    children: JSXElement | JSXElement[];
+  }) => (
+    <div class="absolute top-full right-0 mt-2 grid min-w-full justify-end rounded-b text-right text-sm backdrop-blur-sm">
+      {props.children}
+    </div>
+  );
+
   return (
     <>
-      <AnimeShow when={getShowBar()}>
-        <div class="absolute top-full right-0 mt-1 w-full">
-          <div class="text-[0.5em]">
-            <Bar
-              fill="main"
-              bg="sub-alt"
-              percent={getBarPercent()}
-              animationDuration={getBarAnimationDuration()}
-              animationEase={getBarAnimationEase()}
-            />
-          </div>
-        </div>
-      </AnimeShow>
-      <div class="absolute top-full right-0 mt-2 grid min-w-full justify-end rounded-b text-right text-sm backdrop-blur-sm">
-        <AnimeShow when={getShowBar()}>
-          <Anime
-            animation={flashAnimation()}
-            class="w-max justify-self-end p-2 text-base font-bold text-main"
-          >
-            +{getTotal()}
-          </Anime>
-        </AnimeShow>
-        <AnimeShow when={getShowBreakdown()} class="mb-2">
-          <AnimePresence mode="list">
-            <For each={getBreakdownItems()} fallback={null}>
-              {(item) => (
-                <Anime
-                  initial={{ opacity: 0, marginRight: 10 }}
-                  animate={{ opacity: 1, marginRight: 0, duration: 125 }}
-                  exit={{ opacity: 0, marginRight: 10, duration: 125 }}
-                  class="flex justify-end gap-4 px-2 text-xs"
-                >
-                  <span class="w-max text-text">{item.label}</span>
-                  <span
-                    class={
-                      typeof item.amount === "number" && item.amount < 0
-                        ? "text-error"
-                        : "text-main"
-                    }
-                  >
-                    {typeof item.amount === "string"
-                      ? item.amount
-                      : item.amount >= 0
-                        ? `+${item.amount}`
-                        : `${item.amount}`}
-                  </span>
-                </Anime>
-              )}
-            </For>
-          </AnimePresence>
-        </AnimeShow>
-      </div>
+      <XPBar />
+      <BlurredBackground>
+        <Total />
+        <Breakdown />
+      </BlurredBackground>
     </>
   );
 }
