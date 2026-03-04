@@ -6,7 +6,7 @@ header[data-focused] nav:after {
 
 [data-nav-item] {
   border-radius: 10rem !important;
-  color: var(--bg-color);
+  --themable-button-text: var(--bg-color);
 }
 
 [data-nav-item]:hover {
@@ -30,7 +30,6 @@ header[data-focused] nav:after {
 }
 
 [data-nav-item="alerts"],
-[data-nav-item="account"],
 [data-nav-item="login"] {
   background: #9f8ad4;
 }
@@ -47,11 +46,23 @@ header[data-focused] nav:after {
   }
 }
 
-[data-ui-element="userLevel"] {
-  --themable-flash-color: var(--text-color);
-  --themable-bg-color: var(--bg-color);
-  --themable-text-color: var(--sub-color);
-  --themable-hover-bg-color: var(--bg-color);
+[data-nav-item="account"] {
+  --themable-button-text: var(--bg-color);
+  --themable-button-bg: var(--sub-color);
+  --themable-button-hover-bg: color-mix(
+    in srgb,
+    var(--sub-color) 75%,
+    white 15%
+  );
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    white 15%
+  );
+  [data-ui-element="userLevel"] {
+    background: var(--themable-button-text);
+    color: var(--themable-button-bg);
+  }
 }
 
 body.crtmode {

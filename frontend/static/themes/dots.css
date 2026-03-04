@@ -1,7 +1,7 @@
 [data-nav-item] {
   border-radius: 10rem !important;
-  color: #121520;
-  transition: 0.5s;
+  --themable-button-text: #121520;
+  --themable-button-hover-text: var(--bg-color);
 }
 
 [data-nav-item]:hover {
@@ -27,17 +27,16 @@
 [data-nav-item="alerts"],
 [data-nav-item="login"],
 [data-nav-item="account"] {
-  color: var(--sub-color);
-}
-
-[data-nav-item="alerts"]:hover,
-[data-nav-item="login"]:hover,
-[data-nav-item="account"]:hover {
-  color: var(--text-color);
+  --themable-button-text: #393c73;
+  --themable-button-hover-text: var(--text-color);
 }
 
 [data-nav-item="account"] .xpBar {
   bottom: -0.75rem !important;
+}
+
+[data-nav-item="account"]:hover svg {
+  /* color: var(--text-color); */
 }
 
 header[data-focused] {

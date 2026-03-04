@@ -54,6 +54,11 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   animation: grape 5s linear infinite;
 }
 
+[data-nav-item="account"]:hover svg {
+  color: transparent;
+  animation: grape 5s linear infinite;
+}
+
 #words {
   --correct-letter-animation: grape 5s linear infinite;
 }

@@ -33,6 +33,11 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   animation: shadow-repeat 3s linear infinite forwards;
 }
 
+[data-nav-item="account"]:hover svg {
+  color: currentColor;
+  animation: shadow-repeat 3s linear infinite forwards;
+}
+
 #typingTest .word letter.correct,
 #typingTest #words.highlight-word .word.typed letter.correct,
 #typingTest #words.highlight-next-word .word.typed letter.correct,

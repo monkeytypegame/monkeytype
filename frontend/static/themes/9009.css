@@ -18,9 +18,20 @@ kbd {
 }
 
 [data-nav-item="alerts"] {
-  color: var(--color-sub-alt);
+  color: var(--sub-alt-color);
   &:hover {
-    color: color-mix(in srgb, var(--color-sub-alt) 85%, black 15%);
+    color: color-mix(in srgb, var(--sub-alt-color) 85%, black 15%);
+  }
+}
+
+[data-nav-item="account"] {
+  --themable-button-text: var(--main-color);
+  &:hover {
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
   }
 }
 

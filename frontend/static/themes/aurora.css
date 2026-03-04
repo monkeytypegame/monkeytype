@@ -53,6 +53,11 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   animation: aurora 5s linear infinite;
 }
 
+[data-nav-item="account"]:hover svg {
+  color: transparent;
+  animation: aurora 5s linear infinite;
+}
+
 #words {
   --correct-letter-animation: aurora 5s linear infinite;
 }

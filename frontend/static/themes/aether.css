@@ -29,8 +29,12 @@
 [data-nav-item="alerts"],
 [data-nav-item="account"],
 [data-nav-item="login"] {
-  color: #393c73;
+  --themable-button-text: #393c73;
   &:hover {
-    color: color-mix(in srgb, #393c73 75%, white 25%);
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
   }
 }

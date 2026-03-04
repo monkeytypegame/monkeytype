@@ -1,6 +1,10 @@
 [data-nav-item] {
-  color: #76bb40;
+  --themable-button-text: #76bb40;
   &:hover {
-    color: var(--main-color);
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
   }
 }
