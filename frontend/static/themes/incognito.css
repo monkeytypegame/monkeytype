@@ -1,4 +1,4 @@
-[data-ui-element="logo"] h1 {
+header [data-ui-element="logoText"] {
   background: linear-gradient(
     90deg,
     var(--text-color) 64%,
@@ -7,20 +7,13 @@
   -webkit-background-clip: text;
   color: transparent;
   padding-bottom: 0.1em;
+  line-height: 1;
 }
 
-[data-ui-element="logo"] svg path {
-  fill: var(--text-color);
+[data-ui-element="logoSubtext"] {
+  margin-top: 0em;
 }
 
-/* fix logo clipping */
-[data-ui-element="logo"] svg {
-  padding-bottom: 0.05em;
+header [data-ui-element="logo"] svg {
+  color: var(--text-color);
 }
-nav {
-  padding-bottom: 0.2em;
-}
-header {
-  margin-bottom: -0.1em;
-}
-/*  */
