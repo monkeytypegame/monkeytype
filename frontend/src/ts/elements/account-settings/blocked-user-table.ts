@@ -5,7 +5,6 @@ import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
 import { getReceiverUid } from "../../pages/friends";
 import * as DB from "../../db";
-import { updateFriendRequestsIndicator } from "../account-button";
 import { qsr } from "../../utils/dom";
 
 let blockedUsers: Connection[] = [];
@@ -97,7 +96,7 @@ element.onChild("click", "table button.delete", async (e) => {
 
       // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
       delete snapshot.connections[uid];
-      updateFriendRequestsIndicator();
+      DB.setSnapshot(snapshot);
     }
   }
 });

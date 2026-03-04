@@ -1,9 +1,9 @@
-import { createStore, reconcile } from "solid-js/store";
+import { createStore, reconcile, unwrap } from "solid-js/store";
 import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
 import { createSignal } from "solid-js";
 import { Mode } from "@monkeytype/schemas/shared";
 
-type MiniSnapshot = Omit<
+export type MiniSnapshot = Omit<
   Snapshot,
   "results" | "tags" | "presets" | "filterPresets"
 >;
@@ -17,7 +17,7 @@ export function setSnapshot(newValue: MiniSnapshot | undefined): void {
   } else {
     updateSnapshot(
       "value",
-      reconcile(structuredClone(newValue), { merge: true }),
+      reconcile(structuredClone(unwrap(newValue)), { merge: true }),
     );
   }
 }

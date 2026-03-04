@@ -1,16 +1,16 @@
-nav {
-  gap: 0.5rem;
-}
-
-header.focus [data-nav-item],
-header.focus nav:before,
-header.focus nav:after {
+header[data-focused] [data-nav-item],
+header[data-focused] nav:before,
+header[data-focused] nav:after {
   background: #99989f;
 }
 
 [data-nav-item] {
   border-radius: 10rem !important;
-  color: var(--bg-color);
+  --themable-button-text: var(--bg-color);
+}
+
+[data-nav-item]:hover {
+  filter: brightness(1.25);
 }
 
 [data-nav-item="test"] {
@@ -30,63 +30,93 @@ header.focus nav:after {
 }
 
 [data-nav-item="alerts"],
-[data-nav-item="account"],
 [data-nav-item="login"] {
   background: #9f8ad4;
 }
 
-nav .notificationBubble {
-  box-shadow: none;
-  padding-right: 0.2em;
-  right: 0.85em;
-  left: 2.75em;
+[data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg {
+  fill: var(--bg-color);
 }
 
-nav .level {
-  background: var(--color-bg);
-  color: var(--main-color);
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
 }
 
-body.crtmode [data-nav-item="test"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #553d94 20%, transparent),
-    -3px 0 color-mix(in srgb, #553d94 30%, transparent),
-    0 0 3px;
+[data-nav-item="account"] {
+  --themable-button-text: var(--bg-color);
+  --themable-button-bg: var(--sub-color);
+  --themable-button-hover-bg: color-mix(
+    in srgb,
+    var(--sub-color) 75%,
+    white 15%
+  );
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    white 15%
+  );
+  [data-ui-element="userLevel"] {
+    background: var(--themable-button-text);
+    color: var(--themable-button-bg);
+  }
 }
 
-body.crtmode [data-nav-item="leaderboards"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #6851a4 20%, transparent),
-    -3px 0 color-mix(in srgb, #6851a4 30%, transparent),
-    0 0 3px;
+header[data-focused] {
+  [data-nav-item="test"],
+  [data-nav-item="leaderboards"],
+  [data-nav-item="about"],
+  [data-nav-item="settings"] {
+    --themable-button-bg: var(--sub-alt-color);
+    --nav-focus-opacity: 0.5;
+  }
 }
 
-body.crtmode [data-nav-item="about"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #7962b3 20%, transparent),
-    -3px 0 color-mix(in srgb, #7962b3 30%, transparent),
-    0 0 3px;
-}
+body.crtmode {
+  & [data-nav-item="test"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #553d94 20%, transparent),
+      -3px 0 color-mix(in srgb, #553d94 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="settings"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #8c76c3 20%, transparent),
-    -3px 0 color-mix(in srgb, #8c76c3 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="leaderboards"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #6851a4 20%, transparent),
+      -3px 0 color-mix(in srgb, #6851a4 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="alerts"],
-body.crtmode [data-nav-item="account"],
-body.crtmode [data-nav-item="login"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
-    -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="about"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #7962b3 20%, transparent),
+      -3px 0 color-mix(in srgb, #7962b3 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode header.focus [data-nav-item] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
-    -3px 0 color-mix(in srgb, #99989f 30%, transparent),
-    0 0 3px;
+  & [data-nav-item="settings"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #8c76c3 20%, transparent),
+      -3px 0 color-mix(in srgb, #8c76c3 30%, transparent),
+      0 0 3px;
+  }
+
+  & [data-nav-item="alerts"],
+  & [data-nav-item="account"],
+  & [data-nav-item="login"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
+      -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
+      0 0 3px;
+  }
+
+  & header[data-focused] [data-nav-item] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
+      -3px 0 color-mix(in srgb, #99989f 30%, transparent),
+      0 0 3px;
+  }
 }

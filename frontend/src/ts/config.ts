@@ -1,7 +1,6 @@
 import * as Notifications from "./elements/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
-import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
   canSetConfigWithCurrentFunboxes,
@@ -23,6 +22,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { setAccountButtonSpinner } from "./signals/header";
 import { deleteConfig, saveConfig } from "./ape/config";
 import Ape from "./ape";
 import { SnapshotInitError } from "./db";
@@ -48,9 +48,9 @@ let config: Config = {
 let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
-    AccountButton.loading(true);
-    void saveConfig(configToSend).then(() => {
-      AccountButton.loading(false);
+    setAccountButtonSpinner(true);
+    void saveConfig(configToSend).finally(() => {
+      setAccountButtonSpinner(false);
     });
   }
   configToSend = {} as Config;
@@ -74,9 +74,10 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   configLS.set(config);
   if (!noDbCheck) {
-    AccountButton.loading(true);
-    void saveConfig(config);
-    AccountButton.loading(false);
+    setAccountButtonSpinner(true);
+    void saveConfig(config).finally(() => {
+      setAccountButtonSpinner(false);
+    });
   }
 }
 

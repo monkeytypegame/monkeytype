@@ -1,18 +1,13 @@
-import { createSignal } from "solid-js";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 
 type LoaderSignal = null | {
   visible: boolean;
   instant?: boolean;
 };
 
-const [getLoaderBarSignal, set] = createSignal<LoaderSignal>(null);
-
-export function showLoaderBar(instant = false): void {
-  set({ visible: true, instant });
-}
-
-export function hideLoaderBar(): void {
-  set({ visible: false });
-}
-
-export { getLoaderBarSignal };
+export const [getLoaderBarSignal, { showLoaderBar, hideLoaderBar }] =
+  createSignalWithSetters<LoaderSignal>(null)({
+    showLoaderBar: (set, instant: boolean = false) =>
+      set({ visible: true, instant }),
+    hideLoaderBar: (set) => set({ visible: false }),
+  });

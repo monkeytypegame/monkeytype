@@ -26,6 +26,7 @@ import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { AutoShrink } from "../../common/AutoShrink";
+import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
@@ -319,9 +320,7 @@ function AvatarAndName(props: {
 
 function LevelAndBar(props: { xp?: number }): JSXElement {
   const xpDetails = () => getXpDetails(props.xp ?? 0);
-  const bar = () =>
-    ((xpDetails().levelCurrentXp / xpDetails().levelMaxXp) * 100).toFixed(2) +
-    "%";
+  const bar = () => xpDetails().levelProgressPercent;
 
   return (
     <div class="col-span-2 flex w-full items-center gap-2">
@@ -332,20 +331,7 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
       >
         {xpDetails().level}
       </div>
-      <div
-        class="h-2 flex-1 rounded bg-bg"
-        data-balloon-pos="up"
-        aria-label={bar()}
-      >
-        <div
-          class="h-2 rounded bg-main"
-          style={{
-            width: bar(),
-          }}
-        >
-          &nbsp;
-        </div>
-      </div>
+      <Bar percent={bar()} fill="main" bg="bg" showPercentageOnHover />
       <div
         class="shrink-0 text-xs"
         data-balloon-pos="up"
@@ -486,7 +472,7 @@ function Socials(props: {
         >
           <Show when={props.socials?.github}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-github", variant: "brand", fixedWidth: true }}
               href={`https://github.com/${props.socials?.github}`}
               ariaLabel={{ text: props.socials?.github ?? "", position: "up" }}
@@ -494,7 +480,7 @@ function Socials(props: {
           </Show>
           <Show when={props.socials?.twitter}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-twitter", variant: "brand", fixedWidth: true }}
               href={`https://x.com/${props.socials?.twitter}`}
               ariaLabel={{ text: props.socials?.twitter ?? "", position: "up" }}
@@ -502,7 +488,7 @@ function Socials(props: {
           </Show>
           <Show when={props.socials?.website}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-globe", fixedWidth: true }}
               href={props.socials?.website ?? ""}
               ariaLabel={{ text: props.socials?.website ?? "", position: "up" }}

@@ -36,6 +36,8 @@ import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
 } from "./stores/snapshot";
+import { XpBreakdown } from "@monkeytype/schemas/results";
+import { setXpBarData } from "./signals/header";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -250,6 +252,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.connections = convertConnections(connectionsData);
 
     dbSnapshot = snap;
+
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();
@@ -955,6 +958,7 @@ export async function updateLbMemory<M extends Mode>(
 
 export type SaveLocalResultData = {
   xp?: number;
+  xpBreakdown?: XpBreakdown;
   streak?: number;
   result?: SnapshotResult<Mode>;
   isPb?: boolean;
@@ -1020,9 +1024,16 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   setSnapshot(snapshot, {
     dispatchEvent: false,
   });
+  if (data.xp !== undefined) {
+    setXpBarData({
+      addedXp: data.xp,
+      resultingXp: snapshot.xp,
+      breakdown: data.xpBreakdown,
+    });
+  }
 }
 
-export function addXp(xp: number): void {
+export function addXp(xp: number, breakdown?: XpBreakdown): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -1030,6 +1041,11 @@ export function addXp(xp: number): void {
   snapshot.xp += xp;
   setSnapshot(snapshot, {
     dispatchEvent: false,
+  });
+  setXpBarData({
+    addedXp: xp,
+    resultingXp: snapshot.xp,
+    breakdown: breakdown,
   });
 }
 
