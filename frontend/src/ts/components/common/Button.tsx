@@ -86,7 +86,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   return (
     <Conditional
-      if={isAnchor}
+      if={isAnchor()}
       then={
         <a
           class={getClasses()}
