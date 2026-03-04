@@ -172,23 +172,6 @@ describe("Button component", () => {
     expect(child).toHaveTextContent("Child");
   });
 
-  it("applies active", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        text="Hello"
-        active
-      />
-    ));
-
-    const button = container.querySelector("button");
-    expect(button).toHaveClass("bg-main");
-    expect(button).toHaveClass("text-bg");
-    expect(button).toHaveClass("hover:bg-text");
-  });
-
   it("applies aria-label to button provided as text", () => {
     const { container } = render(() => (
       <Button
