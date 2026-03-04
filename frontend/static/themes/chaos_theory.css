@@ -116,12 +116,17 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
 
 [data-ui-element="userLevel"] {
   --themable-flash-color: var(--text-color);
-  --themable-bg-color: var(--main-color);
-  --themable-text-color: var(--bg-color);
+  --themable-bg-color: var(--bg-color);
+  --themable-text-color: var(--main-color);
+  --themable-hover-bg-color: var(--bg-color);
 }
 
 [data-nav-item="login"] {
   background: #ab92e1;
+}
+
+[data-nav-item="account"] svg {
+  fill: var(--bg-color);
 }
 
 body.crtmode [data-nav-item="test"] {
