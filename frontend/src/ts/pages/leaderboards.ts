@@ -7,7 +7,7 @@ import {
 } from "@monkeytype/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import Format from "../utils/format";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as DB from "../db";
@@ -360,7 +360,7 @@ async function requestData(update = false): Promise<void> {
       state.error = "No leaderboard found";
     } else {
       state.error = "Something went wrong";
-      Notifications.add(
+      addNotification(
         "Failed to get leaderboard: " + dataResponse.body.message,
         -1,
       );
@@ -375,7 +375,7 @@ async function requestData(update = false): Promise<void> {
     } else {
       state.userData = null;
       state.error = "Something went wrong";
-      Notifications.add("Failed to get rank: " + rankResponse.body.message, -1);
+      addNotification("Failed to get rank: " + rankResponse.body.message, -1);
     }
   }
 
@@ -877,7 +877,7 @@ function updateContent(): void {
   }
 
   if (state.data === null) {
-    Notifications.add("Data is null");
+    addNotification("Data is null");
     return;
   }
 

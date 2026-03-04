@@ -9,7 +9,7 @@ import {
   formatDistanceToNow,
   format,
 } from "date-fns";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { formatXp, getXpDetails } from "../utils/levels";
@@ -146,7 +146,7 @@ async function fetchPendingConnections(): Promise<void> {
   });
 
   if (result.status !== 200) {
-    Notifications.add("Error getting connections: " + result.body.message, -1);
+    addNotification("Error getting connections: " + result.body.message, -1);
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
@@ -198,7 +198,7 @@ function updatePendingConnections(): void {
 async function fetchFriends(): Promise<void> {
   const result = await Ape.users.getFriends();
   if (result.status !== 200) {
-    Notifications.add("Error getting friends: " + result.body.message, -1);
+    addNotification("Error getting friends: " + result.body.message, -1);
     friendsList = undefined;
   } else {
     friendsList = result.body.data;
@@ -426,10 +426,7 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
   hideLoaderBar();
 
   if (result.status !== 200) {
-    Notifications.add(
-      `Cannot update friend request: ${result.body.message}`,
-      -1,
-    );
+    addNotification(`Cannot update friend request: ${result.body.message}`, -1);
   } else {
     //remove from cache
     pendingRequests = pendingRequests?.filter((it) => it._id !== id);
@@ -452,13 +449,13 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
     }
 
     if (action === "blocked") {
-      Notifications.add(`User has been blocked`, 0);
+      addNotification(`User has been blocked`, 0);
     }
     if (action === "accepted") {
-      Notifications.add(`Request accepted`, 1);
+      addNotification(`Request accepted`, 1);
     }
     if (action === "rejected") {
-      Notifications.add(`Request rejected`, 0);
+      addNotification(`Request rejected`, 0);
     }
 
     if (action === "accepted") {

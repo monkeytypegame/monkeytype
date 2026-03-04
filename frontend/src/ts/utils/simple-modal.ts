@@ -3,7 +3,10 @@ import { Attributes, buildTag } from "./tag-builder";
 import { format as dateFormat } from "date-fns/format";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import {
+  addNotification,
+  AddNotificationOptions,
+} from "../stores/notifications";
 import {
   IsValidResponse,
   ValidatedHtmlInputElement,
@@ -90,7 +93,7 @@ export type ExecReturn = {
   status: 1 | 0 | -1;
   message: string;
   showNotification?: false;
-  notificationOptions?: Notifications.AddNotificationOptions;
+  notificationOptions?: AddNotificationOptions;
   hideOptions?: HideOptions;
   afterHide?: () => void;
   alwaysHide?: boolean;
@@ -359,12 +362,12 @@ export class SimpleModal {
   exec(): void {
     if (!this.canClose) return;
     if (this.hasMissingRequired()) {
-      Notifications.add("Please fill in all fields", 0);
+      addNotification("Please fill in all fields", 0);
       return;
     }
 
     if (this.hasValidationErrors()) {
-      Notifications.add("Please solve all validation errors", 0);
+      addNotification("Please solve all validation errors", 0);
       return;
     }
 
@@ -374,7 +377,7 @@ export class SimpleModal {
     void this.execFn(this, ...vals).then((res) => {
       hideLoaderBar();
       if (res.showNotification ?? true) {
-        Notifications.add(res.message, res.status, res.notificationOptions);
+        addNotification(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1 || res.alwaysHide) {
         void this.hide(true, res.hideOptions).then(() => {

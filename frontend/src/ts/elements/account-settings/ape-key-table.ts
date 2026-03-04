@@ -1,5 +1,5 @@
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
-import * as Notifications from "../../elements/notifications";
+import { addNotification } from "../../stores/notifications";
 import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
@@ -181,7 +181,7 @@ async function getData(): Promise<boolean> {
       void update();
       return false;
     }
-    Notifications.add("Error getting ape keys", -1, { response });
+    addNotification("Error getting ape keys", -1, { response });
     return false;
   }
 
@@ -268,15 +268,15 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   });
   hideLoaderBar();
   if (response.status !== 200) {
-    Notifications.add("Failed to update key", -1, { response });
+    addNotification("Failed to update key", -1, { response });
     return;
   }
   key.enabled = !key.enabled;
   refreshList();
   if (key.enabled) {
-    Notifications.add("Key active", 1);
+    addNotification("Key active", 1);
   } else {
-    Notifications.add("Key inactive", 1);
+    addNotification("Key inactive", 1);
   }
 }
 

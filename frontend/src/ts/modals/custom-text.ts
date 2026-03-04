@@ -8,7 +8,7 @@ import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
 import * as CustomGeneratorPopup from "./custom-generator";
 import * as PractiseWords from "../test/practise-words";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -208,7 +208,7 @@ async function beforeAnimation(
   if (modalChainData?.text !== undefined) {
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
-      Notifications.add("Disabled long custom text progress tracking", 0, {
+      addNotification("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
       state.longCustomTextWarning = false;
@@ -253,7 +253,7 @@ function handleFileOpen(): void {
   const file = qs<HTMLInputElement>("#fileInput")?.native.files?.[0];
   if (file) {
     if (file.type !== "text/plain") {
-      Notifications.add("File is not a text file", -1, {
+      addNotification("File is not a text file", -1, {
         duration: 5,
       });
       return;
@@ -269,7 +269,7 @@ function handleFileOpen(): void {
       qs<HTMLInputElement>(`#fileInput`)?.setValue("");
     };
     reader.onerror = (): void => {
-      Notifications.add("Failed to read file", -1, {
+      addNotification("Failed to read file", -1, {
         duration: 5,
       });
     };
@@ -322,7 +322,7 @@ function cleanUpText(): string[] {
 
 function apply(): void {
   if (state.textarea === "") {
-    Notifications.add("Text cannot be empty", 0);
+    addNotification("Text cannot be empty", 0);
     return;
   }
 
@@ -333,7 +333,7 @@ function apply(): void {
       state.customTextLimits.section,
     ].filter((limit) => limit !== "").length > 1
   ) {
-    Notifications.add("You can only specify one limit", 0, {
+    addNotification("You can only specify one limit", 0, {
       duration: 5,
     });
     return;
@@ -345,7 +345,7 @@ function apply(): void {
     state.customTextLimits.time === "" &&
     state.customTextLimits.section === ""
   ) {
-    Notifications.add("You need to specify a limit", 0, {
+    addNotification("You need to specify a limit", 0, {
       duration: 5,
     });
     return;
@@ -356,7 +356,7 @@ function apply(): void {
     state.customTextLimits.word === "0" ||
     state.customTextLimits.time === "0"
   ) {
-    Notifications.add(
+    addNotification(
       "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       0,
       {
@@ -368,7 +368,7 @@ function apply(): void {
   const text = cleanUpText();
 
   if (text.length === 0) {
-    Notifications.add("Text cannot be empty", 0);
+    addNotification("Text cannot be empty", 0);
     return;
   }
 
@@ -541,7 +541,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     ) {
       CustomTextState.setCustomTextName("", undefined);
       state.longCustomTextWarning = false;
-      Notifications.add("Disabled long custom text progress tracking", 0, {
+      addNotification("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
     }

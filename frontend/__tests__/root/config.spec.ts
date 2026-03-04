@@ -10,7 +10,7 @@ import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
 import * as ApeConfig from "../../src/ts/ape/config";
-import * as Notifications from "../../src/ts/elements/notifications";
+import * as Notifications from "../../src/ts/stores/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
@@ -31,7 +31,7 @@ describe("Config", () => {
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
-    const notificationAddMock = vi.spyOn(Notifications, "add");
+    const notificationAddMock = vi.spyOn(Notifications, "addNotification");
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
 

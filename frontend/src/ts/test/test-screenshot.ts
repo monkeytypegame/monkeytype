@@ -7,7 +7,7 @@ import * as DB from "../db";
 import { format } from "date-fns/format";
 import { getActivePage, setIsScreenshotting } from "../signals/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
@@ -112,7 +112,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const src = qs("#result .wrapper");
   if (src === null) {
     console.error("Result wrapper not found for screenshot");
-    Notifications.add("Screenshot target element not found", -1);
+    addNotification("Screenshot target element not found", -1);
     revert();
     return null;
   }
@@ -196,7 +196,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     canvas.height = scaledPaddedHCanvas;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
-      Notifications.add("Failed to get canvas context for screenshot", -1);
+      addNotification("Failed to get canvas context for screenshot", -1);
       return null;
     }
 
@@ -222,7 +222,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     );
     return canvas;
   } catch (e) {
-    Notifications.add(
+    addNotification(
       Misc.createErrorMessage(e, "Error creating screenshot canvas"),
       -1,
     );
@@ -247,7 +247,7 @@ export async function copyToClipboard(): Promise<void> {
 
   canvas.toBlob(async (blob) => {
     if (!blob) {
-      Notifications.add("Failed to generate image data (blob is null)", -1);
+      addNotification("Failed to generate image data (blob is null)", -1);
       return;
     }
     try {
@@ -259,7 +259,7 @@ export async function copyToClipboard(): Promise<void> {
         }),
       );
       await navigator.clipboard.write([clipItem]);
-      Notifications.add("Copied screenshot to clipboard", 1, { duration: 2 });
+      addNotification("Copied screenshot to clipboard", 1, { duration: 2 });
     } catch (e) {
       // Handle clipboard write error
       console.error("Error saving image to clipboard", e);
@@ -270,7 +270,7 @@ export async function copyToClipboard(): Promise<void> {
         !firefoxClipboardNotificationShown
       ) {
         firefoxClipboardNotificationShown = true;
-        Notifications.add(
+        addNotification(
           "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
           0,
           { duration: 10 },
@@ -278,7 +278,7 @@ export async function copyToClipboard(): Promise<void> {
       }
 
       // General fallback notification and action
-      Notifications.add(
+      addNotification(
         "Could not copy screenshot to clipboard. Opening in new tab instead (make sure popups are allowed)",
         0,
         { duration: 5 },
@@ -290,7 +290,7 @@ export async function copyToClipboard(): Promise<void> {
         // No need to revoke URL immediately as the new tab needs it.
         // Browser usually handles cleanup when tab is closed or navigated away.
       } catch (openError) {
-        Notifications.add("Failed to open screenshot in new tab", -1);
+        addNotification("Failed to open screenshot in new tab", -1);
         console.error("Error opening blob URL:", openError);
       }
     }
@@ -312,7 +312,7 @@ async function getBlob(): Promise<Blob | null> {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       if (!blob) {
-        Notifications.add("Failed to convert canvas to Blob for download", -1);
+        addNotification("Failed to convert canvas to Blob for download", -1);
         resolve(null);
       } else {
         resolve(blob); // Return the generated blob
@@ -326,7 +326,7 @@ export async function download(): Promise<void> {
     const blob = await getBlob();
 
     if (!blob) {
-      Notifications.add("Failed to generate screenshot data", -1);
+      addNotification("Failed to generate screenshot data", -1);
       return;
     }
 
@@ -344,10 +344,10 @@ export async function download(): Promise<void> {
 
     URL.revokeObjectURL(url);
 
-    Notifications.add("Screenshot download started", 1);
+    addNotification("Screenshot download started", 1);
   } catch (error) {
     console.error("Error downloading screenshot:", error);
-    Notifications.add("Failed to download screenshot", -1);
+    addNotification("Failed to download screenshot", -1);
   }
 }
 

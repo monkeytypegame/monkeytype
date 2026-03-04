@@ -10,10 +10,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import AsyncContent, {
   Props,
 } from "../../../src/ts/components/common/AsyncContent";
-import * as Notifications from "../../../src/ts/elements/notifications";
+import * as Notifications from "../../../src/ts/stores/notifications";
 
 describe("AsyncContent", () => {
-  const addNotificationMock = vi.spyOn(Notifications, "add");
+  const addNotificationMock = vi.spyOn(Notifications, "addNotification");
 
   beforeEach(() => {
     addNotificationMock.mockClear();

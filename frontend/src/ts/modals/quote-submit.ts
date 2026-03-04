@@ -2,7 +2,7 @@ import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
 import Config from "../config";
@@ -44,7 +44,7 @@ async function submitQuote(): Promise<void> {
   const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
-    Notifications.add("Please fill in all fields", 0);
+    addNotification("Please fill in all fields", 0);
     return;
   }
 
@@ -55,11 +55,11 @@ async function submitQuote(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote", -1, { response });
+    addNotification("Failed to submit quote", -1, { response });
     return;
   }
 
-  Notifications.add("Quote submitted.", 1);
+  addNotification("Quote submitted.", 1);
   modalEl.qsr<HTMLTextAreaElement>(".newQuoteText").setValue("");
   modalEl.qsr<HTMLInputElement>(".newQuoteSource").setValue("");
   CaptchaController.reset("submitQuote");
@@ -67,7 +67,7 @@ async function submitQuote(): Promise<void> {
 
 export async function show(showOptions: ShowOptions): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
-    Notifications.add(
+    addNotification(
       "Could not show quote submit popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
       -1,
     );

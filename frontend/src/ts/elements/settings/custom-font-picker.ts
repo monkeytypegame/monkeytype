@@ -1,5 +1,5 @@
 import FileStorage from "../../utils/file-storage";
-import * as Notifications from "../notifications";
+import { addNotification } from "../../stores/notifications";
 import { applyFontFamily } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(
@@ -56,7 +56,7 @@ uploadContainerEl
       !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
       !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
     ) {
-      Notifications.add(
+      addNotification(
         "Unsupported font format, must be woff, woff2, ttf or otf.",
         0,
       );

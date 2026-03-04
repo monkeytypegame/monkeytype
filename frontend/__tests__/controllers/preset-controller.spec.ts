@@ -3,7 +3,7 @@ import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
 import * as DB from "../../src/ts/db";
 import * as UpdateConfig from "../../src/ts/config";
-import * as Notifications from "../../src/ts/elements/notifications";
+import * as Notifications from "../../src/ts/stores/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TagController from "../../src/ts/controllers/tag-controller";
 
@@ -25,7 +25,7 @@ describe("PresetController", () => {
       UpdateConfig,
       "getConfigChanges",
     );
-    const notificationAddMock = vi.spyOn(Notifications, "add");
+    const notificationAddMock = vi.spyOn(Notifications, "addNotification");
     const testRestartMock = vi.spyOn(TestLogic, "restart");
     const tagControllerClearMock = vi.spyOn(TagController, "clear");
     const tagControllerSetMock = vi.spyOn(TagController, "set");

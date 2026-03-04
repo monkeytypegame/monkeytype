@@ -3,7 +3,7 @@ import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import { hideLoaderBar, showLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { qs, ElementWithUtils } from "../utils/dom";
@@ -63,7 +63,7 @@ export async function getQuoteStats(
   hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to get quote ratings", -1, { response });
+    addNotification("Failed to get quote ratings", -1, { response });
     return;
   }
 
@@ -147,7 +147,7 @@ function hide(clearChain = false): void {
 
 async function submit(): Promise<void> {
   if (rating === 0) {
-    Notifications.add("Please select a rating");
+    addNotification("Please select a rating");
     return;
   }
   if (!currentQuote) {
@@ -163,7 +163,7 @@ async function submit(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote rating", -1, { response });
+    addNotification("Failed to submit quote rating", -1, { response });
     return;
   }
 
@@ -187,7 +187,7 @@ async function submit(): Promise<void> {
       quoteId: currentQuote.id,
       language: currentQuote.language,
     } as QuoteStats;
-    Notifications.add("Rating updated", 1);
+    addNotification("Rating updated", 1);
   } else {
     languageRatings[currentQuote.id] = rating;
     if (
@@ -204,7 +204,7 @@ async function submit(): Promise<void> {
         language: currentQuote.language,
       } as QuoteStats;
     }
-    Notifications.add("Rating submitted", 1);
+    addNotification("Rating submitted", 1);
   }
 
   snapshot.quoteRatings = quoteRatings;

@@ -8,7 +8,7 @@ import {
   Switch,
 } from "solid-js";
 
-import * as Notifications from "../../elements/notifications";
+import { addNotification } from "../../stores/notifications";
 import { createErrorMessage, typedKeys } from "../../utils/misc";
 import { Conditional } from "./Conditional";
 import { LoadingCircle } from "./LoadingCircle";
@@ -87,7 +87,7 @@ export default function AsyncContent<T extends QueryMapping>(
     );
     console.error("AsyncMultiContent failed", message, err);
 
-    Notifications.add(message, -1);
+    addNotification(message, -1);
 
     return message;
   };

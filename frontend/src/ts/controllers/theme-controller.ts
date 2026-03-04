@@ -4,7 +4,7 @@ import Config, { setConfig } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
@@ -130,7 +130,7 @@ async function set(
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setConfig("autoSwitchTheme", false);
-    Notifications.add("Auto switch theme disabled", 0);
+    addNotification("Auto switch theme disabled", 0);
   }
 }
 
@@ -217,7 +217,7 @@ export async function randomizeTheme(): Promise<void> {
           ?.name ?? "custom"
       ).replace(/_/g, " ");
     }
-    Notifications.add(name, 0);
+    addNotification(name, 0);
   }
 }
 
@@ -420,7 +420,7 @@ ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
 });
 
 window.addEventListener("customBackgroundFailed", () => {
-  Notifications.add(
+  addNotification(
     "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
     { duration: 5 },

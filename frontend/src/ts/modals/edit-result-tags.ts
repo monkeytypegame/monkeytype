@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as AccountPage from "../pages/account";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
@@ -28,7 +28,7 @@ export function show(
   source: "accountPage" | "resultPage",
 ): void {
   if (resultId === "") {
-    Notifications.add(
+    addNotification(
       "Failed to show edit result tags modal: result id is empty",
       -1,
     );
@@ -56,7 +56,7 @@ function appendButtons(): void {
   const buttonsEl = modal.getModal().qs(".buttons");
 
   if (buttonsEl === null) {
-    Notifications.add(
+    addNotification(
       "Failed to append buttons to edit result tags modal: could not find buttons element",
       -1,
     );
@@ -116,14 +116,14 @@ async function save(): Promise<void> {
   state.tags = state.tags.filter((el) => el !== undefined);
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update result tags", -1, { response });
+    addNotification("Failed to update result tags", -1, { response });
     return;
   }
 
   //can do this because the response will not be null if the status is 200
   const responseTagPbs = response.body.data?.tagPbs ?? [];
 
-  Notifications.add("Tags updated", 1, {
+  addNotification("Tags updated", 1, {
     duration: 2,
   });
 

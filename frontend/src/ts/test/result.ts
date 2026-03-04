@@ -7,7 +7,7 @@ import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
@@ -63,7 +63,7 @@ let quoteId = "";
 
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
-  Notifications.add(useSmoothedBurst ? "on" : "off", 1);
+  addNotification(useSmoothedBurst ? "on" : "off", 1);
   if (TestState.resultVisible) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -73,7 +73,7 @@ export function toggleSmoothedBurst(): void {
 
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
-  Notifications.add(useFakeChartData ? "on" : "off", 1);
+  addNotification(useFakeChartData ? "on" : "off", 1);
   if (TestState.resultVisible) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -1078,7 +1078,7 @@ export async function update(
     ];
 
     showConfetti();
-    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
+    addNotification(Arrays.randomElementFromArray(messages), 0, {
       customTitle: "Nice",
       duration: 15,
       important: true,
@@ -1344,7 +1344,7 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
 
 qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
-    Notifications.add("Could not get quote stats!", -1);
+    addNotification("Could not get quote stats!", -1);
     return;
   }
 
@@ -1363,7 +1363,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
     });
     hideLoaderBar();
 
-    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
+    addNotification(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button?.removeClass("fas")?.addClass("far");
@@ -1380,7 +1380,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
     });
     hideLoaderBar();
 
-    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
+    addNotification(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button?.removeClass("far")?.addClass("fas");

@@ -1,4 +1,4 @@
-import * as Notifications from "../../elements/notifications";
+import { addNotification } from "../../stores/notifications";
 import * as Misc from "../../utils/misc";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
@@ -50,7 +50,7 @@ export function toggleFunbox(funbox: FunboxName): void {
     !checkCompatibility(getActiveFunboxNames(), funbox) &&
     !Config.funbox.includes(funbox)
   ) {
-    Notifications.add(
+    addNotification(
       `${Strings.capitalizeFirstLetter(
         funbox.replace(/_/g, " "),
       )} funbox is not compatible with the current funbox selection`,
@@ -98,7 +98,7 @@ export async function activate(
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
   if (!checkCompatibility(getActiveFunboxNames())) {
-    Notifications.add(
+    addNotification(
       Misc.createErrorMessage(
         undefined,
         `Failed to activate funbox: funboxes ${Config.funbox
@@ -124,7 +124,7 @@ export async function activate(
     JSONData.getCurrentLanguage(Config.language),
   );
   if (error) {
-    Notifications.add(
+    addNotification(
       Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1,
     );
@@ -137,10 +137,7 @@ export async function activate(
 
   if (language.ligatures) {
     if (isFunboxActiveWithProperty("noLigatures")) {
-      Notifications.add(
-        "Current language does not support this funbox mode",
-        0,
-      );
+      addNotification("Current language does not support this funbox mode", 0);
       setConfig("funbox", [], {
         nosave: true,
       });
@@ -187,12 +184,12 @@ export async function activate(
 
   if (!canSetSoFar) {
     if (Config.funbox.length > 1) {
-      Notifications.add(
+      addNotification(
         `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
         -1,
       );
     } else {
-      Notifications.add(
+      addNotification(
         `Failed to activate funbox ${Config.funbox}: no forced configs. Disabling funbox`,
         -1,
       );

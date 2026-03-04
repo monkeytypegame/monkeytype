@@ -16,11 +16,11 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
 import { isFriend } from "../../../db";
-import * as Notifications from "../../../elements/notifications";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { getUserId, isLoggedIn } from "../../../signals/core";
+import { addNotification } from "../../../stores/notifications";
 import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
@@ -121,10 +121,10 @@ function ActionButtons(props: {
     const friendName = props.profile.name;
     void addFriend(friendName).then((result) => {
       if (result === true) {
-        Notifications.add(`Request sent to ${friendName}`);
+        addNotification(`Request sent to ${friendName}`);
         setHasFriendRequest(true);
       } else {
-        Notifications.add(result, -1);
+        addNotification(result, -1);
       }
     });
   };
@@ -140,7 +140,7 @@ function ActionButtons(props: {
             fa={{ icon: "fa-pen", fixedWidth: true }}
             onClick={() => {
               if (props.profile.banned === true) {
-                Notifications.add("Banned users cannot edit their profile", 0);
+                addNotification("Banned users cannot edit their profile", 0);
                 return;
               }
               EditProfileModal.show();
@@ -155,7 +155,7 @@ function ActionButtons(props: {
 
               navigator.clipboard.writeText(url).then(
                 function () {
-                  Notifications.add("URL Copied to clipboard", 0);
+                  addNotification("URL Copied to clipboard", 0);
                 },
                 function () {
                   alert(

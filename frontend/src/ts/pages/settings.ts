@@ -8,7 +8,7 @@ import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
@@ -815,7 +815,7 @@ qs("#exportSettingsButton")?.on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      Notifications.add("JSON Copied to clipboard", 0);
+      addNotification("JSON Copied to clipboard", 0);
     },
     function () {
       ImportExportSettingsModal.show("export");
@@ -840,7 +840,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, {
+    addNotification("Saved", 1, {
       duration: 1,
     });
   }
@@ -858,7 +858,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, {
+    addNotification("Saved", 1, {
       duration: 1,
     });
   }
@@ -877,7 +877,7 @@ qs(
       ),
     );
     if (didConfigSave) {
-      Notifications.add("Saved", 1, {
+      addNotification("Saved", 1, {
         duration: 1,
       });
     }
@@ -977,11 +977,11 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
   navigator.clipboard
     .writeText(window.location.toString())
     .then(() => {
-      Notifications.add("Link copied to clipboard", 1);
+      addNotification("Link copied to clipboard", 1);
     })
     .catch((e: unknown) => {
       const msg = Misc.createErrorMessage(e, "Failed to copy to clipboard");
-      Notifications.add(msg, -1);
+      addNotification(msg, -1);
     });
 });
 

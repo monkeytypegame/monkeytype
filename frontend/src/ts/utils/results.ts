@@ -1,5 +1,5 @@
 import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -14,7 +14,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     body: { result: notSignedInLastResult },
   });
   if (response.status !== 200) {
-    Notifications.add("Failed to save last result", -1, { response });
+    addNotification("Failed to save last result", -1, { response });
     return;
   }
 
@@ -38,7 +38,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   }
   DB.saveLocalResult(dataToSave);
   TestLogic.clearNotSignedInResult();
-  Notifications.add(
+  addNotification(
     `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
     1,
   );

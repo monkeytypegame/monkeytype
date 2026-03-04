@@ -5,7 +5,7 @@ import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
@@ -478,7 +478,7 @@ async function fillContent(): Promise<void> {
 
       filteredResults.push(result);
     } catch (e) {
-      Notifications.add(
+      addNotification(
         "Something went wrong when filtering. Resetting filters.",
         0,
       );
@@ -970,7 +970,7 @@ async function update(): Promise<void> {
     await fillContent();
   } catch (e) {
     console.error(e);
-    Notifications.add(`Something went wrong: ${e}`, -1);
+    addNotification(`Something went wrong: ${e}`, -1);
   }
 }
 
@@ -1087,7 +1087,7 @@ qs(".pageAccount")?.onChild(
       target?.removeClass("loading");
 
       if (response.status !== 200) {
-        Notifications.add("Error fetching result", -1, { response });
+        addNotification("Error fetching result", -1, { response });
         return;
       }
 
@@ -1110,7 +1110,7 @@ qs(".pageAccount")?.onChild(
         target?.setAttribute("data-balloon-pos", "up");
         target.addClass("disabled");
 
-        Notifications.add("Graph history is not available for long tests", 0);
+        addNotification("Graph history is not available for long tests", 0);
         return;
       }
     }

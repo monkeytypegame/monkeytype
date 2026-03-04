@@ -4,7 +4,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import { getActivePage } from "../signals/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
@@ -424,7 +424,7 @@ export async function refresh(): Promise<void> {
         layoutNameDisplayString = Config.keymapLayout;
       }
     } catch (e) {
-      Notifications.add(
+      addNotification(
         Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
         -1,
       );
@@ -560,7 +560,7 @@ async function updateLegends(): Promise<void> {
 
   const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
   if (layout === undefined) {
-    Notifications.add("Failed to load keymap layout", -1);
+    addNotification("Failed to load keymap layout", -1);
 
     return;
   }

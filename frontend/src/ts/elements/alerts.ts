@@ -2,9 +2,11 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
-import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
-import * as Notifications from "../elements/notifications";
+import {
+  addNotification,
+  getNotificationHistory,
+} from "../stores/notifications";
 import {
   applyReducedMotion,
   createErrorMessage,
@@ -30,19 +32,10 @@ let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
 
 type State = {
-  notifications: {
-    id: string;
-    title: string;
-    message: string;
-    level: number;
-    details?: string | object;
-  }[];
   psas: { message: string; level: number }[];
 };
 
-let notificationId = 0;
 const state: State = {
-  notifications: [],
   psas: [],
 };
 
@@ -69,7 +62,7 @@ function hide(): void {
       const status = updateResponse.status;
       const message = updateResponse.body.message;
       if (status !== 200) {
-        Notifications.add(`Failed to update inbox: ${message}`, -1);
+        addNotification(`Failed to update inbox: ${message}`, -1);
         return;
       }
 
@@ -95,7 +88,7 @@ function hide(): void {
       }
 
       if (badgesClaimed.length > 0) {
-        Notifications.add(
+        addNotification(
           `New badge${
             badgesClaimed.length > 1 ? "s" : ""
           } unlocked: ${badgesClaimed.join(", ")}`,
@@ -272,13 +265,14 @@ function fillPSAs(): void {
 }
 
 function fillNotifications(): void {
-  if (state.notifications.length === 0) {
+  const history = getNotificationHistory();
+  if (history.length === 0) {
     notificationHistoryListEl.setHtml(
       `<div class="nothing">Nothing to show</div>`,
     );
   } else {
     notificationHistoryListEl.empty();
-    for (const n of state.notifications) {
+    for (const n of history) {
       const { message, level, title } = n;
 
       let levelClass = "sub";
@@ -388,7 +382,7 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
   if (id === undefined) {
     throw new Error("Notification ID is undefined");
   }
-  const notification = state.notifications.find((it) => it.id === id);
+  const notification = getNotificationHistory().find((it) => it.id === id);
   if (notification === undefined) return;
 
   const icon = target.querySelector("i") as HTMLElement;
@@ -437,32 +431,9 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
     });
   } catch (e: unknown) {
     const msg = createErrorMessage(e, "Could not copy to clipboard");
-    Notifications.add(msg, -1);
+    addNotification(msg, -1);
   }
 }
-
-NotificationEvent.subscribe((message, level, options) => {
-  let title = "Notice";
-  if (level === -1) {
-    title = "Error";
-  } else if (level === 1) {
-    title = "Success";
-  }
-  if (options.customTitle !== undefined) {
-    title = options.customTitle;
-  }
-
-  state.notifications.push({
-    id: (notificationId++).toString(),
-    title,
-    message,
-    level,
-    details: options.details,
-  });
-  if (state.notifications.length > 25) {
-    state.notifications.shift();
-  }
-});
 
 AuthEvent.subscribe((event) => {
   if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {

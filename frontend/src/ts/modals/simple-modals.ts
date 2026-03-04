@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as AccountController from "../auth";
 import * as DB from "../db";
 import { resetConfig, setConfig } from "../config";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
@@ -682,7 +682,7 @@ list.deleteAccount = new SimpleModal({
       };
     }
 
-    Notifications.add("Deleting all data...", 0);
+    addNotification("Deleting all data...", 0);
     const response = await Ape.users.delete();
 
     if (response.status !== 200) {
@@ -730,11 +730,11 @@ list.resetAccount = new SimpleModal({
       };
     }
 
-    Notifications.add("Resetting settings...", 0);
+    addNotification("Resetting settings...", 0);
     await resetConfig();
     await FileStorage.deleteFile("LocalBackgroundFile");
 
-    Notifications.add("Resetting account...", 0);
+    addNotification("Resetting account...", 0);
     const response = await Ape.users.reset();
     if (response.status !== 200) {
       return {

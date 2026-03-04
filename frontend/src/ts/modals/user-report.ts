@@ -1,7 +1,7 @@
 import Ape from "../ape";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import { addNotification } from "../stores/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
@@ -30,12 +30,12 @@ let select: SlimSelect | undefined = undefined;
 
 export async function show(options: ShowOptions): Promise<void> {
   if (!isAuthenticated()) {
-    Notifications.add("You must be logged in to submit a report", 0);
+    addNotification("You must be logged in to submit a report", 0);
     return;
   }
 
   if (!CaptchaController.isCaptchaAvailable()) {
-    Notifications.add(
+    addNotification(
       "Could not show user report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
       -1,
     );
@@ -79,7 +79,7 @@ async function hide(): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("userReportModal");
   if (!captchaResponse) {
-    Notifications.add("Please complete the captcha");
+    addNotification("Please complete the captcha");
     return;
   }
 
@@ -92,17 +92,17 @@ async function submitReport(): Promise<void> {
   const captcha = captchaResponse;
 
   if (!reason) {
-    Notifications.add("Please select a valid report reason");
+    addNotification("Please select a valid report reason");
     return;
   }
 
   if (!comment) {
-    Notifications.add("Please provide a comment");
+    addNotification("Please provide a comment");
     return;
   }
 
   if (reason === "Suspected cheating" && state.lbOptOut) {
-    Notifications.add(
+    addNotification(
       "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
       0,
       {
@@ -114,7 +114,7 @@ async function submitReport(): Promise<void> {
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    Notifications.add(
+    addNotification(
       `Report comment is ${characterDifference} character(s) too long`,
     );
     return;
@@ -132,11 +132,11 @@ async function submitReport(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to report user", -1, { response });
+    addNotification("Failed to report user", -1, { response });
     return;
   }
 
-  Notifications.add("Report submitted. Thank you!", 1);
+  addNotification("Report submitted. Thank you!", 1);
   void hide();
 }
 
