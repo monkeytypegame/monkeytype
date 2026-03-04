@@ -104,7 +104,8 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
   background: #fc76d9;
 }
 
-[data-ui-element="notificationBubble"] {
+[data-nav-item="alerts"] [data-ui-element="notificationBubble"],
+[data-ui-element="navAvatar"] [data-ui-element="notificationBubble"] {
   box-shadow: none;
   background: var(--bg-color);
 }

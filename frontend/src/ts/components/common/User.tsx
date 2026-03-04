@@ -68,12 +68,11 @@ export function User(props: Props): JSXElement {
   return (
     <div class={cn("grid grid-flow-col place-items-center gap-2", props.class)}>
       <Show when={props.showAvatar ?? true}>
-        <div class="relative w-[1.25em]">
+        <div class="relative w-[1.25em]" data-ui-element="navAvatar">
           <NotificationBubble
             variant="atCorner"
             show={props.showNotificationBubble ?? false}
             class="m-0.5"
-            data-ui-element="notificationBubble"
           />
           <AnimeConditional
             exitBeforeEnter

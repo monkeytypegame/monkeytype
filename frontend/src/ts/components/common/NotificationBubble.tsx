@@ -6,7 +6,6 @@ type Props = {
   variant: "fromCorner" | "atCorner" | "center";
   show: boolean;
   class?: string;
-  "data-ui-element"?: string;
 };
 
 export function NotificationBubble(props: Props): JSXElement {
@@ -22,7 +21,7 @@ export function NotificationBubble(props: Props): JSXElement {
             "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
           props.class,
         )}
-        data-ui-element={props["data-ui-element"]}
+        data-ui-element="notificationBubble"
       ></div>
     </Show>
   );

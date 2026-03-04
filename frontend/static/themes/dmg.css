@@ -9,9 +9,10 @@ header[data-focused] [data-nav-item="test"] {
   background: #e34c6c;
 }
 
-[data-ui-element="notificationBubble"] {
+[data-nav-item="alerts"] [data-ui-element="notificationBubble"],
+[data-ui-element="navAvatar"] [data-ui-element="notificationBubble"] {
   box-shadow: none;
-  background: var(--color-sub);
+  background: var(--bg-color);
 }
 
 [data-ui-element="userLevel"] {

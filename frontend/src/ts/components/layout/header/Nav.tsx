@@ -152,7 +152,6 @@ export function Nav(): JSXElement {
         <NotificationBubble
           variant="fromCorner"
           show={showAlertsNotificationBubble()}
-          data-ui-element="notificationBubble"
         />
       </Button>
       <AnimeConditional
