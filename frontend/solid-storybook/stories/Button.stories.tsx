@@ -15,6 +15,33 @@ const meta = preview.meta({
       control: "select",
       options: ["button", "text"],
     },
+    active: {
+      control: "boolean",
+    },
+    disabled: {
+      control: "boolean",
+    },
+    text: {
+      control: "text",
+    },
+    fa: {
+      control: "object",
+    },
+    ariaLabel: {
+      control: "object",
+    },
+    class: {
+      control: "text",
+    },
+    "router-link": {
+      control: "boolean",
+    },
+    href: {
+      control: "text",
+    },
+    sameTarget: {
+      control: "boolean",
+    },
   },
   args: {
     onClick: fn(),
@@ -24,57 +51,42 @@ const meta = preview.meta({
 export const Default = meta.story({
   args: {
     text: "Button",
-  },
-});
-
-export const WithIcon = meta.story({
-  args: {
-    text: "Settings",
-    fa: { icon: "fa-cog", variant: "solid" },
     type: "button",
   },
 });
 
-export const IconOnly = meta.story({
-  args: {
-    fa: { icon: "fa-cog", variant: "solid" },
-    ariaLabel: "Settings",
-  },
-});
+export const AllVariants = meta.story({
+  render: () => (
+    <div class="grid grid-cols-6 gap-4 text-text">
+      <div class="self-center">Button Type</div>
+      <Button text="Default" onClick={fn()} />
+      <Button text="Active" active={true} onClick={fn()} />
+      <Button text="Disabled" disabled={true} onClick={fn()} />
+      <Button
+        text="Icon"
+        fa={{ icon: "fa-cog", variant: "solid" }}
+        onClick={fn()}
+      />
+      <Button fa={{ icon: "fa-cog", variant: "solid" }} onClick={fn()} />
+      <div class="self-center">Text Type</div>
 
-export const TextType = meta.story({
+      <Button type="text" text="Default" onClick={fn()} />
+      <Button type="text" text="Active" active={true} onClick={fn()} />
+      <Button type="text" text="Disabled" disabled={true} onClick={fn()} />
+      <Button
+        type="text"
+        text="Icon"
+        fa={{ icon: "fa-cog", variant: "solid" }}
+        onClick={fn()}
+      />
+      <Button
+        type="text"
+        fa={{ icon: "fa-cog", variant: "solid" }}
+        onClick={fn()}
+      />
+    </div>
+  ),
   args: {
-    text: "Text Button",
-    type: "text",
-  },
-});
-
-export const Active = meta.story({
-  args: {
-    text: "Active",
-    active: true,
-  },
-});
-
-export const Disabled = meta.story({
-  args: {
-    text: "Disabled",
-    disabled: true,
-  },
-});
-
-export const ActiveDisabled = meta.story({
-  args: {
-    text: "Active + Disabled",
-    active: true,
-    disabled: true,
-  },
-});
-
-export const AsLink = meta.story({
-  args: {
-    text: "External Link",
-    href: "https://monkeytype.com",
-    fa: { icon: "fa-external-link-alt", variant: "solid" },
+    text: "Button",
   },
 });

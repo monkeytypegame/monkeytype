@@ -6,8 +6,31 @@ import "../stories/tailwind.css";
 import "../stories/storybook-theme.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
+import { ThemesList } from "../../src/ts/constants/themes";
+import { ThemeDecorator } from "./ThemeDecorator";
+
 export default definePreview({
   addons: [addonDocs(), addonA11y()],
+  globalTypes: {
+    theme: {
+      description: "Global theme for components",
+      toolbar: {
+        title: "Theme",
+        icon: "paintbrush",
+        items: ThemesList.sort((a, b) => a.name.localeCompare(b.name)).map(
+          (t) => ({
+            value: t.name,
+            title: t.name.replace(/_/g, " "),
+          }),
+        ),
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: {
+    theme: "serika_dark",
+  },
+  decorators: [ThemeDecorator],
   parameters: {
     // automatically create action args for all props that start with 'on'
     actions: {
