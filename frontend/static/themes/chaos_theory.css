@@ -106,12 +106,13 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
 
 [data-ui-element="notificationBubble"] {
   box-shadow: none;
-  background: var(--color-bg);
+  background: var(--bg-color);
 }
 
 [data-ui-element="userLevel"] {
-  background: var(--color-bg);
-  color: var(--main-color);
+  --themable-flash-color: var(--text-color);
+  --themable-bg-color: var(--main-color);
+  --themable-text-color: var(--bg-color);
 }
 
 [data-nav-item="login"] {

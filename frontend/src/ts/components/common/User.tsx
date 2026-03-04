@@ -6,7 +6,6 @@ import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
-import { getTheme } from "../../signals/theme";
 import { cn } from "../../utils/cn";
 import { Anime, AnimeConditional } from "./anime";
 import { Button } from "./Button";
@@ -42,19 +41,23 @@ export function User(props: Props): JSXElement {
     on(
       () => props.level,
       () => {
-        const theme = getTheme();
         const rand = (Math.random() * 2 - 1) / 4;
         const rand2 = (Math.random() + 1) / 2;
         setFlashAnimation({
           scale: [1 + 0.5 * rand2, 1],
-          backgroundColor: [theme.main, theme.sub],
+          backgroundColor: [
+            "var(--themable-flash-color)",
+            "var(--themable-bg-color)",
+          ],
           rotate: [10 * rand, 0],
           duration: 2000,
           ease: "out(5)",
           onBegin: () => setIsAnimating(true),
           onComplete: () => {
             setIsAnimating(false);
-            if (levelEl) levelEl.style.backgroundColor = "";
+            if (levelEl) {
+              levelEl.style.backgroundColor = "";
+            }
           },
         });
       },
@@ -120,7 +123,9 @@ export function User(props: Props): JSXElement {
           ref={(el) => (levelEl = el)}
           animation={flashAnimation()}
           class={cn(
-            "rounded-half bg-(--unhoveredcolor) px-[0.5em] py-[0.1em] text-[0.7em] text-bg [--unhoveredcolor:var(--color-sub)]",
+            "[--themable-bg-color:var(--sub-color)] [--themable-flash-color:var(--main-color)] [--themable-text-color:var(--bg-color)]",
+            "bg-(--themable-bg-color) text-(--themable-text-color)",
+            "rounded-half px-[0.5em] py-[0.1em] text-[0.7em]",
             { "transition-colors duration-125": !isAnimating() },
           )}
           data-ui-element="userLevel"
