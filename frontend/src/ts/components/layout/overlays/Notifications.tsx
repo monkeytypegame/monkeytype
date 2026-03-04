@@ -142,6 +142,7 @@ export function Notifications(): JSXElement {
 
   return (
     <div
+      data-ui-element="notifications"
       class={cn(
         "fixed right-4 z-99999999 grid w-87.5 pt-4 transition-opacity duration-125",
         getIsScreenshotting() && "pointer-events-none opacity-0",
