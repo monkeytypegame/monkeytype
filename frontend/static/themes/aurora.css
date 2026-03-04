@@ -41,7 +41,11 @@
   animation: aurora-bg 5s linear infinite;
 }
 
+[data-ui-element="logo"] h1 {
+  color: var(--main-color);
+}
 [data-ui-element="logoSubtext"],
+[data-ui-element="logo"]:hover h1,
 #result .stats .group .bottom,
 [data-nav-item]:hover,
 footer button:hover,

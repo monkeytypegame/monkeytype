@@ -1,21 +1,36 @@
 [data-nav-item="test"] {
   color: #d55170;
+  &:hover {
+    color: color-mix(in srgb, #d55170 75%, white 25%);
+  }
 }
 
 [data-nav-item="leaderboards"] {
   color: #e4a88a;
+  &:hover {
+    color: color-mix(in srgb, #e4a88a 75%, white 25%);
+  }
 }
 
 [data-nav-item="about"] {
   color: #db886f;
+  &:hover {
+    color: color-mix(in srgb, #db886f 75%, white 25%);
+  }
 }
 
 [data-nav-item="settings"] {
   color: #db887a;
+  &:hover {
+    color: color-mix(in srgb, #db887a 75%, white 25%);
+  }
 }
 
 [data-nav-item="alerts"],
 [data-nav-item="account"],
 [data-nav-item="login"] {
   color: #ffc819;
+  &:hover {
+    color: color-mix(in srgb, #ffc819 75%, white 25%);
+  }
 }
