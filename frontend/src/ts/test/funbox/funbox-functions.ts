@@ -165,7 +165,7 @@ export class PolyglotWordset extends Wordset {
     this.wordsMap = wordsMap;
     this.resetIndexes();
     this.length = Array.from(this.wordsMap.values()).reduce(
-      (sum, ws) => sum + ws.words.length,
+      (sum, ws) => sum + ws.length,
       0,
     );
     this.currLang = this.langs[0] as Language;
@@ -176,7 +176,7 @@ export class PolyglotWordset extends Wordset {
   }
 
   override resetIndexes(): void {
-    this.wordsMap.forEach((ws, _) => {
+    this.wordsMap.forEach((ws) => {
       ws.resetIndexes();
     });
   }
