@@ -37,11 +37,9 @@ header .button.discord.dotHidden::after {
 
 #result .stats .group .bottom,
 [data-nav-item]:hover,
-/* [data-nav-item]:hover .transition-colors, */
-footer button:hover
-/* a:not(.button):hover  */ {
+footer button:hover,
+a:not(.button):hover {
   animation: trance 5s linear infinite;
-  /* transition-duration: none; */
 }
 
 #words {
