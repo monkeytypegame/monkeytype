@@ -1,21 +1,3 @@
-import * as Misc from "./misc";
-import Config, { setConfig } from "../config";
-import { addNotification } from "../stores/notifications";
-import { decompressFromURI } from "lz-ts";
-import * as TestState from "../test/test-state";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as CustomText from "../test/custom-text";
-import Ape from "../ape";
-import * as DB from "../db";
-
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { restart as restartTest } from "../test/test-logic";
-import * as ChallengeController from "../controllers/challenge-controller";
-import {
-  DifficultySchema,
-  Mode2Schema,
-  ModeSchema,
-} from "@monkeytype/schemas/shared";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -26,12 +8,31 @@ import {
   FunboxSchema,
   FunboxName,
 } from "@monkeytype/schemas/configs";
-import { z } from "zod";
+import { Language } from "@monkeytype/schemas/languages";
+import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
+import {
+  DifficultySchema,
+  Mode2Schema,
+  ModeSchema,
+} from "@monkeytype/schemas/shared";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/schemas/languages";
+import { decompressFromURI } from "lz-ts";
+import { For } from "solid-js";
+import { z } from "zod";
+
+import Ape from "../ape";
+import Config, { setConfig } from "../config";
+import * as ChallengeController from "../controllers/challenge-controller";
+import * as DB from "../db";
 import * as AuthEvent from "../observables/auth-event";
-import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { addNotification } from "../stores/notifications";
+import * as CustomText from "../test/custom-text";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import { restart as restartTest } from "../test/test-logic";
+import * as TestState from "../test/test-state";
+import * as Misc from "./misc";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -287,20 +288,29 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     nosave: true,
   });
 
-  let appliedString = "";
+  const appliedEntries = Object.entries(applied).filter(
+    ([, v]) => v !== undefined,
+  );
 
-  Object.keys(applied).forEach((setKey) => {
-    const set = applied[setKey];
-    if (set !== undefined) {
-      appliedString += `${setKey}${Misc.escapeHTML(set ? ": " + set : "")}<br>`;
-    }
-  });
-
-  if (appliedString !== "") {
-    addNotification("Settings applied from URL:<br><br>" + appliedString, 1, {
-      duration: 10,
-      allowHTML: true,
-    });
+  if (appliedEntries.length > 0) {
+    addNotification(
+      <>
+        {`Settings applied from URL:`}
+        <br />
+        <br />
+        <For each={appliedEntries}>
+          {([key, val]) => (
+            <>
+              {key}
+              {val ? ": " + val : ""}
+              <br />
+            </>
+          )}
+        </For>
+      </>,
+      1,
+      { duration: 10 },
+    );
   }
 }
 

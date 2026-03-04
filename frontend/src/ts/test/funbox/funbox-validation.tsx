@@ -1,8 +1,10 @@
+import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
+import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
+import { intersect } from "@monkeytype/util/arrays";
+import { For } from "solid-js";
+
 import { addNotification } from "../../stores/notifications";
 import * as Strings from "../../utils/strings";
-import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
-import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
-import { intersect } from "@monkeytype/util/arrays";
 
 export function checkForcedConfig(
   key: string,
@@ -188,14 +190,19 @@ export function canSetFunboxWithConfig(
       );
     }
     addNotification(
-      `You can't enable ${funbox.replace(/_/g, " ")}:<br>${errorStrings.join(
-        "<br>",
-      )}`,
+      <>
+        {`You can't enable ${funbox.replace(/_/g, " ")}:`}
+        <For each={errorStrings}>
+          {(s) => (
+            <>
+              <br />
+              {s}
+            </>
+          )}
+        </For>
+      </>,
       0,
-      {
-        duration: 5,
-        allowHTML: true,
-      },
+      { duration: 5 },
     );
     return false;
   } else {

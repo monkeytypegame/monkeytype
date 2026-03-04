@@ -99,8 +99,7 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
             <Fa {...iconProps()} class="mr-2 inline" />
             {title()}
           </div>
-          {/* oxlint-disable-next-line solid/no-innerhtml -- notification message contains escaped HTML */}
-          <div innerHTML={props.notification.message}></div>
+          <div>{props.notification.message}</div>
         </div>
       </Anime>
     </div>

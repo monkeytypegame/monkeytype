@@ -1,13 +1,13 @@
 import { createStore } from "solid-js/store";
 
-import * as Misc from "../utils/misc";
 import { CommonResponsesType } from "@monkeytype/contracts/util/api";
+import { JSXElement } from "solid-js";
 
 export type NotificationLevel = -1 | 0 | 1;
 
 export type Notification = {
   id: number;
-  message: string;
+  message: string | JSXElement;
   level: NotificationLevel;
   important: boolean;
   duration: number;
@@ -75,13 +75,12 @@ export type AddNotificationOptions = {
   customTitle?: string;
   customIcon?: string;
   closeCallback?: () => void;
-  allowHTML?: boolean;
   details?: object | string;
   response?: CommonResponsesType;
 };
 
 export function addNotification(
-  message: string,
+  message: string | JSXElement,
   level: NotificationLevel = 0,
   options: AddNotificationOptions = {},
 ): void {
@@ -96,7 +95,7 @@ export function addNotification(
           ? options.response.body.validationErrors
           : undefined,
     };
-    message = message + ": " + options.response.body.message;
+    message = (message as string) + ": " + options.response.body.message;
   }
 
   const title =
@@ -106,15 +105,13 @@ export function addNotification(
   notificationHistory.push({
     id: (historyId++).toString(),
     title,
-    message,
+    message: typeof message === "string" ? message : "",
     level,
     details,
   });
   if (notificationHistory.length > 25) {
     notificationHistory.shift();
   }
-
-  const escapedMessage = options.allowHTML ? message : Misc.escapeHTML(message);
 
   let duration: number;
   if (options.duration === undefined) {
@@ -124,7 +121,7 @@ export function addNotification(
   }
 
   const notifId = pushNotification({
-    message: escapedMessage,
+    message,
     level,
     important: options.important ?? false,
     duration,

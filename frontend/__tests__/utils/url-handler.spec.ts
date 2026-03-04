@@ -231,14 +231,9 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(addNotificationMock).toHaveBeenCalledWith(
-        "Settings applied from URL:<br><br>mode: time<br>mode2: 60<br>custom text settings<br>punctuation: on<br>numbers: on<br>language: english<br>difficulty: master<br>funbox: ascii, crt<br>",
-        1,
-        {
-          duration: 10,
-          allowHTML: true,
-        },
-      );
+      expect(addNotificationMock).toHaveBeenCalledWith(expect.anything(), 1, {
+        duration: 10,
+      });
     });
     it("rejects invalid values", () => {
       //GIVEN
