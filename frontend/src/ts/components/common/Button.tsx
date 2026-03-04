@@ -9,7 +9,7 @@ type BaseProps = {
   fa?: FaProps;
   class?: string;
   classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
-  type?: "text" | "button";
+  variant?: "text" | "button";
   children?: JSXElement;
   ariaLabel?:
     | string
@@ -64,8 +64,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-[color,background,opacity] duration-125 ease-in-out select-none",
       "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
       {
-        "bg-sub-alt hover:bg-text hover:text-bg": props.type !== "text",
-        "bg-transparent text-sub hover:text-text": props.type === "text",
+        "bg-sub-alt hover:bg-text hover:text-bg": props.variant !== "text",
+        "bg-transparent text-sub hover:text-text": props.variant === "text",
         [props.class ?? ""]: props.class !== undefined,
         "bg-main text-bg hover:bg-text": isActive(),
 
@@ -100,6 +100,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
+          data-ui-variant={props.variant ?? "button"}
           {...props.dataset}
         >
           {content}
@@ -115,6 +116,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
+          data-ui-variant={props.variant ?? "button"}
           {...props.dataset}
         >
           {content}

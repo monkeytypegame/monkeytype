@@ -98,7 +98,7 @@ export function User(props: Props): JSXElement {
           if={props.linkToProfile ?? false}
           then={
             <Button
-              type="text"
+              variant="text"
               href={`/profile/${props.user.name}`}
               text={props.user.name}
               router-link

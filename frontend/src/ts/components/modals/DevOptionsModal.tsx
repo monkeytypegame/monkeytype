@@ -159,7 +159,7 @@ export function DevOptionsModal(): JSXElement {
         <For each={buttons}>
           {(btn) => (
             <Button
-              type="button"
+              variant="button"
               onClick={btn.onClick}
               fa={{ icon: btn.icon, fixedWidth: true }}
               text={btn.label()}

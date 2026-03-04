@@ -31,7 +31,7 @@ import { AccountXpBar } from "./AccountXpBar";
 export function Nav(): JSXElement {
   const [showMenu, setShowMenu] = createSignal(false);
   const buttonClass = () =>
-    cn("aspect-square transition-opacity", {
+    cn("aspect-square", {
       "opacity-(--nav-focus-opacity)": getFocus(),
     });
 
@@ -77,7 +77,7 @@ export function Nav(): JSXElement {
   return (
     <nav class={cn("z-5 flex w-full items-center gap-1 md:gap-2")}>
       <Button
-        type="text"
+        variant="text"
         fa={{
           icon: "fa-keyboard",
           fixedWidth: true,
@@ -93,7 +93,7 @@ export function Nav(): JSXElement {
         }}
       />
       <Button
-        type="text"
+        variant="text"
         fa={{
           icon: "fa-crown",
           fixedWidth: true,
@@ -106,7 +106,7 @@ export function Nav(): JSXElement {
         href="/leaderboards"
       />
       <Button
-        type="text"
+        variant="text"
         fa={{
           icon: "fa-info",
           fixedWidth: true,
@@ -122,7 +122,7 @@ export function Nav(): JSXElement {
         }}
       />
       <Button
-        type="text"
+        variant="text"
         fa={{
           icon: "fa-cog",
           fixedWidth: true,
@@ -136,7 +136,7 @@ export function Nav(): JSXElement {
       />
       <div class="grow"></div>
       <Button
-        type="text"
+        variant="text"
         fa={{
           icon: "fa-bell",
           fixedWidth: true,
@@ -165,7 +165,7 @@ export function Nav(): JSXElement {
               onMouseLeave={() => setShowMenu(false)}
             >
               <Button
-                type="text"
+                variant="text"
                 class={cn(
                   "h-full",
                   "hover:**:data-[ui-element='userLevel']:bg-(--themable-hover-bg-color) hover:[&_svg]:fill-text",
@@ -200,7 +200,7 @@ export function Nav(): JSXElement {
         else={
           <Show when={showLoginButton()}>
             <Button
-              type="text"
+              variant="text"
               href="/login"
               dataset={{
                 "data-nav-item": "login",

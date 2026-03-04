@@ -472,7 +472,7 @@ function Socials(props: {
         >
           <Show when={props.socials?.github}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-github", variant: "brand", fixedWidth: true }}
               href={`https://github.com/${props.socials?.github}`}
               ariaLabel={{ text: props.socials?.github ?? "", position: "up" }}
@@ -480,7 +480,7 @@ function Socials(props: {
           </Show>
           <Show when={props.socials?.twitter}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-twitter", variant: "brand", fixedWidth: true }}
               href={`https://x.com/${props.socials?.twitter}`}
               ariaLabel={{ text: props.socials?.twitter ?? "", position: "up" }}
@@ -488,7 +488,7 @@ function Socials(props: {
           </Show>
           <Show when={props.socials?.website}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-globe", fixedWidth: true }}
               href={props.socials?.website ?? ""}
               ariaLabel={{ text: props.socials?.website ?? "", position: "up" }}

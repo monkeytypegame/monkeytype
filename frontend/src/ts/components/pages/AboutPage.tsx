@@ -342,7 +342,7 @@ export function AboutPage(): JSXElement {
         <H2 fa={{ icon: "fa-users" }} text="credits" />
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Montydrei"
             href="https://www.reddit.com/user/montydrei"
             class="p-0 pt-2 pr-2 pb-2"
@@ -351,7 +351,7 @@ export function AboutPage(): JSXElement {
         </p>
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Everyone"
             href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
             class="p-0 pt-2 pr-2 pb-2"
@@ -361,7 +361,7 @@ export function AboutPage(): JSXElement {
         </p>
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Supporters"
             href="#supporters_title"
             class="p-0 pt-2 pr-2 pb-2"
@@ -371,7 +371,7 @@ export function AboutPage(): JSXElement {
         </p>
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Contributors"
             href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"
             class="p-0 pt-2 pr-2 pb-2"
