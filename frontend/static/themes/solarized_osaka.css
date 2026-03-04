@@ -9,6 +9,8 @@ kbd {
 }
 
 button.text:hover,
+button[data-ui-variant="text"]:hover,
+a:not(.button):not([data-ui-variant="button"]):hover,
 .button.text:hover,
 .textButton:hover {
   color: var(--caret-color);
@@ -20,7 +22,7 @@ button.text.active,
   color: var(--main-color);
 }
 
-button:not(.textButton):hover,
+button:not(.textButton):not([data-ui-variant="text"]):hover,
 .button:hover,
 input[type="button"]:hover,
 input[type="reset"]:hover,
@@ -32,10 +34,4 @@ input[type="submit"]:hover {
 .scrollToTopButton:hover {
   background: var(--caret-color);
   color: var(--bg-color);
-}
-
-nav button:hover,
-nav a:hover {
-  color: var(--caret-color);
-  background: transparent;
 }

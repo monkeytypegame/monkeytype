@@ -100,7 +100,7 @@ footer button:hover > .relative > i {
 }
 
 .button:hover,
-button:not(.textButton):not(.text):hover,
+button:not(.textButton):not(.text):not([data-ui-variant="text"]):hover,
 [data-nav-item]:hover {
   animation: rainbow-button 2s alternate ease-in-out infinite;
 }
