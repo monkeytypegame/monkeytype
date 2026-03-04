@@ -38,6 +38,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
   const isActive = (): boolean =>
     (!isAnchor() && !("href" in props) && props.active) ?? false;
 
+  const variant = () => props.variant ?? "button";
+
   const content = (
     <>
       <Show when={props.fa !== undefined}>
@@ -65,14 +67,14 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
       "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
       "[--themable-button-active:var(--main-color)]",
-      props.variant === "text" &&
+      variant() === "text" &&
         "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)] active:text-sub",
-      (props?.variant ?? "button") === "button" &&
+      variant() === "button" &&
         "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)] active:bg-sub",
-      (props?.variant ?? "button") === "button" &&
+      variant() === "button" &&
         isActive() &&
         "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
-      (props?.variant ?? "button") === "text" &&
+      variant() === "text" &&
         isActive() &&
         "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
       {
@@ -106,7 +108,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
-          data-ui-variant={props.variant ?? "button"}
+          data-ui-variant={variant()}
           {...props.dataset}
         >
           {content}
@@ -122,7 +124,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
-          data-ui-variant={props.variant ?? "button"}
+          data-ui-variant={variant()}
           {...props.dataset}
         >
           {content}
