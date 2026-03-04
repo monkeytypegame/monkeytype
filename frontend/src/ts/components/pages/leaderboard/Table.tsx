@@ -160,6 +160,7 @@ function getSpeedColumns({
             user={info.row.original}
             isFriend={isFriend(info.row.original.uid)}
             class="text-[1em]"
+            linkToProfile={true}
           />
         ),
       meta: {
@@ -352,7 +353,15 @@ function getXpColumns({
     }),
     defineColumn("uid", {
       header: "name",
-      cell: (info) => userOverride?.() ?? <User user={info.row.original} />,
+      cell: (info) =>
+        userOverride?.() ?? (
+          <User
+            user={info.row.original}
+            isFriend={isFriend(info.row.original.uid)}
+            class="text-[1em]"
+            linkToProfile={true}
+          />
+        ),
       meta: {
         cellMeta: () => ({ class: "w-full" }),
       },

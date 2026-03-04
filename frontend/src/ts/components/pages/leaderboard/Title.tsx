@@ -96,7 +96,7 @@ export function Title(props: {
           <div class="h-[1.75em] w-[0.25em] rounded bg-sub-alt"></div>
           <Button
             text={subTitle()?.buttonText}
-            type="text"
+            variant="text"
             onClick={props.onPreviousSelect}
             fa={{
               icon: props.selection.previous ? "fa-forward" : "fa-backward",

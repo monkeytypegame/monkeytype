@@ -19,7 +19,6 @@ import {
   setPage,
   setSelection,
 } from "../../../stores/leaderboard-selection";
-import { qsr } from "../../../utils/dom";
 import AsyncContent from "../../common/AsyncContent";
 import { Conditional } from "../../common/Conditional";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -31,12 +30,6 @@ import { Title } from "./Title";
 import { UserRank } from "./UserRank";
 
 const pageName: PageName = "leaderboards";
-
-qsr(`nav .view-${pageName}`).on("mouseenter", () => {
-  prefetch();
-});
-
-//used for url params so we need this global
 
 export function LeaderboardPage(): JSXElement {
   const isOpen = () => getActivePage() === pageName;
@@ -265,7 +258,7 @@ export function LeaderboardPage(): JSXElement {
   );
 }
 
-function prefetch(): void {
+export function prefetchLeaderboardPage(): void {
   void queryClient.prefetchQuery(
     getLeaderboardQueryOptions({
       type: "allTime",

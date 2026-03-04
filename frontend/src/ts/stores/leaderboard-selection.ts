@@ -47,7 +47,7 @@ export type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
 const [getSelectionLs, setSelection] = lsSelection();
 export const [getPage, setPage] = createSignal(0);
 
-export const getSelection = () => {
+export const getSelection = (): Selection => {
   if (
     getServerConfiguration()?.connections.enabled === false &&
     getSelectionLs().friendsOnly

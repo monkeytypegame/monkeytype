@@ -19,6 +19,7 @@ import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
 import { prefetchAboutPage } from "../../pages/AboutPage";
+import { prefetchLeaderboardPage } from "../../pages/leaderboard/LeaderboardPage";
 import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
@@ -91,6 +92,9 @@ export function Nav(): JSXElement {
         }}
         class={buttonClass()}
         href="/leaderboards"
+        onMouseEnter={() => {
+          prefetchLeaderboardPage();
+        }}
       />
       <Button
         variant="text"
