@@ -23,7 +23,6 @@ function revert(): void {
   qs("#ad-result-small-wrapper")?.show();
   qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
-  qs("#notificationCenter")?.show();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
   qs(".pageTest .buttons")?.show();
@@ -86,7 +85,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   setIsScreenshotting(true);
   qs(".pageTest .buttons")?.hide();
-  qs("#notificationCenter")?.hide();
   qs(".pageTest .loginTip")?.hide();
   qs("noscript")?.hide();
   qs("#nocss")?.hide();

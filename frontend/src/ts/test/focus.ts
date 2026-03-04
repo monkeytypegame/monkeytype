@@ -25,7 +25,6 @@ function initializeCache(): void {
     "footer",
     "main",
     "#bannerCenter",
-    "#notificationCenter",
     "#capsWarning",
     "#ad-vertical-right-wrapper",
     "#ad-vertical-left-wrapper",

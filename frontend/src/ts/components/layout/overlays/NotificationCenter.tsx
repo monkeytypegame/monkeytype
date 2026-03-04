@@ -1,7 +1,11 @@
 import { AnimationParams } from "animejs";
 import { For, JSXElement, onMount } from "solid-js";
 
-import { getGlobalOffsetTop } from "../../../signals/core";
+import {
+  getFocus,
+  getGlobalOffsetTop,
+  getIsScreenshotting,
+} from "../../../signals/core";
 import {
   Notification,
   pushNotification,
@@ -9,6 +13,7 @@ import {
   removeNotification,
   clearAllNotifications as clearAll,
 } from "../../../stores/notifications";
+import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/misc";
 import { Anime } from "../../common/anime/Anime";
 import { AnimePresence } from "../../common/anime/AnimePresence";
@@ -127,7 +132,10 @@ export function NotificationCenter(): JSXElement {
 
   return (
     <div
-      class="fixed right-4 z-99999999 grid w-87.5 pt-4"
+      class={cn(
+        "fixed right-4 z-99999999 grid w-87.5 pt-4",
+        (getFocus() || getIsScreenshotting()) && "opacity-0",
+      )}
       style={{ "margin-top": `${getGlobalOffsetTop()}px` }}
     >
       <AnimeShow when={stickyCount() > 1}>
