@@ -123,7 +123,7 @@ export function User(props: Props): JSXElement {
           ref={(el) => (levelEl = el)}
           animation={flashAnimation()}
           class={cn(
-            "[--themable-bg-color:var(--sub-color)] [--themable-flash-color:var(--main-color)] [--themable-text-color:var(--bg-color)]",
+            "[--themable-bg-color:var(--sub-color)] [--themable-flash-color:var(--main-color)] [--themable-hover-bg-color:var(--text-color)] [--themable-text-color:var(--bg-color)]",
             "bg-(--themable-bg-color) text-(--themable-text-color)",
             "rounded-half px-[0.5em] py-[0.1em] text-[0.7em]",
             { "transition-colors duration-125": !isAnimating() },

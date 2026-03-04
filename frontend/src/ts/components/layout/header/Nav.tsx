@@ -169,7 +169,7 @@ export function Nav(): JSXElement {
                 type="text"
                 class={cn(
                   "h-full",
-                  "hover:[&_.level]:bg-text hover:[&_svg]:fill-text",
+                  "hover:**:data-[ui-element='userLevel']:bg-text hover:[&_svg]:fill-text",
                   { "opacity-(--nav-focus-opacity)": getFocus() },
                 )}
                 href="/account"
