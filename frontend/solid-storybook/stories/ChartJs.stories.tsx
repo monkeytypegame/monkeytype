@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { ChartJs } from "../../src/ts/components/common/ChartJs";
 
 const meta = preview.meta({
-  title: "Monkeytype/ChartJs",
+  title: "Common/ChartJs",
   component: ChartJs as any,
   parameters: {
     layout: "padded",

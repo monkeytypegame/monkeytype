@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { UserFlags } from "../../src/ts/components/common/UserFlags";
 
 const meta = preview.meta({
-  title: "Monkeytype/UserFlags",
+  title: "Common/UserFlags",
   component: UserFlags,
   parameters: {
     layout: "centered",

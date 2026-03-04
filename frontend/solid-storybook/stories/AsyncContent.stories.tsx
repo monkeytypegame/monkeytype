@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
 });
 
 const meta = preview.meta({
-  title: "Monkeytype/AsyncContent",
+  title: "Common/AsyncContent",
   // oxlint-disable-next-line typescript/no-unsafe-assignment -- generic component
   component: AsyncContent as unknown as () => ReturnType<typeof AsyncContent>,
   parameters: {

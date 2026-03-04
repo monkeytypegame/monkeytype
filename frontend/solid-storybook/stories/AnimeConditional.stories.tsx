@@ -11,7 +11,7 @@ type AnimeConditionalProps = {
 };
 
 const meta = preview.meta({
-  title: "Monkeytype/AnimeConditional",
+  title: "Common/Anime/AnimeConditional",
   component: AnimeConditional as Component<AnimeConditionalProps>,
   parameters: {
     layout: "centered",

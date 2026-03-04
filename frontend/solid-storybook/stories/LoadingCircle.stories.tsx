@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { LoadingCircle } from "../../src/ts/components/common/LoadingCircle";
 
 const meta = preview.meta({
-  title: "Monkeytype/LoadingCircle",
+  title: "Common/LoadingCircle",
   component: LoadingCircle,
   parameters: {
     layout: "centered",

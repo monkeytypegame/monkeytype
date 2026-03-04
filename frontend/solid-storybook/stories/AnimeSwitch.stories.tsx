@@ -5,7 +5,7 @@ import { AnimeMatch } from "../../src/ts/components/common/anime/AnimeMatch";
 import { AnimeSwitch } from "../../src/ts/components/common/anime/AnimeSwitch";
 
 const meta = preview.meta({
-  title: "Monkeytype/AnimeSwitch",
+  title: "Common/Anime/AnimeSwitch",
   component: AnimeSwitch as Component,
   parameters: {
     layout: "centered",

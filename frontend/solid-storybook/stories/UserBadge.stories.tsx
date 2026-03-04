@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { UserBadge } from "../../src/ts/components/common/UserBadge";
 
 const meta = preview.meta({
-  title: "Monkeytype/UserBadge",
+  title: "Common/UserBadge",
   component: UserBadge,
   parameters: {
     layout: "centered",

@@ -11,7 +11,7 @@ import {
 } from "../../src/ts/components/ui/table/Table";
 
 const meta = preview.meta({
-  title: "Monkeytype/Table",
+  title: "UI/Table",
   component: Table,
   parameters: {
     layout: "padded",

@@ -10,7 +10,7 @@ type ConditionalProps = {
 };
 
 const meta = preview.meta({
-  title: "Monkeytype/Conditional",
+  title: "Common/Conditional",
   component: Conditional as Component<ConditionalProps>,
   parameters: {
     layout: "centered",

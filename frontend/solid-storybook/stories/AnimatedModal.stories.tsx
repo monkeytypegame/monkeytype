@@ -22,7 +22,7 @@ function ModalTrigger(props: { modalId: ModalId; label: string }) {
 }
 
 const meta = preview.meta({
-  title: "Monkeytype/AnimatedModal",
+  title: "Common/AnimatedModal",
   component: AnimatedModal,
   parameters: {
     layout: "fullscreen",

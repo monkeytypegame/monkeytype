@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { User } from "../../src/ts/components/common/User";
 
 const meta = preview.meta({
-  title: "Monkeytype/User",
+  title: "Common/User",
   component: User,
   parameters: {
     layout: "centered",

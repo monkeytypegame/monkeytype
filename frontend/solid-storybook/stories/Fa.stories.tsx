@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { Fa } from "../../src/ts/components/common/Fa";
 
 const meta = preview.meta({
-  title: "Monkeytype/Fa",
+  title: "Common/Fa",
   component: Fa,
   parameters: {
     layout: "centered",

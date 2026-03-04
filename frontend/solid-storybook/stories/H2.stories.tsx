@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { H2 } from "../../src/ts/components/common/Headers";
 
 const metaH2 = preview.meta({
-  title: "Monkeytype/H2",
+  title: "Common/H2",
   component: H2,
   parameters: {
     layout: "centered",

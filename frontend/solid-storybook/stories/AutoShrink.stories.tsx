@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { AutoShrink } from "../../src/ts/components/common/AutoShrink";
 
 const meta = preview.meta({
-  title: "Monkeytype/AutoShrink",
+  title: "Common/AutoShrink",
   component: AutoShrink,
   parameters: {
     layout: "centered",

@@ -4,7 +4,7 @@ import { Component, createSignal } from "solid-js";
 import { AnimeShow } from "../../src/ts/components/common/anime/AnimeShow";
 
 const meta = preview.meta({
-  title: "Monkeytype/AnimeShow",
+  title: "Common/Anime/AnimeShow",
   component: AnimeShow as Component<{
     when: boolean;
     slide?: true;

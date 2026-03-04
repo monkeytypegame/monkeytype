@@ -3,7 +3,7 @@ import preview from "#.storybook/preview";
 import { DiscordAvatar } from "../../src/ts/components/common/DiscordAvatar";
 
 const meta = preview.meta({
-  title: "Monkeytype/DiscordAvatar",
+  title: "Common/DiscordAvatar",
   component: DiscordAvatar,
   parameters: {
     layout: "centered",

@@ -4,7 +4,7 @@ import { Component } from "solid-js";
 import { NotificationBubble } from "../../src/ts/components/common/NotificationBubble";
 
 const meta = preview.meta({
-  title: "Monkeytype/NotificationBubble",
+  title: "Common/NotificationBubble",
   component: NotificationBubble,
   parameters: {
     layout: "centered",

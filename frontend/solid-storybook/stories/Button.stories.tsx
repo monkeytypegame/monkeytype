@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 import { Button } from "../../src/ts/components/common/Button";
 
 const meta = preview.meta({
-  title: "Monkeytype/Button",
+  title: "Common/Button",
   component: Button,
   parameters: {
     layout: "centered",

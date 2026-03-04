@@ -5,7 +5,7 @@ import { z } from "zod";
 import { ValidatedInput } from "../../src/ts/components/ui/ValidatedInput";
 
 const meta = preview.meta({
-  title: "Monkeytype/ValidatedInput",
+  title: "UI/ValidatedInput",
   component: ValidatedInput as Component<{
     value?: string;
     placeholder?: string;
