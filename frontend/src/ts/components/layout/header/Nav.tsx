@@ -173,7 +173,9 @@ export function Nav(): JSXElement {
                 )}
                 href="/account"
                 router-link
-                data-nav-item="account"
+                dataset={{
+                  "data-nav-item": "account",
+                }}
               >
                 <User
                   user={snap()}
