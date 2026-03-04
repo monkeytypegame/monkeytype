@@ -25,7 +25,7 @@ export class Wordset {
 
   randomWord(mode: FunboxWordsFrequency): string {
     if (mode === "zipf") {
-      return this.words[zipfyRandomArrayIndex(this.words.length)] as string;
+      return this.words[zipfyRandomArrayIndex(this.length)] as string;
     } else {
       return randomElementFromArray(this.words);
     }
