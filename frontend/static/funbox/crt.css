@@ -120,7 +120,7 @@ body.crtmode #paceCaret.carrot {
   box-shadow: none;
 }
 
-body.crtmode #logo .icon {
+body.crtmode [data-ui-element="logo"] svg {
   filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
 }

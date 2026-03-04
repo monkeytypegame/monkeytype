@@ -1,3 +1,6 @@
 [data-nav-item] {
   color: #76bb40;
+  &:hover {
+    color: var(--main-color);
+  }
 }
