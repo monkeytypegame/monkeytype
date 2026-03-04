@@ -34,7 +34,6 @@
   }
 }
 
-.button.discord::after,
 #caret,
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
@@ -42,7 +41,7 @@
   animation: aurora-bg 5s linear infinite;
 }
 
-#logo .bottom,
+[data-ui-element="logoSubtext"],
 #result .stats .group .bottom,
 [data-nav-item]:hover,
 footer button:hover,
