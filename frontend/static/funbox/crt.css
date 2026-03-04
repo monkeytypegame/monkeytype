@@ -125,6 +125,11 @@ body.crtmode header [data-ui-element="logo"] svg {
     drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
 }
 
+body.crtmode header [data-ui-element="navAvatar"] svg {
+  filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
+    drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
+}
+
 body.crtmode [data-ui-element="navAvatar"],
 body.crtmode [data-ui-element="userLevel"],
 body.crtmode [data-ui-element="xpBar"],
