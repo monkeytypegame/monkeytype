@@ -3,7 +3,6 @@ import { JSXElement, Show } from "solid-js";
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
 import { getSnapshot } from "../../../stores/snapshot";
-import { AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
@@ -14,13 +13,16 @@ type Props = {
 
 export function AccountMenu(props: Props): JSXElement {
   const buttonClass =
-    "w-full justify-start rounded-none px-3 py-2 whitespace-nowrap gap-2";
+    "w-full justify-start px-3 py-2 whitespace-nowrap gap-2 bg-transparent";
 
   return (
-    <AnimeShow when={props.show} class="absolute right-0 z-1000 w-auto text-xs">
-      <div class="h-2"></div>
+    <div
+      class="pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125 [&_a]:pointer-events-auto [&_button]:pointer-events-auto"
+      data-ui-element="accountMenu"
+    >
+      <div class="h-3"></div>
       <div
-        class="overflow-hidden rounded bg-sub-alt ring-6 ring-bg"
+        class="grid grid-flow-row rounded bg-sub-alt ring-6 ring-bg"
         data-ui-element="accountMenu"
       >
         <Button
@@ -83,6 +85,6 @@ export function AccountMenu(props: Props): JSXElement {
           }}
         />
       </div>
-    </AnimeShow>
+    </div>
   );
 }

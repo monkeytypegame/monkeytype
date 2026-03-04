@@ -160,11 +160,11 @@ export function Nav(): JSXElement {
         then={(snap) => (
           <>
             <div
-              class="relative"
-              onMouseEnter={() => setShowMenu(true)}
-              onMouseLeave={() => setShowMenu(false)}
-              onFocusIn={() => setShowMenu(true)}
-              onFocusOut={() => setShowMenu(false)}
+              class={cn(
+                "relative",
+                "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
+                "focus-within:**:data-[ui-element='accountMenu']:pointer-events-auto focus-within:**:data-[ui-element='accountMenu']:opacity-100",
+              )}
             >
               <Button
                 variant="text"
