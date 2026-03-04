@@ -27,9 +27,6 @@ header [data-ui-element="logoText"] {
 
 [data-ui-element="logoSubtext"] {
   margin-top: 0em;
-}
-
-header [data-ui-element="logoSubtext"] {
   /* prevent it from being transparent */
   -webkit-text-fill-color: #385eca;
 }

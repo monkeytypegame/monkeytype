@@ -1,7 +1,3 @@
-nav {
-  gap: 0.5rem;
-}
-
 header[data-focused] [data-nav-item],
 header[data-focused] nav:before,
 header[data-focused] nav:after {
@@ -43,6 +39,14 @@ header[data-focused] nav:after {
   fill: var(--bg-color);
 }
 
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
+}
+
 [data-ui-element="userLevel"] {
   --themable-flash-color: var(--text-color);
   --themable-bg-color: var(--bg-color);
@@ -50,58 +54,48 @@ header[data-focused] nav:after {
   --themable-hover-bg-color: var(--bg-color);
 }
 
-[data-nav-item="alerts"] [data-ui-element="notificationBubble"],
-[data-nav-item="account"] [data-ui-element="notificationBubble"] {
-  box-shadow: none;
-  right: -0.25em;
-  top: -0.25em;
-}
+body.crtmode {
+  & [data-nav-item="test"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #553d94 20%, transparent),
+      -3px 0 color-mix(in srgb, #553d94 30%, transparent),
+      0 0 3px;
+  }
 
-nav .level {
-  background: var(--color-bg);
-  color: var(--main-color);
-}
+  & [data-nav-item="leaderboards"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #6851a4 20%, transparent),
+      -3px 0 color-mix(in srgb, #6851a4 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="test"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #553d94 20%, transparent),
-    -3px 0 color-mix(in srgb, #553d94 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="about"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #7962b3 20%, transparent),
+      -3px 0 color-mix(in srgb, #7962b3 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="leaderboards"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #6851a4 20%, transparent),
-    -3px 0 color-mix(in srgb, #6851a4 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="settings"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #8c76c3 20%, transparent),
+      -3px 0 color-mix(in srgb, #8c76c3 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="about"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #7962b3 20%, transparent),
-    -3px 0 color-mix(in srgb, #7962b3 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="alerts"],
+  & [data-nav-item="account"],
+  & [data-nav-item="login"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
+      -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="settings"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #8c76c3 20%, transparent),
-    -3px 0 color-mix(in srgb, #8c76c3 30%, transparent),
-    0 0 3px;
-}
-
-body.crtmode [data-nav-item="alerts"],
-body.crtmode [data-nav-item="account"],
-body.crtmode [data-nav-item="login"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
-    -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
-    0 0 3px;
-}
-
-body.crtmode header[data-focused] [data-nav-item] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
-    -3px 0 color-mix(in srgb, #99989f 30%, transparent),
-    0 0 3px;
+  & header[data-focused] [data-nav-item] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
+      -3px 0 color-mix(in srgb, #99989f 30%, transparent),
+      0 0 3px;
+  }
 }

@@ -2,14 +2,23 @@
 [data-nav-item="leaderboards"],
 [data-nav-item="about"] {
   color: #88dbdf;
+  &:hover {
+    color: color-mix(in srgb, #88dbdf 75%, black 25%);
+  }
 }
 
 [data-nav-item="settings"] {
   color: #ff585d;
+  &:hover {
+    color: color-mix(in srgb, #ff585d 75%, black 25%);
+  }
 }
 
 [data-nav-item="alerts"],
 [data-nav-item="account"],
 [data-nav-item="login"] {
   color: #f3e03b;
+  &:hover {
+    color: color-mix(in srgb, #f3e03b 75%, black 25%);
+  }
 }

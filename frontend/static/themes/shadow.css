@@ -26,17 +26,13 @@ header [data-ui-element="logoText"] {
   color: white;
 }
 
-header .config .group .buttons .textButton.active,
 #result .stats .group,
 [data-nav-item]:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
+footer button:hover,
 a:not(.button):hover {
   animation: shadow-repeat 3s linear infinite forwards;
 }
 
-#logo,
 #typingTest .word letter.correct,
 #typingTest #words.highlight-word .word.typed letter.correct,
 #typingTest #words.highlight-next-word .word.typed letter.correct,
