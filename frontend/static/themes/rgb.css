@@ -72,7 +72,7 @@
   animation: rgb-bg 5s linear infinite !important;
 }
 
-header.focus .button.discord::after,
+header[data-focused] .button.discord::after,
 header .button.discord.dotHidden::after {
   animation-name: none !important;
 }

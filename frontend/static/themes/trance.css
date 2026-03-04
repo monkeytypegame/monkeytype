@@ -30,7 +30,7 @@
   animation: trance-bg 5s linear infinite;
 }
 
-header.focus .button.discord::after,
+header[data-focused] .button.discord::after,
 header .button.discord.dotHidden::after {
   animation-name: none !important;
 }

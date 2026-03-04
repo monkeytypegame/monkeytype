@@ -2,9 +2,9 @@ nav {
   gap: 0.5rem;
 }
 
-header.focus [data-nav-item],
-header.focus nav:before,
-header.focus nav:after {
+header[data-focused] [data-nav-item],
+header[data-focused] nav:before,
+header[data-focused] nav:after {
   background: #99989f;
 }
 
@@ -88,7 +88,7 @@ body.crtmode [data-nav-item="login"] {
     0 0 3px;
 }
 
-body.crtmode header.focus [data-nav-item] {
+body.crtmode header[data-focused] [data-nav-item] {
   box-shadow:
     3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
     -3px 0 color-mix(in srgb, #99989f 30%, transparent),
