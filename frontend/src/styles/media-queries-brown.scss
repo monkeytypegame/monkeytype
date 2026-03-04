@@ -2,13 +2,6 @@
 @use "./media.scss" as *;
 
 @include media-query(brown) {
-  header {
-    nav {
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-      gap: 0.1rem;
-    }
-  }
   .page404 {
     .content {
       grid-template-columns: 1fr;

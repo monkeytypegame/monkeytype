@@ -20,7 +20,7 @@ export function ContactModal(): JSXElement {
       </div>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <Button
-          type="button"
+          variant="button"
           href="mailto:contact@monkeytype.com?subject=[Question] "
           text="Question"
           class={buttonClass}
@@ -30,7 +30,7 @@ export function ContactModal(): JSXElement {
           }}
         />
         <Button
-          type="button"
+          variant="button"
           href="mailto:contact@monkeytype.com?subject=[Feedback] "
           fa={{
             icon: "fa-comment-dots",
@@ -40,7 +40,7 @@ export function ContactModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="mailto:support@monkeytype.com?subject=[Bug] "
           fa={{
             icon: "fa-bug",
@@ -50,7 +50,7 @@ export function ContactModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="mailto:support@monkeytype.com?subject=[Account] "
           fa={{
             icon: "fa-user-circle",
@@ -60,7 +60,7 @@ export function ContactModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="mailto:jack@monkeytype.com?subject=[Business] "
           fa={{
             icon: "fa-briefcase",
@@ -70,7 +70,7 @@ export function ContactModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="mailto:contact@monkeytype.com?subject=[Other] "
           fa={{
             icon: "fa-ellipsis-h",

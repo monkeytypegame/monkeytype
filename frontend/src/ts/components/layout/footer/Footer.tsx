@@ -25,7 +25,7 @@ export function Footer(): JSXElement {
       >
         <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
           <Button
-            type="text"
+            variant="text"
             text="contact"
             fa={{
               icon: "fa-envelope",
@@ -34,7 +34,7 @@ export function Footer(): JSXElement {
             onClick={() => showModal("Contact")}
           />
           <Button
-            type="text"
+            variant="text"
             text="support"
             fa={{
               icon: "fa-donate",
@@ -43,7 +43,7 @@ export function Footer(): JSXElement {
             onClick={() => showModal("Support")}
           />
           <Button
-            type="text"
+            variant="text"
             text="github"
             fa={{
               icon: "fa-code",
@@ -52,7 +52,7 @@ export function Footer(): JSXElement {
             href="https://github.com/monkeytypegame/monkeytype"
           />
           <Button
-            type="text"
+            variant="text"
             text="discord"
             fa={{
               icon: "fa-discord",
@@ -62,7 +62,7 @@ export function Footer(): JSXElement {
             href="https://www.discord.gg/monkeytype"
           />
           <Button
-            type="text"
+            variant="text"
             text="twitter"
             fa={{
               icon: "fa-twitter",
@@ -72,7 +72,7 @@ export function Footer(): JSXElement {
             href="https://x.com/monkeytype"
           />
           <Button
-            type="text"
+            variant="text"
             text="terms"
             fa={{
               icon: "fa-file-contract",
@@ -82,7 +82,7 @@ export function Footer(): JSXElement {
           />
           <Button
             href="/security-policy.html"
-            type="text"
+            variant="text"
             text="security"
             fa={{
               icon: "fa-shield-alt",
@@ -91,7 +91,7 @@ export function Footer(): JSXElement {
           />
           <Button
             href="/privacy-policy.html"
-            type="text"
+            variant="text"
             text="privacy"
             fa={{
               icon: "fa-lock",

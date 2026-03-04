@@ -1,4 +1,4 @@
-import { JSX, JSXElement, Show } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { Conditional } from "./Conditional";
@@ -8,17 +8,19 @@ type BaseProps = {
   text?: string;
   fa?: FaProps;
   class?: string;
-  classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
-  type?: "text" | "button";
+  variant?: "text" | "button";
   children?: JSXElement;
   ariaLabel?:
     | string
     | { text: string; position: "up" | "down" | "left" | "right" };
   "router-link"?: true;
+  onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  dataset?: Record<string, string>;
 };
 
 type ButtonProps = BaseProps & {
-  onClick: () => void;
   href?: never;
   sameTarget?: true;
   active?: boolean;
@@ -27,13 +29,14 @@ type ButtonProps = BaseProps & {
 
 type AnchorProps = BaseProps & {
   href: string;
-  onClick?: never;
+  // onClick?: never;
   disabled?: never;
 };
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
-  const isAnchor = "href" in props;
-  const isActive = (): boolean => (!isAnchor && props.active) ?? false;
+  const isAnchor = (): boolean => "href" in props;
+  const isActive = (): boolean =>
+    (!isAnchor() && !("href" in props) && props.active) ?? false;
 
   const content = (
     <>
@@ -58,26 +61,32 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   const getClasses = (): string => {
     return cn(
-      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-colors transition-opacity duration-125 ease-in-out select-none",
+      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-[color,background,opacity] duration-125 ease-in-out select-none",
       "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
+      "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
+      "[--themable-button-active:var(--main-color)]",
+      props.variant === "text" &&
+        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)]",
+      (props?.variant ?? "button") === "button" &&
+        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)]",
+      (props?.variant ?? "button") === "button" &&
+        isActive() &&
+        "[--themable-button-bg:var(--main-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+      (props?.variant ?? "button") === "button" &&
+        isActive() &&
+        "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
       {
-        "bg-sub-alt hover:bg-text hover:text-bg": props.type !== "text",
-        "bg-transparent text-sub hover:text-text": props.type === "text",
-        [props.class ?? ""]: props.class !== undefined,
-        "bg-main text-bg hover:bg-text": isActive(),
-
-        ...props.classList,
+        "pointer-events-none opacity-[0.33]": props.disabled,
       },
       {
-        "opacity-[0.33]": props.disabled,
-        "bg-text text-bg": isActive() && props.disabled,
+        [props.class ?? ""]: props.class !== undefined,
       },
     );
   };
 
   return (
     <Conditional
-      if={isAnchor}
+      if={isAnchor()}
       then={
         <a
           class={getClasses()}
@@ -94,6 +103,11 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           }
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
+          onClick={() => props.onClick?.()}
+          onMouseEnter={() => props.onMouseEnter?.()}
+          onMouseLeave={() => props.onMouseLeave?.()}
+          data-ui-variant={props.variant ?? "button"}
+          {...props.dataset}
         >
           {content}
         </a>
@@ -103,9 +117,13 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           type="button"
           class={getClasses()}
           onClick={() => props.onClick?.()}
+          onMouseEnter={() => props.onMouseEnter?.()}
+          onMouseLeave={() => props.onMouseLeave?.()}
           {...ariaLabel()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
+          data-ui-variant={props.variant ?? "button"}
+          {...props.dataset}
         >
           {content}
         </button>

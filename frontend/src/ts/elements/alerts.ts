@@ -13,10 +13,9 @@ import {
 } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { MonkeyMail } from "@monkeytype/schemas/users";
-import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
 import { animate } from "animejs";
-import { qs, qsr } from "../utils/dom";
+import { qsr } from "../utils/dom";
 
 const alertsPopupEl = qsr("#alertsPopup");
 const accountAlertsListEl = alertsPopupEl.qsr(".accountAlerts .list");
@@ -48,7 +47,6 @@ const state: State = {
 };
 
 function hide(): void {
-  setNotificationBubbleVisible(false);
   DB.updateInboxUnreadSize(0);
   void modal.hide({
     afterAnimation: async () => {
@@ -111,16 +109,13 @@ function hide(): void {
       }
 
       if (totalXpClaimed > 0) {
-        const snapxp = DB.getSnapshot()?.xp ?? 0;
-        void XPBar.update(snapxp, totalXpClaimed);
-
         DB.addXp(totalXpClaimed);
       }
     },
   });
 }
 
-async function show(): Promise<void> {
+export async function showAlerts(): Promise<void> {
   void modal.show({
     beforeAnimation: async () => {
       if (isAuthenticated()) {
@@ -313,14 +308,6 @@ function fillNotifications(): void {
   }
 }
 
-export function setNotificationBubbleVisible(tf: boolean): void {
-  if (tf) {
-    qs("header nav .showAlerts .notificationBubble")?.show();
-  } else {
-    qs("header nav .showAlerts .notificationBubble")?.hide();
-  }
-}
-
 function updateInboxSize(): void {
   const remainingItems = accountAlerts.length - mailToDelete.length;
   alertsPopupEl
@@ -454,10 +441,6 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
   }
 }
 
-qs("header nav .showAlerts")?.on("click", () => {
-  void show();
-});
-
 NotificationEvent.subscribe((message, level, options) => {
   let title = "Notice";
   if (level === -1) {
@@ -482,12 +465,7 @@ NotificationEvent.subscribe((message, level, options) => {
 });
 
 AuthEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
-    const snapshot = DB.getSnapshot();
-    setNotificationBubbleVisible((snapshot?.inboxUnreadSize ?? 0) > 0);
-  }
   if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
-    setNotificationBubbleVisible(false);
     accountAlerts = [];
     mailToMarkRead = [];
     mailToDelete = [];

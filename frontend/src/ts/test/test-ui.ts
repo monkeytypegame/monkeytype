@@ -52,7 +52,6 @@ import * as Ligatures from "./break-ligatures";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
-import * as XPBar from "../elements/xp-bar";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
@@ -64,6 +63,7 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../signals/theme";
+import { skipBreakdown } from "../signals/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1916,7 +1916,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    void XPBar.skipBreakdown();
+    skipBreakdown();
   }
 
   currentTestLine = 0;
