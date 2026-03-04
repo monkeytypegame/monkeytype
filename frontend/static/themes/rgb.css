@@ -61,10 +61,9 @@
   }
 }
 
-.button.discord::after,
-.pageSettings .section .buttons .button.active,
+.pageSettings .section .buttons button.active,
 .pageSettings .section.languages .buttons .language.active,
-.pageAccount .group.filterButtons .buttons .button.active {
+.pageAccount .group.filterButtons .buttons button.active {
   animation: rgb-bg 5s linear infinite;
 }
 
@@ -72,18 +71,20 @@
   animation: rgb-bg 5s linear infinite !important;
 }
 
-header[data-focused] .button.discord::after,
-header .button.discord.dotHidden::after {
-  animation-name: none !important;
+header[data-focused] {
+  & [data-ui-element="logoSubtext"] {
+    animation: none;
+  }
+  & [data-ui-element="logo"] svg path {
+    animation: none;
+  }
 }
 
 [data-ui-element="logoSubtext"],
-header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 [data-nav-item]:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
+footer button:hover,
+footer a:hover,
 a:not(.button):hover,
 #words.flipped .word {
   animation: rgb 5s linear infinite;
@@ -98,6 +99,7 @@ a:not(.button):hover,
   --untyped-letter-animation: rgb 5s linear infinite;
 }
 
-header [data-ui-element="logo"] path {
+header [data-ui-element="logo"] svg path,
+header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
   animation: rgb-fill 5s linear infinite;
 }
