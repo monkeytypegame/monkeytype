@@ -66,21 +66,21 @@ body.crtmode header.focus nav > .textButton {
 }
 
 /* color individual parts of the mt logo */
-#logo .icon svg path:nth-child(2),
-#logo .icon svg path:nth-child(8) {
+[data-ui-element="logo"] svg path:nth-child(2),
+[data-ui-element="logo"] svg path:nth-child(8) {
   fill: var(--text-color);
 }
-#logo .icon svg path:nth-child(1),
-#logo .icon svg path:nth-child(6),
-#logo .icon svg path:nth-child(7) {
+[data-ui-element="logo"] svg path:nth-child(1),
+[data-ui-element="logo"] svg path:nth-child(6),
+[data-ui-element="logo"] svg path:nth-child(7) {
   fill: var(--sub-color);
 }
-#logo .icon svg path:nth-child(3),
-#logo .icon svg path:nth-child(4),
-#logo .icon svg path:nth-child(5) {
+[data-ui-element="logo"] svg path:nth-child(3),
+[data-ui-element="logo"] svg path:nth-child(4),
+[data-ui-element="logo"] svg path:nth-child(5) {
   fill: var(--main-color);
 }
 
-#logo .icon svg path:nth-child(9) {
+[data-ui-element="logo"] svg path:nth-child(9) {
   fill: #9a7a61;
 }
