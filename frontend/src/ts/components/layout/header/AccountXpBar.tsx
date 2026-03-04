@@ -95,6 +95,8 @@ export function AccountXpBar(): JSXElement {
         promises.push(runBreakdown(breakdown, isStale));
         setShowBreakdown(true);
       } else {
+        setShowBreakdown(false);
+        setBreakdownItems([]);
         setTotal(data.addedXp);
       }
       setShowBar(true);
