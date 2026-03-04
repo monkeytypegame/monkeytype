@@ -106,12 +106,17 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
 [data-nav-item="account"],
 [data-nav-item="alerts"] {
   background: #fc76d9;
+  & svg {
+    fill: var(--bg-color);
+  }
 }
 
-[data-nav-item="alerts"] [data-ui-element="notificationBubble"],
-[data-ui-element="navAvatar"] [data-ui-element="notificationBubble"] {
-  box-shadow: none;
-  background: var(--bg-color);
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
 }
 
 [data-ui-element="userLevel"] {
@@ -125,61 +130,59 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
   background: #ab92e1;
 }
 
-[data-nav-item="account"] svg {
-  fill: var(--bg-color);
-}
+body.crtmode {
+  & [data-nav-item="test"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
+      -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="test"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
-    -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="leaderboards"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
+      -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="leaderboards"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
-    -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="about"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #7ae1bf 20%, transparent),
+      -3px 0 color-mix(in srgb, #7ae1bf 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="about"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #7ae1bf 20%, transparent),
-    -3px 0 color-mix(in srgb, #7ae1bf 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="settings"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #ff5869 20%, transparent),
+      -3px 0 color-mix(in srgb, #ff5869 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="settings"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #ff5869 20%, transparent),
-    -3px 0 color-mix(in srgb, #ff5869 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="account"],
+  & [data-nav-item="alerts"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
+      -3px 0 color-mix(in srgb, #fc76d9 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="account"],
-body.crtmode [data-nav-item="alerts"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
-    -3px 0 color-mix(in srgb, #fc76d9 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="login"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
+      -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="login"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
-    -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
-    0 0 3px;
-}
+  & #caret {
+    box-shadow: none !important;
+    filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
+      drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
+  }
 
-body.crtmode #caret {
-  box-shadow: none !important;
-  filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
-    drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
-}
-
-body.crtmode header[data-focused] [data-nav-item] {
-  box-shadow:
-    3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow);
+  & header[data-focused] [data-nav-item] {
+    box-shadow:
+      3px 0 1px var(--crt-sub-color-glow),
+      -3px 0 var(--crt-sub-color-glow);
+  }
 }
