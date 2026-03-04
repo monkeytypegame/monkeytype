@@ -916,12 +916,17 @@ body.darkMode {
       }
 
       .modesticky {
-        position: sticky;
         top: calc(1rem - 2px);
         z-index: 2;
-
-        font-size: 1.1rem !important;
-        padding: 0.1rem 0.75rem;
+        vertical-align: top;
+        border-collapse: collapse;
+        background-color: var(--bg-color) !important;
+        * {
+          position: sticky;
+          top: calc(1rem - 2px);
+          z-index: 2;
+          color: var(--sub-color);
+        }
       }
 
       thead {
