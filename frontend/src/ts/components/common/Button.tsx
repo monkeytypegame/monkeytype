@@ -1,4 +1,4 @@
-import { JSX, JSXElement, Show } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { Conditional } from "./Conditional";
@@ -8,7 +8,6 @@ type BaseProps = {
   text?: string;
   fa?: FaProps;
   class?: string;
-  classList?: JSX.HTMLAttributes<HTMLButtonElement>["classList"];
   variant?: "text" | "button";
   children?: JSXElement;
   ariaLabel?:
@@ -63,17 +62,23 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     return cn(
       "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-[color,background,opacity] duration-125 ease-in-out select-none",
       "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
+      "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
+      "[--themable-button-active:var(--main-color)]",
+      props.variant === "text" &&
+        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)]",
+      (props?.variant ?? "button") === "button" &&
+        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)]",
+      (props?.variant ?? "button") === "button" &&
+        isActive() &&
+        "[--themable-button-bg:var(--main-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+      (props?.variant ?? "button") === "button" &&
+        isActive() &&
+        "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
       {
-        "bg-sub-alt hover:bg-text hover:text-bg": props.variant !== "text",
-        "bg-transparent text-sub hover:text-text": props.variant === "text",
-        [props.class ?? ""]: props.class !== undefined,
-        "bg-main text-bg hover:bg-text": isActive(),
-
-        ...props.classList,
+        "pointer-events-none opacity-[0.33]": props.disabled,
       },
       {
-        "opacity-[0.33]": props.disabled,
-        "bg-text text-bg": isActive() && props.disabled,
+        [props.class ?? ""]: props.class !== undefined,
       },
     );
   };

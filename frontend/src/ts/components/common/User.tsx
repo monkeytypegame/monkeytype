@@ -46,8 +46,8 @@ export function User(props: Props): JSXElement {
         setFlashAnimation({
           scale: [1 + 0.5 * rand2, 1],
           backgroundColor: [
-            "var(--themable-flash-color)",
-            "var(--themable-bg-color)",
+            "var(--themable-button-active)",
+            "var(--themable-button-text)",
           ],
           rotate: [10 * rand, 0],
           duration: 2000,
@@ -121,8 +121,7 @@ export function User(props: Props): JSXElement {
           ref={(el) => (levelEl = el)}
           animation={flashAnimation()}
           class={cn(
-            "[--themable-bg-color:var(--sub-color)] [--themable-flash-color:var(--main-color)] [--themable-hover-bg-color:var(--text-color)] [--themable-text-color:var(--bg-color)]",
-            "bg-(--themable-bg-color) text-(--themable-text-color)",
+            "bg-(--themable-button-text) text-(--bg-color)",
             "rounded-half px-[0.5em] py-[0.1em] text-[0.7em]",
             { "transition-colors duration-125": !isAnimating() },
           )}

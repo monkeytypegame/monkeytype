@@ -93,12 +93,19 @@ header[data-focused] {
   background: #ff5869;
 }
 
-[data-nav-item="account"],
 [data-nav-item="alerts"] {
   background: #fc76d9;
   & svg {
     fill: var(--bg-color);
   }
+}
+
+[data-nav-item="account"] {
+  --themable-button-bg: var(--main-color);
+  --themable-button-text: var(--bg-color);
+  --themable-button-hover-bg: var(--main-color);
+  --themable-button-hover-text: var(--bg-color);
+  --themable-button-active: var(--bg-color);
 }
 
 [data-nav-item="alerts"],
@@ -110,10 +117,8 @@ header[data-focused] {
 }
 
 [data-ui-element="userLevel"] {
-  --themable-flash-color: var(--text-color);
-  --themable-bg-color: var(--bg-color);
-  --themable-text-color: var(--main-color);
-  --themable-hover-bg-color: var(--bg-color);
+  color: var(--themable-button-bg);
+  background: var(--themable-button-text);
 }
 
 [data-nav-item="login"] {
