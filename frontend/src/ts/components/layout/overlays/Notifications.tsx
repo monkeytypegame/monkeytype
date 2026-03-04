@@ -97,7 +97,7 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
           class="p-4 text-sm"
           onClick={() => removeNotification(props.notification.id)}
         >
-          <div class="pb-2 opacity-75">
+          <div class="pb-2 opacity-50">
             <Fa {...iconProps()} class="mr-2 inline" />
             {title()}
           </div>
