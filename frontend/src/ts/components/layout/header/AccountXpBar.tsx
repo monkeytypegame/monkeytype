@@ -256,7 +256,9 @@ export function AccountXpBar(): JSXElement {
       // Exact level up, animate to 100% then reset to 0% for next level
       setBarAnimationEase("out(5)");
       await animateBar(100, 1000, isStale);
+      if (isStale()) return;
       setAnimatedLevel(Math.floor(endingLevel));
+      await animateBar(0, 0, isStale);
     } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
       // Same level, just animate to the new percentage
       setBarAnimationEase("out(5)");
