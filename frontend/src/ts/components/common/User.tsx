@@ -90,7 +90,7 @@ export function User(props: Props): JSXElement {
         </div>
       </Show>
       <div
-        class={cn("text-xs transition-colors duration-125", {
+        class={cn("text-xs", {
           "hidden sm:block": props.hideNameOnSmallScreens,
         })}
       >
@@ -110,7 +110,6 @@ export function User(props: Props): JSXElement {
 
       <div class="flex items-center justify-center gap-2">
         <UserFlags
-          class="transition-colors duration-125"
           {...props.user}
           isFriend={props.isFriend}
           iconsOnly={props.iconsOnly}
