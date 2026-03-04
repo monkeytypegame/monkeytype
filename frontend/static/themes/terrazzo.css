@@ -1,5 +1,5 @@
 /* hide buttons while typing */
-header[data-focused] nav > .textButton {
+header[data-focused] [data-nav-item] {
   background: none;
 }
 
@@ -62,7 +62,7 @@ body.crtmode {
       -3px 0 color-mix(in srgb, var(--text-color) 30%, transparent),
       0 0 3px;
   }
-  & header[data-focused] nav > .textButton {
+  & header[data-focused] [data-nav-item] {
     box-shadow: none;
   }
 }
