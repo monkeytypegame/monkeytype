@@ -11,10 +11,6 @@ const meta = preview.meta({
   },
   tags: ["autodocs"],
   argTypes: {
-    type: {
-      control: "select",
-      options: ["button", "text"],
-    },
     active: {
       control: "boolean",
     },
@@ -70,17 +66,17 @@ export const AllVariants = meta.story({
       <Button fa={{ icon: "fa-cog", variant: "solid" }} onClick={fn()} />
       <div class="self-center">Text Type</div>
 
-      <Button type="text" text="Default" onClick={fn()} />
-      <Button type="text" text="Active" active={true} onClick={fn()} />
-      <Button type="text" text="Disabled" disabled={true} onClick={fn()} />
+      <Button variant="text" text="Default" onClick={fn()} />
+      <Button variant="text" text="Active" active={true} onClick={fn()} />
+      <Button variant="text" text="Disabled" disabled={true} onClick={fn()} />
       <Button
-        type="text"
+        variant="text"
         text="Icon"
         fa={{ icon: "fa-cog", variant: "solid" }}
         onClick={fn()}
       />
       <Button
-        type="text"
+        variant="text"
         fa={{ icon: "fa-cog", variant: "solid" }}
         onClick={fn()}
       />
