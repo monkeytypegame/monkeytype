@@ -1,3 +1,11 @@
+:root {
+  /* custom vars */
+  --theme-bg-stripe-color: #434653;
+  --theme-bg-stripe-opacity: 0.1;
+  --theme-accent-stripe-color: #bf8200;
+  --current-color: var(--text-color);
+}
+
 .colorfulMode {
   --current-color: var(--main-color);
 }
