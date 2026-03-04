@@ -55,10 +55,10 @@ function update(mode: Mode): void {
       <tr>
         ${
           mode2memory === pb.mode2
-            ? ""
+            ? "<td></td>"
             : `
-            <td class="modesticky" rowspan="${list.filter((elem) => elem.mode2 === pb.mode2).length}">
-              <div>${pb.mode2}</div>
+            <td class="modesticky">
+              ${pb.mode2}
             </td>
           `
         }
