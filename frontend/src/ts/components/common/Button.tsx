@@ -18,12 +18,12 @@ type BaseProps = {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   dataset?: Record<string, string>;
+  active?: boolean;
 };
 
 type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
-  active?: boolean;
   disabled?: boolean;
 };
 
@@ -66,15 +66,15 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
       "[--themable-button-active:var(--main-color)]",
       props.variant === "text" &&
-        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)]",
+        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)] active:text-sub",
       (props?.variant ?? "button") === "button" &&
-        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)]",
-      (props?.variant ?? "button") === "button" &&
-        isActive() &&
-        "[--themable-button-bg:var(--main-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)] active:bg-sub",
       (props?.variant ?? "button") === "button" &&
         isActive() &&
         "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+      (props?.variant ?? "button") === "text" &&
+        isActive() &&
+        "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
       {
         "pointer-events-none opacity-[0.33]": props.disabled,
       },
