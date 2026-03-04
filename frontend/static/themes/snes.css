@@ -39,11 +39,22 @@ header[data-focused] nav:after {
   background: #9f8ad4;
 }
 
-nav .notificationBubble {
+[data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg {
+  fill: var(--bg-color);
+}
+
+[data-ui-element="userLevel"] {
+  --themable-flash-color: var(--text-color);
+  --themable-bg-color: var(--bg-color);
+  --themable-text-color: var(--sub-color);
+  --themable-hover-bg-color: var(--bg-color);
+}
+
+[data-nav-item="alerts"] [data-ui-element="notificationBubble"],
+[data-nav-item="account"] [data-ui-element="notificationBubble"] {
   box-shadow: none;
-  padding-right: 0.2em;
-  right: 0.85em;
-  left: 2.75em;
+  right: -0.25em;
+  top: -0.25em;
 }
 
 nav .level {
