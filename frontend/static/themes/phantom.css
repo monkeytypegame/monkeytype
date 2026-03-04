@@ -107,7 +107,7 @@ input[type="submit"]:hover {
   animation: phantom-bg 3s linear infinite;
 }
 
-#logo .bottom,
+[data-ui-element="logoSubtext"],
 header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 [data-nav-item]:hover,

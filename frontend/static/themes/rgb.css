@@ -77,7 +77,7 @@ header .button.discord.dotHidden::after {
   animation-name: none !important;
 }
 
-#logo .bottom,
+[data-ui-element="logoSubtext"],
 header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 [data-nav-item]:hover,
