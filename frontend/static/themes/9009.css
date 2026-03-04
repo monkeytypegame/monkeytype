@@ -5,16 +5,28 @@ kbd {
 
 [data-nav-item] {
   color: var(--main-color);
+  &:hover {
+    color: color-mix(in srgb, var(--main-color) 85%, white 15%);
+  }
 }
 
 [data-nav-item="test"] {
   color: var(--error-color);
+  &:hover {
+    color: color-mix(in srgb, var(--error-color) 85%, white 15%);
+  }
 }
 
 [data-nav-item="alerts"] {
-  color: var(--color-alt);
+  color: var(--color-sub-alt);
+  &:hover {
+    color: color-mix(in srgb, var(--color-sub-alt) 85%, black 15%);
+  }
 }
 
 [data-nav-item="settings"] {
   color: var(--caret-color);
+  &:hover {
+    color: color-mix(in srgb, var(--caret-color) 85%, white 15%);
+  }
 }
