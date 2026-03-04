@@ -4,7 +4,7 @@
   transition: 0.5s;
 }
 
-[data-ui-element="subLogo"] {
+[data-ui-element="logoSubtext"] {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 

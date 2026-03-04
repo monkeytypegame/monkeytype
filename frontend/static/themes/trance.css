@@ -24,9 +24,9 @@
 
 .button.discord::after,
 #caret,
-.pageSettings .section .buttons .button.active,
+.pageSettings .section .buttons button.active,
 .pageSettings .section.languages .buttons .language.active,
-.pageAccount .group.filterButtons .buttons .button.active {
+.pageAccount .group.filterButtons .buttons button.active {
   animation: trance-bg 5s linear infinite;
 }
 

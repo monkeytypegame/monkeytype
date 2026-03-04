@@ -9,7 +9,7 @@ export function Logo(): JSXElement {
   return (
     <a
       href={`${location.origin}/`}
-      class="-m-2 flex h-6 w-max gap-2 rounded-[0.8rem] p-2 focus-visible:[&_.sublogo]:text-transparent"
+      class="-m-2 flex h-6 w-max gap-2 rounded-[0.8rem] p-2 focus-visible:**:data-[ui-element='logoSubtext']:text-transparent"
       aria-label="Monkeytype Home"
       router-link
       style={{
@@ -43,12 +43,12 @@ export function Logo(): JSXElement {
       <div class="hidden h-6 place-content-center text-[2rem] leading-0 sm:grid">
         <div
           class={cn(
-            "sublogo -mt-[1.65em] hidden pl-[0.5em] text-[0.315em] leading-0 text-sub transition-colors duration-125 lg:block",
+            "-mt-[1.65em] hidden pl-[0.5em] text-[0.315em] leading-0 text-sub transition-colors duration-125 lg:block",
             {
               "text-transparent": getFocus(),
             },
           )}
-          data-ui-element="subLogo"
+          data-ui-element="logoSubtext"
         >
           {isDevEnvironment() ? "localhost" : "monkey see"}
         </div>
@@ -56,6 +56,7 @@ export function Logo(): JSXElement {
           class={cn("-mt-[0.11em] text-text transition-colors duration-250", {
             "text-sub": getFocus(),
           })}
+          data-ui-element="logoText"
         >
           monkeytype
         </h1>
