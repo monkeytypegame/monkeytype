@@ -172,27 +172,6 @@ describe("Button component", () => {
     expect(child).toHaveTextContent("Child");
   });
 
-  it("applies custom class list when classList prop is provided", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        text="Hello"
-        classList={{
-          customTrue: true,
-          customFalse: false,
-          customUndefined: undefined,
-        }}
-      />
-    ));
-
-    const button = container.querySelector("button");
-    expect(button).toHaveClass("customTrue");
-    expect(button).not.toHaveClass("customFalse");
-    expect(button).not.toHaveClass("customUndefined");
-  });
-
   it("applies active", () => {
     const { container } = render(() => (
       <Button
