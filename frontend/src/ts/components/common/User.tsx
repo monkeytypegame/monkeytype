@@ -82,7 +82,7 @@ export function User(props: Props): JSXElement {
               <DiscordAvatar
                 size={64}
                 discordId={props.user.discordId}
-                discordAvatar={props.user.discordAvatar + "a"}
+                discordAvatar={props.user.discordAvatar}
                 fallbackIcon="user"
               />
             }
