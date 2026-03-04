@@ -72,7 +72,7 @@ export function AccountMenu(props: Props): JSXElement {
           router-link
         />
         <Button
-          text="Signout"
+          text="Sign out"
           class={buttonClass}
           fa={{
             icon: "fa-sign-out-alt",
