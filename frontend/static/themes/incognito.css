@@ -5,7 +5,6 @@ header [data-ui-element="logoText"] {
     var(--main-color) 36%
   );
   background-clip: text;
-  -webkit-background-clip: text;
   color: transparent;
   padding-bottom: 0.1em;
   line-height: 1;

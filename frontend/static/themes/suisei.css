@@ -13,7 +13,6 @@
 [data-ui-element="logoText"] {
   background: linear-gradient(120deg, var(--main-color), var(--sub-color));
   background-clip: text;
-  -webkit-background-clip: text;
   color: transparent;
   padding-bottom: 0.1em;
   line-height: 1;

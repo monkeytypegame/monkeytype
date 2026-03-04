@@ -13,7 +13,6 @@ header [data-ui-element="logoText"] {
   );
   background-size: 500% auto;
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
   padding-bottom: 0.1em;
@@ -60,7 +59,6 @@ footer button:hover > .relative > i {
   );
   background-size: 500% auto;
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 5s alternate ease-in-out infinite;
   transition: all 1s ease;

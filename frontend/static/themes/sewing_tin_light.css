@@ -8,7 +8,7 @@
 
 header [data-ui-element="logoText"] {
   background-color: #ffffff; /* fallback */
-  background: -webkit-linear-gradient(
+  background: linear-gradient(
     #2d2076,
     #2d2076 25%,
     #2e3395 25%,
@@ -19,7 +19,6 @@ header [data-ui-element="logoText"] {
     #385eca
   );
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   padding-bottom: 0.1em;
   line-height: 1;
