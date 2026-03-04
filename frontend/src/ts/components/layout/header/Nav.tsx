@@ -163,6 +163,8 @@ export function Nav(): JSXElement {
               class="relative"
               onMouseEnter={() => setShowMenu(true)}
               onMouseLeave={() => setShowMenu(false)}
+              onFocusIn={() => setShowMenu(true)}
+              onFocusOut={() => setShowMenu(false)}
             >
               <Button
                 variant="text"
