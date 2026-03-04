@@ -69,36 +69,45 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
   const title = (): string => props.notification.customTitle ?? config().title;
 
   return (
-    <Anime
-      initial={enterInitial}
-      animate={enterAnimate}
-      exit={exitAnimation}
+    <div
       class={cn(
-        "mb-4 cursor-pointer overflow-hidden rounded-xl border-2 border-solid backdrop-blur-[15px] select-none",
-        "text-white relative grid",
-        "shadow-[0px_8px_24px_0px_rgba(0,0,0,0.08)]",
-        "transition-[background] duration-125",
-        "border-(--notif-border) bg-(--notif-bg) hover:bg-(--notif-bg-hover)",
-        props.notification.important && "important",
+        "transition-opacity duration-125",
+        getFocus() &&
+          !props.notification.important &&
+          "pointer-events-none hidden",
       )}
-      style={{
-        "--notif-border": config().border,
-        "--notif-bg": config().bg,
-        "--notif-bg-hover": config().bgHover,
-      }}
     >
-      <div
-        class="p-4 text-sm"
-        onClick={() => removeNotification(props.notification.id)}
+      <Anime
+        initial={enterInitial}
+        animate={enterAnimate}
+        exit={exitAnimation}
+        class={cn(
+          "mb-4 cursor-pointer overflow-hidden rounded-xl border-2 border-solid backdrop-blur-[15px] select-none",
+          "text-white relative grid",
+          "shadow-[0px_8px_24px_0px_rgba(0,0,0,0.08)]",
+          "transition-[background] duration-125",
+          "border-(--notif-border) bg-(--notif-bg) hover:bg-(--notif-bg-hover)",
+          props.notification.important && "important",
+        )}
+        style={{
+          "--notif-border": config().border,
+          "--notif-bg": config().bg,
+          "--notif-bg-hover": config().bgHover,
+        }}
       >
-        <div class="text-white/60 pb-2 font-medium">
-          <Fa {...iconProps()} class="text-white/60 mr-2 inline" />
-          {title()}
+        <div
+          class="p-4 text-sm"
+          onClick={() => removeNotification(props.notification.id)}
+        >
+          <div class="text-white/60 pb-2 font-medium">
+            <Fa {...iconProps()} class="text-white/60 mr-2 inline" />
+            {title()}
+          </div>
+          {/* oxlint-disable-next-line solid/no-innerhtml -- notification message contains escaped HTML */}
+          <div innerHTML={props.notification.message}></div>
         </div>
-        {/* oxlint-disable-next-line solid/no-innerhtml -- notification message contains escaped HTML */}
-        <div innerHTML={props.notification.message}></div>
-      </div>
-    </Anime>
+      </Anime>
+    </div>
   );
 }
 
@@ -132,8 +141,7 @@ export function Notifications(): JSXElement {
     <div
       class={cn(
         "fixed right-4 z-99999999 grid w-87.5 pt-4 transition-opacity duration-125",
-        (getFocus() || getIsScreenshotting()) &&
-          "pointer-events-none opacity-0",
+        getIsScreenshotting() && "pointer-events-none opacity-0",
       )}
       style={{ "margin-top": `${getGlobalOffsetTop()}px` }}
     >
