@@ -28,6 +28,7 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
+import { strView } from "./strings-view";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -150,24 +151,22 @@ class PseudolangWordGenerator extends Wordset {
 }
 
 export class PolyglotWordset extends Wordset {
-  readonly wordsMap: Map<Language, Wordset>;
+  readonly wordsetMap: Map<Language, Wordset>;
   readonly languageProperties: Map<Language, JSONData.LanguageProperties>;
   private currLang: Language;
   readonly langs: Language[];
 
   constructor(
-    wordsMap: Map<Language, Wordset>,
+    words: string[],
+    wordsetMap: Map<Language, Wordset>,
     languageProperties: Map<Language, JSONData.LanguageProperties>,
   ) {
-    super([]);
+    super(words);
     this.languageProperties = languageProperties;
     this.langs = Array.from(languageProperties.keys());
-    this.wordsMap = wordsMap;
+    this.wordsetMap = wordsetMap;
     this.resetIndexes();
-    this.length = Array.from(this.wordsMap.values()).reduce(
-      (sum, ws) => sum + ws.length,
-      0,
-    );
+    this.length = words.length;
     this.currLang = this.langs[0] as Language;
   }
 
@@ -176,7 +175,7 @@ export class PolyglotWordset extends Wordset {
   }
 
   override resetIndexes(): void {
-    this.wordsMap.forEach((ws) => {
+    this.wordsetMap.forEach((ws) => {
       ws.resetIndexes();
     });
   }
@@ -189,7 +188,7 @@ export class PolyglotWordset extends Wordset {
 
   private getWordset(): Wordset {
     const lang = this.uniformLang();
-    return this.wordsMap.get(lang) as Wordset;
+    return this.wordsetMap.get(lang) as Wordset;
   }
 
   override randomWord(mode: FunboxWordsFrequency): string {
@@ -790,11 +789,16 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           },
         ]),
       );
-
-      const wordsMap: Map<Language, Wordset> = new Map(
-        languages.map((lang) => [lang.name, new Wordset(lang.words)]),
-      );
-      return new PolyglotWordset(wordsMap, languageProperties);
+      const wordsetMap = new Map<Language, Wordset>();
+      let end = 0;
+      const words: string[] = [];
+      for (const lang of languages) {
+        const start = end;
+        end += lang.words.length;
+        words.push(...lang.words);
+        wordsetMap.set(lang.name, new Wordset(strView(words, start, end)));
+      }
+      return new PolyglotWordset(words, wordsetMap, languageProperties);
     },
   },
 };
