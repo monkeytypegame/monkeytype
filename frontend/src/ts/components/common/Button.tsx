@@ -34,8 +34,9 @@ type AnchorProps = BaseProps & {
 };
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
-  const isAnchor = "href" in props;
-  const isActive = (): boolean => (!isAnchor && props.active) ?? false;
+  const isAnchor = (): boolean => "href" in props;
+  const isActive = (): boolean =>
+    (!isAnchor() && !("href" in props) && props.active) ?? false;
 
   const content = (
     <>

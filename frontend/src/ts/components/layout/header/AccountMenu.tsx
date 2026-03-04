@@ -7,7 +7,6 @@ import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
 type Props = {
-  show: boolean;
   showFriendsNotificationBubble?: boolean;
 };
 

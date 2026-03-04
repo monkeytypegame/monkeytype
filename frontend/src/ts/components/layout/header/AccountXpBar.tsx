@@ -5,6 +5,7 @@ import {
   createSignal,
   For,
   JSXElement,
+  onCleanup,
   ParentProps,
 } from "solid-js";
 
@@ -42,6 +43,10 @@ export function AccountXpBar(): JSXElement {
       set(value);
       fireAnimationEvent();
     },
+  });
+
+  onCleanup(() => {
+    runId++;
   });
 
   let canSkip = true;

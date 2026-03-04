@@ -1,11 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { createMemo, JSXElement, Show } from "solid-js";
 
 import { showAlerts } from "../../../elements/alerts";
 import { createEffectOn } from "../../../hooks/effects";
@@ -29,17 +23,10 @@ import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
 export function Nav(): JSXElement {
-  const [showMenu, setShowMenu] = createSignal(false);
   const buttonClass = () =>
     cn("aspect-square", {
       "opacity-(--nav-focus-opacity)": getFocus(),
     });
-
-  createEffect(() => {
-    if (getSnapshot() === undefined) {
-      setShowMenu(false);
-    }
-  });
 
   createEffectOn(getSnapshot, (snapshot) => {
     if (snapshot === undefined) {
@@ -190,7 +177,6 @@ export function Nav(): JSXElement {
                 />
               </Button>
               <AccountMenu
-                show={showMenu()}
                 showFriendsNotificationBubble={showFriendsNotificationBubble()}
               />
             </div>
