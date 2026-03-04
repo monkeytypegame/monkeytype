@@ -13,6 +13,10 @@ header.focus nav:after {
   color: var(--bg-color);
 }
 
+[data-nav-item]:hover {
+  filter: brightness(1.25);
+}
+
 [data-nav-item="test"] {
   background: #553d94;
 }

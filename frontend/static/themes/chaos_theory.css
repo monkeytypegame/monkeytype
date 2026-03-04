@@ -83,6 +83,10 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
   transition: 0.5s;
 }
 
+[data-nav-item]:hover {
+  filter: brightness(1.25);
+}
+
 [data-nav-item="test"] {
   background: #ab92e1;
 }

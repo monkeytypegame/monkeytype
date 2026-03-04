@@ -4,6 +4,10 @@
   background: var(--main-color);
 }
 
+[data-nav-item]:hover {
+  filter: brightness(1.25);
+}
+
 header[data-focused] [data-nav-item="test"] {
   --nav-focus-opacity: 1;
   background: #e34c6c;
