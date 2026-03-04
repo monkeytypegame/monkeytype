@@ -7,6 +7,7 @@ import { qsa } from "../utils/dom";
 import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
+import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
@@ -23,6 +24,7 @@ const components: Record<string, () => JSXElement> = {
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
+  header: () => <Header />,
   devtools: () => <DevTools />,
 };
 

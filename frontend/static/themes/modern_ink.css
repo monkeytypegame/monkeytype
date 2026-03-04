@@ -1,7 +1,12 @@
 [data-nav-item="test"],
 [data-nav-item="account"],
 [data-nav-item="login"] {
-  color: #ff0000;
+  --themable-button-text: #ff0000;
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    black 25%
+  );
 }
 
 .word.error {

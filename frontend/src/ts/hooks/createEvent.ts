@@ -22,6 +22,7 @@ import { Accessor, createSignal } from "solid-js";
  * dispatchSave(); // triggers the effect
  * ```
  */
+
 export function createEvent(): [Accessor<number>, () => void] {
   const [get, set] = createSignal(0);
   return [

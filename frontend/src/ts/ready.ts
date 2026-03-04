@@ -1,7 +1,6 @@
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
-import * as AccountButton from "./elements/account-button";
 //@ts-expect-error no types for this package
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -30,13 +29,9 @@ onDOMReady(async () => {
 
   void ServerConfiguration.sync().then(() => {
     if (!ServerConfiguration.get()?.users.signUp) {
-      AccountButton.hide();
       qs(".register")?.hide();
       qs(".login")?.hide();
       qs(".disabledNotification")?.show();
-    }
-    if (!ServerConfiguration.get()?.connections.enabled) {
-      qs(".accountButtonAndMenu .goToFriends")?.hide();
     }
   });
 
