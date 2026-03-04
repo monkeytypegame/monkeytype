@@ -33,3 +33,9 @@ input[type="submit"]:hover {
   background: var(--caret-color);
   color: var(--bg-color);
 }
+
+nav button:hover,
+nav a:hover {
+  color: var(--caret-color);
+  background: transparent;
+}
