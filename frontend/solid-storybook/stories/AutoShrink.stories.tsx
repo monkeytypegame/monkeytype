@@ -15,8 +15,55 @@ const meta = preview.meta({
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "200px", border: "1px solid var(--sub-color)" }}>
-        <Story />
+      <div style={{ display: "flex", "flex-direction": "column", gap: "24px" }}>
+        <div>
+          <div style={{ "font-size": "12px", "margin-bottom": "4px" }}>
+            400px container
+          </div>
+          <div
+            style={{
+              width: "400px",
+              border: "1px dashed gray",
+              padding: "8px",
+              resize: "horizontal",
+              overflow: "auto",
+            }}
+          >
+            <Story />
+          </div>
+        </div>
+        <div>
+          <div style={{ "font-size": "12px", "margin-bottom": "4px" }}>
+            200px container
+          </div>
+          <div
+            style={{
+              width: "200px",
+              border: "1px dashed gray",
+              padding: "8px",
+              resize: "horizontal",
+              overflow: "auto",
+            }}
+          >
+            <Story />
+          </div>
+        </div>
+        <div>
+          <div style={{ "font-size": "12px", "margin-bottom": "4px" }}>
+            100px container
+          </div>
+          <div
+            style={{
+              width: "100px",
+              border: "1px dashed gray",
+              padding: "8px",
+              resize: "horizontal",
+              overflow: "auto",
+            }}
+          >
+            <Story />
+          </div>
+        </div>
       </div>
     ),
   ],

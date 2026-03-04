@@ -22,7 +22,7 @@ export const Default = meta.story({
   args: {
     percent: 50,
     fill: "main",
-    bg: "bg",
+    bg: "sub-alt",
   },
 });
 
@@ -38,7 +38,8 @@ export const HalfWithHover = meta.story({
   args: {
     percent: 50,
     fill: "main",
-    bg: "bg",
+    bg: "sub-alt",
+
     showPercentageOnHover: true,
   },
 });

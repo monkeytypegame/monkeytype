@@ -15,6 +15,13 @@ const meta = preview.meta({
     size: { control: "number" },
     class: { control: "text" },
   },
+  decorators: [
+    (Story) => (
+      <div class="text-2xl">
+        <Story />
+      </div>
+    ),
+  ],
 });
 
 export const Default = meta.story({
