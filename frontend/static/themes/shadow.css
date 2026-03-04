@@ -29,7 +29,7 @@ header [data-ui-element="logoText"] {
 #result .stats .group,
 [data-nav-item]:hover,
 footer button:hover,
-a:not(.button):hover {
+a:not(.button):not([data-ui-variant="button"]):hover {
   animation: shadow-repeat 3s linear infinite forwards;
 }
 

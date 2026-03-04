@@ -50,7 +50,7 @@
 #result .stats .group .bottom,
 [data-nav-item]:hover,
 footer button:hover,
-a:not(.button):hover {
+a:not(.button):not([data-ui-variant="button"]):hover {
   animation: fire 5s linear infinite;
 }
 

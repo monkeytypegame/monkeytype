@@ -84,9 +84,9 @@ header[data-focused] {
 #result .stats .group .bottom,
 [data-nav-item]:hover,
 footer button:hover,
+#words.flipped .word,
 footer a:hover,
-a:not(.button):hover,
-#words.flipped .word {
+a:not(.button):not([data-ui-variant="button"]):hover {
   animation: rgb 5s linear infinite;
 }
 

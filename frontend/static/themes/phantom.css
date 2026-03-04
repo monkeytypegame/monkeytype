@@ -110,7 +110,7 @@ input[type="submit"]:hover {
 [data-ui-element="logoSubtext"],
 #result .stats .group .bottom,
 [data-nav-item]:hover,
-a:not(.button):hover {
+a:not(.button):not([data-ui-variant="button"]):hover {
   animation: phantom-glow 3s linear infinite;
 }
 
