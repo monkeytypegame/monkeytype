@@ -1,6 +1,12 @@
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
-import { createMemo, createSignal, For, JSXElement } from "solid-js";
+import {
+  createMemo,
+  createSignal,
+  For,
+  JSXElement,
+  ParentProps,
+} from "solid-js";
 
 import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
@@ -346,9 +352,7 @@ export function AccountXpBar(): JSXElement {
     </AnimeShow>
   );
 
-  const BlurredBackground = (props: {
-    children: JSXElement | JSXElement[];
-  }) => (
+  const BlurredBackground = (props: ParentProps) => (
     <div class="absolute top-full right-0 mt-2 grid min-w-full justify-end rounded-b text-right text-sm backdrop-blur-sm">
       {props.children}
     </div>
