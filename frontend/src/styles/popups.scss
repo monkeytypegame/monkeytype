@@ -918,8 +918,10 @@ body.darkMode {
       .modesticky {
         position: sticky;
         top: calc(1rem - 2px);
-        background-color: transparent;
         z-index: 2;
+
+        font-size: 1.1rem !important;
+        padding: 0.1rem 0.75rem;
       }
 
       thead {
