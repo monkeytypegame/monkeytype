@@ -166,7 +166,7 @@ function PbTable<M extends "time" | "words">(props: {
       <Show when={props.isAccountPage}>
         <div class="flex h-full flex-col">
           <Button
-            ariaLabel={{ text: "Show all personal bests", position: "left" }}
+            balloon={{ text: "Show all personal bests", position: "left" }}
             class="h-full rounded-none rounded-r text-sub hover:text-bg"
             fa={{ icon: "fa-ellipsis-v" }}
             onClick={() => PbTablesModal.show(props.mode)}
