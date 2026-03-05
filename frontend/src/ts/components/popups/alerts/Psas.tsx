@@ -20,7 +20,9 @@ export function Psas(): JSXElement {
           when={getPsas().length > 0}
           fallback={<div class="place-self-center">Nothing to show</div>}
         >
-          <For each={getPsas()}>{(psa) => <Psa psa={psa} />}</For>
+          <div class="flex flex-col content-start gap-4 place-self-start">
+            <For each={getPsas()}>{(psa) => <Psa psa={psa} />}</For>
+          </div>
         </Show>
       }
     />

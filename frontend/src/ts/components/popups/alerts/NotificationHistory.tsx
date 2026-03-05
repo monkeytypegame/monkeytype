@@ -40,11 +40,13 @@ export function NotificationHistory(): JSXElement {
           when={getNotificationHistory().length > 0}
           fallback={<div class="place-self-center">Nothing to show</div>}
         >
-          <For each={reversed()}>
-            {(notification) => (
-              <NotificationEntry notification={notification} />
-            )}
-          </For>
+          <div class="flex w-full flex-col content-start gap-4 place-self-start">
+            <For each={reversed()}>
+              {(notification) => (
+                <NotificationEntry notification={notification} />
+              )}
+            </For>
+          </div>
         </Show>
       }
     />
@@ -55,7 +57,7 @@ function NotificationEntry(props: {
   notification: NotificationHistoryEntry;
 }): JSXElement {
   return (
-    <div class="grid h-min grid-cols-[0.25rem_auto_max-content] gap-x-2 gap-y-1 [&_.buttons]:opacity-0 focus-within:[&_.buttons]:opacity-100 hover:[&_.buttons]:opacity-100">
+    <div class="grid h-min w-full grid-cols-[0.25rem_auto_max-content] gap-x-2 gap-y-1 [&_.buttons]:opacity-0 focus-within:[&_.buttons]:opacity-100 hover:[&_.buttons]:opacity-100">
       <div
         class={cn(
           "row-span-2 h-full w-1 rounded-sm transition-colors duration-125",
