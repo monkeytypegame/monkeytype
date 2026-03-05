@@ -14,6 +14,7 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { H3 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
+import { AlertsSection } from "./AlertsSection";
 
 export function Inbox(): JSXElement {
   const inboxQuery = useInboxQuery(
@@ -38,58 +39,67 @@ export function Inbox(): JSXElement {
   const inboxSize = () => inboxQuery().length;
 
   return (
-    <div>
-      <div class="flex text-xl">
-        <H3 fa={{ icon: "fa-inbox" }} text="Inbox" />
-        <div
-          class={cn(
-            "grow text-right text-sub",
-            inboxQuery.isLoading && "hidden",
-          )}
+    <AlertsSection
+      title={
+        <>
+          <H3 fa={{ icon: "fa-inbox" }} text="Inbox" />
+          <InboxCounter
+            size={inboxSize()}
+            maxSize={maxMailboxSize()}
+            show={!inboxQuery.isLoading}
+          />
+        </>
+      }
+      body={
+        <AsyncContent
+          collection={inboxQuery}
+          loader={<LoadingCircle class="place-self-center text-lg" />}
         >
-          {inboxSize()}/{maxMailboxSize()}
-        </div>
-      </div>
-      <AsyncContent
-        collection={inboxQuery}
-        loader={
-          <div class="grid min-h-20 place-items-center text-xl">
-            <div>
-              <LoadingCircle />
-            </div>
-          </div>
-        }
-      >
-        {(inbox) => (
-          <>
-            <Show when={inboxQuery().some((it) => it.status === "unclaimed")}>
-              <Button
-                fa={{ icon: "fa-gift", fixedWidth: true }}
-                text="Claim all"
-                onClick={() => updateInbox({ from: "unclaimed", to: "read" })}
-              />
-            </Show>
-            <Show when={inboxQuery().some((it) => it.status === "read")}>
-              <Button
-                fa={{ icon: "fa-trash", fixedWidth: true }}
-                text="Delete all"
-                onClick={() => updateInbox({ from: "read", to: "deleted" })}
-              />
-            </Show>
+          {(inbox) => (
+            <>
+              <Show when={inboxQuery().some((it) => it.status === "unclaimed")}>
+                <Button
+                  fa={{ icon: "fa-gift", fixedWidth: true }}
+                  text="Claim all"
+                  onClick={() => updateInbox({ from: "unclaimed", to: "read" })}
+                />
+              </Show>
+              <Show when={inboxQuery().some((it) => it.status === "read")}>
+                <Button
+                  fa={{ icon: "fa-trash", fixedWidth: true }}
+                  text="Delete all"
+                  onClick={() => updateInbox({ from: "read", to: "deleted" })}
+                />
+              </Show>
 
-            <For
-              each={inbox}
-              fallback={
-                <div class="grid min-h-20 place-items-center">
-                  <div>Nothing to show</div>
-                </div>
-              }
-            >
-              {(entry) => <Entry entry={entry} />}
-            </For>
-          </>
-        )}
-      </AsyncContent>
+              <For
+                each={inbox}
+                fallback={<div class="place-self-center">Nothing to show</div>}
+              >
+                {(entry) => <Entry entry={entry} />}
+              </For>
+            </>
+          )}
+        </AsyncContent>
+      }
+    />
+  );
+}
+
+function InboxCounter(props: {
+  size: number;
+  maxSize: number;
+  show: boolean;
+}): JSXElement {
+  return (
+    <div
+      class={cn(
+        "grow text-right text-sub",
+        !props.show && "hidden",
+        props.size >= props.maxSize && "text-error",
+      )}
+    >
+      {props.size}/{props.maxSize}
     </div>
   );
 }

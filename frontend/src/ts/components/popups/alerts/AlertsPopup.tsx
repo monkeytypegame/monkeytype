@@ -1,7 +1,6 @@
 import { JSXElement } from "solid-js";
 
-import { hideModalAndClearChain, showModal } from "../../../stores/modals";
-import { qs } from "../../../utils/dom";
+import { hideModalAndClearChain } from "../../../stores/modals";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import { Button } from "../../common/Button";
 import { Inbox } from "./Inbox";
@@ -13,7 +12,7 @@ export function AlertsPopup(): JSXElement {
     <AnimatedModal
       id="Alerts"
       wrapperClass="justify-end overflow-x-hidden p-0"
-      modalClass="h-full absolute right-0 top-0 max-w-[calc(350px+2rem)] rounded-l bg-bg sm:p-4 p-4 sm:pt-8 pt-8 block overflow-hidden"
+      modalClass="h-full absolute right-0 top-0 max-w-[calc(100vw-5rem)] sm:max-w-[calc(350px+2rem)] rounded-l bg-bg sm:p-4 p-4 sm:pt-8 pt-8 block overflow-hidden"
       customAnimations={{
         show: {
           modal: {
@@ -55,7 +54,3 @@ function MobileClose(): JSXElement {
 function Separator(): JSXElement {
   return <div class="h-1 rounded bg-sub-alt"></div>;
 }
-
-qs("header nav .showAlerts2")?.on("click", () => {
-  showModal("Alerts");
-});
