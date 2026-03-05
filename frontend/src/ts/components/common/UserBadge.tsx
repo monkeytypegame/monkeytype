@@ -4,10 +4,14 @@ import {
   badges,
   UserBadge as UserBadgeType,
 } from "../../controllers/badge-controller";
-import { Balloon } from "./Balloon";
+import { Balloon, BalloonProps } from "./Balloon";
 import { Fa } from "./Fa";
 
-export function UserBadge(props: { id?: number; iconOnly?: true }): JSXElement {
+export function UserBadge(props: {
+  id?: number;
+  iconOnly?: true;
+  balloon?: Omit<BalloonProps, "text">;
+}): JSXElement {
   const badge = (): UserBadgeType | undefined =>
     props.id !== undefined ? badges[props.id] : undefined;
   return (
@@ -15,7 +19,7 @@ export function UserBadge(props: { id?: number; iconOnly?: true }): JSXElement {
       <Balloon
         class="rounded-[0.5em] text-[0.9em]"
         text={badge()?.description ?? ""}
-        position="right"
+        {...props.balloon}
         style={{
           background: badge()?.background ?? "inherit",
           color: badge()?.color ?? "inherit",

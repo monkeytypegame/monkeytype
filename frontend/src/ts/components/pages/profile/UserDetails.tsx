@@ -20,13 +20,14 @@ import * as Notifications from "../../../elements/notifications";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
+import { bp } from "../../../signals/breakpoints";
 import { getUserId, isLoggedIn } from "../../../signals/core";
 import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { AutoShrink } from "../../common/AutoShrink";
-import { Balloon } from "../../common/Balloon";
+import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";
@@ -262,6 +263,9 @@ function AvatarAndName(props: {
     return hoverText;
   };
 
+  const balloonPosition = (): BalloonProps["position"] =>
+    bp().md ? "right" : "up";
+
   return (
     <div
       class={cn(
@@ -289,22 +293,36 @@ function AvatarAndName(props: {
         </AutoShrink>
         <UserBadge
           id={props.profile.inventory?.badges.find((it) => it.selected)?.id}
+          balloon={{
+            position: balloonPosition(),
+            length: balloonPosition() === "up" ? "medium" : undefined,
+          }}
         />
         <For
           each={props.profile.inventory?.badges
             .filter((it) => !it.selected)
             .map((it) => it.id)}
         >
-          {(badgeId) => <UserBadge id={badgeId} iconOnly />}
+          {(badgeId) => (
+            <UserBadge
+              id={badgeId}
+              iconOnly
+              balloon={{
+                position: balloonPosition(),
+                length: balloonPosition() === "up" ? "medium" : undefined,
+              }}
+            />
+          )}
         </For>
         <div class="grid">
-          <Balloon inline text={accountAgeHint()}>
+          <Balloon inline text={accountAgeHint()} position={balloonPosition()}>
             Joined {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}
           </Balloon>
           <Show when={(props.profile.streak ?? 0) > 1}>
             <Balloon
               inline
               text={`Longest streak: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
+              position={balloonPosition()}
               break
               length="large"
             >
