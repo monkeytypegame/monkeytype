@@ -13,7 +13,7 @@ export type Notification = {
   duration: number;
   customTitle?: string;
   customIcon?: string;
-  closeCallback?: () => void;
+  onDismiss?: (reason: "click" | "timeout" | "clear") => void;
 };
 
 export type NotificationHistoryEntry = {
@@ -28,7 +28,9 @@ let id = 0;
 const [notifications, setNotifications] = createStore<Notification[]>([]);
 const autoRemoveTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
-const notificationHistory: NotificationHistoryEntry[] = [];
+const [notificationHistory, setNotificationHistory] = createStore<
+  NotificationHistoryEntry[]
+>([]);
 let historyId = 0;
 
 function pushNotification(notification: Omit<Notification, "id">): number {
@@ -37,14 +39,17 @@ function pushNotification(notification: Omit<Notification, "id">): number {
   return newId;
 }
 
-export function removeNotification(notificationId: number): void {
+export function removeNotification(
+  notificationId: number,
+  reason: "click" | "timeout" | "clear" = "click",
+): void {
   const timer = autoRemoveTimers.get(notificationId);
   if (timer !== undefined) {
     clearTimeout(timer);
     autoRemoveTimers.delete(notificationId);
   }
   const notification = notifications.find((n) => n.id === notificationId);
-  notification?.closeCallback?.();
+  notification?.onDismiss?.(reason);
   setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
 }
 
@@ -54,7 +59,7 @@ export function clearAllNotifications(): void {
   }
   autoRemoveTimers.clear();
   for (const notification of notifications) {
-    notification.closeCallback?.();
+    notification.onDismiss?.("clear");
   }
   setNotifications([]);
 }
@@ -72,7 +77,7 @@ export type AddNotificationOptions = {
   duration?: number;
   customTitle?: string;
   customIcon?: string;
-  closeCallback?: () => void;
+  onDismiss?: (reason: "click" | "timeout" | "clear") => void;
   details?: object | string;
   response?: CommonResponsesType;
 };
@@ -102,16 +107,19 @@ export function addNotification(
     options.customTitle ??
     (level === 1 ? "Success" : level === -1 ? "Error" : "Notice");
 
-  notificationHistory.push({
-    id: (historyId++).toString(),
-    title,
-    message: typeof message === "string" ? message : "",
-    level,
-    details,
+  setNotificationHistory((prev) => {
+    const next = [
+      ...prev,
+      {
+        id: (historyId++).toString(),
+        title,
+        message: typeof message === "string" ? message : "",
+        level,
+        details,
+      },
+    ];
+    return next.length > 25 ? next.slice(-25) : next;
   });
-  if (notificationHistory.length > 25) {
-    notificationHistory.shift();
-  }
 
   let duration: number;
   if (options.duration === undefined) {
@@ -127,13 +135,13 @@ export function addNotification(
     duration,
     customTitle: options.customTitle,
     customIcon: options.customIcon,
-    closeCallback: options.closeCallback,
+    onDismiss: options.onDismiss,
   });
 
   if (duration > 0) {
     const timer = setTimeout(() => {
       autoRemoveTimers.delete(notifId);
-      removeNotification(notifId);
+      removeNotification(notifId, "timeout");
     }, duration + 250);
     autoRemoveTimers.set(notifId, timer);
   }
