@@ -55,28 +55,30 @@ describe("AsyncContent", () => {
     });
 
     it("renders default error message on fail", async () => {
-      renderWithQuery({ result: new Error("Test error") });
+      const error = new Error("Test error");
+      renderWithQuery({ result: error });
 
       await waitFor(() => {
         expect(screen.getByText(/An error occurred/)).toBeInTheDocument();
       });
-      expect(notifyErrorMock).toHaveBeenCalledWith(
-        "An error occurred: Test error",
-      );
+      expect(notifyErrorMock).toHaveBeenCalledWith("An error occurred", {
+        error,
+      });
     });
 
     it("renders custom error message on fail", async () => {
+      const error = new Error("Test error");
       renderWithQuery(
-        { result: new Error("Test error") },
+        { result: error },
         { errorMessage: "Custom error message" },
       );
 
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(notifyErrorMock).toHaveBeenCalledWith(
-        "Custom error message: Test error",
-      );
+      expect(notifyErrorMock).toHaveBeenCalledWith("Custom error message", {
+        error,
+      });
     });
 
     it("ignores error on fail if ignoreError is set", async () => {
@@ -109,17 +111,18 @@ describe("AsyncContent", () => {
     });
 
     it("renders on fail if alwaysShowContent", async () => {
+      const error = new Error("Test error");
       renderWithQuery(
-        { result: new Error("Test error") },
+        { result: error },
         { errorMessage: "Custom error message" },
       );
 
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(notifyErrorMock).toHaveBeenCalledWith(
-        "Custom error message: Test error",
-      );
+      expect(notifyErrorMock).toHaveBeenCalledWith("Custom error message", {
+        error,
+      });
     });
 
     function renderWithQuery(
@@ -213,28 +216,30 @@ describe("AsyncContent", () => {
     });
 
     it("renders default error message on fail", async () => {
-      renderWithQuery({ first: "data", second: new Error("Test error") });
+      const error = new Error("Test error");
+      renderWithQuery({ first: "data", second: error });
 
       await waitFor(() => {
         expect(screen.getByText(/An error occurred/)).toBeInTheDocument();
       });
-      expect(notifyErrorMock).toHaveBeenCalledWith(
-        "An error occurred: Test error",
-      );
+      expect(notifyErrorMock).toHaveBeenCalledWith("An error occurred", {
+        error,
+      });
     });
 
     it("renders custom error message on fail", async () => {
+      const firstError = new Error("First error");
       renderWithQuery(
-        { first: new Error("First error"), second: new Error("Second error") },
+        { first: firstError, second: new Error("Second error") },
         { errorMessage: "Custom error message" },
       );
 
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(notifyErrorMock).toHaveBeenCalledWith(
-        "Custom error message: First error",
-      );
+      expect(notifyErrorMock).toHaveBeenCalledWith("Custom error message", {
+        error: firstError,
+      });
     });
 
     it("ignores error on fail if ignoreError is set", async () => {
@@ -282,17 +287,18 @@ describe("AsyncContent", () => {
     });
 
     it("renders on fail if alwaysShowContent", async () => {
+      const error = new Error("Test error");
       renderWithQuery(
-        { first: "data", second: new Error("Test error") },
+        { first: "data", second: error },
         { errorMessage: "Custom error message" },
       );
 
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(notifyErrorMock).toHaveBeenCalledWith(
-        "Custom error message: Test error",
-      );
+      expect(notifyErrorMock).toHaveBeenCalledWith("Custom error message", {
+        error,
+      });
     });
 
     function renderWithQuery(

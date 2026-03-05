@@ -62,7 +62,7 @@ describe("PresetController", () => {
       expect(tagControllerClearMock).toHaveBeenCalled();
       expect(testRestartMock).toHaveBeenCalled();
       expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", {
-        duration: 2,
+        durationMs: 2000,
       });
       expect(configSaveFullConfigMock).toHaveBeenCalled();
     });
@@ -122,7 +122,7 @@ describe("PresetController", () => {
       });
       expect(testRestartMock).toHaveBeenCalled();
       expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", {
-        duration: 2,
+        durationMs: 2000,
       });
       expect(configSaveFullConfigMock).toHaveBeenCalled();
     });

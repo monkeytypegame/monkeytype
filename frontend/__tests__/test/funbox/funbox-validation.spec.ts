@@ -67,7 +67,7 @@ describe("funbox-validation", () => {
 
         if (error !== undefined) {
           expect(addNotificationMock).toHaveBeenCalledWith(error, {
-            duration: 5,
+            durationMs: 5000,
           });
         }
       },
