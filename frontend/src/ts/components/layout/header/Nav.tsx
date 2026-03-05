@@ -178,6 +178,7 @@ export function Nav(): JSXElement {
                   level={getAnimatedLevel()}
                   showSpinner={getAccountButtonSpinner()}
                   showNotificationBubble={showFriendsNotificationBubble()}
+                  fontClass="text-em-xs"
                 />
               </Button>
               <AccountMenu

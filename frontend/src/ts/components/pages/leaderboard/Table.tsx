@@ -60,7 +60,10 @@ export function Table(
         : {
             getRowId: (row: { uid: string }) => row.uid,
             activeRow: getUserId,
-            class: "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
+            class: cn(
+              "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
+              "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+            ),
           },
   }));
 
@@ -157,9 +160,11 @@ function getSpeedColumns({
       cell: (info) =>
         userOverride?.() ?? (
           <User
+            avatarFallback="user-circle"
+            avatarColor="sub"
             user={info.row.original}
             isFriend={isFriend(info.row.original.uid)}
-            class="text-[1em]"
+            class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
             linkToProfile={true}
           />
         ),

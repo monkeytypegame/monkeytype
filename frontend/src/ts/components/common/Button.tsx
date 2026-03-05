@@ -107,6 +107,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
           data-ui-variant={props.variant ?? "button"}
+          data-ui-element={"button"}
           {...props.dataset}
         >
           {content}
@@ -123,6 +124,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
           data-ui-variant={props.variant ?? "button"}
+          data-ui-element={"button"}
           {...props.dataset}
         >
           {content}
