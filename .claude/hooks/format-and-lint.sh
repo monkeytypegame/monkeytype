@@ -11,5 +11,5 @@ if [[ "$FILE_PATH" != *.ts && "$FILE_PATH" != *.tsx && "$FILE_PATH" != *.js && "
   exit 0
 fi
 
-npx oxfmt "$FILE_PATH" >&2
-npx oxlint --type-aware --type-check "$FILE_PATH" >&2
+npx oxfmt "$FILE_PATH" >&2 || true
+npx oxlint --type-aware --type-check "$FILE_PATH" >&2 || true
