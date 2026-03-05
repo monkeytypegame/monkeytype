@@ -16,7 +16,7 @@ export function AccountMenu(props: Props): JSXElement {
 
   return (
     <div
-      class="pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125 [&_a]:pointer-events-auto [&_button]:pointer-events-auto"
+      class="pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125"
       data-ui-element="accountMenu"
     >
       <div class="h-3"></div>

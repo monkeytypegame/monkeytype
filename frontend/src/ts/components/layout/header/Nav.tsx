@@ -151,7 +151,7 @@ export function Nav(): JSXElement {
                 "relative",
                 !getFocus() &&
                   "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
-                "focus-within:**:data-[ui-element='accountMenu']:pointer-events-auto focus-within:**:data-[ui-element='accountMenu']:opacity-100",
+                "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
               )}
             >
               <Button

@@ -136,7 +136,7 @@ function PbTable<M extends "time" | "words">(props: {
                     showDecimalPlaces: false,
                   })}
                 </div>
-                <div class="text-xl">
+                <div class="text-xl opacity-75">
                   {format().accuracy(item.pb?.acc, {
                     showDecimalPlaces: false,
                   })}
