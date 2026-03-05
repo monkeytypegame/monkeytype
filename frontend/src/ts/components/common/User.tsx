@@ -121,9 +121,7 @@ export function User(props: Props): JSXElement {
         />
       </div>
 
-      <div
-        class={cn("flex items-center justify-center gap-2", props.fontClass)}
-      >
+      <div class={cn("flex items-center justify-center gap-2")}>
         <UserFlags
           {...props.user}
           isFriend={props.isFriend}

@@ -17,7 +17,7 @@ export function UserBadge(props: {
   return (
     <Show when={badge() !== undefined}>
       <div
-        class={cn("rounded-[0.5em] text-[0.9em]", props.class)}
+        class={cn("rounded-[0.5em] text-em-xs", props.class)}
         aria-label={badge()?.description}
         data-balloon-pos="right"
         style={{
