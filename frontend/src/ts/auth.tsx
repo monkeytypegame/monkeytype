@@ -28,7 +28,7 @@ import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { addBanner } from "./stores/banners";
 import { notify, notifyError, notifySuccess } from "./stores/notifications";
-import * as Misc from "./utils/misc";
+import { createErrorMessage } from "./utils/misc";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -107,7 +107,7 @@ async function getDataAndInit(): Promise<boolean> {
 
       notifyError("Failed to get user data: " + error.message);
     } else {
-      const message = Misc.createErrorMessage(error, "Failed to get user data");
+      const message = createErrorMessage(error, "Failed to get user data");
       notifyError(message);
     }
     return false;
@@ -253,7 +253,7 @@ async function addAuthProvider(
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
-    const message = Misc.createErrorMessage(
+    const message = createErrorMessage(
       error,
       `Failed to add ${providerName} authentication`,
     );
@@ -318,11 +318,11 @@ export async function signUp(
     notifySuccess("Account created");
     return { success: true };
   } catch (e) {
-    let message = Misc.createErrorMessage(e, "Failed to create account");
+    let message = createErrorMessage(e, "Failed to create account");
 
     if (e instanceof Error) {
       if ("code" in e && e.code === "auth/email-already-in-use") {
-        message = Misc.createErrorMessage(
+        message = createErrorMessage(
           { message: "Email already in use" },
           "Failed to create account",
         );
