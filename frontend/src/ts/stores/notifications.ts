@@ -33,7 +33,9 @@ const [notificationHistory, setNotificationHistory] = createStore<
 >([]);
 let historyId = 0;
 
-function pushNotification(notification: Omit<Notification, "id">): number {
+function addNotificationToStore(
+  notification: Omit<Notification, "id">,
+): number {
   const newId = id++;
   setNotifications((prev) => [{ ...notification, id: newId }, ...prev]);
   return newId;
@@ -72,12 +74,12 @@ export function getNotificationHistory(): NotificationHistoryEntry[] {
   return notificationHistory;
 }
 
-export type AddNotificationOptions = {
-  important?: boolean;
-  duration?: number;
-  customTitle?: string;
-  customIcon?: string;
-  onDismiss?: (reason: "click" | "timeout" | "clear") => void;
+export type AddNotificationOptions = Partial<
+  Pick<
+    Notification,
+    "important" | "duration" | "customTitle" | "customIcon" | "onDismiss"
+  >
+> & {
   details?: object | string;
   response?: CommonResponsesType;
 };
@@ -128,7 +130,7 @@ export function addNotificationWithLevel(
     duration = options.duration * 1000;
   }
 
-  const notifId = pushNotification({
+  const notifId = addNotificationToStore({
     message,
     level,
     important: options.important ?? false,
