@@ -1,25 +1,43 @@
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
+import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
-
+import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
+import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { MyProfile } from "./pages/account/MyProfile";
+import { ProfilePage } from "./pages/profile/ProfilePage";
+import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
+  profilepage: () => <ProfilePage />,
+  profilesearchpage: () => <ProfileSearchPage />,
+  myprofile: () => <MyProfile />,
   modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
+  header: () => <Header />,
+  devtools: () => <DevTools />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
   for (const mountPoint of qsa(name)) {
-    render(() => component(), mountPoint.native);
+    render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          {component()}
+        </QueryClientProvider>
+      ),
+      mountPoint.native,
+    );
   }
 }
 

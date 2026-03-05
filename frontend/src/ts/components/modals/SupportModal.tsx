@@ -7,7 +7,8 @@ import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 
 export function SupportModal(): JSXElement {
-  const buttonClass = "p-4 flex flex-col text-md";
+  const buttonClass =
+    "p-4 flex flex-col text-md h-full justify-center items-center";
   const iconScale = 2;
 
   return (
@@ -21,9 +22,9 @@ export function SupportModal(): JSXElement {
         not be possible without you and your continued support.{" "}
         <Fa icon="fa-heart" />
       </div>
-      <div class="xs:grid-cols-2 grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div class="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
         <Button
-          type="button"
+          variant="button"
           onClick={() => {
             setCommandlineSubgroup("ads");
             showModal("Commandline");
@@ -37,7 +38,7 @@ export function SupportModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="https://ko-fi.com/monkeytype"
           fa={{
             icon: "fa-donate",
@@ -48,7 +49,7 @@ export function SupportModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="https://www.patreon.com/monkeytype"
           fa={{
             variant: "brand",
@@ -60,7 +61,7 @@ export function SupportModal(): JSXElement {
           class={buttonClass}
         />
         <Button
-          type="button"
+          variant="button"
           href="https://monkeytype.store"
           fa={{
             icon: "fa-tshirt",

@@ -449,8 +449,8 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
-            entry.uid
-          }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+            entry.name
+          }" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,

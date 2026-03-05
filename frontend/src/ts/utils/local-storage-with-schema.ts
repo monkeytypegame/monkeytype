@@ -91,9 +91,12 @@ export class LocalStorageWithSchema<T> {
     try {
       console.debug(`LS ${this.key} Parsing to set in localStorage`);
       const parsed = this.schema.parse(data);
-      console.debug(`LS ${this.key} Setting in localStorage`);
-      window.localStorage.setItem(this.key, JSON.stringify(parsed));
-      this.cache = parsed;
+      const newValue = JSON.stringify(parsed);
+      if (newValue !== JSON.stringify(this.cache)) {
+        console.debug(`LS ${this.key} Setting in localStorage`);
+        window.localStorage.setItem(this.key, newValue);
+        this.cache = parsed;
+      }
       return true;
     } catch (e) {
       let message = "Unknown error occurred";

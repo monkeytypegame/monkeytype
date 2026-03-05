@@ -1,4 +1,0 @@
-{
-  "ignorePatterns": ["node_modules", "__migration__", "dist", ".turbo"],
-  "extends": ["../packages/oxlint-config/plugin.jsonc"]
-}

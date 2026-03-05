@@ -83,7 +83,7 @@ async function submitReport(): Promise<void> {
   const quoteId = state.quoteToReport?.id.toString();
   const quoteLanguage = removeLanguageSize(Config.language);
   const reason = qsr<HTMLSelectElement>(
-    "#quoteReportModal .reason",
+    "#quoteReportModal select.reason",
   ).getValue() as QuoteReportReason;
   const comment = qsr<HTMLTextAreaElement>(
     "#quoteReportModal .comment",

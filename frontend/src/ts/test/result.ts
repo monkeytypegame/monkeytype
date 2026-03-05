@@ -107,7 +107,7 @@ async function updateChartData(): Promise<void> {
   }
 
   const chartData1 = [
-    ...result.chartData["wpm"].map((a) =>
+    ...result.chartData.wpm.map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
@@ -118,9 +118,9 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const valueWindow = Math.max(...result.chartData["burst"]) * 0.25;
+  const valueWindow = Math.max(...result.chartData.burst) * 0.25;
   let smoothedBurst = Arrays.smoothWithValueWindow(
-    result.chartData["burst"],
+    result.chartData.burst,
     1,
     useSmoothedBurst ? valueWindow : 0,
   );
@@ -223,19 +223,19 @@ function applyFakeChartData(): void {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
 
   const chartData1 = [
-    ...fakeChartData["wpm"].map((a) =>
+    ...fakeChartData.wpm.map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
   const chartData2 = [
-    ...fakeChartData["raw"].map((a) =>
+    ...fakeChartData.raw.map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
   const chartData3 = [
-    ...fakeChartData["burst"].map((a) =>
+    ...fakeChartData.burst.map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];

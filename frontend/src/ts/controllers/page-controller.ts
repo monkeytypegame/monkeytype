@@ -1,13 +1,15 @@
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import { getActivePage, setActivePage } from "../signals/core";
+import {
+  getActivePage,
+  setActivePage,
+  setSelectedProfileName,
+} from "../signals/core";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
-import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
 import * as PageLeaderboards from "../pages/leaderboards";
@@ -15,7 +17,7 @@ import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import Page, { PageName, LoadingOptions } from "../pages/page";
+import Page, { PageName, LoadingOptions, PageProperties } from "../pages/page";
 import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 
@@ -33,8 +35,12 @@ const pages = {
   about: solidPage("about"),
   account: Account.page,
   login: PageLogin.page,
-  profile: PageProfile.page,
-  profileSearch: PageProfileSearch.page,
+  profile: solidPage("profile", {
+    beforeShow: async (options) => {
+      setSelectedProfileName(options.params?.["uidOrName"]);
+    },
+  }),
+  profileSearch: solidPage("profileSearch"),
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
@@ -295,7 +301,13 @@ export async function change(
   return true;
 }
 
-function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
+function solidPage(
+  id: PageName,
+  props?: {
+    path?: string;
+    beforeShow?: PageProperties<undefined>["beforeShow"];
+  },
+): Page<undefined> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
@@ -303,8 +315,9 @@ function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
     id,
     path,
     element: qsr(`#${internalId}`),
-    beforeShow: async () => {
+    beforeShow: async (options) => {
       Skeleton.append(internalId, "main");
+      await props?.beforeShow?.(options);
     },
     afterHide: async () => {
       Skeleton.remove(internalId);

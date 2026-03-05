@@ -5,7 +5,6 @@ import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
 import { getReceiverUid } from "../../pages/friends";
 import * as DB from "../../db";
-import { updateFriendRequestsIndicator } from "../account-button";
 import { qsr } from "../../utils/dom";
 
 let blockedUsers: Connection[] = [];
@@ -58,9 +57,7 @@ function refreshList(): void {
   const content = blockedUsers.map(
     (blocked) => `
     <tr data-id="${blocked._id}" data-uid="${getReceiverUid(blocked)}">
-       <td><a href="${location.origin}/profile/${
-         blocked.initiatorUid
-       }?isUid" router-link>${blocked.initiatorName}</a></td>
+       <td><a href="${location.origin}/profile/${blocked.initiatorName}" router-link>${blocked.initiatorName}</a></td>
        <td>${format(new Date(blocked.lastModified), "dd MMM yyyy HH:mm")}</td>
        <td>
          <button class="delete">
@@ -99,7 +96,7 @@ element.onChild("click", "table button.delete", async (e) => {
 
       // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
       delete snapshot.connections[uid];
-      updateFriendRequestsIndicator();
+      DB.setSnapshot(snapshot);
     }
   }
 });

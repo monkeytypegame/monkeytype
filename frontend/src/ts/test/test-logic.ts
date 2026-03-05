@@ -18,7 +18,6 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
-import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
@@ -46,7 +45,6 @@ import {
   CompletedEvent,
   CompletedEventCustomText,
 } from "@monkeytype/schemas/results";
-import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -69,6 +67,7 @@ import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
 import { qs } from "../utils/dom";
+import { setAccountButtonSpinner } from "../signals/header";
 
 let failReason = "";
 
@@ -195,7 +194,7 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    if (TestState.savingEnabled) {
+    if (Config.resultSaving) {
       TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
       TestInput.pushAfkToHistory();
@@ -1011,14 +1010,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       duration: 1,
     });
     dontSave = true;
-  } else if (afkDetected) {
-    Notifications.add("Test invalid - AFK detected", 0);
-    TestStats.setInvalid();
-    dontSave = true;
-  } else if (TestState.isRepeated) {
-    Notifications.add("Test invalid - repeated", 0);
-    TestStats.setInvalid();
-    dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
@@ -1041,6 +1032,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     TestStats.setInvalid();
     tooShort = true;
+    dontSave = true;
+  } else if (afkDetected) {
+    Notifications.add("Test invalid - AFK detected", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (TestState.isRepeated) {
+    Notifications.add("Test invalid - repeated", 0);
+    TestStats.setInvalid();
     dontSave = true;
   } else if (
     completedEvent.wpm < 0 ||
@@ -1190,30 +1189,12 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
-  AccountButton.loading(true);
-
-  if (!TestState.savingEnabled) {
+  if (!Config.resultSaving) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
-    return null;
-  }
-
-  if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, {
-      duration: 2,
-      customTitle: "Notice",
-      important: true,
-    });
-    AccountButton.loading(false);
-    retrySaving.canRetry = true;
-    qs("#retrySavingResultButton")?.show();
-    if (!isRetrying) {
-      retrySaving.completedEvent = completedEvent;
-    }
     return null;
   }
 
@@ -1230,9 +1211,11 @@ async function saveResult(
 
   console.trace();
 
+  setAccountButtonSpinner(true);
+
   const response = await Ape.results.add({ body: { result } });
 
-  AccountButton.loading(false);
+  setAccountButtonSpinner(false);
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
@@ -1268,14 +1251,10 @@ async function saveResult(
   const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
-    const snapxp = DB.getSnapshot()?.xp ?? 0;
-
-    void XPBar.update(
-      snapxp,
-      data.xp,
-      TestState.resultVisible ? data.xpBreakdown : undefined,
-    );
     localDataToSave.xp = data.xp;
+    if (TestState.resultVisible) {
+      localDataToSave.xpBreakdown = data.xpBreakdown;
+    }
   }
 
   if (data.streak !== undefined) {
@@ -1355,7 +1334,7 @@ export function fail(reason: string): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);
-  if (!TestState.savingEnabled) return;
+  if (!Config.resultSaving) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
   let tt = Numbers.roundTo2(testSeconds - afkseconds);
@@ -1527,11 +1506,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
     ManualRestart.set();
     restart();
   }
-});
-
-qs("header")?.onChild("click", "nav #startTestButton, #logo", () => {
-  if (getActivePage() === "test") restart();
-  // Result.showConfetti();
 });
 
 // ===============================

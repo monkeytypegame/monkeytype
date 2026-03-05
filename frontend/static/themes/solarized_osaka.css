@@ -3,20 +3,14 @@
   --untyped-letter-color: #586e75;
 }
 
-header #logo {
-  color: var(--text-color);
-}
-
-header #logo .icon {
-  color: var(--text-color) !important;
-}
-
 kbd {
   color: var(--text-color);
   background-color: var(--sub-alt-color);
 }
 
 button.text:hover,
+button[data-ui-variant="text"]:hover,
+a:not(.button):not([data-ui-variant="button"]):hover,
 .button.text:hover,
 .textButton:hover {
   color: var(--caret-color);
@@ -28,7 +22,7 @@ button.text.active,
   color: var(--main-color);
 }
 
-button:hover,
+button:not(.textButton):not([data-ui-variant="text"]):hover,
 .button:hover,
 input[type="button"]:hover,
 input[type="reset"]:hover,

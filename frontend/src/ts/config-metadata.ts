@@ -209,6 +209,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "behavior",
   },
+  resultSaving: {
+    icon: "fa-save",
+    displayString: "result saving",
+    changeRequiresRestart: false,
+    group: "behavior",
+  },
   blindMode: {
     icon: "fa-eye-slash",
     displayString: "blind mode",
@@ -555,6 +561,12 @@ export const configMetadata: ConfigMetadataObject = {
   highlightMode: {
     icon: "fa-highlighter",
     displayString: "highlight mode",
+    changeRequiresRestart: false,
+    group: "appearance",
+  },
+  typedEffect: {
+    icon: "fa-eye",
+    displayString: "typed effect",
     changeRequiresRestart: false,
     group: "appearance",
   },

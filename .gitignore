@@ -113,6 +113,7 @@ dep-graph.png
 # TypeScript
 build/
 backend/workers
+*.tsbuildinfo
 
 #scripts
 updateContributors.js

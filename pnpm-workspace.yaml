@@ -1,4 +1,17 @@
 packages:
-  - "frontend"
-  - "backend"
-  - "packages/*"
+  - frontend
+  - backend
+  - packages/*
+
+onlyBuiltDependencies:
+  - "@firebase/util"
+  - "@fortawesome/fontawesome-free"
+  - "@sentry/cli"
+  - bcrypt
+  - core-js
+  - cpu-features
+  - esbuild
+  - msgpackr-extract
+  - protobufjs
+  - re2
+  - ssh2

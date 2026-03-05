@@ -1,8 +1,6 @@
-nav > .textButton:nth-child(1),
-nav > .textButton:nth-child(2),
-nav > .textButton:nth-child(3),
-nav > .textButton:nth-child(4),
-nav > .textButton:nth-child(5),
-nav > .textButton:nth-child(6) {
+[data-nav-item] {
   color: #ff6f69;
+  &:hover {
+    color: var(--main-color);
+  }
 }

@@ -150,13 +150,13 @@ export async function fillCustomButtons(): Promise<void> {
 
   if (!isAuthenticated()) {
     saveButton?.setText("save");
-    addButton?.addClass("hidden");
+    addButton?.hide();
     customThemesEl?.setStyle({ marginBottom: "0" });
     return;
   }
 
   saveButton?.setText("save as new");
-  addButton?.removeClass("hidden");
+  addButton?.show();
 
   const customThemes = DB.getSnapshot()?.customThemes ?? [];
 
@@ -321,7 +321,7 @@ qs(".pageSettings")?.onChild("click", ".section.themes .theme.button", (e) => {
   }
 });
 
-function handleColorInput(props: {
+function handleColorInput(options: {
   convertColor: boolean;
 }): (e: Event) => void {
   return (e) => {
@@ -332,7 +332,7 @@ function handleColorInput(props: {
 
     let color: string;
 
-    if (props.convertColor) {
+    if (options.convertColor) {
       try {
         color = Colors.convertStringToHex(target.value);
       } catch {

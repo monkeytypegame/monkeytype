@@ -18,7 +18,7 @@ export function LoaderBar(): JSX.Element {
 
   return (
     <div
-      class="bg-main pointer-events-none fixed top-0 z-9999 hidden h-1 w-full animate-[loader]"
+      class="pointer-events-none fixed top-0 z-9999 hidden h-1 w-full animate-[loader] bg-main"
       style={{
         "animation-duration": "2s",
         "animation-iteration-count": "infinite",

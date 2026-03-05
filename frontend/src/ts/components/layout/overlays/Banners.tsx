@@ -27,7 +27,7 @@ function Banner(props: BannerType): JSXElement {
   return (
     <div
       class={cn(
-        "content-grid text-bg [&_a]:text-bg [&_a]:hover:text-text w-full [&_a]:underline",
+        "content-grid w-full text-bg [&_a]:text-bg [&_a]:underline [&_a]:hover:text-text",
         {
           "bg-error": props.level === "error",
           "bg-sub": props.level === "notice",
@@ -61,7 +61,7 @@ function Banner(props: BannerType): JSXElement {
           else={
             <button
               type="button"
-              class="text text-bg hover:text-text -mr-2 self-center"
+              class="text -mr-2 self-center text-bg hover:text-text"
               onClick={() => {
                 remove();
               }}

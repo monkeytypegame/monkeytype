@@ -27,7 +27,7 @@
     </div>
     <!-- <div id="div-gpt-ad-mkt-0" style="height: 100vh"></div> -->
     <div id="app" class="content-grid focus hidden">
-      <load src="html/header.html" />
+      <mount data-component="header"></mount>
       <main class="full-width content-grid" style="height: 100%">
         <div id="ad-vertical-left-wrapper" class="ad advertisement ad-v focus">
           <div class="icon"><i class="fas fa-ad"></i></div>
@@ -38,13 +38,22 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <div class="page pageAbout full-width hidden" id="pageAbout">
+
+        <div class="page pageAbout hidden full-width" id="pageAbout">
           <mount data-component="aboutpage"></mount>
         </div>
         <load src="html/pages/settings.html" />
         <load src="html/pages/login.html" />
         <load src="html/pages/account.html" />
-        <load src="html/pages/profile.html" />
+
+        <div class="page pageProfile hidden" id="pageProfile">
+          <mount data-component="profilepage"></mount>
+        </div>
+
+        <div class="page pageProfileSearch hidden" id="pageProfileSearch">
+          <mount data-component="profilesearchpage"></mount>
+        </div>
+
         <load src="html/pages/test.html" />
         <load src="html/pages/404.html" />
         <load src="html/pages/account-settings.html" />
@@ -72,5 +81,6 @@
 
     <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
     <script type="module" src="ts/index.ts"></script>
+    <mount data-component="devtools"></mount>
   </body>
 </html>

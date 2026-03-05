@@ -4,7 +4,6 @@ import * as Notifications from "../elements/notifications";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 // import * as Settings from "../pages/settings";
-import * as ConnectionState from "../states/connection";
 import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";
@@ -14,13 +13,6 @@ let state = {
 };
 
 export function show(): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
@@ -57,8 +49,10 @@ function updatePreview(): void {
   newDate.setUTCSeconds(0);
   newDate.setUTCMilliseconds(0);
 
-  newDate.setHours(newDate.getHours() - -1 * inputValue); //idk why, but it only works when i subtract (so i have to negate inputValue)
-  newDate.setMinutes(newDate.getMinutes() - -1 * ((inputValue % 1) * 60));
+  newDate.setHours(newDate.getHours() - -1 * Math.floor(inputValue)); //idk why, but it only works when i subtract (so i have to negate inputValue)
+  newDate.setMinutes(
+    newDate.getMinutes() - -1 * ((((inputValue % 1) + 1) % 1) * 60),
+  );
 
   preview?.setHtml(`
     <div class="row"><div>Current local reset time:</div><div>${date.toLocaleTimeString()}</div></div>

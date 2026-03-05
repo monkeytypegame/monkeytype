@@ -167,7 +167,7 @@ function updateClearAllButton(): void {
       padding: [0, "0.5em"],
       duration: 125,
       onBegin: () => {
-        clearAllButton?.removeClass("hidden");
+        clearAllButton?.show();
       },
     });
   } else if (visibleStickyNotifications < 1) {
@@ -176,7 +176,7 @@ function updateClearAllButton(): void {
       padding: ["0.5em", 0],
       duration: 125,
       onComplete: () => {
-        clearAllButton?.addClass("hidden");
+        clearAllButton?.hide();
       },
     });
   }

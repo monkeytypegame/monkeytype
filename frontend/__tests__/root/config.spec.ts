@@ -9,8 +9,7 @@ import {
 import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
-import * as DB from "../../src/ts/db";
-import * as AccountButton from "../../src/ts/elements/account-button";
+import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/elements/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
 
@@ -31,8 +30,7 @@ describe("Config", () => {
       "isConfigValueValid",
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
-    const dbSaveConfigMock = vi.spyOn(DB, "saveConfig");
-    const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
+    const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
     const notificationAddMock = vi.spyOn(Notifications, "add");
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
@@ -42,7 +40,6 @@ describe("Config", () => {
       isConfigValueValidMock,
       dispatchConfigEventMock,
       dbSaveConfigMock,
-      accountButtonLoadingMock,
       notificationAddMock,
       miscReloadAfterMock,
       miscTriggerResizeMock,
@@ -182,14 +179,8 @@ describe("Config", () => {
       //wait for debounce
       await vi.advanceTimersByTimeAsync(2500);
 
-      //show loading
-      expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(1, true);
-
       //save
       expect(dbSaveConfigMock).toHaveBeenCalledWith({ numbers: true });
-
-      //hide loading
-      expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(2, false);
     });
 
     it("saves configOverride values to localstorage if nosave=false", async () => {
@@ -224,7 +215,6 @@ describe("Config", () => {
       //wait for debounce
       await vi.advanceTimersByTimeAsync(2500);
 
-      expect(accountButtonLoadingMock).not.toHaveBeenCalled();
       expect(dbSaveConfigMock).not.toHaveBeenCalled();
     });
 

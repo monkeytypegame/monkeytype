@@ -846,6 +846,96 @@
       "source": "Micrometer Metrics Integration",
       "id": 140,
       "length": 220
+    },
+    {
+      "text": "public static List<Set<Integer>> findMaximalCliques(List<Set<Integer>> adjacency) {\n\tif (adjacency == null) {\n\t\tthrow new IllegalArgumentException(\"Adjacency list must not be null\");\n\t}\n\n\tint n = adjacency.size();\n\tList<Set<Integer>> graph = new ArrayList<>(n);\n\tfor (int u = 0; u < n; u++) {\n\t\tSet<Integer> neighbors = adjacency.get(u);\n\t\tif (neighbors == null) {\n\t\t\tthrow new IllegalArgumentException(\"Adjacency list must not contain null sets\");\n\t\t}\n\t\tSet<Integer> copy = new HashSet<>();\n\t\tfor (int v : neighbors) {\n\t\t\tif (v < 0 || v >= n) {\n\t\t\t\tthrow new IllegalArgumentException(\"Neighbor index out of bounds: \" + v);\n\t\t\t}\n\t\t\tif (v != u) {\n\t\t\t\tcopy.add(v);\n\t\t\t}\n\t\t}\n\t\tgraph.add(copy);\n\t}\n\n\tSet<Integer> r = new HashSet<>();\n\tSet<Integer> p = new HashSet<>();\n\tSet<Integer> x = new HashSet<>();\n\tfor (int v = 0; v < n; v++) {\n\t\tp.add(v);\n\t}\n\n\tList<Set<Integer>> cliques = new ArrayList<>();\n\tbronKerboschPivot(r, p, x, graph, cliques);\n\treturn cliques;\n}",
+      "source": "Graph Algorithms - Maximal Cliques",
+      "id": 141,
+      "length": 959
+    },
+    {
+      "text": "private static void bronKerboschPivot(Set<Integer> r, Set<Integer> p, Set<Integer> x, List<Set<Integer>> graph, List<Set<Integer>> cliques) {\n\tif (p.isEmpty() && x.isEmpty()) {\n\t\tcliques.add(new HashSet<>(r));\n\t\treturn;\n\t}\n\n\tint pivot = choosePivot(p, x, graph);\n\tSet<Integer> candidates = new HashSet<>(p);\n\tif (pivot != -1) {\n\t\tcandidates.removeAll(graph.get(pivot));\n\t}\n\n\tfor (Integer v : candidates) {\n\t\tr.add(v);\n\t\tSet<Integer> newP = intersection(p, graph.get(v));\n\t\tSet<Integer> newX = intersection(x, graph.get(v));\n\t\tbronKerboschPivot(r, newP, newX, graph, cliques);\n\t\tr.remove(v);\n\t\tp.remove(v);\n\t\tx.add(v);\n\t}\n}",
+      "source": "Bron-Kerbosch Algorithm with Pivoting",
+      "id": 142,
+      "length": 622
+    },
+    {
+      "text": "private static int choosePivot(Set<Integer> p, Set<Integer> x, List<Set<Integer>> graph) {\n\tint pivot = -1;\n\tint maxDegree = -1;\n\tSet<Integer> union = new HashSet<>(p);\n\tunion.addAll(x);\n\tfor (Integer v : union) {\n\t\tint degree = graph.get(v).size();\n\t\tif (degree > maxDegree) {\n\t\t\tmaxDegree = degree;\n\t\t\tpivot = v;\n\t\t}\n\t}\n\treturn pivot;\n}",
+      "source": "Bron-Kerbosch Algorithm - Pivot Selection",
+      "id": 143,
+      "length": 338
+    },
+    {
+      "text": "private static Set<Integer> intersection(Set<Integer> base, Set<Integer> neighbors) {\n\tSet<Integer> result = new HashSet<>();\n\tfor (Integer v : base) {\n\t\tif (neighbors.contains(v)) {\n\t\t\tresult.add(v);\n\t\t}\n\t}\n\treturn result;\n}",
+      "source": "Set Intersection Utility",
+      "id": 144,
+      "length": 225
+    },
+    {
+      "text": "public int solve(int start, int target) {\n\tint numNodes = graph.getNumNodes();\n\tint[][] dp = new int[maxResource + 1][numNodes];\n\tfor (int i = 0; i <= maxResource; i++) {\n\t\tArrays.fill(dp[i], Integer.MAX_VALUE);\n\t}\n\tdp[0][start] = 0;\n\tfor (int r = 0; r <= maxResource; r++) {\n\t\tfor (int u = 0; u < numNodes; u++) {\n\t\t\tif (dp[r][u] == Integer.MAX_VALUE) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tfor (Graph.Edge edge : graph.getEdges(u)) {\n\t\t\t\tint v = edge.to();\n\t\t\t\tint cost = edge.cost();\n\t\t\t\tint resource = edge.resource();\n\t\t\t\tif (r + resource <= maxResource) {\n\t\t\t\t\tdp[r + resource][v] = Math.min(dp[r + resource][v], dp[r][u] + cost);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\tint minCost = Integer.MAX_VALUE;\n\tfor (int r = 0; r <= maxResource; r++) {\n\t\tminCost = Math.min(minCost, dp[r][target]);\n\t}\n\treturn minCost == Integer.MAX_VALUE ? -1 : minCost;\n}",
+      "source": "Constrained Shortest Path Problem (CSP)",
+      "id": 145,
+      "length": 819
+    },
+    {
+      "text": "public static int maxFlow(int[][] capacity, int source, int sink) {\n\tif (capacity == null || capacity.length == 0) {\n\t\tthrow new IllegalArgumentException(\"Capacity matrix must not be null or empty\");\n\t}\n\tfinal int n = capacity.length;\n\tfor (int i = 0; i < n; i++) {\n\t\tif (capacity[i] == null || capacity[i].length != n) {\n\t\t\tthrow new IllegalArgumentException(\"Capacity matrix must be square\");\n\t\t}\n\t\tfor (int j = 0; j < n; j++) {\n\t\t\tif (capacity[i][j] < 0) {\n\t\t\t\tthrow new IllegalArgumentException(\"Capacities must be non-negative\");\n\t\t\t}\n\t\t}\n\t}\n\tif (source < 0 || sink < 0 || source >= n || sink >= n) {\n\t\tthrow new IllegalArgumentException(\"Source and sink must be valid vertex indices\");\n\t}\n\tif (source == sink) {\n\t\treturn 0;\n\t}\n\tint[][] residual = new int[n][n];\n\tfor (int i = 0; i < n; i++) {\n\t\tresidual[i] = Arrays.copyOf(capacity[i], n);\n\t}\n\tint[] level = new int[n];\n\tint flow = 0;\n\twhile (bfsBuildLevelGraph(residual, source, sink, level)) {\n\t\tint[] next = new int[n];\n\t\tint pushed;\n\t\tdo {\n\t\t\tpushed = dfsBlocking(residual, level, next, source, sink, Integer.MAX_VALUE);\n\t\t\tflow += pushed;\n\t\t} while (pushed > 0);\n\t}\n\treturn flow;\n}",
+      "source": "Dinic's Algorithm - Maximum Flow",
+      "id": 146,
+      "length": 1142
+    },
+    {
+      "text": "private static boolean bfsBuildLevelGraph(int[][] residual, int source, int sink, int[] level) {\n\tArrays.fill(level, -1);\n\tlevel[source] = 0;\n\tQueue<Integer> q = new ArrayDeque<>();\n\tq.add(source);\n\twhile (!q.isEmpty()) {\n\t\tint u = q.poll();\n\t\tfor (int v = 0; v < residual.length; v++) {\n\t\t\tif (residual[u][v] > 0 && level[v] == -1) {\n\t\t\t\tlevel[v] = level[u] + 1;\n\t\t\t\tif (v == sink) {\n\t\t\t\t\treturn true;\n\t\t\t\t}\n\t\t\t\tq.add(v);\n\t\t\t}\n\t\t}\n\t}\n\treturn level[sink] != -1;\n}",
+      "source": "Dinic's Algorithm - BFS Level Graph Construction",
+      "id": 147,
+      "length": 463
+    },
+    {
+      "text": "private static int dfsBlocking(int[][] residual, int[] level, int[] next, int u, int sink, int f) {\n\tif (u == sink) {\n\t\treturn f;\n\t}\n\tfinal int n = residual.length;\n\tfor (int v = next[u]; v < n; v++, next[u] = v) {\n\t\tif (residual[u][v] <= 0) {\n\t\t\tcontinue;\n\t\t}\n\t\tif (level[v] != level[u] + 1) {\n\t\t\tcontinue;\n\t\t}\n\t\tint pushed = dfsBlocking(residual, level, next, v, sink, Math.min(f, residual[u][v]));\n\t\tif (pushed > 0) {\n\t\t\tresidual[u][v] -= pushed;\n\t\t\tresidual[v][u] += pushed;\n\t\t\treturn pushed;\n\t\t}\n\t}\n\treturn 0;\n}",
+      "source": "Dinic's Algorithm - DFS Blocking Flow",
+      "id": 148,
+      "length": 516
+    },
+    {
+      "text": "public static boolean isAlphabetical(String s) {\n\ts = s.toLowerCase();\n\tfor (int i = 0; i < s.length() - 1; ++i) {\n\t\tif (!Character.isLetter(s.charAt(i)) || s.charAt(i) > s.charAt(i + 1)) {\n\t\t\treturn false;\n\t\t}\n\t}\n\treturn !s.isEmpty() && Character.isLetter(s.charAt(s.length() - 1));\n}",
+      "source": "String Validation - Alphabetical Check",
+      "id": 149,
+      "length": 285
+    },
+    {
+      "text": "public List<Integer> findEulerianCircuit() {\n\tif (!hasEulerianCircuit()) {\n\t\treturn Collections.emptyList();\n\t}\n\tMap<Integer, LinkedList<Integer>> tempGraph = new HashMap<>();\n\tfor (Map.Entry<Integer, LinkedList<Integer>> entry : graph.entrySet()) {\n\t\ttempGraph.put(entry.getKey(), new LinkedList<>(entry.getValue()));\n\t}\n\tStack<Integer> currentPath = new Stack<>();\n\tLinkedList<Integer> circuit = new LinkedList<>();\n\n\tint startVertex = -1;\n\tfor (Map.Entry<Integer, LinkedList<Integer>> entry : tempGraph.entrySet()) {\n\t\tif (!entry.getValue().isEmpty()) {\n\t\t\tstartVertex = entry.getKey();\n\t\t\tbreak;\n\t\t}\n\t}\n\tif (startVertex == -1) {\n\t\tif (graph.isEmpty()) {\n\t\t\treturn Collections.emptyList();\n\t\t}\n\t\treturn Collections.singletonList(graph.keySet().iterator().next());\n\t}\n\tcurrentPath.push(startVertex);\n\twhile (!currentPath.isEmpty()) {\n\t\tint currentVertex = currentPath.peek();\n\n\t\tif (tempGraph.containsKey(currentVertex) && !tempGraph.get(currentVertex).isEmpty()) {\n\t\t\tint nextVertex = tempGraph.get(currentVertex).pollFirst();\n\t\t\ttempGraph.get(nextVertex).remove(Integer.valueOf(currentVertex));\n\t\t\tcurrentPath.push(nextVertex);\n\t\t} else {\n\t\t\tcircuit.addFirst(currentVertex);\n\t\t\tcurrentPath.pop();\n\t\t}\n\t}\n\treturn circuit;\n}",
+      "source": "Graph Theory - Eulerian Circuit",
+      "id": 150,
+      "length": 1226
+    },
+    {
+      "text": "private boolean isCoherentlyConnected() {\n\tif (graph.isEmpty()) {\n\t\treturn true;\n\t}\n\tSet<Integer> visited = new HashSet<>();\n\tint startNode = -1;\n\tfor (Map.Entry<Integer, LinkedList<Integer>> entry : graph.entrySet()) {\n\t\tif (!entry.getValue().isEmpty()) {\n\t\t\tstartNode = entry.getKey();\n\t\t\tbreak;\n\t\t}\n\t}\n\tif (startNode == -1) {\n\t\treturn true;\n\t}\n\tdfs(startNode, visited);\n\tfor (Map.Entry<Integer, LinkedList<Integer>> entry : graph.entrySet()) {\n\t\tif (!entry.getValue().isEmpty() && !visited.contains(entry.getKey())) {\n\t\t\treturn false;\n\t\t}\n\t}\n\treturn true;\n}",
+      "source": "Graph Connectivity - Coherent Connection Check",
+      "id": 151,
+      "length": 560
+    },
+    {
+      "text": "@WebEndpointTest\nvoid allEvents(WebTestClient client) {\n\tclient.get()\n\t\t.uri((builder) -> builder.path(\"/actuator/auditevents\").build())\n\t\t.exchange()\n\t\t.expectStatus()\n\t\t.isOk()\n\t\t.expectBody()\n\t\t.jsonPath(\"events.[*].principal\")\n\t\t.isEqualTo(new JSONArray().appendElement(\"admin\").appendElement(\"admin\").appendElement(\"user\"));\n}",
+      "source": "Spring Boot - WebTestClient Fluent API",
+      "id": 152,
+      "length": 331
+    },
+    {
+      "text": "@Configuration(proxyBeanMethods = false)\nstatic class TestConfiguration {\n\t@Bean\n\tAuditEventRepository auditEventsRepository() {\n\t\tAuditEventRepository repository = new InMemoryAuditEventRepository(3);\n\t\trepository.add(createEvent(\"2016-11-01T11:00:00Z\", \"admin\", \"login\"));\n\t\trepository.add(createEvent(\"2016-11-01T12:00:00Z\", \"admin\", \"logout\"));\n\t\trepository.add(createEvent(\"2016-11-01T12:00:00Z\", \"user\", \"login\"));\n\t\treturn repository;\n\t}\n\t@Bean\n\tAuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {\n\t\treturn new AuditEventsEndpoint(auditEventRepository);\n\t}\n\tprivate AuditEvent createEvent(String instant, String principal, String type) {\n\t\treturn new AuditEvent(Instant.parse(instant), principal, type, Collections.emptyMap());\n\t}\n}",
+      "source": "Spring Boot - Test Configuration Class",
+      "id": 153,
+      "length": 772
+    },
+    {
+      "text": "@Test\nvoid getWhenContextTypeIsNullShouldThrowException() {\n\tassertThatIllegalArgumentException()\n\t\t.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContextClass.class,\n\t\t\t\tApplicationContext.class, this.mockContextSupplier))\n\t\t.withMessageContaining(\"'type' must be an interface\");\n}",
+      "source": "Spring Boot - Exception Assertion Testing",
+      "id": 154,
+      "length": 319
+    },
+    {
+      "text": "@Test\nvoid getWhenContextFailsShouldReturnProxyThatThrowsExceptions() {\n\tApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);\n\tassertThat((Object) context).isNotNull();\n\tassertThatIllegalStateException().isThrownBy(() -> context.getBean(\"foo\"))\n\t\t.withCause(this.startupFailure)\n\t\t.withMessageContaining(\"failed to start\");\n}",
+      "source": "Spring Boot - Context Failure Testing",
+      "id": 155,
+      "length": 369
     }
   ]
 }

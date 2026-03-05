@@ -1,28 +1,43 @@
-.word letter.incorrect {
-  color: var(--error-color);
-}
-
-.word letter.incorrect.extra {
-  color: var(--error-extra-color);
-}
-
-.word.error {
-  border-bottom: solid 2px var(--error-color);
-}
-
 kbd {
   color: var(--sub-color);
   background-color: var(--main-color);
 }
 
-nav > .textButton {
+[data-nav-item] {
   color: var(--main-color);
+  &:hover {
+    color: color-mix(in srgb, var(--main-color) 85%, white 15%);
+  }
 }
 
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: var(--error-color);
+  &:hover {
+    color: color-mix(in srgb, var(--error-color) 85%, white 15%);
+  }
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="alerts"] {
+  color: var(--sub-alt-color);
+  &:hover {
+    color: color-mix(in srgb, var(--sub-alt-color) 85%, black 15%);
+  }
+}
+
+[data-nav-item="account"] {
+  --themable-button-text: var(--main-color);
+  &:hover {
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
+  }
+}
+
+[data-nav-item="settings"] {
   color: var(--caret-color);
+  &:hover {
+    color: color-mix(in srgb, var(--caret-color) 85%, white 15%);
+  }
 }

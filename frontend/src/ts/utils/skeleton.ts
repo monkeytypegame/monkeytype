@@ -7,6 +7,11 @@ export function save(id: string, removeAfter = true): void {
   if (removeAfter) remove(id);
 }
 
+export function add(id: string): void {
+  if (!has(id)) {
+    save(id);
+  }
+}
 export function remove(id: string): void {
   const popup = skeletons.get(id);
   if (popup) {

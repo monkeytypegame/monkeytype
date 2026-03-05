@@ -4,34 +4,16 @@ import { createRequire } from "module";
 import * as path from "path";
 import { fontawesomeSubset as createFontawesomeSubset } from "fontawesome-subset";
 
-/**
- * Detect fontawesome icons used by the application and creates subset font files only containing the used icons.
- * @param options
- * @returns
- */
-export function fontawesomeSubset(): Plugin {
-  return {
-    name: "vite-plugin-fontawesome-subset",
-    apply: "build",
-    async buildStart() {
-      const start = performance.now();
-      console.log("\nCreating fontawesome subset...");
+function parseIcons(iconSet: string): string[] {
+  const require = createRequire(import.meta.url);
+  const path = require.resolve(
+    `@fortawesome/fontawesome-free/js/${iconSet}.js`,
+  );
+  const file: string | null = fs.readFileSync(path).toString();
 
-      const fontawesomeClasses = getFontawesomeConfig();
-      await createFontawesomeSubset(
-        fontawesomeClasses,
-        "src/webfonts-generated",
-        {
-          targetFormats: ["woff2"],
-        },
-      );
-
-      const end = performance.now();
-      console.log(
-        `Creating fontawesome subset took ${Math.round(end - start)} ms`,
-      );
-    },
-  };
+  return file
+    ?.match(/"(.*)": \[.*\],/g)
+    ?.map((it) => it.substring(1, it.indexOf(":") - 1)) as string[];
 }
 
 type FontawesomeConfig = {
@@ -82,6 +64,31 @@ const modules2 = {
   ],
   stacked: ["stack", "stack-1x", "stack-2x", "inverse"],
 };
+
+function toFileAndDir(dir: string, file: string): FileObject {
+  const name = path.join(dir, file);
+  return { name, isDirectory: fs.statSync(name).isDirectory() };
+}
+
+function findAllFiles(
+  dir: string,
+  filter: (filename: string) => boolean = (_it): boolean => true,
+): string[] {
+  const files = fs
+    .readdirSync(dir)
+    .map((it) => toFileAndDir(dir, it))
+    .filter((file) => file.isDirectory || filter(file.name));
+
+  const out: string[] = [];
+  for (const file of files) {
+    if (file.isDirectory) {
+      out.push(...findAllFiles(file.name, filter));
+    } else {
+      out.push(file.name);
+    }
+  }
+  return out;
+}
 
 /**
  * Detect used fontawesome icons in the directories `src/**` and `static/**{.html|.css}`
@@ -164,44 +171,37 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
   };
 }
 
+/**
+ * Detect fontawesome icons used by the application and creates subset font files only containing the used icons.
+ * @param options
+ * @returns
+ */
+export function fontawesomeSubset(): Plugin {
+  return {
+    name: "vite-plugin-fontawesome-subset",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating fontawesome subset...");
+
+      const fontawesomeClasses = getFontawesomeConfig();
+      await createFontawesomeSubset(
+        fontawesomeClasses,
+        "src/webfonts-generated",
+        {
+          targetFormats: ["woff2"],
+        },
+      );
+
+      const end = performance.now();
+      console.log(
+        `Creating fontawesome subset took ${Math.round(end - start)} ms`,
+      );
+    },
+  };
+}
+
 //detect if we run this as a main
 if (import.meta.url.endsWith(process.argv[1] as string)) {
   getFontawesomeConfig(true);
-}
-
-function toFileAndDir(dir: string, file: string): FileObject {
-  const name = path.join(dir, file);
-  return { name, isDirectory: fs.statSync(name).isDirectory() };
-}
-
-function findAllFiles(
-  dir: string,
-  filter: (filename: string) => boolean = (_it): boolean => true,
-): string[] {
-  const files = fs
-    .readdirSync(dir)
-    .map((it) => toFileAndDir(dir, it))
-    .filter((file) => file.isDirectory || filter(file.name));
-
-  const out: string[] = [];
-  for (const file of files) {
-    if (file.isDirectory) {
-      out.push(...findAllFiles(file.name, filter));
-    } else {
-      out.push(file.name);
-    }
-  }
-  return out;
-}
-
-function parseIcons(iconSet: string): string[] {
-  const require = createRequire(import.meta.url);
-  const path = require.resolve(
-    `@fortawesome/fontawesome-free/js/${iconSet}.js`,
-  );
-  const file: string | null = fs.readFileSync(path).toString();
-
-  return file
-    ?.match(/"(.*)": \[.*\],/g)
-    ?.map((it) => it.substring(1, it.indexOf(":") - 1)) as string[];
 }

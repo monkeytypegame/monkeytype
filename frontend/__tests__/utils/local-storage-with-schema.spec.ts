@@ -75,6 +75,7 @@ describe("local-storage-with-schema.ts", () => {
 
         const update = { ...defaultObject, fontSize: 5 };
         ls.set(update);
+        getItemMock.mockReset();
 
         expect(ls.get()).toStrictEqual(update);
 
@@ -83,6 +84,7 @@ describe("local-storage-with-schema.ts", () => {
 
       it("should get last valid value if schema is incorrect", () => {
         ls.set(defaultObject);
+        getItemMock.mockReset();
 
         ls.set({ hi: "hello" } as any);
 
@@ -90,6 +92,15 @@ describe("local-storage-with-schema.ts", () => {
 
         expect(setItemMock).toHaveBeenCalledOnce();
         expect(getItemMock).not.toHaveBeenCalled();
+      });
+
+      it("should not set if value has not changed", () => {
+        ls.set(defaultObject);
+        setItemMock.mockReset();
+
+        ls.set(defaultObject);
+
+        expect(setItemMock).not.toHaveBeenCalled();
       });
     });
 
