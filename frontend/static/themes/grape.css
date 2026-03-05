@@ -34,7 +34,6 @@
   }
 }
 
-.button.discord::after,
 #caret,
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
@@ -42,19 +41,21 @@
   animation: grape-bg 5s linear infinite;
 }
 
-header.focus .button.discord::after,
-header .button.discord.dotHidden::after {
-  animation-name: none !important;
+[data-ui-element="logo"] h1 {
+  color: var(--main-color);
 }
 
-#logo .bottom,
-header .config .group .buttons .textButton.active,
+[data-ui-element="logoSubtext"],
+[data-ui-element="logo"]:hover h1,
 #result .stats .group .bottom,
 [data-nav-item]:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
-a:not(.button):hover {
+footer button:hover,
+a:not(.button):not([data-ui-variant="button"]):hover {
+  animation: grape 5s linear infinite;
+}
+
+[data-nav-item="account"]:hover svg {
+  color: transparent;
   animation: grape 5s linear infinite;
 }
 

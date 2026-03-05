@@ -2,8 +2,8 @@ import { createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
 import { signIn } from "../../auth";
+import { addXp } from "../../db";
 import * as Notifications from "../../elements/notifications";
-import { update } from "../../elements/xp-bar";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
@@ -106,18 +106,32 @@ export function DevOptionsModal(): JSXElement {
     },
     {
       icon: "fa-star",
-      label: () => "XP Bar Test",
+      label: () => "XP Simple Test",
       onClick: () => {
         setTimeout(() => {
-          void update(1000000, 20800, {
+          addXp(1000);
+        }, 500);
+        hideModal("DevOptions");
+      },
+    },
+    {
+      icon: "fa-star",
+      label: () => "XP with breakdown Test",
+      onClick: () => {
+        setTimeout(() => {
+          const fakeBreakdown = {
             base: 100,
-            fullAccuracy: 200,
-            accPenalty: 300,
-            quote: 400,
-            punctuation: 500,
-            streak: 10_000,
+            quote: 10,
+            corrected: 5,
+            funbox: 5,
+            streak: 10,
+            incomplete: 10,
+            accPenalty: 5,
             configMultiplier: 2,
-          });
+            daily: 10000,
+          };
+          const totalFakeXp = 10270;
+          addXp(totalFakeXp, fakeBreakdown);
         }, 500);
         hideModal("DevOptions");
       },
@@ -145,7 +159,7 @@ export function DevOptionsModal(): JSXElement {
         <For each={buttons}>
           {(btn) => (
             <Button
-              type="button"
+              variant="button"
               onClick={btn.onClick}
               fa={{ icon: btn.icon, fixedWidth: true }}
               text={btn.label()}
