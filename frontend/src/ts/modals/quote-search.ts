@@ -21,7 +21,6 @@ import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
-import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
 import { getLanguage } from "../utils/json-data";
 import { qsr, ElementWithUtils } from "../utils/dom";
@@ -491,11 +490,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       button.removeClass("fas").addClass("far");
     } catch (e) {
       hideLoaderBar();
-      const message = createErrorMessage(
-        e,
-        "Failed to remove quote from favorites",
-      );
-      notifyError(message);
+      notifyError("Failed to remove quote from favorites", { error: e });
     }
   } else {
     try {
@@ -505,8 +500,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       button.removeClass("far").addClass("fas");
     } catch (e) {
       hideLoaderBar();
-      const message = createErrorMessage(e, "Failed to add quote to favorites");
-      notifyError(message);
+      notifyError("Failed to add quote to favorites", { error: e });
     }
   }
 }

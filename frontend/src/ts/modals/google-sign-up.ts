@@ -7,7 +7,6 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
@@ -117,8 +116,7 @@ async function apply(): Promise<void> {
     }
   } catch (e) {
     console.log(e);
-    const message = createErrorMessage(e, "Failed to sign in with Google");
-    notifyError(message);
+    notifyError("Failed to sign in with Google", { error: e });
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();

@@ -1,5 +1,4 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import { notifyError } from "../stores/notifications";
@@ -37,7 +36,7 @@ export async function getCharFromEvent(
   try {
     layout = await JSONData.getLayout(Config.layout);
   } catch (e) {
-    notifyError(Misc.createErrorMessage(e, "Failed to emulate event"));
+    notifyError("Failed to emulate event", { error: e });
     return null;
   }
 

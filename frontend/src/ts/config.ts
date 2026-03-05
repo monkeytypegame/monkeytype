@@ -7,7 +7,6 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
-  createErrorMessage,
   isObject,
   promiseWithResolvers,
   triggerResize,
@@ -347,9 +346,8 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     saveFullConfigToLocalStorage();
     notifySuccess("Done");
   } catch (e) {
-    const msg = createErrorMessage(e, "Failed to import settings");
-    console.error(msg);
-    notifyError(msg);
+    console.error(e);
+    notifyError("Failed to import settings", { error: e });
   }
 }
 

@@ -206,8 +206,7 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   const { data: list, error } = await tryCatch(JSONData.getChallengeList());
   if (error) {
-    const message = Misc.createErrorMessage(error, "Failed to setup challenge");
-    notifyError(message);
+    notifyError("Failed to setup challenge", { error });
     ManualRestart.set();
     setTimeout(() => {
       qs("header .config")?.show();
@@ -379,7 +378,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     challengeLoading = false;
     return true;
   } catch (e) {
-    notifyError(Misc.createErrorMessage(e, "Failed to load challenge"));
+    notifyError("Failed to load challenge", { error: e });
     return false;
   }
 }

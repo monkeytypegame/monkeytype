@@ -974,8 +974,7 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
       notifySuccess("Link copied to clipboard");
     })
     .catch((e: unknown) => {
-      const msg = Misc.createErrorMessage(e, "Failed to copy to clipboard");
-      notifyError(msg);
+      notifyError("Failed to copy to clipboard", { error: e });
     });
 });
 

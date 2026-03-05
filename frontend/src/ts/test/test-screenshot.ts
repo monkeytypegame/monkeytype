@@ -220,7 +220,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     );
     return canvas;
   } catch (e) {
-    notifyError(Misc.createErrorMessage(e, "Error creating screenshot canvas"));
+    notifyError("Error creating screenshot canvas", { error: e });
     return null;
   } finally {
     revert(); // Ensure UI is reverted on both success and error

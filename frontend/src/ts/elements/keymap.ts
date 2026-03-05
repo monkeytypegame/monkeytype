@@ -424,9 +424,7 @@ export async function refresh(): Promise<void> {
         layoutNameDisplayString = Config.keymapLayout;
       }
     } catch (e) {
-      notifyError(
-        Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
-      );
+      notifyError(`Failed to load keymap ${layoutName}`, { error: e });
       return;
     }
 

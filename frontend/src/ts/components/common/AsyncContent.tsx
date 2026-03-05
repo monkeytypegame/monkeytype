@@ -87,7 +87,7 @@ export default function AsyncContent<T extends QueryMapping>(
     );
     console.error("AsyncMultiContent failed", message, err);
 
-    notifyError(message);
+    notifyError(props.errorMessage ?? "An error occurred", { error: err });
 
     return message;
   };

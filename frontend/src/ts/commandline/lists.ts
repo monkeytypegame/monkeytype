@@ -296,11 +296,7 @@ export const commands: CommandsSubgroup = {
             notifySuccess("Copied to clipboard");
           })
           .catch((e: unknown) => {
-            const message = Misc.createErrorMessage(
-              e,
-              "Failed to copy to clipboard",
-            );
-            notifyError(message);
+            notifyError("Failed to copy to clipboard", { error: e });
           });
       },
     },

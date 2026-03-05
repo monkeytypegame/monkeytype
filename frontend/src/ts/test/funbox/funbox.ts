@@ -1,5 +1,4 @@
 import { notify, notifyError } from "../../stores/notifications";
-import * as Misc from "../../utils/misc";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
@@ -98,12 +97,9 @@ export async function activate(
   // so we need to double check its validity
   if (!checkCompatibility(getActiveFunboxNames())) {
     notifyError(
-      Misc.createErrorMessage(
-        undefined,
-        `Failed to activate funbox: funboxes ${Config.funbox
-          .map((it) => it.replace(/_/g, " "))
-          .join(", ")} are not compatible`,
-      ),
+      `Failed to activate funbox: funboxes ${Config.funbox
+        .map((it) => it.replace(/_/g, " "))
+        .join(", ")} are not compatible`,
     );
     setConfig("funbox", [], {
       nosave: true,
@@ -122,7 +118,7 @@ export async function activate(
     JSONData.getCurrentLanguage(Config.language),
   );
   if (error) {
-    notifyError(Misc.createErrorMessage(error, "Failed to activate funbox"));
+    notifyError("Failed to activate funbox", { error });
     setConfig("funbox", [], {
       nosave: true,
     });

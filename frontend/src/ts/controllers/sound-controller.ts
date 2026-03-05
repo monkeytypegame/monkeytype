@@ -1,6 +1,5 @@
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import { createErrorMessage } from "../utils/misc";
 import { randomElementFromArray } from "../utils/arrays";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
@@ -620,10 +619,9 @@ function initAudioContext(): void {
   } catch (e) {
     audioCtx = null;
     console.error(e);
-    notifyError(
-      createErrorMessage(e, "Error initializing audio context") +
-        ". Notes will not play.",
-    );
+    notifyError("Error initializing audio context. Notes will not play.", {
+      error: e,
+    });
   }
 }
 

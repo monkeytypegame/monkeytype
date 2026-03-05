@@ -8,12 +8,7 @@ import {
   notifySuccess,
   getNotificationHistory,
 } from "../stores/notifications";
-import {
-  applyReducedMotion,
-  createErrorMessage,
-  escapeHTML,
-  promiseAnimate,
-} from "../utils/misc";
+import { applyReducedMotion, escapeHTML, promiseAnimate } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as AuthEvent from "../observables/auth-event";
@@ -426,8 +421,7 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
       duration,
     });
   } catch (e: unknown) {
-    const msg = createErrorMessage(e, "Could not copy to clipboard");
-    notifyError(msg);
+    notifyError("Could not copy to clipboard", { error: e });
   }
 }
 

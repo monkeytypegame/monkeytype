@@ -1978,8 +1978,7 @@ async function copyToClipboard(content: string): Promise<void> {
       duration: 2,
     });
   } catch (e) {
-    const msg = Misc.createErrorMessage(e, "Could not copy to clipboard");
-    notifyError(msg);
+    notifyError("Could not copy to clipboard", { error: e });
   }
 }
 

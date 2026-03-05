@@ -107,8 +107,7 @@ async function getDataAndInit(): Promise<boolean> {
 
       notifyError("Failed to get user data: " + error.message);
     } else {
-      const message = createErrorMessage(error, "Failed to get user data");
-      notifyError(message);
+      notifyError("Failed to get user data", { error });
     }
     return false;
   }
@@ -253,11 +252,7 @@ async function addAuthProvider(
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
-    const message = createErrorMessage(
-      error,
-      `Failed to add ${providerName} authentication`,
-    );
-    notifyError(message);
+    notifyError(`Failed to add ${providerName} authentication`, { error });
   }
 }
 

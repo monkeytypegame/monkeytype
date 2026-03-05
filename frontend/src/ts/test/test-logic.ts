@@ -365,7 +365,7 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    notifyError(Misc.createErrorMessage(error, "Failed to load language"));
+    notifyError("Failed to load language", { error });
   }
 
   if (!language || language.name !== Config.language) {
@@ -392,12 +392,7 @@ async function init(): Promise<boolean> {
         JSONData.getLanguage(langName),
       );
       if (error) {
-        notifyError(
-          Misc.createErrorMessage(
-            error,
-            `Failed to load language: ${langName}`,
-          ),
-        );
+        notifyError(`Failed to load language: ${langName}`, { error });
       }
       return lang;
     });
@@ -487,9 +482,7 @@ async function init(): Promise<boolean> {
         });
       }
     } else {
-      notifyError(Misc.createErrorMessage(e, "Failed to generate words"), {
-        important: true,
-      });
+      notifyError("Failed to generate words", { error: e, important: true });
     }
 
     return await init();
@@ -638,13 +631,10 @@ export async function addWord(): Promise<void> {
     TestUI.addWord(randomWord.word);
   } catch (e) {
     TimerEvent.dispatch("fail", "word generation error");
-    notifyError(
-      Misc.createErrorMessage(
-        e,
-        "Error while getting next word. Please try again later",
-      ),
-      { important: true },
-    );
+    notifyError("Error while getting next word. Please try again later", {
+      error: e,
+      important: true,
+    });
   }
 }
 

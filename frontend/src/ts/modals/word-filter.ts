@@ -177,9 +177,7 @@ async function filter(language: Language): Promise<string[]> {
     JSONData.getLanguage(language),
   );
   if (error) {
-    notifyError(
-      Misc.createErrorMessage(error, "Failed to filter language words"),
-    );
+    notifyError("Failed to filter language words", { error });
     return [];
   }
 
