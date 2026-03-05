@@ -35,13 +35,13 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-bell",
       label: () => "Test Notifications",
       onClick: () => {
-        notifySuccess("This is a test", { duration: 0 });
-        notify("This is a test", { duration: 0 });
+        notifySuccess("This is a test", { durationMs: 0 });
+        notify("This is a test", { durationMs: 0 });
         notifyError("This is a test", {
-          duration: 0,
+          durationMs: 0,
           details: { test: true, error: "Example error message" },
         });
-        notify("useInnerHtml<br>test", { duration: 0, useInnerHtml: true });
+        notify("useInnerHtml<br>test", { durationMs: 0, useInnerHtml: true });
         hideModal("DevOptions");
       },
     },

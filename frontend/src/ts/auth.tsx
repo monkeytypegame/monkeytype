@@ -35,7 +35,7 @@ export const githubProvider = new GithubAuthProvider();
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
-    notifyError("Authentication uninitialized", { duration: 3 });
+    notifyError("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
 
@@ -94,13 +94,13 @@ async function getDataAndInit(): Promise<boolean> {
         notify(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
           {
-            duration: 0,
+            durationMs: 0,
           },
         );
         notify(
           "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
           {
-            duration: 0,
+            durationMs: 0,
           },
         );
       }
@@ -239,7 +239,7 @@ async function addAuthProvider(
   provider: AuthProvider,
 ): Promise<void> {
   if (!isAuthAvailable()) {
-    notifyError("Authentication uninitialized", { duration: 3 });
+    notifyError("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   showLoaderBar();
@@ -258,7 +258,7 @@ async function addAuthProvider(
 
 export function signOut(): void {
   if (!isAuthAvailable()) {
-    notifyError("Authentication uninitialized", { duration: 3 });
+    notifyError("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   if (!isAuthenticated()) return;

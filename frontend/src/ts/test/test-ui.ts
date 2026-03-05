@@ -1975,7 +1975,7 @@ async function copyToClipboard(content: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(content);
     notify("Copied to clipboard", {
-      duration: 2,
+      durationMs: 2000,
     });
   } catch (e) {
     notifyError("Could not copy to clipboard", { error: e });

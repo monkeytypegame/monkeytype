@@ -88,7 +88,7 @@ function hide(): void {
           `New badge${
             badgesClaimed.length > 1 ? "s" : ""
           } unlocked: ${badgesClaimed.join(", ")}`,
-          { duration: 5, customTitle: "Reward", customIcon: "gift" },
+          { durationMs: 5000, customTitle: "Reward", customIcon: "gift" },
         );
       }
 

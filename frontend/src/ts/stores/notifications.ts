@@ -10,7 +10,7 @@ export type Notification = {
   message: string;
   level: NotificationLevel;
   important: boolean;
-  duration: number;
+  durationMs: number;
   useInnerHtml: boolean;
   customTitle?: string;
   customIcon?: string;
@@ -79,7 +79,7 @@ export type AddNotificationOptions = Partial<
   Pick<
     Notification,
     | "important"
-    | "duration"
+    | "durationMs"
     | "customTitle"
     | "customIcon"
     | "onDismiss"
@@ -132,29 +132,24 @@ export function addNotificationWithLevel(
     return next.length > 25 ? next.slice(-25) : next;
   });
 
-  let duration: number;
-  if (options.duration === undefined) {
-    duration = level === "error" ? 0 : 3000;
-  } else {
-    duration = options.duration * 1000;
-  }
+  const durationMs = options.durationMs ?? (level === "error" ? 0 : 3000);
 
   const notifId = addNotificationToStore({
     message,
     level,
     important: options.important ?? false,
-    duration,
+    durationMs,
     useInnerHtml: options.useInnerHtml ?? false,
     customTitle: options.customTitle,
     customIcon: options.customIcon,
     onDismiss: options.onDismiss,
   });
 
-  if (duration > 0) {
+  if (durationMs > 0) {
     const timer = setTimeout(() => {
       autoRemoveTimers.delete(notifId);
       removeNotification(notifId, "timeout");
-    }, duration + 250);
+    }, durationMs + 250);
     autoRemoveTimers.set(notifId, timer);
   }
 }

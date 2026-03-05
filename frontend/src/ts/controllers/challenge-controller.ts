@@ -176,7 +176,7 @@ export function verify(result: CompletedEvent): string | null {
         if (TestState.activeChallenge.autoRole) {
           notifySuccess(
             "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
-            { duration: 5 },
+            { durationMs: 5000 },
           );
         }
         notifySuccess(`${TestState.activeChallenge.display} challenge passed!`);

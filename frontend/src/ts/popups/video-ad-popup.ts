@@ -13,7 +13,7 @@ export async function show(): Promise<void> {
     notify(
       "Looks like you're using an adblocker. Video ads will not work until you disable it.",
       {
-        duration: 6,
+        durationMs: 6000,
       },
     );
     return;
@@ -24,7 +24,7 @@ export async function show(): Promise<void> {
     notify(
       "Looks like you're using a cookie popup blocker. Video ads will not work without giving your consent through the popup.",
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
     return;
@@ -72,7 +72,7 @@ export function egVideoListener(options: Record<string, string>): void {
     hide();
   } else if (event === "empty") {
     notifyError("Failed to load video ad. Please try again later", {
-      duration: 3,
+      durationMs: 3000,
     });
     hide();
   }

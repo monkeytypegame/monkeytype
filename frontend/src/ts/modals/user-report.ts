@@ -104,7 +104,7 @@ async function submitReport(): Promise<void> {
     notify(
       "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
       {
-        duration: 10,
+        durationMs: 10000,
       },
     );
     return;

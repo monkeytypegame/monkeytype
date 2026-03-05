@@ -209,7 +209,7 @@ async function beforeAnimation(
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
       notify("Disabled long custom text progress tracking", {
-        duration: 5,
+        durationMs: 5000,
       });
       state.longCustomTextWarning = false;
     }
@@ -253,7 +253,7 @@ function handleFileOpen(): void {
   const file = qs<HTMLInputElement>("#fileInput")?.native.files?.[0];
   if (file) {
     if (file.type !== "text/plain") {
-      notifyError("File is not a text file", { duration: 5 });
+      notifyError("File is not a text file", { durationMs: 5000 });
       return;
     }
 
@@ -267,7 +267,7 @@ function handleFileOpen(): void {
       qs<HTMLInputElement>(`#fileInput`)?.setValue("");
     };
     reader.onerror = (): void => {
-      notifyError("Failed to read file", { duration: 5 });
+      notifyError("Failed to read file", { durationMs: 5000 });
     };
   }
 }
@@ -330,7 +330,7 @@ function apply(): void {
     ].filter((limit) => limit !== "").length > 1
   ) {
     notify("You can only specify one limit", {
-      duration: 5,
+      durationMs: 5000,
     });
     return;
   }
@@ -342,7 +342,7 @@ function apply(): void {
     state.customTextLimits.section === ""
   ) {
     notify("You need to specify a limit", {
-      duration: 5,
+      durationMs: 5000,
     });
     return;
   }
@@ -355,7 +355,7 @@ function apply(): void {
     notify(
       "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }
@@ -537,7 +537,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       CustomTextState.setCustomTextName("", undefined);
       state.longCustomTextWarning = false;
       notify("Disabled long custom text progress tracking", {
-        duration: 5,
+        durationMs: 5000,
       });
     }
   });

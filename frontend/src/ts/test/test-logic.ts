@@ -177,7 +177,7 @@ export function restart(options = {} as RestartOptions): void {
           message = "Press shift + enter or use your mouse to confirm.";
         }
         notify(`Quick restart disabled in long tests. ${message}`, {
-          duration: 4,
+          durationMs: 4000,
           important: true,
         });
         return;
@@ -655,7 +655,7 @@ export async function retrySavingResult(): Promise<void> {
     notify(
       "Could not retry saving the result as the result no longer exists.",
       {
-        duration: 5,
+        durationMs: 5000,
         important: true,
       },
     );
@@ -973,7 +973,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   } else if (difficultyFailed) {
     notify(`Test failed - ${failReason}`, {
-      duration: 1,
+      durationMs: 1000,
     });
     dontSave = true;
   } else if (
@@ -1079,7 +1079,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       notifySuccess("Long custom text progress saved", {
-        duration: 5,
+        durationMs: 5000,
         important: true,
       });
 
@@ -1092,7 +1092,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       const text = CustomText.getCustomText(customTextName, true);
       CustomText.setText(text);
       notifySuccess("Long custom text completed", {
-        duration: 5,
+        durationMs: 5000,
         important: true,
       });
     }
@@ -1157,7 +1157,7 @@ async function saveResult(
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
   if (!Config.resultSaving) {
     notifyError("Result not saved: disabled by user", {
-      duration: 3,
+      durationMs: 3000,
       customTitle: "Notice",
       important: true,
     });
@@ -1319,7 +1319,7 @@ const debouncedZipfCheck = debounce(250, async () => {
         Strings.getLanguageDisplayString(Config.language),
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }
@@ -1329,7 +1329,7 @@ const debouncedZipfCheck = debounce(250, async () => {
         Strings.getLanguageDisplayString(Config.language),
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }

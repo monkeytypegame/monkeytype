@@ -535,7 +535,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       notify(
         "Quote submission is disabled temporarily due to a large submission queue.",
         {
-          duration: 5,
+          durationMs: 5000,
         },
       );
       return;

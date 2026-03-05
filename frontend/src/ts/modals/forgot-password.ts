@@ -68,7 +68,7 @@ async function submit(): Promise<void> {
         return;
       }
 
-      notifySuccess(result.body.message, { duration: 5 });
+      notifySuccess(result.body.message, { durationMs: 5000 });
     });
 
   hide();

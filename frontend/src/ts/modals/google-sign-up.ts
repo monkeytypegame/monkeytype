@@ -56,7 +56,7 @@ async function hide(): Promise<void> {
       resetIgnoreAuthCallback();
       if (signedInUser !== undefined) {
         notify("Sign up process cancelled", {
-          duration: 5,
+          durationMs: 5000,
         });
         LoginPage.hidePreloader();
         LoginPage.enableInputs();

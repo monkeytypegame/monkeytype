@@ -100,7 +100,7 @@ window.onerror = function (message, url, line, column, error): void {
   if (Misc.isDevEnvironment()) {
     notifyError(error?.message ?? "Undefined message", {
       customTitle: "DEV: Unhandled error",
-      duration: 5,
+      durationMs: 5000,
       important: true,
     });
     console.error({ message, url, line, column, error });
@@ -111,7 +111,11 @@ window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
     notifyError(
       (e.reason as Error).message ?? e.reason ?? "Undefined message",
-      { customTitle: "DEV: Unhandled rejection", duration: 5, important: true },
+      {
+        customTitle: "DEV: Unhandled rejection",
+        durationMs: 5000,
+        important: true,
+      },
     );
   }
 };

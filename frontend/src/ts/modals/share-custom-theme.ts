@@ -53,7 +53,7 @@ async function copy(): Promise<void> {
     notify(
       "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
       {
-        duration: 5,
+        durationMs: 5000,
       },
     );
     void urlModal.show({

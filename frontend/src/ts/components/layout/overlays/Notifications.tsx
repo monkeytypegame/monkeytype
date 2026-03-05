@@ -116,7 +116,7 @@ export function Notifications(): JSXElement {
   const stickyCount = (): number => {
     const focus = getFocus();
     return getNotifications().filter(
-      (n) => n.duration === 0 && (!focus || n.important),
+      (n) => n.durationMs === 0 && (!focus || n.important),
     ).length;
   };
 

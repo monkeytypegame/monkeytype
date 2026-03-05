@@ -312,7 +312,7 @@ export function handleConfigInput<T extends ConfigKey>({
     const didConfigSave = setConfig(configName, value);
 
     if (didConfigSave) {
-      notifySuccess("Saved", { duration: 1 });
+      notifySuccess("Saved", { durationMs: 1000 });
     }
   };
 

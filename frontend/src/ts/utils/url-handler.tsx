@@ -293,7 +293,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       .map(([key, val]) => key + (val ? ": " + val : ""))
       .join("<br />");
     notifySuccess(`Settings applied from URL:<br /><br />${lines}`, {
-      duration: 10,
+      durationMs: 10000,
       useInnerHtml: true,
     });
   }

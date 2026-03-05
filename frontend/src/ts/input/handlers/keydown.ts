@@ -65,7 +65,7 @@ export async function handleEnter(
         if (delay >= 5000) {
           notify("Please double tap shift+enter to confirm bail out", {
             important: true,
-            duration: 5,
+            durationMs: 5000,
           });
         }
         e.preventDefault();

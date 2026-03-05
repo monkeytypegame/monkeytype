@@ -119,7 +119,7 @@ async function save(): Promise<void> {
   //can do this because the response will not be null if the status is 200
   const responseTagPbs = response.body.data?.tagPbs ?? [];
 
-  notifySuccess("Tags updated", { duration: 2 });
+  notifySuccess("Tags updated", { durationMs: 2000 });
 
   DB.getSnapshot()?.results?.forEach((result) => {
     if (result._id === state.resultId) {

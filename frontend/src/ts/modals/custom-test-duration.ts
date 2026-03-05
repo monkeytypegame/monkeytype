@@ -102,7 +102,7 @@ function apply(): void {
       notify(
         "Infinite time! Make sure to use Bail Out from the command line to save your result.",
         {
-          duration: 7,
+          durationMs: 7000,
         },
       );
     }

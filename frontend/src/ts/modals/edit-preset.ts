@@ -281,7 +281,7 @@ async function apply(): Promise<void> {
     if (response.status !== 200 || response.body.data === null) {
       notifyError("Failed to add preset: " + response.body.message);
     } else {
-      notifySuccess("Preset added", { duration: 2 });
+      notifySuccess("Preset added", { durationMs: 2000 });
       snapshotPresets.push({
         name: presetName,
         config: configChanges,

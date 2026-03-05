@@ -254,7 +254,7 @@ export async function copyToClipboard(): Promise<void> {
         }),
       );
       await navigator.clipboard.write([clipItem]);
-      notifySuccess("Copied screenshot to clipboard", { duration: 2 });
+      notifySuccess("Copied screenshot to clipboard", { durationMs: 2000 });
     } catch (e) {
       // Handle clipboard write error
       console.error("Error saving image to clipboard", e);
@@ -267,14 +267,14 @@ export async function copyToClipboard(): Promise<void> {
         firefoxClipboardNotificationShown = true;
         notify(
           "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
-          { duration: 10 },
+          { durationMs: 10000 },
         );
       }
 
       // General fallback notification and action
       notify(
         "Could not copy screenshot to clipboard. Opening in new tab instead (make sure popups are allowed)",
-        { duration: 5 },
+        { durationMs: 5000 },
       );
       try {
         // Fallback: Open blob in a new tab

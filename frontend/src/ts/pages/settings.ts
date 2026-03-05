@@ -840,7 +840,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    notifySuccess("Saved", { duration: 1 });
+    notifySuccess("Saved", { durationMs: 1000 });
   }
 });
 
@@ -856,7 +856,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    notifySuccess("Saved", { duration: 1 });
+    notifySuccess("Saved", { durationMs: 1000 });
   }
 });
 
@@ -873,7 +873,7 @@ qs(
       ),
     );
     if (didConfigSave) {
-      notifySuccess("Saved", { duration: 1 });
+      notifySuccess("Saved", { durationMs: 1000 });
     }
   }
 });

@@ -1085,7 +1085,7 @@ export async function update(
     showConfetti();
     notify(Arrays.randomElementFromArray(messages), {
       customTitle: "Nice",
-      duration: 15,
+      durationMs: 15000,
       important: true,
     });
   }

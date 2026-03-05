@@ -37,7 +37,7 @@ export async function apply(_id: string): Promise<void> {
     }
   }
   TestLogic.restart();
-  notifySuccess("Preset applied", { duration: 2 });
+  notifySuccess("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
 }
 function isPartialPreset(preset: SnapshotPreset): boolean {

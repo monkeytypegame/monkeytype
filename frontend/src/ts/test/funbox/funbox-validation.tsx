@@ -145,7 +145,7 @@ export function canSetConfigWithCurrentFunboxes(
           key,
         )} to ${value.toString()} with currently active funboxes.`,
         {
-          duration: 5,
+          durationMs: 5000,
         },
       );
     }
@@ -188,7 +188,7 @@ export function canSetFunboxWithConfig(
     }
     notify(
       `You can't enable ${funbox.replace(/_/g, " ")}:<br />${errorStrings.join("<br />")}`,
-      { duration: 5, useInnerHtml: true },
+      { durationMs: 5000, useInnerHtml: true },
     );
     return false;
   } else {

@@ -663,7 +663,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
         if (mainVersion <= 16 && minorVersion <= 5) {
           notify("CRT is not available on Safari 16.5 or earlier.", {
-            duration: 5,
+            durationMs: 5000,
           });
           toggleFunbox("crt");
           return;
@@ -717,7 +717,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             ", ",
           )}).`,
           {
-            duration: 7,
+            durationMs: 7000,
           },
         );
         throw new WordGenError("");
@@ -737,7 +737,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         setConfig("language", fallbackLanguage);
         notify(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
-          { duration: 5 },
+          { durationMs: 5000 },
         );
         throw new WordGenError("");
       }
