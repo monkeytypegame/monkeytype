@@ -80,6 +80,12 @@ export function clearAllNotifications(): void {
   }
 }
 
+export const __testing = {
+  clearNotificationHistory(): void {
+    setNotificationHistory([]);
+  },
+};
+
 export function getNotifications(): Notification[] {
   return notifications;
 }
