@@ -19,7 +19,6 @@ let cache: {
 function initializeCache(): void {
   if (cacheReady) return;
 
-  const cursorSelector = "body, button, a";
   const elementsSelector = [
     "app",
     "footer",
@@ -33,7 +32,6 @@ function initializeCache(): void {
     "#ad-footer-small-wrapper",
   ].join(",");
 
-  cache.cursor = qsa(cursorSelector);
   cache.focus = qsa(elementsSelector);
 
   cacheReady = true;
@@ -44,6 +42,7 @@ function initializeCache(): void {
 export function set(value: boolean, withCursor = false): void {
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
+    cache.cursor = qsa("body, button, a");
 
     if (value && !getFocus()) {
       setFocus(true);
@@ -52,7 +51,7 @@ export function set(value: boolean, withCursor = false): void {
       if (cache.focus) {
         cache.focus.addClass("focus");
       }
-      if (!withCursor && cache.cursor) {
+      if (!withCursor && cache.cursor !== undefined) {
         cache.cursor.setStyle({ cursor: "none" });
       }
 
@@ -67,7 +66,7 @@ export function set(value: boolean, withCursor = false): void {
       if (cache.focus) {
         cache.focus.removeClass("focus");
       }
-      if (cache.cursor) {
+      if (cache.cursor !== undefined) {
         cache.cursor.setStyle({ cursor: "" });
       }
 

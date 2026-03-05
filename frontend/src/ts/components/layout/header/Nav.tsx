@@ -149,7 +149,8 @@ export function Nav(): JSXElement {
             <div
               class={cn(
                 "relative",
-                "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
+                !getFocus() &&
+                  "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
                 "focus-within:**:data-[ui-element='accountMenu']:pointer-events-auto focus-within:**:data-[ui-element='accountMenu']:opacity-100",
               )}
             >
