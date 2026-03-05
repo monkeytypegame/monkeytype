@@ -4,7 +4,8 @@ import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as BadgeController from "../controllers/badge-controller";
 import {
-  addNotification,
+  notifyError,
+  notifySuccess,
   getNotificationHistory,
 } from "../stores/notifications";
 import {
@@ -62,7 +63,7 @@ function hide(): void {
       const status = updateResponse.status;
       const message = updateResponse.body.message;
       if (status !== 200) {
-        addNotification(`Failed to update inbox: ${message}`, -1);
+        notifyError(`Failed to update inbox: ${message}`);
         return;
       }
 
@@ -88,16 +89,11 @@ function hide(): void {
       }
 
       if (badgesClaimed.length > 0) {
-        addNotification(
+        notifySuccess(
           `New badge${
             badgesClaimed.length > 1 ? "s" : ""
           } unlocked: ${badgesClaimed.join(", ")}`,
-          1,
-          {
-            duration: 5,
-            customTitle: "Reward",
-            customIcon: "gift",
-          },
+          { duration: 5, customTitle: "Reward", customIcon: "gift" },
         );
       }
 
@@ -276,9 +272,9 @@ function fillNotifications(): void {
       const { message, level, title } = n;
 
       let levelClass = "sub";
-      if (level === -1) {
+      if (level === "error") {
         levelClass = "error";
-      } else if (level === 1) {
+      } else if (level === "success") {
         levelClass = "main";
       }
 
@@ -431,7 +427,7 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
     });
   } catch (e: unknown) {
     const msg = createErrorMessage(e, "Could not copy to clipboard");
-    addNotification(msg, -1);
+    notifyError(msg);
   }
 }
 

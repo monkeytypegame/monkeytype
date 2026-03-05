@@ -1,7 +1,7 @@
 import Config, { setConfig } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
-import { addNotification } from "../stores/notifications";
+import { notify } from "../stores/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { ElementWithUtils } from "../utils/dom";
 
@@ -97,18 +97,17 @@ function apply(): void {
     ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {
-      addNotification("Stay safe and take breaks!", 0);
+      notify("Stay safe and take breaks!");
     } else if (val === 0) {
-      addNotification(
+      notify(
         "Infinite time! Make sure to use Bail Out from the command line to save your result.",
-        0,
         {
           duration: 7,
         },
       );
     }
   } else {
-    addNotification("Custom time must be a positive number or zero", 0);
+    notify("Custom time must be a positive number or zero");
     return;
   }
 

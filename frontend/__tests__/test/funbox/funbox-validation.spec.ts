@@ -5,7 +5,7 @@ import * as Notifications from "../../../src/ts/stores/notifications";
 import { FunboxName } from "@monkeytype/schemas/configs";
 describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
-    const addNotificationMock = vi.spyOn(Notifications, "addNotification");
+    const addNotificationMock = vi.spyOn(Notifications, "notify");
     afterEach(() => {
       addNotificationMock.mockClear();
     });
@@ -66,7 +66,7 @@ describe("funbox-validation", () => {
         ).toBe(error === undefined);
 
         if (error !== undefined) {
-          expect(addNotificationMock).toHaveBeenCalledWith(error, 0, {
+          expect(addNotificationMock).toHaveBeenCalledWith(error, {
             duration: 5,
           });
         }

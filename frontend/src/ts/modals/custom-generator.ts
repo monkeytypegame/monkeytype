@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import { addNotification } from "../stores/notifications";
+import { notify } from "../stores/notifications";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -131,7 +131,7 @@ function generateWords(): string[] {
     ) || 100;
 
   if (characterInput === undefined || characterInput.trim() === "") {
-    addNotification("Character set cannot be empty", 0);
+    notify("Character set cannot be empty");
     return [];
   }
 

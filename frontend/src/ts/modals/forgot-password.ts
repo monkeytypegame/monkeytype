@@ -1,7 +1,7 @@
 import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
-import { addNotification } from "../stores/notifications";
+import { notify, notifyError, notifySuccess } from "../stores/notifications";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { UserEmailSchema } from "@monkeytype/schemas/users";
@@ -9,9 +9,8 @@ import { ElementWithUtils } from "../utils/dom";
 
 export function show(): void {
   if (!CaptchaController.isCaptchaAvailable()) {
-    addNotification(
+    notifyError(
       "Could not show forgot password popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1,
     );
     return;
   }
@@ -35,7 +34,7 @@ export function show(): void {
 async function submit(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("forgotPasswordModal");
   if (!captchaResponse) {
-    addNotification("Please complete the captcha");
+    notify("Please complete the captcha");
     return;
   }
 
@@ -43,14 +42,14 @@ async function submit(): Promise<void> {
     modal.getModal().qs<HTMLInputElement>("input")?.getValue()?.trim() ?? "";
 
   if (email === "") {
-    addNotification("Please enter your email address");
+    notify("Please enter your email address");
     CaptchaController.reset("forgotPasswordModal");
     return;
   }
 
   const validation = UserEmailSchema.safeParse(email);
   if (!validation.success) {
-    addNotification("Please enter a valid email address");
+    notify("Please enter a valid email address");
     CaptchaController.reset("forgotPasswordModal");
     return;
   }
@@ -63,14 +62,13 @@ async function submit(): Promise<void> {
     .then((result) => {
       hideLoaderBar();
       if (result.status !== 200) {
-        addNotification(
+        notifyError(
           "Failed to send password reset email: " + result.body.message,
-          -1,
         );
         return;
       }
 
-      addNotification(result.body.message, 1, { duration: 5 });
+      notifySuccess(result.body.message, { duration: 5 });
     });
 
   hide();

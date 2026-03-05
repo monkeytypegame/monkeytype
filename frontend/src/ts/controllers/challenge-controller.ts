@@ -1,6 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import { addNotification } from "../stores/notifications";
+import { notify, notifyError, notifySuccess } from "../stores/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
@@ -31,7 +31,7 @@ export function clearActive(): void {
     !challengeLoading &&
     !TestState.testRestarting
   ) {
-    addNotification("Challenge cleared", 0);
+    notify("Challenge cleared");
     TestState.setActiveChallenge(null);
   }
 }
@@ -149,15 +149,12 @@ export function verify(result: CompletedEvent): string | null {
     const afk = (result.afkDuration / result.testDuration) * 100;
 
     if (afk > 10) {
-      addNotification(`Challenge failed: AFK time is greater than 10%`, 0);
+      notify(`Challenge failed: AFK time is greater than 10%`);
       return null;
     }
 
     if (TestState.activeChallenge.requirements === undefined) {
-      addNotification(
-        `${TestState.activeChallenge.display} challenge passed!`,
-        1,
-      );
+      notifySuccess(`${TestState.activeChallenge.display} challenge passed!`);
       return TestState.activeChallenge.name;
     } else {
       let requirementsMet = true;
@@ -177,34 +174,26 @@ export function verify(result: CompletedEvent): string | null {
       }
       if (requirementsMet) {
         if (TestState.activeChallenge.autoRole) {
-          addNotification(
+          notifySuccess(
             "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
-            1,
-            {
-              duration: 5,
-            },
+            { duration: 5 },
           );
         }
-        addNotification(
-          `${TestState.activeChallenge.display} challenge passed!`,
-          1,
-        );
+        notifySuccess(`${TestState.activeChallenge.display} challenge passed!`);
         return TestState.activeChallenge.name;
       } else {
-        addNotification(
+        notify(
           `${
             TestState.activeChallenge.display
           } challenge failed: ${failReasons.join(", ")}`,
-          0,
         );
         return null;
       }
     }
   } catch (e) {
     console.error(e);
-    addNotification(
+    notify(
       `Something went wrong when verifying challenge: ${(e as Error).message}`,
-      0,
     );
     return null;
   }
@@ -218,7 +207,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   const { data: list, error } = await tryCatch(JSONData.getChallengeList());
   if (error) {
     const message = Misc.createErrorMessage(error, "Failed to setup challenge");
-    addNotification(message, -1);
+    notifyError(message);
     ManualRestart.set();
     setTimeout(() => {
       qs("header .config")?.show();
@@ -233,7 +222,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   let notitext;
   try {
     if (challenge === undefined) {
-      addNotification("Challenge not found", 0);
+      notify("Challenge not found");
       ManualRestart.set();
       setTimeout(() => {
         qs("header .config")?.show();
@@ -382,15 +371,15 @@ export async function setup(challengeName: string): Promise<boolean> {
     qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
-      addNotification(`Challenge '${challenge.display}' loaded.`, 0);
+      notify(`Challenge '${challenge.display}' loaded.`);
     } else {
-      addNotification("Challenge loaded. " + notitext, 0);
+      notify("Challenge loaded. " + notitext);
     }
     TestState.setActiveChallenge(challenge);
     challengeLoading = false;
     return true;
   } catch (e) {
-    addNotification(Misc.createErrorMessage(e, "Failed to load challenge"), -1);
+    notifyError(Misc.createErrorMessage(e, "Failed to load challenge"));
     return false;
   }
 }

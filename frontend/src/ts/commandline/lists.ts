@@ -22,7 +22,8 @@ import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
 import {
-  addNotification,
+  notifyError,
+  notifySuccess,
   clearAllNotifications,
 } from "../stores/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
@@ -292,14 +293,14 @@ export const commands: CommandsSubgroup = {
         navigator.clipboard
           .writeText(JSON.stringify(TestStats.getStats()))
           .then(() => {
-            addNotification("Copied to clipboard", 1);
+            notifySuccess("Copied to clipboard");
           })
           .catch((e: unknown) => {
             const message = Misc.createErrorMessage(
               e,
               "Failed to copy to clipboard",
             );
-            addNotification(message, -1);
+            notifyError(message);
           });
       },
     },
@@ -410,7 +411,7 @@ export async function getList(
 
   const list = lists[listName as ListsObjectKeys];
   if (!list) {
-    addNotification(`List not found: ${listName}`, -1);
+    notifyError(`List not found: ${listName}`);
     throw new Error(`List ${listName} not found`);
   }
   return list;

@@ -24,7 +24,7 @@ describe("Theme component", () => {
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
   const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
   const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
-  const notificationAddMock = vi.spyOn(Notifications, "addNotification");
+  const notificationAddMock = vi.spyOn(Notifications, "notify");
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -99,7 +99,7 @@ describe("Theme component", () => {
     expect(loaderShowMock).toHaveBeenCalledOnce();
     fireEvent.error(css);
     expect(loaderHideMock).toHaveBeenCalledOnce();
-    expect(notificationAddMock).toHaveBeenCalledWith("Failed to load theme", 0);
+    expect(notificationAddMock).toHaveBeenCalledWith("Failed to load theme");
   });
 
   it("renders favicon", () => {

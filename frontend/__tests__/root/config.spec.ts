@@ -31,7 +31,7 @@ describe("Config", () => {
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
-    const notificationAddMock = vi.spyOn(Notifications, "addNotification");
+    const notificationAddMock = vi.spyOn(Notifications, "notify");
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
 
@@ -89,7 +89,6 @@ describe("Config", () => {
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
         "No quit funbox is active. Please finish the test.",
-        0,
         {
           important: true,
         },
@@ -269,7 +268,6 @@ describe("Config", () => {
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
         "Ad settings changed. Refreshing...",
-        0,
       );
       expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
     });

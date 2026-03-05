@@ -5,7 +5,7 @@ import { randomElementFromArray } from "../utils/arrays";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
-import { addNotification } from "../stores/notifications";
+import { notifyError } from "../stores/notifications";
 
 import type { Howl } from "howler";
 import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
@@ -620,10 +620,9 @@ function initAudioContext(): void {
   } catch (e) {
     audioCtx = null;
     console.error(e);
-    addNotification(
+    notifyError(
       createErrorMessage(e, "Error initializing audio context") +
         ". Notes will not play.",
-      -1,
     );
   }
 }

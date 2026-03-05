@@ -1,7 +1,7 @@
 import Ape from "../ape";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { addNotification } from "../stores/notifications";
+import { notifyError, notifySuccess } from "../stores/notifications";
 import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { Quote } from "@monkeytype/schemas/quotes";
@@ -92,7 +92,7 @@ async function getQuotes(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    addNotification("Failed to get new quotes", -1, { response });
+    notifyError("Failed to get new quotes", { response });
     return;
   }
 
@@ -153,11 +153,11 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.qsa("textarea, input").enable();
-    addNotification("Failed to approve quote", -1, { response });
+    notifyError("Failed to approve quote", { response });
     return;
   }
 
-  addNotification(`Quote approved. ${response.body.message ?? ""}`, 1);
+  notifySuccess(`Quote approved. ${response.body.message ?? ""}`);
   quotes.splice(index, 1);
   updateList();
 }
@@ -177,11 +177,11 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.qsa("textarea, input").enable();
-    addNotification("Failed to refuse quote", -1, { response });
+    notifyError("Failed to refuse quote", { response });
     return;
   }
 
-  addNotification("Quote refused.", 1);
+  notifySuccess("Quote refused.");
   quotes.splice(index, 1);
   updateList();
 }
@@ -212,14 +212,11 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.qsa("textarea, input").enable();
-    addNotification("Failed to approve quote", -1, { response });
+    notifyError("Failed to approve quote", { response });
     return;
   }
 
-  addNotification(
-    `Quote edited and approved. ${response.body.message ?? ""}`,
-    1,
-  );
+  notifySuccess(`Quote edited and approved. ${response.body.message ?? ""}`);
   quotes.splice(index, 1);
   updateList();
 }

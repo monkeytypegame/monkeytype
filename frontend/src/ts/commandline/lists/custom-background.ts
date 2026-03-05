@@ -3,7 +3,7 @@ import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-background-picker";
-import { addNotification } from "../../stores/notifications";
+import { notify } from "../../stores/notifications";
 
 const fromMeta = buildCommandForConfigKey("customBackground");
 
@@ -43,7 +43,7 @@ const customBackgroundCommand: Command = {
 
             // check type
             if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
-              addNotification("Unsupported image format", 0);
+              notify("Unsupported image format");
               cleanup();
               return;
             }
@@ -56,10 +56,7 @@ const customBackgroundCommand: Command = {
                 await applyCustomBackground();
                 await updateUI();
               } catch (e) {
-                addNotification(
-                  "Error uploading background: " + (e as Error).message,
-                  0,
-                );
+                notify("Error uploading background: " + (e as Error).message);
               }
               cleanup();
             };
@@ -83,10 +80,7 @@ const customBackgroundCommand: Command = {
             await applyCustomBackground();
             await updateUI();
           } catch (e) {
-            addNotification(
-              "Error removing background: " + (e as Error).message,
-              0,
-            );
+            notify("Error removing background: " + (e as Error).message);
           }
         },
       },

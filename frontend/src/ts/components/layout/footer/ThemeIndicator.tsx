@@ -4,7 +4,7 @@ import * as Commandline from "../../../commandline/commandline";
 import Config, { setConfig } from "../../../config";
 import { isAuthenticated } from "../../../firebase";
 import { getThemeIndicator } from "../../../signals/core";
-import { addNotification } from "../../../stores/notifications";
+import { notify } from "../../../stores/notifications";
 import { getSnapshot } from "../../../stores/snapshot";
 import { Fa } from "../../common/Fa";
 
@@ -16,7 +16,7 @@ export function ThemeIndicator(): JSXElement {
         return;
       }
       if (isAuthenticated() && (getSnapshot()?.customThemes?.length ?? 0) < 1) {
-        addNotification("No custom themes!", 0);
+        notify("No custom themes!");
         setConfig("customTheme", false);
         return;
       }

@@ -1,5 +1,5 @@
 import FileStorage from "../../utils/file-storage";
-import { addNotification } from "../../stores/notifications";
+import { notify } from "../../stores/notifications";
 import { applyFontFamily } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(
@@ -56,10 +56,7 @@ uploadContainerEl
       !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
       !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
     ) {
-      addNotification(
-        "Unsupported font format, must be woff, woff2, ttf or otf.",
-        0,
-      );
+      notify("Unsupported font format, must be woff, woff2, ttf or otf.");
       fileInput.value = "";
       return;
     }

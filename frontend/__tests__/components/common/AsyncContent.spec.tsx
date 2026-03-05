@@ -13,10 +13,10 @@ import AsyncContent, {
 import * as Notifications from "../../../src/ts/stores/notifications";
 
 describe("AsyncContent", () => {
-  const addNotificationMock = vi.spyOn(Notifications, "addNotification");
+  const notifyErrorMock = vi.spyOn(Notifications, "notifyError");
 
   beforeEach(() => {
-    addNotificationMock.mockClear();
+    notifyErrorMock.mockClear();
   });
 
   describe("with single query", () => {
@@ -60,9 +60,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/An error occurred/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyErrorMock).toHaveBeenCalledWith(
         "An error occurred: Test error",
-        -1,
       );
     });
 
@@ -75,9 +74,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyErrorMock).toHaveBeenCalledWith(
         "Custom error message: Test error",
-        -1,
       );
     });
 
@@ -89,7 +87,7 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/no data/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).not.toHaveBeenCalled();
+      expect(notifyErrorMock).not.toHaveBeenCalled();
     });
 
     it("renders on pending if alwaysShowContent", async () => {
@@ -119,9 +117,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyErrorMock).toHaveBeenCalledWith(
         "Custom error message: Test error",
-        -1,
       );
     });
 
@@ -221,9 +218,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/An error occurred/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyErrorMock).toHaveBeenCalledWith(
         "An error occurred: Test error",
-        -1,
       );
     });
 
@@ -236,9 +232,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyErrorMock).toHaveBeenCalledWith(
         "Custom error message: First error",
-        -1,
       );
     });
 
@@ -252,7 +247,7 @@ describe("AsyncContent", () => {
         expect(screen.getByText(/no data/)).toBeInTheDocument();
       });
 
-      expect(addNotificationMock).not.toHaveBeenCalled();
+      expect(notifyErrorMock).not.toHaveBeenCalled();
     });
 
     it("renders on pending if alwaysShowContent", async () => {
@@ -295,9 +290,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
       });
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyErrorMock).toHaveBeenCalledWith(
         "Custom error message: Test error",
-        -1,
       );
     });
 

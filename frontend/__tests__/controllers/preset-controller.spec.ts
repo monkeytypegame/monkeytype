@@ -25,7 +25,7 @@ describe("PresetController", () => {
       UpdateConfig,
       "getConfigChanges",
     );
-    const notificationAddMock = vi.spyOn(Notifications, "addNotification");
+    const notificationAddMock = vi.spyOn(Notifications, "notifySuccess");
     const testRestartMock = vi.spyOn(TestLogic, "restart");
     const tagControllerClearMock = vi.spyOn(TagController, "clear");
     const tagControllerSetMock = vi.spyOn(TagController, "set");
@@ -61,7 +61,7 @@ describe("PresetController", () => {
       expect(configApplyMock).toHaveBeenCalledWith(preset.config);
       expect(tagControllerClearMock).toHaveBeenCalled();
       expect(testRestartMock).toHaveBeenCalled();
-      expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", 1, {
+      expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", {
         duration: 2,
       });
       expect(configSaveFullConfigMock).toHaveBeenCalled();
@@ -121,7 +121,7 @@ describe("PresetController", () => {
         punctuation: true,
       });
       expect(testRestartMock).toHaveBeenCalled();
-      expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", 1, {
+      expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", {
         duration: 2,
       });
       expect(configSaveFullConfigMock).toHaveBeenCalled();

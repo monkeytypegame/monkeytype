@@ -30,7 +30,7 @@ import {
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
 } from "../state";
-import { addNotification } from "../../stores/notifications";
+import { notify } from "../../stores/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import {
@@ -198,7 +198,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
     if (getIncorrectShiftsInARow() >= 5) {
-      addNotification("Opposite shift mode is on.", 0, {
+      notify("Opposite shift mode is on.", {
         important: true,
         customTitle: "Reminder",
       });

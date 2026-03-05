@@ -22,7 +22,8 @@ describe("url-handler", () => {
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
     const restartTestMock = vi.spyOn(TestLogic, "restart");
-    const addNotificationMock = vi.spyOn(Notifications, "addNotification");
+    const notifySuccessMock = vi.spyOn(Notifications, "notifySuccess");
+    const notifyMock = vi.spyOn(Notifications, "notify");
 
     beforeEach(() => {
       [
@@ -30,7 +31,8 @@ describe("url-handler", () => {
         findGetParameterMock,
         setSelectedQuoteIdMock,
         restartTestMock,
-        addNotificationMock,
+        notifySuccessMock,
+        notifyMock,
       ].forEach((it) => it.mockClear());
 
       findGetParameterMock.mockImplementation((override) => override);
@@ -231,7 +233,7 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(addNotificationMock).toHaveBeenCalledWith(expect.anything(), 1, {
+      expect(notifySuccessMock).toHaveBeenCalledWith(expect.anything(), {
         duration: 10,
       });
     });
@@ -259,9 +261,8 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyMock).toHaveBeenCalledWith(
         `Failed to load test settings from URL: JSON does not match schema: "0" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', "1" needs to be a number or a number represented as a string e.g. "10"., "2.mode" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', "2.pipeDelimiter" expected boolean, received string, "2.limit" expected object, received string, "2.text" expected array, received string, "3" expected boolean, received string, "4" expected boolean, received string, "6" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', "7" invalid input`,
-        0,
       );
     });
   });

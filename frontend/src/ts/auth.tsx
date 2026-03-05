@@ -27,7 +27,7 @@ import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { addBanner } from "./stores/banners";
-import { addNotification } from "./stores/notifications";
+import { notify, notifyError, notifySuccess } from "./stores/notifications";
 import * as Misc from "./utils/misc";
 
 export const gmailProvider = new GoogleAuthProvider();
@@ -35,9 +35,7 @@ export const githubProvider = new GithubAuthProvider();
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
-    addNotification("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    notifyError("Authentication uninitialized", { duration: 3 });
     return;
   }
 
@@ -45,10 +43,10 @@ export async function sendVerificationEmail(): Promise<void> {
   const response = await Ape.users.verificationEmail();
   if (response.status !== 200) {
     hideLoaderBar();
-    addNotification("Failed to request verification email", -1, { response });
+    notifyError("Failed to request verification email", { response });
   } else {
     hideLoaderBar();
-    addNotification("Verification email sent", 1);
+    notifySuccess("Verification email sent");
   }
 }
 
@@ -93,26 +91,24 @@ async function getDataAndInit(): Promise<boolean> {
     console.error(error);
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
-        addNotification(
+        notify(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-          0,
           {
             duration: 0,
           },
         );
-        addNotification(
+        notify(
           "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-          0,
           {
             duration: 0,
           },
         );
       }
 
-      addNotification("Failed to get user data: " + error.message, -1);
+      notifyError("Failed to get user data: " + error.message);
     } else {
       const message = Misc.createErrorMessage(error, "Failed to get user data");
-      addNotification(message, -1);
+      notifyError(message);
     }
     return false;
   }
@@ -200,7 +196,7 @@ async function signInWithProvider(
 
   if (error !== null) {
     if (error.message !== "") {
-      addNotification(error.message, -1);
+      notifyError(error.message);
     }
     return { success: false, message: error.message };
   }
@@ -244,9 +240,7 @@ async function addAuthProvider(
   provider: AuthProvider,
 ): Promise<void> {
   if (!isAuthAvailable()) {
-    addNotification("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    notifyError("Authentication uninitialized", { duration: 3 });
     return;
   }
   showLoaderBar();
@@ -255,7 +249,7 @@ async function addAuthProvider(
   try {
     await linkWithPopup(user, provider);
     hideLoaderBar();
-    addNotification(`${providerName} authentication added`, 1);
+    notifySuccess(`${providerName} authentication added`);
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
@@ -263,15 +257,13 @@ async function addAuthProvider(
       error,
       `Failed to add ${providerName} authentication`,
     );
-    addNotification(message, -1);
+    notifyError(message);
   }
 }
 
 export function signOut(): void {
   if (!isAuthAvailable()) {
-    addNotification("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    notifyError("Authentication uninitialized", { duration: 3 });
     return;
   }
   if (!isAuthenticated()) return;
@@ -323,7 +315,7 @@ export async function signUp(
     await onAuthStateChanged(true, createdAuthUser.user);
     resetIgnoreAuthCallback();
 
-    addNotification("Account created", 1);
+    notifySuccess("Account created");
     return { success: true };
   } catch (e) {
     let message = Misc.createErrorMessage(e, "Failed to create account");
@@ -337,7 +329,7 @@ export async function signUp(
       }
     }
 
-    addNotification(message, -1);
+    notifyError(message);
     signOut();
     return { success: false, message };
   }

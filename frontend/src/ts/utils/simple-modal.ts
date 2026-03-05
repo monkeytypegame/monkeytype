@@ -4,7 +4,8 @@ import { format as dateFormat } from "date-fns/format";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import {
-  addNotification,
+  notify,
+  addNotificationWithLevel,
   AddNotificationOptions,
 } from "../stores/notifications";
 import {
@@ -90,7 +91,7 @@ type CommonInputType =
   | NumberInput;
 
 export type ExecReturn = {
-  status: 1 | 0 | -1;
+  status: "success" | "notice" | "error";
   message: string;
   showNotification?: false;
   notificationOptions?: AddNotificationOptions;
@@ -362,12 +363,12 @@ export class SimpleModal {
   exec(): void {
     if (!this.canClose) return;
     if (this.hasMissingRequired()) {
-      addNotification("Please fill in all fields", 0);
+      notify("Please fill in all fields");
       return;
     }
 
     if (this.hasValidationErrors()) {
-      addNotification("Please solve all validation errors", 0);
+      notify("Please solve all validation errors");
       return;
     }
 
@@ -377,9 +378,13 @@ export class SimpleModal {
     void this.execFn(this, ...vals).then((res) => {
       hideLoaderBar();
       if (res.showNotification ?? true) {
-        addNotification(res.message, res.status, res.notificationOptions);
+        addNotificationWithLevel(
+          res.message,
+          res.status,
+          res.notificationOptions,
+        );
       }
-      if (res.status === 1 || res.alwaysHide) {
+      if (res.status === "success" || res.alwaysHide) {
         void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();

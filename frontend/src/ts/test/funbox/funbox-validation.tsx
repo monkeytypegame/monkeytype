@@ -3,7 +3,7 @@ import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
 import { For } from "solid-js";
 
-import { addNotification } from "../../stores/notifications";
+import { notify } from "../../stores/notifications";
 import * as Strings from "../../utils/strings";
 
 export function checkForcedConfig(
@@ -129,7 +129,7 @@ export function canSetConfigWithCurrentFunboxes(
   if (key === "words" || key === "time") {
     if (!checkForcedConfig(key, value, funboxes).result) {
       if (!noNotification) {
-        addNotification("Active funboxes do not support infinite tests", 0);
+        notify("Active funboxes do not support infinite tests");
         return false;
       } else {
         errorCount += 1;
@@ -141,11 +141,10 @@ export function canSetConfigWithCurrentFunboxes(
 
   if (errorCount > 0) {
     if (!noNotification) {
-      addNotification(
+      notify(
         `You can't set ${Strings.camelCaseToWords(
           key,
         )} to ${value.toString()} with currently active funboxes.`,
-        0,
         {
           duration: 5,
         },
@@ -188,7 +187,7 @@ export function canSetFunboxWithConfig(
         )} cannot be set to ${error.value.toString()}.`,
       );
     }
-    addNotification(
+    notify(
       <>
         {`You can't enable ${funbox.replace(/_/g, " ")}:`}
         <For each={errorStrings}>
@@ -200,7 +199,6 @@ export function canSetFunboxWithConfig(
           )}
         </For>
       </>,
-      0,
       { duration: 5 },
     );
     return false;

@@ -1,4 +1,4 @@
-import { addNotification } from "../../stores/notifications";
+import { notify, notifyError } from "../../stores/notifications";
 import * as Misc from "../../utils/misc";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
@@ -50,11 +50,10 @@ export function toggleFunbox(funbox: FunboxName): void {
     !checkCompatibility(getActiveFunboxNames(), funbox) &&
     !Config.funbox.includes(funbox)
   ) {
-    addNotification(
+    notify(
       `${Strings.capitalizeFirstLetter(
         funbox.replace(/_/g, " "),
       )} funbox is not compatible with the current funbox selection`,
-      0,
     );
     return;
   }
@@ -98,14 +97,13 @@ export async function activate(
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
   if (!checkCompatibility(getActiveFunboxNames())) {
-    addNotification(
+    notifyError(
       Misc.createErrorMessage(
         undefined,
         `Failed to activate funbox: funboxes ${Config.funbox
           .map((it) => it.replace(/_/g, " "))
           .join(", ")} are not compatible`,
       ),
-      -1,
     );
     setConfig("funbox", [], {
       nosave: true,
@@ -124,10 +122,7 @@ export async function activate(
     JSONData.getCurrentLanguage(Config.language),
   );
   if (error) {
-    addNotification(
-      Misc.createErrorMessage(error, "Failed to activate funbox"),
-      -1,
-    );
+    notifyError(Misc.createErrorMessage(error, "Failed to activate funbox"));
     setConfig("funbox", [], {
       nosave: true,
     });
@@ -137,7 +132,7 @@ export async function activate(
 
   if (language.ligatures) {
     if (isFunboxActiveWithProperty("noLigatures")) {
-      addNotification("Current language does not support this funbox mode", 0);
+      notify("Current language does not support this funbox mode");
       setConfig("funbox", [], {
         nosave: true,
       });
@@ -184,14 +179,12 @@ export async function activate(
 
   if (!canSetSoFar) {
     if (Config.funbox.length > 1) {
-      addNotification(
+      notifyError(
         `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
-        -1,
       );
     } else {
-      addNotification(
+      notifyError(
         `Failed to activate funbox ${Config.funbox}: no forced configs. Disabling funbox`,
-        -1,
       );
     }
     setConfig("funbox", [], {

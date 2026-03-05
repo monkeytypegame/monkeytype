@@ -27,7 +27,7 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import * as DB from "../db";
 import * as AuthEvent from "../observables/auth-event";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { addNotification } from "../stores/notifications";
+import { notify, notifyError, notifySuccess } from "../stores/notifications";
 import * as CustomText from "../test/custom-text";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import { restart as restartTest } from "../test/test-logic";
@@ -50,16 +50,16 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     hideLoaderBar();
 
     if (response.status !== 200) {
-      addNotification("Failed to link Discord", -1, { response });
+      notifyError("Failed to link Discord", { response });
       return;
     }
 
     if (response.body.data === null) {
-      addNotification("Failed to link Discord: data returned was null", -1);
+      notifyError("Failed to link Discord: data returned was null");
       return;
     }
 
-    addNotification(response.body.message, 1);
+    notifySuccess(response.body.message);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
@@ -92,7 +92,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
-    addNotification("Failed to load theme from URL: " + error.message, 0);
+    notify("Failed to load theme from URL: " + error.message);
     return;
   }
 
@@ -111,7 +111,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 
   if (colorArray === undefined || colorArray.length !== 10) {
-    addNotification("Failed to load theme from URL: no colors found", 0);
+    notify("Failed to load theme from URL: no colors found");
     return;
   }
 
@@ -119,7 +119,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const oldCustomThemeColors = Config.customThemeColors;
   try {
     setConfig("customThemeColors", colorArray);
-    addNotification("Custom theme applied", 1);
+    notifySuccess("Custom theme applied");
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
       setConfig("customBackground", image);
@@ -129,7 +129,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 
     if (!Config.customTheme) setConfig("customTheme", true);
   } catch (e) {
-    addNotification("Something went wrong. Reverting to previous state.", 0);
+    notify("Something went wrong. Reverting to previous state.");
     console.error(e);
     setConfig("customTheme", oldCustomTheme);
     setConfig("customThemeColors", oldCustomThemeColors);
@@ -172,10 +172,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.error("Failed to parse test settings:", error);
-    addNotification(
-      "Failed to load test settings from URL: " + error.message,
-      0,
-    );
+    notify("Failed to load test settings from URL: " + error.message);
     return;
   }
 
@@ -293,7 +290,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   );
 
   if (appliedEntries.length > 0) {
-    addNotification(
+    notifySuccess(
       <>
         {`Settings applied from URL:`}
         <br />
@@ -308,7 +305,6 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
           )}
         </For>
       </>,
-      1,
       { duration: 10 },
     );
   }
@@ -320,18 +316,18 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   ).toLowerCase();
   if (getValue === "") return;
 
-  addNotification("Loading challenge", 0);
+  notify("Loading challenge");
   ChallengeController.setup(getValue)
     .then((result) => {
       if (result) {
-        addNotification("Challenge loaded", 1);
+        notifySuccess("Challenge loaded");
         restartTest({
           nosave: true,
         });
       }
     })
     .catch((e: unknown) => {
-      addNotification("Failed to load challenge", -1);
+      notifyError("Failed to load challenge");
       console.error(e);
     });
 }

@@ -37,7 +37,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message:
             "Failed to add tag: " +
             response.body.message.replace(tagName, propTagName),
@@ -59,7 +59,7 @@ const actionModals: Record<Action, SimpleModal> = {
       });
       void Settings.update();
 
-      return { status: 1, message: `Tag added` };
+      return { status: "success", message: `Tag added` };
     },
   }),
   edit: new SimpleModal({
@@ -86,7 +86,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to edit tag",
           notificationOptions: { response },
         };
@@ -101,7 +101,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       void Settings.update();
 
-      return { status: 1, message: `Tag updated` };
+      return { status: "success", message: `Tag updated` };
     },
   }),
   remove: new SimpleModal({
@@ -117,7 +117,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to remove tag",
           notificationOptions: { response },
         };
@@ -132,7 +132,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       void Settings.update();
 
-      return { status: 1, message: `Tag removed` };
+      return { status: "success", message: `Tag removed` };
     },
   }),
   clearPb: new SimpleModal({
@@ -150,7 +150,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to clear tag pb",
           notificationOptions: { response },
         };
@@ -169,7 +169,7 @@ const actionModals: Record<Action, SimpleModal> = {
       }
 
       void Settings.update();
-      return { status: 1, message: `Tag PB cleared` };
+      return { status: "success", message: `Tag PB cleared` };
     },
   }),
 };

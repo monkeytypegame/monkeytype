@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 import { CommonResponsesType } from "@monkeytype/contracts/util/api";
 import { JSXElement } from "solid-js";
 
-export type NotificationLevel = -1 | 0 | 1;
+export type NotificationLevel = "error" | "notice" | "success";
 
 export type Notification = {
   id: number;
@@ -82,9 +82,9 @@ export type AddNotificationOptions = {
   response?: CommonResponsesType;
 };
 
-export function addNotification(
+export function addNotificationWithLevel(
   message: string | JSXElement,
-  level: NotificationLevel = 0,
+  level: NotificationLevel,
   options: AddNotificationOptions = {},
 ): void {
   let details = options.details;
@@ -105,7 +105,7 @@ export function addNotification(
 
   const title =
     options.customTitle ??
-    (level === 1 ? "Success" : level === -1 ? "Error" : "Notice");
+    (level === "success" ? "Success" : level === "error" ? "Error" : "Notice");
 
   setNotificationHistory((prev) => {
     const next = [
@@ -123,7 +123,7 @@ export function addNotification(
 
   let duration: number;
   if (options.duration === undefined) {
-    duration = level === -1 ? 0 : 3000;
+    duration = level === "error" ? 0 : 3000;
   } else {
     duration = options.duration * 1000;
   }
@@ -145,4 +145,25 @@ export function addNotification(
     }, duration + 250);
     autoRemoveTimers.set(notifId, timer);
   }
+}
+
+export function notify(
+  message: string | JSXElement,
+  options?: AddNotificationOptions,
+): void {
+  addNotificationWithLevel(message, "notice", options);
+}
+
+export function notifySuccess(
+  message: string | JSXElement,
+  options?: AddNotificationOptions,
+): void {
+  addNotificationWithLevel(message, "success", options);
+}
+
+export function notifyError(
+  message: string | JSXElement,
+  options?: AddNotificationOptions,
+): void {
+  addNotificationWithLevel(message, "error", options);
 }

@@ -2,7 +2,7 @@ import * as PbTablesModal from "../modals/pb-tables";
 import * as EditProfileModal from "../modals/edit-profile";
 import { getSnapshot } from "../db";
 import { isAuthenticated } from "../firebase";
-import { addNotification } from "../stores/notifications";
+import { notify, notifyError } from "../stores/notifications";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as AddFilterPresetModal from "../modals/new-filter-preset";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
@@ -21,19 +21,16 @@ accountPage?.onChild("click", ".pbsWords .showAllButton", () => {
 
 accountPage?.onChild("click", ".editProfileButton", () => {
   if (!isAuthenticated()) {
-    addNotification("You must be logged in to edit your profile", 0);
+    notify("You must be logged in to edit your profile");
     return;
   }
   const snapshot = getSnapshot();
   if (!snapshot) {
-    addNotification(
-      "Failed to open edit profile modal: No user snapshot found",
-      -1,
-    );
+    notifyError("Failed to open edit profile modal: No user snapshot found");
     return;
   }
   if (snapshot.banned === true) {
-    addNotification("Banned users cannot edit their profile", 0);
+    notify("Banned users cannot edit their profile");
     return;
   }
   EditProfileModal.show();

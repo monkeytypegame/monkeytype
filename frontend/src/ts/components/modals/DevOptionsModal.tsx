@@ -7,7 +7,7 @@ import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import { hideModal } from "../../stores/modals";
-import { addNotification } from "../../stores/notifications";
+import { notify, notifyError, notifySuccess } from "../../stores/notifications";
 import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
@@ -36,9 +36,9 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-bell",
       label: () => "Test Notifications",
       onClick: () => {
-        addNotification("This is a test", 1, { duration: 0 });
-        addNotification("This is a test", 0, { duration: 0 });
-        addNotification("This is a test", -1, {
+        notifySuccess("This is a test", { duration: 0 });
+        notify("This is a test", { duration: 0 });
+        notifyError("This is a test", {
           duration: 0,
           details: { test: true, error: "Example error message" },
         });
@@ -52,7 +52,7 @@ export function DevOptionsModal(): JSXElement {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
         setLocalMediaQueryDebugLevel(next);
-        addNotification(`Setting media query debug level to ${next}`, 0);
+        notify(`Setting media query debug level to ${next}`);
         setMediaQueryDebugLevel(next);
       },
     },
@@ -75,9 +75,8 @@ export function DevOptionsModal(): JSXElement {
           envConfig.quickLoginEmail === undefined ||
           envConfig.quickLoginPassword === undefined
         ) {
-          addNotification(
+          notifyError(
             "Quick login credentials not set. Add QUICK_LOGIN_EMAIL and QUICK_LOGIN_PASSWORD to your frontend .env file.",
-            -1,
           );
           return;
         }
@@ -89,14 +88,11 @@ export function DevOptionsModal(): JSXElement {
         )
           .then((result) => {
             if (!result.success) {
-              addNotification(result.message, -1);
+              notifyError(result.message);
             }
           })
           .catch((error: unknown) => {
-            addNotification(
-              createErrorMessage(error, "Quick login failed"),
-              -1,
-            );
+            notifyError(createErrorMessage(error, "Quick login failed"));
           })
           .finally(() => {
             hideLoaderBar();

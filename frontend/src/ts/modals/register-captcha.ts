@@ -1,7 +1,7 @@
 import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
 import { promiseWithResolvers } from "../utils/misc";
-import { addNotification } from "../stores/notifications";
+import { notifyError } from "../stores/notifications";
 
 const {
   promise,
@@ -13,9 +13,8 @@ export { promise };
 
 export async function show(): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
-    addNotification(
+    notifyError(
       "Could not show register popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1,
     );
     resolve(undefined);
     return;

@@ -19,21 +19,21 @@ import { AnimeShow } from "../../common/anime/AnimeShow";
 import { Fa, FaProps } from "../../common/Fa";
 
 const levelConfig = {
-  0: {
+  notice: {
     icon: "fa-info-circle",
     title: "Notice",
     border: "rgba(0,130,251,0.985)",
     bg: "rgba(0,77,148,0.9)",
     bgHover: "rgba(0,77,148,0.5)",
   },
-  1: {
+  success: {
     icon: "fa-check-circle",
     title: "Success",
     border: "rgba(100,206,100,0.71)",
     bg: "rgba(0,148,0,0.9)",
     bgHover: "rgba(0,148,0,0.5)",
   },
-  [-1]: {
+  error: {
     icon: "fa-times-circle",
     title: "Error",
     border: "rgba(241,51,34,0.71)",
@@ -53,7 +53,7 @@ const exitAnimation = {
 
 function NotificationItem(props: { notification: Notification }): JSXElement {
   const config = (): (typeof levelConfig)[keyof typeof levelConfig] =>
-    levelConfig[props.notification.level] ?? levelConfig[0];
+    levelConfig[props.notification.level] ?? levelConfig.notice;
 
   const iconProps = (): FaProps =>
     props.notification.customIcon !== undefined
