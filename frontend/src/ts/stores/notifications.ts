@@ -1,17 +1,17 @@
 import { createStore } from "solid-js/store";
 
 import { CommonResponsesType } from "@monkeytype/contracts/util/api";
-import { JSXElement } from "solid-js";
 import { createErrorMessage } from "../utils/misc";
 
 export type NotificationLevel = "error" | "notice" | "success";
 
 export type Notification = {
   id: number;
-  message: string | JSXElement;
+  message: string;
   level: NotificationLevel;
   important: boolean;
   duration: number;
+  useInnerHtml: boolean;
   customTitle?: string;
   customIcon?: string;
   onDismiss?: (reason: "click" | "timeout" | "clear") => void;
@@ -78,7 +78,12 @@ export function getNotificationHistory(): NotificationHistoryEntry[] {
 export type AddNotificationOptions = Partial<
   Pick<
     Notification,
-    "important" | "duration" | "customTitle" | "customIcon" | "onDismiss"
+    | "important"
+    | "duration"
+    | "customTitle"
+    | "customIcon"
+    | "onDismiss"
+    | "useInnerHtml"
   >
 > & {
   details?: object | string;
@@ -87,7 +92,7 @@ export type AddNotificationOptions = Partial<
 };
 
 export function addNotificationWithLevel(
-  message: string | JSXElement,
+  message: string,
   level: NotificationLevel,
   options: AddNotificationOptions = {},
 ): void {
@@ -102,16 +107,11 @@ export function addNotificationWithLevel(
           ? options.response.body.validationErrors
           : undefined,
     };
-    if (typeof message === "string") {
-      message = message + ": " + options.response.body.message;
-    }
+    message = message + ": " + options.response.body.message;
   }
 
   if (options.error !== undefined) {
-    message = createErrorMessage(
-      options.error,
-      typeof message === "string" ? message : "An error occurred",
-    );
+    message = createErrorMessage(options.error, message);
   }
 
   const title =
@@ -124,7 +124,7 @@ export function addNotificationWithLevel(
       {
         id: (historyId++).toString(),
         title,
-        message: typeof message === "string" ? message : "",
+        message,
         level,
         details,
       },
@@ -144,6 +144,7 @@ export function addNotificationWithLevel(
     level,
     important: options.important ?? false,
     duration,
+    useInnerHtml: options.useInnerHtml ?? false,
     customTitle: options.customTitle,
     customIcon: options.customIcon,
     onDismiss: options.onDismiss,
@@ -159,21 +160,21 @@ export function addNotificationWithLevel(
 }
 
 export function notify(
-  message: string | JSXElement,
+  message: string,
   options?: AddNotificationOptions,
 ): void {
   addNotificationWithLevel(message, "notice", options);
 }
 
 export function notifySuccess(
-  message: string | JSXElement,
+  message: string,
   options?: AddNotificationOptions,
 ): void {
   addNotificationWithLevel(message, "success", options);
 }
 
 export function notifyError(
-  message: string | JSXElement,
+  message: string,
   options?: AddNotificationOptions,
 ): void {
   addNotificationWithLevel(message, "error", options);

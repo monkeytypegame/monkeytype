@@ -16,6 +16,7 @@ import { cn } from "../../../utils/cn";
 import { Anime } from "../../common/anime/Anime";
 import { AnimePresence } from "../../common/anime/AnimePresence";
 import { AnimeShow } from "../../common/anime/AnimeShow";
+import { Conditional } from "../../common/Conditional";
 import { Fa, FaProps } from "../../common/Fa";
 
 const levelConfig = {
@@ -99,7 +100,12 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
             <Fa {...iconProps()} class="mr-2 inline" />
             {title()}
           </div>
-          <div>{props.notification.message}</div>
+          <Conditional
+            if={props.notification.useInnerHtml}
+            // oxlint-disable-next-line solid/no-innerhtml
+            then={<div innerHTML={props.notification.message}></div>}
+            else={<div>{props.notification.message}</div>}
+          />
         </div>
       </Anime>
     </div>

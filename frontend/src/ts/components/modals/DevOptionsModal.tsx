@@ -41,6 +41,7 @@ export function DevOptionsModal(): JSXElement {
           duration: 0,
           details: { test: true, error: "Example error message" },
         });
+        notify("useInnerHtml<br>test", { duration: 0, useInnerHtml: true });
         hideModal("DevOptions");
       },
     },
