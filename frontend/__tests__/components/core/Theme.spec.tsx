@@ -4,9 +4,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Theme } from "../../../src/ts/components/core/Theme";
 import { ThemeWithName } from "../../../src/ts/constants/themes";
-import * as Notifications from "../../../src/ts/elements/notifications";
 import * as Loader from "../../../src/ts/signals/loader-bar";
 import * as ThemeSignal from "../../../src/ts/signals/theme";
+import * as Notifications from "../../../src/ts/stores/notifications";
 
 vi.mock("../../../src/ts/constants/themes", () => ({
   themes: {
@@ -24,7 +24,7 @@ describe("Theme component", () => {
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
   const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
   const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
-  const notificationAddMock = vi.spyOn(Notifications, "add");
+  const notificationAddMock = vi.spyOn(Notifications, "showNoticeNotification");
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -99,7 +99,7 @@ describe("Theme component", () => {
     expect(loaderShowMock).toHaveBeenCalledOnce();
     fireEvent.error(css);
     expect(loaderHideMock).toHaveBeenCalledOnce();
-    expect(notificationAddMock).toHaveBeenCalledWith("Failed to load theme", 0);
+    expect(notificationAddMock).toHaveBeenCalledWith("Failed to load theme");
   });
 
   it("renders favicon", () => {

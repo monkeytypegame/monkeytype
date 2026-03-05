@@ -3,17 +3,20 @@ import { envConfig } from "virtual:env-config";
 
 import { signIn } from "../../auth";
 import { addXp } from "../../db";
-import * as Notifications from "../../elements/notifications";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import { hideModal } from "../../stores/modals";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
 import { toggleCaretDebug } from "../../utils/caret";
-import { createErrorMessage } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
@@ -36,11 +39,15 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-bell",
       label: () => "Test Notifications",
       onClick: () => {
-        Notifications.add("This is a test", 1, { duration: 0 });
-        Notifications.add("This is a test", 0, { duration: 0 });
-        Notifications.add("This is a test", -1, {
-          duration: 0,
+        showSuccessNotification("This is a test", { durationMs: 0 });
+        showNoticeNotification("This is a test", { durationMs: 0 });
+        showErrorNotification("This is a test", {
+          durationMs: 0,
           details: { test: true, error: "Example error message" },
+        });
+        showNoticeNotification("useInnerHtml<br>test", {
+          durationMs: 0,
+          useInnerHtml: true,
         });
         hideModal("DevOptions");
       },
@@ -52,7 +59,7 @@ export function DevOptionsModal(): JSXElement {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
         setLocalMediaQueryDebugLevel(next);
-        Notifications.add(`Setting media query debug level to ${next}`, 5);
+        showNoticeNotification(`Setting media query debug level to ${next}`);
         setMediaQueryDebugLevel(next);
       },
     },
@@ -75,9 +82,8 @@ export function DevOptionsModal(): JSXElement {
           envConfig.quickLoginEmail === undefined ||
           envConfig.quickLoginPassword === undefined
         ) {
-          Notifications.add(
+          showErrorNotification(
             "Quick login credentials not set. Add QUICK_LOGIN_EMAIL and QUICK_LOGIN_PASSWORD to your frontend .env file.",
-            -1,
           );
           return;
         }
@@ -89,14 +95,11 @@ export function DevOptionsModal(): JSXElement {
         )
           .then((result) => {
             if (!result.success) {
-              Notifications.add(result.message, -1);
+              showErrorNotification(result.message);
             }
           })
           .catch((error: unknown) => {
-            Notifications.add(
-              createErrorMessage(error, "Quick login failed"),
-              -1,
-            );
+            showErrorNotification("Quick login failed", { error });
           })
           .finally(() => {
             hideLoaderBar();

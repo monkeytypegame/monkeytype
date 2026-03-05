@@ -1,7 +1,10 @@
 import Config, { setConfig } from "../config";
 import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as QuoteSubmitPopup from "./quote-submit";
 import * as QuoteApprovePopup from "./quote-approve";
 import * as QuoteFilterPopup from "./quote-filter";
@@ -21,7 +24,6 @@ import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
-import { createErrorMessage } from "../utils/misc";
 import { highlightMatches } from "../utils/strings";
 import { getLanguage } from "../utils/json-data";
 import { qsr, ElementWithUtils } from "../utils/dom";
@@ -334,9 +336,8 @@ async function updateResults(searchText: string): Promise<void> {
         ?.dataset?.["quoteId"] as string,
     );
     if (quoteId === undefined || isNaN(quoteId)) {
-      Notifications.add(
+      showErrorNotification(
         "Could not toggle quote favorite: quote id is not a number",
-        -1,
       );
       return;
     }
@@ -349,9 +350,8 @@ async function updateResults(searchText: string): Promise<void> {
         ?.dataset?.["quoteId"] as string,
     );
     if (quoteId === undefined || isNaN(quoteId)) {
-      Notifications.add(
+      showErrorNotification(
         "Could not open quote report modal: quote id is not a number",
-        -1,
       );
       return;
     }
@@ -451,7 +451,7 @@ function apply(val: number): void {
     TestState.setSelectedQuoteId(val);
     ManualRestart.set();
   } else {
-    Notifications.add("Quote ID must be at least 1", 0);
+    showNoticeNotification("Quote ID must be at least 1");
     return;
   }
   TestLogic.restart();
@@ -470,7 +470,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const quoteLang = Config.language;
 
   if (quoteLang === undefined || quoteId === "") {
-    Notifications.add("Could not get quote stats!", -1);
+    showErrorNotification("Could not get quote stats!");
     return;
   }
 
@@ -495,11 +495,9 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       button.removeClass("fas").addClass("far");
     } catch (e) {
       hideLoaderBar();
-      const message = createErrorMessage(
-        e,
-        "Failed to remove quote from favorites",
-      );
-      Notifications.add(message, -1);
+      showErrorNotification("Failed to remove quote from favorites", {
+        error: e,
+      });
     }
   } else {
     try {
@@ -509,8 +507,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       button.removeClass("far").addClass("fas");
     } catch (e) {
       hideLoaderBar();
-      const message = createErrorMessage(e, "Failed to add quote to favorites");
-      Notifications.add(message, -1);
+      showErrorNotification("Failed to add quote to favorites", { error: e });
     }
   }
 }
@@ -521,7 +518,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
   modalEl.qs("button.toggleFavorites")?.on("click", (e) => {
     if (!isAuthenticated()) {
-      // Notifications.add("You need to be logged in to use this feature!", 0);
+      // notify("You need to be logged in to use this feature!");
       return;
     }
 
@@ -542,11 +539,10 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       false;
     hideLoaderBar();
     if (!isSubmissionEnabled) {
-      Notifications.add(
+      showNoticeNotification(
         "Quote submission is disabled temporarily due to a large submission queue.",
-        0,
         {
-          duration: 5,
+          durationMs: 5000,
         },
       );
       return;

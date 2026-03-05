@@ -12,6 +12,7 @@ import { Banners } from "./Banners";
 import { FpsCounter } from "./FpsCounter";
 import { LoaderBar } from "./LoaderBar";
 import { MediaQueryDebugger } from "./MediaQueryDebugger";
+import { Notifications } from "./Notifications";
 
 export function Overlays(): JSXElement {
   return (
@@ -34,6 +35,7 @@ export function Overlays(): JSXElement {
         <Fa icon="fa-terminal" />
       </button>
       <Banners />
+      <Notifications />
       <MediaQueryDebugger />
       <LoaderBar />
       <FpsCounter />
