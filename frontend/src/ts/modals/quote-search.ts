@@ -1,7 +1,7 @@
 import Config, { setConfig } from "../config";
 import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
-import { notify, notifyError } from "../stores/notifications";
+import { showNotice, showError } from "../stores/notifications";
 import * as QuoteSubmitPopup from "./quote-submit";
 import * as QuoteApprovePopup from "./quote-approve";
 import * as QuoteFilterPopup from "./quote-filter";
@@ -333,7 +333,7 @@ async function updateResults(searchText: string): Promise<void> {
         ?.dataset?.["quoteId"] as string,
     );
     if (quoteId === undefined || isNaN(quoteId)) {
-      notifyError("Could not toggle quote favorite: quote id is not a number");
+      showError("Could not toggle quote favorite: quote id is not a number");
       return;
     }
     void toggleFavoriteForQuote(`${quoteId}`);
@@ -345,9 +345,7 @@ async function updateResults(searchText: string): Promise<void> {
         ?.dataset?.["quoteId"] as string,
     );
     if (quoteId === undefined || isNaN(quoteId)) {
-      notifyError(
-        "Could not open quote report modal: quote id is not a number",
-      );
+      showError("Could not open quote report modal: quote id is not a number");
       return;
     }
     void QuoteReportModal.show(quoteId, {
@@ -446,7 +444,7 @@ function apply(val: number): void {
     TestState.setSelectedQuoteId(val);
     ManualRestart.set();
   } else {
-    notify("Quote ID must be at least 1");
+    showNotice("Quote ID must be at least 1");
     return;
   }
   TestLogic.restart();
@@ -465,7 +463,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const quoteLang = Config.language;
 
   if (quoteLang === undefined || quoteId === "") {
-    notifyError("Could not get quote stats!");
+    showError("Could not get quote stats!");
     return;
   }
 
@@ -490,7 +488,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       button.removeClass("fas").addClass("far");
     } catch (e) {
       hideLoaderBar();
-      notifyError("Failed to remove quote from favorites", { error: e });
+      showError("Failed to remove quote from favorites", { error: e });
     }
   } else {
     try {
@@ -500,7 +498,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       button.removeClass("far").addClass("fas");
     } catch (e) {
       hideLoaderBar();
-      notifyError("Failed to add quote to favorites", { error: e });
+      showError("Failed to add quote to favorites", { error: e });
     }
   }
 }
@@ -532,7 +530,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       false;
     hideLoaderBar();
     if (!isSubmissionEnabled) {
-      notify(
+      showNotice(
         "Quote submission is disabled temporarily due to a large submission queue.",
         {
           durationMs: 5000,

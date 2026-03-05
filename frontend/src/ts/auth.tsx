@@ -27,7 +27,7 @@ import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { addBanner } from "./stores/banners";
-import { notify, notifyError, notifySuccess } from "./stores/notifications";
+import { showNotice, showError, showSuccess } from "./stores/notifications";
 import { createErrorMessage } from "./utils/misc";
 
 export const gmailProvider = new GoogleAuthProvider();
@@ -35,7 +35,7 @@ export const githubProvider = new GithubAuthProvider();
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
-    notifyError("Authentication uninitialized", { durationMs: 3000 });
+    showError("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
 
@@ -43,10 +43,10 @@ export async function sendVerificationEmail(): Promise<void> {
   const response = await Ape.users.verificationEmail();
   if (response.status !== 200) {
     hideLoaderBar();
-    notifyError("Failed to request verification email", { response });
+    showError("Failed to request verification email", { response });
   } else {
     hideLoaderBar();
-    notifySuccess("Verification email sent");
+    showSuccess("Verification email sent");
   }
 }
 
@@ -91,13 +91,13 @@ async function getDataAndInit(): Promise<boolean> {
     console.error(error);
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
-        notify(
+        showNotice(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
           {
             durationMs: 0,
           },
         );
-        notify(
+        showNotice(
           "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
           {
             durationMs: 0,
@@ -105,9 +105,9 @@ async function getDataAndInit(): Promise<boolean> {
         );
       }
 
-      notifyError("Failed to get user data: " + error.message);
+      showError("Failed to get user data: " + error.message);
     } else {
-      notifyError("Failed to get user data", { error });
+      showError("Failed to get user data", { error });
     }
     return false;
   }
@@ -195,7 +195,7 @@ async function signInWithProvider(
 
   if (error !== null) {
     if (error.message !== "") {
-      notifyError(error.message);
+      showError(error.message);
     }
     return { success: false, message: error.message };
   }
@@ -239,7 +239,7 @@ async function addAuthProvider(
   provider: AuthProvider,
 ): Promise<void> {
   if (!isAuthAvailable()) {
-    notifyError("Authentication uninitialized", { durationMs: 3000 });
+    showError("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   showLoaderBar();
@@ -248,17 +248,17 @@ async function addAuthProvider(
   try {
     await linkWithPopup(user, provider);
     hideLoaderBar();
-    notifySuccess(`${providerName} authentication added`);
+    showSuccess(`${providerName} authentication added`);
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
-    notifyError(`Failed to add ${providerName} authentication`, { error });
+    showError(`Failed to add ${providerName} authentication`, { error });
   }
 }
 
 export function signOut(): void {
   if (!isAuthAvailable()) {
-    notifyError("Authentication uninitialized", { durationMs: 3000 });
+    showError("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   if (!isAuthenticated()) return;
@@ -309,7 +309,7 @@ export async function signUp(
     await onAuthStateChanged(true, createdAuthUser.user);
     resetIgnoreAuthCallback();
 
-    notifySuccess("Account created");
+    showSuccess("Account created");
     return { success: true };
   } catch (e) {
     let message = createErrorMessage(e, "Failed to create account");
@@ -323,7 +323,7 @@ export async function signUp(
       }
     }
 
-    notifyError(message);
+    showError(message);
     signOut();
     return { success: false, message };
   }

@@ -6,7 +6,7 @@ import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../signals/loader-bar";
 import { getTheme } from "../../signals/theme";
-import { notify } from "../../stores/notifications";
+import { showNotice } from "../../stores/notifications";
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
@@ -33,7 +33,7 @@ export function Theme(): JSXElement {
     const name = target.dataset["name"];
     console.debug("Theme component failed to load style", name, e);
     console.error(`Failed to load theme ${name}`, e);
-    notify("Failed to load theme");
+    showNotice("Failed to load theme");
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {

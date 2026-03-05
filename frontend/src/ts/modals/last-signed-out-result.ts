@@ -1,7 +1,7 @@
 import AnimatedModal from "../utils/animated-modal";
 
 import * as TestLogic from "../test/test-logic";
-import { notify, notifyError } from "../stores/notifications";
+import { showNotice, showError } from "../stores/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
 import { syncNotSignedInLastResult } from "../utils/results";
@@ -97,7 +97,7 @@ function fillGroup(
 
 export function show(): void {
   if (!TestLogic.notSignedInLastResult) {
-    notifyError("Failed to show last signed out result modal: no last result");
+    showError("Failed to show last signed out result modal: no last result");
     return;
   }
 
@@ -133,7 +133,7 @@ const modal = new AnimatedModal({
     });
     modalEl.qs("button.discard")?.on("click", () => {
       TestLogic.clearNotSignedInResult();
-      notify("Last test result discarded");
+      showNotice("Last test result discarded");
       hide();
     });
   },

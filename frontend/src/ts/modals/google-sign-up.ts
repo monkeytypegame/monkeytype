@@ -1,5 +1,5 @@
 import { ElementWithUtils, qsr } from "../utils/dom";
-import { notify, notifyError, notifySuccess } from "../stores/notifications";
+import { showNotice, showError, showSuccess } from "../stores/notifications";
 import {
   sendEmailVerification,
   updateProfile,
@@ -29,7 +29,7 @@ function show(credential: UserCredential): void {
       signedInUser = credential;
 
       if (!CaptchaController.isCaptchaAvailable()) {
-        notifyError(
+        showError(
           "Could not show google sign up popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
         );
         return;
@@ -55,7 +55,7 @@ async function hide(): Promise<void> {
     afterAnimation: async () => {
       resetIgnoreAuthCallback();
       if (signedInUser !== undefined) {
-        notify("Sign up process cancelled", {
+        showNotice("Sign up process cancelled", {
           durationMs: 5000,
         });
         LoginPage.hidePreloader();
@@ -75,15 +75,13 @@ async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if (!signedInUser) {
-    notifyError(
-      "Missing user credential. Please close the popup and try again.",
-    );
+    showError("Missing user credential. Please close the popup and try again.");
     return;
   }
 
   const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    notify("Please complete the captcha");
+    showNotice("Please complete the captcha");
     return;
   }
 
@@ -105,7 +103,7 @@ async function apply(): Promise<void> {
     if (response.status === 200) {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
-      notifySuccess("Account created");
+      showSuccess("Account created");
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
@@ -116,7 +114,7 @@ async function apply(): Promise<void> {
     }
   } catch (e) {
     console.log(e);
-    notifyError("Failed to sign in with Google", { error: e });
+    showError("Failed to sign in with Google", { error: e });
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();

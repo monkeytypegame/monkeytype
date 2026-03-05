@@ -8,9 +8,9 @@ import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import {
-  notify,
-  notifyError,
-  notifySuccess,
+  showNotice,
+  showError,
+  showSuccess,
   addNotificationWithLevel,
 } from "../stores/notifications";
 import { isAuthenticated } from "../firebase";
@@ -68,7 +68,7 @@ let quoteId = "";
 
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
-  notifySuccess(useSmoothedBurst ? "on" : "off");
+  showSuccess(useSmoothedBurst ? "on" : "off");
   if (TestState.resultVisible) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -78,7 +78,7 @@ export function toggleSmoothedBurst(): void {
 
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
-  notifySuccess(useFakeChartData ? "on" : "off");
+  showSuccess(useFakeChartData ? "on" : "off");
   if (TestState.resultVisible) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -1083,7 +1083,7 @@ export async function update(
     ];
 
     showConfetti();
-    notify(Arrays.randomElementFromArray(messages), {
+    showNotice(Arrays.randomElementFromArray(messages), {
       customTitle: "Nice",
       durationMs: 15000,
       important: true,
@@ -1349,7 +1349,7 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
 
 qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
-    notifyError("Could not get quote stats!");
+    showError("Could not get quote stats!");
     return;
   }
 

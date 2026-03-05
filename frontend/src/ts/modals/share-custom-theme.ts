@@ -1,6 +1,6 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
-import { notify, notifySuccess } from "../stores/notifications";
+import { showNotice, showSuccess } from "../stores/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import { getTheme } from "../signals/theme";
 
@@ -47,10 +47,10 @@ async function copy(): Promise<void> {
 
   try {
     await navigator.clipboard.writeText(url);
-    notifySuccess("URL Copied to clipboard");
+    showSuccess("URL Copied to clipboard");
     void modal.hide();
   } catch (e) {
-    notify(
+    showNotice(
       "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
       {
         durationMs: 5000,

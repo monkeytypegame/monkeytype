@@ -6,7 +6,7 @@ import AnimatedModal, {
   ShowOptions,
 } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
-import { notifyError } from "../stores/notifications";
+import { showError } from "../stores/notifications";
 
 async function fill(): Promise<void> {
   const modalEl = modal.getModal();
@@ -52,7 +52,7 @@ async function fill(): Promise<void> {
       .closest(".savedText")
       ?.getAttribute("data-name");
     if (name === null || name === undefined) {
-      notifyError("Failed to show delete modal: no name found");
+      showError("Failed to show delete modal: no name found");
       return;
     }
     showPopup("deleteCustomText", [name], {
@@ -65,7 +65,7 @@ async function fill(): Promise<void> {
       .closest(".savedLongText")
       ?.getAttribute("data-name");
     if (name === null || name === undefined) {
-      notifyError("Failed to show delete modal: no name found");
+      showError("Failed to show delete modal: no name found");
       return;
     }
     showPopup("deleteCustomTextLong", [name], {
@@ -80,7 +80,7 @@ async function fill(): Promise<void> {
         .closest(".savedLongText")
         ?.getAttribute("data-name");
       if (name === null || name === undefined) {
-        notifyError("Failed to show delete modal: no name found");
+        showError("Failed to show delete modal: no name found");
         return;
       }
       showPopup("resetProgressCustomTextLong", [name], {

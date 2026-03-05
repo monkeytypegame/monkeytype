@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import { notify, notifyError, notifySuccess } from "../stores/notifications";
+import { showNotice, showError, showSuccess } from "../stores/notifications";
 import * as CustomTextState from "../states/custom-text-name";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
@@ -70,22 +70,22 @@ function save(): boolean {
     .isChecked() as boolean;
 
   if (!name) {
-    notify("Custom text needs a name");
+    showNotice("Custom text needs a name");
     return false;
   }
 
   if (state.textToSave.length === 0) {
-    notify("Custom text can't be empty");
+    showNotice("Custom text can't be empty");
     return false;
   }
 
   const saved = CustomText.setCustomText(name, state.textToSave, checkbox);
   if (saved) {
     CustomTextState.setCustomTextName(name, checkbox);
-    notifySuccess("Custom text saved");
+    showSuccess("Custom text saved");
     return true;
   } else {
-    notifyError("Error saving custom text");
+    showError("Error saving custom text");
     return false;
   }
 }

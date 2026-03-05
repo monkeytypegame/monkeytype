@@ -2,7 +2,7 @@ import Config, { setConfig, saveFullConfigToLocalStorage } from "../../config";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
-import { notify, notifyError, notifySuccess } from "../../stores/notifications";
+import { showNotice, showError, showSuccess } from "../../stores/notifications";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
@@ -60,7 +60,7 @@ export async function fillPresetButtons(): Promise<void> {
   if (favThemesEl === null || themesEl === null) {
     const msg =
       "Failed to fill preset theme buttons: favThemes or allThemes element not found";
-    notifyError(msg);
+    showError(msg);
     void captureException(new Error(msg));
     console.error(msg, { favThemesEl, themesEl });
     return;
@@ -214,7 +214,7 @@ function saveCustomThemeColors(): void {
   const colors = ThemeController.convertThemeToCustomColors(getTheme());
 
   setConfig("customThemeColors", colors);
-  notifySuccess("Custom theme saved");
+  showSuccess("Custom theme saved");
 }
 
 export function updateActiveTab(): void {
@@ -336,7 +336,7 @@ function handleColorInput(options: {
       try {
         color = Colors.convertStringToHex(target.value);
       } catch {
-        notify("Invalid color format");
+        showNotice("Invalid color format");
         color = "#000000";
       }
     } else {

@@ -1,5 +1,5 @@
 import Ape from "./ape";
-import { notify, notifyError } from "./stores/notifications";
+import { showNotice, showError } from "./stores/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
@@ -276,7 +276,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    notifyError("Error getting results", { response });
+    showError("Error getting results", { response });
     return false;
   }
 
@@ -330,18 +330,18 @@ export async function addCustomTheme(
   dbSnapshot.customThemes ??= [];
 
   if (dbSnapshot.customThemes.length >= 20) {
-    notify("Too many custom themes!");
+    showNotice("Too many custom themes!");
     return false;
   }
 
   const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    notifyError("Error adding custom theme", { response });
+    showError("Error adding custom theme", { response });
     return false;
   }
 
   if (response.body.data === null) {
-    notifyError("Error adding custom theme: No data returned");
+    showError("Error adding custom theme: No data returned");
     return false;
   }
 
@@ -365,7 +365,7 @@ export async function editCustomTheme(
 
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
-    notifyError(
+    showError(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
     );
     return false;
@@ -375,7 +375,7 @@ export async function editCustomTheme(
     body: { themeId, theme: newTheme },
   });
   if (response.status !== 200) {
-    notifyError("Error editing custom theme", { response });
+    showError("Error editing custom theme", { response });
     return false;
   }
 
@@ -399,7 +399,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
 
   const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    notifyError("Error deleting custom theme", { response });
+    showError("Error deleting custom theme", { response });
     return false;
   }
 
@@ -1083,7 +1083,7 @@ export async function getTestActivityCalendar(
     showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
-      notifyError("Error getting test activities", { response });
+      showError("Error getting test activities", { response });
       hideLoaderBar();
       return undefined;
     }

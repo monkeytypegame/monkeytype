@@ -3,7 +3,7 @@ import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { applyFontFamily } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-font-picker";
-import { notify } from "../../stores/notifications";
+import { showNotice } from "../../stores/notifications";
 import Config, { setConfig } from "../../config";
 
 const fromMeta = buildCommandForConfigKey("fontFamily");
@@ -63,7 +63,7 @@ if (fromMeta.subgroup) {
                 !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
                 !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
               ) {
-                notify(
+                showNotice(
                   "Unsupported font format, must be woff, woff2, ttf or otf.",
                 );
                 cleanup();
@@ -78,7 +78,7 @@ if (fromMeta.subgroup) {
                   await applyFontFamily();
                   await updateUI();
                 } catch (e) {
-                  notify("Error uploading font: " + (e as Error).message);
+                  showNotice("Error uploading font: " + (e as Error).message);
                 }
                 cleanup();
               };
@@ -102,7 +102,7 @@ if (fromMeta.subgroup) {
               await updateUI();
               await applyFontFamily();
             } catch (e) {
-              notify("Error removing font: " + (e as Error).message);
+              showNotice("Error removing font: " + (e as Error).message);
             }
           },
         },

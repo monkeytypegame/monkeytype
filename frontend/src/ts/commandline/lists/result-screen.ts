@@ -1,7 +1,7 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWordsModal from "../../modals/practise-words";
-import { notifyError, notifySuccess } from "../../stores/notifications";
+import { showError, showSuccess } from "../../stores/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
@@ -144,10 +144,10 @@ const commands: Command[] = [
 
       navigator.clipboard.writeText(words).then(
         () => {
-          notifySuccess("Copied to clipboard");
+          showSuccess("Copied to clipboard");
         },
         () => {
-          notifyError("Failed to copy!");
+          showError("Failed to copy!");
         },
       );
     },

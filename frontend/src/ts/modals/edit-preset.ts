@@ -4,7 +4,7 @@ import * as Config from "../config";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Settings from "../pages/settings";
-import { notify, notifyError, notifySuccess } from "../stores/notifications";
+import { showNotice, showError, showSuccess } from "../stores/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import {
   PresetNameSchema,
@@ -102,7 +102,7 @@ async function initializeEditState(id: string): Promise<void> {
   }
   const edittedPreset = await getPreset(id);
   if (edittedPreset === undefined) {
-    notifyError("Preset not found");
+    showError("Preset not found");
     return;
   }
   if (
@@ -238,7 +238,7 @@ async function apply(): Promise<void> {
     state.presetType === "partial" &&
     Array.from(state.checkboxes.values()).every((val: boolean) => !val);
   if (noPartialGroupSelected) {
-    notify(
+    showNotice(
       "At least one setting group must be active while saving partial presets",
     );
     return;
@@ -251,12 +251,12 @@ async function apply(): Promise<void> {
     const noPresetName: boolean =
       presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
     if (noPresetName) {
-      notify("Preset name cannot be empty");
+      showNotice("Preset name cannot be empty");
       return;
     }
 
     if (presetNameEl?.getValidationResult().status === "failed") {
-      notify("Preset name is not valid");
+      showNotice("Preset name is not valid");
       return;
     }
   }
@@ -279,9 +279,9 @@ async function apply(): Promise<void> {
     });
 
     if (response.status !== 200 || response.body.data === null) {
-      notifyError("Failed to add preset: " + response.body.message);
+      showError("Failed to add preset: " + response.body.message);
     } else {
-      notifySuccess("Preset added", { durationMs: 2000 });
+      showSuccess("Preset added", { durationMs: 2000 });
       snapshotPresets.push({
         name: presetName,
         config: configChanges,
@@ -297,7 +297,7 @@ async function apply(): Promise<void> {
       (preset: SnapshotPreset) => preset._id === presetId,
     ) as SnapshotPreset;
     if (preset === undefined) {
-      notifyError("Preset not found");
+      showError("Preset not found");
       return;
     }
     const configChanges = getConfigChanges();
@@ -315,9 +315,9 @@ async function apply(): Promise<void> {
     });
 
     if (response.status !== 200) {
-      notifyError("Failed to edit preset", { response });
+      showError("Failed to edit preset", { response });
     } else {
-      notifySuccess("Preset updated");
+      showSuccess("Preset updated");
 
       preset.name = presetName;
       preset.display = presetName.replaceAll("_", " ");
@@ -334,9 +334,9 @@ async function apply(): Promise<void> {
     const response = await Ape.presets.delete({ params: { presetId } });
 
     if (response.status !== 200) {
-      notifyError("Failed to remove preset", { response });
+      showError("Failed to remove preset", { response });
     } else {
-      notifySuccess("Preset removed");
+      showSuccess("Preset removed");
       snapshotPresets.forEach((preset: SnapshotPreset, index: number) => {
         if (preset._id === presetId) {
           snapshotPresets.splice(index, 1);

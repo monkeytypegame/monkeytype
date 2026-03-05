@@ -7,7 +7,7 @@ import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import { hideModal } from "../../stores/modals";
-import { notify, notifyError, notifySuccess } from "../../stores/notifications";
+import { showNotice, showError, showSuccess } from "../../stores/notifications";
 import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
@@ -35,13 +35,16 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-bell",
       label: () => "Test Notifications",
       onClick: () => {
-        notifySuccess("This is a test", { durationMs: 0 });
-        notify("This is a test", { durationMs: 0 });
-        notifyError("This is a test", {
+        showSuccess("This is a test", { durationMs: 0 });
+        showNotice("This is a test", { durationMs: 0 });
+        showError("This is a test", {
           durationMs: 0,
           details: { test: true, error: "Example error message" },
         });
-        notify("useInnerHtml<br>test", { durationMs: 0, useInnerHtml: true });
+        showNotice("useInnerHtml<br>test", {
+          durationMs: 0,
+          useInnerHtml: true,
+        });
         hideModal("DevOptions");
       },
     },
@@ -52,7 +55,7 @@ export function DevOptionsModal(): JSXElement {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
         setLocalMediaQueryDebugLevel(next);
-        notify(`Setting media query debug level to ${next}`);
+        showNotice(`Setting media query debug level to ${next}`);
         setMediaQueryDebugLevel(next);
       },
     },
@@ -75,7 +78,7 @@ export function DevOptionsModal(): JSXElement {
           envConfig.quickLoginEmail === undefined ||
           envConfig.quickLoginPassword === undefined
         ) {
-          notifyError(
+          showError(
             "Quick login credentials not set. Add QUICK_LOGIN_EMAIL and QUICK_LOGIN_PASSWORD to your frontend .env file.",
           );
           return;
@@ -88,11 +91,11 @@ export function DevOptionsModal(): JSXElement {
         )
           .then((result) => {
             if (!result.success) {
-              notifyError(result.message);
+              showError(result.message);
             }
           })
           .catch((error: unknown) => {
-            notifyError("Quick login failed", { error });
+            showError("Quick login failed", { error });
           })
           .finally(() => {
             hideLoaderBar();

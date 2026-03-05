@@ -1,7 +1,7 @@
 import Config, { setConfig } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
-import { notify } from "../stores/notifications";
+import { showNotice } from "../stores/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 export function show(showOptions?: ShowOptions): void {
@@ -31,9 +31,9 @@ function apply(): void {
       ManualRestart.set();
       TestLogic.restart();
       if (val > 2000) {
-        notify("Stay safe and take breaks!");
+        showNotice("Stay safe and take breaks!");
       } else if (val === 0) {
-        notify(
+        showNotice(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",
           {
             durationMs: 7000,
@@ -42,7 +42,7 @@ function apply(): void {
       }
     }
   } else {
-    notify("Custom word amount must be at least 1");
+    showNotice("Custom word amount must be at least 1");
   }
 
   hide(true);

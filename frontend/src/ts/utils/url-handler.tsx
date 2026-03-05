@@ -26,7 +26,7 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import * as DB from "../db";
 import * as AuthEvent from "../observables/auth-event";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { notify, notifyError, notifySuccess } from "../stores/notifications";
+import { showNotice, showError, showSuccess } from "../stores/notifications";
 import * as CustomText from "../test/custom-text";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import { restart as restartTest } from "../test/test-logic";
@@ -49,16 +49,16 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     hideLoaderBar();
 
     if (response.status !== 200) {
-      notifyError("Failed to link Discord", { response });
+      showError("Failed to link Discord", { response });
       return;
     }
 
     if (response.body.data === null) {
-      notifyError("Failed to link Discord: data returned was null");
+      showError("Failed to link Discord: data returned was null");
       return;
     }
 
-    notifySuccess(response.body.message);
+    showSuccess(response.body.message);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
@@ -91,7 +91,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
-    notify("Failed to load theme from URL: " + error.message);
+    showNotice("Failed to load theme from URL: " + error.message);
     return;
   }
 
@@ -110,7 +110,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 
   if (colorArray === undefined || colorArray.length !== 10) {
-    notify("Failed to load theme from URL: no colors found");
+    showNotice("Failed to load theme from URL: no colors found");
     return;
   }
 
@@ -118,7 +118,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const oldCustomThemeColors = Config.customThemeColors;
   try {
     setConfig("customThemeColors", colorArray);
-    notifySuccess("Custom theme applied");
+    showSuccess("Custom theme applied");
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
       setConfig("customBackground", image);
@@ -128,7 +128,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 
     if (!Config.customTheme) setConfig("customTheme", true);
   } catch (e) {
-    notify("Something went wrong. Reverting to previous state.");
+    showNotice("Something went wrong. Reverting to previous state.");
     console.error(e);
     setConfig("customTheme", oldCustomTheme);
     setConfig("customThemeColors", oldCustomThemeColors);
@@ -171,7 +171,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.error("Failed to parse test settings:", error);
-    notify("Failed to load test settings from URL: " + error.message);
+    showNotice("Failed to load test settings from URL: " + error.message);
     return;
   }
 
@@ -292,7 +292,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     const lines = appliedEntries
       .map(([key, val]) => key + (val ? ": " + val : ""))
       .join("<br />");
-    notifySuccess(`Settings applied from URL:<br /><br />${lines}`, {
+    showSuccess(`Settings applied from URL:<br /><br />${lines}`, {
       durationMs: 10000,
       useInnerHtml: true,
     });
@@ -305,18 +305,18 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   ).toLowerCase();
   if (getValue === "") return;
 
-  notify("Loading challenge");
+  showNotice("Loading challenge");
   ChallengeController.setup(getValue)
     .then((result) => {
       if (result) {
-        notifySuccess("Challenge loaded");
+        showSuccess("Challenge loaded");
         restartTest({
           nosave: true,
         });
       }
     })
     .catch((e: unknown) => {
-      notifyError("Failed to load challenge");
+      showError("Failed to load challenge");
       console.error(e);
     });
 }

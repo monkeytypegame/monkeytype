@@ -1,4 +1,4 @@
-import { notify, notifyError, notifySuccess } from "./stores/notifications";
+import { showNotice, showError, showSuccess } from "./stores/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce } from "throttle-debounce";
@@ -82,7 +82,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
 
 function isConfigChangeBlocked(): boolean {
   if (TestState.isActive && config.funbox.includes("no_quit")) {
-    notify("No quit funbox is active. Please finish the test.", {
+    showNotice("No quit funbox is active. Please finish the test.", {
       important: true,
     });
     return true;
@@ -117,7 +117,7 @@ export function setConfig<T extends keyof Config>(
     TestState.isActive &&
     config.funbox.includes("no_quit")
   ) {
-    notify("No quit funbox is active. Please finish the test.", {
+    showNotice("No quit funbox is active. Please finish the test.", {
       important: true,
     });
     console.warn(
@@ -344,10 +344,10 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     );
     await applyConfig(parsedConfig);
     saveFullConfigToLocalStorage();
-    notifySuccess("Done");
+    showSuccess("Done");
   } catch (e) {
     console.error(e);
-    notifyError("Failed to import settings", { error: e });
+    showError("Failed to import settings", { error: e });
   }
 }
 

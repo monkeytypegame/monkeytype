@@ -13,7 +13,7 @@ import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { signIn, signInWithGitHub, signInWithGoogle, signUp } from "../auth";
-import { notify, notifyError } from "../stores/notifications";
+import { showNotice, showError } from "../stores/notifications";
 import * as ConnectionState from "../states/connection";
 
 let registerForm: {
@@ -211,7 +211,7 @@ new ValidatedHtmlInputElement(passwordVerifyInputEl, {
 
 qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
   if (!ConnectionState.get()) {
-    notify("You are offline");
+    showNotice("You are offline");
     return;
   }
 
@@ -226,7 +226,7 @@ qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
   hidePreloader();
 
   if (!data.success) {
-    notifyError(data.message);
+    showError(data.message);
     enableInputs();
     enableSignUpButton();
   }
@@ -236,7 +236,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
   e.preventDefault();
 
   if (!ConnectionState.get()) {
-    notify("You are offline");
+    showNotice("You are offline");
     return;
   }
 
@@ -249,7 +249,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
     false;
 
   if (email === "" || password === "") {
-    notify("Please fill in all fields");
+    showNotice("Please fill in all fields");
     return;
   }
 
@@ -260,7 +260,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
   hidePreloader();
 
   if (!data.success) {
-    notifyError(data.message);
+    showError(data.message);
     enableInputs();
     enableSignUpButton();
   }
@@ -268,7 +268,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
 
 qs(".pageLogin .login button.signInWithGitHub")?.on("click", async () => {
   if (!ConnectionState.get()) {
-    notify("You are offline");
+    showNotice("You are offline");
     return;
   }
 
@@ -283,7 +283,7 @@ qs(".pageLogin .login button.signInWithGitHub")?.on("click", async () => {
   hidePreloader();
 
   if (!data.success) {
-    notifyError(data.message);
+    showError(data.message);
     enableInputs();
     enableSignUpButton();
   }
@@ -293,13 +293,13 @@ qs(".pageLogin .register form")?.on("submit", async (e) => {
   e.preventDefault();
 
   if (!ConnectionState.get()) {
-    notify("You are offline");
+    showNotice("You are offline");
     return;
   }
 
   const signupData = getSignupData();
   if (signupData === false) {
-    notify("Please fill in all fields");
+    showNotice("Please fill in all fields");
     return;
   }
 
@@ -315,7 +315,7 @@ qs(".pageLogin .register form")?.on("submit", async (e) => {
 
   hidePreloader();
   if (!data.success) {
-    notifyError(data.message);
+    showError(data.message);
     enableInputs();
     enableSignUpButton();
   }

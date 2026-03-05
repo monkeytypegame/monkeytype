@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { notify } from "../stores/notifications";
+import { showNotice } from "../stores/notifications";
 import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
@@ -78,7 +78,7 @@ export function init(
       (missed === "biwords" && sortableMissedBiwords.length === 0)) &&
     !slow
   ) {
-    notify("You haven't missed any words");
+    showNotice("You haven't missed any words");
     return false;
   }
 
@@ -100,7 +100,7 @@ export function init(
       Math.min(limit, Math.round(typedWords.length * 0.2)),
     );
     if (sortableSlowWords.length === 0) {
-      notify("Test too short to classify slow words.");
+      showNotice("Test too short to classify slow words.");
     }
   }
 
@@ -113,7 +113,7 @@ export function init(
     sortableMissedBiwords.length === 0 &&
     sortableSlowWords.length === 0
   ) {
-    notify("Could not start a new custom test");
+    showNotice("Could not start a new custom test");
     return false;
   }
 

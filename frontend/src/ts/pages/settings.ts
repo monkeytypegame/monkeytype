@@ -8,7 +8,7 @@ import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
-import { notify, notifyError, notifySuccess } from "../stores/notifications";
+import { showNotice, showError, showSuccess } from "../stores/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
@@ -815,7 +815,7 @@ qs("#exportSettingsButton")?.on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      notify("JSON Copied to clipboard");
+      showNotice("JSON Copied to clipboard");
     },
     function () {
       ImportExportSettingsModal.show("export");
@@ -840,7 +840,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    notifySuccess("Saved", { durationMs: 1000 });
+    showSuccess("Saved", { durationMs: 1000 });
   }
 });
 
@@ -856,7 +856,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    notifySuccess("Saved", { durationMs: 1000 });
+    showSuccess("Saved", { durationMs: 1000 });
   }
 });
 
@@ -873,7 +873,7 @@ qs(
       ),
     );
     if (didConfigSave) {
-      notifySuccess("Saved", { durationMs: 1000 });
+      showSuccess("Saved", { durationMs: 1000 });
     }
   }
 });
@@ -971,10 +971,10 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
   navigator.clipboard
     .writeText(window.location.toString())
     .then(() => {
-      notifySuccess("Link copied to clipboard");
+      showSuccess("Link copied to clipboard");
     })
     .catch((e: unknown) => {
-      notifyError("Failed to copy to clipboard", { error: e });
+      showError("Failed to copy to clipboard", { error: e });
     });
 });
 

@@ -1,4 +1,4 @@
-import { notify, notifyError } from "../stores/notifications";
+import { showNotice, showError } from "../stores/notifications";
 import Config, { setConfig } from "../config";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
@@ -1974,11 +1974,11 @@ qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
 async function copyToClipboard(content: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(content);
-    notify("Copied to clipboard", {
+    showNotice("Copied to clipboard", {
       durationMs: 2000,
     });
   } catch (e) {
-    notifyError("Could not copy to clipboard", { error: e });
+    showError("Could not copy to clipboard", { error: e });
   }
 }
 

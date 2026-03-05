@@ -4,7 +4,7 @@ import * as PageTransition from "../states/page-transition";
 import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
-import { notify } from "../stores/notifications";
+import { showNotice } from "../stores/notifications";
 import * as NavigationEvent from "../observables/navigation-event";
 import * as AuthEvent from "../observables/auth-event";
 
@@ -179,7 +179,7 @@ export async function navigate(
 
   const noQuit = isFunboxActive("no_quit");
   if (TestState.isActive && noQuit) {
-    notify("No quit funbox is active. Please finish the test.", {
+    showNotice("No quit funbox is active. Please finish the test.", {
       important: true,
     });
     //todo: figure out if this was ever used

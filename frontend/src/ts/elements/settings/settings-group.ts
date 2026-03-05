@@ -1,7 +1,7 @@
 import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
 
 import Config, { setConfig } from "../../config";
-import { notifyError } from "../../stores/notifications";
+import { showError } from "../../stores/notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
 import {
@@ -117,7 +117,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
             console.error(
               `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`,
             );
-            notifyError("Button is missing data property. Please report this.");
+            showError("Button is missing data property. Please report this.");
             return;
           }
 

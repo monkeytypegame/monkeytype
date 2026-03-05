@@ -4,8 +4,8 @@ import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as BadgeController from "../controllers/badge-controller";
 import {
-  notifyError,
-  notifySuccess,
+  showError,
+  showSuccess,
   getNotificationHistory,
 } from "../stores/notifications";
 import { applyReducedMotion, escapeHTML, promiseAnimate } from "../utils/misc";
@@ -58,7 +58,7 @@ function hide(): void {
       const status = updateResponse.status;
       const message = updateResponse.body.message;
       if (status !== 200) {
-        notifyError(`Failed to update inbox: ${message}`);
+        showError(`Failed to update inbox: ${message}`);
         return;
       }
 
@@ -84,7 +84,7 @@ function hide(): void {
       }
 
       if (badgesClaimed.length > 0) {
-        notifySuccess(
+        showSuccess(
           `New badge${
             badgesClaimed.length > 1 ? "s" : ""
           } unlocked: ${badgesClaimed.join(", ")}`,
@@ -421,7 +421,7 @@ async function copyNotificationToClipboard(target: HTMLElement): Promise<void> {
       duration,
     });
   } catch (e: unknown) {
-    notifyError("Could not copy to clipboard", { error: e });
+    showError("Could not copy to clipboard", { error: e });
   }
 }
 

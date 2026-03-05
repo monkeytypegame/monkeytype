@@ -1,4 +1,4 @@
-import { notifyError } from "../../stores/notifications";
+import { showError } from "../../stores/notifications";
 import { Connection } from "@monkeytype/schemas/connections";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
@@ -24,7 +24,7 @@ async function getData(): Promise<boolean> {
 
   if (response.status !== 200) {
     blockedUsers = [];
-    notifyError("Error getting blocked users", { response });
+    showError("Error getting blocked users", { response });
     return false;
   }
 
@@ -82,7 +82,7 @@ element.onChild("click", "table button.delete", async (e) => {
 
   const response = await Ape.connections.delete({ params: { id } });
   if (response.status !== 200) {
-    notifyError(`Cannot unblock user: ${response.body.message}`);
+    showError(`Cannot unblock user: ${response.body.message}`);
   } else {
     blockedUsers = blockedUsers.filter((it) => it._id !== id);
     refreshList();
