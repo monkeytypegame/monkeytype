@@ -1,7 +1,6 @@
 import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
 import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
-import { For } from "solid-js";
 
 import { notify } from "../../stores/notifications";
 import * as Strings from "../../utils/strings";
@@ -188,18 +187,8 @@ export function canSetFunboxWithConfig(
       );
     }
     notify(
-      <>
-        {`You can't enable ${funbox.replace(/_/g, " ")}:`}
-        <For each={errorStrings}>
-          {(s) => (
-            <>
-              <br />
-              {s}
-            </>
-          )}
-        </For>
-      </>,
-      { duration: 5 },
+      `You can't enable ${funbox.replace(/_/g, " ")}:<br />${errorStrings.join("<br />")}`,
+      { duration: 5, useInnerHtml: true },
     );
     return false;
   } else {

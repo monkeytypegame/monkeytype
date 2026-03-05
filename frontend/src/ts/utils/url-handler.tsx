@@ -18,7 +18,6 @@ import {
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { decompressFromURI } from "lz-ts";
-import { For } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../ape";
@@ -290,23 +289,13 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   );
 
   if (appliedEntries.length > 0) {
-    notifySuccess(
-      <>
-        {`Settings applied from URL:`}
-        <br />
-        <br />
-        <For each={appliedEntries}>
-          {([key, val]) => (
-            <>
-              {key}
-              {val ? ": " + val : ""}
-              <br />
-            </>
-          )}
-        </For>
-      </>,
-      { duration: 10 },
-    );
+    const lines = appliedEntries
+      .map(([key, val]) => key + (val ? ": " + val : ""))
+      .join("<br />");
+    notifySuccess(`Settings applied from URL:<br /><br />${lines}`, {
+      duration: 10,
+      useInnerHtml: true,
+    });
   }
 }
 
