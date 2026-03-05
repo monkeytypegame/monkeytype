@@ -2,6 +2,7 @@ import { createStore } from "solid-js/store";
 
 import { CommonResponsesType } from "@monkeytype/contracts/util/api";
 import { JSXElement } from "solid-js";
+import { createErrorMessage } from "../utils/misc";
 
 export type NotificationLevel = "error" | "notice" | "success";
 
@@ -82,6 +83,7 @@ export type AddNotificationOptions = Partial<
 > & {
   details?: object | string;
   response?: CommonResponsesType;
+  error?: unknown;
 };
 
 export function addNotificationWithLevel(
@@ -103,6 +105,13 @@ export function addNotificationWithLevel(
     if (typeof message === "string") {
       message = message + ": " + options.response.body.message;
     }
+  }
+
+  if (options.error !== undefined) {
+    message = createErrorMessage(
+      options.error,
+      typeof message === "string" ? message : "An error occurred",
+    );
   }
 
   const title =
