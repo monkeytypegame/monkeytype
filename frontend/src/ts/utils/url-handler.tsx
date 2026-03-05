@@ -1,21 +1,3 @@
-import * as Misc from "./misc";
-import Config, { setConfig } from "../config";
-import * as Notifications from "../elements/notifications";
-import { decompressFromURI } from "lz-ts";
-import * as TestState from "../test/test-state";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as CustomText from "../test/custom-text";
-import Ape from "../ape";
-import * as DB from "../db";
-
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { restart as restartTest } from "../test/test-logic";
-import * as ChallengeController from "../controllers/challenge-controller";
-import {
-  DifficultySchema,
-  Mode2Schema,
-  ModeSchema,
-} from "@monkeytype/schemas/shared";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -26,12 +8,34 @@ import {
   FunboxSchema,
   FunboxName,
 } from "@monkeytype/schemas/configs";
-import { z } from "zod";
+import { Language } from "@monkeytype/schemas/languages";
+import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
+import {
+  DifficultySchema,
+  Mode2Schema,
+  ModeSchema,
+} from "@monkeytype/schemas/shared";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/schemas/languages";
+import { decompressFromURI } from "lz-ts";
+import { z } from "zod";
+
+import Ape from "../ape";
+import Config, { setConfig } from "../config";
+import * as ChallengeController from "../controllers/challenge-controller";
+import * as DB from "../db";
 import * as AuthEvent from "../observables/auth-event";
-import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
+import * as CustomText from "../test/custom-text";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import { restart as restartTest } from "../test/test-logic";
+import * as TestState from "../test/test-state";
+import * as Misc from "./misc";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -49,16 +53,16 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     hideLoaderBar();
 
     if (response.status !== 200) {
-      Notifications.add("Failed to link Discord", -1, { response });
+      showErrorNotification("Failed to link Discord", { response });
       return;
     }
 
     if (response.body.data === null) {
-      Notifications.add("Failed to link Discord: data returned was null", -1);
+      showErrorNotification("Failed to link Discord: data returned was null");
       return;
     }
 
-    Notifications.add(response.body.message, 1);
+    showSuccessNotification(response.body.message);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
@@ -91,7 +95,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
-    Notifications.add("Failed to load theme from URL: " + error.message, 0);
+    showNoticeNotification("Failed to load theme from URL: " + error.message);
     return;
   }
 
@@ -110,7 +114,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 
   if (colorArray === undefined || colorArray.length !== 10) {
-    Notifications.add("Failed to load theme from URL: no colors found", 0);
+    showNoticeNotification("Failed to load theme from URL: no colors found");
     return;
   }
 
@@ -118,7 +122,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const oldCustomThemeColors = Config.customThemeColors;
   try {
     setConfig("customThemeColors", colorArray);
-    Notifications.add("Custom theme applied", 1);
+    showSuccessNotification("Custom theme applied");
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
       setConfig("customBackground", image);
@@ -128,7 +132,9 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 
     if (!Config.customTheme) setConfig("customTheme", true);
   } catch (e) {
-    Notifications.add("Something went wrong. Reverting to previous state.", 0);
+    showNoticeNotification(
+      "Something went wrong. Reverting to previous state.",
+    );
     console.error(e);
     setConfig("customTheme", oldCustomTheme);
     setConfig("customThemeColors", oldCustomThemeColors);
@@ -171,9 +177,8 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.error("Failed to parse test settings:", error);
-    Notifications.add(
+    showNoticeNotification(
       "Failed to load test settings from URL: " + error.message,
-      0,
     );
     return;
   }
@@ -287,19 +292,20 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     nosave: true,
   });
 
-  let appliedString = "";
+  const appliedEntries = Object.entries(applied).filter(
+    ([, v]) => v !== undefined,
+  );
 
-  Object.keys(applied).forEach((setKey) => {
-    const set = applied[setKey];
-    if (set !== undefined) {
-      appliedString += `${setKey}${Misc.escapeHTML(set ? ": " + set : "")}<br>`;
-    }
-  });
-
-  if (appliedString !== "") {
-    Notifications.add("Settings applied from URL:<br><br>" + appliedString, 1, {
-      duration: 10,
-      allowHTML: true,
+  if (appliedEntries.length > 0) {
+    const lines = appliedEntries
+      .map(
+        ([key, val]) =>
+          Misc.escapeHTML(key) + (val ? ": " + Misc.escapeHTML(val) : ""),
+      )
+      .join("<br />");
+    showSuccessNotification(`Settings applied from URL:<br /><br />${lines}`, {
+      durationMs: 10000,
+      useInnerHtml: true,
     });
   }
 }
@@ -310,18 +316,18 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   ).toLowerCase();
   if (getValue === "") return;
 
-  Notifications.add("Loading challenge", 0);
+  showNoticeNotification("Loading challenge");
   ChallengeController.setup(getValue)
     .then((result) => {
       if (result) {
-        Notifications.add("Challenge loaded", 1);
+        showSuccessNotification("Challenge loaded");
         restartTest({
           nosave: true,
         });
       }
     })
     .catch((e: unknown) => {
-      Notifications.add("Failed to load challenge", -1);
+      showErrorNotification("Failed to load challenge");
       console.error(e);
     });
 }

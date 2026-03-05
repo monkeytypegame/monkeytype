@@ -1,4 +1,8 @@
-import * as Notifications from "./elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "./stores/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce } from "throttle-debounce";
@@ -7,7 +11,6 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
-  createErrorMessage,
   isObject,
   promiseWithResolvers,
   triggerResize,
@@ -83,9 +86,12 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
 
 function isConfigChangeBlocked(): boolean {
   if (TestState.isActive && config.funbox.includes("no_quit")) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     return true;
   }
   return false;
@@ -118,9 +124,12 @@ export function setConfig<T extends keyof Config>(
     TestState.isActive &&
     config.funbox.includes("no_quit")
   ) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
         value,
@@ -345,11 +354,10 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     );
     await applyConfig(parsedConfig);
     saveFullConfigToLocalStorage();
-    Notifications.add("Done", 1);
+    showSuccessNotification("Done");
   } catch (e) {
-    const msg = createErrorMessage(e, "Failed to import settings");
-    console.error(msg);
-    Notifications.add(msg, -1);
+    console.error(e);
+    showErrorNotification("Failed to import settings", { error: e });
   }
 }
 
