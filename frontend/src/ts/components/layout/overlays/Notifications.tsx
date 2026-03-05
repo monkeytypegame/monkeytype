@@ -23,23 +23,23 @@ const levelConfig = {
   notice: {
     icon: "fa-info-circle",
     title: "Notice",
-    border: "rgba(0,130,251,0.985)",
-    bg: "rgba(0,77,148,0.9)",
-    bgHover: "rgba(0,77,148,0.5)",
+    border: "var(--notif-notice-border, rgba(0,130,251,0.985))",
+    bg: "var(--notif-notice-bg, rgba(0,77,148,0.9))",
+    bgHover: "var(--notif-notice-bg-hover, rgba(0,77,148,0.5))",
   },
   success: {
     icon: "fa-check-circle",
     title: "Success",
-    border: "rgba(100,206,100,0.71)",
-    bg: "rgba(0,148,0,0.9)",
-    bgHover: "rgba(0,148,0,0.5)",
+    border: "var(--notif-success-border, rgba(100,206,100,0.71))",
+    bg: "var(--notif-success-bg, rgba(0,148,0,0.9))",
+    bgHover: "var(--notif-success-bg-hover, rgba(0,148,0,0.5))",
   },
   error: {
     icon: "fa-times-circle",
     title: "Error",
-    border: "rgba(241,51,34,0.71)",
-    bg: "rgba(138,18,12,0.9)",
-    bgHover: "rgba(138,18,12,0.5)",
+    border: "var(--notif-error-border, rgba(241,51,34,0.71))",
+    bg: "var(--notif-error-bg, rgba(138,18,12,0.9))",
+    bgHover: "var(--notif-error-bg-hover, rgba(138,18,12,0.5))",
   },
 } as const;
 
