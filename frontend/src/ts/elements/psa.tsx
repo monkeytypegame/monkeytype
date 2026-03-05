@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import Ape from "../ape";
 import * as AuthEvent from "../observables/auth-event";
+import { addPsa } from "../stores/alerts";
 import { addBanner } from "../stores/banners";
 import { secondsToString } from "../utils/date-and-time";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
@@ -178,6 +179,7 @@ export async function show(): Promise<void> {
     }
 
     Alerts.addPSA(psa.message, psa.level ?? -1);
+    addPsa(psa.message, psa.level ?? -1);
 
     if (localmemory.includes(psa._id) && !(psa.sticky ?? false)) {
       return;

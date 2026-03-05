@@ -12,11 +12,25 @@ export function AlertsPopup(): JSXElement {
   return (
     <AnimatedModal
       id="Alerts"
-      wrapperClass="p-0 "
-      modalClass="h-full absolute right-0 top-0 rounded flex flex-col overflow-hidden text-xs"
+      wrapperClass="justify-end overflow-x-hidden p-0"
+      modalClass="h-full absolute right-0 top-0 max-w-[calc(350px+2rem)] rounded-l bg-bg p-8 pr-[calc(1rem-7px)] pl-4 text-xs block overflow-hidden"
+      customAnimations={{
+        show: {
+          modal: {
+            marginRight: ["-10rem", "0"],
+          },
+        },
+        hide: {
+          modal: {
+            marginRight: ["0", "-10rem"],
+          },
+        },
+      }}
+      onEscape={() => hideModalAndClearChain("Alerts")}
+      onBackdropClick={() => hideModalAndClearChain("Alerts")}
     >
       <MobileClose />
-      <div class="flex h-full flex-col gap-4 overflow-y-scroll">
+      <div class="grid h-full content-baseline gap-8 overflow-y-scroll px-4">
         <Inbox />
         <Separator />
         <Psas />
@@ -30,6 +44,7 @@ export function AlertsPopup(): JSXElement {
 function MobileClose(): JSXElement {
   return (
     <Button
+      class="mb-8 hidden w-full pointer-coarse:block"
       onClick={() => hideModalAndClearChain("Alerts")}
       text="close"
       fa={{ icon: "fa-times" }}
