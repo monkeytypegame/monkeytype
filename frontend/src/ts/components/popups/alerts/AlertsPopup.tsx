@@ -43,9 +43,9 @@ export function AlertsPopup(): JSXElement {
 function MobileClose(): JSXElement {
   return (
     <Button
-      class="mb-8 hidden w-full pointer-coarse:block"
+      class="mb-8 hidden w-full pointer-coarse:flex"
       onClick={() => hideModalAndClearChain("Alerts")}
-      text="close"
+      text="Close"
       fa={{ icon: "fa-times" }}
     />
   );
