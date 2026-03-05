@@ -95,7 +95,9 @@ export function addNotification(
           ? options.response.body.validationErrors
           : undefined,
     };
-    message = (message as string) + ": " + options.response.body.message;
+    if (typeof message === "string") {
+      message = message + ": " + options.response.body.message;
+    }
   }
 
   const title =
