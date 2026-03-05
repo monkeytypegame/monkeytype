@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
+import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
 import { updateFromServer as updateConfigFromServer } from "./config";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
@@ -22,7 +23,6 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "./firebase";
-import * as RegisterCaptchaModal from "./modals/register-captcha";
 import { showPopup } from "./modals/simple-modals-base";
 import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
@@ -294,8 +294,7 @@ export async function signUp(
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
-  await RegisterCaptchaModal.show();
-  const captchaToken = await RegisterCaptchaModal.promise;
+  const captchaToken = await showRegisterCaptchaModal();
   if (captchaToken === undefined || captchaToken === "") {
     return { success: false, message: "Please complete the captcha" };
   }
