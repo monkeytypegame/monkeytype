@@ -64,14 +64,6 @@ footer button:hover > .relative > i {
   transition: all 1s ease;
 }
 
-footer .textButton:has(.fa-palette) {
-  animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
-}
-
-footer .textButton:has(.fa-palette):hover {
-  -webkit-text-fill-color: initial;
-}
-
 #liveStatsTextTop.timerMain,
 #liveStatsTextBottom.timerMain,
 #liveStatsMini.timerMain {
