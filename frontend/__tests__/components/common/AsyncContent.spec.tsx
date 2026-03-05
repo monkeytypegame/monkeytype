@@ -13,7 +13,7 @@ import AsyncContent, {
 import * as Notifications from "../../../src/ts/stores/notifications";
 
 describe("AsyncContent", () => {
-  const notifyErrorMock = vi.spyOn(Notifications, "notifyError");
+  const notifyErrorMock = vi.spyOn(Notifications, "showErrorNotification");
 
   beforeEach(() => {
     notifyErrorMock.mockClear();

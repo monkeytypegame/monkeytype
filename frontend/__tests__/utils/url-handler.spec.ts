@@ -22,8 +22,11 @@ describe("url-handler", () => {
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
     const restartTestMock = vi.spyOn(TestLogic, "restart");
-    const notifySuccessMock = vi.spyOn(Notifications, "notifySuccess");
-    const notifyMock = vi.spyOn(Notifications, "notify");
+    const notifySuccessMock = vi.spyOn(
+      Notifications,
+      "showSuccessNotification",
+    );
+    const notifyMock = vi.spyOn(Notifications, "showNoticeNotification");
 
     beforeEach(() => {
       [

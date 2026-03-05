@@ -5,7 +5,10 @@ import * as Notifications from "../../../src/ts/stores/notifications";
 import { FunboxName } from "@monkeytype/schemas/configs";
 describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
-    const addNotificationMock = vi.spyOn(Notifications, "notify");
+    const addNotificationMock = vi.spyOn(
+      Notifications,
+      "showNoticeNotification",
+    );
     afterEach(() => {
       addNotificationMock.mockClear();
     });

@@ -31,7 +31,10 @@ describe("Config", () => {
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
-    const notificationAddMock = vi.spyOn(Notifications, "notify");
+    const notificationAddMock = vi.spyOn(
+      Notifications,
+      "showNoticeNotification",
+    );
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
 

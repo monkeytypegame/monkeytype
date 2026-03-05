@@ -51,9 +51,17 @@ export function removeNotification(
     clearTimeout(timer);
     autoRemoveTimers.delete(notificationId);
   }
-  const notification = notifications.find((n) => n.id === notificationId);
-  notification?.onDismiss?.(reason);
-  setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+  let onDismiss: Notification["onDismiss"] | undefined;
+  setNotifications((prev) =>
+    prev.filter((n) => {
+      if (n.id === notificationId) {
+        onDismiss = n.onDismiss;
+        return false;
+      }
+      return true;
+    }),
+  );
+  onDismiss?.(reason);
 }
 
 export function clearAllNotifications(): void {
@@ -62,7 +70,11 @@ export function clearAllNotifications(): void {
   }
   autoRemoveTimers.clear();
   for (const notification of notifications) {
-    notification.onDismiss?.("clear");
+    try {
+      notification.onDismiss?.("clear");
+    } catch (e) {
+      console.error("onDismiss threw during clearAll", e);
+    }
   }
   setNotifications([]);
 }
@@ -146,6 +158,7 @@ export function addNotificationWithLevel(
   });
 
   if (durationMs > 0) {
+    // +250 accounts for the exit animation duration in Notifications.tsx
     const timer = setTimeout(() => {
       autoRemoveTimers.delete(notifId);
       removeNotification(notifId, "timeout");

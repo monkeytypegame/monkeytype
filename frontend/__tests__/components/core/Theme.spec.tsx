@@ -24,7 +24,7 @@ describe("Theme component", () => {
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
   const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
   const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
-  const notificationAddMock = vi.spyOn(Notifications, "notify");
+  const notificationAddMock = vi.spyOn(Notifications, "showNoticeNotification");
 
   beforeEach(() => {
     vi.useFakeTimers();

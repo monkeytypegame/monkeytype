@@ -25,7 +25,10 @@ describe("PresetController", () => {
       UpdateConfig,
       "getConfigChanges",
     );
-    const notificationAddMock = vi.spyOn(Notifications, "notifySuccess");
+    const notificationAddMock = vi.spyOn(
+      Notifications,
+      "showSuccessNotification",
+    );
     const testRestartMock = vi.spyOn(TestLogic, "restart");
     const tagControllerClearMock = vi.spyOn(TagController, "clear");
     const tagControllerSetMock = vi.spyOn(TagController, "set");

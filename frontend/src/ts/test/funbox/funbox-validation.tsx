@@ -3,6 +3,7 @@ import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
 
 import { showNoticeNotification } from "../../stores/notifications";
+import { escapeHTML } from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 
 export function checkForcedConfig(
@@ -187,7 +188,7 @@ export function canSetFunboxWithConfig(
       );
     }
     showNoticeNotification(
-      `You can't enable ${funbox.replace(/_/g, " ")}:<br />${errorStrings.join("<br />")}`,
+      `You can't enable ${escapeHTML(funbox.replace(/_/g, " "))}:<br />${errorStrings.map((s) => escapeHTML(s)).join("<br />")}`,
       { durationMs: 5000, useInnerHtml: true },
     );
     return false;
