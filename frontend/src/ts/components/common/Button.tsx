@@ -1,6 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
+import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
 import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
@@ -10,20 +11,18 @@ type BaseProps = {
   class?: string;
   variant?: "text" | "button";
   children?: JSXElement;
-  ariaLabel?:
-    | string
-    | { text: string; position: "up" | "down" | "left" | "right" };
+  balloon?: BalloonProps;
   "router-link"?: true;
   onClick?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   dataset?: Record<string, string>;
+  active?: boolean;
 };
 
 type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
-  active?: boolean;
   disabled?: boolean;
 };
 
@@ -38,6 +37,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
   const isActive = (): boolean =>
     (!isAnchor() && !("href" in props) && props.active) ?? false;
 
+  const variant = () => props.variant ?? "button";
+
   const content = (
     <>
       <Show when={props.fa !== undefined}>
@@ -48,16 +49,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     </>
   );
 
-  const ariaLabel = (): object => {
-    if (props.ariaLabel === undefined) return {};
-    if (typeof props.ariaLabel === "string") {
-      return { "aria-label": props.ariaLabel, "data-balloon-pos": "up" };
-    }
-    return {
-      "aria-label": props.ariaLabel.text,
-      "data-balloon-pos": props.ariaLabel.position,
-    };
-  };
+  const balloonHtmlProps = () => buildBalloonHtmlProperties(props.balloon);
 
   const getClasses = (): string => {
     return cn(
@@ -65,16 +57,16 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
       "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
       "[--themable-button-active:var(--main-color)]",
-      props.variant === "text" &&
-        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)]",
-      (props?.variant ?? "button") === "button" &&
-        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)]",
-      (props?.variant ?? "button") === "button" &&
-        isActive() &&
-        "[--themable-button-bg:var(--main-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
-      (props?.variant ?? "button") === "button" &&
+      variant() === "text" &&
+        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)] active:text-sub",
+      variant() === "button" &&
+        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)] active:bg-sub",
+      variant() === "button" &&
         isActive() &&
         "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+      variant() === "text" &&
+        isActive() &&
+        "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
       {
         "pointer-events-none opacity-[0.33]": props.disabled,
       },
@@ -101,13 +93,12 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
               ? undefined
               : "noreferrer noopener"
           }
-          {...ariaLabel()}
+          {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
-          data-ui-variant={props.variant ?? "button"}
-          data-ui-element={"button"}
+          data-ui-variant={variant()}
           {...props.dataset}
         >
           {content}
@@ -120,11 +111,10 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
-          {...ariaLabel()}
+          {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
-          data-ui-variant={props.variant ?? "button"}
-          data-ui-element={"button"}
+          data-ui-variant={variant()}
           {...props.dataset}
         >
           {content}

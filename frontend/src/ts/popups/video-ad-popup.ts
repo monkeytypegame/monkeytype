@@ -1,4 +1,7 @@
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
@@ -10,11 +13,10 @@ export async function show(): Promise<void> {
   Skeleton.append(wrapperId, "popups");
   await AdController.checkAdblock();
   if (AdController.adBlock) {
-    Notifications.add(
+    showNoticeNotification(
       "Looks like you're using an adblocker. Video ads will not work until you disable it.",
-      0,
       {
-        duration: 6,
+        durationMs: 6000,
       },
     );
     return;
@@ -22,11 +24,10 @@ export async function show(): Promise<void> {
 
   await AdController.checkCookieblocker();
   if (AdController.cookieBlocker) {
-    Notifications.add(
+    showNoticeNotification(
       "Looks like you're using a cookie popup blocker. Video ads will not work without giving your consent through the popup.",
-      0,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
     return;
@@ -73,8 +74,8 @@ export function egVideoListener(options: Record<string, string>): void {
   } else if (event === "finished") {
     hide();
   } else if (event === "empty") {
-    Notifications.add("Failed to load video ad. Please try again later", -1, {
-      duration: 3,
+    showErrorNotification("Failed to load video ad. Please try again later", {
+      durationMs: 3000,
     });
     hide();
   }

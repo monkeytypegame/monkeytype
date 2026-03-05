@@ -21,7 +21,11 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
-import * as Notifications from "../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+  clearAllNotifications,
+} from "../stores/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
@@ -257,7 +261,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-trash-alt",
       alias: "dismiss",
       exec: async (): Promise<void> => {
-        Notifications.clearAllNotifications();
+        clearAllNotifications();
       },
     },
     {
@@ -289,14 +293,10 @@ export const commands: CommandsSubgroup = {
         navigator.clipboard
           .writeText(JSON.stringify(TestStats.getStats()))
           .then(() => {
-            Notifications.add("Copied to clipboard", 1);
+            showSuccessNotification("Copied to clipboard");
           })
           .catch((e: unknown) => {
-            const message = Misc.createErrorMessage(
-              e,
-              "Failed to copy to clipboard",
-            );
-            Notifications.add(message, -1);
+            showErrorNotification("Failed to copy to clipboard", { error: e });
           });
       },
     },
@@ -407,7 +407,7 @@ export async function getList(
 
   const list = lists[listName as ListsObjectKeys];
   if (!list) {
-    Notifications.add(`List not found: ${listName}`, -1);
+    showErrorNotification(`List not found: ${listName}`);
     throw new Error(`List ${listName} not found`);
   }
   return list;

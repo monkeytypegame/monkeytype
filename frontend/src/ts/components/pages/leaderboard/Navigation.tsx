@@ -26,7 +26,7 @@ export function Navigation(props: {
       const page = parseInt(pageNumber, 10);
       if (isNaN(page) || page < 1) {
         return {
-          status: 0,
+          status: "notice",
           message: "Invalid page number",
         };
       }
@@ -34,7 +34,7 @@ export function Navigation(props: {
       props.onPageChange(page - 1);
 
       return {
-        status: 1,
+        status: "success",
         message: "Navigating to page " + page,
         showNotification: false,
       };

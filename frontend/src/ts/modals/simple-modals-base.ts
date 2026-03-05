@@ -1,4 +1,4 @@
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal } from "../utils/simple-modal";
 
@@ -58,7 +58,7 @@ export function showPopup(
 ): void {
   const popup = list[key];
   if (popup === undefined) {
-    Notifications.add("Failed to show popup - popup is not defined", -1);
+    showErrorNotification("Failed to show popup - popup is not defined");
     return;
   }
   popup.show(showParams, showOptions);

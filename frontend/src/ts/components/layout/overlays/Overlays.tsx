@@ -12,6 +12,7 @@ import { Banners } from "./Banners";
 import { FpsCounter } from "./FpsCounter";
 import { LoaderBar } from "./LoaderBar";
 import { MediaQueryDebugger } from "./MediaQueryDebugger";
+import { Notifications } from "./Notifications";
 
 export function Overlays(): JSXElement {
   return (
@@ -34,6 +35,7 @@ export function Overlays(): JSXElement {
         <Fa icon="fa-terminal" />
       </button>
       <Banners />
+      <Notifications />
       <MediaQueryDebugger />
       <LoaderBar />
       <FpsCounter />
@@ -49,7 +51,7 @@ function DevButtons(): JSXElement {
     <div class="fixed top-30 left-0 z-10000 flex w-max flex-col gap-2 text-xs">
       <Button
         href={`${envConfig.backendUrl}/configure/`}
-        ariaLabel={{
+        balloon={{
           text: "Configure server",
           position: "right",
         }}
@@ -59,7 +61,7 @@ function DevButtons(): JSXElement {
         class="rounded-tl-none rounded-bl-none p-2"
       />
       <Button
-        ariaLabel={{
+        balloon={{
           text: "Dev options",
           position: "right",
         }}

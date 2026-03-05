@@ -7,7 +7,11 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
@@ -145,9 +149,12 @@ export function restart(options = {} as RestartOptions): void {
 
   const noQuit = isFunboxActive("no_quit");
   if (TestState.isActive && noQuit) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     options.event?.preventDefault();
     return;
   }
@@ -176,11 +183,10 @@ export function restart(options = {} as RestartOptions): void {
         } else if (Config.quickRestart === "enter") {
           message = "Press shift + enter or use your mouse to confirm.";
         }
-        Notifications.add(
+        showNoticeNotification(
           `Quick restart disabled in long tests. ${message}`,
-          0,
           {
-            duration: 4,
+            durationMs: 4000,
             important: true,
           },
         );
@@ -224,7 +230,7 @@ export function restart(options = {} as RestartOptions): void {
     !options.withSameWordset &&
     !options.practiseMissed
   ) {
-    Notifications.add("Reverting to previous settings.", 0);
+    showNoticeNotification("Reverting to previous settings.");
     if (PractiseWords.before.punctuation !== null) {
       setConfig("punctuation", PractiseWords.before.punctuation);
     }
@@ -369,10 +375,7 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to load language"),
-      -1,
-    );
+    showErrorNotification("Failed to load language", { error });
   }
 
   if (!language || language.name !== Config.language) {
@@ -399,13 +402,9 @@ async function init(): Promise<boolean> {
         JSONData.getLanguage(langName),
       );
       if (error) {
-        Notifications.add(
-          Misc.createErrorMessage(
-            error,
-            `Failed to load language: ${langName}`,
-          ),
-          -1,
-        );
+        showErrorNotification(`Failed to load language: ${langName}`, {
+          error,
+        });
       }
       return lang;
     });
@@ -417,9 +416,8 @@ async function init(): Promise<boolean> {
     if (Config.lazyMode && !anySupportsLazyMode) {
       LazyModeState.setRemember(true);
       if (!showedLazyModeNotification) {
-        Notifications.add(
+        showNoticeNotification(
           "None of the selected polyglot languages support lazy mode.",
-          0,
           {
             important: true,
           },
@@ -437,7 +435,7 @@ async function init(): Promise<boolean> {
     if (Config.lazyMode && !allowLazyMode) {
       LazyModeState.setRemember(true);
       if (!showedLazyModeNotification) {
-        Notifications.add("This language does not support lazy mode.", 0, {
+        showNoticeNotification("This language does not support lazy mode.", {
           important: true,
         });
         showedLazyModeNotification = true;
@@ -494,18 +492,15 @@ async function init(): Promise<boolean> {
     console.error(e);
     if (e instanceof WordGenError) {
       if (e.message.length > 0) {
-        Notifications.add(e.message, 0, {
+        showNoticeNotification(e.message, {
           important: true,
         });
       }
     } else {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to generate words"),
-        -1,
-        {
-          important: true,
-        },
-      );
+      showErrorNotification("Failed to generate words", {
+        error: e,
+        important: true,
+      });
     }
 
     return await init();
@@ -621,9 +616,8 @@ export async function addWord(): Promise<void> {
       );
 
       if (section === false) {
-        Notifications.add(
+        showErrorNotification(
           "Error while getting section. Please try again later",
-          -1,
         );
         toggleFunbox(sectionFunbox.name);
         restart();
@@ -657,13 +651,10 @@ export async function addWord(): Promise<void> {
     TestUI.addWord(randomWord.word);
   } catch (e) {
     TimerEvent.dispatch("fail", "word generation error");
-    Notifications.add(
-      Misc.createErrorMessage(
-        e,
-        "Error while getting next word. Please try again later",
-      ),
-      -1,
+    showErrorNotification(
+      "Error while getting next word. Please try again later",
       {
+        error: e,
         important: true,
       },
     );
@@ -684,11 +675,10 @@ export async function retrySavingResult(): Promise<void> {
   const { completedEvent } = retrySaving;
 
   if (completedEvent === null) {
-    Notifications.add(
+    showNoticeNotification(
       "Could not retry saving the result as the result no longer exists.",
-      0,
       {
-        duration: 5,
+        durationMs: 5000,
         important: true,
       },
     );
@@ -703,7 +693,7 @@ export async function retrySavingResult(): Promise<void> {
   retrySaving.canRetry = false;
   qs("#retrySavingResultButton")?.hide();
 
-  Notifications.add("Retrying to save...");
+  showNoticeNotification("Retrying to save...");
 
   await saveResult(completedEvent, true);
 }
@@ -972,9 +962,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (countUndefined(ce) > 0) {
     console.log(ce);
-    Notifications.add(
+    showErrorNotification(
       "Failed to build result object: One of the fields is undefined or NaN",
-      -1,
     );
     dontSave = true;
   }
@@ -1001,13 +990,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
-    Notifications.add("Test invalid - inconsistent test duration", 0);
+    showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
     dontSave = true;
   } else if (difficultyFailed) {
-    Notifications.add(`Test failed - ${failReason}`, 0, {
-      duration: 1,
+    showNoticeNotification(`Test failed - ${failReason}`, {
+      durationMs: 1000,
     });
     dontSave = true;
   } else if (
@@ -1029,16 +1018,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.getLimitValue() < 15) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
-    Notifications.add("Test invalid - too short", 0);
+    showNoticeNotification("Test invalid - too short");
     TestStats.setInvalid();
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
-    Notifications.add("Test invalid - AFK detected", 0);
+    showNoticeNotification("Test invalid - AFK detected");
     TestStats.setInvalid();
     dontSave = true;
   } else if (TestState.isRepeated) {
-    Notifications.add("Test invalid - repeated", 0);
+    showNoticeNotification("Test invalid - repeated");
     TestStats.setInvalid();
     dontSave = true;
   } else if (
@@ -1050,7 +1039,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    Notifications.add("Test invalid - wpm", 0);
+    showNoticeNotification("Test invalid - wpm");
     TestStats.setInvalid();
     dontSave = true;
   } else if (
@@ -1062,7 +1051,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    Notifications.add("Test invalid - raw", 0);
+    showNoticeNotification("Test invalid - raw");
     TestStats.setInvalid();
     dontSave = true;
   } else if (
@@ -1071,7 +1060,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (DB.getSnapshot()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
-    Notifications.add("Test invalid - accuracy", 0);
+    showNoticeNotification("Test invalid - accuracy");
     TestStats.setInvalid();
     dontSave = true;
   }
@@ -1112,8 +1101,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      Notifications.add("Long custom text progress saved", 1, {
-        duration: 5,
+      showSuccessNotification("Long custom text progress saved", {
+        durationMs: 5000,
         important: true,
       });
 
@@ -1125,8 +1114,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
       CustomText.setText(text);
-      Notifications.add("Long custom text completed", 1, {
-        duration: 5,
+      showSuccessNotification("Long custom text completed", {
+        durationMs: 5000,
         important: true,
       });
     }
@@ -1190,8 +1179,8 @@ async function saveResult(
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
   if (!Config.resultSaving) {
-    Notifications.add("Result not saved: disabled by user", -1, {
-      duration: 3,
+    showErrorNotification("Result not saved: disabled by user", {
+      durationMs: 3000,
       customTitle: "Notice",
       important: true,
     });
@@ -1237,7 +1226,7 @@ async function saveResult(
       response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    Notifications.add("Failed to save result", -1, { response });
+    showErrorNotification("Failed to save result", { response });
     return response;
   }
 
@@ -1320,7 +1309,7 @@ async function saveResult(
 
   qs("#retrySavingResultButton")?.hide();
   if (isRetrying) {
-    Notifications.add("Result saved", 1, { important: true });
+    showSuccessNotification("Result saved", { important: true });
   }
   DB.saveLocalResult(localDataToSave);
   return response;
@@ -1348,24 +1337,22 @@ export function fail(reason: string): void {
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
-    Notifications.add(
+    showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
         Strings.getLanguageDisplayString(Config.language),
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-      0,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }
   if (supports === "unknown") {
-    Notifications.add(
+    showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
         Strings.getLanguageDisplayString(Config.language),
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-      0,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }
@@ -1412,7 +1399,7 @@ qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
 
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
+    showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
   ManualRestart.set();

@@ -1,8 +1,10 @@
 import Config from "../../config";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
-import * as Notifications from "../../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import { isAuthenticated } from "../../firebase";
-import { createErrorMessage } from "../../utils/misc";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as TestWords from "../../test/test-words";
 import { Command } from "../types";
@@ -29,14 +31,10 @@ const commands: Command[] = [
           true,
         );
         hideLoaderBar();
-        Notifications.add("Quote added to favorites", 1);
+        showSuccessNotification("Quote added to favorites");
       } catch (e) {
         hideLoaderBar();
-        const message = createErrorMessage(
-          e,
-          "Failed to add quote to favorites",
-        );
-        Notifications.add(message, -1);
+        showErrorNotification("Failed to add quote to favorites", { error: e });
       }
     },
   },
@@ -61,14 +59,12 @@ const commands: Command[] = [
           false,
         );
         hideLoaderBar();
-        Notifications.add("Quote removed from favorites", 1);
+        showSuccessNotification("Quote removed from favorites");
       } catch (e) {
         hideLoaderBar();
-        const message = createErrorMessage(
-          e,
-          "Failed to remove quote from favorites",
-        );
-        Notifications.add(message, -1);
+        showErrorNotification("Failed to remove quote from favorites", {
+          error: e,
+        });
       }
     },
   },

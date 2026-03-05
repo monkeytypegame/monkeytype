@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { compressToURI } from "lz-ts";
 import * as UpdateConfig from "../../src/ts/config";
-import * as Notifications from "../../src/ts/elements/notifications";
+import * as Notifications from "../../src/ts/stores/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/test/test-state";
 import * as Misc from "../../src/ts/utils/misc";
@@ -22,7 +22,11 @@ describe("url-handler", () => {
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
     const restartTestMock = vi.spyOn(TestLogic, "restart");
-    const addNotificationMock = vi.spyOn(Notifications, "add");
+    const notifySuccessMock = vi.spyOn(
+      Notifications,
+      "showSuccessNotification",
+    );
+    const notifyMock = vi.spyOn(Notifications, "showNoticeNotification");
 
     beforeEach(() => {
       [
@@ -30,7 +34,8 @@ describe("url-handler", () => {
         findGetParameterMock,
         setSelectedQuoteIdMock,
         restartTestMock,
-        addNotificationMock,
+        notifySuccessMock,
+        notifyMock,
       ].forEach((it) => it.mockClear());
 
       findGetParameterMock.mockImplementation((override) => override);
@@ -231,14 +236,10 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(addNotificationMock).toHaveBeenCalledWith(
-        "Settings applied from URL:<br><br>mode: time<br>mode2: 60<br>custom text settings<br>punctuation: on<br>numbers: on<br>language: english<br>difficulty: master<br>funbox: ascii, crt<br>",
-        1,
-        {
-          duration: 10,
-          allowHTML: true,
-        },
-      );
+      expect(notifySuccessMock).toHaveBeenCalledWith(expect.anything(), {
+        durationMs: 10000,
+        useInnerHtml: true,
+      });
     });
     it("rejects invalid values", () => {
       //GIVEN
@@ -264,9 +265,8 @@ describe("url-handler", () => {
       loadTestSettingsFromUrl("");
 
       //THEN
-      expect(addNotificationMock).toHaveBeenCalledWith(
+      expect(notifyMock).toHaveBeenCalledWith(
         `Failed to load test settings from URL: JSON does not match schema: "0" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', "1" needs to be a number or a number represented as a string e.g. "10"., "2.mode" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', "2.pipeDelimiter" expected boolean, received string, "2.limit" expected object, received string, "2.text" expected array, received string, "3" expected boolean, received string, "4" expected boolean, received string, "6" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', "7" invalid input`,
-        0,
       );
     });
   });

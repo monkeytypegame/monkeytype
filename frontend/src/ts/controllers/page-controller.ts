@@ -12,7 +12,7 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
-import * as PageLeaderboards from "../pages/leaderboard";
+import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
