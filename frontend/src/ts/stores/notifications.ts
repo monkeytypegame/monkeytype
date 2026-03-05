@@ -23,6 +23,7 @@ export type NotificationHistoryEntry = {
   message: string;
   level: NotificationLevel;
   details?: string | object;
+  useInnerHtml: boolean;
 };
 
 let id = 0;
@@ -146,6 +147,7 @@ export function addNotificationWithLevel(
         message,
         level,
         details,
+        useInnerHtml: options.useInnerHtml ?? false,
       },
     ];
     return next.length > 25 ? next.slice(-25) : next;

@@ -13,7 +13,7 @@ export function H2(props: {
     <h2
       id={props.id}
       class={cn(
-        "flex place-items-center gap-4 pb-4 text-4xl text-sub",
+        "flex place-items-center gap-[0.5em] pb-[0.5em] text-[2.25em] text-sub",
         props.class,
       )}
     >
@@ -35,7 +35,10 @@ export function H3(props: {
   return (
     <h3
       id={props.id}
-      class={cn("flex place-items-center gap-2 pb-2 text-sub", props.class)}
+      class={cn(
+        "flex place-items-center gap-[0.5em] pb-[0.5em] text-[1em] text-sub",
+        props.class,
+      )}
     >
       <Fa {...props.fa} />
       {props.text}

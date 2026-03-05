@@ -8,10 +8,12 @@ import {
   useInboxQuery,
 } from "../../../collections/inbox";
 import { getModalVisibility } from "../../../stores/modals";
+import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { H2 } from "../../common/Headers";
+import { H3 } from "../../common/Headers";
+import { LoadingCircle } from "../../common/LoadingCircle";
 
 export function Inbox(): JSXElement {
   const inboxQuery = useInboxQuery(
@@ -32,37 +34,63 @@ export function Inbox(): JSXElement {
       );
     }
   };
+
+  const inboxSize = () => inboxQuery().length;
+
   return (
-    <AsyncContent collection={inboxQuery}>
-      {(inbox) => (
-        <>
-          <div class="flex flex-row">
-            <H2 fa={{ icon: "fa-inbox" }} text="Inbox" class="text-lg" />
-            <div class="ml-auto text-lg text-sub">
-              {inbox.length}/{maxMailboxSize()}
+    <div>
+      <div class="flex text-xl">
+        <H3 fa={{ icon: "fa-inbox" }} text="Inbox" />
+        <div
+          class={cn(
+            "grow text-right text-sub",
+            inboxQuery.isLoading && "hidden",
+          )}
+        >
+          {inboxSize()}/{maxMailboxSize()}
+        </div>
+      </div>
+      <AsyncContent
+        collection={inboxQuery}
+        loader={
+          <div class="grid min-h-20 place-items-center text-xl">
+            <div>
+              <LoadingCircle />
             </div>
           </div>
-          <Show when={inboxQuery().some((it) => it.status === "unclaimed")}>
-            <Button
-              fa={{ icon: "fa-gift", fixedWidth: true }}
-              text="Claim all"
-              onClick={() => updateInbox({ from: "unclaimed", to: "read" })}
-            />
-          </Show>
-          <Show when={inboxQuery().some((it) => it.status === "read")}>
-            <Button
-              fa={{ icon: "fa-trash", fixedWidth: true }}
-              text="Delete all"
-              onClick={() => updateInbox({ from: "read", to: "deleted" })}
-            />
-          </Show>
+        }
+      >
+        {(inbox) => (
+          <>
+            <Show when={inboxQuery().some((it) => it.status === "unclaimed")}>
+              <Button
+                fa={{ icon: "fa-gift", fixedWidth: true }}
+                text="Claim all"
+                onClick={() => updateInbox({ from: "unclaimed", to: "read" })}
+              />
+            </Show>
+            <Show when={inboxQuery().some((it) => it.status === "read")}>
+              <Button
+                fa={{ icon: "fa-trash", fixedWidth: true }}
+                text="Delete all"
+                onClick={() => updateInbox({ from: "read", to: "deleted" })}
+              />
+            </Show>
 
-          <For each={inbox} fallback="Nothing to show">
-            {(entry) => <Entry entry={entry} />}
-          </For>
-        </>
-      )}
-    </AsyncContent>
+            <For
+              each={inbox}
+              fallback={
+                <div class="grid min-h-20 place-items-center">
+                  <div>Nothing to show</div>
+                </div>
+              }
+            >
+              {(entry) => <Entry entry={entry} />}
+            </For>
+          </>
+        )}
+      </AsyncContent>
+    </div>
   );
 }
 
@@ -91,9 +119,9 @@ function Entry(props: { entry: InboxItem }): JSXElement {
       <div class="content-center">
         <Show when={props.entry.status === "unclaimed"}>
           <Button
-            type="text"
+            variant="text"
             fa={{ icon: "fa-gift", fixedWidth: true }}
-            ariaLabel={{ text: "Claim", position: "left" }}
+            balloon={{ text: "Claim", position: "left" }}
             onClick={() =>
               inboxCollection.update(
                 props.entry.id,
@@ -110,9 +138,9 @@ function Entry(props: { entry: InboxItem }): JSXElement {
           }
         >
           <Button
-            type="text"
+            variant="text"
             fa={{ icon: "fa-trash", fixedWidth: true }}
-            ariaLabel={{ text: "Delete", position: "left" }}
+            balloon={{ text: "Delete", position: "left" }}
             onClick={() =>
               inboxCollection.update(
                 props.entry.id,
