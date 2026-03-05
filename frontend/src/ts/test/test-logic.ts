@@ -18,7 +18,6 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
-import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
@@ -46,7 +45,6 @@ import {
   CompletedEvent,
   CompletedEventCustomText,
 } from "@monkeytype/schemas/results";
-import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -69,6 +67,7 @@ import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
 import { qs } from "../utils/dom";
+import { setAccountButtonSpinner } from "../signals/header";
 
 let failReason = "";
 
@@ -1190,15 +1189,12 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
-  AccountButton.loading(true);
-
   if (!Config.resultSaving) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
     return null;
   }
 
@@ -1215,9 +1211,11 @@ async function saveResult(
 
   console.trace();
 
+  setAccountButtonSpinner(true);
+
   const response = await Ape.results.add({ body: { result } });
 
-  AccountButton.loading(false);
+  setAccountButtonSpinner(false);
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
@@ -1253,14 +1251,10 @@ async function saveResult(
   const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
-    const snapxp = DB.getSnapshot()?.xp ?? 0;
-
-    void XPBar.update(
-      snapxp,
-      data.xp,
-      TestState.resultVisible ? data.xpBreakdown : undefined,
-    );
     localDataToSave.xp = data.xp;
+    if (TestState.resultVisible) {
+      localDataToSave.xpBreakdown = data.xpBreakdown;
+    }
   }
 
   if (data.streak !== undefined) {
@@ -1512,11 +1506,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
     ManualRestart.set();
     restart();
   }
-});
-
-qs("header")?.onChild("click", "nav #startTestButton, #logo", () => {
-  if (getActivePage() === "test") restart();
-  // Result.showConfetti();
 });
 
 // ===============================

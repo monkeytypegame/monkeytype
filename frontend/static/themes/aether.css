@@ -1,21 +1,40 @@
 [data-nav-item="test"] {
   color: #e4002b;
+  &:hover {
+    color: color-mix(in srgb, #e4002b 75%, white 25%);
+  }
 }
 
 [data-nav-item="leaderboards"] {
   color: #c53562;
+  &:hover {
+    color: color-mix(in srgb, #c53562 75%, white 25%);
+  }
 }
 
 [data-nav-item="about"] {
   color: #95549e;
+  &:hover {
+    color: color-mix(in srgb, #95549e 75%, white 25%);
+  }
 }
 
 [data-nav-item="settings"] {
   color: #6744a1;
+  &:hover {
+    color: color-mix(in srgb, #6744a1 75%, white 25%);
+  }
 }
 
 [data-nav-item="alerts"],
 [data-nav-item="account"],
 [data-nav-item="login"] {
-  color: #393c73;
+  --themable-button-text: #393c73;
+  &:hover {
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
+  }
 }

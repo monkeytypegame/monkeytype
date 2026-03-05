@@ -1,16 +1,11 @@
-nav {
-  gap: 0.5rem;
-}
-
-header.focus [data-nav-item],
-header.focus nav:before,
-header.focus nav:after {
-  background: var(--sub-color);
-}
-
 [data-nav-item] {
   border-radius: 10rem !important;
-  color: #121520;
+  --themable-button-text: #121520;
+  --themable-button-hover-text: var(--bg-color);
+}
+
+[data-nav-item]:hover {
+  filter: brightness(1.25);
 }
 
 [data-nav-item="test"] {
@@ -29,61 +24,72 @@ header.focus nav:after {
   background: #4acb8a;
 }
 
-header.focus [data-nav-item="login"],
-header.focus [data-nav-item="account"] {
-  background: transparent !important;
-}
-
 [data-nav-item="alerts"],
 [data-nav-item="login"],
 [data-nav-item="account"] {
-  color: var(--sub-color);
-}
-
-[data-nav-item="alerts"]:hover,
-[data-nav-item="login"]:hover,
-[data-nav-item="account"]:hover {
-  color: var(--text-color);
+  --themable-button-text: #393c73;
+  --themable-button-hover-text: var(--text-color);
 }
 
 [data-nav-item="account"] .xpBar {
   bottom: -0.75rem !important;
 }
 
-body.crtmode [data-nav-item="test"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #f94348 20%, transparent),
-    -3px 0 color-mix(in srgb, #f94348 30%, transparent),
-    0 0 3px;
+[data-nav-item="account"]:hover svg {
+  /* color: var(--text-color); */
 }
 
-body.crtmode [data-nav-item="leaderboards"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #9261ff 20%, transparent),
-    -3px 0 color-mix(in srgb, #9261ff 30%, transparent),
-    0 0 3px;
+header[data-focused] {
+  & [data-nav-item] {
+    --nav-focus-opacity: 1;
+    background: var(--sub-color);
+  }
+  & [data-nav-item="alerts"],
+  & [data-nav-item="login"],
+  & [data-nav-item="account"] {
+    --nav-focus-opacity: 0;
+    background: transparent;
+  }
 }
 
-body.crtmode [data-nav-item="about"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #3cc5f8 20%, transparent),
-    -3px 0 color-mix(in srgb, #3cc5f8 30%, transparent),
-    0 0 3px;
-}
+body.crtmode {
+  & [data-nav-item="test"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #f94348 20%, transparent),
+      -3px 0 color-mix(in srgb, #f94348 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="settings"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #4acb8a 20%, transparent),
-    -3px 0 color-mix(in srgb, #4acb8a 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="leaderboards"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #9261ff 20%, transparent),
+      -3px 0 color-mix(in srgb, #9261ff 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode header.focus [data-nav-item] {
-  box-shadow:
-    3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow);
-}
+  & [data-nav-item="about"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #3cc5f8 20%, transparent),
+      -3px 0 color-mix(in srgb, #3cc5f8 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode header.focus [data-nav-item="account"] {
-  box-shadow: none;
+  & [data-nav-item="settings"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #4acb8a 20%, transparent),
+      -3px 0 color-mix(in srgb, #4acb8a 30%, transparent),
+      0 0 3px;
+  }
+
+  & header[data-focused] {
+    & [data-nav-item] {
+      box-shadow:
+        3px 0 1px var(--crt-sub-color-glow),
+        -3px 0 var(--crt-sub-color-glow);
+    }
+
+    & [data-nav-item="account"] {
+      box-shadow: none;
+    }
+  }
 }

@@ -20,12 +20,15 @@ import * as Notifications from "../../../elements/notifications";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
+import { bp } from "../../../signals/breakpoints";
 import { getUserId, isLoggedIn } from "../../../signals/core";
 import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { AutoShrink } from "../../common/AutoShrink";
+import { Balloon, BalloonProps } from "../../common/Balloon";
+import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
@@ -134,7 +137,7 @@ function ActionButtons(props: {
       then={
         <>
           <Button
-            ariaLabel={{ text: "Edit profile", position: "left" }}
+            balloon={{ text: "Edit profile", position: "left" }}
             class="h-full rounded-none rounded-tr text-sub hover:text-bg"
             fa={{ icon: "fa-pen", fixedWidth: true }}
             onClick={() => {
@@ -146,7 +149,7 @@ function ActionButtons(props: {
             }}
           />
           <Button
-            ariaLabel={{ text: "Copy public link", position: "left" }}
+            balloon={{ text: "Copy public link", position: "left" }}
             class="h-full rounded-none rounded-br text-sub hover:text-bg"
             fa={{ icon: "fa-link", fixedWidth: true }}
             onClick={() => {
@@ -171,7 +174,7 @@ function ActionButtons(props: {
         <>
           <Show when={!isUsersProfile()}>
             <Button
-              ariaLabel={{ text: "Report user", position: "left" }}
+              balloon={{ text: "Report user", position: "left" }}
               class={cn(
                 "h-full rounded-none rounded-tr text-sub hover:text-bg",
                 {
@@ -190,7 +193,7 @@ function ActionButtons(props: {
           </Show>
           <Show when={showFriendsButton()}>
             <Button
-              ariaLabel={{ text: "Send friend request", position: "left" }}
+              balloon={{ text: "Send friend request", position: "left" }}
               class="h-full rounded-none rounded-br text-sub hover:text-bg"
               fa={{ icon: "fa-user-plus", fixedWidth: true }}
               onClick={() => handleAddFriend()}
@@ -260,6 +263,9 @@ function AvatarAndName(props: {
     return hoverText;
   };
 
+  const balloonPosition = (): BalloonProps["position"] =>
+    bp().md ? "right" : "up";
+
   return (
     <div
       class={cn(
@@ -287,27 +293,41 @@ function AvatarAndName(props: {
         </AutoShrink>
         <UserBadge
           id={props.profile.inventory?.badges.find((it) => it.selected)?.id}
+          balloon={{
+            position: balloonPosition(),
+            length: balloonPosition() === "up" ? "medium" : undefined,
+          }}
         />
         <For
           each={props.profile.inventory?.badges
             .filter((it) => !it.selected)
             .map((it) => it.id)}
         >
-          {(badgeId) => <UserBadge id={badgeId} iconOnly />}
+          {(badgeId) => (
+            <UserBadge
+              id={badgeId}
+              iconOnly
+              balloon={{
+                position: balloonPosition(),
+                length: balloonPosition() === "up" ? "medium" : undefined,
+              }}
+            />
+          )}
         </For>
         <div class="grid">
-          <span aria-label={accountAgeHint()} data-balloon-pos="up">
+          <Balloon inline text={accountAgeHint()} position={balloonPosition()}>
             Joined {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}
-          </span>
+          </Balloon>
           <Show when={(props.profile.streak ?? 0) > 1}>
-            <span
-              aria-label={`Longest streak: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
-              data-balloon-pos="up"
-              data-balloon-break=""
-              data-balloon-length="large"
+            <Balloon
+              inline
+              text={`Longest streak: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
+              position={balloonPosition()}
+              break
+              length="large"
             >
               Current streak {formatStreak(props.profile.streak)}
-            </span>
+            </Balloon>
           </Show>
         </div>
       </div>
@@ -319,44 +339,27 @@ function AvatarAndName(props: {
 
 function LevelAndBar(props: { xp?: number }): JSXElement {
   const xpDetails = () => getXpDetails(props.xp ?? 0);
-  const bar = () =>
-    ((xpDetails().levelCurrentXp / xpDetails().levelMaxXp) * 100).toFixed(2) +
-    "%";
+  const bar = () => xpDetails().levelProgressPercent;
 
   return (
     <div class="col-span-2 flex w-full items-center gap-2">
-      <div
+      <Balloon
         class="shrink-0 text-text"
-        data-balloon-pos="up"
-        aria-label={formatXp(props.xp ?? 0) + " total xp"}
+        text={formatXp(props.xp ?? 0) + " total xp"}
       >
         {xpDetails().level}
-      </div>
-      <div
-        class="h-2 flex-1 rounded bg-bg"
-        data-balloon-pos="up"
-        aria-label={bar()}
-      >
-        <div
-          class="h-2 rounded bg-main"
-          style={{
-            width: bar(),
-          }}
-        >
-          &nbsp;
-        </div>
-      </div>
-      <div
+      </Balloon>
+      <Bar percent={bar()} fill="main" bg="bg" showPercentageOnHover />
+      <Balloon
         class="shrink-0 text-xs"
-        data-balloon-pos="up"
-        aria-label={
+        text={
           formatXp(xpDetails().levelMaxXp - xpDetails().levelCurrentXp) +
           " xp until next level"
         }
       >
         {formatXp(xpDetails().levelCurrentXp)}/
         {formatXp(xpDetails().levelMaxXp)}{" "}
-      </div>
+      </Balloon>
     </div>
   );
 }
@@ -486,26 +489,26 @@ function Socials(props: {
         >
           <Show when={props.socials?.github}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-github", variant: "brand", fixedWidth: true }}
               href={`https://github.com/${props.socials?.github}`}
-              ariaLabel={{ text: props.socials?.github ?? "", position: "up" }}
+              balloon={{ text: props.socials?.github ?? "" }}
             />
           </Show>
           <Show when={props.socials?.twitter}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-twitter", variant: "brand", fixedWidth: true }}
               href={`https://x.com/${props.socials?.twitter}`}
-              ariaLabel={{ text: props.socials?.twitter ?? "", position: "up" }}
+              balloon={{ text: props.socials?.twitter ?? "" }}
             />
           </Show>
           <Show when={props.socials?.website}>
             <Button
-              type="text"
+              variant="text"
               fa={{ icon: "fa-globe", fixedWidth: true }}
               href={props.socials?.website ?? ""}
-              ariaLabel={{ text: props.socials?.website ?? "", position: "up" }}
+              balloon={{ text: props.socials?.website ?? "" }}
             />
           </Show>
         </div>

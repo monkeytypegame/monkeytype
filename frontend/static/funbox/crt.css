@@ -120,23 +120,25 @@ body.crtmode #paceCaret.carrot {
   box-shadow: none;
 }
 
-body.crtmode #logo .icon {
+body.crtmode header [data-ui-element="logo"] svg {
   filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
 }
 
-body.crtmode .avatars,
-body.crtmode nav .view-account .avatar,
-/* Adding `filter` style to .levelAndBar would make it
-the containing block for the absolute positioned .xpBar */
-body.crtmode nav .view-account .levelAndBar .level,
-body.crtmode nav .view-account .levelAndBar .xpBar,
-body.crtmode header.focus #logo .icon {
+body.crtmode header [data-ui-element="navAvatar"] svg {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
 }
 
-body.crtmode nav .accountButtonAndMenu .view-account .xpBar .xpBreakdown {
+body.crtmode [data-ui-element="navAvatar"],
+body.crtmode [data-ui-element="userLevel"],
+body.crtmode [data-ui-element="xpBar"],
+body.crtmode header[data-focused] [data-ui-element="logo"] svg {
+  filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
+    drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
+}
+
+body.crtmode [data-ui-element="xpBreakdown"] {
   backdrop-filter: none;
   background: var(--bg-color);
 }

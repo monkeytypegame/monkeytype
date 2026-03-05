@@ -1,16 +1,32 @@
-header #logo .text {
+[data-ui-element="logo"] > div {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   transition: 0.5s;
 }
 
-header #logo .top {
+[data-ui-element="logoSubtext"] {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
-header #logo .icon {
+[data-ui-element="logo"] svg {
   transform: rotateX(180deg);
   transition: 0.5s;
+}
+
+header[data-focused] {
+  & [data-ui-element="logo"] > div,
+  [data-ui-element="logo"] svg {
+    transform: rotateY(0deg);
+    direction: ltr;
+  }
+  & [data-nav-item] {
+    --nav-focus-opacity: 1;
+    background: var(--sub-color);
+    transform: rotateY(180deg);
+  }
+  & [data-nav-item="account"] {
+    --themable-button-bg: var(--sub-color);
+  }
 }
 
 #words .incorrect.extra {
@@ -20,7 +36,7 @@ header #logo .icon {
 }
 
 #caret {
-  background-image: url(https://i.imgur.com/yN31JmJ.png) !important;
+  background-image: url(/images/themes/chaos_theory/caret.webp) !important;
   background-color: transparent !important;
   background-size: 1rem !important;
   background-position: center !important;
@@ -55,27 +71,6 @@ header #logo .icon {
   align-content: right;
 }
 
-header.focus [data-nav-item],
-header.focus nav:before,
-header.focus nav:after {
-  background: var(--sub-color);
-  transform: rotateY(180deg) !important;
-}
-
-header.focus #logo .text,
-header.focus #logo:before,
-header.focus #logo:after {
-  transform: rotateY(0deg);
-  direction: ltr;
-}
-
-header.focus #logo .icon,
-header.focus #logo:before,
-header.focus #logo:after {
-  transform: rotateX(0deg);
-  direction: ltr;
-}
-
 footer .textButton .fa-palette {
   transform: rotateY(0deg);
   transition: 0.5s;
@@ -86,14 +81,13 @@ footer .textButton:hover .fa-palette {
   transition: 0.5s;
 }
 
-nav {
-  gap: 0.5rem;
-}
-
 [data-nav-item] {
-  border-radius: 10rem i !important;
   color: var(--bg-color);
   transition: 0.5s;
+}
+
+[data-nav-item]:hover {
+  filter: brightness(1.25);
 }
 
 [data-nav-item="test"] {
@@ -112,82 +106,91 @@ nav {
   background: #ff5869;
 }
 
-[data-nav-item="account"] {
-  background: #fc76d9;
-}
-
-nav .notificationBubble {
-  box-shadow: none;
-  background: var(--color-bg);
-  padding-right: 0.2em;
-  right: 0.85em;
-  left: 2.75em;
-}
-
-nav .level {
-  background: var(--color-bg);
-  color: var(--main-color);
-}
-
 [data-nav-item="alerts"] {
   background: #fc76d9;
+  & svg {
+    fill: var(--bg-color);
+  }
+}
+
+[data-nav-item="account"] {
+  --themable-button-bg: var(--main-color);
+  --themable-button-text: var(--bg-color);
+  --themable-button-hover-bg: var(--main-color);
+  --themable-button-hover-text: var(--bg-color);
+  --themable-button-active: var(--bg-color);
+}
+
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
+}
+
+[data-ui-element="userLevel"] {
+  color: var(--themable-button-bg);
+  background: var(--themable-button-text);
 }
 
 [data-nav-item="login"] {
   background: #ab92e1;
 }
 
-body.crtmode [data-nav-item="test"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
-    -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
-    0 0 3px;
-}
+body.crtmode {
+  & [data-nav-item="test"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
+      -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="leaderboards"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
-    -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="leaderboards"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
+      -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="about"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #7ae1bf 20%, transparent),
-    -3px 0 color-mix(in srgb, #7ae1bf 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="about"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #7ae1bf 20%, transparent),
+      -3px 0 color-mix(in srgb, #7ae1bf 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="settings"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #ff5869 20%, transparent),
-    -3px 0 color-mix(in srgb, #ff5869 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="settings"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #ff5869 20%, transparent),
+      -3px 0 color-mix(in srgb, #ff5869 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="account"],
-body.crtmode [data-nav-item="alerts"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
-    -3px 0 color-mix(in srgb, #fc76d9 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="account"],
+  & [data-nav-item="alerts"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
+      -3px 0 color-mix(in srgb, #fc76d9 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode [data-nav-item="login"] {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
-    -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="login"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
+      -3px 0 color-mix(in srgb, #ab92e1 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode #caret {
-  box-shadow: none !important;
-  filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
-    drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
-}
+  & #caret {
+    box-shadow: none !important;
+    filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
+      drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
+  }
 
-body.crtmode header.focus [data-nav-item] {
-  box-shadow:
-    3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow);
+  & header[data-focused] [data-nav-item] {
+    box-shadow:
+      3px 0 1px var(--crt-sub-color-glow),
+      -3px 0 var(--crt-sub-color-glow);
+  }
 }
