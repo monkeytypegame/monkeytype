@@ -3,7 +3,11 @@ import Ape from "../ape";
 import Config from "../config";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { showNotice, showError, showSuccess } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import { removeLanguageSize } from "../utils/strings";
@@ -27,7 +31,7 @@ export async function show(
   showOptions?: ShowOptions,
 ): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
-    showError(
+    showErrorNotification(
       "Could not show quote report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
     );
     return;
@@ -75,7 +79,7 @@ async function hide(clearChain = false): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("quoteReportModal");
   if (!captchaResponse) {
-    showNotice("Please complete the captcha");
+    showNoticeNotification("Please complete the captcha");
     return;
   }
 
@@ -90,23 +94,23 @@ async function submitReport(): Promise<void> {
   const captcha = captchaResponse;
 
   if (quoteId === undefined || quoteId === "") {
-    showNotice("Please select a quote");
+    showNoticeNotification("Please select a quote");
     return;
   }
 
   if (!reason) {
-    showNotice("Please select a valid report reason");
+    showNoticeNotification("Please select a valid report reason");
     return;
   }
 
   if (!comment) {
-    showNotice("Please provide a comment");
+    showNoticeNotification("Please provide a comment");
     return;
   }
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    showNotice(
+    showNoticeNotification(
       `Report comment is ${characterDifference} character(s) too long`,
     );
     return;
@@ -125,11 +129,11 @@ async function submitReport(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    showError("Failed to report quote", { response });
+    showErrorNotification("Failed to report quote", { response });
     return;
   }
 
-  showSuccess("Report submitted. Thank you!");
+  showSuccessNotification("Report submitted. Thank you!");
   void hide(true);
 }
 

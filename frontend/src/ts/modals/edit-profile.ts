@@ -3,7 +3,10 @@ import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { showError, showSuccess } from "../stores/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
 import {
@@ -141,7 +144,7 @@ async function updateProfile(): Promise<void> {
     updates.socialProfiles?.github !== undefined &&
     updates.socialProfiles?.github.length > githubLengthLimit
   ) {
-    showError(
+    showErrorNotification(
       `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
     );
     return;
@@ -152,7 +155,7 @@ async function updateProfile(): Promise<void> {
     updates.socialProfiles?.twitter !== undefined &&
     updates.socialProfiles?.twitter.length > twitterLengthLimit
   ) {
-    showError(
+    showErrorNotification(
       `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
     );
     return;
@@ -168,7 +171,7 @@ async function updateProfile(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    showError("Failed to update profile", { response });
+    showErrorNotification("Failed to update profile", { response });
     return;
   }
 
@@ -183,7 +186,7 @@ async function updateProfile(): Promise<void> {
 
   DB.setSnapshot(snapshot);
 
-  showSuccess("Profile updated");
+  showSuccessNotification("Profile updated");
 
   hide();
 }

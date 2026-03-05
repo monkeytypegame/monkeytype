@@ -1,5 +1,5 @@
 import FileStorage from "../../utils/file-storage";
-import { showNotice } from "../../stores/notifications";
+import { showNoticeNotification } from "../../stores/notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(
@@ -53,7 +53,7 @@ uploadContainerEl
 
     // check type
     if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
-      showNotice("Unsupported image format");
+      showNoticeNotification("Unsupported image format");
       fileInput.value = "";
       return;
     }

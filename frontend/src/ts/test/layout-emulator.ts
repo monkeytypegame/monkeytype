@@ -1,7 +1,7 @@
 import Config from "../config";
 import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
-import { showError } from "../stores/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import * as KeyConverter from "../utils/key-converter";
 
 import { getActiveFunboxNames } from "./funbox/list";
@@ -36,7 +36,7 @@ export async function getCharFromEvent(
   try {
     layout = await JSONData.getLayout(Config.layout);
   } catch (e) {
-    showError("Failed to emulate event", { error: e });
+    showErrorNotification("Failed to emulate event", { error: e });
     return null;
   }
 

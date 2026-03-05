@@ -2,7 +2,11 @@ import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 import * as DB from "../../db";
 import Config from "../../config";
-import { showNotice, showError, showSuccess } from "../../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import Ape from "../../ape/index";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import SlimSelect from "slim-select";
@@ -222,9 +226,11 @@ async function deleteFilterPreset(id: string): Promise<void> {
     removeFilterPresetFromSnapshot(id);
     void updateFilterPresets();
     reset();
-    showSuccess("Filter preset deleted");
+    showSuccessNotification("Filter preset deleted");
   } else {
-    showError("Error deleting filter preset: " + result.body.message);
+    showErrorNotification(
+      "Error deleting filter preset: " + result.body.message,
+    );
     console.log("error deleting filter preset", result.body.message);
   }
 }
@@ -508,7 +514,9 @@ function toggle<G extends ResultFiltersGroup>(
       newValue as ResultFilters[G][ResultFiltersGroupItem<G>];
     save();
   } catch (e) {
-    showNotice("Something went wrong toggling filter. Reverting to defaults.");
+    showNoticeNotification(
+      "Something went wrong toggling filter. Reverting to defaults.",
+    );
     console.log("toggling filter error");
     console.error(e);
     reset();

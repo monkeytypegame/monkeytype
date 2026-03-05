@@ -9,7 +9,11 @@ import {
   formatDistanceToNow,
   format,
 } from "date-fns";
-import { showNotice, showError, showSuccess } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { formatXp, getXpDetails } from "../utils/levels";
@@ -146,7 +150,7 @@ async function fetchPendingConnections(): Promise<void> {
   });
 
   if (result.status !== 200) {
-    showError("Error getting connections: " + result.body.message);
+    showErrorNotification("Error getting connections: " + result.body.message);
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
@@ -198,7 +202,7 @@ function updatePendingConnections(): void {
 async function fetchFriends(): Promise<void> {
   const result = await Ape.users.getFriends();
   if (result.status !== 200) {
-    showError("Error getting friends: " + result.body.message);
+    showErrorNotification("Error getting friends: " + result.body.message);
     friendsList = undefined;
   } else {
     friendsList = result.body.data;
@@ -426,7 +430,9 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
   hideLoaderBar();
 
   if (result.status !== 200) {
-    showError(`Cannot update friend request: ${result.body.message}`);
+    showErrorNotification(
+      `Cannot update friend request: ${result.body.message}`,
+    );
   } else {
     //remove from cache
     pendingRequests = pendingRequests?.filter((it) => it._id !== id);
@@ -449,13 +455,13 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
     }
 
     if (action === "blocked") {
-      showNotice(`User has been blocked`);
+      showNoticeNotification(`User has been blocked`);
     }
     if (action === "accepted") {
-      showSuccess(`Request accepted`);
+      showSuccessNotification(`Request accepted`);
     }
     if (action === "rejected") {
-      showNotice(`Request rejected`);
+      showNoticeNotification(`Request rejected`);
     }
 
     if (action === "accepted") {

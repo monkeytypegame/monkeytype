@@ -1,4 +1,4 @@
-import { showError } from "../stores/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { isPopupVisible } from "../utils/misc";
 import * as AdController from "../controllers/ad-controller";
 import AnimatedModal from "../utils/animated-modal";
@@ -88,7 +88,7 @@ const modal = new AnimatedModal({
         AdController.showConsentPopup();
       } catch (e) {
         console.error("Failed to open ad consent UI");
-        showError(
+        showErrorNotification(
           "Failed to open Ad consent popup. Do you have an ad or cookie popup blocker enabled?",
         );
       }

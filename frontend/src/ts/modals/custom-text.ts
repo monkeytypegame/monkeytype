@@ -8,7 +8,10 @@ import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
 import * as CustomGeneratorPopup from "./custom-generator";
 import * as PractiseWords from "../test/practise-words";
-import { showNotice, showError } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -208,7 +211,7 @@ async function beforeAnimation(
   if (modalChainData?.text !== undefined) {
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
-      showNotice("Disabled long custom text progress tracking", {
+      showNoticeNotification("Disabled long custom text progress tracking", {
         durationMs: 5000,
       });
       state.longCustomTextWarning = false;
@@ -253,7 +256,7 @@ function handleFileOpen(): void {
   const file = qs<HTMLInputElement>("#fileInput")?.native.files?.[0];
   if (file) {
     if (file.type !== "text/plain") {
-      showError("File is not a text file", { durationMs: 5000 });
+      showErrorNotification("File is not a text file", { durationMs: 5000 });
       return;
     }
 
@@ -267,7 +270,7 @@ function handleFileOpen(): void {
       qs<HTMLInputElement>(`#fileInput`)?.setValue("");
     };
     reader.onerror = (): void => {
-      showError("Failed to read file", { durationMs: 5000 });
+      showErrorNotification("Failed to read file", { durationMs: 5000 });
     };
   }
 }
@@ -318,7 +321,7 @@ function cleanUpText(): string[] {
 
 function apply(): void {
   if (state.textarea === "") {
-    showNotice("Text cannot be empty");
+    showNoticeNotification("Text cannot be empty");
     return;
   }
 
@@ -329,7 +332,7 @@ function apply(): void {
       state.customTextLimits.section,
     ].filter((limit) => limit !== "").length > 1
   ) {
-    showNotice("You can only specify one limit", {
+    showNoticeNotification("You can only specify one limit", {
       durationMs: 5000,
     });
     return;
@@ -341,7 +344,7 @@ function apply(): void {
     state.customTextLimits.time === "" &&
     state.customTextLimits.section === ""
   ) {
-    showNotice("You need to specify a limit", {
+    showNoticeNotification("You need to specify a limit", {
       durationMs: 5000,
     });
     return;
@@ -352,7 +355,7 @@ function apply(): void {
     state.customTextLimits.word === "0" ||
     state.customTextLimits.time === "0"
   ) {
-    showNotice(
+    showNoticeNotification(
       "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       {
         durationMs: 7000,
@@ -363,7 +366,7 @@ function apply(): void {
   const text = cleanUpText();
 
   if (text.length === 0) {
-    showNotice("Text cannot be empty");
+    showNoticeNotification("Text cannot be empty");
     return;
   }
 
@@ -536,7 +539,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     ) {
       CustomTextState.setCustomTextName("", undefined);
       state.longCustomTextWarning = false;
-      showNotice("Disabled long custom text progress tracking", {
+      showNoticeNotification("Disabled long custom text progress tracking", {
         durationMs: 5000,
       });
     }

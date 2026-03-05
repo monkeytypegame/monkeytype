@@ -21,7 +21,10 @@ import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { bp } from "../../../signals/breakpoints";
 import { getUserId, isLoggedIn } from "../../../signals/core";
-import { showNotice, showError } from "../../../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../../stores/notifications";
 import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
@@ -123,10 +126,10 @@ function ActionButtons(props: {
     const friendName = props.profile.name;
     void addFriend(friendName).then((result) => {
       if (result === true) {
-        showNotice(`Request sent to ${friendName}`);
+        showNoticeNotification(`Request sent to ${friendName}`);
         setHasFriendRequest(true);
       } else {
-        showError(result);
+        showErrorNotification(result);
       }
     });
   };
@@ -142,7 +145,9 @@ function ActionButtons(props: {
             fa={{ icon: "fa-pen", fixedWidth: true }}
             onClick={() => {
               if (props.profile.banned === true) {
-                showNotice("Banned users cannot edit their profile");
+                showNoticeNotification(
+                  "Banned users cannot edit their profile",
+                );
                 return;
               }
               EditProfileModal.show();
@@ -157,7 +162,7 @@ function ActionButtons(props: {
 
               navigator.clipboard.writeText(url).then(
                 function () {
-                  showNotice("URL Copied to clipboard");
+                  showNoticeNotification("URL Copied to clipboard");
                 },
                 function () {
                   alert(

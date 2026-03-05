@@ -1,6 +1,6 @@
 import { ZodIssue } from "zod";
 import { isZodError } from "@monkeytype/util/zod";
-import { showError } from "../stores/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
@@ -116,7 +116,7 @@ export class LocalStorageWithSchema<T> {
 
       const msg = `Failed to set ${this.key} in localStorage: ${message}`;
       console.error(msg);
-      showError(msg);
+      showErrorNotification(msg);
 
       return false;
     }

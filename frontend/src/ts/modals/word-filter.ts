@@ -1,7 +1,10 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
-import { showNotice, showError } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -177,7 +180,7 @@ async function filter(language: Language): Promise<string[]> {
     JSONData.getLanguage(language),
   );
   if (error) {
-    showError("Failed to filter language words", { error });
+    showErrorNotification("Failed to filter language words", { error });
     return [];
   }
 
@@ -221,7 +224,7 @@ async function apply(set: boolean): Promise<void> {
   const filteredWords = await filter(language);
 
   if (filteredWords.length === 0) {
-    showNotice("No words found");
+    showNoticeNotification("No words found");
     enableButtons();
     return;
   }
@@ -277,7 +280,7 @@ async function setup(): Promise<void> {
     const presetToApply = presets[presetName];
 
     if (presetToApply === undefined) {
-      showError(`Preset ${presetName} not found`);
+      showErrorNotification(`Preset ${presetName} not found`);
       return;
     }
 

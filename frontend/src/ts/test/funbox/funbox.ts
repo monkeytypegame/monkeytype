@@ -1,4 +1,7 @@
-import { showNotice, showError } from "../../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../stores/notifications";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
@@ -49,7 +52,7 @@ export function toggleFunbox(funbox: FunboxName): void {
     !checkCompatibility(getActiveFunboxNames(), funbox) &&
     !Config.funbox.includes(funbox)
   ) {
-    showNotice(
+    showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
         funbox.replace(/_/g, " "),
       )} funbox is not compatible with the current funbox selection`,
@@ -96,7 +99,7 @@ export async function activate(
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
   if (!checkCompatibility(getActiveFunboxNames())) {
-    showError(
+    showErrorNotification(
       `Failed to activate funbox: funboxes ${Config.funbox
         .map((it) => it.replace(/_/g, " "))
         .join(", ")} are not compatible`,
@@ -118,7 +121,7 @@ export async function activate(
     JSONData.getCurrentLanguage(Config.language),
   );
   if (error) {
-    showError("Failed to activate funbox", { error });
+    showErrorNotification("Failed to activate funbox", { error });
     setConfig("funbox", [], {
       nosave: true,
     });
@@ -128,7 +131,9 @@ export async function activate(
 
   if (language.ligatures) {
     if (isFunboxActiveWithProperty("noLigatures")) {
-      showNotice("Current language does not support this funbox mode");
+      showNoticeNotification(
+        "Current language does not support this funbox mode",
+      );
       setConfig("funbox", [], {
         nosave: true,
       });
@@ -175,11 +180,11 @@ export async function activate(
 
   if (!canSetSoFar) {
     if (Config.funbox.length > 1) {
-      showError(
+      showErrorNotification(
         `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
       );
     } else {
-      showError(
+      showErrorNotification(
         `Failed to activate funbox ${Config.funbox}: no forced configs. Disabling funbox`,
       );
     }

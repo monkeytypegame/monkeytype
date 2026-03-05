@@ -7,7 +7,10 @@ import { emulateInsertText } from "./insert-text";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import * as JSONData from "../../utils/json-data";
-import { showNotice, showError } from "../../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../stores/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
 import * as ManualRestart from "../../test/manual-restart-tracker";
@@ -63,10 +66,13 @@ export async function handleEnter(
       if (getLastBailoutAttempt() === -1 || delay > 200) {
         setLastBailoutAttempt(Date.now());
         if (delay >= 5000) {
-          showNotice("Please double tap shift+enter to confirm bail out", {
-            important: true,
-            durationMs: 5000,
-          });
+          showNoticeNotification(
+            "Please double tap shift+enter to confirm bail out",
+            {
+              important: true,
+              durationMs: 5000,
+            },
+          );
         }
         e.preventDefault();
         return;
@@ -99,7 +105,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
       () => undefined,
     );
     if (keymapLayout === undefined) {
-      showError("Failed to load keymap layout");
+      showErrorNotification("Failed to load keymap layout");
 
       return;
     }

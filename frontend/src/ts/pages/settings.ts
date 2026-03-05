@@ -8,7 +8,11 @@ import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
-import { showNotice, showError, showSuccess } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
@@ -815,7 +819,7 @@ qs("#exportSettingsButton")?.on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      showNotice("JSON Copied to clipboard");
+      showNoticeNotification("JSON Copied to clipboard");
     },
     function () {
       ImportExportSettingsModal.show("export");
@@ -840,7 +844,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    showSuccess("Saved", { durationMs: 1000 });
+    showSuccessNotification("Saved", { durationMs: 1000 });
   }
 });
 
@@ -856,7 +860,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    showSuccess("Saved", { durationMs: 1000 });
+    showSuccessNotification("Saved", { durationMs: 1000 });
   }
 });
 
@@ -873,7 +877,7 @@ qs(
       ),
     );
     if (didConfigSave) {
-      showSuccess("Saved", { durationMs: 1000 });
+      showSuccessNotification("Saved", { durationMs: 1000 });
     }
   }
 });
@@ -971,10 +975,10 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
   navigator.clipboard
     .writeText(window.location.toString())
     .then(() => {
-      showSuccess("Link copied to clipboard");
+      showSuccessNotification("Link copied to clipboard");
     })
     .catch((e: unknown) => {
-      showError("Failed to copy to clipboard", { error: e });
+      showErrorNotification("Failed to copy to clipboard", { error: e });
     });
 });
 

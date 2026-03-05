@@ -1,6 +1,10 @@
 import Ape from "../ape";
 // import * as DB from "../db";
-import { showNotice, showError, showSuccess } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 // import * as Settings from "../pages/settings";
@@ -75,13 +79,13 @@ async function apply(): Promise<void> {
   const value = state.offset;
 
   if (isNaN(value)) {
-    showNotice("Streak hour offset must be a number");
+    showNoticeNotification("Streak hour offset must be a number");
     return;
   }
 
   // Check if value is whole number or ends in .5 (multiply by 2 to check if result is integer)
   if (value < -11 || value > 12 || (value * 2) % 1 !== 0) {
-    showNotice(
+    showNoticeNotification(
       "Streak offset must be between -11 and 12. Times ending in .5 can be used for 30-minute increments.",
     );
     return;
@@ -95,9 +99,9 @@ async function apply(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    showError("Failed to set streak hour offset", { response });
+    showErrorNotification("Failed to set streak hour offset", { response });
   } else {
-    showSuccess("Streak hour offset set");
+    showSuccessNotification("Streak hour offset set");
     const snap = getSnapshot() as Snapshot;
 
     snap.streakHourOffset = value;

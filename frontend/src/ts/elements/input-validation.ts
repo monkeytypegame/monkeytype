@@ -7,7 +7,7 @@ import {
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
 import Config, { setConfig } from "../config";
-import { showSuccess } from "../stores/notifications";
+import { showSuccessNotification } from "../stores/notifications";
 import { ElementWithUtils } from "../utils/dom";
 
 export type ValidationResult =
@@ -312,7 +312,7 @@ export function handleConfigInput<T extends ConfigKey>({
     const didConfigSave = setConfig(configName, value);
 
     if (didConfigSave) {
-      showSuccess("Saved", { durationMs: 1000 });
+      showSuccessNotification("Saved", { durationMs: 1000 });
     }
   };
 

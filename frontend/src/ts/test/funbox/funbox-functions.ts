@@ -7,7 +7,10 @@ import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
 import * as TTSEvent from "../../observables/tts-event";
-import { showNotice, showError } from "../../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../stores/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
@@ -227,7 +230,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     toggleScript(params: string[]): void {
       if (window.speechSynthesis === undefined) {
-        showError("Failed to load text-to-speech script");
+        showErrorNotification("Failed to load text-to-speech script");
         return;
       }
       if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
@@ -662,9 +665,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const minorVersion =
           versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
         if (mainVersion <= 16 && minorVersion <= 5) {
-          showNotice("CRT is not available on Safari 16.5 or earlier.", {
-            durationMs: 5000,
-          });
+          showNoticeNotification(
+            "CRT is not available on Safari 16.5 or earlier.",
+            {
+              durationMs: 5000,
+            },
+          );
           toggleFunbox("crt");
           return;
         }
@@ -688,7 +694,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     async withWords(_words) {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
-          showNotice(
+          showNoticeNotification(
             `Failed to load language: ${language}. It will be ignored.`,
           );
           return null;
@@ -714,7 +720,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           nosave: true,
         });
         toggleFunbox("polyglot", true);
-        showNotice(
+        showNoticeNotification(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
           )}).`,
@@ -737,7 +743,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
         setConfig("language", fallbackLanguage);
-        showNotice(
+        showNoticeNotification(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
           { durationMs: 5000 },
         );

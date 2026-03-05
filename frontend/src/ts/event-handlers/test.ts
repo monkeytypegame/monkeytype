@@ -6,7 +6,10 @@ import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
 import * as CustomTestDurationModal from "../modals/custom-test-duration";
 import * as TestWords from "../test/test-words";
-import { showNotice, showError } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";
@@ -75,7 +78,7 @@ testPage?.onChild("click", "#mobileTestConfigButton", () => {
 
 qs(".pageTest #rateQuoteButton")?.on("click", async () => {
   if (TestWords.currentQuote === null) {
-    showError("Failed to show quote rating popup: no quote");
+    showErrorNotification("Failed to show quote rating popup: no quote");
     return;
   }
   QuoteRateModal.show(TestWords.currentQuote);
@@ -83,7 +86,7 @@ qs(".pageTest #rateQuoteButton")?.on("click", async () => {
 
 qs(".pageTest #reportQuoteButton")?.on("click", async () => {
   if (TestWords.currentQuote === null) {
-    showError("Failed to show quote report popup: no quote");
+    showErrorNotification("Failed to show quote report popup: no quote");
     return;
   }
   void QuoteReportModal.show(TestWords.currentQuote?.id);
@@ -103,7 +106,7 @@ testPage?.onChild("click", "#testConfig .customText .textButton", () => {
 
 testPage?.onChild("click", "#practiseWordsButton", () => {
   if (Config.mode === "zen") {
-    showNotice("Practice words is unsupported in zen mode");
+    showNoticeNotification("Practice words is unsupported in zen mode");
     return;
   }
   PractiseWordsModal.show();

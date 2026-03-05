@@ -1,6 +1,9 @@
 import Config from "../../config";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
-import { showError, showSuccess } from "../../stores/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import { isAuthenticated } from "../../firebase";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as TestWords from "../../test/test-words";
@@ -28,10 +31,10 @@ const commands: Command[] = [
           true,
         );
         hideLoaderBar();
-        showSuccess("Quote added to favorites");
+        showSuccessNotification("Quote added to favorites");
       } catch (e) {
         hideLoaderBar();
-        showError("Failed to add quote to favorites", { error: e });
+        showErrorNotification("Failed to add quote to favorites", { error: e });
       }
     },
   },
@@ -56,10 +59,12 @@ const commands: Command[] = [
           false,
         );
         hideLoaderBar();
-        showSuccess("Quote removed from favorites");
+        showSuccessNotification("Quote removed from favorites");
       } catch (e) {
         hideLoaderBar();
-        showError("Failed to remove quote from favorites", { error: e });
+        showErrorNotification("Failed to remove quote from favorites", {
+          error: e,
+        });
       }
     },
   },

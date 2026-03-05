@@ -1,5 +1,8 @@
 import Ape from "../ape";
-import { showError, showSuccess } from "../stores/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -14,7 +17,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     body: { result: notSignedInLastResult },
   });
   if (response.status !== 200) {
-    showError("Failed to save last result", { response });
+    showErrorNotification("Failed to save last result", { response });
     return;
   }
 
@@ -38,7 +41,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   }
   DB.saveLocalResult(dataToSave);
   TestLogic.clearNotSignedInResult();
-  showSuccess(
+  showSuccessNotification(
     `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
   );
 }

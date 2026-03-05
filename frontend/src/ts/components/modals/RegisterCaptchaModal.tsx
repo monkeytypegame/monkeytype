@@ -7,7 +7,7 @@ import {
 } from "../../controllers/captcha-controller";
 import { useRef } from "../../hooks/useRef";
 import { hideModal, showModal } from "../../stores/modals";
-import { showError } from "../../stores/notifications";
+import { showErrorNotification } from "../../stores/notifications";
 import { promiseWithResolvers } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 
@@ -19,7 +19,7 @@ const {
 
 export async function showRegisterCaptchaModal(): Promise<string | undefined> {
   if (!isCaptchaAvailable()) {
-    showError(
+    showErrorNotification(
       "Could not show register popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
     );
     return undefined;

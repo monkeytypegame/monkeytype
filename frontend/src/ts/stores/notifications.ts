@@ -154,21 +154,21 @@ export function addNotificationWithLevel(
   }
 }
 
-export function showNotice(
+export function showNoticeNotification(
   message: string,
   options?: AddNotificationOptions,
 ): void {
   addNotificationWithLevel(message, "notice", options);
 }
 
-export function showSuccess(
+export function showSuccessNotification(
   message: string,
   options?: AddNotificationOptions,
 ): void {
   addNotificationWithLevel(message, "success", options);
 }
 
-export function showError(
+export function showErrorNotification(
   message: string,
   options?: AddNotificationOptions,
 ): void {

@@ -2,7 +2,7 @@ import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
 import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
 
-import { showNotice } from "../../stores/notifications";
+import { showNoticeNotification } from "../../stores/notifications";
 import * as Strings from "../../utils/strings";
 
 export function checkForcedConfig(
@@ -128,7 +128,7 @@ export function canSetConfigWithCurrentFunboxes(
   if (key === "words" || key === "time") {
     if (!checkForcedConfig(key, value, funboxes).result) {
       if (!noNotification) {
-        showNotice("Active funboxes do not support infinite tests");
+        showNoticeNotification("Active funboxes do not support infinite tests");
         return false;
       } else {
         errorCount += 1;
@@ -140,7 +140,7 @@ export function canSetConfigWithCurrentFunboxes(
 
   if (errorCount > 0) {
     if (!noNotification) {
-      showNotice(
+      showNoticeNotification(
         `You can't set ${Strings.camelCaseToWords(
           key,
         )} to ${value.toString()} with currently active funboxes.`,
@@ -186,7 +186,7 @@ export function canSetFunboxWithConfig(
         )} cannot be set to ${error.value.toString()}.`,
       );
     }
-    showNotice(
+    showNoticeNotification(
       `You can't enable ${funbox.replace(/_/g, " ")}:<br />${errorStrings.join("<br />")}`,
       { durationMs: 5000, useInnerHtml: true },
     );

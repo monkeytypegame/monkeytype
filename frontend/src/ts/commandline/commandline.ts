@@ -5,7 +5,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { showNotice } from "../stores/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
@@ -131,7 +131,9 @@ export function show(
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
-            showNotice(`Command list ${overrideStringOrGroup} not found`);
+            showNoticeNotification(
+              `Command list ${overrideStringOrGroup} not found`,
+            );
           }
         } else {
           subgroupOverride = overrideStringOrGroup;
@@ -149,9 +151,11 @@ export function show(
           (c) => c.id === settings.commandOverride,
         );
         if (command === undefined) {
-          showNotice(`Command ${settings.commandOverride} not found`);
+          showNoticeNotification(
+            `Command ${settings.commandOverride} not found`,
+          );
         } else if (command?.input !== true) {
-          showNotice(
+          showNoticeNotification(
             `Command ${settings.commandOverride} is not an input command`,
           );
         } else {

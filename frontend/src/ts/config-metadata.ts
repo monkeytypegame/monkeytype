@@ -1,6 +1,6 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
-import { showNotice } from "./stores/notifications";
+import { showNoticeNotification } from "./stores/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
@@ -160,7 +160,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
     afterSet: ({ currentConfig }) => {
       if (currentConfig.mode === "zen" && currentConfig.paceCaret !== "off") {
-        showNotice(`Pace caret will not work with zen mode.`);
+        showNoticeNotification(`Pace caret will not work with zen mode.`);
       }
     },
   },
@@ -297,7 +297,7 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     isBlocked: ({ value, currentConfig }) => {
       if (!checkCompatibility(value)) {
-        showNotice(
+        showNoticeNotification(
           `${capitalizeFirstLetter(
             value.join(", "),
           )} is an invalid combination of funboxes`,
@@ -307,7 +307,9 @@ export const configMetadata: ConfigMetadataObject = {
 
       for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
-          showNotice(`${value}" cannot be enabled with the current config`);
+          showNoticeNotification(
+            `${value}" cannot be enabled with the current config`,
+          );
           return true;
         }
       }
@@ -480,7 +482,7 @@ export const configMetadata: ConfigMetadataObject = {
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
-          showNotice(
+          showNoticeNotification(
             `Pace caret "pb" and "tag pb" are unavailable without an account`,
           );
           return true;
@@ -600,7 +602,7 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     isBlocked: ({ value, currentConfig }) => {
       if (value && currentConfig.tapeMode !== "off") {
-        showNotice("Show all lines doesn't support tape mode.");
+        showNoticeNotification("Show all lines doesn't support tape mode.");
         return true;
       }
       return false;
@@ -758,15 +760,19 @@ export const configMetadata: ConfigMetadataObject = {
       if (value === "custom") {
         const snapshot = DB.getSnapshot();
         if (!isAuthenticated()) {
-          showNotice("Random theme 'custom' is unavailable without an account");
+          showNoticeNotification(
+            "Random theme 'custom' is unavailable without an account",
+          );
           return true;
         }
         if (!snapshot) {
-          showNotice("Random theme 'custom' requires a snapshot to be set");
+          showNoticeNotification(
+            "Random theme 'custom' requires a snapshot to be set",
+          );
           return true;
         }
         if (snapshot?.customThemes?.length === 0) {
-          showNotice(
+          showNoticeNotification(
             "Random theme 'custom' requires at least one custom theme to be saved",
           );
           return true;
@@ -886,7 +892,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {
-        showNotice("Ads are disabled in development mode.");
+        showNoticeNotification("Ads are disabled in development mode.");
         return true;
       }
       return false;
@@ -894,7 +900,7 @@ export const configMetadata: ConfigMetadataObject = {
     afterSet: ({ nosave }) => {
       if (!nosave && !isDevEnvironment()) {
         reloadAfter(3);
-        showNotice("Ad settings changed. Refreshing...");
+        showNoticeNotification("Ad settings changed. Refreshing...");
       }
     },
   },

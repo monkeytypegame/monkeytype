@@ -3,7 +3,7 @@ import * as CookiesModal from "../modals/cookies";
 import * as EditPresetPopup from "../modals/edit-preset";
 import * as EditTagPopup from "../modals/edit-tag";
 
-import { showError } from "../stores/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { qs } from "../utils/dom";
 
 const settingsPage = qs("#pageSettings");
@@ -33,7 +33,9 @@ settingsPage?.qs(".section.presets")?.on("click", (e) => {
       presetid === null ||
       name === null
     ) {
-      showError("Failed to edit preset: Could not find preset id or name");
+      showErrorNotification(
+        "Failed to edit preset: Could not find preset id or name",
+      );
       return;
     }
     EditPresetPopup.show("edit", presetid, name);
@@ -48,7 +50,9 @@ settingsPage?.qs(".section.presets")?.on("click", (e) => {
       presetid === null ||
       name === null
     ) {
-      showError("Failed to remove preset: Could not find preset id or name");
+      showErrorNotification(
+        "Failed to remove preset: Could not find preset id or name",
+      );
       return;
     }
     EditPresetPopup.show("remove", presetid, name);
@@ -70,7 +74,9 @@ settingsPage?.qs(".section.tags")?.on("click", (e) => {
       tagid === null ||
       name === null
     ) {
-      showError("Failed to edit tag: Could not find tag id or name");
+      showErrorNotification(
+        "Failed to edit tag: Could not find tag id or name",
+      );
       return;
     }
     EditTagPopup.show("edit", tagid, name);
@@ -85,7 +91,9 @@ settingsPage?.qs(".section.tags")?.on("click", (e) => {
       tagid === null ||
       name === null
     ) {
-      showError("Failed to clear tag PB: Could not find tag id or name");
+      showErrorNotification(
+        "Failed to clear tag PB: Could not find tag id or name",
+      );
       return;
     }
     EditTagPopup.show("clearPb", tagid, name);
@@ -100,7 +108,9 @@ settingsPage?.qs(".section.tags")?.on("click", (e) => {
       tagid === null ||
       name === null
     ) {
-      showError("Failed to remove tag: Could not find tag id or name");
+      showErrorNotification(
+        "Failed to remove tag: Could not find tag id or name",
+      );
       return;
     }
     EditTagPopup.show("remove", tagid, name);

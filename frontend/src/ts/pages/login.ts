@@ -13,7 +13,10 @@ import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { signIn, signInWithGitHub, signInWithGoogle, signUp } from "../auth";
-import { showNotice, showError } from "../stores/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as ConnectionState from "../states/connection";
 
 let registerForm: {
@@ -211,7 +214,7 @@ new ValidatedHtmlInputElement(passwordVerifyInputEl, {
 
 qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
   if (!ConnectionState.get()) {
-    showNotice("You are offline");
+    showNoticeNotification("You are offline");
     return;
   }
 
@@ -226,7 +229,7 @@ qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
   hidePreloader();
 
   if (!data.success) {
-    showError(data.message);
+    showErrorNotification(data.message);
     enableInputs();
     enableSignUpButton();
   }
@@ -236,7 +239,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
   e.preventDefault();
 
   if (!ConnectionState.get()) {
-    showNotice("You are offline");
+    showNoticeNotification("You are offline");
     return;
   }
 
@@ -249,7 +252,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
     false;
 
   if (email === "" || password === "") {
-    showNotice("Please fill in all fields");
+    showNoticeNotification("Please fill in all fields");
     return;
   }
 
@@ -260,7 +263,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
   hidePreloader();
 
   if (!data.success) {
-    showError(data.message);
+    showErrorNotification(data.message);
     enableInputs();
     enableSignUpButton();
   }
@@ -268,7 +271,7 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
 
 qs(".pageLogin .login button.signInWithGitHub")?.on("click", async () => {
   if (!ConnectionState.get()) {
-    showNotice("You are offline");
+    showNoticeNotification("You are offline");
     return;
   }
 
@@ -283,7 +286,7 @@ qs(".pageLogin .login button.signInWithGitHub")?.on("click", async () => {
   hidePreloader();
 
   if (!data.success) {
-    showError(data.message);
+    showErrorNotification(data.message);
     enableInputs();
     enableSignUpButton();
   }
@@ -293,13 +296,13 @@ qs(".pageLogin .register form")?.on("submit", async (e) => {
   e.preventDefault();
 
   if (!ConnectionState.get()) {
-    showNotice("You are offline");
+    showNoticeNotification("You are offline");
     return;
   }
 
   const signupData = getSignupData();
   if (signupData === false) {
-    showNotice("Please fill in all fields");
+    showNoticeNotification("Please fill in all fields");
     return;
   }
 
@@ -315,7 +318,7 @@ qs(".pageLogin .register form")?.on("submit", async (e) => {
 
   hidePreloader();
   if (!data.success) {
-    showError(data.message);
+    showErrorNotification(data.message);
     enableInputs();
     enableSignUpButton();
   }

@@ -4,7 +4,7 @@ import { format as dateFormat } from "date-fns/format";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import {
-  showNotice,
+  showNoticeNotification,
   addNotificationWithLevel,
   AddNotificationOptions,
 } from "../stores/notifications";
@@ -363,12 +363,12 @@ export class SimpleModal {
   exec(): void {
     if (!this.canClose) return;
     if (this.hasMissingRequired()) {
-      showNotice("Please fill in all fields");
+      showNoticeNotification("Please fill in all fields");
       return;
     }
 
     if (this.hasValidationErrors()) {
-      showNotice("Please solve all validation errors");
+      showNoticeNotification("Please solve all validation errors");
       return;
     }
 
