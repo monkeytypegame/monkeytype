@@ -31,9 +31,7 @@ const autoRemoveTimers = new Map<number, ReturnType<typeof setTimeout>>();
 const notificationHistory: NotificationHistoryEntry[] = [];
 let historyId = 0;
 
-export function pushNotification(
-  notification: Omit<Notification, "id">,
-): number {
+function pushNotification(notification: Omit<Notification, "id">): number {
   const newId = id++;
   setNotifications((prev) => [{ ...notification, id: newId }, ...prev]);
   return newId;

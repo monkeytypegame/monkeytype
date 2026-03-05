@@ -161,7 +161,6 @@ export function canSetFunboxWithConfig(
   funbox: FunboxName,
   config: Config,
 ): boolean {
-  console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = [...config.funbox, funbox];
 
   const errors = [];
