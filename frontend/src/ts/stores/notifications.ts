@@ -69,14 +69,15 @@ export function clearAllNotifications(): void {
     clearTimeout(timer);
   }
   autoRemoveTimers.clear();
-  for (const notification of notifications) {
+  const prev = [...notifications];
+  setNotifications([]);
+  for (const notification of prev) {
     try {
       notification.onDismiss?.("clear");
     } catch (e) {
       console.error("onDismiss threw during clearAll", e);
     }
   }
-  setNotifications([]);
 }
 
 export function getNotifications(): Notification[] {

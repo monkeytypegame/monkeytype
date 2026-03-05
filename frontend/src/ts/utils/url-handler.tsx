@@ -298,7 +298,10 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   if (appliedEntries.length > 0) {
     const lines = appliedEntries
-      .map(([key, val]) => key + (val ? ": " + val : ""))
+      .map(
+        ([key, val]) =>
+          Misc.escapeHTML(key) + (val ? ": " + Misc.escapeHTML(val) : ""),
+      )
       .join("<br />");
     showSuccessNotification(`Settings applied from URL:<br /><br />${lines}`, {
       durationMs: 10000,
