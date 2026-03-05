@@ -1,3 +1,6 @@
 [data-nav-item="test"] {
   color: var(--caret-color);
+  &:hover {
+    color: var(--sub-color);
+  }
 }

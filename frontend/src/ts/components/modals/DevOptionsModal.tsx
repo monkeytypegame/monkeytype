@@ -2,18 +2,21 @@ import { createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
 import { signIn } from "../../auth";
-import * as Notifications from "../../elements/notifications";
-import { update } from "../../elements/xp-bar";
+import { addXp } from "../../db";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import { hideModal } from "../../stores/modals";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
 import { toggleCaretDebug } from "../../utils/caret";
-import { createErrorMessage } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
@@ -36,11 +39,15 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-bell",
       label: () => "Test Notifications",
       onClick: () => {
-        Notifications.add("This is a test", 1, { duration: 0 });
-        Notifications.add("This is a test", 0, { duration: 0 });
-        Notifications.add("This is a test", -1, {
-          duration: 0,
+        showSuccessNotification("This is a test", { durationMs: 0 });
+        showNoticeNotification("This is a test", { durationMs: 0 });
+        showErrorNotification("This is a test", {
+          durationMs: 0,
           details: { test: true, error: "Example error message" },
+        });
+        showNoticeNotification("useInnerHtml<br>test", {
+          durationMs: 0,
+          useInnerHtml: true,
         });
         hideModal("DevOptions");
       },
@@ -52,7 +59,7 @@ export function DevOptionsModal(): JSXElement {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
         setLocalMediaQueryDebugLevel(next);
-        Notifications.add(`Setting media query debug level to ${next}`, 5);
+        showNoticeNotification(`Setting media query debug level to ${next}`);
         setMediaQueryDebugLevel(next);
       },
     },
@@ -75,9 +82,8 @@ export function DevOptionsModal(): JSXElement {
           envConfig.quickLoginEmail === undefined ||
           envConfig.quickLoginPassword === undefined
         ) {
-          Notifications.add(
+          showErrorNotification(
             "Quick login credentials not set. Add QUICK_LOGIN_EMAIL and QUICK_LOGIN_PASSWORD to your frontend .env file.",
-            -1,
           );
           return;
         }
@@ -89,14 +95,11 @@ export function DevOptionsModal(): JSXElement {
         )
           .then((result) => {
             if (!result.success) {
-              Notifications.add(result.message, -1);
+              showErrorNotification(result.message);
             }
           })
           .catch((error: unknown) => {
-            Notifications.add(
-              createErrorMessage(error, "Quick login failed"),
-              -1,
-            );
+            showErrorNotification("Quick login failed", { error });
           })
           .finally(() => {
             hideLoaderBar();
@@ -106,18 +109,32 @@ export function DevOptionsModal(): JSXElement {
     },
     {
       icon: "fa-star",
-      label: () => "XP Bar Test",
+      label: () => "XP Simple Test",
       onClick: () => {
         setTimeout(() => {
-          void update(1000000, 20800, {
+          addXp(1000);
+        }, 500);
+        hideModal("DevOptions");
+      },
+    },
+    {
+      icon: "fa-star",
+      label: () => "XP with breakdown Test",
+      onClick: () => {
+        setTimeout(() => {
+          const fakeBreakdown = {
             base: 100,
-            fullAccuracy: 200,
-            accPenalty: 300,
-            quote: 400,
-            punctuation: 500,
-            streak: 10_000,
+            quote: 10,
+            corrected: 5,
+            funbox: 5,
+            streak: 10,
+            incomplete: 10,
+            accPenalty: 5,
             configMultiplier: 2,
-          });
+            daily: 10000,
+          };
+          const totalFakeXp = 10270;
+          addXp(totalFakeXp, fakeBreakdown);
         }, 500);
         hideModal("DevOptions");
       },
@@ -145,7 +162,7 @@ export function DevOptionsModal(): JSXElement {
         <For each={buttons}>
           {(btn) => (
             <Button
-              type="button"
+              variant="button"
               onClick={btn.onClick}
               fa={{ icon: btn.icon, fixedWidth: true }}
               text={btn.label()}

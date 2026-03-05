@@ -96,6 +96,11 @@ export type AnimeProps = ParentProps<{
    * CSS styles for the wrapper element.
    */
   style?: string | Record<string, string>;
+
+  /**
+   * Callback ref to access the underlying DOM element.
+   */
+  ref?: (el: HTMLElement) => void;
 }>;
 
 /**
@@ -166,6 +171,7 @@ export function Anime(props: AnimeProps): JSXElement {
     "as",
     "class",
     "style",
+    "ref",
   ]);
 
   let element: HTMLElement | undefined = undefined;
@@ -345,6 +351,7 @@ export function Anime(props: AnimeProps): JSXElement {
 
   const setElementRef = (el: unknown): void => {
     element = el as HTMLElement;
+    local.ref?.(el as HTMLElement);
   };
 
   return (

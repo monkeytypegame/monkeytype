@@ -1,11 +1,10 @@
-import * as Notifications from "../../elements/notifications";
+import { showErrorNotification } from "../../stores/notifications";
 import { Connection } from "@monkeytype/schemas/connections";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
 import { getReceiverUid } from "../../pages/friends";
 import * as DB from "../../db";
-import { updateFriendRequestsIndicator } from "../account-button";
 import { qsr } from "../../utils/dom";
 
 let blockedUsers: Connection[] = [];
@@ -25,7 +24,7 @@ async function getData(): Promise<boolean> {
 
   if (response.status !== 200) {
     blockedUsers = [];
-    Notifications.add("Error getting blocked users", -1, { response });
+    showErrorNotification("Error getting blocked users", { response });
     return false;
   }
 
@@ -83,7 +82,7 @@ element.onChild("click", "table button.delete", async (e) => {
 
   const response = await Ape.connections.delete({ params: { id } });
   if (response.status !== 200) {
-    Notifications.add(`Cannot unblock user: ${response.body.message}`, -1);
+    showErrorNotification(`Cannot unblock user: ${response.body.message}`);
   } else {
     blockedUsers = blockedUsers.filter((it) => it._id !== id);
     refreshList();
@@ -97,7 +96,7 @@ element.onChild("click", "table button.delete", async (e) => {
 
       // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
       delete snapshot.connections[uid];
-      updateFriendRequestsIndicator();
+      DB.setSnapshot(snapshot);
     }
   }
 });

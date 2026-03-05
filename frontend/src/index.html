@@ -9,13 +9,6 @@
 
     <!-- theme component adds to the head element, don't move to head.html -->
     <mount data-component="theme"></mount>
-    <div id="notificationCenter">
-      <div class="clearAll button hidden">
-        <i class="fas fa-times"></i>
-        Clear all
-      </div>
-      <div class="history"></div>
-    </div>
     <div id="barTimerProgress" class="timerMain">
       <div class="opacityWrapper" style="opacity: 0">
         <div class="bar"></div>
@@ -28,7 +21,7 @@
     </div>
     <!-- <div id="div-gpt-ad-mkt-0" style="height: 100vh"></div> -->
     <div id="app" class="content-grid focus hidden">
-      <load src="html/header.html" />
+      <mount data-component="header"></mount>
       <main class="full-width content-grid" style="height: 100%">
         <div id="ad-vertical-left-wrapper" class="ad advertisement ad-v focus">
           <div class="icon"><i class="fas fa-ad"></i></div>

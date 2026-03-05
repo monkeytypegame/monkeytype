@@ -2,11 +2,11 @@ import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
 import { createEffect, createMemo, JSXElement } from "solid-js";
 
 import { themes } from "../../constants/themes";
-import * as Notifications from "../../elements/notifications";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../signals/loader-bar";
 import { getTheme } from "../../signals/theme";
+import { showNoticeNotification } from "../../stores/notifications";
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
@@ -33,7 +33,7 @@ export function Theme(): JSXElement {
     const name = target.dataset["name"];
     console.debug("Theme component failed to load style", name, e);
     console.error(`Failed to load theme ${name}`, e);
-    Notifications.add("Failed to load theme", 0);
+    showNoticeNotification("Failed to load theme");
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {

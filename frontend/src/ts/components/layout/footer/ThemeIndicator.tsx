@@ -2,9 +2,9 @@ import { JSXElement, Show } from "solid-js";
 
 import * as Commandline from "../../../commandline/commandline";
 import Config, { setConfig } from "../../../config";
-import * as Notifications from "../../../elements/notifications";
 import { isAuthenticated } from "../../../firebase";
 import { getThemeIndicator } from "../../../signals/core";
+import { showNoticeNotification } from "../../../stores/notifications";
 import { getSnapshot } from "../../../stores/snapshot";
 import { Fa } from "../../common/Fa";
 
@@ -16,7 +16,7 @@ export function ThemeIndicator(): JSXElement {
         return;
       }
       if (isAuthenticated() && (getSnapshot()?.customThemes?.length ?? 0) < 1) {
-        Notifications.add("No custom themes!", 0);
+        showNoticeNotification("No custom themes!");
         setConfig("customTheme", false);
         return;
       }

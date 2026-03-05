@@ -1,7 +1,5 @@
 import { createStore } from "solid-js/store";
 
-import * as NotificationEvent from "../observables/notification-event";
-
 export type AlertNotification = {
   id: string;
   title: string;
@@ -46,17 +44,3 @@ export function addPsa(message: string, level: number): void {
 export function getPsas(): AlertPsa[] {
   return psas;
 }
-
-NotificationEvent.subscribe((message, level, options) => {
-  let title = "Notice";
-  if (level === -1) {
-    title = "Error";
-  } else if (level === 1) {
-    title = "Success";
-  }
-  if (options.customTitle !== undefined) {
-    title = options.customTitle;
-  }
-
-  addNotification({ title, message, level, details: options.details });
-});

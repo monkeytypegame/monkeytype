@@ -6,6 +6,7 @@ export type ModalId =
   | "Support"
   | "Commandline"
   | "DevOptions"
+  | "RegisterCaptcha"
   | "Alerts";
 
 export type ModalVisibility = {

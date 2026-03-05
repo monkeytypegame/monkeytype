@@ -1,4 +1,7 @@
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import Config, { setConfig } from "../config";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
@@ -52,7 +55,6 @@ import * as Ligatures from "./break-ligatures";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
-import * as XPBar from "../elements/xp-bar";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
@@ -64,6 +66,7 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../signals/theme";
+import { skipBreakdown } from "../signals/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1916,7 +1919,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    void XPBar.skipBreakdown();
+    skipBreakdown();
   }
 
   currentTestLine = 0;
@@ -1974,12 +1977,11 @@ qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
 async function copyToClipboard(content: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(content);
-    Notifications.add("Copied to clipboard", 0, {
-      duration: 2,
+    showNoticeNotification("Copied to clipboard", {
+      durationMs: 2000,
     });
   } catch (e) {
-    const msg = Misc.createErrorMessage(e, "Could not copy to clipboard");
-    Notifications.add(msg, -1);
+    showErrorNotification("Could not copy to clipboard", { error: e });
   }
 }
 

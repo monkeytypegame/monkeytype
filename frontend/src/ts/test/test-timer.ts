@@ -9,7 +9,10 @@ import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
@@ -264,13 +267,12 @@ function checkIfTimerIsSlow(drift: number): void {
     if (drift > 500 || slowTimerCount > 5) {
       //slow timer
 
-      Notifications.add(
+      showNoticeNotification(
         'This could be caused by "efficiency mode" on Microsoft Edge.',
       );
 
-      Notifications.add(
+      showErrorNotification(
         "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-        -1,
       );
 
       TimerEvent.dispatch("fail", "slow timer");

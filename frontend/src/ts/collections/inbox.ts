@@ -71,6 +71,7 @@ export const inboxCollection = createCollection(
   }),
 );
 
+// oxlint-disable-next-line typescript/explicit-function-return-type
 export function useInboxQuery(enabled: Accessor<boolean>) {
   return useLiveQuery((q) => {
     if (!isLoggedIn() || !enabled()) return undefined;

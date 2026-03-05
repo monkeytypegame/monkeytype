@@ -172,52 +172,14 @@ describe("Button component", () => {
     expect(child).toHaveTextContent("Child");
   });
 
-  it("applies custom class list when classList prop is provided", () => {
+  it("applies balloon to button with default position", () => {
     const { container } = render(() => (
       <Button
         onClick={() => {
           //
         }}
         text="Hello"
-        classList={{
-          customTrue: true,
-          customFalse: false,
-          customUndefined: undefined,
-        }}
-      />
-    ));
-
-    const button = container.querySelector("button");
-    expect(button).toHaveClass("customTrue");
-    expect(button).not.toHaveClass("customFalse");
-    expect(button).not.toHaveClass("customUndefined");
-  });
-
-  it("applies active", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        text="Hello"
-        active
-      />
-    ));
-
-    const button = container.querySelector("button");
-    expect(button).toHaveClass("bg-main");
-    expect(button).toHaveClass("text-bg");
-    expect(button).toHaveClass("hover:bg-text");
-  });
-
-  it("applies aria-label to button provided as text", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        text="Hello"
-        ariaLabel="test"
+        balloon={{ text: "test" }}
       />
     ));
 
@@ -226,14 +188,14 @@ describe("Button component", () => {
     expect(button).toHaveAttribute("data-balloon-pos", "up");
   });
 
-  it("applies aria-label to button provided as object", () => {
+  it("applies balloon to button with custom position", () => {
     const { container } = render(() => (
       <Button
         onClick={() => {
           //
         }}
         text="Hello"
-        ariaLabel={{ text: "test", position: "down" }}
+        balloon={{ text: "test", position: "down" }}
       />
     ));
 
@@ -257,9 +219,13 @@ describe("Button component", () => {
     expect(button).toHaveAttribute("router-link", "");
   });
 
-  it("applies aria-label to anchor provided as text", () => {
+  it("applies balloon to anchor with default position", () => {
     const { container } = render(() => (
-      <Button href="http://example.com" text="Hello" ariaLabel="test" />
+      <Button
+        href="http://example.com"
+        text="Hello"
+        balloon={{ text: "test" }}
+      />
     ));
 
     const anchor = container.querySelector("a");
@@ -267,12 +233,12 @@ describe("Button component", () => {
     expect(anchor).toHaveAttribute("data-balloon-pos", "up");
   });
 
-  it("applies aria-label to anchor provided as object", () => {
+  it("applies balloon to anchor with custom position", () => {
     const { container } = render(() => (
       <Button
         href="http://example.com"
         text="Hello"
-        ariaLabel={{ text: "test", position: "down" }}
+        balloon={{ text: "test", position: "down" }}
       />
     ));
 
