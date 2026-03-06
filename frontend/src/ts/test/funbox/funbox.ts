@@ -18,7 +18,6 @@ import {
   getAllFunboxes,
   getActiveFunboxes,
   getActiveFunboxNames,
-  get,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
@@ -61,12 +60,6 @@ export function toggleFunbox(funbox: FunboxName): void {
   }
   FunboxMemory.load();
   configToggleFunbox(funbox, false);
-
-  if (!getActiveFunboxNames().includes(funbox)) {
-    get(funbox).functions?.clearGlobal?.();
-  } else {
-    get(funbox).functions?.applyGlobalCSS?.();
-  }
 }
 
 export async function clear(): Promise<boolean> {
@@ -112,8 +105,8 @@ export async function activate(
   }
 
   MemoryTimer.reset();
-  await setFunboxBodyClasses();
-  await applyFunboxCSS();
+  setFunboxBodyClasses();
+  applyFunboxCSS();
 
   qs("#wordsWrapper")?.show();
 
@@ -209,7 +202,7 @@ export async function rememberSettings(): Promise<void> {
   }
 }
 
-async function setFunboxBodyClasses(): Promise<boolean> {
+function setFunboxBodyClasses(): void {
   const body = qs("body");
 
   const activeFbClasses = getActiveFunboxNames().map(
@@ -230,11 +223,9 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     "class",
     [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" "),
   );
-
-  return true;
 }
 
-async function applyFunboxCSS(): Promise<boolean> {
+function applyFunboxCSS(): void {
   qsa(".funBoxTheme").remove();
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
     const css = document.createElement("link");
@@ -243,17 +234,16 @@ async function applyFunboxCSS(): Promise<boolean> {
     css.href = "funbox/" + funbox.name + ".css";
     document.head.appendChild(css);
   }
-  return true;
 }
 
-async function syncFunboxStateWithConfig(): Promise<void> {
+function syncFunboxStateWithConfig(): void {
   const active = getActiveFunboxNames();
   getAllFunboxes()
     .filter((it) => !active.includes(it.name))
     .forEach((it) => it.functions?.clearGlobal?.());
 
-  await setFunboxBodyClasses();
-  await applyFunboxCSS();
+  setFunboxBodyClasses();
+  applyFunboxCSS();
 
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
     fb.functions.applyGlobalCSS();
@@ -262,8 +252,6 @@ async function syncFunboxStateWithConfig(): Promise<void> {
 
 ConfigEvent.subscribe(({ key }) => {
   if (key === "funbox") {
-    void syncFunboxStateWithConfig().catch((error: unknown) => {
-      console.error("Failed to sync funbox state with config", error);
-    });
+    syncFunboxStateWithConfig();
   }
 });
