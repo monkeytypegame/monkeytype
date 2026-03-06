@@ -25,7 +25,7 @@ import {
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { qs } from "../../utils/dom";
+import { qs, qsa } from "../../utils/dom";
 import * as ConfigEvent from "../../observables/config-event";
 
 export function toggleScript(...params: string[]): void {
@@ -79,7 +79,7 @@ export async function clear(): Promise<boolean> {
       ?.join(" ") ?? "",
   );
 
-  qs(".funBoxTheme")?.remove();
+  qsa(".funBoxTheme").remove();
 
   qs("#wordsWrapper")?.show();
   MemoryTimer.reset();
@@ -235,7 +235,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  qs(".funBoxTheme")?.remove();
+  qsa(".funBoxTheme").remove();
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
     const css = document.createElement("link");
     css.classList.add("funBoxTheme");
@@ -246,15 +246,25 @@ async function applyFunboxCSS(): Promise<boolean> {
   return true;
 }
 
-ConfigEvent.subscribe(async ({ key }) => {
-  if (key === "funbox") {
-    const active = getActiveFunboxNames();
-    getAllFunboxes()
-      .filter((it) => !active.includes(it.name))
-      .forEach((it) => it.functions?.clearGlobal?.());
+async function syncFunboxStateWithConfig(): Promise<void> {
+  const active = getActiveFunboxNames();
+  getAllFunboxes()
+    .filter((it) => !active.includes(it.name))
+    .forEach((it) => it.functions?.clearGlobal?.());
 
-    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
-      fb.functions.applyGlobalCSS();
-    }
+  await setFunboxBodyClasses();
+  await applyFunboxCSS();
+
+  for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+    fb.functions.applyGlobalCSS();
+  }
+}
+
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "funbox") {
+    void syncFunboxStateWithConfig().catch((error: unknown) => {
+      console.error("Failed to sync funbox state with config");
+      console.error(error);
+    });
   }
 });
