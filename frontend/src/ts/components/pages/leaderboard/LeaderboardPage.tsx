@@ -22,6 +22,7 @@ import {
 import AsyncContent from "../../common/AsyncContent";
 import { Conditional } from "../../common/Conditional";
 import { LoadingCircle } from "../../common/LoadingCircle";
+import { Separator } from "../../common/Separator";
 import { Navigation } from "./Navigation";
 import { NextUpdate } from "./NextUpdate";
 import { Sidebar } from "./Sidebar";
@@ -162,7 +163,10 @@ export function LeaderboardPage(): JSXElement {
             }
           />
 
-          <Show when={isLoggedIn() && !dataQuery.isLoading}>
+          <Show
+            when={isLoggedIn() && !dataQuery.isLoading}
+            fallback={<Separator />}
+          >
             <AsyncContent
               queries={{
                 data: dataQuery,
@@ -173,30 +177,33 @@ export function LeaderboardPage(): JSXElement {
               errorClass="rounded bg-sub-alt p-4"
             >
               {({ data, rank, config }) => (
-                <Show
-                  when={rank !== undefined && rank !== null}
-                  fallback={<div class="h-1 w-full rounded bg-sub-alt"></div>}
-                >
-                  <UserRank
-                    type={getSelection().type === "weekly" ? "xp" : "speed"}
-                    data={rank}
-                    friendsOnly={getSelection().friendsOnly}
-                    total={data?.count}
-                    minWpm={
-                      data && "minWpm" in data
-                        ? (data.minWpm as number)
-                        : undefined
-                    }
-                    memoryDifference={getLbMemoryDifference(
-                      getSelection(),
-                      rank?.rank,
-                    )}
-                    isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                    isBanned={getSnapshot()?.banned ?? false}
-                    minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                    userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
-                  />
-                </Show>
+                <Conditional
+                  if={rank !== undefined && rank !== null}
+                  then={
+                    <UserRank
+                      type={getSelection().type === "weekly" ? "xp" : "speed"}
+                      data={rank}
+                      friendsOnly={getSelection().friendsOnly}
+                      total={data?.count}
+                      minWpm={
+                        data && "minWpm" in data
+                          ? (data.minWpm as number)
+                          : undefined
+                      }
+                      memoryDifference={getLbMemoryDifference(
+                        getSelection(),
+                        rank?.rank,
+                      )}
+                      isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                      isBanned={getSnapshot()?.banned ?? false}
+                      minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
+                      userTimeTyping={
+                        getSnapshot()?.typingStats.timeTyping ?? 0
+                      }
+                    />
+                  }
+                  else={<Separator />}
+                />
               )}
             </AsyncContent>
           </Show>
@@ -204,12 +211,9 @@ export function LeaderboardPage(): JSXElement {
           <AsyncContent
             query={dataQuery}
             loader={
-              <>
-                <div class="h-1 w-full rounded bg-sub-alt"></div>
-                <div class="flex justify-center pt-4 text-4xl">
-                  <LoadingCircle />
-                </div>
-              </>
+              <div class="flex justify-center pt-4 text-4xl">
+                <LoadingCircle />
+              </div>
             }
           >
             {(data) => (
