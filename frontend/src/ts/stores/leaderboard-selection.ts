@@ -1,6 +1,6 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { Accessor, createSignal, Setter } from "solid-js";
+import { Accessor, createEffect, createSignal, Setter } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
@@ -47,13 +47,17 @@ export type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
 const [getSelectionLs, setSelection] = lsSelection();
 export const [getPage, setPage] = createSignal(0);
 
-export const getSelection = (): Selection => {
+// Reset friendsOnly when connections are disabled
+createEffect(() => {
   if (
     getSelectionLs().friendsOnly &&
     getServerConfiguration()?.connections.enabled === false
   ) {
     setSelection((old) => ({ ...old, friendsOnly: false }));
   }
+});
+
+export const getSelection = (): Selection => {
   return getSelectionLs();
 };
 
