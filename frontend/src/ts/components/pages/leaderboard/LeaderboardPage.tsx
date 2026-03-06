@@ -221,7 +221,7 @@ export function LeaderboardPage(): JSXElement {
               <div>
                 <div
                   class={cn(
-                    "mb-2 grid grid-cols-1 items-center justify-between gap-2 text-sm xs:grid-cols-2 sm:text-base",
+                    "mb-2 grid grid-cols-1 items-center justify-between gap-2 text-sm sm:grid-cols-2 sm:text-base",
                   )}
                 >
                   <NextUpdate type={getSelection().type} />
@@ -256,7 +256,7 @@ export function LeaderboardPage(): JSXElement {
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}
-                    class="w-full xs:w-max"
+                    class="w-full sm:w-max"
                   />
                 </div>
               </div>

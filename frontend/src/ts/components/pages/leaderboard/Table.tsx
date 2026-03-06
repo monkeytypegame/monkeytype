@@ -50,7 +50,7 @@ export function Table(
     hideHeader: props.hideHeader,
     class: cn(
       "table-auto [&>tbody>tr>td]:py-3 [&>tbody>tr>td]:whitespace-nowrap [&>thead>tr>th]:align-middle",
-      "[&>tbody>tr>td]:px-3 [&>tbody>tr>td]:text-[0.7em] [&>thead>tr>th]:px-3 [&>thead>tr>th]:text-[0.7em]",
+      "[&>tbody>tr>td]:px-2 [&>tbody>tr>td]:text-[0.75em] [&>thead>tr>th]:px-2 [&>thead>tr>th]:text-[0.75em]",
       "xs:[&>tbody>tr>td]:px-2 xs:[&>tbody>tr>td]:text-[0.8em] xs:[&>thead>tr>th]:px-2 xs:[&>thead>tr>th]:text-[0.8em]",
       "sm:[&>tbody>tr>td]:px-4 sm:[&>tbody>tr>td]:text-[1em] sm:[&>thead>tr>th]:px-4 sm:[&>thead>tr>th]:text-[1em]",
       "xl:[&>tbody>tr>td]:px-6 xl:[&>thead>tr>th]:px-6",
@@ -224,7 +224,7 @@ function getSpeedColumns({
       header: () => (
         <>
           <div>{format.typingSpeedUnit}</div>
-          <div class="opacity-50">accuracy</div>
+          <div class="text-em-xs opacity-50 sm:text-em-base">accuracy</div>
         </>
       ),
       cell: (info) => (
@@ -281,7 +281,7 @@ function getSpeedColumns({
       header: () => (
         <>
           <div>raw</div>
-          <div class="opacity-50">consistency</div>
+          <div class="text-em-xs opacity-50 sm:text-em-base">consistency</div>
         </>
       ),
       cell: (info) => (
