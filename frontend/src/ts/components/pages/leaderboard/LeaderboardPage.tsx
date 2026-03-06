@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { getSnapshot, updateLbMemory } from "../../../db";
-import { updateGetParameters } from "../../../pages/leaderboards";
 import { PageName } from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import {
@@ -18,6 +17,7 @@ import {
   Selection,
   setPage,
   setSelection,
+  updateGetParameters,
 } from "../../../stores/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";

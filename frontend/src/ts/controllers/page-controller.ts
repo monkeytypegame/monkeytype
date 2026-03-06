@@ -12,14 +12,25 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
-import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import Page, { PageName, LoadingOptions, PageProperties } from "../pages/page";
+import Page, {
+  PageName,
+  LoadingOptions,
+  PageProperties,
+  PageWithUrlParams,
+  UrlParamsSchema,
+  OptionsWithUrlParams,
+} from "../pages/page";
 import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
+import {
+  LeaderboardUrlParamsSchema,
+  readGetParameters,
+} from "../stores/leaderboard-selection";
+import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
 
 type ChangeOptions = {
   force?: boolean;
@@ -44,7 +55,19 @@ const pages = {
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
-  leaderboards: PageLeaderboards.page,
+  leaderboards: solidPageWithUrlParams("leaderboards", {
+    urlParamsSchema: LeaderboardUrlParamsSchema,
+    loadingOptions: {
+      style: "spinner",
+      loadingMode: () => "sync",
+      loadingPromise: async () => {
+        await serverConfigurationPromise;
+      },
+    },
+    beforeShow: async (options) => {
+      readGetParameters(options.urlParams);
+    },
+  }),
 };
 
 function updateOpenGraphUrl(): void {
@@ -321,6 +344,36 @@ function solidPage(
     },
     afterHide: async () => {
       Skeleton.remove(internalId);
+    },
+  });
+}
+
+function solidPageWithUrlParams<U extends UrlParamsSchema>(
+  id: PageName,
+  props: {
+    path?: string;
+    urlParamsSchema: U;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
+    afterHide?: () => Promise<void>;
+  },
+): PageWithUrlParams<undefined, U> {
+  const path = props.path ?? `/${id}`;
+  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
+  onDOMReady(() => Skeleton.save(internalId));
+  return new PageWithUrlParams({
+    id,
+    path,
+    element: qsr(`#${internalId}`),
+    urlParamsSchema: props.urlParamsSchema,
+    loadingOptions: props.loadingOptions,
+    beforeShow: async (options) => {
+      Skeleton.append(internalId, "main");
+      await props.beforeShow?.(options);
+    },
+    afterHide: async () => {
+      Skeleton.remove(internalId);
+      await props.afterHide?.();
     },
   });
 }

@@ -111,7 +111,7 @@ export default class Page<T> {
   }
 }
 
-type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
+export type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
   urlParams?: z.infer<U>;
 };
 
