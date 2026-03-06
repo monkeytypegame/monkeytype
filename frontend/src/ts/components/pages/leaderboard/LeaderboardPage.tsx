@@ -109,7 +109,7 @@ export function LeaderboardPage(): JSXElement {
       if (diff !== 0) {
         void updateLbMemory(
           "time",
-          getSelection().mode2 as string,
+          getSelection().mode2,
           "english",
           rankQuery.data.rank,
           true,

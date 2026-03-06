@@ -49,8 +49,8 @@ export const [getPage, setPage] = createSignal(0);
 
 export const getSelection = (): Selection => {
   if (
-    getServerConfiguration()?.connections.enabled === false &&
-    getSelectionLs().friendsOnly
+    getSelectionLs().friendsOnly &&
+    getServerConfiguration()?.connections.enabled === false
   ) {
     setSelection((old) => ({ ...old, friendsOnly: false }));
   }

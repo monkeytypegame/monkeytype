@@ -29,8 +29,7 @@ export function Sidebar(props: {
   const updateSelection = (patch: Partial<Selection>) => {
     props.onSelect(
       normalizeSelection(
-        //@ts-expect-error this is fine
-        { ...props.selection(), ...patch },
+        { ...props.selection(), ...patch } as Selection,
         getValidLeaderboards(props.validModeRules),
       ),
     );
@@ -86,18 +85,18 @@ export function Sidebar(props: {
           onSelect={selectMode}
           items={getModeButtons(
             getValidLeaderboards(props.validModeRules)[props.selection().type],
-            props.selection().language as Language,
+            props.selection().language,
           )}
         />
       </Show>
       <Show when={props.selection().type === "daily"}>
         <Group
-          selected={props.selection().language as Language}
+          selected={props.selection().language}
           onSelect={selectLanguage}
           items={getLanguageButtons(
             getValidLeaderboards(props.validModeRules).daily,
-            props.selection().mode as Mode,
-            props.selection().mode2 as string,
+            props.selection().mode,
+            props.selection().mode2,
           )}
         />
       </Show>
@@ -107,7 +106,7 @@ export function Sidebar(props: {
 
 function Group<T>(props: {
   items: GroupItem<T>[];
-  selected: T;
+  selected: T | undefined;
   onSelect: (selected: T) => void;
 }): JSXElement {
   const isEqual = (a: unknown, b: unknown): boolean =>
@@ -147,7 +146,7 @@ function normalizeSelection(
   let { mode, mode2, language } = draft;
   const validModes = valid[draft.type];
 
-  if (valid === undefined) throw new Error("no valid leaderboards");
+  if (validModes === undefined) throw new Error("no valid leaderboards");
 
   if (mode === null || validModes[mode] === undefined) {
     const firstMode = Object.keys(validModes).sort()[0] as Mode | undefined;
@@ -203,10 +202,10 @@ function getModeButtons(
 
 function getLanguageButtons(
   valid: LanguagesByModeByMode2,
-  mode: Mode,
-  mode2: string,
+  mode: Mode | undefined,
+  mode2: string | undefined,
 ): GroupItem<Language>[] {
-  if (mode === undefined) return [];
+  if (mode === undefined || mode2 === undefined) return [];
 
   return (valid[mode]?.[mode2] ?? []).map((language) => ({
     id: language,
