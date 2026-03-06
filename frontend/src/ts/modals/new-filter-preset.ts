@@ -24,9 +24,9 @@ const newFilterPresetModal = new SimpleModal({
     const status = await createFilterPreset(name);
 
     if (status === 1) {
-      return { status: 1, message: "Filter preset created" };
+      return { status: "success", message: "Filter preset created" };
     } else {
-      let status: -1 | 0 | 1 = -1;
+      let status: "error" | "notice" | "success" = "error";
       let message: string = "Error creating filter preset";
       return { status, message, alwaysHide: true };
     }

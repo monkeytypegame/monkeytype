@@ -2,6 +2,7 @@ import { JSXElement, Show, Suspense, lazy } from "solid-js";
 
 import { isDevEnvironment } from "../../utils/misc";
 import { ContactModal } from "./ContactModal";
+import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { SupportModal } from "./SupportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
@@ -14,6 +15,7 @@ export function Modals(): JSXElement {
     <>
       <VersionHistoryModal />
       <ContactModal />
+      <RegisterCaptchaModal />
       <SupportModal />
       <Show when={isDevEnvironment()}>
         <Suspense fallback={null}>

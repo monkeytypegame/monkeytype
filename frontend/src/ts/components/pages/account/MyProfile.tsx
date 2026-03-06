@@ -6,10 +6,11 @@ import { getSnapshot } from "../../../stores/snapshot";
 import { UserProfile } from "../profile/UserProfile";
 
 export function MyProfile(): JSXElement {
-  const isOpen = () => getActivePage() === "account";
+  const profile = () =>
+    getActivePage() === "account" ? getSnapshot() : undefined;
   return (
-    <Show when={isOpen()} fallback="no user found">
-      <UserProfile profile={getSnapshot() as UserProfileType} isAccountPage />
+    <Show when={profile() as UserProfileType} fallback="no user found">
+      {(p) => <UserProfile profile={p()} isAccountPage />}
     </Show>
   );
 }

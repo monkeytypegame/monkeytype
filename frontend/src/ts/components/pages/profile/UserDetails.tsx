@@ -16,12 +16,15 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
 import { isFriend } from "../../../db";
-import * as Notifications from "../../../elements/notifications";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { addFriend } from "../../../pages/friends";
 import { bp } from "../../../signals/breakpoints";
 import { getUserId, isLoggedIn } from "../../../signals/core";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../../stores/notifications";
 import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
@@ -123,10 +126,10 @@ function ActionButtons(props: {
     const friendName = props.profile.name;
     void addFriend(friendName).then((result) => {
       if (result === true) {
-        Notifications.add(`Request sent to ${friendName}`);
+        showNoticeNotification(`Request sent to ${friendName}`);
         setHasFriendRequest(true);
       } else {
-        Notifications.add(result, -1);
+        showErrorNotification(result);
       }
     });
   };
@@ -142,7 +145,9 @@ function ActionButtons(props: {
             fa={{ icon: "fa-pen", fixedWidth: true }}
             onClick={() => {
               if (props.profile.banned === true) {
-                Notifications.add("Banned users cannot edit their profile", 0);
+                showNoticeNotification(
+                  "Banned users cannot edit their profile",
+                );
                 return;
               }
               EditProfileModal.show();
@@ -157,7 +162,7 @@ function ActionButtons(props: {
 
               navigator.clipboard.writeText(url).then(
                 function () {
-                  Notifications.add("URL Copied to clipboard", 0);
+                  showNoticeNotification("URL Copied to clipboard");
                 },
                 function () {
                   alert(

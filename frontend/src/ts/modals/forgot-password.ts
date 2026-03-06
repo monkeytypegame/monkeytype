@@ -1,7 +1,11 @@
 import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { UserEmailSchema } from "@monkeytype/schemas/users";
@@ -9,9 +13,8 @@ import { ElementWithUtils } from "../utils/dom";
 
 export function show(): void {
   if (!CaptchaController.isCaptchaAvailable()) {
-    Notifications.add(
+    showErrorNotification(
       "Could not show forgot password popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1,
     );
     return;
   }
@@ -35,7 +38,7 @@ export function show(): void {
 async function submit(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("forgotPasswordModal");
   if (!captchaResponse) {
-    Notifications.add("Please complete the captcha");
+    showNoticeNotification("Please complete the captcha");
     return;
   }
 
@@ -43,14 +46,14 @@ async function submit(): Promise<void> {
     modal.getModal().qs<HTMLInputElement>("input")?.getValue()?.trim() ?? "";
 
   if (email === "") {
-    Notifications.add("Please enter your email address");
+    showNoticeNotification("Please enter your email address");
     CaptchaController.reset("forgotPasswordModal");
     return;
   }
 
   const validation = UserEmailSchema.safeParse(email);
   if (!validation.success) {
-    Notifications.add("Please enter a valid email address");
+    showNoticeNotification("Please enter a valid email address");
     CaptchaController.reset("forgotPasswordModal");
     return;
   }
@@ -63,14 +66,13 @@ async function submit(): Promise<void> {
     .then((result) => {
       hideLoaderBar();
       if (result.status !== 200) {
-        Notifications.add(
+        showErrorNotification(
           "Failed to send password reset email: " + result.body.message,
-          -1,
         );
         return;
       }
 
-      Notifications.add(result.body.message, 1, { duration: 5 });
+      showSuccessNotification(result.body.message, { durationMs: 5000 });
     });
 
   hide();

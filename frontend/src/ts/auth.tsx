@@ -9,9 +9,9 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
+import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
 import { updateFromServer as updateConfigFromServer } from "./config";
 import * as DB from "./db";
-import * as Notifications from "./elements/notifications";
 import {
   isAuthAvailable,
   getAuthenticatedUser,
@@ -22,22 +22,24 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "./firebase";
-import * as RegisterCaptchaModal from "./modals/register-captcha";
 import { showPopup } from "./modals/simple-modals-base";
 import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
 import { addBanner } from "./stores/banners";
-import * as Misc from "./utils/misc";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "./stores/notifications";
+import { createErrorMessage } from "./utils/misc";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
 
@@ -45,10 +47,10 @@ export async function sendVerificationEmail(): Promise<void> {
   const response = await Ape.users.verificationEmail();
   if (response.status !== 200) {
     hideLoaderBar();
-    Notifications.add("Failed to request verification email", -1, { response });
+    showErrorNotification("Failed to request verification email", { response });
   } else {
     hideLoaderBar();
-    Notifications.add("Verification email sent", 1);
+    showSuccessNotification("Verification email sent");
   }
 }
 
@@ -93,26 +95,23 @@ async function getDataAndInit(): Promise<boolean> {
     console.error(error);
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
-        Notifications.add(
+        showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-          0,
           {
-            duration: 0,
+            durationMs: 0,
           },
         );
-        Notifications.add(
+        showNoticeNotification(
           "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-          0,
           {
-            duration: 0,
+            durationMs: 0,
           },
         );
       }
 
-      Notifications.add("Failed to get user data: " + error.message, -1);
+      showErrorNotification("Failed to get user data: " + error.message);
     } else {
-      const message = Misc.createErrorMessage(error, "Failed to get user data");
-      Notifications.add(message, -1);
+      showErrorNotification("Failed to get user data", { error });
     }
     return false;
   }
@@ -200,7 +199,7 @@ async function signInWithProvider(
 
   if (error !== null) {
     if (error.message !== "") {
-      Notifications.add(error.message, -1);
+      showErrorNotification(error.message);
     }
     return { success: false, message: error.message };
   }
@@ -244,9 +243,7 @@ async function addAuthProvider(
   provider: AuthProvider,
 ): Promise<void> {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   showLoaderBar();
@@ -255,23 +252,19 @@ async function addAuthProvider(
   try {
     await linkWithPopup(user, provider);
     hideLoaderBar();
-    Notifications.add(`${providerName} authentication added`, 1);
+    showSuccessNotification(`${providerName} authentication added`);
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
-    const message = Misc.createErrorMessage(
+    showErrorNotification(`Failed to add ${providerName} authentication`, {
       error,
-      `Failed to add ${providerName} authentication`,
-    );
-    Notifications.add(message, -1);
+    });
   }
 }
 
 export function signOut(): void {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   if (!isAuthenticated()) return;
@@ -294,8 +287,7 @@ export async function signUp(
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
-  await RegisterCaptchaModal.show();
-  const captchaToken = await RegisterCaptchaModal.promise;
+  const captchaToken = await showRegisterCaptchaModal();
   if (captchaToken === undefined || captchaToken === "") {
     return { success: false, message: "Please complete the captcha" };
   }
@@ -323,21 +315,21 @@ export async function signUp(
     await onAuthStateChanged(true, createdAuthUser.user);
     resetIgnoreAuthCallback();
 
-    Notifications.add("Account created", 1);
+    showSuccessNotification("Account created");
     return { success: true };
   } catch (e) {
-    let message = Misc.createErrorMessage(e, "Failed to create account");
+    let message = createErrorMessage(e, "Failed to create account");
 
     if (e instanceof Error) {
       if ("code" in e && e.code === "auth/email-already-in-use") {
-        message = Misc.createErrorMessage(
+        message = createErrorMessage(
           { message: "Email already in use" },
           "Failed to create account",
         );
       }
     }
 
-    Notifications.add(message, -1);
+    showErrorNotification(message);
     signOut();
     return { success: false, message };
   }

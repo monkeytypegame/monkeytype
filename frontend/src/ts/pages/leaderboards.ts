@@ -7,7 +7,10 @@ import {
 } from "@monkeytype/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import Format from "../utils/format";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as DB from "../db";
@@ -360,9 +363,8 @@ async function requestData(update = false): Promise<void> {
       state.error = "No leaderboard found";
     } else {
       state.error = "Something went wrong";
-      Notifications.add(
+      showErrorNotification(
         "Failed to get leaderboard: " + dataResponse.body.message,
-        -1,
       );
     }
   }
@@ -375,7 +377,7 @@ async function requestData(update = false): Promise<void> {
     } else {
       state.userData = null;
       state.error = "Something went wrong";
-      Notifications.add("Failed to get rank: " + rankResponse.body.message, -1);
+      showErrorNotification("Failed to get rank: " + rankResponse.body.message);
     }
   }
 
@@ -877,7 +879,7 @@ function updateContent(): void {
   }
 
   if (state.data === null) {
-    Notifications.add("Data is null");
+    showNoticeNotification("Data is null");
     return;
   }
 
