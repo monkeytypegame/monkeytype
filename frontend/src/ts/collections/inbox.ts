@@ -57,13 +57,17 @@ export const inboxCollection = createCollection(
 export async function flushPendingChanges({
   transaction,
 }: MutationFnParams<Pick<InboxItem, "id" | "status">>): Promise<unknown> {
-  console.log("### tx", transaction);
   const updatedStatus = Object.groupBy(
     transaction.mutations.map((it) => it.modified),
     (it) => it.status,
   );
 
-  console.log("### call api", updatedStatus);
+  await Ape.users.updateInbox({
+    body: {
+      mailIdsToMarkRead: updatedStatus.read?.map((it) => it.id),
+      mailIdsToDelete: updatedStatus.deleted?.map((it) => it.id),
+    },
+  });
 
   inboxCollection.utils.writeBatch(() => {
     updatedStatus.deleted?.forEach((deleted) =>
