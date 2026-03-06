@@ -30,7 +30,7 @@ export function AlertsPopup(): JSXElement {
       onBackdropClick={() => hideModalAndClearChain("Alerts")}
       afterHide={() => {
         setTimeout(() => {
-          //TODO
+          flushStrategy.flush();
         }, 125);
       }}
     >

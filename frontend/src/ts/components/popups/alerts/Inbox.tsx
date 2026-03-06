@@ -34,7 +34,12 @@ export function Inbox(): JSXElement {
     },
     mutationFn: async (changes) => {
       //@ts-expect-error cant figure out the type
-      return flushPendingChanges(changes);
+      await flushPendingChanges(changes);
+
+      const allRewards: AllRewards[] = changes.transaction.mutations.flatMap(
+        (it) => (it.original as InboxItem).rewards,
+      );
+      claimRewards(allRewards);
     },
     strategy: flushStrategy.strategy,
   });
@@ -43,16 +48,11 @@ export function Inbox(): JSXElement {
     from: InboxItem["status"];
     to: InboxItem["status"];
   }): void => {
-    const pendingRewards: AllRewards[] = [];
     inboxCollection.forEach((it) => {
       if (it.status === options.from) {
         mutate({ id: it.id, status: options.to });
       }
-      if (options.from === "unclaimed") {
-        pendingRewards.push(...it.rewards);
-      }
     });
-    claimRewards(pendingRewards);
   };
 
   const Entry = (props: { entry: InboxItem }) => {
@@ -85,7 +85,6 @@ export function Inbox(): JSXElement {
               balloon={{ text: "Claim", position: "left" }}
               onClick={() => {
                 mutate({ id: props.entry.id, status: "read" });
-                claimRewards(props.entry.rewards);
               }}
             />
           </Show>
