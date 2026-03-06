@@ -217,48 +217,51 @@ export function LeaderboardPage(): JSXElement {
             }
           >
             {(data) => (
-              <Conditional
-                if={data.entries.length === 0}
-                then={
-                  <div class="flex flex-col items-center gap-4 pt-8">
-                    <div class="text-xl">No entries found</div>
-                  </div>
-                }
-                else={
-                  <div class="grid gap-2">
-                    <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
-                      <NextUpdate type={getSelection().type} />
-                      <Navigation
-                        isLoading={
-                          dataQuery.isLoading ||
-                          dataQuery.isFetching ||
-                          dataQuery.isRefetching
-                        }
-                        lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
-                        userPage={userPage()}
-                        currentPage={getPage()}
-                        onPageChange={setPage}
-                        onScrollToUser={setScrollToUser}
+              <>
+                <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
+                  <NextUpdate type={getSelection().type} />
+                  <Navigation
+                    isLoading={
+                      dataQuery.isLoading ||
+                      dataQuery.isFetching ||
+                      dataQuery.isRefetching
+                    }
+                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    userPage={userPage()}
+                    currentPage={getPage()}
+                    onPageChange={setPage}
+                    onScrollToUser={setScrollToUser}
+                  />
+                </div>
+                <Conditional
+                  if={data.entries.length === 0}
+                  then={
+                    <div class="flex flex-row items-center justify-center bg-sub-alt p-4">
+                      <div class="p-4 text-lg">No entries found</div>
+                      <pre>¯\_(ツ)_/¯</pre>
+                    </div>
+                  }
+                  else={
+                    <div class="grid gap-2">
+                      <Table
+                        type={getSelection().type === "weekly" ? "xp" : "speed"}
+                        entries={data?.entries ?? []}
+                        friendsOnly={getSelection().friendsOnly}
+                        scrollToUser={scrollToUser}
+                        onScrolledToUser={() => setScrollToUser(false)}
                       />
                     </div>
-                    <Table
-                      type={getSelection().type === "weekly" ? "xp" : "speed"}
-                      entries={data?.entries ?? []}
-                      friendsOnly={getSelection().friendsOnly}
-                      scrollToUser={scrollToUser}
-                      onScrolledToUser={() => setScrollToUser(false)}
-                    />
-                    <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
-                      <Navigation
-                        lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
-                        currentPage={getPage()}
-                        onPageChange={setPage}
-                        onScrollToUser={setScrollToUser}
-                      />
-                    </div>
-                  </div>
-                }
-              />
+                  }
+                />{" "}
+                <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
+                  <Navigation
+                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    currentPage={getPage()}
+                    onPageChange={setPage}
+                    onScrollToUser={setScrollToUser}
+                  />
+                </div>
+              </>
             )}
           </AsyncContent>
         </div>
