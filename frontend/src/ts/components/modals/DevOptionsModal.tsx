@@ -2,6 +2,7 @@ import { createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
 import { signIn } from "../../auth";
+import { inboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
@@ -136,6 +137,21 @@ export function DevOptionsModal(): JSXElement {
           const totalFakeXp = 10270;
           addXp(totalFakeXp, fakeBreakdown);
         }, 500);
+        hideModal("DevOptions");
+      },
+    },
+    {
+      icon: "fa-inbox",
+      label: () => "Add Debug Inbox Item",
+      onClick: () => {
+        inboxCollection.utils.writeInsert({
+          id: crypto.randomUUID(),
+          subject: "Debug XP Reward",
+          body: "Here is your 1000 XP reward for debugging.",
+          timestamp: Date.now(),
+          status: "unclaimed" as const,
+          rewards: [{ type: "xp" as const, item: 1000 }],
+        });
         hideModal("DevOptions");
       },
     },

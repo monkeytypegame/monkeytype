@@ -1,5 +1,6 @@
 import { JSXElement } from "solid-js";
 
+import { flushPendingInbox } from "../../../collections/inbox";
 import { hideModalAndClearChain } from "../../../stores/modals";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import { Button } from "../../common/Button";
@@ -27,6 +28,9 @@ export function AlertsPopup(): JSXElement {
       }}
       onEscape={() => hideModalAndClearChain("Alerts")}
       onBackdropClick={() => hideModalAndClearChain("Alerts")}
+      afterHide={() => {
+        setTimeout(() => flushPendingInbox(), 125);
+      }}
     >
       <MobileClose />
       <div class="grid h-full content-baseline gap-8 overflow-y-scroll px-4 text-xs">
