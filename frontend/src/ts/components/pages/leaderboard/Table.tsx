@@ -128,8 +128,7 @@ export function Table(
 function NoEntriesFound(): JSXElement {
   return (
     <div class="flex flex-row items-center justify-center rounded bg-sub-alt p-4 text-text">
-      <div>No entries found</div>
-      <pre>¯\_(ツ)_/¯</pre>
+      <div>No entries found ¯\_(ツ)_/¯</div>
     </div>
   );
 }
