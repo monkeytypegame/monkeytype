@@ -263,8 +263,7 @@ async function syncFunboxStateWithConfig(): Promise<void> {
 ConfigEvent.subscribe(({ key }) => {
   if (key === "funbox") {
     void syncFunboxStateWithConfig().catch((error: unknown) => {
-      console.error("Failed to sync funbox state with config");
-      console.error(error);
+      console.error("Failed to sync funbox state with config", error);
     });
   }
 });
