@@ -9,9 +9,13 @@ import {
 } from "solid-js";
 
 import { LeaderboardType } from "../../../stores/leaderboard-selection";
+import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 
-export function NextUpdate(props: { type: LeaderboardType }): JSXElement {
+export function NextUpdate(props: {
+  type: LeaderboardType;
+  class?: string;
+}): JSXElement {
   const [tick, setTick] = createSignal(Date.now());
 
   // Update the tick every second
@@ -43,5 +47,5 @@ export function NextUpdate(props: { type: LeaderboardType }): JSXElement {
     return "";
   });
 
-  return <div class="text-sub">{nextUpdate()}</div>;
+  return <div class={cn(`text-sub`, props.class)}>{nextUpdate()}</div>;
 }

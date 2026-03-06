@@ -19,6 +19,7 @@ import {
   setPage,
   setSelection,
 } from "../../../stores/leaderboard-selection";
+import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Conditional } from "../../common/Conditional";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -218,7 +219,11 @@ export function LeaderboardPage(): JSXElement {
           >
             {(data) => (
               <div>
-                <div class="mb-2 grid grid-cols-2 items-center justify-between text-sm sm:text-base">
+                <div
+                  class={cn(
+                    "mb-2 grid grid-cols-1 items-center justify-between gap-2 text-sm xs:grid-cols-2 sm:text-base",
+                  )}
+                >
                   <NextUpdate type={getSelection().type} />
                   <Navigation
                     isLoading={
@@ -231,6 +236,7 @@ export function LeaderboardPage(): JSXElement {
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}
+                    class="w-full sm:w-max"
                   />
                 </div>
 
@@ -250,6 +256,7 @@ export function LeaderboardPage(): JSXElement {
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}
+                    class="w-full xs:w-max"
                   />
                 </div>
               </div>

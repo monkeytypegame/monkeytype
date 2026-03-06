@@ -43,7 +43,7 @@ export function UserRank(props: {
     return (
       <div class="text-[1em]">
         <div>You ({percentileString})</div>
-        <div class="text-em-xs text-sub sm:text-em-sm">
+        <div class="hidden text-em-xs text-sub sm:block sm:text-em-sm">
           {" "}
           <Show when={props.memoryDifference !== undefined}>
             ({" "}

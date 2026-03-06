@@ -50,7 +50,8 @@ export function Table(
     hideHeader: props.hideHeader,
     class: cn(
       "table-auto [&>tbody>tr>td]:py-3 [&>tbody>tr>td]:whitespace-nowrap [&>thead>tr>th]:align-middle",
-      "[&>tbody>tr>td]:px-3 [&>tbody>tr>td]:text-[0.9em] [&>thead>tr>th]:px-3 [&>thead>tr>th]:text-[0.8em]",
+      "[&>tbody>tr>td]:px-3 [&>tbody>tr>td]:text-[0.7em] [&>thead>tr>th]:px-3 [&>thead>tr>th]:text-[0.7em]",
+      "xs:[&>tbody>tr>td]:px-2 xs:[&>tbody>tr>td]:text-[0.8em] xs:[&>thead>tr>th]:px-2 xs:[&>thead>tr>th]:text-[0.8em]",
       "sm:[&>tbody>tr>td]:px-4 sm:[&>tbody>tr>td]:text-[1em] sm:[&>thead>tr>th]:px-4 sm:[&>thead>tr>th]:text-[1em]",
       "xl:[&>tbody>tr>td]:px-6 xl:[&>thead>tr>th]:px-6",
     ),
@@ -300,6 +301,7 @@ function getSpeedColumns({
       meta: {
         align: "right",
         maxBreakpoint: "xl",
+        breakpoint: "xs",
       },
     }),
     defineColumn("timestamp", {
@@ -313,7 +315,7 @@ function getSpeedColumns({
               enabled: true,
             })
           ) : (
-            <div class="text-xs">
+            <div class="text-em-sm">
               <div>{dateFormat(info.getValue(), "dd MMM yyyy")}</div>
               <div class="text-sub">{dateFormat(info.getValue(), "HH:mm")}</div>
             </div>

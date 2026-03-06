@@ -1,6 +1,7 @@
 import { JSXElement, Setter, Show } from "solid-js";
 
 import { setPage } from "../../../stores/leaderboard-selection";
+import { cn } from "../../../utils/cn";
 import { ExecReturn, SimpleModal } from "../../../utils/simple-modal";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -40,11 +41,17 @@ export function Navigation(props: {
   onPageChange: Setter<number>;
   onScrollToUser: Setter<boolean>;
   isLoading?: boolean;
+  class?: string;
 }): JSXElement {
   const buttonClass = "px-3 sm:px-4 text-em-base";
 
   return (
-    <div class="grid grid-flow-col items-center gap-2 justify-self-end">
+    <div
+      class={cn(
+        "grid grid-flow-col items-center gap-2 justify-self-end",
+        props.class,
+      )}
+    >
       <Show when={props.isLoading}>
         <LoadingCircle color="sub" class="text-2xl" />
       </Show>
