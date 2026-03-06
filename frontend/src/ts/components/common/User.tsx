@@ -80,7 +80,7 @@ export function User(props: Props): JSXElement {
           <NotificationBubble
             variant="atCorner"
             show={props.showNotificationBubble ?? false}
-            class="m-0.5"
+            class="z-2 m-0.5"
           />
           <AnimeConditional
             exitBeforeEnter
