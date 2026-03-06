@@ -9,7 +9,7 @@ import { Accessor, createMemo, JSXElement } from "solid-js";
 
 import { isFriend } from "../../../db";
 import { createEffectOn } from "../../../hooks/effects";
-import { bp } from "../../../signals/breakpoints";
+import { bp, BreakpointKey } from "../../../signals/breakpoints";
 import { getConfig } from "../../../signals/config";
 import { getUserId } from "../../../signals/core";
 import { cn } from "../../../utils/cn";
@@ -185,6 +185,75 @@ const userColumn = ({
     },
   });
 
+function defineResponsivePair<T>() {
+  return <KA extends string & keyof T, KB extends string & keyof T>({
+    columns,
+    switchBreakpoint: breakpoint,
+    addHeader,
+    mergedMeta,
+    subtitleClass = "text-em-xs opacity-50 sm:text-em-base",
+  }: {
+    columns: [
+      { path: KA; header: string; format: (value: T[KA]) => string },
+      { path: KB; header: string; format: (value: T[KB]) => string },
+    ];
+    switchBreakpoint: BreakpointKey;
+    addHeader?: boolean;
+    mergedMeta?: { breakpoint?: BreakpointKey };
+    subtitleClass?: string;
+  }): DataTableColumnDef<T>[] => {
+    const [a, b] = columns;
+
+    return [
+      {
+        id: a.path,
+        accessorFn: (row: T) => row[a.path],
+        header: a.header,
+        cell: (info: { getValue: () => T[KA] }) =>
+          wrapWithHeader({
+            value: a.format(info.getValue()),
+            header: a.header,
+            enabled: addHeader,
+          }),
+        meta: { align: "right" as const, breakpoint },
+      },
+      {
+        id: b.path,
+        accessorFn: (row: T) => row[b.path],
+        header: b.header,
+        cell: (info: { getValue: () => T[KB] }) =>
+          wrapWithHeader({
+            value: b.format(info.getValue()),
+            header: b.header,
+            enabled: addHeader,
+          }),
+        meta: { align: "right" as const, breakpoint },
+      },
+      {
+        id: a.path + b.path.charAt(0).toUpperCase() + b.path.slice(1),
+        accessorFn: (row: T) => row[a.path],
+        header: () => (
+          <>
+            <div>{a.header}</div>
+            <div class={subtitleClass}>{b.header}</div>
+          </>
+        ),
+        cell: (info: { getValue: () => T[KA]; row: { original: T } }) => (
+          <>
+            <div>{a.format(info.getValue())}</div>
+            <div class="text-sub">{b.format(info.row.original[b.path])}</div>
+          </>
+        ),
+        meta: {
+          align: "right" as const,
+          maxBreakpoint: breakpoint,
+          ...mergedMeta,
+        },
+      },
+    ];
+  };
+}
+
 function getSpeedColumns({
   friendsOnly,
   format,
@@ -201,120 +270,38 @@ function getSpeedColumns({
     friendsRankColumn() as DataTableColumnDef<SpeedEntry>,
     rankColumn(friendsOnly) as DataTableColumnDef<SpeedEntry>,
     userColumn({ userOverride }) as DataTableColumnDef<SpeedEntry>,
-    defineColumn("wpm", {
-      header: format.typingSpeedUnit,
-      cell: (info) =>
-        wrapWithHeader({
-          value: format.typingSpeed(info.getValue(), {
-            showDecimalPlaces: true,
-          }),
+    ...defineResponsivePair<SpeedEntry>()({
+      columns: [
+        {
+          path: "wpm",
           header: format.typingSpeedUnit,
-          enabled: addHeader,
-        }),
-      meta: {
-        align: "right",
-        breakpoint: "xl",
-      },
-    }),
-    defineColumn("acc", {
-      header: "accuracy",
-      cell: (info) =>
-        wrapWithHeader({
-          value: format.percentage(info.getValue(), {
-            showDecimalPlaces: true,
-          }),
+          format: (v) => format.typingSpeed(v, { showDecimalPlaces: true }),
+        },
+        {
+          path: "acc",
           header: "accuracy",
-          enabled: addHeader,
-        }),
-      meta: {
-        align: "right",
-        breakpoint: "xl",
-      },
+          format: (v) => format.percentage(v, { showDecimalPlaces: true }),
+        },
+      ],
+      switchBreakpoint: "xl",
+      addHeader,
     }),
-    defineColumn("wpm", {
-      id: "wpmAcc",
-      header: () => (
-        <>
-          <div>{format.typingSpeedUnit}</div>
-          <div class="text-em-xs opacity-50 sm:text-em-base">accuracy</div>
-        </>
-      ),
-      cell: (info) => (
-        <>
-          <div>
-            {format.typingSpeed(info.row.original.wpm, {
-              showDecimalPlaces: true,
-            })}
-          </div>
-          <div class="text-sub">
-            {format.percentage(info.row.original.acc, {
-              showDecimalPlaces: true,
-            })}
-          </div>
-        </>
-      ),
-      meta: {
-        align: "right",
-        maxBreakpoint: "xl",
-      },
-    }),
-    defineColumn("raw", {
-      header: "raw",
-      cell: (info) =>
-        wrapWithHeader({
-          value: format.typingSpeed(info.getValue(), {
-            showDecimalPlaces: true,
-          }),
+    ...defineResponsivePair<SpeedEntry>()({
+      columns: [
+        {
+          path: "raw",
           header: "raw",
-          enabled: addHeader,
-        }),
-      meta: {
-        align: "right",
-        breakpoint: "xl",
-      },
-    }),
-    defineColumn("consistency", {
-      header: "consistency",
-      cell: (info) =>
-        wrapWithHeader({
-          value: format.percentage(info.getValue(), {
-            showDecimalPlaces: true,
-          }),
+          format: (v) => format.typingSpeed(v, { showDecimalPlaces: true }),
+        },
+        {
+          path: "consistency",
           header: "consistency",
-          enabled: addHeader,
-        }),
-      meta: {
-        align: "right",
-        breakpoint: "xl",
-      },
-    }),
-    defineColumn("raw", {
-      id: "rawCon",
-      header: () => (
-        <>
-          <div>raw</div>
-          <div class="text-em-xs opacity-50 sm:text-em-base">consistency</div>
-        </>
-      ),
-      cell: (info) => (
-        <>
-          <div>
-            {format.typingSpeed(info.row.original.raw, {
-              showDecimalPlaces: true,
-            })}
-          </div>
-          <div class="text-sub">
-            {format.percentage(info.row.original.consistency, {
-              showDecimalPlaces: true,
-            })}
-          </div>
-        </>
-      ),
-      meta: {
-        align: "right",
-        maxBreakpoint: "xl",
-        breakpoint: "xs",
-      },
+          format: (v) => format.percentage(v, { showDecimalPlaces: true }),
+        },
+      ],
+      switchBreakpoint: "xl",
+      addHeader,
+      mergedMeta: { breakpoint: "xs" },
     }),
     defineColumn("timestamp", {
       header: "date",
@@ -364,65 +351,22 @@ function getXpColumns({
     friendsRankColumn() as DataTableColumnDef<XpEntry>,
     rankColumn(friendsOnly) as DataTableColumnDef<XpEntry>,
     userColumn({ userOverride }) as DataTableColumnDef<XpEntry>,
-    defineColumn("totalXp", {
-      header: "xp gained",
-      cell: (info) =>
-        wrapWithHeader({
-          value:
-            info.getValue() < 1000
-              ? info.getValue().toFixed(0)
-              : abbreviateNumber(info.getValue()),
+    ...defineResponsivePair<XpEntry>()({
+      columns: [
+        {
+          path: "totalXp",
           header: "xp gained",
-          enabled: addHeader,
-        }),
-      meta: {
-        align: "right",
-        breakpoint: "xl",
-      },
-    }),
-    defineColumn("timeTypedSeconds", {
-      header: "time typed",
-      cell: (info) =>
-        wrapWithHeader({
-          value: secondsToString(Math.round(info.getValue()), true, true, ":"),
+          format: (v) => (v < 1000 ? v.toFixed(0) : abbreviateNumber(v)),
+        },
+        {
+          path: "timeTypedSeconds",
           header: "time typed",
-          enabled: addHeader,
-        }),
-      meta: {
-        align: "right",
-        breakpoint: "xl",
-      },
-    }),
-    defineColumn("totalXp", {
-      id: "xpTimeTyped",
-      header: () => (
-        <>
-          <div>xp gained</div>
-          <div class="whitespace-nowrap opacity-50">time typed</div>
-        </>
-      ),
-      cell: (info) => (
-        <>
-          <div>
-            {info.getValue() < 1000
-              ? info.getValue().toFixed(0)
-              : abbreviateNumber(info.getValue())}
-          </div>
-          <div class="text-sub">
-            {" "}
-            {secondsToString(
-              Math.round(info.row.original.timeTypedSeconds),
-              true,
-              true,
-              ":",
-            )}
-          </div>
-        </>
-      ),
-      meta: {
-        align: "right",
-        maxBreakpoint: "xl",
-      },
+          format: (v) => secondsToString(Math.round(v), true, true, ":"),
+        },
+      ],
+      switchBreakpoint: "xl",
+      addHeader,
+      subtitleClass: "whitespace-nowrap opacity-50",
     }),
 
     defineColumn("lastActivityTimestamp", {
