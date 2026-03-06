@@ -103,7 +103,7 @@ export function UserRank(props: {
                   )}{" "}
                   typed to be placed on the leaderboard.
                 </Match>
-                <Match when={props.minWpm}>
+                <Match when={props.minWpm !== undefined}>
                   Not qualified (min speed required:{" "}
                   {format().typingSpeed(props.minWpm, {
                     showDecimalPlaces: true,
