@@ -217,8 +217,8 @@ export function LeaderboardPage(): JSXElement {
             }
           >
             {(data) => (
-              <div class="grid gap-4">
-                <div class="grid grid-cols-2 items-center justify-between text-sm sm:text-base">
+              <div>
+                <div class="mb-2 grid grid-cols-2 items-center justify-between text-sm sm:text-base">
                   <NextUpdate type={getSelection().type} />
                   <Navigation
                     isLoading={
@@ -244,7 +244,7 @@ export function LeaderboardPage(): JSXElement {
                   />
                 </div>
 
-                <div class="grid grid-cols-1 items-center justify-between text-sm sm:text-base">
+                <div class="mt-4 grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                   <Navigation
                     lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
                     currentPage={getPage()}
