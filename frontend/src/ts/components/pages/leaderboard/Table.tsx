@@ -134,6 +134,58 @@ function NoEntriesFound(): JSXElement {
   );
 }
 
+const friendsRankColumn = () =>
+  createColumnHelper<SpeedEntry | XpEntry>().accessor("friendsRank", {
+    header: () => <Fa icon="fa-user-friends" />,
+    cell: (info) =>
+      info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
+    meta: {
+      align: "center",
+      headerMeta: {
+        "aria-label": "Friends rank",
+        "data-balloon-pos": "down",
+      },
+    },
+  });
+
+const rankColumn = (friendsOnly: boolean) =>
+  createColumnHelper<SpeedEntry | XpEntry>().accessor("rank", {
+    header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
+    cell: (info) =>
+      info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
+    meta: {
+      align: "center",
+      headerMeta: {
+        "aria-label": "Global rank",
+        "data-balloon-pos": "down",
+      },
+    },
+  });
+
+const userColumn = ({
+  userOverride,
+}: {
+  userOverride?: Accessor<JSXElement>;
+}) =>
+  createColumnHelper<SpeedEntry | XpEntry>().accessor("uid", {
+    header: "name",
+    cell: (info) =>
+      userOverride?.() ?? (
+        <User
+          avatarFallback="user-circle"
+          avatarColor="sub"
+          flagsColor="sub"
+          user={info.row.original}
+          isFriend={isFriend(info.row.original.uid)}
+          class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          linkToProfile={true}
+        />
+      ),
+    meta: {
+      cellMeta: () => ({ class: "w-full" }),
+    },
+  });
+
 function getSpeedColumns({
   friendsOnly,
   format,
@@ -147,48 +199,9 @@ function getSpeedColumns({
 }): DataTableColumnDef<SpeedEntry>[] {
   const defineColumn = createColumnHelper<SpeedEntry>().accessor;
   const columns = [
-    defineColumn("friendsRank", {
-      header: () => <Fa icon="fa-user-friends" />,
-      cell: (info) =>
-        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
-      meta: {
-        align: "center",
-        headerMeta: {
-          "aria-label": "Friends rank",
-          "data-balloon-pos": "down",
-        },
-      },
-    }),
-    defineColumn("rank", {
-      header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
-      cell: (info) =>
-        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
-      meta: {
-        align: "center",
-        headerMeta: {
-          "aria-label": "Global rank",
-          "data-balloon-pos": "down",
-        },
-      },
-    }),
-    defineColumn("uid", {
-      header: "name",
-      cell: (info) =>
-        userOverride?.() ?? (
-          <User
-            avatarFallback="user-circle"
-            avatarColor="sub"
-            flagsColor="sub"
-            user={info.row.original}
-            isFriend={isFriend(info.row.original.uid)}
-            class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
-            linkToProfile={true}
-          />
-        ),
-      meta: {
-        cellMeta: () => ({ class: "w-full" }),
-      },
-    }),
+    friendsRankColumn() as DataTableColumnDef<SpeedEntry>,
+    rankColumn(friendsOnly) as DataTableColumnDef<SpeedEntry>,
+    userColumn({ userOverride }) as DataTableColumnDef<SpeedEntry>,
     defineColumn("wpm", {
       header: format.typingSpeedUnit,
       cell: (info) =>
@@ -349,45 +362,9 @@ function getXpColumns({
 }): DataTableColumnDef<XpEntry>[] {
   const defineColumn = createColumnHelper<XpEntry>().accessor;
   const columns = [
-    defineColumn("friendsRank", {
-      header: () => <Fa icon="fa-user-friends" />,
-      cell: (info) =>
-        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
-      meta: {
-        align: "center",
-        headerMeta: {
-          "aria-label": "Friends rank",
-          "data-balloon-pos": "down",
-        },
-      },
-    }),
-    defineColumn("rank", {
-      header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
-      cell: (info) =>
-        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
-      meta: {
-        align: "center",
-        headerMeta: {
-          "aria-label": "Global rank",
-          "data-balloon-pos": "down",
-        },
-      },
-    }),
-    defineColumn("uid", {
-      header: "name",
-      cell: (info) =>
-        userOverride?.() ?? (
-          <User
-            user={info.row.original}
-            isFriend={isFriend(info.row.original.uid)}
-            class="text-[1em]"
-            linkToProfile={true}
-          />
-        ),
-      meta: {
-        cellMeta: () => ({ class: "w-full" }),
-      },
-    }),
+    friendsRankColumn() as DataTableColumnDef<XpEntry>,
+    rankColumn(friendsOnly) as DataTableColumnDef<XpEntry>,
+    userColumn({ userOverride }) as DataTableColumnDef<XpEntry>,
     defineColumn("totalXp", {
       header: "xp gained",
       cell: (info) =>
