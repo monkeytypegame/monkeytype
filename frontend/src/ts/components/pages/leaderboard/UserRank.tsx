@@ -76,7 +76,7 @@ export function UserRank(props: {
         fallback={<LoadingCircle class="w-full text-center text-2xl" />}
       >
         <Conditional
-          if={props.data !== null}
+          if={true}
           then={
             <Table
               type={props.type}
@@ -87,29 +87,35 @@ export function UserRank(props: {
             />
           }
           else={
-            <div class="w-full p-4 text-center">
-              <Switch fallback="not qualified">
+            <div class="grid w-full place-items-center p-4 text-center text-sub">
+              <Switch fallback="Not qualified">
                 <Match when={props.isLbOptOut}>
-                  You have opted out of the leaderboards.
+                  <div>You have opted out of the leaderboards.</div>
                 </Match>
-                <Match when={props.isBanned}>Your account is banned.</Match>
+                <Match when={props.isBanned}>
+                  <div>Your account is banned.</div>
+                </Match>
                 <Match when={props.userTimeTyping < props.minTimeTyping}>
-                  Your account must have
-                  {formatDuration(
-                    intervalToDuration({
-                      start: 0,
-                      end: props.minTimeTyping * 1000,
-                    }),
-                  )}{" "}
-                  typed to be placed on the leaderboard.
+                  <div>
+                    Your account must have{" "}
+                    {formatDuration(
+                      intervalToDuration({
+                        start: 0,
+                        end: props.minTimeTyping * 1000,
+                      }),
+                    )}{" "}
+                    typed to be placed on the leaderboard.
+                  </div>
                 </Match>
                 <Match when={props.minWpm !== undefined}>
-                  Not qualified (min speed required:{" "}
-                  {format().typingSpeed(props.minWpm, {
-                    showDecimalPlaces: true,
-                    suffix: ` ${format().typingSpeedUnit}`,
-                  })}
-                  )
+                  <div>
+                    Not qualified (min speed required:{" "}
+                    {format().typingSpeed(props.minWpm, {
+                      showDecimalPlaces: true,
+                      suffix: ` ${format().typingSpeedUnit}`,
+                    })}
+                    )
+                  </div>
                 </Match>
               </Switch>
             </div>

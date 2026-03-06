@@ -291,7 +291,6 @@ function getSpeedColumns({
             })}
           </div>
           <div class="text-sub">
-            {" "}
             {format.percentage(info.row.original.consistency, {
               showDecimalPlaces: true,
             })}
