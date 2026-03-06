@@ -103,7 +103,7 @@ export function LeaderboardPage(): JSXElement {
     if (
       rankQuery.data !== undefined &&
       rankQuery.data !== null &&
-      getSelection !== undefined &&
+      getSelection() !== undefined &&
       getSelection().type === "allTime"
     ) {
       const diff = getLbMemoryDifference(getSelection(), rankQuery.data.rank);
