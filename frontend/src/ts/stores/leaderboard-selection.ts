@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
+import { getSnapshot } from "./snapshot";
 
 export const pageSize = 50;
 
@@ -51,7 +52,8 @@ export const [getPage, setPage] = createSignal(0);
 createEffect(() => {
   if (
     getSelectionLs().friendsOnly &&
-    getServerConfiguration()?.connections.enabled === false
+    (getSnapshot() === undefined ||
+      getServerConfiguration()?.connections.enabled === false)
   ) {
     setSelection((old) => ({ ...old, friendsOnly: false }));
   }
