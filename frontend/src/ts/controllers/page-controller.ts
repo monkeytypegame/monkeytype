@@ -55,7 +55,7 @@ const pages = {
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
-  leaderboards: solidPageWithUrlParams("leaderboards", {
+  leaderboards: solidPage("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
     loadingOptions: {
       style: "spinner",
@@ -328,27 +328,13 @@ function solidPage(
   id: PageName,
   props?: {
     path?: string;
+    urlParamsSchema?: never;
+    loadingOptions?: LoadingOptions;
     beforeShow?: PageProperties<undefined>["beforeShow"];
+    afterHide?: () => Promise<void>;
   },
-): Page<undefined> {
-  const path = props?.path ?? `/${id}`;
-  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
-  onDOMReady(() => Skeleton.save(internalId));
-  return new Page({
-    id,
-    path,
-    element: qsr(`#${internalId}`),
-    beforeShow: async (options) => {
-      Skeleton.append(internalId, "main");
-      await props?.beforeShow?.(options);
-    },
-    afterHide: async () => {
-      Skeleton.remove(internalId);
-    },
-  });
-}
-
-function solidPageWithUrlParams<U extends UrlParamsSchema>(
+): Page<undefined>;
+function solidPage<U extends UrlParamsSchema>(
   id: PageName,
   props: {
     path?: string;
@@ -357,23 +343,48 @@ function solidPageWithUrlParams<U extends UrlParamsSchema>(
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
     afterHide?: () => Promise<void>;
   },
-): PageWithUrlParams<undefined, U> {
-  const path = props.path ?? `/${id}`;
+): PageWithUrlParams<undefined, U>;
+function solidPage<U extends UrlParamsSchema>(
+  id: PageName,
+  props?: {
+    path?: string;
+    urlParamsSchema?: U;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
+    afterHide?: () => Promise<void>;
+  },
+): Page<undefined> | PageWithUrlParams<undefined, U> {
+  const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
-  return new PageWithUrlParams({
+
+  const shared = {
     id,
     path,
     element: qsr(`#${internalId}`),
-    urlParamsSchema: props.urlParamsSchema,
-    loadingOptions: props.loadingOptions,
-    beforeShow: async (options) => {
-      Skeleton.append(internalId, "main");
-      await props.beforeShow?.(options);
-    },
+    loadingOptions: props?.loadingOptions,
     afterHide: async () => {
       Skeleton.remove(internalId);
-      await props.afterHide?.();
+      await props?.afterHide?.();
+    },
+  };
+
+  if (props?.urlParamsSchema !== undefined) {
+    return new PageWithUrlParams({
+      ...shared,
+      urlParamsSchema: props.urlParamsSchema,
+      beforeShow: async (options) => {
+        Skeleton.append(internalId, "main");
+        await props.beforeShow?.(options);
+      },
+    });
+  }
+
+  return new Page({
+    ...shared,
+    beforeShow: async (options) => {
+      Skeleton.append(internalId, "main");
+      await props?.beforeShow?.(options);
     },
   });
 }
