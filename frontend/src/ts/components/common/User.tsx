@@ -25,6 +25,7 @@ type Props = {
   showAvatar?: boolean;
   avatarFallback?: "user" | "user-circle";
   avatarColor?: "text" | "sub";
+  flagsColor?: "text" | "sub";
   hideNameOnSmallScreens?: boolean;
   linkToProfile?: boolean;
   level?: number;
@@ -121,7 +122,15 @@ export function User(props: Props): JSXElement {
         />
       </div>
 
-      <div class={cn("flex items-center justify-center gap-2")}>
+      <div
+        class={cn(
+          "flex items-center justify-center gap-2",
+          cn(
+            props.flagsColor === "text" && "text-text",
+            props.flagsColor === "sub" && "text-sub",
+          ),
+        )}
+      >
         <UserFlags
           {...props.user}
           isFriend={props.isFriend}

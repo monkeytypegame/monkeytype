@@ -162,6 +162,7 @@ function getSpeedColumns({
           <User
             avatarFallback="user-circle"
             avatarColor="sub"
+            flagsColor="sub"
             user={info.row.original}
             isFriend={isFriend(info.row.original.uid)}
             class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
