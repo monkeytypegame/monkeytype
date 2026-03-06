@@ -173,25 +173,30 @@ export function LeaderboardPage(): JSXElement {
               errorClass="rounded bg-sub-alt p-4"
             >
               {({ data, rank, config }) => (
-                <UserRank
-                  type={getSelection().type === "weekly" ? "xp" : "speed"}
-                  data={rank}
-                  friendsOnly={getSelection().friendsOnly}
-                  total={data?.count}
-                  minWpm={
-                    data && "minWpm" in data
-                      ? (data.minWpm as number)
-                      : undefined
-                  }
-                  memoryDifference={getLbMemoryDifference(
-                    getSelection(),
-                    rank?.rank,
-                  )}
-                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                  isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
-                />
+                <Show
+                  when={rank !== undefined && rank !== null}
+                  fallback={<div class="h-1 w-full rounded bg-sub-alt"></div>}
+                >
+                  <UserRank
+                    type={getSelection().type === "weekly" ? "xp" : "speed"}
+                    data={rank}
+                    friendsOnly={getSelection().friendsOnly}
+                    total={data?.count}
+                    minWpm={
+                      data && "minWpm" in data
+                        ? (data.minWpm as number)
+                        : undefined
+                    }
+                    memoryDifference={getLbMemoryDifference(
+                      getSelection(),
+                      rank?.rank,
+                    )}
+                    isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                    isBanned={getSnapshot()?.banned ?? false}
+                    minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
+                    userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+                  />
+                </Show>
               )}
             </AsyncContent>
           </Show>
