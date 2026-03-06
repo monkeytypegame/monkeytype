@@ -1,8 +1,10 @@
-import * as Notifications from "../../elements/notifications";
-import * as Strings from "../../utils/strings";
-import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
+import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
+
+import { showNoticeNotification } from "../../stores/notifications";
+import { escapeHTML } from "../../utils/misc";
+import * as Strings from "../../utils/strings";
 
 export function checkForcedConfig(
   key: string,
@@ -127,7 +129,7 @@ export function canSetConfigWithCurrentFunboxes(
   if (key === "words" || key === "time") {
     if (!checkForcedConfig(key, value, funboxes).result) {
       if (!noNotification) {
-        Notifications.add("Active funboxes do not support infinite tests", 0);
+        showNoticeNotification("Active funboxes do not support infinite tests");
         return false;
       } else {
         errorCount += 1;
@@ -139,13 +141,12 @@ export function canSetConfigWithCurrentFunboxes(
 
   if (errorCount > 0) {
     if (!noNotification) {
-      Notifications.add(
+      showNoticeNotification(
         `You can't set ${Strings.camelCaseToWords(
           key,
         )} to ${value.toString()} with currently active funboxes.`,
-        0,
         {
-          duration: 5,
+          durationMs: 5000,
         },
       );
     }
@@ -159,7 +160,6 @@ export function canSetFunboxWithConfig(
   funbox: FunboxName,
   config: Config,
 ): boolean {
-  console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = [...config.funbox, funbox];
 
   const errors = [];
@@ -187,15 +187,9 @@ export function canSetFunboxWithConfig(
         )} cannot be set to ${error.value.toString()}.`,
       );
     }
-    Notifications.add(
-      `You can't enable ${funbox.replace(/_/g, " ")}:<br>${errorStrings.join(
-        "<br>",
-      )}`,
-      0,
-      {
-        duration: 5,
-        allowHTML: true,
-      },
+    showNoticeNotification(
+      `You can't enable ${escapeHTML(funbox.replace(/_/g, " "))}:<br />${errorStrings.map((s) => escapeHTML(s)).join("<br />")}`,
+      { durationMs: 5000, useInnerHtml: true },
     );
     return false;
   } else {

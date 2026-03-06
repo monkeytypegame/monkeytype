@@ -1,4 +1,4 @@
-import * as Notifications from "./elements/notifications";
+import { showErrorNotification } from "./stores/notifications";
 import { ZodSchema, z } from "zod";
 import * as Sentry from "./sentry";
 
@@ -19,7 +19,7 @@ export function invalid(
     message = `Invalid value for ${key} (${val}). ${customMessage}`;
   }
 
-  Notifications.add(message, -1);
+  showErrorNotification(message);
   console.error(message);
   void Sentry.captureException(new Error(message));
 }

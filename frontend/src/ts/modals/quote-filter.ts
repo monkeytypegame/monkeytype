@@ -32,7 +32,7 @@ export const quoteFilterModal = new SimpleModal({
     const maxNum = parseInt(max, 10);
     if (isNaN(minNum) || isNaN(maxNum)) {
       return {
-        status: 0,
+        status: "notice",
         message: "Invalid min/max values",
       };
     }
@@ -42,7 +42,7 @@ export const quoteFilterModal = new SimpleModal({
     refresh();
 
     let message: string = "Saved custom filter";
-    return { status: 1, message };
+    return { status: "success", message };
   },
   afterClickAway: () => {
     setRemoveCustom(true);

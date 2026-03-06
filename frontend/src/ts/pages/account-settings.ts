@@ -9,7 +9,7 @@ import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import { showLoaderBar } from "../signals/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
@@ -175,9 +175,8 @@ qsa(
     if (response.status === 200) {
       window.open(response.body.data.url, "_self");
     } else {
-      Notifications.add(
+      showErrorNotification(
         "Failed to get OAuth from discord: " + response.body.message,
-        -1,
       );
     }
   });
