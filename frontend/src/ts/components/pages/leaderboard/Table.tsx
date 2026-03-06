@@ -105,6 +105,9 @@ export function Table(
           {...commonProps()}
           columns={speedColumns()}
           data={props.entries as LeaderboardEntry[]}
+          noDataRow={{
+            content: <NoEntriesFound />,
+          }}
         />
       }
       else={
@@ -112,9 +115,21 @@ export function Table(
           {...commonProps()}
           columns={xpColumns()}
           data={props.entries as XpLeaderboardEntry[]}
+          noDataRow={{
+            content: <NoEntriesFound />,
+          }}
         />
       }
     />
+  );
+}
+
+function NoEntriesFound(): JSXElement {
+  return (
+    <div class="flex flex-row items-center justify-center rounded bg-sub-alt p-2 text-text">
+      <div class="p-4 text-lg">No entries found</div>
+      <pre>¯\_(ツ)_/¯</pre>
+    </div>
   );
 }
 

@@ -60,6 +60,11 @@ export type DataTableProps<TData, TValue> = {
     activeRow: Accessor<string | null>;
   };
   class?: string;
+  noDataRow?:
+    | true
+    | {
+        content: JSXElement;
+      };
 };
 
 // oxlint-disable-next-line typescript/no-explicit-any
@@ -167,7 +172,10 @@ export function DataTable<TData, TValue = any>(
   });
 
   return (
-    <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
+    <Show
+      when={table.getRowModel().rows?.length || props.noDataRow !== undefined}
+      fallback={props.fallback}
+    >
       <Table id={props.id} class={props.class}>
         <Show when={!props.hideHeader}>
           <TableHeader>
@@ -333,6 +341,23 @@ export function DataTable<TData, TValue = any>(
               </TableRow>
             )}
           </For>
+          <Show
+            when={
+              !table.getRowModel().rows?.length && props.noDataRow !== undefined
+            }
+          >
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                class="text-center text-sub"
+              >
+                {props.noDataRow !== undefined &&
+                  (props.noDataRow === true
+                    ? "No data"
+                    : props.noDataRow.content)}
+              </TableCell>
+            </TableRow>
+          </Show>
         </TableBody>
       </Table>
     </Show>
