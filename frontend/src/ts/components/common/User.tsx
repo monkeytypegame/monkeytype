@@ -124,7 +124,7 @@ export function User(props: Props): JSXElement {
 
       <div
         class={cn(
-          "flex items-center justify-center gap-2",
+          "flex items-center justify-center gap-[0.5em]",
           cn(
             props.flagsColor === "text" && "text-text",
             props.flagsColor === "sub" && "text-sub",
