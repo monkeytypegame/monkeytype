@@ -55,53 +55,6 @@ export function Inbox(): JSXElement {
     });
   };
 
-  const Entry = (props: { entry: InboxItem }) => {
-    return (
-      <div class="grid grid-cols-[0.25rem_auto_max-content] gap-x-2 gap-y-4 [&>div>button]:opacity-0 hover:[&>div>button]:opacity-100">
-        <div
-          classList={{
-            "bg-main": props.entry.status !== "read",
-            "bg-sub-alt": props.entry.status === "read",
-          }}
-        ></div>
-        <div class="flex flex-col gap-1">
-          <div class="text-[0.6rem] text-sub opacity-50">
-            {formatDistanceToNowStrict(props.entry.timestamp)} ago
-          </div>
-          <div class="text-sub">{props.entry.subject}</div>
-          <div>{props.entry.body}</div>
-          <Show when={props.entry.status === "unclaimed"}>
-            <div>
-              <Fa icon="fa-gift" fixedWidth />
-              {props.entry.rewards.length}
-            </div>
-          </Show>
-        </div>
-        <div class="content-center">
-          <Show when={props.entry.status === "unclaimed"}>
-            <Button
-              variant="text"
-              fa={{ icon: "fa-gift", fixedWidth: true }}
-              balloon={{ text: "Claim", position: "left" }}
-              onClick={() => {
-                mutate({ id: props.entry.id, status: "read" });
-              }}
-            />
-          </Show>
-
-          <Show when={props.entry.status !== "unclaimed"}>
-            <Button
-              variant="text"
-              fa={{ icon: "fa-trash", fixedWidth: true }}
-              balloon={{ text: "Delete", position: "left" }}
-              onClick={() => mutate({ id: props.entry.id, status: "deleted" })}
-            />
-          </Show>
-        </div>
-      </div>
-    );
-  };
-
   const inboxSize = () => inboxQuery().length;
 
   return (
@@ -142,7 +95,7 @@ export function Inbox(): JSXElement {
                 each={inbox}
                 fallback={<div class="place-self-center">Nothing to show</div>}
               >
-                {(entry) => <Entry entry={entry} />}
+                {(entry) => <Entry entry={entry} mutate={mutate} />}
               </For>
             </>
           )}
@@ -196,4 +149,61 @@ function claimRewards(pendingRewards: AllRewards[]) {
       { durationMs: 5000, customTitle: "Reward", customIcon: "gift" },
     );
   }
+}
+
+function Entry(props: {
+  entry: InboxItem;
+  mutate: (args: { id: string; status: InboxItem["status"] }) => void;
+}): JSXElement {
+  return (
+    <div class="grid grid-cols-[0.25rem_auto_max-content] gap-x-2 gap-y-4 text-em-base [&>div>button]:opacity-0 hover:[&>div>button]:opacity-100">
+      <div
+        class={cn("rounded-full", {
+          "bg-main": props.entry.status !== "read",
+          "bg-sub-alt": props.entry.status === "read",
+        })}
+      ></div>
+      <div class="flex flex-col gap-0.5">
+        <div class="text-em-sm text-sub opacity-50">
+          {formatDistanceToNowStrict(props.entry.timestamp)} ago
+        </div>
+        <div class="text-sub">{props.entry.subject}</div>
+        <div>{props.entry.body}</div>
+        <Show when={props.entry.status === "unclaimed"}>
+          <div
+            class={cn(
+              "flex items-baseline gap-1",
+              // "bg-sub-alt w-max px-2 py-1 rounded",
+            )}
+          >
+            <Fa icon="fa-gift" fixedWidth />
+            {props.entry.rewards.length}
+          </div>
+        </Show>
+      </div>
+      <div class="content-center">
+        <Show when={props.entry.status === "unclaimed"}>
+          <Button
+            variant="text"
+            fa={{ icon: "fa-gift", fixedWidth: true }}
+            balloon={{ text: "Claim", position: "left" }}
+            onClick={() => {
+              props.mutate({ id: props.entry.id, status: "read" });
+            }}
+          />
+        </Show>
+
+        <Show when={props.entry.status !== "unclaimed"}>
+          <Button
+            variant="text"
+            fa={{ icon: "fa-trash", fixedWidth: true }}
+            balloon={{ text: "Delete", position: "left" }}
+            onClick={() =>
+              props.mutate({ id: props.entry.id, status: "deleted" })
+            }
+          />
+        </Show>
+      </div>
+    </div>
+  );
 }
