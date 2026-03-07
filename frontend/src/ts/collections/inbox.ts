@@ -44,7 +44,7 @@ export const inboxCollection = createCollection(
 
       const response = await Ape.users.getInbox();
       if (response.status !== 200) {
-        throw new Error("Error fetching user inbox" + response.body.message);
+        throw new Error("Error fetching user inbox: " + response.body.message);
       }
       setMaxMailboxSize(response.body.data.maxMail);
       return response.body.data.inbox.map(addStatus);
