@@ -82,7 +82,13 @@ export const getLeaderboardQueryOptions = (
       }
 
       if (response.body.data.entries.length === 0 && options.page !== 0) {
-        setPage(Math.floor(response.body.data.count / pageSize));
+        const page = Math.max(
+          0,
+          Math.ceil(response.body.data.count / pageSize) - 1,
+        );
+        if (page !== options.page) {
+          setPage(page);
+        }
       }
       return response.body.data;
     },
