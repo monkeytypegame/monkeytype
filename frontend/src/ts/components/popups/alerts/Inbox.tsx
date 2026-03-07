@@ -56,25 +56,17 @@ export function Inbox(): JSXElement {
     }
   };
 
-  const recountUnread = (): void => {
-    let count = 0;
-    inboxCollection.forEach((it) => {
-      if (it.status === "unclaimed" || it.status === "unread") {
-        count++;
-      }
-    });
-    updateInboxUnreadSize(count);
-  };
-
   createEffect(() => {
-    inboxQuery();
-    recountUnread();
+    const items = inboxQuery();
+    const count = items.filter(
+      (it) => it.status === "unclaimed" || it.status === "unread",
+    ).length;
+    updateInboxUnreadSize(count);
   });
 
   const mutate = createPacedMutations<Pick<InboxItem, "id" | "status">>({
     onMutate: ({ id, status }) => {
       inboxCollection.update(id, (old) => (old.status = status));
-      recountUnread();
     },
     mutationFn: async (changes) => {
       //@ts-expect-error cant figure out the type
