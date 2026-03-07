@@ -156,14 +156,14 @@ function Entry(props: {
   mutate: (args: { id: string; status: InboxItem["status"] }) => void;
 }): JSXElement {
   return (
-    <div class="grid grid-cols-[0.25rem_auto_max-content] gap-x-2 gap-y-4 text-em-base [&>div>button]:opacity-0 hover:[&>div>button]:opacity-100">
+    <div class="grid grid-cols-[0.25rem_auto_max-content] gap-x-2 gap-y-4 [&>div>button]:opacity-0 hover:[&>div>button]:opacity-100">
       <div
         class={cn("rounded-full", {
           "bg-main": props.entry.status !== "read",
           "bg-sub-alt": props.entry.status === "read",
         })}
       ></div>
-      <div class="flex flex-col gap-0.5">
+      <div class="flex flex-col gap-1">
         <div class="text-em-sm text-sub opacity-50">
           {formatDistanceToNowStrict(props.entry.timestamp)} ago
         </div>
