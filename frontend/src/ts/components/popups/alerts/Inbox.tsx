@@ -28,6 +28,34 @@ export function Inbox(): JSXElement {
     () => getModalVisibility("Alerts")?.visible ?? false,
   );
 
+  const claimRewards = (pendingRewards: AllRewards[]) => {
+    if (pendingRewards.length === 0) return;
+
+    let totalXp = 0;
+    const badgeNames: string[] = [];
+    for (const reward of pendingRewards) {
+      if (reward.type === "xp") {
+        totalXp += reward.item;
+      } else if (reward.type === "badge") {
+        const badge = BadgeController.getById(reward.item.id);
+        if (badge) {
+          badgeNames.push(badge.name);
+          addBadge(reward.item);
+        }
+      }
+    }
+    if (totalXp > 0) {
+      addXp(totalXp);
+    }
+
+    if (badgeNames.length > 0) {
+      showSuccessNotification(
+        `New badge${badgeNames.length > 1 ? "s" : ""} unlocked: ${badgeNames.join(", ")}`,
+        { durationMs: 5000, customTitle: "Reward", customIcon: "gift" },
+      );
+    }
+  };
+
   const mutate = createPacedMutations<Pick<InboxItem, "id" | "status">>({
     onMutate: ({ id, status }) => {
       inboxCollection.update(id, (old) => (old.status = status));
@@ -126,34 +154,6 @@ function InboxCounter(props: {
       {props.size}/{props.maxSize}
     </div>
   );
-}
-
-function claimRewards(pendingRewards: AllRewards[]) {
-  if (pendingRewards.length === 0) return;
-
-  let totalXp = 0;
-  const badgeNames: string[] = [];
-  for (const reward of pendingRewards) {
-    if (reward.type === "xp") {
-      totalXp += reward.item;
-    } else if (reward.type === "badge") {
-      const badge = BadgeController.getById(reward.item.id);
-      if (badge) {
-        badgeNames.push(badge.name);
-        addBadge(reward.item);
-      }
-    }
-  }
-  if (totalXp > 0) {
-    addXp(totalXp);
-  }
-
-  if (badgeNames.length > 0) {
-    showSuccessNotification(
-      `New badge${badgeNames.length > 1 ? "s" : ""} unlocked: ${badgeNames.join(", ")}`,
-      { durationMs: 5000, customTitle: "Reward", customIcon: "gift" },
-    );
-  }
 }
 
 function Entry(props: {
