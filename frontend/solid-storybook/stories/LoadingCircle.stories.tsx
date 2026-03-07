@@ -18,18 +18,6 @@ const meta = preview.meta({
   },
 });
 
-export const Icon = meta.story({
-  args: {
-    mode: "icon",
-  },
-});
-
-export const Svg = meta.story({
-  args: {
-    mode: "svg",
-  },
-});
-
 export const AllVariants = meta.story({
   render: () => (
     <div style={{ display: "flex", gap: "32px", "align-items": "center" }}>
@@ -54,7 +42,7 @@ export const AllVariants = meta.story({
           gap: "8px",
         }}
       >
-        <LoadingCircle mode="svg" />
+        <LoadingCircle mode="svg" class="h-8 w-8" />
         <div style={{ "font-size": "12px", color: "var(--sub-color)" }}>
           SVG
         </div>
