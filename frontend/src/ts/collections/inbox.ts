@@ -56,7 +56,7 @@ export const inboxCollection = createCollection(
 
 export async function flushPendingChanges({
   transaction,
-}: MutationFnParams<Pick<InboxItem, "id" | "status">>): Promise<unknown> {
+}: MutationFnParams<InboxItem>): Promise<unknown> {
   const updatedStatus = Object.groupBy(
     transaction.mutations.map((it) => it.modified),
     (it) => it.status,

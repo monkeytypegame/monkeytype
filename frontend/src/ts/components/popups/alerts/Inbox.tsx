@@ -64,12 +64,14 @@ export function Inbox(): JSXElement {
     updateInboxUnreadSize(count);
   });
 
-  const mutate = createPacedMutations<Pick<InboxItem, "id" | "status">>({
+  const mutate = createPacedMutations<
+    Pick<InboxItem, "id" | "status">,
+    InboxItem
+  >({
     onMutate: ({ id, status }) => {
       inboxCollection.update(id, (old) => (old.status = status));
     },
     mutationFn: async (changes) => {
-      //@ts-expect-error cant figure out the type
       await flushPendingChanges(changes);
 
       const allRewards: AllRewards[] = changes.transaction.mutations.flatMap(
