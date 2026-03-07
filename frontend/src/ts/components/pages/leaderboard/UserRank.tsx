@@ -76,7 +76,7 @@ export function UserRank(props: {
         fallback={<LoadingCircle class="w-full text-center text-2xl" />}
       >
         <Conditional
-          if={true}
+          if={props.data !== null}
           then={
             <Table
               type={props.type}
