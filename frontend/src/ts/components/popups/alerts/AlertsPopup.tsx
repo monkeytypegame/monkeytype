@@ -35,7 +35,6 @@ export function AlertsPopup(): JSXElement {
       }}
     >
       <MobileClose />
-      <Button text="sync" onClick={() => flushStrategy.flush()} />
       <div class="grid h-full content-baseline gap-8 overflow-y-scroll px-4 text-xs">
         <Inbox />
         <Separator />
