@@ -23,7 +23,7 @@ const meta = preview.meta({
     fa: {
       control: "object",
     },
-    ariaLabel: {
+    balloon: {
       control: "object",
     },
     class: {
