@@ -1,13 +1,14 @@
 import { createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
+import Ape from "../../ape";
 import { signIn } from "../../auth";
 import { inboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
-import { hideModal } from "../../stores/modals";
+import { hideModal, showModal } from "../../stores/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -144,15 +145,7 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-inbox",
       label: () => "Add Debug Inbox Item",
       onClick: () => {
-        inboxCollection.utils.writeInsert({
-          id: crypto.randomUUID(),
-          subject: "Debug XP Reward",
-          body: "Here is your 1000 XP reward for debugging.",
-          timestamp: Date.now(),
-          status: "unclaimed" as const,
-          rewards: [{ type: "xp" as const, item: 1000 }],
-        });
-        hideModal("DevOptions");
+        showModal("DevInboxPicker");
       },
     },
     {
@@ -172,20 +165,80 @@ export function DevOptionsModal(): JSXElement {
     },
   ];
 
+  const addDebugInboxItem = (rewardType: "xp" | "badge" | "none"): void => {
+    hideModal("DevInboxPicker");
+    void Ape.dev
+      .addDebugInboxItem({ body: { rewardType } })
+      .then((response) => {
+        if (response.status !== 200) {
+          showErrorNotification("Failed to add inbox item", {
+            details: response.body,
+          });
+          return;
+        }
+        showSuccessNotification("Debug inbox item added");
+        inboxCollection.utils.writeInsert({
+          id: crypto.randomUUID(),
+          subject: "Debug Inbox Item",
+          body:
+            rewardType === "xp"
+              ? "Here is your 1000 XP reward for debugging."
+              : rewardType === "badge"
+                ? "Here is your Developer badge reward."
+                : "A debug inbox item with no reward.",
+          timestamp: Date.now(),
+          status:
+            rewardType === "none"
+              ? ("unread" as const)
+              : ("unclaimed" as const),
+          rewards:
+            rewardType === "xp"
+              ? [{ type: "xp" as const, item: 1000 }]
+              : rewardType === "badge"
+                ? [{ type: "badge" as const, item: { id: 1 } }]
+                : [],
+        });
+      });
+  };
+
   return (
-    <AnimatedModal id="DevOptions" title="Dev Options">
-      <div class="flex flex-col gap-4">
-        <For each={buttons}>
-          {(btn) => (
-            <Button
-              variant="button"
-              onClick={btn.onClick}
-              fa={{ icon: btn.icon, fixedWidth: true }}
-              text={btn.label()}
-            />
-          )}
-        </For>
-      </div>
-    </AnimatedModal>
+    <>
+      <AnimatedModal id="DevOptions" title="Dev Options">
+        <div class="flex flex-col gap-4">
+          <For each={buttons}>
+            {(btn) => (
+              <Button
+                variant="button"
+                onClick={btn.onClick}
+                fa={{ icon: btn.icon, fixedWidth: true }}
+                text={btn.label()}
+              />
+            )}
+          </For>
+        </div>
+      </AnimatedModal>
+      <AnimatedModal id="DevInboxPicker" title="Choose Reward Type">
+        <div class="flex flex-col gap-4">
+          <Button
+            variant="button"
+            onClick={() => addDebugInboxItem("xp")}
+            fa={{ icon: "fa-star", fixedWidth: true }}
+            text="XP Reward (1000)"
+          />
+          <Button
+            variant="button"
+            onClick={() => addDebugInboxItem("badge")}
+            fa={{ icon: "fa-certificate", fixedWidth: true }}
+            text="Badge Reward"
+          />
+          <Button
+            variant="button"
+            onClick={() => addDebugInboxItem("none")}
+            fa={{ icon: "fa-envelope", fixedWidth: true }}
+            text="No Reward"
+          />
+        </div>
+      </AnimatedModal>
+    </>
   );
 }

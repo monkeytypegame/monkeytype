@@ -11,9 +11,11 @@ import MonkeyError from "../../utils/error";
 
 import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import {
+  AddDebugInboxItemRequest,
   GenerateDataRequest,
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
+import { buildMonkeyMail } from "../../utils/monkey-mail";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { MonkeyRequest } from "../types";
 import { DBResult } from "../../utils/result";
@@ -40,6 +42,37 @@ export async function createTestData(
   await updateLeaderboard();
 
   return new MonkeyResponse("test data created", { uid, email });
+}
+
+export async function addDebugInboxItem(
+  req: MonkeyRequest<undefined, AddDebugInboxItemRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { rewardType } = req.body;
+  const inboxConfig = req.ctx.configuration.users.inbox;
+
+  const rewards =
+    rewardType === "xp"
+      ? [{ type: "xp" as const, item: 1000 }]
+      : rewardType === "badge"
+        ? [{ type: "badge" as const, item: { id: 1 } }]
+        : [];
+
+  const body =
+    rewardType === "xp"
+      ? "Here is your 1000 XP reward for debugging."
+      : rewardType === "badge"
+        ? "Here is your Developer badge reward."
+        : "A debug inbox item with no reward.";
+
+  const mail = buildMonkeyMail({
+    subject: "Debug Inbox Item",
+    body,
+    rewards,
+  });
+
+  await UserDal.addToInbox(uid, [mail], inboxConfig);
+  return new MonkeyResponse("Debug inbox item added", null);
 }
 
 async function getOrCreateUser(

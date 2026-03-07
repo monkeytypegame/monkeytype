@@ -6,6 +6,7 @@ export type ModalId =
   | "Support"
   | "Commandline"
   | "DevOptions"
+  | "DevInboxPicker"
   | "RegisterCaptcha"
   | "Alerts";
 
