@@ -3,7 +3,6 @@ import { envConfig } from "virtual:env-config";
 
 import Ape from "../../ape";
 import { signIn } from "../../auth";
-import { inboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
@@ -177,27 +176,6 @@ export function DevOptionsModal(): JSXElement {
           return;
         }
         showSuccessNotification("Debug inbox item added");
-        inboxCollection.utils.writeInsert({
-          id: crypto.randomUUID(),
-          subject: "Debug Inbox Item",
-          body:
-            rewardType === "xp"
-              ? "Here is your 1000 XP reward for debugging."
-              : rewardType === "badge"
-                ? "Here is your Developer badge reward."
-                : "A debug inbox item with no reward.",
-          timestamp: Date.now(),
-          status:
-            rewardType === "none"
-              ? ("unread" as const)
-              : ("unclaimed" as const),
-          rewards:
-            rewardType === "xp"
-              ? [{ type: "xp" as const, item: 1000 }]
-              : rewardType === "badge"
-                ? [{ type: "badge" as const, item: { id: 1 } }]
-                : [],
-        });
       });
   };
 
