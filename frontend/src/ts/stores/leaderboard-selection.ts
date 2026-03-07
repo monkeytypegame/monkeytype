@@ -89,7 +89,7 @@ export function readGetParameters(
   setSelection({ ...getSelection(), ...newSelection } as Selection);
 
   if (params.page !== undefined) {
-    setPage(params.page - 1);
+    setPage(Math.max(0, params.page - 1));
   }
 }
 
