@@ -89,11 +89,11 @@ export function Inbox(): JSXElement {
   });
 
   const updateInbox = (options: {
-    from: InboxItem["status"];
+    from: InboxItem["status"][];
     to: InboxItem["status"];
   }): void => {
     inboxCollection.forEach((it) => {
-      if (it.status === options.from) {
+      if (options.from.includes(it.status)) {
         mutate({ id: it.id, status: options.to });
       }
     });
@@ -124,19 +124,25 @@ export function Inbox(): JSXElement {
                 <Button
                   fa={{ icon: "fa-gift", fixedWidth: true }}
                   text="Claim all"
-                  onClick={() => updateInbox({ from: "unclaimed", to: "read" })}
+                  onClick={() =>
+                    updateInbox({ from: ["unclaimed"], to: "read" })
+                  }
                 />
               </Show>
               <Show
                 when={
                   inboxQuery().length > 0 &&
-                  inboxQuery().every((it) => it.status === "read")
+                  inboxQuery().every(
+                    (it) => it.status === "read" || it.status === "unread",
+                  )
                 }
               >
                 <Button
                   fa={{ icon: "fa-trash", fixedWidth: true }}
                   text="Delete all"
-                  onClick={() => updateInbox({ from: "read", to: "deleted" })}
+                  onClick={() =>
+                    updateInbox({ from: ["read", "unread"], to: "deleted" })
+                  }
                 />
               </Show>
 
