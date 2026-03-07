@@ -25,7 +25,15 @@ async function copyDetails(
     message: notification.message,
     details: notification.details,
   };
-  await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+  try {
+    const text = JSON.stringify(data, null, 2);
+    await navigator.clipboard.writeText(text);
+    window.alert("Copied notification details to clipboard.");
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Failed to copy notification details:", error);
+    window.alert("Failed to copy notification details.");
+  }
 }
 
 export function NotificationHistory(): JSXElement {
