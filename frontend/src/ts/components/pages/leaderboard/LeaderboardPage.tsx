@@ -11,10 +11,12 @@ import {
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
 import {
+  getGoToUserPage,
   getPage,
   getSelection,
   pageSize,
   Selection,
+  setGoToUserPage,
   setPage,
   setSelection,
   updateGetParameters,
@@ -61,6 +63,18 @@ export function LeaderboardPage(): JSXElement {
   createEffect(() => {
     if (isOpen() && rankQuery.isSuccess) {
       syncLbMemory();
+    }
+  });
+
+  //handle goToUserPage url param once rank is loaded
+  createEffect(() => {
+    if (isOpen() && getGoToUserPage() && rankQuery.isSuccess) {
+      setGoToUserPage(false);
+      const page = userPage();
+      if (page !== undefined) {
+        setPage(page);
+        setScrollToUser(true);
+      }
     }
   });
 

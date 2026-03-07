@@ -48,6 +48,7 @@ export type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
 
 const [getSelectionLs, setSelection] = lsSelection();
 export const [getPage, setPage] = createSignal(0);
+export const [getGoToUserPage, setGoToUserPage] = createSignal(false);
 
 // Reset friendsOnly when connections are disabled
 createEffect(() => {
@@ -83,12 +84,14 @@ export function readGetParameters(
     newSelection.mode2 = params.mode2 ?? "15";
     newSelection.language = params.language ?? "english";
     newSelection.previous =
-      (params.type === "daily" && params.yesterday) ?? false;
+      params.type === "daily" && (params.yesterday ?? false);
   }
 
   setSelection({ ...getSelection(), ...newSelection } as Selection);
 
-  if (params.page !== undefined) {
+  if (params.goToUserPage === true) {
+    setGoToUserPage(true);
+  } else if (params.page !== undefined) {
     setPage(Math.max(0, params.page - 1));
   }
 }
