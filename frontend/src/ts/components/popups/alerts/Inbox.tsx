@@ -1,7 +1,7 @@
 import { AllRewards } from "@monkeytype/schemas/users";
 import { createPacedMutations } from "@tanstack/solid-db";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
-import { For, JSXElement, Show } from "solid-js";
+import { createEffect, For, JSXElement, Show } from "solid-js";
 
 import {
   flushPendingChanges,
@@ -12,7 +12,7 @@ import {
   useInboxQuery,
 } from "../../../collections/inbox";
 import * as BadgeController from "../../../controllers/badge-controller";
-import { addBadge, addXp } from "../../../db";
+import { addBadge, addXp, updateInboxUnreadSize } from "../../../db";
 import { getModalVisibility } from "../../../stores/modals";
 import { showSuccessNotification } from "../../../stores/notifications";
 import { cn } from "../../../utils/cn";
@@ -56,9 +56,25 @@ export function Inbox(): JSXElement {
     }
   };
 
+  const recountUnread = (): void => {
+    let count = 0;
+    inboxCollection.forEach((it) => {
+      if (it.status === "unclaimed" || it.status === "unread") {
+        count++;
+      }
+    });
+    updateInboxUnreadSize(count);
+  };
+
+  createEffect(() => {
+    inboxQuery();
+    recountUnread();
+  });
+
   const mutate = createPacedMutations<Pick<InboxItem, "id" | "status">>({
     onMutate: ({ id, status }) => {
       inboxCollection.update(id, (old) => (old.status = status));
+      recountUnread();
     },
     mutationFn: async (changes) => {
       //@ts-expect-error cant figure out the type
