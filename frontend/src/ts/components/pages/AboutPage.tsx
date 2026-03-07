@@ -26,7 +26,7 @@ export function prefetchAboutPage(): void {
 }
 
 export function AboutPage(): JSXElement {
-  const isOpen = (): boolean => getActivePage() === "about";
+  const isOpen = () => getActivePage() === "about";
 
   const contributors = useQuery(() => ({
     ...getContributorsQueryOptions(),

@@ -30,12 +30,14 @@ type Person = {
 
 const columns = [
   {
+    id: "name",
     accessorKey: "name",
     header: "Name",
     cell: (info: any) => info.getValue(),
-    meta: { breakpoint: "xxs" },
+    meta: { maxBreakpoint: "sm" },
   },
   {
+    id: "age",
     accessorKey: "age",
     header: "Age",
     cell: (info: any) => info.getValue(),
@@ -144,8 +146,13 @@ describe("DataTable", () => {
     });
 
     render(() => <DataTable id="breakpoints" columns={columns} data={data} />);
+    const nameHeader = screen.getByRole("button", {
+      name: "Name",
+    }).parentElement;
+    const ageHeader = screen.getByRole("button", { name: "Age" }).parentElement;
 
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.queryByText("Age")).not.toBeInTheDocument();
+    expect(nameHeader).not.toHaveClass("hidden");
+    expect(nameHeader).toHaveClass("sm:hidden");
+    expect(ageHeader).toHaveClass("hidden sm:table-cell");
   });
 });

@@ -4,12 +4,14 @@ import {
   badges,
   UserBadge as UserBadgeType,
 } from "../../controllers/badge-controller";
+import { cn } from "../../utils/cn";
 import { Balloon, BalloonProps } from "./Balloon";
 import { Fa } from "./Fa";
 
 export function UserBadge(props: {
   id?: number;
   iconOnly?: true;
+  class?: string;
   balloon?: Omit<BalloonProps, "text">;
 }): JSXElement {
   const badge = (): UserBadgeType | undefined =>
@@ -17,7 +19,7 @@ export function UserBadge(props: {
   return (
     <Show when={badge() !== undefined}>
       <Balloon
-        class="rounded-[0.5em] text-[0.9em]"
+        class={cn("rounded-[0.5em] text-em-xs", props.class)}
         text={badge()?.description ?? ""}
         {...props.balloon}
         style={{
