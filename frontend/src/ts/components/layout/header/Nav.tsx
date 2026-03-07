@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { showAlerts } from "../../../elements/alerts";
 import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
@@ -123,25 +122,6 @@ export function Nav(): JSXElement {
         router-link
       />
       <div class="grow"></div>
-      <Button
-        variant="text"
-        fa={{
-          icon: "fa-bell",
-          fixedWidth: true,
-        }}
-        dataset={{
-          "data-nav-item": "alerts",
-        }}
-        onClick={() => {
-          void showAlerts();
-        }}
-        class={cn(buttonClass(), "relative")}
-      >
-        <NotificationBubble
-          variant="fromCorner"
-          show={showAlertsNotificationBubble()}
-        />
-      </Button>
       <Button
         variant="text"
         fa={{
