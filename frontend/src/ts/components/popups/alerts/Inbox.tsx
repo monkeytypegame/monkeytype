@@ -83,7 +83,12 @@ export function Inbox(): JSXElement {
                   onClick={() => updateInbox({ from: "unclaimed", to: "read" })}
                 />
               </Show>
-              <Show when={inboxQuery().some((it) => it.status === "read")}>
+              <Show
+                when={
+                  inboxQuery().length > 0 &&
+                  inboxQuery().every((it) => it.status === "read")
+                }
+              >
                 <Button
                   fa={{ icon: "fa-trash", fixedWidth: true }}
                   text="Delete all"
