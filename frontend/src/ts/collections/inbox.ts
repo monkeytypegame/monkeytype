@@ -62,12 +62,16 @@ export async function flushPendingChanges({
     (it) => it.status,
   );
 
-  await Ape.users.updateInbox({
+  const response = await Ape.users.updateInbox({
     body: {
       mailIdsToMarkRead: updatedStatus.read?.map((it) => it.id),
       mailIdsToDelete: updatedStatus.deleted?.map((it) => it.id),
     },
   });
+
+  if (response.status !== 200) {
+    throw new Error("Error updating user inbox: " + response.body.message);
+  }
 
   inboxCollection.utils.writeBatch(() => {
     updatedStatus.deleted?.forEach((deleted) =>
