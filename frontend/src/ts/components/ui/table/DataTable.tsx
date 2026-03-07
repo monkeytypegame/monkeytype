@@ -17,12 +17,13 @@ import {
   JSXElement,
   Match,
   Show,
+  splitProps,
   Switch,
 } from "solid-js";
 import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { bp } from "../../../signals/breakpoints";
+import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import {
@@ -41,7 +42,8 @@ const SortingStateSchema = z.array(
   }),
 );
 
-export type DataTableColumnDef<TData, TValue> =
+// oxlint-disable-next-line typescript/no-explicit-any
+export type DataTableColumnDef<TData, TValue = any> =
   | ColumnDef<TData, TValue>
   | AccessorFnColumnDef<TData, TValue>
   | AccessorKeyColumnDef<TData, TValue>;
@@ -57,9 +59,16 @@ export type DataTableProps<TData, TValue> = {
     class: string;
     activeRow: Accessor<string | null>;
   };
+  class?: string;
+  noDataRow?:
+    | true
+    | {
+        content: JSXElement;
+      };
 };
 
-export function DataTable<TData, TValue = unknown>(
+// oxlint-disable-next-line typescript/no-explicit-any
+export function DataTable<TData, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -80,28 +89,6 @@ export function DataTable<TData, TValue = unknown>(
             },
           ]
         : [],
-  });
-
-  const columnVisibility = createMemo(() => {
-    const current = bp();
-    const result = Object.fromEntries(
-      props.columns.map((col, index) => {
-        col.id =
-          col.id ??
-          ("accessorKey" in col && col.accessorKey !== null
-            ? String(col.accessorKey)
-            : `__col_${index}`);
-
-        const visible =
-          current[col.meta?.breakpoint ?? "xxs"] &&
-          (col.meta?.maxBreakpoint === undefined ||
-            !current[col.meta?.maxBreakpoint]);
-
-        return [col.id, visible];
-      }),
-    );
-
-    return result;
   });
 
   const [rowSelection, setRowSelection] = createSignal({});
@@ -135,23 +122,66 @@ export function DataTable<TData, TValue = unknown>(
       get sorting() {
         return sorting();
       },
-      get columnVisibility() {
-        return columnVisibility();
-      },
       get rowSelection() {
         return rowSelection();
       },
     },
   });
 
+  //create column visibility classes once, make them accessible via the column.id
+  const columnVisibility = createMemo(() => {
+    return Object.fromEntries(
+      table.getAllColumns().map((it) => {
+        const breakpoint =
+          it.columnDef.meta?.breakpoint === "xxl"
+            ? "2xl"
+            : it.columnDef.meta?.breakpoint;
+        const maxBreakpoint =
+          it.columnDef.meta?.maxBreakpoint === "xxl"
+            ? "2xl"
+            : it.columnDef.meta?.maxBreakpoint;
+
+        // 🚨 Tailwind does not generate CSS for dynamically constructed class names.
+        const classes = {
+          hidden: false,
+          "xxs:table-cell": false,
+          "xs:table-cell": false,
+          "sm:table-cell": false,
+          "md:table-cell": false,
+          "lg:table-cell": false,
+          "xl:table-cell": false,
+          "2xl:table-cell": false,
+          "xxs:hidden": false,
+          "xs:hidden": false,
+          "sm:hidden": false,
+          "md:hidden": false,
+          "lg:hidden": false,
+          "xl:hidden": false,
+          "2xl:hidden": false,
+        };
+        if (breakpoint !== undefined) {
+          classes.hidden = true;
+          classes[`${breakpoint}:table-cell`] = true;
+        }
+        if (maxBreakpoint !== undefined) {
+          classes[`${maxBreakpoint}:hidden`] = true;
+        }
+        return [it.id, classes];
+      }),
+    );
+  });
+
   return (
-    <Show when={table.getRowModel().rows?.length} fallback={props.fallback}>
-      <Table id={props.id}>
+    <Show
+      when={table.getRowModel().rows?.length || props.noDataRow !== undefined}
+      fallback={props.fallback}
+    >
+      <Table id={props.id} class={props.class}>
         <Show when={!props.hideHeader}>
           <TableHeader>
             <For each={table.getHeaderGroups()}>
               {(headerGroup) => (
-                <TableRow>
+                <TableRow class="odd:bg-bg">
                   <For each={headerGroup.headers}>
                     {(header) => (
                       <Conditional
@@ -166,6 +196,7 @@ export function DataTable<TData, TValue = unknown>(
                                   ? "descending"
                                   : "none"
                             }
+                            class={cn(columnVisibility()[header.column.id])}
                           >
                             <button
                               type="button"
@@ -173,18 +204,21 @@ export function DataTable<TData, TValue = unknown>(
                               onClick={(e) => {
                                 header.column.getToggleSortingHandler()?.(e);
                               }}
-                              class="m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt"
-                              classList={{
-                                "justify-start text-left":
-                                  (header.column.columnDef.meta?.align ??
-                                    "left") === "left",
-                                "justify-center text-center":
-                                  header.column.columnDef.meta?.align ===
-                                  "center",
-                                "justify-end  text-right":
-                                  header.column.columnDef.meta?.align ===
-                                  "right",
-                              }}
+                              class={cn(
+                                "m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt",
+                                {
+                                  "justify-start text-left":
+                                    (header.column.columnDef.meta?.align ??
+                                      "left") === "left",
+                                  "justify-center text-center":
+                                    header.column.columnDef.meta?.align ===
+                                    "center",
+                                  "justify-end text-right":
+                                    header.column.columnDef.meta?.align ===
+                                    "right",
+                                },
+                                header.column.columnDef.meta?.headerClass,
+                              )}
                               {...(header.column.columnDef.meta?.headerMeta ??
                                 {})}
                             >
@@ -221,16 +255,20 @@ export function DataTable<TData, TValue = unknown>(
                         else={
                           <TableHead
                             colSpan={header.colSpan}
-                            classList={{
-                              "text-left":
-                                (header.column.columnDef.meta?.align ??
-                                  "left") === "left",
-                              "text-center":
-                                header.column.columnDef.meta?.align ===
-                                "center",
-                              "text-right":
-                                header.column.columnDef.meta?.align === "right",
-                            }}
+                            class={cn(
+                              {
+                                "text-left":
+                                  (header.column.columnDef.meta?.align ??
+                                    "left") === "left",
+                                "text-center":
+                                  header.column.columnDef.meta?.align ===
+                                  "center",
+                                "text-right":
+                                  header.column.columnDef.meta?.align ===
+                                  "right",
+                              },
+                              columnVisibility()[header.column.id],
+                            )}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
                           >
@@ -265,25 +303,32 @@ export function DataTable<TData, TValue = unknown>(
               >
                 <For each={row.getVisibleCells()}>
                   {(cell) => {
-                    const cellMeta =
+                    const [cellClass, cellMeta] = splitProps(
                       typeof cell.column.columnDef.meta?.cellMeta === "function"
                         ? cell.column.columnDef.meta.cellMeta({
                             value: cell.getValue(),
                             row: cell.row.original,
                           })
-                        : (cell.column.columnDef.meta?.cellMeta ?? {});
+                        : (cell.column.columnDef.meta?.cellMeta ?? {}),
+                      ["class"],
+                    );
                     return (
                       <TableCell
                         {...cellMeta}
-                        classList={{
-                          "text-left":
-                            (cell.column.columnDef.meta?.align ?? "left") ===
-                            "left",
-                          "text-center":
-                            cell.column.columnDef.meta?.align === "center",
-                          "text-right":
-                            cell.column.columnDef.meta?.align === "right",
-                        }}
+                        class={cn(
+                          "",
+                          {
+                            "text-left":
+                              (cell.column.columnDef.meta?.align ?? "left") ===
+                              "left",
+                            "text-center":
+                              cell.column.columnDef.meta?.align === "center",
+                            "text-right":
+                              cell.column.columnDef.meta?.align === "right",
+                          },
+                          columnVisibility()[cell.column.id],
+                          cellClass.class,
+                        )}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -296,6 +341,23 @@ export function DataTable<TData, TValue = unknown>(
               </TableRow>
             )}
           </For>
+          <Show
+            when={
+              !table.getRowModel().rows?.length && props.noDataRow !== undefined
+            }
+          >
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                class="text-center text-sub"
+              >
+                {props.noDataRow !== undefined &&
+                  (props.noDataRow === true
+                    ? "No data"
+                    : props.noDataRow.content)}
+              </TableCell>
+            </TableRow>
+          </Show>
         </TableBody>
       </Table>
     </Show>

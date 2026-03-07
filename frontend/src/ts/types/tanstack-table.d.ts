@@ -39,5 +39,8 @@ declare module "@tanstack/solid-table" {
      * Can be used to define mouse-overs with `aria-label` and `data-balloon-pos`
      */
     headerMeta?: JSX.HTMLAttributes;
+
+    /** extra classes for the header */
+    headerClass?: string;
   }
 }

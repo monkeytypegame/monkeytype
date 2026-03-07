@@ -29,6 +29,7 @@ type BaseProps = {
   errorMessage?: string;
   ignoreError?: true;
   loader?: JSXElement;
+  errorClass?: string;
 };
 
 type QueryProps<T extends QueryMapping> = {
@@ -117,7 +118,9 @@ export default function AsyncContent<T extends QueryMapping>(
     props.loader ?? <LoadingCircle class="p-4 text-4xl" />;
 
   const errorText = (err: unknown): JSXElement | undefined =>
-    props.ignoreError ? undefined : <div class="error">{handleError(err)}</div>;
+    props.ignoreError ? undefined : (
+      <div class={props.errorClass}>{handleError(err)}</div>
+    );
 
   return (
     <ErrorBoundary fallback={props.ignoreError ? undefined : errorText}>

@@ -24,8 +24,7 @@ export type PopupKey =
   | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
-  | "devGenerateData"
-  | "lbGoToPage";
+  | "devGenerateData";
 
 export const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -50,7 +49,6 @@ export const list: Record<PopupKey, SimpleModal | undefined> = {
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
   devGenerateData: undefined,
-  lbGoToPage: undefined,
 };
 
 export function showPopup(
