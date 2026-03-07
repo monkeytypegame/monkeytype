@@ -146,12 +146,14 @@ export function DataTable<TData, TValue = any>(
           hidden: false,
           "xxs:table-cell": false,
           "xs:table-cell": false,
+          "sm:table-cell": false,
           "md:table-cell": false,
           "lg:table-cell": false,
           "xl:table-cell": false,
           "2xl:table-cell": false,
           "xxs:hidden": false,
           "xs:hidden": false,
+          "sm:hidden": false,
           "md:hidden": false,
           "lg:hidden": false,
           "xl:hidden": false,
@@ -159,11 +161,9 @@ export function DataTable<TData, TValue = any>(
         };
         if (breakpoint !== undefined) {
           classes.hidden = true;
-          //@ts-expect-error shhhh
           classes[`${breakpoint}:table-cell`] = true;
         }
         if (maxBreakpoint !== undefined) {
-          //@ts-expect-error shhhh
           classes[`${maxBreakpoint}:hidden`] = true;
         }
         return [it.id, classes];
