@@ -164,23 +164,29 @@ export async function onAuthStateChanged(
   ];
 
   //undefined means navigate to whatever the current window.location.pathname is
-  await navigate(undefined, {
-    force: true,
-    loadingOptions: {
-      loadingMode: () => {
-        if (user !== null) {
-          return "sync";
-        } else {
-          return "none";
-        }
+  document.body.classList.add("loading");
+
+  try {
+    await navigate(undefined, {
+      force: true,
+      loadingOptions: {
+        loadingMode: () => {
+          if (user !== null) {
+            return "sync";
+          } else {
+            return "none";
+          }
+        },
+        loadingPromise: async () => {
+          await userPromise;
+        },
+        style: "bar",
+        keyframes: keyframes,
       },
-      loadingPromise: async () => {
-        await userPromise;
-      },
-      style: "bar",
-      keyframes: keyframes,
-    },
-  });
+    });
+  } finally {
+    document.body.classList.remove("loading");
+  }
 
   AuthEvent.dispatch({
     type: "authStateChanged",
