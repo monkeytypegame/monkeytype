@@ -19,6 +19,7 @@ import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
 import { prefetchAboutPage } from "../../pages/AboutPage";
+import { prefetchLeaderboardPage } from "../../pages/leaderboard/LeaderboardPage";
 import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
@@ -91,6 +92,9 @@ export function Nav(): JSXElement {
         }}
         class={buttonClass()}
         href="/leaderboards"
+        onMouseEnter={() => {
+          prefetchLeaderboardPage();
+        }}
       />
       <Button
         variant="text"
@@ -150,7 +154,7 @@ export function Nav(): JSXElement {
               class={cn(
                 "relative",
                 "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
-                "focus-within:**:data-[ui-element='accountMenu']:pointer-events-auto focus-within:**:data-[ui-element='accountMenu']:opacity-100",
+                "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
               )}
             >
               <Button
@@ -174,6 +178,7 @@ export function Nav(): JSXElement {
                   level={getAnimatedLevel()}
                   showSpinner={getAccountButtonSpinner()}
                   showNotificationBubble={showFriendsNotificationBubble()}
+                  fontClass="text-em-xs"
                 />
               </Button>
               <AccountMenu

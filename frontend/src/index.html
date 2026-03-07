@@ -9,13 +9,6 @@
 
     <!-- theme component adds to the head element, don't move to head.html -->
     <mount data-component="theme"></mount>
-    <div id="notificationCenter">
-      <div class="clearAll button hidden">
-        <i class="fas fa-times"></i>
-        Clear all
-      </div>
-      <div class="history"></div>
-    </div>
     <div id="barTimerProgress" class="timerMain">
       <div class="opacityWrapper" style="opacity: 0">
         <div class="bar"></div>
@@ -58,7 +51,9 @@
         <load src="html/pages/404.html" />
         <load src="html/pages/account-settings.html" />
         <load src="html/pages/friends.html" />
-        <load src="html/pages/leaderboards.html" />
+        <div class="page pageLeaderboards hidden" id="pageLeaderboards">
+          <mount data-component="leaderboardpage"></mount>
+        </div>
       </main>
       <mount data-component="footer"></mount>
       <div

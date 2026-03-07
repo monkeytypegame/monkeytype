@@ -1,6 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
+import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
 import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
@@ -10,9 +11,7 @@ type BaseProps = {
   class?: string;
   variant?: "text" | "button";
   children?: JSXElement;
-  ariaLabel?:
-    | string
-    | { text: string; position: "up" | "down" | "left" | "right" };
+  balloon?: BalloonProps;
   "router-link"?: true;
   onClick?: () => void;
   onMouseEnter?: () => void;
@@ -50,16 +49,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     </>
   );
 
-  const ariaLabel = (): object => {
-    if (props.ariaLabel === undefined) return {};
-    if (typeof props.ariaLabel === "string") {
-      return { "aria-label": props.ariaLabel, "data-balloon-pos": "up" };
-    }
-    return {
-      "aria-label": props.ariaLabel.text,
-      "data-balloon-pos": props.ariaLabel.position,
-    };
-  };
+  const balloonHtmlProps = () => buildBalloonHtmlProperties(props.balloon);
 
   const getClasses = (): string => {
     return cn(
@@ -103,12 +93,13 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
               ? undefined
               : "noreferrer noopener"
           }
-          {...ariaLabel()}
+          {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
           data-ui-variant={variant()}
+          data-ui-element="button"
           {...props.dataset}
         >
           {content}
@@ -121,10 +112,11 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
           onMouseLeave={() => props.onMouseLeave?.()}
-          {...ariaLabel()}
+          {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
+          data-ui-element="button"
           {...props.dataset}
         >
           {content}

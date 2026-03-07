@@ -358,6 +358,36 @@ describe("Loaderboard Controller", () => {
         true,
       );
     });
+    it("should get null if no rank", async () => {
+      //GIVEN
+      await enableConnectionsFeature(true);
+      getLeaderboardRankMock.mockResolvedValue(null);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/rank")
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+          friendsOnly: true,
+        })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(getLeaderboardRankMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        uid,
+        true,
+      );
+      expect(body).toEqual({
+        message: "Rank retrieved",
+        data: null,
+      });
+    });
     it("should get with ape key", async () => {
       await acceptApeKeys(true);
       const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
