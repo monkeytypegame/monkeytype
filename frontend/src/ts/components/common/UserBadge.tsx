@@ -19,7 +19,10 @@ export function UserBadge(props: {
   return (
     <Show when={badge() !== undefined}>
       <Balloon
-        class={cn("rounded-[0.5em] text-em-xs", props.class)}
+        class={cn(
+          "rounded-[0.5em] px-[0.75em] py-[0.5em] text-em-xs",
+          props.class,
+        )}
         text={badge()?.description ?? ""}
         {...props.balloon}
         style={{
@@ -31,8 +34,7 @@ export function UserBadge(props: {
         <Show when={badge()?.icon}>
           <Fa
             icon={badge()?.icon ?? "fa-question"}
-            fixedWidth={false}
-            class="px-[0.75em] py-[0.5em]"
+            fixedWidth={props.iconOnly === true}
           />
           <Show when={!props.iconOnly}>
             <span class="hidden pr-[0.75em] md:inline">{badge()?.name}</span>
