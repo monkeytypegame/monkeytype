@@ -17,7 +17,7 @@
       }
     },
     {
-      "files": ["solid-storybook/**/*.tsx"],
+      "files": ["storybook/**/*.tsx"],
       "rules": {
         "explicit-function-return-type": "off",
         "no-explicit-any": "off",
