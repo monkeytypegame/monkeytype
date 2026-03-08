@@ -303,22 +303,26 @@ function AvatarAndName(props: {
             length: balloonPosition() === "up" ? "medium" : undefined,
           }}
         />
-        <For
-          each={props.profile.inventory?.badges
-            .filter((it) => !it.selected)
-            .map((it) => it.id)}
-        >
-          {(badgeId) => (
-            <UserBadge
-              id={badgeId}
-              iconOnly
-              balloon={{
-                position: balloonPosition(),
-                length: balloonPosition() === "up" ? "medium" : undefined,
-              }}
-            />
-          )}
-        </For>
+        <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
+          <div class="flex flex-row gap-1">
+            <For
+              each={props.profile.inventory?.badges
+                .filter((it) => !it.selected)
+                .map((it) => it.id)}
+            >
+              {(badgeId) => (
+                <UserBadge
+                  id={badgeId}
+                  iconOnly
+                  balloon={{
+                    position: balloonPosition(),
+                    length: balloonPosition() === "up" ? "medium" : undefined,
+                  }}
+                />
+              )}
+            </For>
+          </div>
+        </Show>
         <div class="grid">
           <Balloon inline text={accountAgeHint()} position={balloonPosition()}>
             Joined {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}
