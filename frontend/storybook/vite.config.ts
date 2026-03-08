@@ -32,6 +32,8 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
+            // oxlint-disable-next-line typescript/ban-ts-comment
+            //@ts-ignore
             provider: playwright(),
             instances: [
               {
