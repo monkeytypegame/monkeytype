@@ -30,8 +30,8 @@ const meta = preview.meta({
 
 export const Default = meta.story({
   args: {
-    discordId: undefined,
-    discordAvatar: undefined,
+    discordId: "102819690287489024",
+    discordAvatar: "a_af6c0b8ad26fdd6bcb86ed7bb40ee6e5",
   },
 });
 
