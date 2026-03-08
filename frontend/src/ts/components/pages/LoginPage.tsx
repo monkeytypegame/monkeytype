@@ -73,7 +73,7 @@ export function LoginPage(): JSXElement {
     const data = await signInWithGoogle(rememberMe());
     hideLoginPageLoader();
     if (!data.success) {
-      showErrorNotification(data.message);
+      showErrorNotification("Failed to sign in with Google: " + data.message);
       enableLoginPageInputs();
     }
   };
@@ -88,7 +88,7 @@ export function LoginPage(): JSXElement {
     const data = await signInWithGitHub(rememberMe());
     hideLoginPageLoader();
     if (!data.success) {
-      showErrorNotification(data.message);
+      showErrorNotification("Failed to sign in with GitHub: " + data.message);
       enableLoginPageInputs();
     }
   };
@@ -108,7 +108,7 @@ export function LoginPage(): JSXElement {
     const data = await signIn(loginEmail(), loginPassword(), rememberMe());
     hideLoginPageLoader();
     if (!data.success) {
-      showErrorNotification(data.message);
+      showErrorNotification("Failed to sign in: " + data.message);
       enableLoginPageInputs();
     }
   };
@@ -190,6 +190,7 @@ export function LoginPage(): JSXElement {
           placeholder="username"
           autocomplete="new-username"
           schema={UserNameSchema}
+          disabled={!getLoginPageInputsEnabled()}
           isValid={remoteValidation(
             async (name: string) =>
               Ape.users.getNameAvailability({ params: { name } }),
@@ -207,6 +208,7 @@ export function LoginPage(): JSXElement {
           placeholder="email"
           autocomplete="new-email"
           schema={UserEmailSchema}
+          disabled={!getLoginPageInputsEnabled()}
           isValid={emailIsValid}
           debounceDelay={0}
           callback={(result: ValidationResult) => {
@@ -237,6 +239,7 @@ export function LoginPage(): JSXElement {
               ? true
               : "verify email not matching email"
           }
+          disabled={!getLoginPageInputsEnabled()}
           debounceDelay={0}
           callback={(result: ValidationResult) => {
             setEmailVerifyValid(emailValid() && result.success);
@@ -248,6 +251,7 @@ export function LoginPage(): JSXElement {
           placeholder="password"
           autocomplete="new-password"
           name="new-password"
+          disabled={!getLoginPageInputsEnabled()}
           schema={isDevEnvironment() ? z.string().min(6) : PasswordSchema}
           callback={(result: ValidationResult) => {
             setPasswordValid(result.success);
@@ -259,6 +263,7 @@ export function LoginPage(): JSXElement {
           class="w-68"
           placeholder="verify password"
           autocomplete="verify-password"
+          disabled={!getLoginPageInputsEnabled()}
           name="verify-password"
           // oxlint-disable-next-line solid/reactivity
           isValid={async (passwordVerify: string) =>
