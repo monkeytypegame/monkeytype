@@ -1,6 +1,5 @@
 import Config, { setConfig } from "../config";
 import * as DB from "../db";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -449,7 +448,6 @@ function apply(val: number): void {
   if (val !== null && !isNaN(val) && val >= 0) {
     setConfig("quoteLength", [-2]);
     TestState.setSelectedQuoteId(val);
-    ManualRestart.set();
   } else {
     showNoticeNotification("Quote ID must be at least 1");
     return;

@@ -13,7 +13,6 @@ import {
 } from "../../stores/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
-import * as ManualRestart from "../../test/manual-restart-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
 import * as CustomTextState from "../../states/custom-text-name";
@@ -31,10 +30,12 @@ export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
     e.preventDefault();
     if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
+      let quickRestarted = true;
       if (e.shiftKey) {
-        ManualRestart.set();
+        quickRestarted = false;
       }
-      TestLogic.restart();
+
+      TestLogic.restart({ quickRestarted: quickRestarted });
       return;
     }
   }
@@ -87,10 +88,11 @@ export async function handleEnter(
   if (Config.quickRestart === "enter") {
     e.preventDefault();
     if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
+      let quickRestarted = true;
       if (e.shiftKey) {
-        ManualRestart.set();
+        quickRestarted = false;
       }
-      TestLogic.restart();
+      TestLogic.restart({ quickRestarted: quickRestarted });
       return;
     }
   }
@@ -202,11 +204,12 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     event.preventDefault();
 
+    let quickRestarted = true;
     if (event.shiftKey) {
-      ManualRestart.set();
+      quickRestarted = false;
     }
 
-    TestLogic.restart();
+    TestLogic.restart({ quickRestarted: quickRestarted });
     return;
   }
 }
