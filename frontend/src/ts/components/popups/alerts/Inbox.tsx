@@ -74,9 +74,9 @@ export function Inbox(): JSXElement {
     mutationFn: async (changes) => {
       await flushPendingChanges(changes);
 
-      const allRewards: AllRewards[] = changes.transaction.mutations.flatMap(
-        (it) => (it.original as InboxItem).rewards,
-      );
+      const allRewards: AllRewards[] = changes.transaction.mutations
+        .filter((it) => (it.original as InboxItem).status === "unclaimed")
+        .flatMap((it) => (it.original as InboxItem).rewards);
       claimRewards(allRewards);
     },
     strategy: flushStrategy.strategy,
