@@ -13,6 +13,7 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isLoggedIn } from "../signals/core";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
+import { showErrorNotification } from "../stores/notifications";
 
 export const flushStrategy = flushDebounceStrategy({ maxWait: 1000 * 60 * 5 });
 
@@ -44,6 +45,9 @@ export const inboxCollection = createCollection(
 
       const response = await Ape.users.getInbox();
       if (response.status !== 200) {
+        showErrorNotification(
+          "Error fetching user inbox: " + response.body.message,
+        );
         throw new Error("Error fetching user inbox: " + response.body.message);
       }
       setMaxMailboxSize(response.body.data.maxMail);
@@ -70,6 +74,9 @@ export async function flushPendingChanges({
   });
 
   if (response.status !== 200) {
+    showErrorNotification(
+      "Error updating user inbox: " + response.body.message,
+    );
     throw new Error("Error updating user inbox: " + response.body.message);
   }
 
