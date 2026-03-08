@@ -54,17 +54,17 @@
   --untyped-letter-color: #565f89;
 }
 
-header:not(.focus) #logo .text {
+header:not([data-focused]) [data-ui-element="logoText"] {
   color: var(--text-color);
   animation: phantom-glow 3s infinite alternate;
 }
 
-header #logo .text .top {
+header [data-ui-element="logoSubtext"] {
   color: inherit;
   animation: none;
 }
 
-header #logo .icon {
+header [data-ui-element="logo"] svg {
   color: var(--main-color) !important;
 }
 
@@ -107,16 +107,25 @@ input[type="submit"]:hover {
   animation: phantom-bg 3s linear infinite;
 }
 
-#logo .bottom,
-header .config .group .buttons .textButton.active,
+[data-ui-element="logoSubtext"],
 #result .stats .group .bottom,
-nav .textButton:hover,
-nav button.text:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
-a:not(.button):hover {
+[data-nav-item]:hover,
+a:not(.button):not([data-ui-variant="button"]):hover {
   animation: phantom-glow 3s linear infinite;
+}
+
+footer a:hover,
+footer button:hover {
+  animation: phantom-glow 3s linear infinite;
+  background: none;
+}
+
+[data-nav-item]:hover {
+  background: none;
+}
+
+#testConfig button:hover {
+  background: none;
 }
 
 .afk,
@@ -141,4 +150,10 @@ a:not(.button):hover {
 #words.highlight-off .word letter,
 #words.highlight-off .word.typed letter {
   animation: phantom-glow 5s linear infinite;
+}
+
+[data-ui-element="accountMenu"] a:hover,
+[data-ui-element="accountMenu"] button:hover {
+  animation: none;
+  background: var(--text-color);
 }

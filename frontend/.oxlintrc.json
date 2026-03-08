@@ -17,8 +17,16 @@
       }
     },
     {
+      "files": ["storybook/**/*.tsx"],
+      "rules": {
+        "explicit-function-return-type": "off",
+        "no-explicit-any": "off",
+        "no-unsafe-assignment": "off"
+      }
+    },
+    {
       "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
-      "files": ["src/**/*.tsx", "src/**/*.ts"],
+      "files": ["src/**/*.tsx"],
       "rules": {
         "explicit-function-return-type": "off",
         "solid/components-return-once": "error",

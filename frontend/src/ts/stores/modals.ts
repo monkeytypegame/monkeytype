@@ -5,6 +5,10 @@ export type ModalId =
   | "Contact"
   | "Support"
   | "Commandline"
+  | "DevOptions"
+  | "DevInboxPicker"
+  | "RegisterCaptcha"
+  | "Alerts"
   | "MiniResultChartModal";
 
 export type ModalVisibility = {

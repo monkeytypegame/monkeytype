@@ -4,7 +4,7 @@ import Config, { setConfig } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
@@ -130,7 +130,7 @@ async function set(
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setConfig("autoSwitchTheme", false);
-    Notifications.add("Auto switch theme disabled", 0);
+    showNoticeNotification("Auto switch theme disabled");
   }
 }
 
@@ -217,7 +217,7 @@ export async function randomizeTheme(): Promise<void> {
           ?.name ?? "custom"
       ).replace(/_/g, " ");
     }
-    Notifications.add(name, 0);
+    showNoticeNotification(name);
   }
 }
 
@@ -259,7 +259,7 @@ export async function applyCustomBackground(): Promise<void> {
   // hide the filter section initially and always
   qs(
     ".pageSettings .section[data-config-name='customBackgroundFilter']",
-  )?.addClass("hidden");
+  )?.hide();
 
   if (backgroundUrl === "") {
     qs("#words")?.removeClass("noErrorBorder");
@@ -282,7 +282,7 @@ export async function applyCustomBackground(): Promise<void> {
       // show the filter section only if the image loads successfully
       qs(
         ".pageSettings .section[data-config-name='customBackgroundFilter']",
-      )?.removeClass("hidden");
+      )?.show();
     };
 
     container?.replaceChildren(img);
@@ -420,10 +420,9 @@ ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
 });
 
 window.addEventListener("customBackgroundFailed", () => {
-  Notifications.add(
+  showNoticeNotification(
     "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
-    0,
-    { duration: 5 },
+    { durationMs: 5000 },
   );
 });
 

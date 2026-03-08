@@ -269,24 +269,6 @@ kbd {
   }
 }
 
-#devButtons {
-  position: fixed;
-  left: 0;
-  top: 10rem;
-  display: grid;
-  grid-auto-flow: row;
-  gap: 0.5rem;
-  text-decoration: none;
-  z-index: 999999999;
-  border-radius: 0 1rem 1rem 0;
-
-  .button {
-    padding: 1rem;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-}
-
 .avatar {
   --size: 1em;
 

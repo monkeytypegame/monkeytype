@@ -55,7 +55,6 @@ const newFilterPresetModal = new SimpleModal({
     },
   ],
   buttonText: "add",
-  onlineOnly: true,
   execFn: async (thisPopup, name) => {
     const filters = thisPopup.context as ResultFilters;
 
@@ -65,10 +64,10 @@ const newFilterPresetModal = new SimpleModal({
         name: replaceSpacesWithUnderscores(name),
       });
       await tx.isPersisted.promise;
-      return { status: 1, message: "Filter preset created" };
+      return { status: "success", message: "Filter preset created" };
     } catch (e) {
       let message: string = "Error creating filter preset";
-      return { status: -1, message, alwaysHide: true };
+      return { status: "error", message, alwaysHide: true };
     }
   },
 });
@@ -77,6 +76,156 @@ export function Filters(props: {
   filters: ResultFilters;
   onChangeFilters: SetStoreFunction<ResultFilters>;
 }): JSXElement {
+  const FilterPresets = (props: {
+    presets: ResultFilters[];
+    onChangeFilters: SetStoreFunction<ResultFilters>;
+  }): JSXElement => {
+    return (
+      <Show when={props.presets.length > 0}>
+        <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
+        <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
+          <For each={props.presets}>
+            {(preset) => (
+              <div class="flex w-full flex-row gap-2">
+                <Button
+                  class="w-full"
+                  text={replaceUnderscoresWithSpaces(preset.name)}
+                  onClick={() => props.onChangeFilters(preset)}
+                />
+                <Button
+                  fa={{ icon: "fa-trash", fixedWidth: true }}
+                  onClick={() =>
+                    resultFilterPresetsCollection.delete(preset._id)
+                  }
+                />
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+    );
+  };
+  const Dropdown = <
+    T extends ResultFiltersKeys,
+    K extends keyof ResultFilters[T],
+  >(options: {
+    icon: FaSolidIcon;
+    text: string;
+    group: T;
+    format?: (value: K) => string;
+  }): JSXElement => {
+    // Isolate this group's data to prevent unnecessary updates
+    const groupData = createMemo(() => props.filters[options.group]);
+
+    const dropdownOptions = createMemo(() =>
+      Object.keys(groupData()).map((k) => ({
+        value: k,
+        text: options.format?.(k as K) ?? k,
+      })),
+    );
+
+    const dropdownSelected = createMemo(() =>
+      Object.entries(groupData())
+        .filter(([, v]) => v)
+        .map(([k]) => k),
+    );
+
+    return (
+      <div>
+        <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
+        <SlimSelect
+          multiple
+          settings={{
+            showSearch: true,
+            placeholderText: "select a " + options.group,
+            allowDeselect: true,
+            closeOnSelect: false,
+            maxValuesShown: 4,
+            addAllOption: true,
+            scrollToTop: true,
+          }}
+          onChange={(selectedValues) => {
+            setFilter(
+              options.group,
+              Object.fromEntries(
+                Object.entries(props.filters[options.group]).map(([k]) => [
+                  k,
+                  selectedValues.includes(k),
+                ]),
+              ),
+            );
+          }}
+          options={dropdownOptions()}
+          selected={dropdownSelected()}
+        />
+      </div>
+    );
+  };
+
+  const ButtonGroup = <
+    T extends ResultFiltersKeys,
+    K extends keyof ResultFilters[T],
+  >(options: {
+    icon?: FaSolidIcon;
+    text?: string;
+    group: T;
+    format?: (value: K) => string;
+    classOverride?: string;
+    singleSelect?: true;
+  }): JSXElement => {
+    const items = (): { id: K; text: string }[] =>
+      Object.keys(props.filters[options.group]).map((id) => ({
+        id,
+        text: options.format?.(id as K) ?? new String(id).toString(),
+      })) as { id: K; text: string }[];
+
+    return (
+      <div>
+        <Show when={options.icon !== undefined && options.text !== undefined}>
+          <H3
+            fa={{ icon: options.icon as FaSolidIcon, fixedWidth: true }}
+            text={options.text as string}
+          />
+        </Show>
+        <div
+          class={
+            options.classOverride ??
+            "flex justify-evenly gap-2 [&>button]:w-full [&>button]:last:col-span-2"
+          }
+        >
+          <For each={items()}>
+            {(item) => (
+              <Button
+                text={item.text ?? (item.id as string)}
+                active={props.filters[options.group][item.id] === true}
+                onClick={() => {
+                  if (options.singleSelect) {
+                    const newValue = Object.fromEntries(
+                      Object.entries(props.filters.date).map(([key]) => [
+                        key,
+                        key === item.id,
+                      ]),
+                    );
+                    setFilter(options.group, newValue);
+                  } else {
+                    setFilter(options.group, {
+                      ...(props.filters[options.group] as Record<
+                        string,
+                        boolean
+                      >),
+                      // oxlint-disable-next-line typescript/strict-boolean-expressions
+                      [item.id]: !props.filters[options.group][item.id],
+                    });
+                  }
+                }}
+              />
+            )}
+          </For>
+        </div>
+      </div>
+    );
+  };
+
   const [isShowAdvanced, setShowAdvanced] = createSignal(true);
 
   const setFilter = (
@@ -187,156 +336,6 @@ export function Filters(props: {
       </Show>
     </>
   );
-
-  function FilterPresets(props: {
-    presets: ResultFilters[];
-    onChangeFilters: SetStoreFunction<ResultFilters>;
-  }): JSXElement {
-    return (
-      <Show when={props.presets.length > 0}>
-        <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
-        <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
-          <For each={props.presets}>
-            {(preset) => (
-              <div class="flex w-full flex-row gap-2">
-                <Button
-                  class="w-full"
-                  text={replaceUnderscoresWithSpaces(preset.name)}
-                  onClick={() => props.onChangeFilters(preset)}
-                />
-                <Button
-                  fa={{ icon: "fa-trash", fixedWidth: true }}
-                  onClick={() =>
-                    resultFilterPresetsCollection.delete(preset._id)
-                  }
-                />
-              </div>
-            )}
-          </For>
-        </div>
-      </Show>
-    );
-  }
-  function Dropdown<
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
-    icon: FaSolidIcon;
-    text: string;
-    group: T;
-    format?: (value: K) => string;
-  }): JSXElement {
-    // Isolate this group's data to prevent unnecessary updates
-    const groupData = createMemo(() => props.filters[options.group]);
-
-    const dropdownOptions = createMemo(() =>
-      Object.keys(groupData()).map((k) => ({
-        value: k,
-        text: options.format?.(k as K) ?? k,
-      })),
-    );
-
-    const dropdownSelected = createMemo(() =>
-      Object.entries(groupData())
-        .filter(([, v]) => v)
-        .map(([k]) => k),
-    );
-
-    return (
-      <div>
-        <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
-        <SlimSelect
-          multiple
-          settings={{
-            showSearch: true,
-            placeholderText: "select a " + options.group,
-            allowDeselect: true,
-            closeOnSelect: false,
-            maxValuesShown: 4,
-            addAllOption: true,
-            scrollToTop: true,
-          }}
-          onChange={(selectedValues) => {
-            setFilter(
-              options.group,
-              Object.fromEntries(
-                Object.entries(props.filters[options.group]).map(([k]) => [
-                  k,
-                  selectedValues.includes(k),
-                ]),
-              ),
-            );
-          }}
-          options={dropdownOptions()}
-          selected={dropdownSelected()}
-        />
-      </div>
-    );
-  }
-
-  function ButtonGroup<
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
-    icon?: FaSolidIcon;
-    text?: string;
-    group: T;
-    format?: (value: K) => string;
-    classOverride?: string;
-    singleSelect?: true;
-  }): JSXElement {
-    const items = (): { id: K; text: string }[] =>
-      Object.keys(props.filters[options.group]).map((id) => ({
-        id,
-        text: options.format?.(id as K) ?? new String(id).toString(),
-      })) as { id: K; text: string }[];
-
-    return (
-      <div>
-        <Show when={options.icon !== undefined && options.text !== undefined}>
-          <H3
-            fa={{ icon: options.icon as FaSolidIcon, fixedWidth: true }}
-            text={options.text as string}
-          />
-        </Show>
-        <div
-          class={
-            options.classOverride ??
-            "flex justify-evenly gap-2 [&>button]:w-full [&>button]:last:col-span-2"
-          }
-        >
-          <For each={items()}>
-            {(item) => (
-              <Button
-                text={item.text ?? (item.id as string)}
-                active={props.filters[options.group][item.id] === true}
-                onClick={() => {
-                  if (options.singleSelect) {
-                    const newValue = Object.fromEntries(
-                      Object.entries(props.filters.date).map(([key]) => [
-                        key,
-                        key === item.id,
-                      ]),
-                    );
-                    setFilter(options.group, newValue);
-                  } else {
-                    setFilter(options.group, {
-                      ...(props.filters[options.group] as Record<
-                        string,
-                        boolean
-                      >),
-                      // oxlint-disable-next-line typescript/strict-boolean-expressions
-                      [item.id]: !props.filters[options.group][item.id],
-                    });
-                  }
-                }}
-              />
-            )}
-          </For>
-        </div>
-      </div>
-    );
-  }
 }
 
 function noFilters(): ResultFilters {

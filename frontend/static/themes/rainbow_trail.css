@@ -1,4 +1,4 @@
-header #logo .text {
+header [data-ui-element="logoText"] {
   background: linear-gradient(
     90deg,
     #60b6ce,
@@ -13,26 +13,17 @@ header #logo .text {
   );
   background-size: 500% auto;
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
   padding-bottom: 0.1em;
+  line-height: 1;
 }
 
-/* fix logo clipping */
-header #logo .icon {
-  padding-bottom: 0.05em;
-}
-nav {
-  padding-bottom: 0.2em;
+[data-ui-element="logoSubtext"] {
+  margin-top: 0em;
 }
 
-header {
-  margin-bottom: -0.1em;
-}
-/*  */
-
-header #logo .top,
+header [data-ui-element="logoSubtext"],
 .view-account .levelAndBar .level,
 [aria-label][data-balloon-pos]::after {
   -webkit-text-fill-color: initial;
@@ -48,7 +39,12 @@ button.text:hover,
 #nextTestButton:hover > i,
 #practiseWordsButton:hover > i,
 #watchReplayButton:hover > i,
-#watchVideoAdButton:hover > i {
+#watchVideoAdButton:hover > i,
+footer a:hover,
+footer a:hover > i,
+footer button:hover,
+footer button:hover > i,
+footer button:hover > .relative > i {
   background: linear-gradient(
     90deg,
     #60b6ce,
@@ -63,18 +59,9 @@ button.text:hover,
   );
   background-size: 500% auto;
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 5s alternate ease-in-out infinite;
   transition: all 1s ease;
-}
-
-.current-theme.textButton {
-  animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
-}
-
-.current-theme.textButton:hover {
-  -webkit-text-fill-color: initial;
 }
 
 #liveStatsTextTop.timerMain,
@@ -113,7 +100,8 @@ button.text:hover,
 }
 
 .button:hover,
-button:not(.textButton):not(.text):hover {
+button:not(.textButton):not(.text):not([data-ui-variant="text"]):hover,
+[data-nav-item]:hover {
   animation: rainbow-button 2s alternate ease-in-out infinite;
 }
 
@@ -128,6 +116,10 @@ button:not(.textButton):not(.text):hover {
 
 .textButton.active {
   color: #111111;
+}
+
+footer button:hover {
+  animation: none !important;
 }
 
 @keyframes rainbow {

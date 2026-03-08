@@ -22,11 +22,9 @@ function initializeCache(): void {
   const cursorSelector = "body, button, a";
   const elementsSelector = [
     "app",
-    "header",
     "footer",
     "main",
     "#bannerCenter",
-    "#notificationCenter",
     "#capsWarning",
     "#ad-vertical-right-wrapper",
     "#ad-vertical-left-wrapper",

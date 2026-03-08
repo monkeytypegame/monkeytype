@@ -2,9 +2,9 @@ import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { showErrorNotification } from "../stores/notifications";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
@@ -28,9 +28,8 @@ export const resultFilterPresetsCollection = createCollection(
         newItems.map(async (it) => {
           const response = await Ape.users.addResultFilterPreset({ body: it });
           if (response.status !== 200) {
-            Notifications.add(
+            showErrorNotification(
               `Failed to insert result filter presets: ${response.body.message}`,
-              -1,
             );
             throw new Error(
               `Failed to insert result filter presets: ${response.body.message}`,
@@ -56,9 +55,8 @@ export const resultFilterPresetsCollection = createCollection(
             params: { presetId: it },
           });
           if (response.status !== 200) {
-            Notifications.add(
+            showErrorNotification(
               `Failed to delete result filter presets: ${response.body.message}`,
-              -1,
             );
             throw new Error(
               `Failed to delete result filter presets: ${response.body.message}`,

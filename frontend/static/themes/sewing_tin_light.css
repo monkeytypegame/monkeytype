@@ -1,14 +1,14 @@
-nav > .textButton {
+[data-nav-item] {
   color: #f2ce83;
 }
 
-nav > .textButton:hover {
+[data-nav-item]:hover {
   color: #c6915e;
 }
 
-header #logo .text {
+header [data-ui-element="logoText"] {
   background-color: #ffffff; /* fallback */
-  background: -webkit-linear-gradient(
+  background: linear-gradient(
     #2d2076,
     #2d2076 25%,
     #2e3395 25%,
@@ -19,25 +19,13 @@ header #logo .text {
     #385eca
   );
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   padding-bottom: 0.1em;
+  line-height: 1;
 }
 
-/* fix logo clipping */
-header #logo .icon {
-  padding-bottom: 0.05em;
-}
-nav {
-  padding-bottom: 0.2em;
-}
-
-header {
-  margin-bottom: -0.1em;
-}
-/*  */
-
-header #logo .text .top {
+[data-ui-element="logoSubtext"] {
+  margin-top: 0em;
   /* prevent it from being transparent */
   -webkit-text-fill-color: #385eca;
 }

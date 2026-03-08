@@ -3,7 +3,7 @@ import * as PageTransition from "../states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { getActivePage } from "../signals/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
@@ -98,22 +98,22 @@ window.addEventListener("keydown", function (e) {
 
 window.onerror = function (message, url, line, column, error): void {
   if (Misc.isDevEnvironment()) {
-    Notifications.add(error?.message ?? "Undefined message", -1, {
+    showErrorNotification(error?.message ?? "Undefined message", {
       customTitle: "DEV: Unhandled error",
-      duration: 5,
+      durationMs: 5000,
       important: true,
     });
+    console.error({ message, url, line, column, error });
   }
 };
 
 window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
-    Notifications.add(
+    showErrorNotification(
       (e.reason as Error).message ?? e.reason ?? "Undefined message",
-      -1,
       {
         customTitle: "DEV: Unhandled rejection",
-        duration: 5,
+        durationMs: 5000,
         important: true,
       },
     );

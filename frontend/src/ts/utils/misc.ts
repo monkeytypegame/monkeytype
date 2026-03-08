@@ -176,8 +176,6 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
-// TODO INVESTIGATE IF THIS IS NEEDED
-// oxlint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp,
 ): number {
@@ -596,13 +594,11 @@ export function promiseWithResolvers<T = void>(): {
     ): Promise<TResult1 | TResult2> {
       return currentPromise.then(onfulfilled, onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
     async catch<TResult = never>(
       onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
     ): Promise<T | TResult> {
       return currentPromise.catch(onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
     async finally(onfinally?: (() => void) | null): Promise<T> {
       return currentPromise.finally(onfinally);
     },
@@ -716,13 +712,17 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
-export function isLinux(): boolean {
-  return isPlatform("Linux");
-}
+//function isWindows(): boolean {
+//return isPlatform("Win");
+//}
 
-export function isMac(): boolean {
-  return isPlatform("Mac");
-}
+//function isLinux(): boolean {
+//return isPlatform("Linux");
+//}
+
+//function isMac(): boolean {
+//return isPlatform("Mac");
+//}
 
 export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
@@ -739,7 +739,8 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   });
 }
 
-export function formatTopPercentage(lbRank: RankAndCount): string {
+export function formatTopPercentage(lbRank?: RankAndCount): string {
+  if (lbRank === undefined) return "";
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";

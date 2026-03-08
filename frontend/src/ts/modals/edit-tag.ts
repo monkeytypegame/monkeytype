@@ -30,7 +30,6 @@ const actionModals: Record<Action, SimpleModal> = {
         validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
-    onlineOnly: true,
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
       const tagName = cleanTagName(propTagName);
@@ -38,7 +37,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message:
             "Failed to add tag: " +
             response.body.message.replace(tagName, propTagName),
@@ -60,7 +59,7 @@ const actionModals: Record<Action, SimpleModal> = {
       });
       void Settings.update();
 
-      return { status: 1, message: `Tag added` };
+      return { status: "success", message: `Tag added` };
     },
   }),
   edit: new SimpleModal({
@@ -73,7 +72,6 @@ const actionModals: Record<Action, SimpleModal> = {
         validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
-    onlineOnly: true,
     buttonText: "save",
     beforeInitFn: (_thisPopup) => {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
@@ -88,7 +86,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to edit tag",
           notificationOptions: { response },
         };
@@ -103,13 +101,12 @@ const actionModals: Record<Action, SimpleModal> = {
 
       void Settings.update();
 
-      return { status: 1, message: `Tag updated` };
+      return { status: "success", message: `Tag updated` };
     },
   }),
   remove: new SimpleModal({
     id: "removeTag",
     title: "Delete tag",
-    onlineOnly: true,
     buttonText: "delete",
     beforeInitFn: (_thisPopup) => {
       _thisPopup.text = `Are you sure you want to delete tag ${_thisPopup.parameters[0]} ?`;
@@ -120,7 +117,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to remove tag",
           notificationOptions: { response },
         };
@@ -135,13 +132,12 @@ const actionModals: Record<Action, SimpleModal> = {
 
       void Settings.update();
 
-      return { status: 1, message: `Tag removed` };
+      return { status: "success", message: `Tag removed` };
     },
   }),
   clearPb: new SimpleModal({
     id: "clearTagPb",
     title: "Clear personal bests",
-    onlineOnly: true,
     buttonText: "clear",
     beforeInitFn: (_thisPopup) => {
       _thisPopup.text = `Are you sure you want to clear personal bests for tag ${_thisPopup.parameters[0]} ?`;
@@ -154,7 +150,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (response.status !== 200) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to clear tag pb",
           notificationOptions: { response },
         };
@@ -173,7 +169,7 @@ const actionModals: Record<Action, SimpleModal> = {
       }
 
       void Settings.update();
-      return { status: 1, message: `Tag PB cleared` };
+      return { status: "success", message: `Tag PB cleared` };
     },
   }),
 };

@@ -17,7 +17,6 @@ import {
 import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
-
 import { DailyActivityChart } from "./DailyActivityChart";
 import { HistogramChart } from "./HistogramChart";
 import { HistoryChart } from "./HistoryChart";
@@ -69,6 +68,34 @@ export function Charts(props: {
 }
 
 function FilterSummary(props: { filters: ResultFilters }): JSXElement {
+  const Item = <
+    T extends ResultFiltersKeys,
+    K extends keyof ResultFilters[T],
+  >(options: {
+    group: T;
+    icon: FaSolidIcon;
+    format?: (val: K) => string;
+  }): JSXElement => {
+    const values = createMemo(() =>
+      isAllSet(props.filters[options.group])
+        ? "all"
+        : Object.entries(props.filters[options.group])
+            .filter(([_, v]) => v)
+            .map(([it]) => options.format?.(it as K) ?? it)
+            .join(", "),
+    );
+
+    return (
+      <span
+        aria-label={capitalizeFirstLetter(options.group)}
+        data-balloon-pos="up"
+      >
+        <Fa icon={options.icon} fixedWidth />
+        {values()}
+      </span>
+    );
+  };
+
   return (
     <div class="mt-4 mb-4 flex flex-wrap justify-center gap-4 text-sub [&>span>i]:mr-1">
       <Item
@@ -97,34 +124,6 @@ function FilterSummary(props: { filters: ResultFilters }): JSXElement {
       />
     </div>
   );
-
-  function Item<
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
-    group: T;
-    icon: FaSolidIcon;
-    format?: (val: K) => string;
-  }): JSXElement {
-    const values = createMemo(() =>
-      isAllSet(props.filters[options.group])
-        ? "all"
-        : Object.entries(props.filters[options.group])
-            .filter(([_, v]) => v)
-            .map(([it]) => options.format?.(it as K) ?? it)
-            .join(", "),
-    );
-
-    return (
-      <span
-        aria-label={capitalizeFirstLetter(options.group)}
-        data-balloon-pos="up"
-      >
-        <Fa icon={options.icon} fixedWidth />
-        {values()}
-      </span>
-    );
-  }
 }
 
 function isAllSet(

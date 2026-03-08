@@ -4,8 +4,9 @@ import * as PageTransition from "../states/page-transition";
 import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import * as NavigationEvent from "../observables/navigation-event";
+import * as AuthEvent from "../observables/auth-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -178,9 +179,12 @@ export async function navigate(
 
   const noQuit = isFunboxActive("no_quit");
   if (TestState.isActive && noQuit) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     //todo: figure out if this was ever used
     // event?.preventDefault();
     return;
@@ -247,4 +251,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 NavigationEvent.subscribe((url, options) => {
   void navigate(url, options);
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    let keyframes = [
+      {
+        percentage: 90,
+        durationMs: 1000,
+        text: "Downloading user data...",
+      },
+    ];
+
+    //undefined means navigate to whatever the current window.location.pathname is
+    void navigate(undefined, {
+      force: true,
+      loadingOptions: {
+        loadingMode: () => {
+          if (event.data.isUserSignedIn) {
+            return "sync";
+          } else {
+            return "none";
+          }
+        },
+        loadingPromise: async () => {
+          await event.data.loadPromise;
+        },
+        style: "bar",
+        keyframes: keyframes,
+      },
+    }).finally(() => {
+      document.body.classList.remove("loading");
+    });
+  }
 });

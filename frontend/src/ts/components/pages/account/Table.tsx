@@ -13,7 +13,6 @@ import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { Fa, FaProps } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
-
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {
@@ -166,7 +165,7 @@ function getColumns<M extends Mode>({
               <Button
                 disabled={!hasChart}
                 class="p-0 text-text"
-                type="text"
+                variant="text"
                 fa={{ icon: "fa-chart-line", fixedWidth: true }}
                 onClick={() => {
                   onMiniResultChartSelected(info.getValue());

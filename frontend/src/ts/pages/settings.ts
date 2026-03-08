@@ -8,7 +8,11 @@ import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import { getActivePage } from "../signals/core";
@@ -80,6 +84,7 @@ async function initGroups(): Promise<void> {
   );
   groups["difficulty"] = new SettingsGroup("difficulty", "button");
   groups["quickRestart"] = new SettingsGroup("quickRestart", "button");
+  groups["resultSaving"] = new SettingsGroup("resultSaving", "button");
   groups["showAverage"] = new SettingsGroup("showAverage", "button");
   groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
     updateCallback: () => {
@@ -814,7 +819,7 @@ qs("#exportSettingsButton")?.on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      Notifications.add("JSON Copied to clipboard", 0);
+      showNoticeNotification("JSON Copied to clipboard");
     },
     function () {
       ImportExportSettingsModal.show("export");
@@ -839,9 +844,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
+    showSuccessNotification("Saved", { durationMs: 1000 });
   }
 });
 
@@ -857,9 +860,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
+    showSuccessNotification("Saved", { durationMs: 1000 });
   }
 });
 
@@ -876,16 +877,17 @@ qs(
       ),
     );
     if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
+      showSuccessNotification("Saved", { durationMs: 1000 });
     }
   }
 });
 
 qsa(".pageSettings .quickNav .links a")?.on("click", (e) => {
-  const target = e.currentTarget as HTMLElement;
-  const settingsGroup = target.innerText;
+  const target = e.currentTarget as HTMLAnchorElement;
+  const href = target.getAttribute("href") ?? "";
+  if (!href.startsWith("#group_")) return;
+  const settingsGroup = href.slice("#group_".length);
+  if (settingsGroup === "") return;
   const isClosed = qs(
     `.pageSettings .settingsGroup.${settingsGroup}`,
   )?.hasClass("slideup");
@@ -973,11 +975,10 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
   navigator.clipboard
     .writeText(window.location.toString())
     .then(() => {
-      Notifications.add("Link copied to clipboard", 1);
+      showSuccessNotification("Link copied to clipboard");
     })
     .catch((e: unknown) => {
-      const msg = Misc.createErrorMessage(e, "Failed to copy to clipboard");
-      Notifications.add(msg, -1);
+      showErrorNotification("Failed to copy to clipboard", { error: e });
     });
 });
 

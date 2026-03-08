@@ -4,7 +4,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { getActivePage } from "../signals/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
@@ -148,11 +148,11 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
 }
 
 export function hide(): void {
-  keymap.addClass("hidden");
+  keymap.hide();
 }
 
 export function show(): void {
-  keymap.removeClass("hidden");
+  keymap.show();
 }
 
 function buildRow(options: {
@@ -424,10 +424,9 @@ export async function refresh(): Promise<void> {
         layoutNameDisplayString = Config.keymapLayout;
       }
     } catch (e) {
-      Notifications.add(
-        Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
-        -1,
-      );
+      showErrorNotification(`Failed to load keymap ${layoutName}`, {
+        error: e,
+      });
       return;
     }
 
@@ -560,7 +559,7 @@ async function updateLegends(): Promise<void> {
 
   const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
   if (layout === undefined) {
-    Notifications.add("Failed to load keymap layout", -1);
+    showErrorNotification("Failed to load keymap layout");
 
     return;
   }

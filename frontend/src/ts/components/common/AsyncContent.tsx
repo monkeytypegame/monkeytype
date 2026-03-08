@@ -9,7 +9,7 @@ import {
   Switch,
 } from "solid-js";
 
-import * as Notifications from "../../elements/notifications";
+import { showErrorNotification } from "../../stores/notifications";
 import { createErrorMessage, typedKeys } from "../../utils/misc";
 import { Conditional } from "./Conditional";
 import { LoadingCircle } from "./LoadingCircle";
@@ -35,6 +35,7 @@ type BaseProps = {
   errorMessage?: string;
   ignoreError?: true;
   loader?: JSXElement;
+  errorClass?: string;
 };
 
 type QueryProps<T extends QueryMapping> = {
@@ -108,21 +109,23 @@ export default function AsyncContent<T extends QueryMapping>(
     );
     console.error("AsyncMultiContent failed", message, err);
 
-    Notifications.add(message, -1);
+    showErrorNotification(props.errorMessage ?? "An error occurred", {
+      error: err,
+    });
 
     return message;
   };
 
-  function allResolved(
+  const allResolved = (
     data: ReturnType<typeof value>,
-  ): data is { [K in keyof T]: T[K] } {
+  ): data is { [K in keyof T]: T[K] } => {
     //single query
     if (data === undefined || data === null) {
       return false;
     }
 
     return Object.values(data).every((v) => v !== undefined && v !== null);
-  }
+  };
 
   const isLoading = (): boolean =>
     Object.values(source() as AsyncEntry<unknown>[]).some((s) => s.isLoading());
@@ -136,7 +139,9 @@ export default function AsyncContent<T extends QueryMapping>(
     props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
 
   const errorText = (err: unknown): JSXElement | undefined =>
-    props.ignoreError ? undefined : <div class="error">{handleError(err)}</div>;
+    props.ignoreError ? undefined : (
+      <div class={props.errorClass}>{handleError(err)}</div>
+    );
 
   return (
     <ErrorBoundary fallback={props.ignoreError ? undefined : errorText}>

@@ -85,8 +85,14 @@ async function fetchSpeedHistogram(): Promise<
 
   const data = response.body.data;
 
-  const histogramChartDataBucketed: { x: number; y: number }[] = [];
+  const histogramChartDataBucketed: {
+    x: number;
+    y: number;
+    topPercentage?: string;
+  }[] = [];
   const labels: string[] = [];
+  const sum = Object.values(data).reduce((sum, it) => (sum += it), 0);
+  let topPercentage = 100;
 
   const keys = Object.keys(data).sort(
     (a, b) => parseInt(a, 10) - parseInt(b, 10),
@@ -94,9 +100,12 @@ async function fetchSpeedHistogram(): Promise<
   for (const [i, key] of keys.entries()) {
     const nextKey = keys[i + 1];
     const bucket = parseInt(key, 10);
+    topPercentage -= ((data[bucket] as number) / sum) * 100;
     histogramChartDataBucketed.push({
       x: bucket,
       y: data[bucket] as number,
+      topPercentage:
+        topPercentage > 0.01 ? `top ${topPercentage.toFixed(2)}%` : undefined,
     });
     labels.push(`${bucket} - ${bucket + 9}`);
     if (nextKey !== undefined && bucket + 10 !== parseInt(nextKey, 10)) {

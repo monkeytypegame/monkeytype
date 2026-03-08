@@ -284,10 +284,7 @@ function getCssOptions({
   return {
     devSourcemap: true,
     postcss: {
-      plugins: [
-        // @ts-expect-error  this is fine
-        autoprefixer({}),
-      ],
+      plugins: [autoprefixer({})],
     },
     preprocessorOptions: {
       scss: {

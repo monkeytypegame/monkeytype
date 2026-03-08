@@ -67,7 +67,7 @@ export type LoadingOptions = {
     }
 );
 
-type PageProperties<T> = {
+export type PageProperties<T> = {
   id: PageName;
   display?: string;
   element: ElementWithUtils;
@@ -111,11 +111,11 @@ export default class Page<T> {
   }
 }
 
-type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
+export type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
   urlParams?: z.infer<U>;
 };
 
-type UrlParamsSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
+export type UrlParamsSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
 type PagePropertiesWithUrlParams<T, U extends UrlParamsSchema> = Omit<
   PageProperties<T>,
   "beforeShow"

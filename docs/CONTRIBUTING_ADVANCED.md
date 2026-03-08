@@ -148,7 +148,7 @@ If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
 ## Standards and Guidelines
 
-Code formatting is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
+Code formatting and linting is enforced by [Oxc (Oxfmt and Oxlint)](https://github.com/oxc-project/oxc), which automatically runs every time you make a commit.
 
 For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 

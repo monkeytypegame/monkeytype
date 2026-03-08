@@ -351,7 +351,7 @@
   &.blind {
     .word {
       & letter.extra {
-        display: none;
+        display: none !important;
       }
       & letter.incorrect {
         color: var(--correct-letter-color);
@@ -533,45 +533,69 @@
     }
   }
 
-  &.typed-effect-dots:not(.withLigatures) {
+  &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
-    .word letter {
-      position: relative;
-      &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 1em;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        opacity: 0;
+    &:not(.withLigatures) .word,
+    &.withLigatures .word.broken-ligatures {
+      letter {
+        position: relative;
+        display: inline-block;
+        &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 1em;
+          aspect-ratio: 1;
+          border-radius: 50%;
+          opacity: 0;
+        }
       }
     }
-    .typed letter {
-      color: var(--bg-color);
-      animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
-      &::after {
-        animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards;
-        background: var(--c-dot);
+    // unify dot spacing
+    &.withLigatures .word.broken-ligatures {
+      letter {
+        width: 0.4em;
       }
     }
-    &:not(.blind) {
+    .word.broken-ligatures:not(.needs-wrap) {
+      white-space: nowrap;
+    }
+
+    &:not(.withLigatures) .word.typed,
+    &.withLigatures .word.broken-ligatures.typed {
+      letter {
+        color: var(--bg-color);
+        animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
+        &::after {
+          animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards;
+          background: var(--c-dot);
+        }
+      }
+    }
+
+    &:not(.withLigatures):not(.blind) {
       .word letter.incorrect::after {
         background: var(--c-dot--error);
       }
     }
+    &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
+      background: var(--c-dot--error);
+    }
 
     @media (prefers-reduced-motion) {
-      .typed letter {
-        animation: none !important;
-        transform: scale(0.4);
-        color: transparent;
-        &::after {
+      &:not(.withLigatures) .word.typed,
+      &.withLigatures .word.broken-ligatures.typed {
+        letter {
           animation: none !important;
-          opacity: 1;
+          transform: scale(0.4);
+          color: transparent;
+          &::after {
+            animation: none !important;
+            opacity: 1;
+          }
         }
       }
     }

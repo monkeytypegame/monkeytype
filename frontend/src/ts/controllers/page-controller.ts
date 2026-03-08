@@ -1,23 +1,36 @@
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import { getActivePage, setActivePage } from "../signals/core";
+import {
+  getActivePage,
+  setActivePage,
+  setSelectedProfileName,
+} from "../signals/core";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
-import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
-import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import Page, { PageName, LoadingOptions } from "../pages/page";
+import Page, {
+  PageName,
+  LoadingOptions,
+  PageProperties,
+  PageWithUrlParams,
+  UrlParamsSchema,
+  OptionsWithUrlParams,
+} from "../pages/page";
 import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
+import {
+  LeaderboardUrlParamsSchema,
+  readGetParameters,
+} from "../stores/leaderboard-selection";
+import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
 
 type ChangeOptions = {
   force?: boolean;
@@ -33,12 +46,28 @@ const pages = {
   about: solidPage("about"),
   account: Account.page,
   login: PageLogin.page,
-  profile: PageProfile.page,
-  profileSearch: PageProfileSearch.page,
+  profile: solidPage("profile", {
+    beforeShow: async (options) => {
+      setSelectedProfileName(options.params?.["uidOrName"]);
+    },
+  }),
+  profileSearch: solidPage("profileSearch"),
   friends: Friends.page,
   404: Page404.page,
   accountSettings: PageAccountSettings.page,
-  leaderboards: PageLeaderboards.page,
+  leaderboards: solidPage("leaderboards", {
+    urlParamsSchema: LeaderboardUrlParamsSchema,
+    loadingOptions: {
+      style: "spinner",
+      loadingMode: () => "sync",
+      loadingPromise: async () => {
+        await serverConfigurationPromise;
+      },
+    },
+    beforeShow: async (options) => {
+      readGetParameters(options.urlParams);
+    },
+  }),
 };
 
 function updateOpenGraphUrl(): void {
@@ -295,19 +324,67 @@ export async function change(
   return true;
 }
 
-function solidPage(id: PageName, props?: { path?: string }): Page<undefined> {
+function solidPage(
+  id: PageName,
+  props?: {
+    path?: string;
+    urlParamsSchema?: never;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: PageProperties<undefined>["beforeShow"];
+    afterHide?: () => Promise<void>;
+  },
+): Page<undefined>;
+function solidPage<U extends UrlParamsSchema>(
+  id: PageName,
+  props: {
+    path?: string;
+    urlParamsSchema: U;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
+    afterHide?: () => Promise<void>;
+  },
+): PageWithUrlParams<undefined, U>;
+function solidPage<U extends UrlParamsSchema>(
+  id: PageName,
+  props?: {
+    path?: string;
+    urlParamsSchema?: U;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
+    afterHide?: () => Promise<void>;
+  },
+): Page<undefined> | PageWithUrlParams<undefined, U> {
   const path = props?.path ?? `/${id}`;
   const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
   onDOMReady(() => Skeleton.save(internalId));
-  return new Page({
+
+  const shared = {
     id,
     path,
     element: qsr(`#${internalId}`),
-    beforeShow: async () => {
-      Skeleton.append(internalId, "main");
-    },
+    loadingOptions: props?.loadingOptions,
     afterHide: async () => {
       Skeleton.remove(internalId);
+      await props?.afterHide?.();
+    },
+  };
+
+  if (props?.urlParamsSchema !== undefined) {
+    return new PageWithUrlParams({
+      ...shared,
+      urlParamsSchema: props.urlParamsSchema,
+      beforeShow: async (options) => {
+        Skeleton.append(internalId, "main");
+        await props.beforeShow?.(options);
+      },
+    });
+  }
+
+  return new Page({
+    ...shared,
+    beforeShow: async (options) => {
+      Skeleton.append(internalId, "main");
+      await props?.beforeShow?.(options);
     },
   });
 }

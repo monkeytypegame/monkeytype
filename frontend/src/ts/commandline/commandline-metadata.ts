@@ -205,6 +205,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+  resultSaving: {
+    subgroup: {
+      options: "fromSchema",
+      alias: (val) => (val ? "enabled" : "disabled"),
+    },
+    alias: "results practice incognito",
+  },
   blindMode: {
     subgroup: {
       options: "fromSchema",

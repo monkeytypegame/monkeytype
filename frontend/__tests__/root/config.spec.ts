@@ -10,8 +10,7 @@ import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
 import * as ApeConfig from "../../src/ts/ape/config";
-import * as AccountButton from "../../src/ts/elements/account-button";
-import * as Notifications from "../../src/ts/elements/notifications";
+import * as Notifications from "../../src/ts/stores/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
@@ -32,8 +31,10 @@ describe("Config", () => {
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
-    const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
-    const notificationAddMock = vi.spyOn(Notifications, "add");
+    const notificationAddMock = vi.spyOn(
+      Notifications,
+      "showNoticeNotification",
+    );
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
 
@@ -42,7 +43,6 @@ describe("Config", () => {
       isConfigValueValidMock,
       dispatchConfigEventMock,
       dbSaveConfigMock,
-      accountButtonLoadingMock,
       notificationAddMock,
       miscReloadAfterMock,
       miscTriggerResizeMock,
@@ -92,7 +92,6 @@ describe("Config", () => {
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
         "No quit funbox is active. Please finish the test.",
-        0,
         {
           important: true,
         },
@@ -182,14 +181,8 @@ describe("Config", () => {
       //wait for debounce
       await vi.advanceTimersByTimeAsync(2500);
 
-      //show loading
-      expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(1, true);
-
       //save
       expect(dbSaveConfigMock).toHaveBeenCalledWith({ numbers: true });
-
-      //hide loading
-      expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(2, false);
     });
 
     it("saves configOverride values to localstorage if nosave=false", async () => {
@@ -224,7 +217,6 @@ describe("Config", () => {
       //wait for debounce
       await vi.advanceTimersByTimeAsync(2500);
 
-      expect(accountButtonLoadingMock).not.toHaveBeenCalled();
       expect(dbSaveConfigMock).not.toHaveBeenCalled();
     });
 
@@ -279,7 +271,6 @@ describe("Config", () => {
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
         "Ad settings changed. Refreshing...",
-        0,
       );
       expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
     });

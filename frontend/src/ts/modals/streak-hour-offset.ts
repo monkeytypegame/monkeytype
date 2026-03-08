@@ -1,10 +1,13 @@
 import Ape from "../ape";
 // import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 // import * as Settings from "../pages/settings";
-import * as ConnectionState from "../states/connection";
 import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";
@@ -14,13 +17,6 @@ let state = {
 };
 
 export function show(): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
@@ -83,15 +79,14 @@ async function apply(): Promise<void> {
   const value = state.offset;
 
   if (isNaN(value)) {
-    Notifications.add("Streak hour offset must be a number", 0);
+    showNoticeNotification("Streak hour offset must be a number");
     return;
   }
 
   // Check if value is whole number or ends in .5 (multiply by 2 to check if result is integer)
   if (value < -11 || value > 12 || (value * 2) % 1 !== 0) {
-    Notifications.add(
+    showNoticeNotification(
       "Streak offset must be between -11 and 12. Times ending in .5 can be used for 30-minute increments.",
-      0,
     );
     return;
   }
@@ -104,9 +99,9 @@ async function apply(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to set streak hour offset", -1, { response });
+    showErrorNotification("Failed to set streak hour offset", { response });
   } else {
-    Notifications.add("Streak hour offset set", 1);
+    showSuccessNotification("Streak hour offset set");
     const snap = getSnapshot() as Snapshot;
 
     snap.streakHourOffset = value;
