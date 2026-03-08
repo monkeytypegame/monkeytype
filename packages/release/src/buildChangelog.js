@@ -57,18 +57,18 @@ async function getLog() {
 }
 
 function itemIsAddingQuotes(item) {
+  const typeIsImprovement = item.type === "impr";
   const scopeIsQuote =
     item.scope?.includes("quote") === true ||
     item.scope?.includes("quotes") === true ||
-    item.message?.includes("quote") === true;
+    item.message?.includes("quote");
 
-  const messageAdds =
-    item.message.includes("add") === true ||
-    item.message.includes("added") === true ||
-    item.message.includes("adding") === true ||
-    item.message.includes("adds") === true;
+  const messageAdds = item.message.startsWith("add") === true;
 
-  return scopeIsQuote && messageAdds;
+  const messageQuotes =
+    item.message.endsWith("quote") === true || item.message.endsWith("quotes");
+
+  return typeIsImprovement && scopeIsQuote && messageAdds && messageQuotes;
 }
 
 function itemIsAddressingQuoteReports(item) {
