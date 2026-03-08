@@ -23,6 +23,7 @@ import { H3 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { AlertsSection } from "./AlertsSection";
 
+const inboxItemIdsToClaim: string[] = [];
 export function Inbox(): JSXElement {
   const inboxQuery = useInboxQuery(
     () => getModalVisibility("Alerts")?.visible ?? false,
@@ -69,14 +70,21 @@ export function Inbox(): JSXElement {
     InboxItem
   >({
     onMutate: ({ id, status }) => {
-      inboxCollection.update(id, (old) => (old.status = status));
+      inboxCollection.update(id, (old) => {
+        if (old.status === "unclaimed") {
+          inboxItemIdsToClaim.push(old.id);
+        }
+        old.status = status;
+      });
     },
     mutationFn: async (changes) => {
       await flushPendingChanges(changes);
 
       const allRewards: AllRewards[] = changes.transaction.mutations
-        .filter((it) => (it.original as InboxItem).status === "unclaimed")
-        .flatMap((it) => (it.original as InboxItem).rewards);
+        .map((it) => it.modified)
+        .filter((it) => inboxItemIdsToClaim.includes(it.id))
+        .flatMap((it) => it.rewards);
+      inboxItemIdsToClaim.length = 0;
       claimRewards(allRewards);
     },
     strategy: flushStrategy.strategy,
