@@ -5,6 +5,7 @@ import { Conditional } from "./Conditional";
 import { Fa } from "./Fa";
 
 export function LoadingCircle(props: {
+  color?: "main" | "sub" | "text";
   mode?: "icon" | "svg";
   class?: string;
 }): JSXElement {
@@ -12,14 +13,29 @@ export function LoadingCircle(props: {
     <Conditional
       if={props.mode === "icon" || props.mode === undefined}
       then={
-        <div class={cn("preloader text-main", props.class)}>
+        <div
+          class={cn(
+            "preloader grid place-items-center",
+            {
+              "text-main": props.color === "main" || props.color === undefined,
+              "text-sub": props.color === "sub",
+              "text-text": props.color === "text",
+            },
+            props.class,
+          )}
+        >
           <Fa icon="fa-circle-notch" fixedWidth spin />
         </div>
       }
       else={
         <div
           class={cn(
-            "preloader grid h-[1em] w-[1em] animate-spin place-items-center fill-main p-[0.5em] [animation-duration:2s]",
+            "preloader grid h-[1em] w-[1em] animate-spin place-items-center p-[0.5em] [animation-duration:2s]",
+            {
+              "fill-main": props.color === "main" || props.color === undefined,
+              "fill-sub": props.color === "sub",
+              "fill-text": props.color === "text",
+            },
             props.class,
           )}
         >
