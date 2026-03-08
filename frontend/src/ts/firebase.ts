@@ -76,7 +76,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
-        setUserId(user?.uid ?? null);
         await callback(true, user);
         setUserId(user?.uid ?? null);
       }
@@ -85,7 +84,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
     app = undefined;
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
-    setUserId(null);
     await callback(false, null);
     setUserId(null);
     if (isDevEnvironment()) {
