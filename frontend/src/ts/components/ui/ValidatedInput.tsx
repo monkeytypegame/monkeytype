@@ -22,6 +22,7 @@ export function ValidatedInput<T = string>(
     name?: string;
     onInput?: (value: T) => void;
     onFocus?: () => void;
+    disabled?: boolean;
   },
 ): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -61,6 +62,7 @@ export function ValidatedInput<T = string>(
       class={props.class}
       placeholder={props.placeholder}
       value={props.value ?? ""}
+      disabled={props.disabled}
       // oxlint-disable-next-line react/no-unknown-property
       autocomplete={props.autocomplete}
       name={props.name}
