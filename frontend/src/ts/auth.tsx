@@ -198,9 +198,6 @@ async function signInWithProvider(
   const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
   if (error !== null) {
-    if (error.message !== "") {
-      showErrorNotification(error.message);
-    }
     return { success: false, message: error.message };
   }
   return { success: true };
