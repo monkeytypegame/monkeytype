@@ -2,6 +2,7 @@ packages:
   - frontend
   - backend
   - packages/*
+  - frontend/storybook
 
 onlyBuiltDependencies:
   - "@firebase/util"
