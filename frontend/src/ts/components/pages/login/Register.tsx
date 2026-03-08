@@ -108,7 +108,7 @@ export function Register(): JSXElement {
   };
 
   return (
-    <div class="grid grid-cols-1 justify-center gap-2">
+    <div class="grid w-full grid-cols-1 justify-center gap-2 sm:w-80">
       <div class="inline-flex items-baseline text-sub">
         <i class="fas fa-user-plus mr-[0.5em]"></i>
         register
@@ -122,7 +122,6 @@ export function Register(): JSXElement {
       >
         <ValidatedInput
           type="text"
-          class="w-68"
           placeholder="username"
           autocomplete="new-username"
           schema={UserNameSchema}
@@ -140,7 +139,6 @@ export function Register(): JSXElement {
         />
         <ValidatedInput
           type="email"
-          class="w-68"
           placeholder="email"
           autocomplete="new-email"
           schema={UserEmailSchema}
@@ -166,7 +164,6 @@ export function Register(): JSXElement {
         />
         <ValidatedInput
           type="email"
-          class="w-68"
           placeholder="verify email"
           autocomplete="verify-email"
           // oxlint-disable-next-line solid/reactivity
@@ -177,13 +174,13 @@ export function Register(): JSXElement {
           }
           disabled={!getLoginPageInputsEnabled()}
           debounceDelay={0}
+          revalidateOn={emailValue}
           callback={(result: ValidationResult) => {
             setEmailVerifyValid(emailValid() && result.success);
           }}
         />
         <ValidatedInput
           type="password"
-          class="w-68"
           placeholder="password"
           autocomplete="new-password"
           name="new-password"
@@ -196,7 +193,6 @@ export function Register(): JSXElement {
         />
         <ValidatedInput
           type="password"
-          class="w-68"
           placeholder="verify password"
           autocomplete="verify-password"
           disabled={!getLoginPageInputsEnabled()}
@@ -208,6 +204,7 @@ export function Register(): JSXElement {
               : "verify password not matching password"
           }
           debounceDelay={0}
+          revalidateOn={passwordValue}
           callback={(result: ValidationResult) => {
             setPasswordVerifyValid(passwordValid() && result.success);
           }}

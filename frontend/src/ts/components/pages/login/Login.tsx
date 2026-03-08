@@ -72,7 +72,7 @@ export function Login(): JSXElement {
   };
 
   return (
-    <div class="grid grid-cols-1 justify-center gap-2">
+    <div class="grid w-full grid-cols-1 justify-center gap-2 sm:w-80">
       <div class="inline-flex items-baseline text-sub">
         <i class="fas fa-sign-in-alt mr-[0.5em]"></i>
         login
@@ -98,7 +98,6 @@ export function Login(): JSXElement {
         <input
           name="current-email"
           type="email"
-          class="w-68"
           placeholder="email"
           // oxlint-disable-next-line react/no-unknown-property
           autocomplete="current-email"
@@ -108,7 +107,6 @@ export function Login(): JSXElement {
         <input
           name="current-password"
           type="password"
-          class="w-68"
           placeholder="password"
           // oxlint-disable-next-line react/no-unknown-property
           autocomplete="current-password"

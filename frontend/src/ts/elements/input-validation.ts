@@ -234,6 +234,11 @@ export class ValidatedHtmlInputElement<
   triggerValidation(): void {
     this.dispatch("input");
   }
+
+  destroy(): void {
+    this.indicator.hide();
+    this.remove();
+  }
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {

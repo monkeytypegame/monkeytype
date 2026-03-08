@@ -2,6 +2,7 @@ import {
   splitProps,
   createEffect,
   JSXElement,
+  on,
   onCleanup,
   onMount,
 } from "solid-js";
@@ -23,6 +24,7 @@ export function ValidatedInput<T = string>(
     onInput?: (value: T) => void;
     onFocus?: () => void;
     disabled?: boolean;
+    revalidateOn?: () => unknown;
   },
 ): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -46,6 +48,7 @@ export function ValidatedInput<T = string>(
       "autocomplete",
       "name",
       "onFocus",
+      "revalidateOn",
     ]);
     validatedInput = new ValidatedHtmlInputElement(
       element,
@@ -54,20 +57,37 @@ export function ValidatedInput<T = string>(
     validatedInput.setValue(props.value ?? null);
   });
 
-  onCleanup(() => validatedInput?.remove());
+  createEffect(
+    on(
+      () => props.revalidateOn?.(),
+      () => {
+        if (validatedInput && inputEl()?.getValue() !== "") {
+          validatedInput.triggerValidation();
+        }
+      },
+      { defer: true },
+    ),
+  );
+
+  onCleanup(() => {
+    validatedInput?.destroy();
+  });
+
   return (
-    <input
-      ref={inputRef}
-      type={props.type ?? "text"}
-      class={props.class}
-      placeholder={props.placeholder}
-      value={props.value ?? ""}
-      disabled={props.disabled}
-      // oxlint-disable-next-line react/no-unknown-property
-      autocomplete={props.autocomplete}
-      name={props.name}
-      onInput={(e) => props.onInput?.(e.target.value as T)}
-      onFocus={() => props.onFocus?.()}
-    />
+    <div class="inputAndIndicator">
+      <input
+        ref={inputRef}
+        type={props.type ?? "text"}
+        class={props.class}
+        placeholder={props.placeholder}
+        value={props.value ?? ""}
+        disabled={props.disabled}
+        // oxlint-disable-next-line react/no-unknown-property
+        autocomplete={props.autocomplete}
+        name={props.name}
+        onInput={(e) => props.onInput?.(e.target.value as T)}
+        onFocus={() => props.onFocus?.()}
+      />
+    </div>
   );
 }

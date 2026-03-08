@@ -32,7 +32,7 @@ export function LoginPage(): JSXElement {
           </div>
         }
         else={
-          <div class="flex h-full items-center justify-around gap-4">
+          <div class="flex h-full flex-col items-center justify-around gap-4 md:flex-row">
             <Register />
             <Login />
           </div>
