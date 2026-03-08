@@ -58,8 +58,7 @@ async function getLog() {
 
 function itemIsAddingQuotes(item) {
   const typeIsImprovement = item.type === "impr";
-  const scopeIsQuote =
-    item.scope?.includes("quote") === true || item.scope?.includes("quotes");
+  const scopeIsQuote = item.scope?.includes("quote");
 
   const messageAdds = item.message.startsWith("add");
 
