@@ -1,45 +1,22 @@
-import { createSignal } from "solid-js";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 
-const [loading, setLoading] = createSignal(false);
-const [inputsDisabled, setInputsDisabled] = createSignal(false);
-const [signUpButtonEnabled, setSignUpButtonEnabled] = createSignal(false);
-const [serverDisabled, setServerDisabled] = createSignal(false);
+export const [
+  getLoginPageInputsEnabled,
+  { enableLoginPageInputs, disableLoginPageInputs },
+] = createSignalWithSetters(true)({
+  enableLoginPageInputs: (set) => set(true),
+  disableLoginPageInputs: (set) => set(false),
+});
 
-export const getLoading = loading;
-export const getInputsDisabled = inputsDisabled;
-export const getSignUpButtonEnabled = signUpButtonEnabled;
-export const getServerDisabled = serverDisabled;
-
-export function showPreloader(): void {
-  setLoading(true);
-}
-
-export function hidePreloader(): void {
-  setLoading(false);
-}
-
-export function enableInputs(): void {
-  setInputsDisabled(false);
-}
-
-export function disableInputs(): void {
-  setInputsDisabled(true);
-}
-
-export function enableSignUpButton(): void {
-  setSignUpButtonEnabled(true);
-}
-
-export function disableSignUpButton(): void {
-  setSignUpButtonEnabled(false);
-}
-
-export function setLoginDisabledByServer(): void {
-  setServerDisabled(true);
-}
+export const [
+  getLoginPageLoader,
+  { showLoginPageLoader, hideLoginPageLoader },
+] = createSignalWithSetters(false)({
+  showLoginPageLoader: (set) => set(true),
+  hideLoginPageLoader: (set) => set(false),
+});
 
 export function resetForm(): void {
-  setLoading(false);
-  setInputsDisabled(false);
-  setSignUpButtonEnabled(false);
+  hideLoginPageLoader();
+  enableLoginPageInputs();
 }

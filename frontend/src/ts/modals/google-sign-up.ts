@@ -11,7 +11,6 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import * as LoginPage from "../stores/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 
@@ -22,6 +21,7 @@ import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
+import { enableLoginPageInputs, hideLoginPageLoader } from "../stores/login";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -62,8 +62,8 @@ async function hide(): Promise<void> {
         showNoticeNotification("Sign up process cancelled", {
           durationMs: 5000,
         });
-        LoginPage.hidePreloader();
-        LoginPage.enableInputs();
+        hideLoginPageLoader();
+        enableLoginPageInputs();
         if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
           await Ape.users.delete();
           await signedInUser?.user.delete().catch(() => {
@@ -110,8 +110,8 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       showSuccessNotification("Account created");
-      LoginPage.enableInputs();
-      LoginPage.hidePreloader();
+      enableLoginPageInputs();
+      hideLoginPageLoader();
       await AccountController.loadUser(signedInUser.user);
 
       signedInUser = undefined;
@@ -121,9 +121,8 @@ async function apply(): Promise<void> {
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.enableSignUpButton();
+    hideLoginPageLoader();
+    enableLoginPageInputs();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser?.user.delete().catch(() => {
