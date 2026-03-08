@@ -1,5 +1,5 @@
 {
-  "name": "/Users/jackbartnik/Code/monkeytype/frontend/storybook",
+  "name": "@monkeytype/frontend-storybook",
   "version": "0.0.0",
   "private": true,
   "imports": {
