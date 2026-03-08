@@ -31,7 +31,7 @@ export function UserBadge(props: {
         <Show when={badge()?.icon}>
           <Fa
             icon={badge()?.icon ?? "fa-question"}
-            fixedWidth={false}
+            fixedWidth={props.iconOnly === true}
             class="px-[0.75em] py-[0.5em]"
           />
           <Show when={!props.iconOnly}>
