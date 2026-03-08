@@ -20,7 +20,7 @@
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
     "docker": "docker compose -f docker/compose.dev.yml up",
-    "storybook": "cd solid-storybook && pnpm run storybook"
+    "storybook": "cd storybook && pnpm run storybook"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
