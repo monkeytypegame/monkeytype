@@ -279,7 +279,7 @@ function AvatarAndName(props: {
       )}
     >
       <DiscordAvatar
-        class="h-full w-full place-self-center"
+        class="h-auto w-full place-self-center"
         size={256}
         discordAvatar={props.profile.discordAvatar}
         discordId={props.profile.discordId}
@@ -296,33 +296,35 @@ function AvatarAndName(props: {
             />
           </div>
         </AutoShrink>
-        <UserBadge
-          id={props.profile.inventory?.badges.find((it) => it.selected)?.id}
-          balloon={{
-            position: balloonPosition(),
-            length: balloonPosition() === "up" ? "medium" : undefined,
-          }}
-        />
-        <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
-          <div class="flex flex-row gap-1">
-            <For
-              each={props.profile.inventory?.badges
-                .filter((it) => !it.selected)
-                .map((it) => it.id)}
-            >
-              {(badgeId) => (
-                <UserBadge
-                  id={badgeId}
-                  iconOnly
-                  balloon={{
-                    position: balloonPosition(),
-                    length: balloonPosition() === "up" ? "medium" : undefined,
-                  }}
-                />
-              )}
-            </For>
-          </div>
-        </Show>
+        <div class="flex flex-col gap-1 text-base">
+          <UserBadge
+            id={props.profile.inventory?.badges.find((it) => it.selected)?.id}
+            balloon={{
+              position: balloonPosition(),
+              length: balloonPosition() === "up" ? "medium" : undefined,
+            }}
+          />
+          <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
+            <div class="flex flex-row gap-1">
+              <For
+                each={props.profile.inventory?.badges
+                  .filter((it) => !it.selected)
+                  .map((it) => it.id)}
+              >
+                {(badgeId) => (
+                  <UserBadge
+                    id={badgeId}
+                    iconOnly
+                    balloon={{
+                      position: balloonPosition(),
+                      length: balloonPosition() === "up" ? "medium" : undefined,
+                    }}
+                  />
+                )}
+              </For>
+            </div>
+          </Show>
+        </div>
         <div class="grid">
           <Balloon inline text={accountAgeHint()} position={balloonPosition()}>
             Joined {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}

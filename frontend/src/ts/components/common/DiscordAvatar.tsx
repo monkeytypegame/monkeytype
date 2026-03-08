@@ -54,7 +54,10 @@ export function DiscordAvatar(props: {
 
   return (
     <div
-      class={cn("grid h-[1.25em] w-[1.25em] place-items-stretch", props.class)}
+      class={cn(
+        "grid aspect-square h-[1.25em] w-[1.25em] place-items-stretch",
+        props.class,
+      )}
     >
       <Conditional
         if={showDiscordAvatar()}
