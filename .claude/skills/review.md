@@ -18,4 +18,4 @@ Trigger: user asks to review changes, review code, or uses /review
    - **Tailwind**: non-canonical classes, inline styles that should be Tailwind, missing responsive variants if siblings have them
    - **Solid-specific**: broken reactivity, missing cleanup, doing things not the "Solid way"
    - **Improvements**: any other changes that would make the code more robust, readable, maintainable, better
-4. Output a concise list of findings. If nothing found, say "No issues found."
+4. Output a concise list of findings. Highlight which issues should be absolutely fixed before merging/committing. If nothing found, say "No issues found."
