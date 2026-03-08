@@ -83,7 +83,7 @@ class CharDistribution {
   public addChar(char: string): void {
     this.count++;
     if (char in this.chars) {
-      (this.chars[char] as number)++;
+      (this.chars[char] as number) += 1;
     } else {
       this.chars[char] = 1;
     }

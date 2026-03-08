@@ -507,7 +507,7 @@ export function pushMissedWord(word: string): void {
   if (!Object.keys(missedWords).includes(word)) {
     missedWords[word] = 1;
   } else {
-    (missedWords[word] as number)++;
+    (missedWords[word] as number) += 1;
   }
 }
 
