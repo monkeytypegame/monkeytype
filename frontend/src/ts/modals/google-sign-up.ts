@@ -11,7 +11,7 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import * as LoginPage from "../pages/login";
+import * as LoginPage from "../stores/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 

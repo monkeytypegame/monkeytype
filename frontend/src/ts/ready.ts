@@ -8,6 +8,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs } from "./utils/dom";
+import { setLoginDisabledByServer } from "./stores/login";
 
 onDOMReady(async () => {
   await configLoadPromise;
@@ -29,9 +30,7 @@ onDOMReady(async () => {
 
   void ServerConfiguration.sync().then(() => {
     if (!ServerConfiguration.get()?.users.signUp) {
-      qs(".register")?.hide();
-      qs(".login")?.hide();
-      qs(".disabledNotification")?.show();
+      setLoginDisabledByServer();
     }
   });
 

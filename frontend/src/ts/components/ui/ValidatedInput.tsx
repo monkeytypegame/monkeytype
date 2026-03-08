@@ -17,7 +17,11 @@ export function ValidatedInput<T = string>(
     value?: string;
     placeholder?: string;
     class?: string;
+    type?: string;
+    autocomplete?: string;
+    name?: string;
     onInput?: (value: T) => void;
+    onFocus?: () => void;
   },
 ): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
@@ -33,7 +37,15 @@ export function ValidatedInput<T = string>(
     const element = inputEl();
     if (element === undefined) return;
 
-    const [_, others] = splitProps(props, ["value", "class", "placeholder"]);
+    const [_, others] = splitProps(props, [
+      "value",
+      "class",
+      "placeholder",
+      "type",
+      "autocomplete",
+      "name",
+      "onFocus",
+    ]);
     validatedInput = new ValidatedHtmlInputElement(
       element,
       others as ValidationOptions<T>,
@@ -45,11 +57,15 @@ export function ValidatedInput<T = string>(
   return (
     <input
       ref={inputRef}
-      type="text"
+      type={props.type ?? "text"}
       class={props.class}
       placeholder={props.placeholder}
       value={props.value ?? ""}
+      // oxlint-disable-next-line react/no-unknown-property
+      autocomplete={props.autocomplete}
+      name={props.name}
       onInput={(e) => props.onInput?.(e.target.value as T)}
+      onFocus={() => props.onFocus?.()}
     />
   );
 }
