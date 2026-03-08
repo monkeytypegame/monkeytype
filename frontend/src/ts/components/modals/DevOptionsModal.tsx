@@ -3,6 +3,7 @@ import { envConfig } from "virtual:env-config";
 
 import Ape from "../../ape";
 import { signIn } from "../../auth";
+import { inboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
@@ -176,6 +177,7 @@ export function DevOptionsModal(): JSXElement {
           return;
         }
         showSuccessNotification("Debug inbox item added");
+        void inboxCollection.utils.refetch();
       });
   };
 
