@@ -264,8 +264,7 @@ AuthEvent.subscribe((event) => {
     ];
 
     //undefined means navigate to whatever the current window.location.pathname is
-    document.body.classList.add("loading");
-    const navigationPromise = navigate(undefined, {
+    void navigate(undefined, {
       force: true,
       loadingOptions: {
         loadingMode: () => {
@@ -281,8 +280,7 @@ AuthEvent.subscribe((event) => {
         style: "bar",
         keyframes: keyframes,
       },
-    });
-    void navigationPromise.finally(() => {
+    }).finally(() => {
       document.body.classList.remove("loading");
     });
   }
