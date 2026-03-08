@@ -303,6 +303,8 @@ function AvatarAndName(props: {
               position: balloonPosition(),
               length: balloonPosition() === "up" ? "medium" : undefined,
             }}
+            class="w-max"
+            hideTextOnSmallScreens={false}
           />
           <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
             <div class="flex flex-row gap-1">
