@@ -25,6 +25,43 @@ function stubVirtualEnvConfig(): Plugin {
   };
 }
 
+function patchQsrToNotThrow(): Plugin {
+  return {
+    name: "patch-qsr-not-throw",
+    enforce: "pre",
+    transform(code, id) {
+      if (!id.includes("utils/dom")) return;
+      // Replace the throw in qsr with creating a dummy element
+      return code.replaceAll(
+        `throw new Error(\`Required element not found: \${selector}\`);`,
+        `console.warn(\`[storybook] qsr: element not found: \${selector}, returning dummy\`);
+    return new ElementWithUtils(document.createElement("div") as T);`,
+      );
+    },
+  };
+}
+
+function patchAnimatedModalToNotThrow(): Plugin {
+  return {
+    name: "patch-animated-modal-not-throw",
+    enforce: "pre",
+    transform(code, id) {
+      if (!id.includes("utils/animated-modal")) return;
+      return code
+        .replaceAll(
+          `throw new Error(
+        \`Dialog element with id \${constructorParams.dialogId} not found\`,
+      );`,
+          `console.warn(\`[storybook] AnimatedModal: dialog #\${constructorParams.dialogId} not found\`); return;`,
+        )
+        .replace(
+          `throw new Error("Animated dialog must be an HTMLDialogElement");`,
+          `console.warn("[storybook] AnimatedModal: element is not a dialog"); return;`,
+        );
+    },
+  };
+}
+
 function stubChartController(): Plugin {
   const stubId = "\0stub-chart-controller";
   const stubCode = `
@@ -83,6 +120,7 @@ function stubVirtualLanguageHashes(): Plugin {
 }
 
 export default defineMain({
+  staticDirs: ["../../static"],
   framework: {
     name: "storybook-solidjs-vite",
     options: {
@@ -107,6 +145,8 @@ export default defineMain({
     config.plugins.push(tailwindcss());
     config.plugins.push(stubVirtualEnvConfig());
     config.plugins.push(stubVirtualLanguageHashes());
+    config.plugins.push(patchQsrToNotThrow());
+    config.plugins.push(patchAnimatedModalToNotThrow());
     config.plugins.push(stubChartController());
     return config;
   },

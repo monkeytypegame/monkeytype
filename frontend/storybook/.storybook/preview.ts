@@ -11,6 +11,19 @@ import "slim-select/styles";
 import { ThemesList } from "../../src/ts/constants/themes";
 import { ThemeDecorator } from "./ThemeDecorator";
 
+const tailwindViewports = {
+  xxs: { name: "xxs (331px)", styles: { width: "331px", height: "900px" } },
+  xs: { name: "xs (426px)", styles: { width: "426px", height: "900px" } },
+  sm: { name: "sm (640px)", styles: { width: "640px", height: "900px" } },
+  md: { name: "md (768px)", styles: { width: "768px", height: "900px" } },
+  lg: { name: "lg (1024px)", styles: { width: "1024px", height: "900px" } },
+  xl: { name: "xl (1280px)", styles: { width: "1280px", height: "900px" } },
+  "2xl": {
+    name: "2xl (1536px)",
+    styles: { width: "1536px", height: "900px" },
+  },
+};
+
 export default definePreview({
   addons: [addonDocs(), addonA11y()],
   globalTypes: {
@@ -34,6 +47,7 @@ export default definePreview({
   },
   decorators: [ThemeDecorator],
   parameters: {
+    layout: "centered",
     // automatically create action args for all props that start with 'on'
     actions: {
       argTypesRegex: "^on.*",
@@ -43,6 +57,9 @@ export default definePreview({
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+    },
+    viewport: {
+      options: tailwindViewports,
     },
     a11y: {
       // 'todo' - show a11y violations in the test UI only

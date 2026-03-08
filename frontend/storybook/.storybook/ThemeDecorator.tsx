@@ -9,6 +9,8 @@ type StoryContext = {
 
 const themeMap = new Map(ThemesList.map((t) => [t.name, t]));
 
+let currentThemeLink: HTMLLinkElement | null = null;
+
 export function ThemeDecorator(
   Story: () => JSXElement,
   context: StoryContext,
@@ -31,6 +33,19 @@ export function ThemeDecorator(
     "--colorful-error-extra-color",
     theme.colorfulErrorExtra,
   );
+
+  // Load/unload theme CSS file
+  if (currentThemeLink) {
+    currentThemeLink.remove();
+    currentThemeLink = null;
+  }
+  if (theme.hasCss) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `/themes/${themeName}.css`;
+    document.head.appendChild(link);
+    currentThemeLink = link;
+  }
 
   return Story();
 }
