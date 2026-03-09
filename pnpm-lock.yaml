@@ -262,8 +262,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0
       '@leonabcd123/modern-caps-lock':
-        specifier: 2.2.2
-        version: 2.2.2
+        specifier: 3.0.4
+        version: 3.0.4
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
@@ -2333,8 +2333,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@leonabcd123/modern-caps-lock@2.2.2':
-    resolution: {integrity: sha512-0e8onO4ovdeVj9d/1Ddl1q7nq/p+PNsLscp1yOXQLOiyANUCLq41/H8qh5RDZAOs6j9yNzyxlP5h4o8u2HCwFA==}
+  '@leonabcd123/modern-caps-lock@3.0.4':
+    resolution: {integrity: sha512-GUUlmHBu3r6H9KaE9sCxqr0iTSLMev7vdzoovrotyaTSS+AtOrJNdptlWf2DnYAHG8U4EJ++mjyUJdNDjaYI9Q==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -12074,7 +12074,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@leonabcd123/modern-caps-lock@2.2.2': {}
+  '@leonabcd123/modern-caps-lock@3.0.4': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
