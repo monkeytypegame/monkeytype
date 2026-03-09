@@ -8,6 +8,7 @@ import { createMemo, For, JSXElement, Show } from "solid-js";
 
 import * as PbTablesModal from "../../../modals/pb-tables";
 import { getConfig } from "../../../signals/config";
+import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
@@ -126,8 +127,10 @@ function PbTable<M extends "time" | "words">(props: {
       <div class="grid grid-cols-2 gap-8 p-4 md:grid-cols-4">
         <For each={bests()}>
           {(item) => (
-            <div class="grid items-center">
-              <div class="col-start-1 row-start-1 text-center">
+            <div
+              class={cn("grid items-center", item.pb !== undefined && "group")}
+            >
+              <div class="col-start-1 row-start-1 text-center transition-opacity group-hover:opacity-0">
                 <div class="text-xs text-sub">
                   {item.mode2} {props.mode === "time" ? "seconds" : "words"}
                 </div>
@@ -143,7 +146,7 @@ function PbTable<M extends "time" | "words">(props: {
                 </div>
               </div>
               <Show when={item.pb !== undefined}>
-                <div class="col-start-1 row-start-1 grid bg-sub-alt text-center text-xs opacity-0 transition-opacity hover:opacity-100">
+                <div class="col-start-1 row-start-1 grid h-full bg-sub-alt text-center text-xs opacity-0 transition-opacity group-hover:opacity-100">
                   <div class="text-sub">
                     {item.mode2} {props.mode === "time" ? "seconds" : "words"}
                   </div>
