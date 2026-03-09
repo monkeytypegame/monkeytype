@@ -182,7 +182,7 @@ export async function insertLocalResult(
   }
 }
 
-const resultsCollection = createCollection(
+export const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),

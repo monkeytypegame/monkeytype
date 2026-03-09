@@ -1,9 +1,4 @@
-import {
-  ResultFilters,
-  User,
-  UserProfileDetails,
-  UserTag,
-} from "@monkeytype/schemas/users";
+import { User, UserProfileDetails, UserTag } from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
@@ -77,7 +72,6 @@ export type Snapshot = Omit<
   inboxUnreadSize: number;
   streak: number;
   maxStreak: number;
-  filterPresets: ResultFilters[]; //TODO remove
   isPremium: boolean;
   streakHourOffset?: number;
   tags: SnapshotUserTag[];
@@ -122,7 +116,6 @@ const defaultSnap = {
   quoteMod: false,
   favoriteQuotes: {},
   addedAt: 0,
-  filterPresets: [],
   xp: 0,
   inboxUnreadSize: 0,
   streak: 0,

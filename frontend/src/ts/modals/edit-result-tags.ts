@@ -6,7 +6,6 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../stores/notifications";
-import * as AccountPage from "../pages/account";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
@@ -149,7 +148,7 @@ async function save(): Promise<void> {
   });
 
   if (state.source === "accountPage") {
-    AccountPage.updateTagsForResult(state.resultId, state.tags);
+    //TODO AccountPage.updateTagsForResult(state.resultId, state.tags);
   } else if (state.source === "resultPage") {
     TestResult.updateTagsAfterEdit(state.tags, responseTagPbs);
   }

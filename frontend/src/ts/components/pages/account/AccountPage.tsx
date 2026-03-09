@@ -15,12 +15,13 @@ import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
+import { MyProfile } from "./MyProfile";
 import { Table } from "./Table";
 import { TestStats } from "./TestStats";
 
 export function AccountPage(): JSXElement {
   //TODO change page
-  const isOpen = (): boolean => getActivePage() === "about";
+  const isOpen = (): boolean => getActivePage() === "account";
   const [limit, setLimit] = createSignal(10);
 
   const [filters, setFilters] = useLocalStorageStore({
@@ -47,8 +48,11 @@ export function AccountPage(): JSXElement {
 
   const data = useResultsLiveQuery({ queryState, sorting, limit });
 
+  //TODO ads
   return (
     <Show when={isLoggedIn() && isOpen()}>
+      <MyProfile />
+
       <Filters filters={filters} onChangeFilters={setFilters} />
 
       <Charts filters={filters} queryState={queryState} />
