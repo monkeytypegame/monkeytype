@@ -28,6 +28,7 @@ import {
   handleResult,
   ValidationResult,
 } from "../../ui/form/utils";
+import { H3 } from "../../common/Headers";
 let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
@@ -102,10 +103,13 @@ export function Register(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-2 sm:w-80">
-      <div class="inline-flex items-baseline text-sub">
-        <i class="fas fa-user-plus mr-[0.5em]"></i>
-        register
-      </div>
+      <H3
+        text="register"
+        fa={{
+          icon: "fa-user-plus",
+        }}
+        class="p-0"
+      />
       <form
         onSubmit={(e) => {
           e.preventDefault();
