@@ -24,12 +24,14 @@ type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
   disabled?: boolean;
+  type?: "submit";
 };
 
 type AnchorProps = BaseProps & {
   href: string;
   // onClick?: never;
   disabled?: never;
+  type?: never;
 };
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
@@ -107,7 +109,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       }
       else={
         <button
-          type="button"
+          type={props.type ?? "button"}
           class={getClasses()}
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}

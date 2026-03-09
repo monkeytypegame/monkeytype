@@ -1,0 +1,47 @@
+import type { AnyFieldApi } from "@tanstack/solid-form";
+
+import { Match, Switch } from "solid-js";
+
+import { Balloon } from "../../common/Balloon";
+import { Fa } from "../../common/Fa";
+import { LoadingCircle } from "../../common/LoadingCircle";
+
+export type FieldIndicatorProps = {
+  field: AnyFieldApi;
+};
+
+export function FieldIndicator(props: FieldIndicatorProps) {
+  return (
+    <Switch>
+      <Match when={props.field.state.meta.isValidating}>
+        <LoadingCircle />
+      </Match>
+      <Match
+        when={
+          props.field.state.meta.isTouched && !props.field.state.meta.isValid
+        }
+      >
+        <Balloon
+          position="left"
+          length="large"
+          text={props.field.state.meta.errors
+
+            .join(", ")}
+        >
+          <Fa icon="fa-times" class="text-error" />
+        </Balloon>
+      </Match>
+      <Match when={props.field.state.meta.hasWarning}>
+        <Balloon
+          position="left"
+          length="large"
+          text={props.field.state.meta.warnings
+
+            .join(", ")}
+        >
+          <Fa icon="fa-exclamation-triangle" class="text-main" />
+        </Balloon>
+      </Match>
+    </Switch>
+  );
+}
