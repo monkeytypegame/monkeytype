@@ -28,9 +28,12 @@ describe("AnimatedModal", () => {
     modalDiv: HTMLDivElement;
   } {
     const { container } = render(() => (
-      <AnimatedModal id="Support" {...props}>
-        <div data-testid="modal-content">Test Content</div>
-      </AnimatedModal>
+      <>
+        <div id="solidmodals"></div>
+        <AnimatedModal id="Support" {...props}>
+          <div data-testid="modal-content">Test Content</div>
+        </AnimatedModal>
+      </>
     ));
 
     return {
