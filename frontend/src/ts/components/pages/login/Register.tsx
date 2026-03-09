@@ -27,6 +27,7 @@ import {
 import { isDevEnvironment } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 import TypoList from "../../../utils/typo-list";
+import { H3 } from "../../common/Headers";
 import { ValidatedInput } from "../../ui/ValidatedInput";
 
 let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
@@ -109,10 +110,13 @@ export function Register(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-2 sm:w-80">
-      <div class="inline-flex items-baseline text-sub">
-        <i class="fas fa-user-plus mr-[0.5em]"></i>
-        register
-      </div>
+      <H3
+        text="register"
+        fa={{
+          icon: "fa-user-plus",
+        }}
+        class="p-0"
+      />
       <form
         action=""
         // oxlint-disable-next-line react/no-unknown-property

@@ -14,6 +14,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../../stores/notifications";
+import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
 
 export function Login(): JSXElement {
@@ -73,10 +74,13 @@ export function Login(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-2 sm:w-80">
-      <div class="inline-flex items-baseline text-sub">
-        <i class="fas fa-sign-in-alt mr-[0.5em]"></i>
-        login
-      </div>
+      <H3
+        text="login"
+        fa={{
+          icon: "fa-sign-in-alt",
+        }}
+        class="p-0"
+      />
       <div class="grid grid-cols-2 gap-4">
         <button
           type="button"
