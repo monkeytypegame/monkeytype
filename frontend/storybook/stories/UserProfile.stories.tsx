@@ -53,17 +53,7 @@ const baseProfile: UserProfileType = {
           timestamp: 1698000000000,
         },
       ],
-      "120": [
-        {
-          acc: 94.1,
-          consistency: 76.0,
-          difficulty: "normal",
-          language: "english",
-          raw: 130,
-          wpm: 118,
-          timestamp: 1697000000000,
-        },
-      ],
+      "120": [],
     },
     words: {
       "10": [
