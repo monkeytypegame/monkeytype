@@ -47,11 +47,13 @@ describe("AsyncContent", () => {
     });
 
     it("renders on resolve", async () => {
-      renderWithQuery({ result: "Test Data" });
+      const { container } = renderWithQuery({ result: "Test Data" });
 
       await waitFor(() => {
         expect(screen.getByTestId("content")).toHaveTextContent("Test Data");
       });
+      const preloader = container.querySelector(".preloader");
+      expect(preloader).not.toBeInTheDocument();
     });
 
     it("renders default error message on fail", async () => {
@@ -147,13 +149,7 @@ describe("AsyncContent", () => {
         }));
 
         return (
-          <AsyncContent
-            query={myQuery}
-            errorMessage={options?.errorMessage}
-            alwaysShowContent={options?.alwaysShowContent}
-            ignoreError={options?.ignoreError}
-            loader={options?.loader}
-          >
+          <AsyncContent query={myQuery} {...(options as Props<string>)}>
             {(data: string | undefined) => (
               <>
                 foo
@@ -205,7 +201,10 @@ describe("AsyncContent", () => {
     });
 
     it("renders on resolve", async () => {
-      renderWithQuery({ first: "First Data", second: "Second Data" });
+      const { container } = renderWithQuery({
+        first: "First Data",
+        second: "Second Data",
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId("first")).toHaveTextContent("First Data");
@@ -213,6 +212,8 @@ describe("AsyncContent", () => {
       await waitFor(() => {
         expect(screen.getByTestId("second")).toHaveTextContent("Second Data");
       });
+      const preloader = container.querySelector(".preloader");
+      expect(preloader).not.toBeInTheDocument();
     });
 
     it("renders default error message on fail", async () => {
@@ -334,13 +335,11 @@ describe("AsyncContent", () => {
           retry: 0,
         }));
 
+        type Q = { first: string | undefined; second: string | undefined };
         return (
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
-            errorMessage={options?.errorMessage}
-            alwaysShowContent={options?.alwaysShowContent}
-            ignoreError={options?.ignoreError}
-            loader={options?.loader}
+            {...(options as Props<Q>)}
           >
             {(results: {
               first: string | undefined;

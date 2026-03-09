@@ -280,6 +280,8 @@ AuthEvent.subscribe((event) => {
         style: "bar",
         keyframes: keyframes,
       },
+    }).finally(() => {
+      document.body.classList.remove("loading");
     });
   }
 });

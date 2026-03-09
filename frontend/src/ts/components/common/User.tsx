@@ -3,6 +3,7 @@ import { AnimationParams } from "animejs";
 import { createEffect, createSignal, JSXElement, on, Show } from "solid-js";
 
 import {
+  getMatchingFlags,
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
@@ -23,11 +24,15 @@ type Props = {
       badgeId?: number;
     };
   showAvatar?: boolean;
+  avatarFallback?: "user" | "user-circle";
+  avatarColor?: "text" | "sub";
+  flagsColor?: "text" | "sub";
   hideNameOnSmallScreens?: boolean;
   linkToProfile?: boolean;
   level?: number;
   showSpinner?: boolean;
   showNotificationBubble?: boolean;
+  fontClass?: "text-em-xs" | "text-em-sm" | "text-em-md" | "text-em-lg";
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
@@ -66,31 +71,42 @@ export function User(props: Props): JSXElement {
   );
 
   return (
-    <div class={cn("grid grid-flow-col place-items-center gap-2", props.class)}>
+    <div
+      class={cn(
+        "grid grid-flow-col place-items-center gap-[0.5em]",
+        props.class,
+      )}
+    >
       <Show when={props.showAvatar ?? true}>
         <div class="relative w-[1.25em]" data-ui-element="navAvatar">
           <NotificationBubble
             variant="atCorner"
             show={props.showNotificationBubble ?? false}
-            class="m-0.5"
+            class="z-2 m-0.5"
           />
-          <AnimeConditional
-            exitBeforeEnter
-            if={props.showSpinner ?? false}
-            then={<Fa icon={"fa-circle-notch"} spin={true} />}
-            else={
-              <DiscordAvatar
-                size={64}
-                discordId={props.user.discordId}
-                discordAvatar={props.user.discordAvatar}
-                fallbackIcon="user"
-              />
-            }
-          />
+          <div class="grid place-items-center">
+            <AnimeConditional
+              exitBeforeEnter
+              if={props.showSpinner ?? false}
+              then={<Fa icon={"fa-circle-notch"} spin={true} />}
+              else={
+                <DiscordAvatar
+                  size={64}
+                  discordId={props.user.discordId}
+                  discordAvatar={props.user.discordAvatar}
+                  fallbackIcon={props.avatarFallback ?? "user"}
+                  class={cn(
+                    props.avatarColor === "text" && "text-text",
+                    props.avatarColor === "sub" && "text-sub",
+                  )}
+                />
+              }
+            />
+          </div>
         </div>
       </Show>
       <div
-        class={cn("text-xs", {
+        class={cn(props.fontClass, {
           "hidden sm:block": props.hideNameOnSmallScreens,
         })}
       >
@@ -102,20 +118,38 @@ export function User(props: Props): JSXElement {
               href={`/profile/${props.user.name}`}
               text={props.user.name}
               router-link
+              class="px-0"
             />
           }
           else={props.user.name}
         />
       </div>
 
-      <div class="flex items-center justify-center gap-2">
-        <UserFlags
-          {...props.user}
-          isFriend={props.isFriend}
-          iconsOnly={props.iconsOnly}
-        />
+      <Show
+        when={
+          getMatchingFlags({ ...props.user, isFriend: props.isFriend }).length >
+          0
+        }
+      >
+        <div
+          class={cn(
+            "flex items-center justify-center gap-[0.5em]",
+            cn(
+              props.flagsColor === "text" && "text-text",
+              props.flagsColor === "sub" && "text-sub",
+            ),
+          )}
+        >
+          <UserFlags
+            {...props.user}
+            isFriend={props.isFriend}
+            iconsOnly={props.iconsOnly}
+          />
+        </div>
+      </Show>
+      <Show when={props.user.badgeId !== undefined}>
         <UserBadge id={props.user.badgeId} />
-      </div>
+      </Show>
       <Show when={props.level !== undefined}>
         <Anime
           ref={(el) => (levelEl = el)}

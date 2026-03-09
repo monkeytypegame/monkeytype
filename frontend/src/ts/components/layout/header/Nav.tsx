@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { showAlerts } from "../../../elements/alerts";
 import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage, getFocus } from "../../../signals/core";
@@ -10,6 +9,7 @@ import {
   getAnimatedLevel,
   setAnimatedLevel,
 } from "../../../signals/header";
+import { showModal } from "../../../stores/modals";
 import { getSnapshot } from "../../../stores/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
@@ -19,6 +19,7 @@ import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
 import { prefetchAboutPage } from "../../pages/AboutPage";
+import { prefetchLeaderboardPage } from "../../pages/leaderboard/LeaderboardPage";
 import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
@@ -91,6 +92,9 @@ export function Nav(): JSXElement {
         }}
         class={buttonClass()}
         href="/leaderboards"
+        onMouseEnter={() => {
+          prefetchLeaderboardPage();
+        }}
       />
       <Button
         variant="text"
@@ -132,7 +136,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "alerts",
         }}
         onClick={() => {
-          void showAlerts();
+          showModal("Alerts");
         }}
         class={cn(buttonClass(), "relative")}
       >
@@ -174,6 +178,7 @@ export function Nav(): JSXElement {
                   level={getAnimatedLevel()}
                   showSpinner={getAccountButtonSpinner()}
                   showNotificationBubble={showFriendsNotificationBubble()}
+                  fontClass="text-em-xs"
                 />
               </Button>
               <AccountMenu
