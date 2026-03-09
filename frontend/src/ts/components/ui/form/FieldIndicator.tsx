@@ -16,30 +16,36 @@ export function FieldIndicator(props: FieldIndicatorProps) {
   //@ts-expect-error custom meta attributes
   const getWarnings = () => props.field.getMeta().warnings as string[];
   return (
-    <Switch>
-      <Match when={props.field.state.meta.isValidating}>
-        <LoadingCircle />
-      </Match>
-      <Match
-        when={
-          props.field.state.meta.isTouched && !props.field.state.meta.isValid
-        }
-      >
-        <Balloon
-          position="left"
-          length="large"
-          text={props.field.state.meta.errors
-
-            .join(", ")}
+    <div class="absolute top-1/2 right-2 -translate-y-1/2">
+      <Switch>
+        <Match when={props.field.state.meta.isValidating}>
+          <LoadingCircle />
+        </Match>
+        <Match
+          when={
+            props.field.state.meta.isTouched && !props.field.state.meta.isValid
+          }
         >
-          <Fa icon="fa-times" class="text-error" />
-        </Balloon>
-      </Match>
-      <Match when={hasWarning()}>
-        <Balloon position="left" length="large" text={getWarnings().join(", ")}>
-          <Fa icon="fa-exclamation-triangle" class="text-main" />
-        </Balloon>
-      </Match>
-    </Switch>
+          <Balloon
+            position="left"
+            length="large"
+            text={props.field.state.meta.errors
+
+              .join(", ")}
+          >
+            <Fa icon="fa-times" class="text-error" />
+          </Balloon>
+        </Match>
+        <Match when={hasWarning()}>
+          <Balloon
+            position="left"
+            length="large"
+            text={getWarnings().join(", ")}
+          >
+            <Fa icon="fa-exclamation-triangle" class="text-main" />
+          </Balloon>
+        </Match>
+      </Switch>
+    </div>
   );
 }

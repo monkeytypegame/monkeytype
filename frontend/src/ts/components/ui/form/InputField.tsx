@@ -13,8 +13,9 @@ export function InputField(props: {
   onFocus?: () => void;
 }): JSXElement {
   return (
-    <div class="flex flex-row">
+    <div class="relative w-full">
       <input
+        class="w-full"
         id={props.field().name as string}
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? (props.field().name as string)}

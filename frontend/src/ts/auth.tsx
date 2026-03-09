@@ -34,6 +34,15 @@ import {
 } from "./stores/notifications";
 import { createErrorMessage } from "./utils/misc";
 
+export type AuthResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    };
+
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
@@ -156,15 +165,7 @@ export async function signIn(
   email: string,
   password: string,
   rememberMe: boolean,
-): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
@@ -182,15 +183,7 @@ export async function signIn(
 async function signInWithProvider(
   provider: AuthProvider,
   rememberMe: boolean,
-): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
@@ -203,27 +196,15 @@ async function signInWithProvider(
   return { success: true };
 }
 
-export async function signInWithGoogle(rememberMe: boolean): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+export async function signInWithGoogle(
+  rememberMe: boolean,
+): Promise<AuthResult> {
   return signInWithProvider(gmailProvider, rememberMe);
 }
 
-export async function signInWithGitHub(rememberMe: boolean): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+export async function signInWithGitHub(
+  rememberMe: boolean,
+): Promise<AuthResult> {
   return signInWithProvider(githubProvider, rememberMe);
 }
 
@@ -272,15 +253,7 @@ export async function signUp(
   name: string,
   email: string,
   password: string,
-): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }

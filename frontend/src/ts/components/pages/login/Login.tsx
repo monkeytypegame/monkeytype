@@ -1,75 +1,62 @@
-import { createSignal, JSXElement } from "solid-js";
+import { createForm } from "@tanstack/solid-form";
+import { createSignal, JSXElement, Show } from "solid-js";
 
-import { signIn, signInWithGitHub, signInWithGoogle } from "../../../auth";
+import {
+  AuthResult,
+  signIn,
+  signInWithGitHub,
+  signInWithGoogle,
+} from "../../../auth";
 import * as ForgotPasswordModal from "../../../modals/forgot-password";
-import * as ConnectionState from "../../../states/connection";
 import {
-  showLoginPageLoader,
-  hideLoginPageLoader,
-  disableLoginPageInputs,
-  enableLoginPageInputs,
-  getLoginPageInputsEnabled,
-} from "../../../stores/login";
-import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
 } from "../../../stores/notifications";
+import { Button } from "../../common/Button";
+import { LoadingCircle } from "../../common/LoadingCircle";
 import { Separator } from "../../common/Separator";
+import { Checkbox } from "../../ui/form/Checkbox";
+import { InputField } from "../../ui/form/InputField";
 
 export function Login(): JSXElement {
-  const [loginEmail, setLoginEmail] = createSignal("");
-  const [loginPassword, setLoginPassword] = createSignal("");
-  const [rememberMe, setRememberMe] = createSignal(true);
+  const [isEditable, setEditable] = createSignal(true);
 
-  const handleSignInWithGoogle = async () => {
-    if (!ConnectionState.get()) {
-      showNoticeNotification("You are offline");
-      return;
-    }
-    showLoginPageLoader();
-    disableLoginPageInputs();
-    const data = await signInWithGoogle(rememberMe());
-    hideLoginPageLoader();
-    if (!data.success) {
-      showErrorNotification("Failed to sign in with Google: " + data.message);
-      enableLoginPageInputs();
-    }
-  };
+  const form = createForm(() => ({
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: true,
+    },
+    onSubmit: async ({ value, meta }) => {
+      setEditable(false);
+      const action = (meta as { action: "Google" | "GitHub" })?.action;
+      try {
+        let data: AuthResult;
 
-  const handleSignInWithGitHub = async () => {
-    if (!ConnectionState.get()) {
-      showNoticeNotification("You are offline");
-      return;
-    }
-    showLoginPageLoader();
-    disableLoginPageInputs();
-    const data = await signInWithGitHub(rememberMe());
-    hideLoginPageLoader();
-    if (!data.success) {
-      showErrorNotification("Failed to sign in with GitHub: " + data.message);
-      enableLoginPageInputs();
-    }
-  };
-
-  const handleSignIn = async (e: SubmitEvent) => {
-    e.preventDefault();
-    if (!ConnectionState.get()) {
-      showNoticeNotification("You are offline");
-      return;
-    }
-    if (loginEmail() === "" || loginPassword() === "") {
+        if (action === "Google") {
+          data = await signInWithGoogle(value.rememberMe);
+        } else if (action === "GitHub") {
+          data = await signInWithGitHub(value.rememberMe);
+        } else {
+          if (value.email === "" || value.password === "") {
+            showNoticeNotification("Please fill in all fields");
+            return;
+          }
+          data = await signIn(value.email, value.password, value.rememberMe);
+        }
+        if (!data.success) {
+          showErrorNotification(
+            `Failed to sign in${action !== undefined ? " with " + action : ""} : ${data.message}`,
+          );
+        }
+      } finally {
+        setEditable(true);
+      }
+    },
+    onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
-      return;
-    }
-    showLoginPageLoader();
-    disableLoginPageInputs();
-    const data = await signIn(loginEmail(), loginPassword(), rememberMe());
-    hideLoginPageLoader();
-    if (!data.success) {
-      showErrorNotification("Failed to sign in: " + data.message);
-      enableLoginPageInputs();
-    }
-  };
+    },
+  }));
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-2 sm:w-80">
@@ -78,70 +65,86 @@ export function Login(): JSXElement {
         login
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <button
-          type="button"
-          disabled={!getLoginPageInputsEnabled()}
-          onClick={handleSignInWithGoogle}
-        >
-          <i class="fab fa-google"></i>
-        </button>
-        <button
-          type="button"
-          disabled={!getLoginPageInputsEnabled()}
-          onClick={handleSignInWithGitHub}
-        >
-          <i class="fab fa-github"></i>
-        </button>
+        <Button
+          fa={{ icon: "fa-google", variant: "brand" }}
+          onClick={void form.handleSubmit({ action: "Google" })}
+          disabled={!isEditable()}
+        />
+        <Button
+          fa={{ icon: "fa-github", variant: "brand" }}
+          onClick={void form.handleSubmit({ action: "GitHub" })}
+          disabled={!isEditable()}
+        />
       </div>
-      <form class="grid w-full gap-2" onSubmit={handleSignIn}>
-        <Separator text="or" />
-        <input
-          name="current-email"
-          type="email"
-          placeholder="email"
-          // oxlint-disable-next-line react/no-unknown-property
-          autocomplete="current-email"
-          disabled={!getLoginPageInputsEnabled()}
-          onInput={(e) => setLoginEmail(e.target.value)}
-        />
-        <input
-          name="current-password"
-          type="password"
-          placeholder="password"
-          // oxlint-disable-next-line react/no-unknown-property
-          autocomplete="current-password"
-          disabled={!getLoginPageInputsEnabled()}
-          onInput={(e) => setLoginPassword(e.target.value)}
-        />
-        <div>
-          <label class="flex h-6 cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              checked={rememberMe()}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              disabled={!getLoginPageInputsEnabled()}
-            />
-            <div>remember me</div>
-          </label>
-        </div>
-        <button
-          type="submit"
-          class="signIn"
-          disabled={!getLoginPageInputsEnabled()}
-        >
-          <i class="fas fa-sign-in-alt"></i>
-          sign in
-        </button>
-      </form>
-      <button
-        type="button"
-        class="text text-xs"
-        style={{ "justify-content": "right" }}
-        onClick={() => ForgotPasswordModal.show()}
-        disabled={!getLoginPageInputsEnabled()}
+      <form
+        class="grid w-full gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
       >
-        forgot password?
-      </button>
+        <Separator text="or" />
+        <form.Field
+          name="email"
+          children={(field) => (
+            <InputField
+              field={field}
+              autocomplete="current-email"
+              disabled={!isEditable()}
+            />
+          )}
+        />
+        <form.Field
+          name="password"
+          children={(field) => (
+            <InputField
+              field={field}
+              type="password"
+              autocomplete="current-password"
+              disabled={!isEditable()}
+            />
+          )}
+        />
+        <form.Field
+          name="rememberMe"
+          children={(field) => (
+            <Checkbox
+              field={field}
+              disabled={!isEditable()}
+              label="remember me"
+            />
+          )}
+        />
+
+        <form.Subscribe
+          selector={(state) => ({
+            canSubmit: state.canSubmit,
+            isSubmitting: state.isSubmitting,
+          })}
+          children={(state) => (
+            <>
+              <Button
+                fa={{ icon: "fa-sign-in-alt" }}
+                text="sign in"
+                type="submit"
+                disabled={!state().canSubmit}
+              />
+              <Show when={state().isSubmitting}>
+                <LoadingCircle />
+              </Show>
+            </>
+          )}
+        />
+      </form>
+
+      <Button
+        text="forgot password?"
+        variant="text"
+        class="text justify-end text-xs"
+        onClick={() => ForgotPasswordModal.show()}
+        disabled={!isEditable()}
+      />
     </div>
   );
 }
