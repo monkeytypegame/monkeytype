@@ -314,7 +314,7 @@ export async function applyFontFamily(): Promise<void> {
 
   document.documentElement.style.setProperty(
     "--font",
-    `"${font}", "Roboto Mono", "Vazirmatn", monospace`,
+    `"${font}", "Roboto Mono", "Vazirharf", monospace`,
   );
 }
 
