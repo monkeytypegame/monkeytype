@@ -20,7 +20,7 @@ export function UserBadge(props: {
     <Show when={badge() !== undefined}>
       <Balloon
         class={cn(
-          "rounded-[0.5em] px-[0.75em] py-[0.5em] text-em-xs",
+          "rounded-[0.5em] px-[0.5em] py-[0.25em] text-em-xs",
           props.class,
         )}
         text={badge()?.description ?? ""}
@@ -37,7 +37,7 @@ export function UserBadge(props: {
             fixedWidth={props.iconOnly === true}
           />
           <Show when={!props.iconOnly}>
-            <span class="hidden pr-[0.75em] md:inline">{badge()?.name}</span>
+            <span class="hidden pl-[0.75em] md:inline">{badge()?.name}</span>
           </Show>
         </Show>
       </Balloon>
