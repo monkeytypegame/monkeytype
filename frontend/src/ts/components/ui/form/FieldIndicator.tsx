@@ -11,6 +11,10 @@ export type FieldIndicatorProps = {
 };
 
 export function FieldIndicator(props: FieldIndicatorProps) {
+  //@ts-expect-error custom meta attributes
+  const hasWarning = () => props.field.getMeta().hasWarning as boolean;
+  //@ts-expect-error custom meta attributes
+  const getWarnings = () => props.field.getMeta().warnings as string[];
   return (
     <Switch>
       <Match when={props.field.state.meta.isValidating}>
@@ -31,14 +35,8 @@ export function FieldIndicator(props: FieldIndicatorProps) {
           <Fa icon="fa-times" class="text-error" />
         </Balloon>
       </Match>
-      <Match when={props.field.state.meta.hasWarning}>
-        <Balloon
-          position="left"
-          length="large"
-          text={props.field.state.meta.warnings
-
-            .join(", ")}
-        >
+      <Match when={hasWarning()}>
+        <Balloon position="left" length="large" text={getWarnings().join(", ")}>
           <Fa icon="fa-exclamation-triangle" class="text-main" />
         </Balloon>
       </Match>

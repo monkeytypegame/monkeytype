@@ -94,7 +94,7 @@ export function Register2(): JSXElement {
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          form.handleSubmit();
+          void form.handleSubmit();
         }}
         action=""
         // oxlint-disable-next-line react/no-unknown-property

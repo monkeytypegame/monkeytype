@@ -14,13 +14,13 @@ export function InputField(props: {
   return (
     <div class="flex flex-row">
       <input
-        id={props.field().name}
+        id={props.field().name as string}
         type={props.type ?? "text"}
-        placeholder={props.placeholder ?? props.field().name}
+        placeholder={props.placeholder ?? (props.field().name as string)}
         // oxlint-disable-next-line react/no-unknown-property
         autocomplete={props.autocomplete}
-        name={props.field().name}
-        value={props.field().state.value}
+        name={props.field().name as string}
+        value={props.field().state.value as string}
         onBlur={() => props.field().handleBlur()}
         onInput={(e) => props.field().handleChange(e.target.value)}
         disabled={props.disabled}

@@ -14,6 +14,7 @@ type BaseProps = {
   balloon?: BalloonProps;
   "router-link"?: true;
   onClick?: () => void;
+  type?: HTMLButtonElement["type"];
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   dataset?: Record<string, string>;
@@ -24,7 +25,6 @@ type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
   disabled?: boolean;
-  type?: "submit";
 };
 
 type AnchorProps = BaseProps & {
@@ -109,7 +109,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       }
       else={
         <button
-          type={props.type ?? "button"}
+          type={props.type === "submit" ? "submit" : "button"}
           class={getClasses()}
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}
