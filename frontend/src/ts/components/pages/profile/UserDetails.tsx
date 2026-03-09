@@ -397,15 +397,27 @@ function BioAndKeyboard(props: {
           props.variant === "full" && "md:col-span-2 lg:order-4 lg:col-span-1",
         )}
       >
-        <div>
-          <div class="text-sub">bio</div>
-          <div>{props.details?.bio}</div>
-        </div>
-
-        <div>
-          <div class="text-sub">keyboard</div>
-          <div>{props.details?.keyboard}</div>
-        </div>
+        <Show
+          when={
+            props.details?.bio !== undefined && props.details.bio.length > 0
+          }
+        >
+          <div>
+            <div class="text-sub">bio</div>
+            <div>{props.details?.bio}</div>
+          </div>
+        </Show>
+        <Show
+          when={
+            props.details?.keyboard !== undefined &&
+            props.details.keyboard.length > 0
+          }
+        >
+          <div>
+            <div class="text-sub">keyboard</div>
+            <div>{props.details?.keyboard}</div>
+          </div>
+        </Show>
       </div>
     </>
   );
@@ -486,14 +498,20 @@ function Socials(props: {
           props.variant === "full" && "lg:order-6",
         )}
       >
-        <div
-          class={cn(
-            "text-sm text-sub md:hidden",
-            props.variant === "full" && "md:block lg:hidden",
+        <Show
+          when={Object.values(props.socials ?? {}).some(
+            (it) => it !== undefined && it.length > 0,
           )}
         >
-          socials
-        </div>
+          <div
+            class={cn(
+              "text-sm text-sub md:hidden",
+              props.variant === "full" && "md:block lg:hidden",
+            )}
+          >
+            socials
+          </div>
+        </Show>
         <div
           class={cn(
             "flex gap-2 text-2xl text-text md:flex-col lg:h-full lg:flex-col lg:justify-around [&>a]:p-0 [&>a]:text-text [&>a]:hover:text-main",
