@@ -303,6 +303,8 @@ function AvatarAndName(props: {
               position: balloonPosition(),
               length: balloonPosition() === "up" ? "medium" : undefined,
             }}
+            class="w-max"
+            hideTextOnSmallScreens={false}
           />
           <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
             <div class="flex flex-row gap-1">
@@ -390,7 +392,7 @@ function BioAndKeyboard(props: {
       ></div>
       <div
         class={cn(
-          "flex h-full flex-col content-center justify-around gap-2 overflow-hidden text-sm",
+          "flex h-full flex-col content-center justify-around gap-2 overflow-hidden text-sm whitespace-pre-line",
           props.variant === "hasBioOrKeyboard" && "md:order-4",
           props.variant === "full" && "md:col-span-2 lg:order-4 lg:col-span-1",
         )}
