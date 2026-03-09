@@ -21,6 +21,7 @@ type BaseProps = {
 };
 
 type ButtonProps = BaseProps & {
+  type?: "button" | "submit" | "reset";
   href?: never;
   sameTarget?: true;
   disabled?: boolean;
@@ -107,7 +108,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       }
       else={
         <button
-          type="button"
+          // oxlint-disable-next-line button-has-type
+          type={(props as ButtonProps).type ?? "button"}
           class={getClasses()}
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}

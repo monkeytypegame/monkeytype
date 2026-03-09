@@ -14,6 +14,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../../stores/notifications";
+import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
 
@@ -82,20 +83,22 @@ export function Login(): JSXElement {
         class="p-0"
       />
       <div class="grid grid-cols-2 gap-4">
-        <button
-          type="button"
+        <Button
+          fa={{
+            icon: "fa-google",
+            variant: "brand",
+          }}
           disabled={!getLoginPageInputsEnabled()}
           onClick={handleSignInWithGoogle}
-        >
-          <i class="fab fa-google"></i>
-        </button>
-        <button
-          type="button"
+        />
+        <Button
+          fa={{
+            icon: "fa-github",
+            variant: "brand",
+          }}
           disabled={!getLoginPageInputsEnabled()}
           onClick={handleSignInWithGitHub}
-        >
-          <i class="fab fa-github"></i>
-        </button>
+        />
       </div>
       <form class="grid w-full gap-2" onSubmit={handleSignIn}>
         <Separator text="or" />
@@ -128,24 +131,23 @@ export function Login(): JSXElement {
             <div>remember me</div>
           </label>
         </div>
-        <button
+        <Button
           type="submit"
           class="signIn"
           disabled={!getLoginPageInputsEnabled()}
-        >
-          <i class="fas fa-sign-in-alt"></i>
-          sign in
-        </button>
+          fa={{
+            icon: "fa-sign-in-alt",
+          }}
+          text="sign in"
+        />
       </form>
-      <button
-        type="button"
-        class="text text-xs"
-        style={{ "justify-content": "right" }}
+      <Button
+        variant="text"
+        class="w-max justify-self-end text-xs"
+        text="forgot password?"
         onClick={() => ForgotPasswordModal.show()}
         disabled={!getLoginPageInputsEnabled()}
-      >
-        forgot password?
-      </button>
+      />
     </div>
   );
 }

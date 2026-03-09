@@ -27,6 +27,7 @@ import {
 import { isDevEnvironment } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 import TypoList from "../../../utils/typo-list";
+import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { ValidatedInput } from "../../ui/ValidatedInput";
 
@@ -213,13 +214,14 @@ export function Register(): JSXElement {
             setPasswordVerifyValid(passwordValid() && result.success);
           }}
         />
-        <button
+        <Button
           type="submit"
           disabled={!isRegisterFormComplete() || !getLoginPageInputsEnabled()}
-        >
-          <i class="fas fa-user-plus"></i>
-          sign up
-        </button>
+          fa={{
+            icon: "fa-user-plus",
+          }}
+          text="sign up"
+        />
       </form>
     </div>
   );
