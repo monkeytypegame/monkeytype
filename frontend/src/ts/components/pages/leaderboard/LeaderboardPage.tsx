@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { getSnapshot, updateLbMemory } from "../../../db";
+import { createEffectOn } from "../../../hooks/effects";
 import { PageName } from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import {
@@ -39,6 +40,18 @@ export function LeaderboardPage(): JSXElement {
   const isOpen = () => getActivePage() === pageName;
 
   const [scrollToUser, setScrollToUser] = createSignal(false);
+
+  //invalidate cache for daily and weekly lb on close
+  createEffectOn(isOpen, (open) => {
+    if (!open) {
+      void queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey.length >= 3 &&
+          query.queryKey[1] === "leaderboard" &&
+          ["weekly", "daily"].includes(query.queryKey[2] as string),
+      });
+    }
+  });
 
   //prefetch next page
   createEffect(() => {
