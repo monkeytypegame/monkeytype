@@ -127,7 +127,13 @@ function PbTable<M extends "time" | "words">(props: {
         <For each={bests()}>
           {(item) => (
             <div class="group grid items-center">
-              <div class="col-start-1 row-start-1 text-center transition-opacity group-hover:opacity-0">
+              <div
+                class={
+                  item.pb !== undefined
+                    ? "col-start-1 row-start-1 text-center transition-opacity group-hover:opacity-0"
+                    : "col-start-1 row-start-1 text-center"
+                }
+              >
                 <div class="text-xs text-sub">
                   {item.mode2} {props.mode === "time" ? "seconds" : "words"}
                 </div>
@@ -142,6 +148,7 @@ function PbTable<M extends "time" | "words">(props: {
                   })}
                 </div>
               </div>
+
               <Show when={item.pb !== undefined}>
                 <div class="col-start-1 row-start-1 grid bg-sub-alt text-center text-xs opacity-0 transition-opacity group-hover:opacity-100">
                   <div class="text-sub">
