@@ -60,6 +60,7 @@ export type DataTableProps<TData, TValue> = {
     activeRow: Accessor<string | null>;
   };
   class?: string;
+  onSortingChange?: (sorting: SortingState) => void;
   noDataRow?:
     | true
     | {
@@ -109,8 +110,15 @@ export function DataTable<TData, TValue = any>(
       return props.columns;
     },
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (it) => {
+      setSorting(it);
+      props.onSortingChange?.(sorting());
+    },
+
+    //oxlint-disable-next-line solid/reactivity
+    ...(props.onSortingChange
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
     enableRowSelection: () => props.rowSelection !== undefined,
     getRowId: (row, index) =>
       props.rowSelection !== undefined

@@ -1,9 +1,4 @@
-import {
-  ResultFilters,
-  User,
-  UserProfileDetails,
-  UserTag,
-} from "@monkeytype/schemas/users";
+import { User, UserProfileDetails, UserTag } from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
@@ -23,7 +18,6 @@ export type SnapshotUserTag = UserTag & {
 
 export type SnapshotResult<M extends Mode> = Omit<
   Result<M>,
-  | "_id"
   | "bailedOut"
   | "blindMode"
   | "lazyMode"
@@ -38,7 +32,6 @@ export type SnapshotResult<M extends Mode> = Omit<
   | "afkDuration"
   | "tags"
 > & {
-  _id: string;
   bailedOut: boolean;
   blindMode: boolean;
   lazyMode: boolean;
@@ -52,6 +45,10 @@ export type SnapshotResult<M extends Mode> = Omit<
   incompleteTestSeconds: number;
   afkDuration: number;
   tags: string[];
+  //calculated values
+  words: number;
+  timeTyping: number;
+  dayTimestamp: number;
 };
 
 export type Snapshot = Omit<
@@ -75,7 +72,6 @@ export type Snapshot = Omit<
   inboxUnreadSize: number;
   streak: number;
   maxStreak: number;
-  filterPresets: ResultFilters[];
   isPremium: boolean;
   streakHourOffset?: number;
   tags: SnapshotUserTag[];
@@ -120,7 +116,6 @@ const defaultSnap = {
   quoteMod: false,
   favoriteQuotes: {},
   addedAt: 0,
-  filterPresets: [],
   xp: 0,
   inboxUnreadSize: 0,
   streak: 0,

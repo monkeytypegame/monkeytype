@@ -5,6 +5,7 @@ import { mapRange } from "@monkeytype/util/numbers";
 import { getTheme } from "../signals/theme";
 import { qs } from "../utils/dom";
 
+//TODO
 export function hide(): void {
   qs(".pageAccount .resultBatches")?.hide();
 }

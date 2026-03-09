@@ -138,6 +138,7 @@ export class SimpleModal {
   hideCallsExec: boolean;
   showLabels: boolean;
   afterClickAway: (() => void) | undefined;
+  context?: unknown;
   constructor(options: SimpleModalOptions) {
     this.parameters = [];
     this.id = options.id;
@@ -411,9 +412,13 @@ export class SimpleModal {
     simpleModalEl.qsa(".checkbox").removeClass("disabled");
   }
 
-  show(parameters: string[] = [], showOptions: ShowOptions): void {
+  show(
+    parameters: string[] = [],
+    showOptions: ShowOptions & { context?: unknown },
+  ): void {
     activePopup = this;
     this.parameters = parameters;
+    this.context = showOptions.context;
     void modal.show({
       focusFirstInput: true,
       ...showOptions,
