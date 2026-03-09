@@ -344,7 +344,7 @@ async function validateFonts(): Promise<void> {
   //no missing files
   const ignoredFonts = new Set([
     "GallaudetRegular.woff2", //used for asl
-    "Vazirmatn-Regular.woff2", //default font
+    "Vazirharf-NL-Regular.woff2", //default font
   ]);
 
   const fontFiles = fs
