@@ -1,5 +1,5 @@
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement, Show } from "solid-js";
+import { JSXElement } from "solid-js";
 
 import {
   AuthResult,
@@ -9,18 +9,20 @@ import {
 } from "../../../auth";
 import * as ForgotPasswordModal from "../../../modals/forgot-password";
 import {
+  disableLoginPageInputs,
+  enableLoginPageInputs,
+  getLoginPageInputsEnabled,
+} from "../../../stores/login";
+import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../stores/notifications";
 import { Button } from "../../common/Button";
-import { LoadingCircle } from "../../common/LoadingCircle";
 import { Separator } from "../../common/Separator";
 import { Checkbox } from "../../ui/form/Checkbox";
 import { InputField } from "../../ui/form/InputField";
 
 export function Login(): JSXElement {
-  const [isEditable, setEditable] = createSignal(true);
-
   const form = createForm(() => ({
     defaultValues: {
       email: "",
@@ -28,7 +30,7 @@ export function Login(): JSXElement {
       rememberMe: true,
     },
     onSubmit: async ({ value, meta }) => {
-      setEditable(false);
+      disableLoginPageInputs();
       const action = (meta as { action: "Google" | "GitHub" })?.action;
       try {
         let data: AuthResult;
@@ -50,7 +52,7 @@ export function Login(): JSXElement {
           );
         }
       } finally {
-        setEditable(true);
+        enableLoginPageInputs();
       }
     },
     onSubmitInvalid: () => {
@@ -68,12 +70,12 @@ export function Login(): JSXElement {
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={void form.handleSubmit({ action: "Google" })}
-          disabled={!isEditable()}
+          disabled={!getLoginPageInputsEnabled()}
         />
         <Button
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={void form.handleSubmit({ action: "GitHub" })}
-          disabled={!isEditable()}
+          disabled={!getLoginPageInputsEnabled()}
         />
       </div>
       <form
@@ -91,7 +93,7 @@ export function Login(): JSXElement {
             <InputField
               field={field}
               autocomplete="current-email"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
             />
           )}
         />
@@ -102,7 +104,7 @@ export function Login(): JSXElement {
               field={field}
               type="password"
               autocomplete="current-password"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
             />
           )}
         />
@@ -111,7 +113,7 @@ export function Login(): JSXElement {
           children={(field) => (
             <Checkbox
               field={field}
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
               label="remember me"
             />
           )}
@@ -123,17 +125,12 @@ export function Login(): JSXElement {
             isSubmitting: state.isSubmitting,
           })}
           children={(state) => (
-            <>
-              <Button
-                fa={{ icon: "fa-sign-in-alt" }}
-                text="sign in"
-                type="submit"
-                disabled={!state().canSubmit}
-              />
-              <Show when={state().isSubmitting}>
-                <LoadingCircle />
-              </Show>
-            </>
+            <Button
+              fa={{ icon: "fa-sign-in-alt" }}
+              text="sign in"
+              type="submit"
+              disabled={!getLoginPageInputsEnabled() || !state().canSubmit}
+            />
           )}
         />
       </form>
@@ -143,7 +140,7 @@ export function Login(): JSXElement {
         variant="text"
         class="text justify-end text-xs"
         onClick={() => ForgotPasswordModal.show()}
-        disabled={!isEditable()}
+        disabled={!getLoginPageInputsEnabled()}
       />
     </div>
   );

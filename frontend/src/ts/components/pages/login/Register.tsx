@@ -4,11 +4,16 @@ import {
   UserNameSchema,
 } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement, Show } from "solid-js";
+import { JSXElement } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../../../ape";
 import { signUp } from "../../../auth";
+import {
+  disableLoginPageInputs,
+  enableLoginPageInputs,
+  getLoginPageInputsEnabled,
+} from "../../../stores/login";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -17,7 +22,6 @@ import { isDevEnvironment } from "../../../utils/misc";
 import { remoteValidationForm } from "../../../utils/remote-validation";
 import TypoList from "../../../utils/typo-list";
 import { Button } from "../../common/Button";
-import { LoadingCircle } from "../../common/LoadingCircle";
 import { InputField } from "../../ui/form/InputField";
 import {
   fromSchema,
@@ -72,8 +76,6 @@ export function Register(): JSXElement {
     return messages.length > 0 ? messages : undefined;
   };
 
-  const [isEditable, setEditable] = createSignal(true);
-
   const form = createForm(() => ({
     defaultValues: {
       username: "",
@@ -83,14 +85,14 @@ export function Register(): JSXElement {
       passwordVerify: "",
     },
     onSubmit: async ({ value }) => {
-      setEditable(false);
+      disableLoginPageInputs();
       try {
         const data = await signUp(value.username, value.email, value.password);
         if (!data.success) {
           showErrorNotification(data.message);
         }
       } finally {
-        setEditable(true);
+        enableLoginPageInputs();
       }
     },
     onSubmitInvalid: () => {
@@ -131,7 +133,7 @@ export function Register(): JSXElement {
               field={field}
               showIndicator
               autocomplete="new-username"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
             />
           )}
         />
@@ -151,7 +153,7 @@ export function Register(): JSXElement {
               field={field}
               showIndicator
               autocomplete="new-email"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
               onFocus={() => {
                 if (!moduleLoadAttempted) {
                   moduleLoadAttempted = true;
@@ -181,7 +183,7 @@ export function Register(): JSXElement {
               showIndicator
               autocomplete="verify-email"
               placeholder="verify email"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
             />
           )}
         />
@@ -204,7 +206,7 @@ export function Register(): JSXElement {
               showIndicator
               autocomplete="new-password"
               type="password"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
             />
           )}
         />
@@ -223,7 +225,7 @@ export function Register(): JSXElement {
               placeholder="verify password"
               autocomplete="verify-password"
               type="password"
-              disabled={!isEditable()}
+              disabled={!getLoginPageInputsEnabled()}
             />
           )}
         />
@@ -233,17 +235,12 @@ export function Register(): JSXElement {
             isSubmitting: state.isSubmitting,
           })}
           children={(state) => (
-            <>
-              <Button
-                fa={{ icon: "fa-user-plus" }}
-                text="sign up"
-                type="submit"
-                disabled={!state().canSubmit}
-              />
-              <Show when={state().isSubmitting}>
-                <LoadingCircle />
-              </Show>
-            </>
+            <Button
+              fa={{ icon: "fa-user-plus" }}
+              text="sign up"
+              type="submit"
+              disabled={!getLoginPageInputsEnabled() || !state().canSubmit}
+            />
           )}
         />
       </form>
