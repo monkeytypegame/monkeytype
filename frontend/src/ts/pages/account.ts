@@ -1039,15 +1039,20 @@ qs(".pageAccount .loadMoreButton")?.on("click", () => {
 });
 
 qs(".pageAccount #accountHistoryChart")?.on("click", () => {
-  const index: number = ChartController.accountHistoryActiveIndex;
+  const chart = ChartController.accountHistory;
+
+  const hasActive = (chart.tooltip?.getActiveElements?.() ?? []).length > 0;
+  if (!hasActive) return;
+
+  const index = ChartController.accountHistoryActiveIndex;
+  if (index === undefined) return;
   loadMoreLines(index);
-  if (window === undefined) return;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
     throw new Error("Cannot find result for index " + index);
   }
-  const element = qs(`.resultRow[data-id="${resultId}"`);
+  const element = qs(`.resultRow[data-id="${resultId}"]`);
   qsa(".resultRow").removeClass("active");
 
   element?.scrollIntoView({
