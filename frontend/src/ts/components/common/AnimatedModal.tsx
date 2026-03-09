@@ -19,6 +19,7 @@ import { applyReducedMotion } from "../../utils/misc";
 type AnimationParams = {
   opacity?: number | [number, number];
   marginTop?: string | [string, string];
+  marginRight?: string | [string, string];
   duration?: number;
 };
 
@@ -109,14 +110,38 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
       // Modal animation
       if (animMode !== "none") {
-        modalEl()?.setStyle({
+        const customModal = props.customAnimations?.show?.modal;
+        const initialStyle: Record<string, string> = {
           opacity: "0",
           marginTop: "1rem",
-        });
-
-        modalEl()?.animate({
+        };
+        const animParams: Record<string, unknown> = {
           opacity: [0, 1],
           marginTop: ["1rem", "0"],
+        };
+        if (customModal) {
+          if (customModal.opacity !== undefined) {
+            const v = customModal.opacity;
+            initialStyle["opacity"] = String(Array.isArray(v) ? v[0] : v);
+            animParams["opacity"] = v;
+          }
+          if (customModal.marginTop !== undefined) {
+            const v = customModal.marginTop;
+            initialStyle["marginTop"] = Array.isArray(v) ? v[0] : v;
+            animParams["marginTop"] = v;
+          }
+          if (customModal.marginRight !== undefined) {
+            const v = customModal.marginRight;
+            initialStyle["marginRight"] = Array.isArray(v) ? v[0] : v;
+            animParams["marginRight"] = v;
+            delete initialStyle["marginTop"];
+            delete animParams["marginTop"];
+          }
+        }
+        modalEl()?.setStyle(initialStyle);
+
+        modalEl()?.animate({
+          ...animParams,
           duration: modalAnimDuration,
           easing: "ease-out",
           fill: "forwards",
@@ -177,9 +202,25 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
       // Modal animation
       if (animMode !== "none") {
-        modalEl()?.animate({
+        const customModal = props.customAnimations?.hide?.modal;
+        const hideAnimParams: Record<string, unknown> = {
           opacity: [1, 0],
           marginTop: ["0", "1rem"],
+        };
+        if (customModal) {
+          if (customModal.opacity !== undefined) {
+            hideAnimParams["opacity"] = customModal.opacity;
+          }
+          if (customModal.marginTop !== undefined) {
+            hideAnimParams["marginTop"] = customModal.marginTop;
+          }
+          if (customModal.marginRight !== undefined) {
+            hideAnimParams["marginRight"] = customModal.marginRight;
+            delete hideAnimParams["marginTop"];
+          }
+        }
+        modalEl()?.animate({
+          ...hideAnimParams,
           duration: modalAnimDuration,
         });
 

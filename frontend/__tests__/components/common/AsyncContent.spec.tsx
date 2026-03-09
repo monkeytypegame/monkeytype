@@ -149,13 +149,7 @@ describe("AsyncContent", () => {
         }));
 
         return (
-          <AsyncContent
-            query={myQuery}
-            errorMessage={options?.errorMessage}
-            alwaysShowContent={options?.alwaysShowContent}
-            ignoreError={options?.ignoreError}
-            loader={options?.loader}
-          >
+          <AsyncContent query={myQuery} {...(options as Props<string>)}>
             {(data: string | undefined) => (
               <>
                 foo
@@ -341,13 +335,11 @@ describe("AsyncContent", () => {
           retry: 0,
         }));
 
+        type Q = { first: string | undefined; second: string | undefined };
         return (
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
-            errorMessage={options?.errorMessage}
-            alwaysShowContent={options?.alwaysShowContent}
-            ignoreError={options?.ignoreError}
-            loader={options?.loader}
+            {...(options as Props<Q>)}
           >
             {(results: {
               first: string | undefined;

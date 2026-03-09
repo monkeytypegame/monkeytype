@@ -19,7 +19,9 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
+    '"' +
+      font.replaceAll(/_/g, " ") +
+      '", "Roboto Mono", "Vazirharf", "monospace"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;

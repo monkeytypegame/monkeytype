@@ -31,6 +31,11 @@
       "persistent": true,
       "cache": false
     },
+    "storybook": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
     "start": {
       "dependsOn": ["build"]
     },

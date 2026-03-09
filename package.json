@@ -1,6 +1,6 @@
 {
   "name": "monkeytype",
-  "version": "26.6.0",
+  "version": "26.11.0",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
@@ -31,6 +31,7 @@
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
+    "storybook": "turbo run storybook --force",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",

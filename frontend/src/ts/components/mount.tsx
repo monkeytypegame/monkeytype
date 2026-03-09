@@ -15,6 +15,7 @@ import { MyProfile } from "./pages/account/MyProfile";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
+import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
@@ -24,6 +25,7 @@ const components: Record<string, () => JSXElement> = {
   profilesearchpage: () => <ProfileSearchPage />,
   myprofile: () => <MyProfile />,
   modals: () => <Modals />,
+  popups: () => <Popups />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
   header: () => <Header />,
