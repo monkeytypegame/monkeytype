@@ -1323,7 +1323,7 @@ export function fail(reason: string): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);
-  // When test is repeated we already do the rest of this function in finish.
+  // When the test is repeated we already do the rest of the code in this function in finish.
   if (!Config.resultSaving || TestState.isRepeated) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
