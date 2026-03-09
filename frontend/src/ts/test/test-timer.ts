@@ -137,11 +137,14 @@ function layoutfluid(): void {
       setConfig("keymapLayout", layout as KeymapLayout, {
         nosave: true,
       });
-      setTimeout(() => {
-        void KeymapEvent.highlight(
-          TestWords.words.getCurrent().charAt(TestInput.input.current.length),
-        );
-      }, 1);
+
+      if (Config.keymapMode === "next") {
+        setTimeout(() => {
+          void KeymapEvent.highlight(
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          );
+        }, 1);
+      }
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");
