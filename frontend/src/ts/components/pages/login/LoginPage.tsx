@@ -6,7 +6,7 @@ import { getActivePage } from "../../../signals/core";
 import { getLoginPageLoader } from "../../../stores/login";
 import { Conditional } from "../../common/Conditional";
 import { Login } from "./Login";
-import { Register2 } from "./Register2";
+import { Register } from "./Register";
 
 export function LoginPage(): JSXElement {
   const isOpen = () => getActivePage() === "login";
@@ -33,7 +33,7 @@ export function LoginPage(): JSXElement {
         }
         else={
           <div class="flex h-full flex-col items-center justify-around gap-4 md:flex-row">
-            <Register2 />
+            <Register />
             <Login />
           </div>
         }

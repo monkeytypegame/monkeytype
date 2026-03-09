@@ -10,6 +10,7 @@ export function InputField(props: {
   autocomplete?: string;
   type?: string;
   disabled?: boolean;
+  onFocus?: () => void;
 }): JSXElement {
   return (
     <div class="flex flex-row">
@@ -24,6 +25,7 @@ export function InputField(props: {
         onBlur={() => props.field().handleBlur()}
         onInput={(e) => props.field().handleChange(e.target.value)}
         disabled={props.disabled}
+        onFocus={() => props.onFocus?.()}
       />
       <Show when={props.showIndicator}>
         <FieldIndicator field={props.field()} />
