@@ -31,7 +31,7 @@ export function DiscordAvatar(props: {
       return (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 496 512"
+          viewBox="0 0 502 512"
           class="fill-current transition-colors duration-125"
         >
           {/* <!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--> */}
@@ -54,7 +54,10 @@ export function DiscordAvatar(props: {
 
   return (
     <div
-      class={cn("grid h-[1.25em] w-[1.25em] place-items-center", props.class)}
+      class={cn(
+        "grid aspect-square h-[1.25em] w-[1.25em] place-items-stretch",
+        props.class,
+      )}
     >
       <Conditional
         if={showDiscordAvatar()}
@@ -62,6 +65,7 @@ export function DiscordAvatar(props: {
           <>
             <Show when={showSpinner()}>
               <LoadingCircle
+                color="sub"
                 mode="svg"
                 class="col-start-1 row-start-1 h-full w-full fill-current"
               />

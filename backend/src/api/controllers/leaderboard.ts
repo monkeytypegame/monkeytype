@@ -98,10 +98,11 @@ export async function getRankFromLeaderboard(
     );
   }
 
-  return new MonkeyResponse(
-    "Rank retrieved",
-    omit(data as LeaderboardsDAL.DBLeaderboardEntry, ["_id"]),
-  );
+  if (data === null) {
+    return new MonkeyResponse("Rank retrieved", null);
+  }
+
+  return new MonkeyResponse("Rank retrieved", omit(data, ["_id"]));
 }
 
 function getDailyLeaderboardWithError(

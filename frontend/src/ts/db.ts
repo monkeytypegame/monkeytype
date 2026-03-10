@@ -925,11 +925,12 @@ export async function updateLocalTagPB<M extends Mode>(
 
 export async function updateLbMemory<M extends Mode>(
   mode: M,
-  mode2: Mode2<M>,
+  mode2: Mode2<M> | undefined,
   language: Language,
   rank: number,
   api = false,
 ): Promise<void> {
+  if (mode2 === undefined) return;
   if (mode === "time") {
     const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
