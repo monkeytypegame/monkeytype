@@ -33,6 +33,7 @@ let currentPageNumber = 1;
 let usingCustomLength = true;
 let dataBalloonDirection = "left";
 let quotes: Quote[];
+let lengthFilterSelectionForChain: string[] | null = null;
 
 async function updateQuotes(): Promise<void> {
   ({ quotes } = await QuotesController.getQuotes(Config.language));
@@ -65,10 +66,8 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   const quoteLengthDropdown = modal
     .getModal()
     .qs<HTMLSelectElement>("select.quoteLengthFilter");
-  const selectedOptions = quoteLengthDropdown
-    ? Array.from(quoteLengthDropdown.native.selectedOptions)
-    : [];
-  const quoteLengthFilterValue = selectedOptions.map((el) => el.value);
+  const quoteLengthFilterValue =
+    getLengthFilterSelectionFromModal(quoteLengthDropdown);
 
   if (quoteLengthFilterValue.length === 0) {
     usingCustomLength = true;
@@ -371,7 +370,18 @@ async function updateResults(searchText: string): Promise<void> {
 
 let lengthSelect: SlimSelect | undefined = undefined;
 
-function initLengthSelect(): void {
+function getLengthFilterSelectionFromModal(
+  quoteLengthDropdown?: ElementWithUtils<HTMLSelectElement> | null,
+): string[] {
+  const dropdown =
+    quoteLengthDropdown ??
+    modal.getModal().qs<HTMLSelectElement>("select.quoteLengthFilter");
+  return dropdown
+    ? Array.from(dropdown.native.selectedOptions).map((el) => el.value)
+    : [];
+}
+
+function initLengthSelect(initialSelection?: string[] | null): void {
   lengthSelect = new SlimSelect({
     select: "#quoteSearchModal .quoteLengthFilter",
 
@@ -403,6 +413,10 @@ function initLengthSelect(): void {
       },
     ],
   });
+
+  if (initialSelection !== undefined && initialSelection !== null) {
+    lengthSelect.setSelected(initialSelection);
+  }
 }
 
 export async function show(showOptions?: ShowOptions): Promise<void> {
@@ -410,6 +424,8 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
     ...showOptions,
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
+      lengthFilterSelectionForChain = null;
+      usingCustomLength = true;
       if (!isAuthenticated()) {
         modalEl.qsr(".goToQuoteSubmit").hide();
         modalEl.qsr(".toggleFavorites").hide();
@@ -584,6 +600,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
 }
 
 async function cleanup(): Promise<void> {
+  lengthFilterSelectionForChain = getLengthFilterSelectionFromModal();
   lengthSelect?.destroy();
   lengthSelect = undefined;
 }
@@ -594,7 +611,7 @@ const modal = new AnimatedModal({
   cleanup,
   showOptionsWhenInChain: {
     beforeAnimation: async (): Promise<void> => {
-      initLengthSelect();
+      initLengthSelect(lengthFilterSelectionForChain);
     },
   },
 });
