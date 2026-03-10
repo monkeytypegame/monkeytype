@@ -23,7 +23,6 @@ import {
 } from "../../../stores/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
-import { Conditional } from "../../common/Conditional";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Separator } from "../../common/Separator";
 import { Navigation } from "./Navigation";
@@ -192,32 +191,24 @@ export function LeaderboardPage(): JSXElement {
               errorClass="rounded bg-sub-alt p-4"
             >
               {({ data, rank, config }) => (
-                <Conditional
-                  if={rank !== undefined && rank !== null}
-                  then={
-                    <UserRank
-                      type={getSelection().type === "weekly" ? "xp" : "speed"}
-                      data={rank}
-                      friendsOnly={getSelection().friendsOnly}
-                      total={data?.count}
-                      minWpm={
-                        data && "minWpm" in data
-                          ? (data.minWpm as number)
-                          : undefined
-                      }
-                      memoryDifference={getLbMemoryDifference(
-                        getSelection(),
-                        rank?.rank,
-                      )}
-                      isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                      isBanned={getSnapshot()?.banned ?? false}
-                      minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                      userTimeTyping={
-                        getSnapshot()?.typingStats.timeTyping ?? 0
-                      }
-                    />
+                <UserRank
+                  type={getSelection().type === "weekly" ? "xp" : "speed"}
+                  data={rank}
+                  friendsOnly={getSelection().friendsOnly}
+                  total={data?.count}
+                  minWpm={
+                    data && "minWpm" in data
+                      ? (data.minWpm as number)
+                      : undefined
                   }
-                  else={<Separator />}
+                  memoryDifference={getLbMemoryDifference(
+                    getSelection(),
+                    rank?.rank,
+                  )}
+                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                  isBanned={getSnapshot()?.banned ?? false}
+                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
+                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}
             </AsyncContent>
