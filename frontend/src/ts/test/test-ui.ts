@@ -1324,7 +1324,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
-    const word = TestWords.words.get(i);
+    const word = TestWords.words.get(i) ?? "";
     const containsKorean =
       input?.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
@@ -1376,7 +1376,7 @@ async function loadWordsHistory(): Promise<boolean> {
       }
 
       const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word ?? "");
+      const wordCharacters = Strings.splitIntoCharacters(word);
       const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
 
       let loop;
