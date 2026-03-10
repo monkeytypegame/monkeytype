@@ -4,6 +4,7 @@ import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-background-picker";
 import { showNoticeNotification } from "../../stores/notifications";
+import Config, { setConfig } from "../../config";
 
 const fromMeta = buildCommandForConfigKey("customBackground");
 
@@ -69,16 +70,20 @@ const customBackgroundCommand: Command = {
         },
       },
       {
-        id: "removeLocalBackground",
-        display: "Remove local background",
+        id: "removeCustomBackground",
+        display: "Remove custom background",
         icon: "fa-trash",
         alias: "remove background",
         available: async (): Promise<boolean> => {
-          return await FileStorage.hasFile("LocalBackgroundFile");
+          return (
+            (await FileStorage.hasFile("LocalBackgroundFile")) ||
+            Config.customBackground !== ""
+          );
         },
         exec: async (): Promise<void> => {
           try {
             await FileStorage.deleteFile("LocalBackgroundFile");
+            setConfig("customBackground", "");
             await applyCustomBackground();
             await updateUI();
           } catch (e) {
