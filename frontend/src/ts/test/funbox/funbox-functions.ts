@@ -675,6 +675,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           return;
         }
       }
+      qs("#scanline")?.remove();
       qs("body")?.appendHtml('<div id="scanline" />');
       qs("body")?.addClass("crtmode");
       qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
