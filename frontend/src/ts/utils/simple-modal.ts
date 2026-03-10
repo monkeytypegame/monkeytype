@@ -3,7 +3,11 @@ import { Attributes, buildTag } from "./tag-builder";
 import { format as dateFormat } from "date-fns/format";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  addNotificationWithLevel,
+  AddNotificationOptions,
+} from "../stores/notifications";
 import {
   IsValidResponse,
   ValidatedHtmlInputElement,
@@ -87,10 +91,10 @@ type CommonInputType =
   | NumberInput;
 
 export type ExecReturn = {
-  status: 1 | 0 | -1;
+  status: "success" | "notice" | "error";
   message: string;
   showNotification?: false;
-  notificationOptions?: Notifications.AddNotificationOptions;
+  notificationOptions?: AddNotificationOptions;
   hideOptions?: HideOptions;
   afterHide?: () => void;
   alwaysHide?: boolean;
@@ -359,12 +363,12 @@ export class SimpleModal {
   exec(): void {
     if (!this.canClose) return;
     if (this.hasMissingRequired()) {
-      Notifications.add("Please fill in all fields", 0);
+      showNoticeNotification("Please fill in all fields");
       return;
     }
 
     if (this.hasValidationErrors()) {
-      Notifications.add("Please solve all validation errors", 0);
+      showNoticeNotification("Please solve all validation errors");
       return;
     }
 
@@ -374,9 +378,13 @@ export class SimpleModal {
     void this.execFn(this, ...vals).then((res) => {
       hideLoaderBar();
       if (res.showNotification ?? true) {
-        Notifications.add(res.message, res.status, res.notificationOptions);
+        addNotificationWithLevel(
+          res.message,
+          res.status,
+          res.notificationOptions,
+        );
       }
-      if (res.status === 1 || res.alwaysHide) {
+      if (res.status === "success" || res.alwaysHide) {
         void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();

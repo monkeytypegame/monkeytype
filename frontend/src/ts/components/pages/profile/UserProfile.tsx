@@ -19,7 +19,7 @@ export function UserProfile(props: {
   isAccountPage?: true;
 }): JSXElement {
   return (
-    <div class="flex w-full flex-col gap-8">
+    <div class="grid w-full gap-8">
       <UserDetails
         profile={props.profile}
         isAccountPage={props.isAccountPage}
@@ -136,7 +136,7 @@ function PbTable<M extends "time" | "words">(props: {
                     showDecimalPlaces: false,
                   })}
                 </div>
-                <div class="text-xl">
+                <div class="text-xl opacity-75">
                   {format().accuracy(item.pb?.acc, {
                     showDecimalPlaces: false,
                   })}
@@ -166,7 +166,7 @@ function PbTable<M extends "time" | "words">(props: {
       <Show when={props.isAccountPage}>
         <div class="flex h-full flex-col">
           <Button
-            ariaLabel={{ text: "Show all personal bests", position: "left" }}
+            balloon={{ text: "Show all personal bests", position: "left" }}
             class="h-full rounded-none rounded-r text-sub hover:text-bg"
             fa={{ icon: "fa-ellipsis-v" }}
             onClick={() => PbTablesModal.show(props.mode)}

@@ -1,21 +1,38 @@
 [data-nav-item="test"] {
   color: #f19dac;
+  &:hover {
+    color: color-mix(in srgb, #f19dac 75%, black 25%);
+  }
 }
 
 [data-nav-item="leaderboards"] {
   color: #f6f4a0;
+  &:hover {
+    color: color-mix(in srgb, #f6f4a0 75%, black 25%);
+  }
 }
 
 [data-nav-item="about"] {
   color: #73e4d0;
+  &:hover {
+    color: color-mix(in srgb, #73e4d0 75%, black 25%);
+  }
 }
 
 [data-nav-item="settings"] {
   color: #61cfe6;
+  &:hover {
+    color: color-mix(in srgb, #61cfe6 75%, black 25%);
+  }
 }
 
 [data-nav-item="alerts"],
 [data-nav-item="account"],
 [data-nav-item="login"] {
-  color: #ba96db;
+  --themable-button-text: #ba96db;
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    black 25%
+  );
 }

@@ -38,3 +38,12 @@
     }
   }
 }
+
+body.loading {
+  header nav,
+  footer,
+  #testConfig {
+    pointer-events: none;
+    user-select: none;
+  }
+}

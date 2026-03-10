@@ -51,7 +51,7 @@ export function ActivityCalendar(props: {
     if (!props.isAccountPage) {
       // oxlint-disable-next-line typescript/no-non-null-assertion
       const title = element()!.qsr(".top .title");
-      title.appendHtml("   months");
+      title.appendHtml(" last 12 months");
     }
   };
 

@@ -19,7 +19,9 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
+    '"' +
+      font.replaceAll(/_/g, " ") +
+      '", "Roboto Mono", "Vazirharf", "monospace"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -44,7 +46,6 @@ export function setMediaQueryDebugLevel(level: number): void {
 }
 
 if (isDevEnvironment()) {
-  qs("header #logo .top")?.setText("localhost");
   qs("head title")?.setText(
     (qs("head title")?.native.textContent ?? "") + " (localhost)",
   );

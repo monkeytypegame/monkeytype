@@ -19,7 +19,8 @@
     "test-coverage": "vitest run --coverage",
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
-    "docker": "docker compose -f docker/compose.dev.yml up"
+    "docker": "docker compose -f docker/compose.dev.yml up",
+    "storybook": "cd storybook && pnpm run storybook"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -33,6 +34,9 @@
     "@solid-primitives/refs": "1.1.2",
     "@solid-primitives/transition-group": "1.1.2",
     "@solidjs/meta": "0.29.4",
+    "@tanstack/pacer-lite": "0.2.1",
+    "@tanstack/query-db-collection": "1.0.27",
+    "@tanstack/solid-db": "0.2.10",
     "@tanstack/solid-query": "5.90.23",
     "@tanstack/solid-query-devtools": "5.91.3",
     "@tanstack/solid-table": "8.21.3",

@@ -1,5 +1,8 @@
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
-import * as Notifications from "../../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
@@ -27,13 +30,13 @@ const editApeKey = new SimpleModal({
     });
     if (response.status !== 200) {
       return {
-        status: -1,
+        status: "error",
         message: "Failed to update key",
         notificationOptions: { response },
       };
     }
     return {
-      status: 1,
+      status: "success",
       message: "Key updated",
       hideOptions: {
         clearModalChain: true,
@@ -53,7 +56,7 @@ const deleteApeKeyModal = new SimpleModal({
     });
     if (response.status !== 200) {
       return {
-        status: -1,
+        status: "error",
         message: "Failed to delete key",
         notificationOptions: { response },
       };
@@ -62,7 +65,7 @@ const deleteApeKeyModal = new SimpleModal({
     onApeKeyChange?.();
 
     return {
-      status: 1,
+      status: "success",
       message: "Key deleted",
       hideOptions: {
         clearModalChain: true,
@@ -90,7 +93,7 @@ const viewApeKey = new SimpleModal({
   hideCallsExec: true,
   execFn: async (_thisPopup) => {
     return {
-      status: 1,
+      status: "success",
       message: "Key generated",
       showNotification: false,
       hideOptions: {
@@ -133,7 +136,7 @@ const generateApeKey = new SimpleModal({
     const response = await Ape.apeKeys.add({ body: { name, enabled: false } });
     if (response.status !== 200) {
       return {
-        status: -1,
+        status: "error",
         message: "Failed to generate key",
         notificationOptions: { response },
       };
@@ -146,7 +149,7 @@ const generateApeKey = new SimpleModal({
     onApeKeyChange?.();
 
     return {
-      status: 1,
+      status: "success",
       message: "Key generated",
       hideOptions: {
         clearModalChain: true,
@@ -181,7 +184,7 @@ async function getData(): Promise<boolean> {
       void update();
       return false;
     }
-    Notifications.add("Error getting ape keys", -1, { response });
+    showErrorNotification("Error getting ape keys", { response });
     return false;
   }
 
@@ -268,15 +271,15 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   });
   hideLoaderBar();
   if (response.status !== 200) {
-    Notifications.add("Failed to update key", -1, { response });
+    showErrorNotification("Failed to update key", { response });
     return;
   }
   key.enabled = !key.enabled;
   refreshList();
   if (key.enabled) {
-    Notifications.add("Key active", 1);
+    showSuccessNotification("Key active");
   } else {
-    Notifications.add("Key inactive", 1);
+    showSuccessNotification("Key inactive");
   }
 }
 

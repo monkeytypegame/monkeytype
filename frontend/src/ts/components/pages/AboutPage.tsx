@@ -11,7 +11,6 @@ import {
 import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
 import { showModal } from "../../stores/modals";
-import { qsr } from "../../utils/dom";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
@@ -19,12 +18,15 @@ import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
 
-qsr("nav .view-about").on("mouseenter", () => {
-  prefetch();
-});
+export function prefetchAboutPage(): void {
+  void queryClient.prefetchQuery(getContributorsQueryOptions());
+  void queryClient.prefetchQuery(getSupportersQueryOptions());
+  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
+  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+}
 
 export function AboutPage(): JSXElement {
-  const isOpen = (): boolean => getActivePage() === "about";
+  const isOpen = () => getActivePage() === "about";
 
   const contributors = useQuery(() => ({
     ...getContributorsQueryOptions(),
@@ -340,7 +342,7 @@ export function AboutPage(): JSXElement {
         <H2 fa={{ icon: "fa-users" }} text="credits" />
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Montydrei"
             href="https://www.reddit.com/user/montydrei"
             class="p-0 pt-2 pr-2 pb-2"
@@ -349,7 +351,7 @@ export function AboutPage(): JSXElement {
         </p>
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Everyone"
             href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
             class="p-0 pt-2 pr-2 pb-2"
@@ -359,7 +361,7 @@ export function AboutPage(): JSXElement {
         </p>
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Supporters"
             href="#supporters_title"
             class="p-0 pt-2 pr-2 pb-2"
@@ -369,7 +371,7 @@ export function AboutPage(): JSXElement {
         </p>
         <p>
           <Button
-            type="text"
+            variant="text"
             text="Contributors"
             href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"
             class="p-0 pt-2 pr-2 pb-2"
@@ -446,11 +448,4 @@ export function AboutPage(): JSXElement {
       </section>
     </div>
   );
-}
-
-function prefetch(): void {
-  void queryClient.prefetchQuery(getContributorsQueryOptions());
-  void queryClient.prefetchQuery(getSupportersQueryOptions());
-  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
 }

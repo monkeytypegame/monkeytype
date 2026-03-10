@@ -5,11 +5,20 @@
 [data-nav-item="test"] {
   background: var(--caret-color);
   border-radius: 50%;
+  --nav-focus-opacity: 1;
 }
 
 [data-nav-item="leaderboards"] {
   background: var(--error-color);
   border-radius: 50%;
+  --nav-focus-opacity: 1;
+}
+
+header[data-focused] {
+  & [data-nav-item="test"],
+  & [data-nav-item="leaderboards"] {
+    color: transparent;
+  }
 }
 
 body.crtmode [data-nav-item="test"] {

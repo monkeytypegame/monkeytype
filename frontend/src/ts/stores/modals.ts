@@ -5,7 +5,10 @@ export type ModalId =
   | "Contact"
   | "Support"
   | "Commandline"
-  | "DevOptions";
+  | "DevOptions"
+  | "DevInboxPicker"
+  | "RegisterCaptcha"
+  | "Alerts";
 
 export type ModalVisibility = {
   visible: boolean;

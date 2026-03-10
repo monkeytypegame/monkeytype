@@ -1,25 +1,24 @@
 [data-nav-item] {
   border-radius: 10rem !important;
-  background: var(--text-color);
-  color: var(--main-color);
+  --themable-button-bg: var(--text-color);
+  --themable-button-text: var(--main-color);
+  --themable-button-hover-bg: var(--text-color);
+  --themable-button-hover-text: var(--bg-color);
 }
 
-[data-nav-item]:hover {
-  color: var(--bg-color);
-  background: var(--text-color);
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
 }
 
-nav .notificationBubble {
-  box-shadow: none;
-  background: var(--color-bg);
-  padding-right: 0.2em;
-  right: 0.85em;
-  left: 2.75em;
-}
-
-nav .level {
-  background: var(--color-bg);
-  color: var(--text-color);
+[data-ui-element="userLevel"] {
+  --themable-flash-color: var(--text-color);
+  --themable-bg-color: var(--bg-color);
+  --themable-text-color: var(--main-color);
+  --themable-hover-bg-color: var(--bg-color);
 }
 
 body.crtmode [data-nav-item] {
@@ -27,4 +26,14 @@ body.crtmode [data-nav-item] {
     3px 0 1px var(--crt-text-color-glow),
     -3px 0 var(--crt-text-color-glow),
     0 0 3px;
+}
+
+header[data-focused] {
+  [data-nav-item="test"],
+  [data-nav-item="leaderboards"],
+  [data-nav-item="about"],
+  [data-nav-item="settings"] {
+    /* --themable-button-bg: var(--sub-color); */
+    --nav-focus-opacity: 0.5;
+  }
 }

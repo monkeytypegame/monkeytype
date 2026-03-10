@@ -1,11 +1,14 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/test/funbox/funbox-validation";
 
-import * as Notifications from "../../../src/ts/elements/notifications";
+import * as Notifications from "../../../src/ts/stores/notifications";
 import { FunboxName } from "@monkeytype/schemas/configs";
 describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
-    const addNotificationMock = vi.spyOn(Notifications, "add");
+    const addNotificationMock = vi.spyOn(
+      Notifications,
+      "showNoticeNotification",
+    );
     afterEach(() => {
       addNotificationMock.mockClear();
     });
@@ -66,8 +69,8 @@ describe("funbox-validation", () => {
         ).toBe(error === undefined);
 
         if (error !== undefined) {
-          expect(addNotificationMock).toHaveBeenCalledWith(error, 0, {
-            duration: 5,
+          expect(addNotificationMock).toHaveBeenCalledWith(error, {
+            durationMs: 5000,
           });
         }
       },
