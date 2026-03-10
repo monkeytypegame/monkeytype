@@ -1,6 +1,7 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { Accessor, JSXElement, Show } from "solid-js";
 
+import { cn } from "../../../utils/cn";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -13,9 +14,12 @@ export function InputField(props: {
   onFocus?: () => void;
 }): JSXElement {
   return (
-    <div class="relative w-full">
+    <div class="grid w-full">
       <input
-        class="w-full"
+        class={cn(
+          "col-start-1 row-start-1 w-full",
+          props.showIndicator ? "pr-[1.85em]" : "",
+        )}
         id={props.field().name as string}
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? (props.field().name as string)}
