@@ -4,7 +4,7 @@ import { splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 export type BalloonProps = {
-  text: string;
+  text?: string;
   position?: BalloonPosition;
   break?: boolean;
   length?: "small" | "medium" | "large" | "xlarge" | "fit";
@@ -20,7 +20,10 @@ type Props = ParentProps<BalloonProps> &
 export function buildBalloonHtmlProperties(
   props: BalloonProps | undefined,
 ): Record<string, string> {
-  if (!props) return {};
+  // oxlint-disable-next-line solid/reactivity just a util - consumer is responsible for reactivity
+  if (props === undefined || props.text === undefined || props.text === "") {
+    return {};
+  }
   return {
     // oxlint-disable-next-line solid/reactivity just a util - consumer is responsible for reactivity
     "aria-label": props.text,
