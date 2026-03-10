@@ -149,6 +149,25 @@ async function validateLayouts(): Promise<void> {
   }
 }
 
+async function fetchQuotes(language: string): Promise<QuoteData | null> {
+  const url = `https://raw.githubusercontent.com/monkeytypegame/monkeytype/refs/heads/master/frontend/static/quotes/${language}.json`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const quoteJsonData = (await response.json()) as QuoteData;
+    return quoteJsonData;
+  } catch (error) {
+    console.error(
+      `Failed to get quotes: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return null;
+  }
+}
+
 async function validateQuotes(): Promise<void> {
   const problems = new Problems<string, never>("Quotes", {});
 
@@ -197,6 +216,19 @@ async function validateQuotes(): Promise<void> {
       );
     }
 
+    // check if pr added quotes in this language
+    let addedQuotesToThisLanguage = false;
+    const currentLanguageData = await fetchQuotes(quotefilename);
+
+    if (
+      currentLanguageData !== null &&
+      (currentLanguageData.quotes.length < quoteData.quotes.length ||
+        JSON.stringify(currentLanguageData.quotes) !==
+          JSON.stringify(quoteData.quotes))
+    ) {
+      addedQuotesToThisLanguage = true;
+    }
+
     //check quote length
     quoteData.quotes.forEach((quote) => {
       if (quote.text.length !== quote.length) {
@@ -206,12 +238,19 @@ async function validateQuotes(): Promise<void> {
         );
       }
 
-      if (quote.text.length < 60) {
-        // TODO: too many quotes trigger this
-        // problems.add(
-        //   quotefilename,
-        //   `ID ${quote.id}: length too short (under 60 characters)`,
-        // );
+      if (
+        addedQuotesToThisLanguage &&
+        currentLanguageData !== null &&
+        !currentLanguageData.quotes.some(
+          (langQuote) => langQuote.text === quote.text,
+        )
+      ) {
+        if (quote.text.length < 60) {
+          problems.add(
+            quotefilename,
+            `ID ${quote.id}: length too short (under 60 characters)`,
+          );
+        }
       }
     });
 
@@ -344,7 +383,7 @@ async function validateFonts(): Promise<void> {
   //no missing files
   const ignoredFonts = new Set([
     "GallaudetRegular.woff2", //used for asl
-    "Vazirmatn-Regular.woff2", //default font
+    "Vazirharf-NL-Regular.woff2", //default font
   ]);
 
   const fontFiles = fs

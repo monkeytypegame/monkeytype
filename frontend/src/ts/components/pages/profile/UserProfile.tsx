@@ -19,7 +19,7 @@ export function UserProfile(props: {
   isAccountPage?: true;
 }): JSXElement {
   return (
-    <div class="flex w-full flex-col gap-8">
+    <div class="grid w-full gap-8">
       <UserDetails
         profile={props.profile}
         isAccountPage={props.isAccountPage}
