@@ -29,3 +29,15 @@ export function handleResult(
   }
   return undefined;
 }
+
+export function allFieldsMandatory<T extends object>(): (args: {
+  value: T;
+}) => string | undefined {
+  return ({ value }: { value: T }): string | undefined => {
+    const hasInvalid = Object.values(value).some(
+      (v) => v === undefined || v === "",
+    );
+
+    return hasInvalid ? "all fields are mandatory" : undefined;
+  };
+}

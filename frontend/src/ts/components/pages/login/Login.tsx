@@ -23,6 +23,7 @@ import { Separator } from "../../common/Separator";
 import { Checkbox } from "../../ui/form/Checkbox";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
+import { allFieldsMandatory } from "../../ui/form/utils";
 
 export function Login(): JSXElement {
   const form = createForm(() => ({
@@ -59,6 +60,9 @@ export function Login(): JSXElement {
     },
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
+    },
+    validators: {
+      onChange: allFieldsMandatory(),
     },
   }));
 

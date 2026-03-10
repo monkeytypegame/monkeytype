@@ -25,6 +25,7 @@ import { H3 } from "../../common/Headers";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import {
+  allFieldsMandatory,
   fromSchema,
   handleResult,
   ValidationResult,
@@ -98,6 +99,9 @@ export function Register(): JSXElement {
     },
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
+    },
+    validators: {
+      onChange: allFieldsMandatory(),
     },
   }));
 
