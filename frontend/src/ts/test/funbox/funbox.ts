@@ -17,14 +17,13 @@ import {
   getAllFunboxes,
   getActiveFunboxes,
   getActiveFunboxNames,
-  get,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { qs } from "../../utils/dom";
+import { qs, qsa } from "../../utils/dom";
 import * as ConfigEvent from "../../observables/config-event";
 
 export function toggleScript(...params: string[]): void {
@@ -36,11 +35,6 @@ export function toggleScript(...params: string[]): void {
 }
 
 export function setFunbox(funbox: FunboxName[]): boolean {
-  if (funbox.length === 0) {
-    for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
-      fb.functions.clearGlobal();
-    }
-  }
   FunboxMemory.load();
   setConfig("funbox", funbox);
   return true;
@@ -60,12 +54,6 @@ export function toggleFunbox(funbox: FunboxName): void {
   }
   FunboxMemory.load();
   configToggleFunbox(funbox, false);
-
-  if (!getActiveFunboxNames().includes(funbox)) {
-    get(funbox).functions?.clearGlobal?.();
-  } else {
-    get(funbox).functions?.applyGlobalCSS?.();
-  }
 }
 
 export async function clear(): Promise<boolean> {
@@ -78,7 +66,7 @@ export async function clear(): Promise<boolean> {
       ?.join(" ") ?? "",
   );
 
-  qs(".funBoxTheme")?.remove();
+  qsa(".funBoxTheme").remove();
 
   qs("#wordsWrapper")?.show();
   MemoryTimer.reset();
@@ -232,7 +220,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  qs(".funBoxTheme")?.remove();
+  qsa(".funBoxTheme").remove();
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
     const css = document.createElement("link");
     css.classList.add("funBoxTheme");
