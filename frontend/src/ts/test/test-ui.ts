@@ -1325,13 +1325,10 @@ async function loadWordsHistory(): Promise<boolean> {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.get(i) ?? "";
+    const koreanRegex =
+      /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
     const containsKorean =
-      input?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      ) !== null ||
-      word?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      ) !== null;
+      koreanRegex.test(input ?? "") || koreanRegex.test(word);
 
     const wordEl = document.createElement("div");
     wordEl.className = "word";
