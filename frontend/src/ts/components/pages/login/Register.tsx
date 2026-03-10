@@ -21,14 +21,14 @@ import {
 import { isDevEnvironment } from "../../../utils/misc";
 import { remoteValidationForm } from "../../../utils/remote-validation";
 import TypoList from "../../../utils/typo-list";
-import { Button } from "../../common/Button";
+import { H3 } from "../../common/Headers";
 import { InputField } from "../../ui/form/InputField";
+import { SubmitButton } from "../../ui/form/SubmitButton";
 import {
   fromSchema,
   handleResult,
   ValidationResult,
 } from "../../ui/form/utils";
-import { H3 } from "../../common/Headers";
 let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
@@ -233,19 +233,11 @@ export function Register(): JSXElement {
             />
           )}
         />
-        <form.Subscribe
-          selector={(state) => ({
-            canSubmit: state.canSubmit,
-            isSubmitting: state.isSubmitting,
-          })}
-          children={(state) => (
-            <Button
-              fa={{ icon: "fa-user-plus" }}
-              text="sign up"
-              type="submit"
-              disabled={!getLoginPageInputsEnabled() || !state().canSubmit}
-            />
-          )}
+        <SubmitButton
+          form={form}
+          fa={{ icon: "fa-user-plus" }}
+          text="sign up"
+          disabled={!getLoginPageInputsEnabled()}
         />
       </form>
     </div>

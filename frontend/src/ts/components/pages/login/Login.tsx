@@ -22,6 +22,7 @@ import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
 import { Checkbox } from "../../ui/form/Checkbox";
 import { InputField } from "../../ui/form/InputField";
+import { SubmitButton } from "../../ui/form/SubmitButton";
 
 export function Login(): JSXElement {
   const form = createForm(() => ({
@@ -123,19 +124,11 @@ export function Login(): JSXElement {
           )}
         />
 
-        <form.Subscribe
-          selector={(state) => ({
-            canSubmit: state.canSubmit,
-            isSubmitting: state.isSubmitting,
-          })}
-          children={(state) => (
-            <Button
-              fa={{ icon: "fa-sign-in-alt" }}
-              text="sign in"
-              type="submit"
-              disabled={!getLoginPageInputsEnabled() || !state().canSubmit}
-            />
-          )}
+        <SubmitButton
+          form={form}
+          fa={{ icon: "fa-sign-in-alt" }}
+          text="sign in"
+          disabled={!getLoginPageInputsEnabled()}
         />
       </form>
 

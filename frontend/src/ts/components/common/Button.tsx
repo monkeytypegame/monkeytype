@@ -21,7 +21,7 @@ type BaseProps = {
   active?: boolean;
 };
 
-type ButtonProps = BaseProps & {
+export type ButtonProps = BaseProps & {
   type?: "button" | "submit" | "reset";
   href?: never;
   sameTarget?: true;
