@@ -149,7 +149,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
       scheduleUpdate(
         currentSettings,
         nextExpectedStepEnd,
-        Math.max(16, (currentSettings.spc ?? 0) * 1000),
+        Math.max(16, getDelayUntilStepEnd(nextExpectedStepEnd)),
       );
     } else {
       settings = null;
@@ -162,9 +162,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
   }
 
   try {
-    const now = performance.now();
-    const absoluteStepEnd = startTimestamp + expectedStepEnd;
-    const duration = absoluteStepEnd - now;
+    const duration = getDelayUntilStepEnd(expectedStepEnd);
 
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
@@ -184,6 +182,10 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.hide();
     return;
   }
+}
+
+function getDelayUntilStepEnd(stepEnd: number): number {
+  return startTimestamp + stepEnd - performance.now();
 }
 
 function scheduleUpdate(
