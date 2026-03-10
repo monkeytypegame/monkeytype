@@ -12,6 +12,7 @@ import {
 import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
+import { getFocus } from "../../../signals/core";
 import {
   getSkipBreakdownEvent,
   getXpBarData,
@@ -303,7 +304,7 @@ export function AccountXpBar(): JSXElement {
   };
 
   const XPBar = () => (
-    <AnimeShow when={getShowBar()}>
+    <AnimeShow when={getShowBar() && !getFocus()}>
       <div class="absolute top-full right-0 mt-1 w-full">
         <div class="text-[0.5em]">
           <Bar
@@ -319,7 +320,7 @@ export function AccountXpBar(): JSXElement {
   );
 
   const Total = () => (
-    <AnimeShow when={getShowBar()}>
+    <AnimeShow when={getShowBar() && !getFocus()}>
       <Anime
         animation={flashAnimation()}
         class="w-max justify-self-end p-2 text-base font-bold text-main"
@@ -330,7 +331,7 @@ export function AccountXpBar(): JSXElement {
   );
 
   const Breakdown = () => (
-    <AnimeShow when={getShowBreakdown()} class="mb-2">
+    <AnimeShow when={getShowBreakdown() && !getFocus()} class="mb-2">
       <AnimePresence mode="list">
         <For each={getBreakdownItems()} fallback={null}>
           {(item) => (
