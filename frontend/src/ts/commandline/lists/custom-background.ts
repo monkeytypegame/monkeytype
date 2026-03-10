@@ -70,20 +70,16 @@ const customBackgroundCommand: Command = {
         },
       },
       {
-        id: "removeCustomBackground",
-        display: "Remove custom background",
+        id: "removeLocalBackground",
+        display: "Remove local background",
         icon: "fa-trash",
         alias: "remove background",
         available: async (): Promise<boolean> => {
-          return (
-            (await FileStorage.hasFile("LocalBackgroundFile")) ||
-            Config.customBackground !== ""
-          );
+          return await FileStorage.hasFile("LocalBackgroundFile");
         },
         exec: async (): Promise<void> => {
           try {
             await FileStorage.deleteFile("LocalBackgroundFile");
-            setConfig("customBackground", "");
             await applyCustomBackground();
             await updateUI();
           } catch (e) {
@@ -91,6 +87,18 @@ const customBackgroundCommand: Command = {
               "Error removing background: " + (e as Error).message,
             );
           }
+        },
+      },
+      {
+        id: "removeUrlBackground",
+        display: "Remove URL background",
+        icon: "fa-trash",
+        alias: "remove background",
+        available: async (): Promise<boolean> => {
+          return Config.customBackground !== "";
+        },
+        exec: async (): Promise<void> => {
+          setConfig("customBackground", "");
         },
       },
     ],
