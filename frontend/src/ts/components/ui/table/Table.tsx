@@ -25,7 +25,10 @@ const TableBody: Component<ComponentProps<"tbody">> = (props) => {
   const [local, others] = splitProps(props, ["class"]);
   return (
     <tbody
-      class={cn("text-sm xl:text-base [&>tr]:odd:bg-sub-alt", local.class)}
+      class={cn(
+        "text-sm xl:text-base [&>tr:nth-child(odd)>td]:bg-sub-alt",
+        local.class,
+      )}
       {...others}
     ></tbody>
   );
