@@ -216,6 +216,8 @@ export function DataTable<TData, TValue = any>(
                                   "justify-end text-right":
                                     header.column.columnDef.meta?.align ===
                                     "right",
+                                  "rounded-l": header.column.getIsFirstColumn(),
+                                  "rounded-r": header.column.getIsLastColumn(),
                                 },
                                 header.column.columnDef.meta?.headerClass,
                               )}
