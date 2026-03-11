@@ -1,11 +1,13 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { Accessor, JSXElement } from "solid-js";
 
+import { cn } from "../../../utils/cn";
+
 export function Checkbox(props: {
   field: Accessor<AnyFieldApi>;
   label?: string;
-
   disabled?: boolean;
+  class?: string;
 }): JSXElement {
   return (
     <div>
@@ -18,6 +20,7 @@ export function Checkbox(props: {
           type="checkbox"
           checked={props.field().state.value as boolean}
           disabled={props.disabled}
+          class={cn("", props.class)}
         />
         <div>{props.label}</div>
       </label>

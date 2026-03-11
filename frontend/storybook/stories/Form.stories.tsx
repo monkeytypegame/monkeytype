@@ -55,7 +55,6 @@ export const withValidation = meta.story({
           name="username"
           validators={{
             onChange: fromSchema(z.string().min(3).max(5)),
-            onBlur: fieldMandatory(),
             onChangeAsyncDebounceMs: 250,
             onChangeAsync: async ({ value }) => {
               await sleep(500);
@@ -74,7 +73,7 @@ export const withValidation = meta.story({
         <form.Field
           name="password"
           validators={{
-            onBlur: fieldMandatory(),
+            onChange: fieldMandatory(),
           }}
           children={(field) => (
             <InputField

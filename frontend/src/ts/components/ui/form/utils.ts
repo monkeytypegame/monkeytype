@@ -5,8 +5,12 @@ export type ValidationResult = { type: "error" | "warning"; message: string };
 export function fromSchema<T>(
   schema: ZodSchema<T>,
 ): (args: { value: T }) => undefined | string[] {
-  return ({ value }) =>
-    schema.safeParse(value)?.error?.issues.map((it) => it.message);
+  return ({ value }) => {
+    const result = schema.safeParse(value);
+    return result.success
+      ? undefined
+      : result.error.issues.map((it) => it.message);
+  };
 }
 
 export function handleResult(

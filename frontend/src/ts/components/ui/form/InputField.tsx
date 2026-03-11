@@ -11,6 +11,7 @@ export function InputField(props: {
   autocomplete?: string;
   type?: string;
   disabled?: boolean;
+  class?: string;
   onFocus?: () => void;
 }): JSXElement {
   return (
@@ -18,7 +19,9 @@ export function InputField(props: {
       <input
         class={cn(
           "col-start-1 row-start-1 w-full",
+          "rounded-half border-none bg-sub-alt p-1 outline-[0.15em] outline-main",
           props.showIndicator ? "pr-[1.85em]" : "",
+          props.class,
         )}
         id={props.field().name as string}
         type={props.type ?? "text"}
