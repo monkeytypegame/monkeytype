@@ -118,7 +118,19 @@ export function Register(): JSXElement {
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          void form.handleSubmit();
+          if (!form.state.canSubmit || !form.state.isValid) {
+            form.options.onSubmitInvalid?.({
+              value: form.state.values,
+              formApi: form,
+              meta: undefined,
+            });
+            return;
+          }
+          void form.options.onSubmit?.({
+            value: form.state.values,
+            formApi: form,
+            meta: undefined,
+          });
         }}
         action=""
         // oxlint-disable-next-line react/no-unknown-property

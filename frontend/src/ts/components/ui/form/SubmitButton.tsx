@@ -1,25 +1,29 @@
-// oxlint-disable typescript/no-explicit-any
-import { SolidFormApi } from "@tanstack/solid-form";
 import { JSXElement, splitProps } from "solid-js";
 
 import { Button, ButtonProps } from "../../common/Button";
 
+type FormStateSlice = {
+  canSubmit: boolean;
+  isSubmitting: boolean;
+  isValid: boolean;
+  isDirty: boolean;
+};
+
+type SubscribableForm = {
+  Subscribe: (props: {
+    selector: (state: {
+      canSubmit: boolean;
+      isSubmitting: boolean;
+      isValid: boolean;
+      isDirty: boolean;
+    }) => FormStateSlice;
+    children: (state: () => FormStateSlice) => JSXElement;
+  }) => JSXElement;
+};
+
 export function SubmitButton(
   props: {
-    form: SolidFormApi<
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any
-    >;
+    form: SubscribableForm;
   } & Omit<ButtonProps, "type">,
 ): JSXElement {
   const [local, others] = splitProps(props, ["disabled"]);
