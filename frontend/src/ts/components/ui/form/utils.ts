@@ -30,14 +30,22 @@ export function handleResult(
   return undefined;
 }
 
-export function allFieldsMandatory<T extends object>(): (args: {
-  value: T;
-}) => string | undefined {
+type ValidatorCallback<T> = (args: { value: T }) => string | undefined;
+
+export function allFieldsMandatory<T extends object>(): ValidatorCallback<T> {
   return ({ value }: { value: T }): string | undefined => {
     const hasInvalid = Object.values(value).some(
       (v) => v === undefined || v === "",
     );
 
     return hasInvalid ? "all fields are mandatory" : undefined;
+  };
+}
+
+export function fieldMandatory<T>(message?: string): ValidatorCallback<T> {
+  return ({ value }) => {
+    return value !== undefined && value !== ""
+      ? undefined
+      : (message ?? "mandatory");
   };
 }

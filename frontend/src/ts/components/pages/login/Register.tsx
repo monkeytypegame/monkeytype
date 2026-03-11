@@ -26,6 +26,7 @@ import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import {
   allFieldsMandatory,
+  fieldMandatory,
   fromSchema,
   handleResult,
   ValidationResult,
@@ -141,6 +142,7 @@ export function Register(): JSXElement {
           name="username"
           validators={{
             onChange: fromSchema(UserNameSchema),
+            onBlur: fieldMandatory(),
             onChangeAsyncDebounceMs: 1000,
             onChangeAsync: remoteValidationForm(
               async (name: string) =>
@@ -167,6 +169,7 @@ export function Register(): JSXElement {
             onChangeAsyncDebounceMs: 0,
             onChangeAsync: async (field) =>
               handleResult(field.fieldApi, await emailIsValid(field.value)),
+            onBlur: fieldMandatory(),
           }}
           children={(field) => (
             <InputField
