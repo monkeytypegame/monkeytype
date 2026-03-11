@@ -39,7 +39,7 @@ function createFieldMock(meta: MetaState) {
 }
 
 const meta = preview.meta({
-  title: "UI/FieldIndicator",
+  title: "UI/Form/FieldIndicator",
   component: FieldIndicator as Component<{
     field?: AnyFieldApi;
   }>,
