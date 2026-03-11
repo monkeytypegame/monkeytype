@@ -114,6 +114,7 @@ input[type="checkbox"] {
   position: relative;
   transition: background 0.125s;
   flex-shrink: 0;
+  cursor: pointer;
   &:after {
     font-family: "Font Awesome";
     content: "\f00c";

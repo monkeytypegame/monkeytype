@@ -25,12 +25,25 @@ let registerForm: {
   password?: string;
 } = {};
 
+let loginForm: {
+  email?: string;
+  password?: string;
+} = {};
+
 export function enableSignUpButton(): void {
-  qs(".page.pageLogin .register.side button")?.enable();
+  qs(".page.pageLogin .register.side button.signUp")?.enable();
 }
 
 export function disableSignUpButton(): void {
-  qs(".page.pageLogin .register.side button")?.disable();
+  qs(".page.pageLogin .register.side button.signUp")?.disable();
+}
+
+export function enableSignInButton(): void {
+  qs(".page.pageLogin .login.side button.signIn")?.enable();
+}
+
+export function disableSignInButton(): void {
+  qs(".page.pageLogin .login.side button.signIn")?.disable();
 }
 
 export function enableInputs(): void {
@@ -51,7 +64,7 @@ export function hidePreloader(): void {
   qs(".pageLogin .preloader")?.hide();
 }
 
-function isFormComplete(): boolean {
+function isRegisterFormComplete(): boolean {
   return (
     registerForm.name !== undefined &&
     registerForm.email !== undefined &&
@@ -59,21 +72,43 @@ function isFormComplete(): boolean {
   );
 }
 
-export const updateSignupButton = (): void => {
-  if (isFormComplete()) {
+function isLoginFormComplete(): boolean {
+  return loginForm.email !== undefined && loginForm.password !== undefined;
+}
+
+export const updateSignUpButton = (): void => {
+  if (isRegisterFormComplete()) {
     enableSignUpButton();
   } else {
     disableSignUpButton();
   }
 };
 
-type SignupData = {
+export const updateSignInButton = (): void => {
+  if (isLoginFormComplete()) {
+    enableSignInButton();
+  } else {
+    disableSignInButton();
+  }
+};
+
+type SignUpData = {
   name: string;
   email: string;
   password: string;
 };
-export function getSignupData(): SignupData | false {
-  return isFormComplete() ? (registerForm as SignupData) : false;
+
+type SignInData = {
+  email: string;
+  password: string;
+};
+
+export function getSignUpData(): SignUpData | false {
+  return isRegisterFormComplete() ? (registerForm as SignUpData) : false;
+}
+
+export function getSignInData(): SignInData | false {
+  return isLoginFormComplete() ? (loginForm as SignInData) : false;
 }
 
 const nameInputEl = qsr<HTMLInputElement>(
@@ -89,7 +124,7 @@ new ValidatedHtmlInputElement(nameInputEl, {
   callback: (result) => {
     registerForm.name =
       result.status === "success" ? nameInputEl?.getValue() : undefined;
-    updateSignupButton();
+    updateSignUpButton();
   },
 });
 
@@ -175,7 +210,7 @@ new ValidatedHtmlInputElement(emailVerifyInputEl, {
       result.status === "success"
         ? emailInputEl.getValue()
         : undefined;
-    updateSignupButton();
+    updateSignUpButton();
   },
 });
 
@@ -208,8 +243,28 @@ new ValidatedHtmlInputElement(passwordVerifyInputEl, {
       result.status === "success"
         ? passwordInputEl.getValue()
         : undefined;
-    updateSignupButton();
+    updateSignUpButton();
   },
+});
+
+const loginEmailInputEl = qsr<HTMLInputElement>(
+  '.page.pageLogin .login input[type="email"]',
+);
+
+loginEmailInputEl.on("input", () => {
+  const value = loginEmailInputEl.getValue()?.trim();
+  loginForm.email = value !== "" ? value : undefined;
+  updateSignInButton();
+});
+
+const loginPasswordInputEl = qsr<HTMLInputElement>(
+  '.page.pageLogin .login input[type="password"]',
+);
+
+loginPasswordInputEl.on("input", () => {
+  const value = loginPasswordInputEl.getValue()?.trim();
+  loginForm.password = value !== "" ? value : undefined;
+  updateSignInButton();
 });
 
 qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
@@ -224,14 +279,14 @@ qs(".pageLogin .login button.signInWithGoogle")?.on("click", async () => {
 
   showPreloader();
   disableInputs();
-  disableSignUpButton();
+  disableSignInButton();
   const data = await signInWithGoogle(rememberMe);
   hidePreloader();
 
   if (!data.success) {
     showErrorNotification(data.message);
     enableInputs();
-    enableSignUpButton();
+    enableSignInButton();
   }
 });
 
@@ -243,29 +298,26 @@ qs(".pageLogin .login form")?.on("submit", async (e) => {
     return;
   }
 
-  const email =
-    qsa<HTMLInputElement>(".pageLogin .login input")?.[0]?.getValue() ?? "";
-  const password =
-    qsa<HTMLInputElement>(".pageLogin .login input")?.[1]?.getValue() ?? "";
+  const signInData = getSignInData();
   const rememberMe =
     qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
     false;
 
-  if (email === "" || password === "") {
+  if (signInData === false) {
     showNoticeNotification("Please fill in all fields");
     return;
   }
 
   showPreloader();
   disableInputs();
-  disableSignUpButton();
-  const data = await signIn(email, password, rememberMe);
+  disableSignInButton();
+  const data = await signIn(signInData.email, signInData.password, rememberMe);
   hidePreloader();
 
   if (!data.success) {
     showErrorNotification(data.message);
     enableInputs();
-    enableSignUpButton();
+    enableSignInButton();
   }
 });
 
@@ -281,14 +333,14 @@ qs(".pageLogin .login button.signInWithGitHub")?.on("click", async () => {
 
   showPreloader();
   disableInputs();
-  disableSignUpButton();
+  disableSignInButton();
   const data = await signInWithGitHub(rememberMe);
   hidePreloader();
 
   if (!data.success) {
     showErrorNotification(data.message);
     enableInputs();
-    enableSignUpButton();
+    enableSignInButton();
   }
 });
 
@@ -300,8 +352,8 @@ qs(".pageLogin .register form")?.on("submit", async (e) => {
     return;
   }
 
-  const signupData = getSignupData();
-  if (signupData === false) {
+  const signUpData = getSignUpData();
+  if (signUpData === false) {
     showNoticeNotification("Please fill in all fields");
     return;
   }
@@ -311,9 +363,9 @@ qs(".pageLogin .register form")?.on("submit", async (e) => {
   disableSignUpButton();
 
   const data = await signUp(
-    signupData.name,
-    signupData.email,
-    signupData.password,
+    signUpData.name,
+    signUpData.email,
+    signUpData.password,
   );
 
   hidePreloader();
@@ -335,6 +387,7 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
     registerForm = {};
+    loginForm = {};
     const inputs = qsa<HTMLInputElement>(".pageLogin input");
     inputs.forEach((input) => {
       input.setValue("");
@@ -342,6 +395,7 @@ export const page = new Page({
     qsa(".pageLogin .register .indicator")?.hide();
     enableInputs();
     disableSignUpButton();
+    disableSignInButton();
   },
 });
 
