@@ -564,6 +564,15 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       else return "";
     },
   },
+  lefthand: {
+    async withWords(words?: string[]): Promise<Wordset> {
+      const LEFT_HAND_KEYS = new Set("qwertasdfgzxcvb");
+      const filtered = (words ?? []).filter((w) =>
+        [...w.toLowerCase()].every((ch) => LEFT_HAND_KEYS.has(ch)),
+      );
+      return new Wordset(filtered.length > 0 ? filtered : ["test"]);
+    },
+  },
   pseudolang: {
     async withWords(words?: string[]): Promise<Wordset> {
       if (words !== undefined) return new PseudolangWordGenerator(words);

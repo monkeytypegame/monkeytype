@@ -323,6 +323,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["getWord"],
     name: "weakspot",
   },
+  lefthand: {
+    description: "Only words typeable with the left hand.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesWordsFrequency"],
+    frontendFunctions: ["withWords"],
+    name: "lefthand",
+  },
   pseudolang: {
     description: "Nonsense words that look like the current language.",
     canGetPb: false,
