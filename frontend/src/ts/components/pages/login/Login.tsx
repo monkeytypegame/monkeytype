@@ -26,7 +26,7 @@ import { SubmitButton } from "../../ui/form/SubmitButton";
 import { allFieldsMandatory } from "../../ui/form/utils";
 
 export function Login(): JSXElement {
-  const doLogin = async (
+  const trySignIn = async (
     auth: () => Promise<AuthResult>,
     label?: string,
   ): Promise<void> => {
@@ -50,7 +50,7 @@ export function Login(): JSXElement {
       rememberMe: true,
     },
     onSubmit: async ({ value }) =>
-      doLogin(async () =>
+      trySignIn(async () =>
         signIn(value.email, value.password, value.rememberMe),
       ),
     onSubmitInvalid: () => {
@@ -74,7 +74,7 @@ export function Login(): JSXElement {
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={() =>
-            void doLogin(async () =>
+            void trySignIn(async () =>
               signInWithGoogle(form.getFieldValue("rememberMe")),
             )
           }
@@ -83,7 +83,7 @@ export function Login(): JSXElement {
         <Button
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={() =>
-            void doLogin(async () =>
+            void trySignIn(async () =>
               signInWithGitHub(form.getFieldValue("rememberMe")),
             )
           }
