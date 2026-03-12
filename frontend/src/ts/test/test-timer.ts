@@ -7,6 +7,7 @@ import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
 import {
@@ -18,6 +19,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
+import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
@@ -135,6 +137,14 @@ function layoutfluid(): void {
       setConfig("keymapLayout", layout as KeymapLayout, {
         nosave: true,
       });
+
+      if (Config.keymapMode === "next") {
+        setTimeout(() => {
+          void KeymapEvent.highlight(
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          );
+        }, 1);
+      }
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");
