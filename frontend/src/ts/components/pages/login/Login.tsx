@@ -26,38 +26,33 @@ import { SubmitButton } from "../../ui/form/SubmitButton";
 import { allFieldsMandatory } from "../../ui/form/utils";
 
 export function Login(): JSXElement {
+  const doLogin = async (
+    auth: () => Promise<AuthResult>,
+    label?: string,
+  ): Promise<void> => {
+    disableLoginPageInputs();
+    try {
+      const data = await auth();
+      if (!data.success) {
+        showErrorNotification(
+          `Failed to sign in${label !== undefined ? " with " + label : ""} : ${data.message}`,
+        );
+      }
+    } finally {
+      enableLoginPageInputs();
+    }
+  };
+
   const form = createForm(() => ({
     defaultValues: {
       email: "",
       password: "",
       rememberMe: true,
     },
-    onSubmit: async ({ value, meta }) => {
-      disableLoginPageInputs();
-      const action = (meta as { action: "Google" | "GitHub" })?.action;
-      try {
-        let data: AuthResult;
-
-        if (action === "Google") {
-          data = await signInWithGoogle(value.rememberMe);
-        } else if (action === "GitHub") {
-          data = await signInWithGitHub(value.rememberMe);
-        } else {
-          if (value.email === "" || value.password === "") {
-            showNoticeNotification("Please fill in all fields");
-            return;
-          }
-          data = await signIn(value.email, value.password, value.rememberMe);
-        }
-        if (!data.success) {
-          showErrorNotification(
-            `Failed to sign in${action !== undefined ? " with " + action : ""} : ${data.message}`,
-          );
-        }
-      } finally {
-        enableLoginPageInputs();
-      }
-    },
+    onSubmit: async ({ value }) =>
+      doLogin(async () =>
+        signIn(value.email, value.password, value.rememberMe),
+      ),
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
     },
@@ -78,12 +73,20 @@ export function Login(): JSXElement {
       <div class="grid grid-cols-2 gap-4">
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}
-          onClick={void form.handleSubmit({ action: "Google" })}
+          onClick={() =>
+            void doLogin(async () =>
+              signInWithGoogle(form.getFieldValue("rememberMe")),
+            )
+          }
           disabled={!getLoginPageInputsEnabled()}
         />
         <Button
           fa={{ icon: "fa-github", variant: "brand" }}
-          onClick={void form.handleSubmit({ action: "GitHub" })}
+          onClick={() =>
+            void doLogin(async () =>
+              signInWithGitHub(form.getFieldValue("rememberMe")),
+            )
+          }
           disabled={!getLoginPageInputsEnabled()}
         />
       </div>
