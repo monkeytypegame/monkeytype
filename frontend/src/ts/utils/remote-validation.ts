@@ -1,6 +1,6 @@
 import { IsValidResponse } from "../elements/input-validation";
 
-type IsValidResonseOrFunction =
+type IsValidResponseOrFunction =
   | ((message: string) => IsValidResponse)
   | IsValidResponse;
 export function remoteValidation<V, T>(
@@ -9,8 +9,8 @@ export function remoteValidation<V, T>(
   ) => Promise<{ status: number; body: { data?: T; message: string } }>,
   options?: {
     check?: (data: T) => IsValidResponse;
-    on4xx?: IsValidResonseOrFunction;
-    on5xx?: IsValidResonseOrFunction;
+    on4xx?: IsValidResponseOrFunction;
+    on5xx?: IsValidResponseOrFunction;
   },
 ): (val: V) => Promise<IsValidResponse> {
   return async (val) => {
@@ -19,7 +19,7 @@ export function remoteValidation<V, T>(
       return options?.check?.(result.body.data as T) ?? true;
     }
 
-    let handler: IsValidResonseOrFunction | undefined;
+    let handler: IsValidResponseOrFunction | undefined;
     if (result.status <= 499) {
       handler = options?.on4xx ?? ((message) => message);
     } else {
@@ -37,8 +37,8 @@ export function remoteValidationForm<V, T>(
   ) => Promise<{ status: number; body: { data?: T; message: string } }>,
   options?: {
     check?: (data: T) => IsValidResponse;
-    on4xx?: IsValidResonseOrFunction;
-    on5xx?: IsValidResonseOrFunction;
+    on4xx?: IsValidResponseOrFunction;
+    on5xx?: IsValidResponseOrFunction;
   },
 ): (val: { value: V }) => Promise<undefined | string | { warning: string }> {
   return async (val: { value: V }) => {
@@ -48,7 +48,7 @@ export function remoteValidationForm<V, T>(
     if (result.status <= 299) {
       validationResult = options?.check?.(result.body.data as T) ?? undefined;
     } else {
-      let handler: IsValidResonseOrFunction | undefined;
+      let handler: IsValidResponseOrFunction | undefined;
       if (result.status <= 499) {
         handler = options?.on4xx ?? ((message) => message);
       } else {

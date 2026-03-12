@@ -50,7 +50,7 @@ export function Login(): JSXElement {
       rememberMe: true,
     },
     onSubmit: async ({ value }) =>
-      trySignIn(async () =>
+      await trySignIn(async () =>
         signIn(value.email, value.password, value.rememberMe),
       ),
     onSubmitInvalid: () => {
