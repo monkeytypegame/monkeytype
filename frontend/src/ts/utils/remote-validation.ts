@@ -1,6 +1,8 @@
+import { AnyFieldApi } from "@tanstack/solid-form";
 import { IsValidResponse } from "../elements/input-validation";
+import { handleResult } from "../components/ui/form/utils";
 
-type IsValidResponseOrFunction =
+type IsValidResonseOrFunction =
   | ((message: string) => IsValidResponse)
   | IsValidResponse;
 export function remoteValidation<V, T>(
@@ -9,8 +11,8 @@ export function remoteValidation<V, T>(
   ) => Promise<{ status: number; body: { data?: T; message: string } }>,
   options?: {
     check?: (data: T) => IsValidResponse;
-    on4xx?: IsValidResponseOrFunction;
-    on5xx?: IsValidResponseOrFunction;
+    on4xx?: IsValidResonseOrFunction;
+    on5xx?: IsValidResonseOrFunction;
   },
 ): (val: V) => Promise<IsValidResponse> {
   return async (val) => {
@@ -19,7 +21,7 @@ export function remoteValidation<V, T>(
       return options?.check?.(result.body.data as T) ?? true;
     }
 
-    let handler: IsValidResponseOrFunction | undefined;
+    let handler: IsValidResonseOrFunction | undefined;
     if (result.status <= 499) {
       handler = options?.on4xx ?? ((message) => message);
     } else {
@@ -37,18 +39,21 @@ export function remoteValidationForm<V, T>(
   ) => Promise<{ status: number; body: { data?: T; message: string } }>,
   options?: {
     check?: (data: T) => IsValidResponse;
-    on4xx?: IsValidResponseOrFunction;
-    on5xx?: IsValidResponseOrFunction;
+    on4xx?: IsValidResonseOrFunction;
+    on5xx?: IsValidResonseOrFunction;
   },
-): (val: { value: V }) => Promise<undefined | string | { warning: string }> {
-  return async (val: { value: V }) => {
+): (val: {
+  value: V;
+  fieldApi: AnyFieldApi;
+}) => Promise<undefined | string | string[]> {
+  return async (val: { value: V; fieldApi: AnyFieldApi }) => {
     let validationResult;
 
     const result = await call(val.value);
     if (result.status <= 299) {
       validationResult = options?.check?.(result.body.data as T) ?? undefined;
     } else {
-      let handler: IsValidResponseOrFunction | undefined;
+      let handler: IsValidResonseOrFunction | undefined;
       if (result.status <= 499) {
         handler = options?.on4xx ?? ((message) => message);
       } else {
@@ -63,6 +68,13 @@ export function remoteValidationForm<V, T>(
       }
     }
 
-    return validationResult === true ? undefined : validationResult;
+    if (validationResult === true || validationResult === undefined) {
+      return undefined;
+    }
+    if (typeof validationResult === "string") return validationResult;
+
+    return handleResult(val.fieldApi, [
+      { type: "warning", message: validationResult.warning },
+    ]);
   };
 }
