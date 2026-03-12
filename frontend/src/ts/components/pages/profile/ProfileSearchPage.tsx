@@ -27,7 +27,6 @@ export function ProfileSearchPage(): JSXElement {
     onSubmit: async ({ value }) => {
       setEditable(false);
       try {
-        console.log("### onSubmit");
         NavigationEvent.dispatch(`/profile/${value.username}`, {});
       } finally {
         setEditable(true);
