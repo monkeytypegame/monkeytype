@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@leonabcd123/modern-caps-lock": "2.2.2",
+    "@leonabcd123/modern-caps-lock": "3.0.4",
     "@monkeytype/contracts": "workspace:*",
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",
@@ -37,6 +37,7 @@
     "@tanstack/pacer-lite": "0.2.1",
     "@tanstack/query-db-collection": "1.0.27",
     "@tanstack/solid-db": "0.2.10",
+    "@tanstack/solid-form": "1.28.4",
     "@tanstack/solid-query": "5.90.23",
     "@tanstack/solid-query-devtools": "5.91.3",
     "@tanstack/solid-table": "8.21.3",

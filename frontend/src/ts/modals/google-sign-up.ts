@@ -21,7 +21,6 @@ import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
-import { enableLoginPageInputs, hideLoginPageLoader } from "../stores/login";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -62,8 +61,6 @@ async function hide(): Promise<void> {
         showNoticeNotification("Sign up process cancelled", {
           durationMs: 5000,
         });
-        hideLoginPageLoader();
-        enableLoginPageInputs();
         if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
           await Ape.users.delete();
           await signedInUser?.user.delete().catch(() => {
@@ -110,8 +107,6 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       showSuccessNotification("Account created");
-      enableLoginPageInputs();
-      hideLoginPageLoader();
       await AccountController.loadUser(signedInUser.user);
 
       signedInUser = undefined;
@@ -121,8 +116,6 @@ async function apply(): Promise<void> {
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
-    hideLoginPageLoader();
-    enableLoginPageInputs();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser?.user.delete().catch(() => {

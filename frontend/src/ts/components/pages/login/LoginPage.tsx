@@ -3,7 +3,7 @@ import { JSXElement, Show } from "solid-js";
 
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getActivePage } from "../../../signals/core";
-import { getLoginPageLoader } from "../../../stores/login";
+import { getLoginPageInputsEnabled } from "../../../stores/login";
 import { Conditional } from "../../common/Conditional";
 import { Login } from "./Login";
 import { Register } from "./Register";
@@ -17,7 +17,7 @@ export function LoginPage(): JSXElement {
 
   return (
     <Show when={isOpen()}>
-      <Show when={getLoginPageLoader()}>
+      <Show when={!getLoginPageInputsEnabled()}>
         <div class="fixed top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 text-3xl text-main transition-opacity duration-250">
           <i class="fas fa-fw fa-spin fa-circle-notch"></i>
         </div>
