@@ -74,8 +74,9 @@ export function Login(): JSXElement {
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={() =>
-            void trySignIn(async () =>
-              signInWithGoogle(form.getFieldValue("rememberMe")),
+            void trySignIn(
+              async () => signInWithGoogle(form.getFieldValue("rememberMe")),
+              "Google",
             )
           }
           disabled={!getLoginPageInputsEnabled()}
@@ -83,8 +84,9 @@ export function Login(): JSXElement {
         <Button
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={() =>
-            void trySignIn(async () =>
-              signInWithGitHub(form.getFieldValue("rememberMe")),
+            void trySignIn(
+              async () => signInWithGitHub(form.getFieldValue("rememberMe")),
+              "GitHub",
             )
           }
           disabled={!getLoginPageInputsEnabled()}
