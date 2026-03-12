@@ -936,6 +936,108 @@
       "source": "Spring Boot - Context Failure Testing",
       "id": 155,
       "length": 369
+    },
+    {
+      "text": "public List<Integer> withdraw(int amount) {\n\tList<Integer> result = new ArrayList<>();\n\tif (amount % 50 != 0) {\n\t\tthrow new IllegalArgumentException(\"Cannot withdraw odd amount\");\n\t}\n\tif (amount > getAvailableATMCash()) {\n\t\tthrow new IllegalArgumentException(\"Cannot withdraw. Amount is bigger than existing ATM cash\");\n\t}\n\tint[] nominals = {5000, 1000, 500, 100, 50};\n\tfor (int nominal : nominals) {\n\t\tInteger existingBanknotes = nominalMap.get(nominal);\n\t\tif (existingBanknotes != null && existingBanknotes > 0) {\n\t\t\tint requiredBanknotes = Math.min(amount / nominal, existingBanknotes);\n\t\t\tnominalMap.put(nominal, existingBanknotes - requiredBanknotes);\n\t\t\tresult.addAll(Collections.nCopies(requiredBanknotes, nominal));\n\t\t\tamount -= requiredBanknotes * nominal;\n\t\t}\n\t}\n\n\tif (amount > 0) {\n\t\tthrow new IllegalArgumentException(\"Cannot withdraw. Not enough banknotes for this amount\");\n\t}\n\treturn result;\n}",
+      "source": "ATM Withdrawal Logic",
+      "id": 156,
+      "length": 908
+    },
+    {
+      "text": "public class ExpiryCache<K, V> {\n\tprivate static class Entry<V> {\n\t\tV value;\n\t\tlong expiryTime;\n\n\t\tpublic Entry(V value, long expiryTime) {\n\t\t\tthis.value = value;\n\t\t\tthis.expiryTime = expiryTime;\n\t\t}\n\t}\n\n\tprivate final Map<K, Entry<V>> cache = new ConcurrentHashMap<>();\n\tprivate final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);\n\tprivate final long deltaTime;\n\n\tpublic ExpiryCache(long cleanupInterval, long deltaTime) {\n\t\tthis.deltaTime = deltaTime;\n\t\texecutorService.scheduleAtFixedRate(this::cleanUp, cleanupInterval, cleanupInterval, TimeUnit.MILLISECONDS);\n\t}\n\n\tpublic void put(K key, V value) {\n\t\tlong expiryTime = System.currentTimeMillis() + deltaTime;\n\t\tcache.put(key, new Entry<>(value, expiryTime));\n\t}\n\n\tpublic V get(K key) {\n\t\tEntry<V> entry = cache.get(key);\n\t\tif (entry == null || System.currentTimeMillis() > entry.expiryTime) {\n\t\t\tcache.remove(key);\n\t\t\treturn null;\n\t\t}\n\t\treturn entry.value;\n\t}\n\n\tprivate void cleanUp() {\n\t\tlong now = System.currentTimeMillis();\n\t\tcache.entrySet().removeIf(e -> e.getValue().expiryTime <= now);\n\t}\n\n\tpublic void shutDown() {\n\t\texecutorService.shutdown();\n\t}\n}",
+      "source": "Expiry Cache Implementation",
+      "id": 157,
+      "length": 1147
+    },
+    {
+      "text": "public static int[] twoSum(int[] nums, int target) {\n\tMap<Integer, Integer> map = new HashMap<>();\n\n\tfor (int i = 0; i < nums.length; i++) {\n\t\tint difference = target - nums[i];\n\t\tif (map.containsKey(difference)) {\n\t\t\treturn new int[]{map.get(difference), i};\n\t\t}\n\t\tmap.put(nums[i], i);\n\t}\n\treturn new int[]{};\n}",
+      "source": "Two Sum Algorithm",
+      "id": 158,
+      "length": 312
+    },
+    {
+      "text": "public static Map<String, Object> findChampions(List<List<Map<String, Integer>>> statistics) {\n\tMap<Integer, Integer> stepsPerUser = new HashMap<>();\n\tMap<Integer, Integer> participantsCount = new HashMap<>();\n\tint totalDays = statistics.size();\n\n\tfor (List<Map<String, Integer>> dailyStats : statistics) {\n\t\tSet<Integer> dailyParticipants = new HashSet<>();\n\t\tfor (Map<String, Integer> entry : dailyStats) {\n\t\t\tint userId = entry.get(\"userId\");\n\t\t\tint steps = entry.get(\"steps\");\n\n\t\t\tstepsPerUser.put(userId, stepsPerUser.getOrDefault(userId, 0) + steps);\n\t\t\tdailyParticipants.add(userId);\n\t\t}\n\n\t\tfor (int userId : dailyParticipants) {\n\t\t\tparticipantsCount.put(userId, participantsCount.getOrDefault(userId, 0) + 1);\n\t\t}\n\t}\n\n\tSet<Integer> qualifiedUsers = new HashSet<>();\n\tfor (Map.Entry<Integer, Integer> entry : participantsCount.entrySet()) {\n\t\tif (entry.getValue() == totalDays) {\n\t\t\tqualifiedUsers.add(entry.getKey());\n\t\t}\n\t}\n\n\tint maxSteps = 0;\n\tList<Integer> champions = new ArrayList<>();\n\tfor (int userId : qualifiedUsers) {\n\t\tint totalSteps = stepsPerUser.get(userId);\n\t\tif (totalSteps > maxSteps) {\n\t\t\tmaxSteps = totalSteps;\n\t\t\tchampions.clear();\n\t\t\tchampions.add(userId);\n\t\t} else if (totalSteps == maxSteps) {\n\t\t\tchampions.add(userId);\n\t\t}\n\t}\n\n\tMap<String, Object> result = new HashMap<>();\n\tresult.put(\"userIds\", champions);\n\tresult.put(\"steps\", maxSteps);\n\treturn result;\n}",
+      "source": "Find Champions - Interview Question",
+      "id": 159,
+      "length": 1390
+    },
+    {
+      "text": "var clientAccounts = clients.stream()\n\t.collect(toMap(Function.identity(), Client::getAccounts));",
+      "source": "Streams - Collect toMap Example",
+      "id": 160,
+      "length": 97
+    },
+    {
+      "text": "var filteredActiveAccounts = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.filter(Account::isActive)\n\t.collect(toMap(Account::getAccountId, Function.identity(), (a, b) -> a));",
+      "source": "Streams - FlatMap Filter Collect Example",
+      "id": 161,
+      "length": 189
+    },
+    {
+      "text": "var totalBalanceOfALlClients = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.map(Account::getBalance)\n\t.reduce(BigDecimal.ZERO, BigDecimal::add);",
+      "source": "Streams - Reduce BigDecimal Example",
+      "id": 162,
+      "length": 159
+    },
+    {
+      "text": "var clientsWithAtLeastOneActiveAccount = clients.stream()\n\t.filter(c -> c.getAccounts().stream().anyMatch(Account::isActive))\n\t.toList();",
+      "source": "Streams - AnyMatch Filter Example",
+      "id": 163,
+      "length": 137
+    },
+    {
+      "text": "var richestAccount = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.max(Comparator.comparing(Account::getBalance))\n\t.orElseThrow(() -> new RuntimeException(\"No richest account\"));",
+      "source": "Streams - Max Comparator Example",
+      "id": 164,
+      "length": 192
+    },
+    {
+      "text": "var accountsByCurrency = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.collect(groupingBy(Account::getCurrency, Collectors.counting()));",
+      "source": "Streams - Grouping Counting Example",
+      "id": 165,
+      "length": 150
+    },
+    {
+      "text": "var clientsWithUSD = clients.stream()\n\t.filter(c -> c.getAccounts()\n\t\t.stream()\n\t\t.anyMatch(a -> a.getCurrency() == Currency.USD))\n\t.toList();",
+      "source": "Streams -  Filter Currency Example",
+      "id": 166,
+      "length": 142
+    },
+    {
+      "text": "var clientsBalances = clients.stream()\n\t.collect(toMap(Client::getFullName, c -> c.getAccounts()\n\t\t.stream()\n\t\t.map(Account::getBalance)\n\t\t.reduce(BigDecimal.ZERO, BigDecimal::add)));",
+      "source": "Streams - ToMap Aggregate Balance Example",
+      "id": 167,
+      "length": 183
+    },
+    {
+      "text": "var accountsGroupedByType = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.collect(groupingBy(Account::getAccountType));",
+      "source": "Streams - Grouping By Type Example",
+      "id": 168,
+      "length": 133
+    },
+    {
+      "text": "var onlyCreditCardAccounts = accountsGroupedByType.values().stream()\n\t.flatMap(Collection::stream)\n\t.filter(a -> a.getAccountType() == AccountType.CREDIT_CARD)\n\t.toList();",
+      "source": "Streams - Filter Credit Card Example",
+      "id": 169,
+      "length": 171
+    },
+    {
+      "text": "var highestBalanceByCurrency = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.collect(toMap(Account::getCurrency, Function.identity(), BinaryOperator.maxBy(Comparator.comparing(Account::getBalance))));",
+      "source": "Streams - ToMap MaxBy Example",
+      "id": 170,
+      "length": 214
+    },
+    {
+      "text": "var accountsGroupedByCurrency = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.collect(groupingBy(Account::getCurrency, counting()));",
+      "source": "Streams -  Grouping By Currency Counting Example",
+      "id": 171,
+      "length": 146
+    },
+    {
+      "text": "var secondHighestBalance = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.sorted(Comparator.comparing(Account::getBalance).reversed())\n\t.skip(1)\n\t.findFirst()\n\t.orElse(null);",
+      "source": "Streams - Second Highest Example",
+      "id": 172,
+      "length": 187
     }
   ]
 }

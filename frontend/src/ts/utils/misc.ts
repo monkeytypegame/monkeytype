@@ -753,7 +753,11 @@ export function formatTypingStatsRatio(stats: {
   completedPercentage: string;
   restartRatio: string;
 } {
-  if (stats.completedTests === undefined || stats.startedTests === undefined) {
+  if (
+    stats.completedTests === undefined ||
+    stats.startedTests === undefined ||
+    stats.startedTests === 0
+  ) {
     return { completedPercentage: "", restartRatio: "" };
   }
   return {

@@ -301,7 +301,7 @@ export class Caret {
         side = "afterLetter";
 
         if (Config.blindMode || Config.hideExtraLetters) {
-          options.letterIndex = wordText?.length - 1;
+          options.letterIndex = (wordText?.length ?? letters.length) - 1;
         } else {
           options.letterIndex = letters.length - 1;
         }
