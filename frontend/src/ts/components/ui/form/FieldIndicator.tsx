@@ -29,9 +29,7 @@ export function FieldIndicator(props: FieldIndicatorProps) {
           <Balloon
             position="left"
             length="large"
-            text={props.field.state.meta.errors
-
-              .join(", ")}
+            text={props.field.state.meta.errors.join(", ")}
           >
             <Fa icon="fa-times" class="text-error" fixedWidth />
           </Balloon>
