@@ -177,13 +177,11 @@ export function Register(): JSXElement {
               onFocus={() => {
                 if (!moduleLoadAttempted) {
                   moduleLoadAttempted = true;
-                  try {
-                    void import("disposable-email-domains-js").then(
-                      (it) => (disposableEmailModule = it),
-                    );
-                  } catch {
-                    // Silent failure
-                  }
+                  void import("disposable-email-domains-js")
+                    .then((it) => (disposableEmailModule = it))
+                    .catch(() => {
+                      // Silent failure
+                    });
                 }
               }}
             />
