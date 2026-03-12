@@ -1,0 +1,182 @@
+{
+  "topics": [
+    {
+      "title": "How do I type coding symbols?",
+      "searchText": "coding symbols punctuation quotes custom text code special characters",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "There are two ways to type coding symbols in Monkeytype:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Punctuation mode - Enable it by clicking the @ punctuation button in the test config bar. This adds common symbols like ! , . ; : ' \" ( )",
+            "Quote mode - Switch to quote mode in the test config bar. Quotes often contain real code-like punctuation and symbols.",
+            "Custom text - Use the command line (Ctrl + Shift + P) and select \"custom text\" to type any text you want, including code."
+          ]
+        }
+      ]
+    },
+    {
+      "title": "How do I restart the test quickly?",
+      "searchText": "restart test quickly tab enter esc shortcut keyboard",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "You can restart the test without touching the mouse:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Press Tab + Enter - the default shortcut to restart.",
+            "Enable Quick Restart mode in settings - restart with Tab or Esc or Enter."
+          ]
+        }
+      ]
+    },
+    {
+      "title": "How do I change the language?",
+      "searchText": "language change switch foreign english spanish french german",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Search language in command line. A list of all available languages will appear - select the one you want."
+        },
+        {
+          "type": "paragraph",
+          "text": "Monkeytype supports multiple languages."
+        }
+      ]
+    },
+    {
+      "title": "How do I change the theme?",
+      "searchText": "theme color appearance dark light custom random palette",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "There are several ways to change the theme:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Open the command line with Ctrl + Shift + P and search for a theme name.",
+            "Go to Settings → Theme and browse the full list.",
+            "Enable random theme in settings to get a new theme on every test. After completing a test, the theme will be set to a random one. The random themes are not saved to your config. If set to 'favorite' only favorite themes will be randomized. If set to 'light' or 'dark', only presets with light or dark background colors will be randomized, respectively. If set to 'auto', dark or light themes are used depending on your system theme. If set to 'custom', custom themes will be randomized.",
+            "Click the palette icon in the footer to quickly switch themes."
+          ]
+        }
+      ]
+    },
+    {
+      "title": "How do I save my progress?",
+      "searchText": "save progress account history personal best login signup",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "To save your typing history and personal bests, create a free account."
+        },
+        {
+          "type": "paragraph",
+          "text": "Click the person icon in the top right to sign up or log in. Once logged in, all your results are automatically saved."
+        },
+        {
+          "type": "paragraph",
+          "text": "Without an account, results are only stored temporarily in your browser session."
+        }
+      ]
+    },
+    {
+      "title": "How do the leaderboards work?",
+      "searchText": "leaderboard rank top fastest qualify anticheat english 15 60 seconds",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "The global leaderboards track the fastest typists for 15 second and 60 second English tests."
+        },
+        {
+          "type": "paragraph",
+          "text": "To qualify, your result must:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Be completed while logged in",
+            "Use the English language",
+            "Have no funbox modifiers active",
+            "Pass the anticheat verification"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "What is Blind Mode?",
+      "searchText": "blind mode errors hide mistakes accuracy training",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Blind mode hides your errors while typing - you won't see red characters or highlights during the test."
+        },
+        {
+          "type": "paragraph",
+          "text": "This is useful for training yourself to keep typing without fixating on mistakes. Accuracy is still tracked and shown at the end."
+        },
+        {
+          "type": "paragraph",
+          "text": "Enable it in Settings → Behavior → Blind Mode."
+        }
+      ]
+    },
+    {
+      "title": "What is Pace Caret?",
+      "searchText": "pace caret target speed race wpm goal second caret",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "The pace caret is a second caret that moves at a target speed so you can race against it."
+        },
+        {
+          "type": "paragraph",
+          "text": "Set it to your personal best, average, or a custom WPM target in Settings → Caret → Pace Caret."
+        }
+      ]
+    },
+    {
+      "title": "What are Funbox modes?",
+      "searchText": "funbox fun modes gibberish numbers challenge special modifier",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Funbox modes are special modifiers that change how the test works. Examples:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "gibberish - random nonsense words",
+            "58008 - only numbers",
+            "read ahead - hides the current word",
+            "no quit - forces you to finish"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Access via Ctrl + Shift + P → funbox."
+        }
+      ]
+    },
+    {
+      "title": "How do I use Custom Text?",
+      "searchText": "custom text paste own code lyrics repeat randomize",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Custom text lets you type any text you want - code, prose, lyrics."
+        },
+        {
+          "type": "paragraph",
+          "text": "Open the command line with Ctrl + Shift + P, search for custom text, and paste your content. You can also set it to repeat or randomize word order."
+        }
+      ]
+    }
+  ]
+}

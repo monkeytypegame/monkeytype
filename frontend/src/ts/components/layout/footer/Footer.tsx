@@ -73,6 +73,15 @@ export function Footer(): JSXElement {
           />
           <Button
             variant="text"
+            text="faq"
+            fa={{
+              icon: "fa-question-circle",
+              fixedWidth: true,
+            }}
+            onClick={() => showModal("Faq")}
+          />
+          <Button
+            variant="text"
             text="terms"
             fa={{
               icon: "fa-file-contract",
