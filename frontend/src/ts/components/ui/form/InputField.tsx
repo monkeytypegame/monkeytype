@@ -7,7 +7,7 @@ import { FieldIndicator } from "./FieldIndicator";
 export function InputField(props: {
   field: Accessor<AnyFieldApi>;
   placeholder?: string;
-  showIndicator?: true;
+  showIndicator?: boolean;
   autocomplete?: string;
   type?: string;
   disabled?: boolean;
@@ -22,7 +22,7 @@ export function InputField(props: {
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
           "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
           "autofill-fix",
-          props.showIndicator ? "pr-[1.85em]" : "",
+          props.showIndicator === true ? "pr-[1.85em]" : "",
           props.class,
         )}
         id={props.field().name as string}
