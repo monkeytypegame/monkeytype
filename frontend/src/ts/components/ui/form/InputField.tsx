@@ -19,7 +19,9 @@ export function InputField(props: {
       <input
         class={cn(
           "col-start-1 row-start-1 w-full",
-          "rounded-half border-none bg-sub-alt p-1 outline-[0.15em] outline-main",
+          "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
+          "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
+          "autofill-fix",
           props.showIndicator ? "pr-[1.85em]" : "",
           props.class,
         )}

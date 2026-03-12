@@ -17,8 +17,8 @@
 
 @layer custom-styles {
   @import "buttons", "404", "ads", "account", "animations", "caret",
-    "commandline", "core", "fonts", "inputs", "keymap", "monkey", "popups",
-    "scroll", "settings", "account-settings", "test", "loading", "friends",
+    "commandline", "core", "fonts", "keymap", "monkey", "popups", "scroll",
+    "settings", "account-settings", "test", "loading", "friends",
     "media-queries";
 
   .chartCanvas {
