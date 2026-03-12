@@ -126,6 +126,8 @@ export function Register(): JSXElement {
             });
             return;
           }
+          // we are calling onSubmit manually to bypass an unnecessary extra validation
+          // that runs when running handleSubmit, since we block the submit button when the form is invalid
           void form.options.onSubmit?.({
             value: form.state.values,
             formApi: form,
