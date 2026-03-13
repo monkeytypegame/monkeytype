@@ -131,3 +131,4 @@ frontend/static/webfonts-preview
 
 .turbo
 frontend/.env.sentry-build-plugin
+.claude/worktrees
