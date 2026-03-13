@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -39237,6 +39249,66 @@
       "source": "Norwegian Wood",
       "id": 7752,
       "length": 122
+    },
+    {
+      "text": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness.",
+      "source": "A Tale of Two Cities",
+      "id": 7753,
+      "length": 109
+    },
+    {
+      "text": "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+      "source": "Harry Potter and the Chamber of Secrets",
+      "id": 7754,
+      "length": 83
+    },
+    {
+      "text": "I am no bird; and no net ensnares me: I am a free human being with an independent will.",
+      "source": "Jane Eyre",
+      "id": 7755,
+      "length": 87
+    },
+    {
+      "text": "The most important things are the hardest to say. They are the things you get ashamed of, because words diminish them.",
+      "source": "The Body",
+      "id": 7756,
+      "length": 118
+    },
+    {
+      "text": "I took a deep breath and listened to the old brag of my heart: I am, I am, I am.",
+      "source": "The Bell Jar",
+      "id": 7757,
+      "length": 80
+    },
+    {
+      "text": "You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.",
+      "source": "Oh, The Places You Will Go!",
+      "id": 7758,
+      "length": 107
+    },
+    {
+      "text": "Not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost.",
+      "source": "The Lord of the Rings",
+      "id": 7759,
+      "length": 115
+    },
+    {
+      "text": "So we beat on, boats against the current, borne back ceaselessly into the past. Old sport.",
+      "source": "The Great Gatsby",
+      "id": 7760,
+      "length": 90
+    },
+    {
+      "text": "One must always be careful of books, and what is inside them, for words have the power to change us.",
+      "source": "Clockwork Angel",
+      "id": 7761,
+      "length": 100
+    },
+    {
+      "text": "If you want to know what a man is like, take a good look at how he treats his inferiors, not his equals.",
+      "source": "Harry Potter and the Goblet of Fire",
+      "id": 7762,
+      "length": 104
     }
   ]
 }
