@@ -49,7 +49,7 @@
     "object-hash": "3.0.0",
     "prom-client": "15.1.3",
     "rate-limiter-flexible": "5.0.3",
-    "simple-git": "3.16.0",
+    "simple-git": "3.32.3",
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.7",
     "ua-parser-js": "0.7.33",
