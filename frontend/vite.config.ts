@@ -281,9 +281,11 @@ function getCssOptions({
 }: {
   isDevelopment: boolean;
 }): CSSOptions {
+  //@ts-expect-error works?
   return {
     devSourcemap: true,
     postcss: {
+      //@ts-expect-error works?
       plugins: [autoprefixer({})],
     },
     preprocessorOptions: {

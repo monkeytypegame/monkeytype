@@ -110,7 +110,7 @@
     "tsx": "4.21.0",
     "typescript": "6.0.0-beta",
     "unplugin-inject-preload": "3.0.0",
-    "vite": "7.1.12",
+    "vite": "8.0.0",
     "vite-bundle-visualizer": "1.2.1",
     "vite-plugin-filter-replace": "0.1.14",
     "vite-plugin-html-inject": "1.1.2",
@@ -118,7 +118,7 @@
     "vite-plugin-minify": "2.1.0",
     "vite-plugin-pwa": "1.1.0",
     "vite-plugin-solid": "2.11.10",
-    "vitest": "4.0.15"
+    "vitest": "4.1.0"
   },
   "lint-staged": {
     "*": [
