@@ -39269,16 +39269,16 @@
       "length": 80
     },
     {
-      "text": "You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.",
-      "source": "Oh, The Places You Will Go!",
+      "text": "Two roads diverged in a wood, and I took the one less traveled by, and that has made all the difference.",
+      "source": "The Road Not Taken",
       "id": 7758,
-      "length": 107
+      "length": 104
     },
     {
-      "text": "Not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost.",
-      "source": "The Lord of the Rings",
+      "text": "The world breaks everyone, and afterward, some are strong at the broken places.",
+      "source": "A Farewell to Arms",
       "id": 7759,
-      "length": 115
+      "length": 79
     },
     {
       "text": "So we beat on, boats against the current, borne back ceaselessly into the past. Old sport.",
@@ -39293,10 +39293,10 @@
       "length": 100
     },
     {
-      "text": "If you want to know what a man is like, take a good look at how he treats his inferiors, not his equals.",
-      "source": "Harry Potter and the Goblet of Fire",
+      "text": "There is no greater agony than bearing an untold story inside you.",
+      "source": "I Know Why the Caged Bird Sings",
       "id": 7762,
-      "length": 104
+      "length": 66
     }
   ]
 }
