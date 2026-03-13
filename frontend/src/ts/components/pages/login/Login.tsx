@@ -35,7 +35,7 @@ export function Login(): JSXElement {
       const data = await auth();
       if (!data.success) {
         showErrorNotification(
-          `Failed to sign in${label !== undefined ? " with:" + label : ":"} ${data.message}`,
+          `Failed to sign in${label !== undefined ? ` with ${label}` : ""}: ${data.message}`,
         );
       }
     } finally {
