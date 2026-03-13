@@ -256,20 +256,25 @@ function getBuildOptions({
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
-        manualChunks: (id) => {
-          if (id.includes("@sentry")) {
-            return "vendor-sentry";
-          }
-          if (id.includes("@firebase")) {
-            return "vendor-firebase";
-          }
-          if (id.includes("monkeytype/packages")) {
-            return "monkeytype-packages";
-          }
-          if (id.includes("node_modules")) {
-            return "vendor";
-          }
-          return;
+        advancedChunks: {
+          groups: [
+            {
+              name: "vendor-sentry",
+              test: /[\\/]node_modules[\\/]@sentry[\\/]/,
+            },
+            {
+              name: "vendor-firebase",
+              test: /[\\/]node_modules[\\/]@firebase[\\/]/,
+            },
+            {
+              name: "monkeytype-packages",
+              test: /[\\/]node_modules[\\/]monkeytype[\\/]packages[\\/]/,
+            },
+            {
+              name: "vendor",
+              test: /[\\/]node_modules[\\/]/,
+            },
+          ],
         },
       },
     },
