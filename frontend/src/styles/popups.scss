@@ -911,6 +911,10 @@ body.darkMode {
       border-collapse: collapse;
       color: var(--text-color);
 
+      tbody {
+        clip-path: inset(0);
+      }
+
       td {
         padding: 0.5rem 0.5rem;
       }
@@ -930,11 +934,11 @@ body.darkMode {
         z-index: 3;
       }
 
-      tbody tr:nth-child(odd) td {
+      tbody tr.odd {
         background: var(--sub-alt-color);
       }
 
-      tbody tr:nth-child(even) td {
+      tbody tr.even {
         background: var(--bg-color);
       }
 
