@@ -85,5 +85,10 @@
   "engines": {
     "node": ">=24.0.0 <25"
   },
-  "packageManager": "pnpm@10.28.1"
+  "packageManager": "pnpm@10.28.1",
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.8"
+    }
+  }
 }
