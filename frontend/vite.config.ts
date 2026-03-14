@@ -255,8 +255,12 @@ function getBuildOptions({
             },
             {
               name: "monkeytype-packages",
-              test: /node_modules\/monkeytype\/packages\//,
+              test: /monkeytype\/packages\//,
             },
+            // {
+            //   name: "monkeytype-components",
+            //   test: /src\/ts\/components\//,
+            // },
             {
               name: "vendor",
               test: /node_modules\//,
