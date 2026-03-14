@@ -642,6 +642,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#e57474",
     colorfulErrorExtra: "#ef7e7e",
   },
+  evergarden: {
+    bg: "#232a2e",
+    caret: "#b3e6db",
+    main: "#cbe3b3",
+    sub: "#58686d",
+    subAlt: "#1c2225",
+    text: "#f8f9e8",
+    error: "#f57f82",
+    errorExtra: "#f57f82",
+    colorfulError: "#f57f82",
+    colorfulErrorExtra: "#f57f82",
+  },
   evil_eye: {
     bg: "#0084c2",
     caret: "#f7f2ea",
