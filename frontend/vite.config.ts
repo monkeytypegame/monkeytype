@@ -24,7 +24,6 @@ import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-import replace from "vite-plugin-filter-replace";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
@@ -185,22 +184,6 @@ function getPlugins({
           applicationKey: "monkeytype-frontend",
         }) as Plugin)
       : null,
-    replace([
-      {
-        filter: ["src/ts/firebase.ts"],
-        replace: {
-          from: `"./constants/firebase-config.ts"`,
-          to: `"./constants/firebase-config-live.ts"`,
-        },
-      },
-      {
-        filter: ["src/email-handler.html"],
-        replace: {
-          from: `"./ts/constants/firebase-config"`,
-          to: `"./ts/constants/firebase-config-live"`,
-        },
-      },
-    ]) as PluginOption,
     injectPreload(),
     minifyJson(),
   ];
@@ -256,23 +239,23 @@ function getBuildOptions({
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             {
               name: "vendor-sentry",
-              test: /[\\/]node_modules[\\/]@sentry[\\/]/,
+              test: /node_modules\/@sentry\//,
             },
             {
               name: "vendor-firebase",
-              test: /[\\/]node_modules[\\/]@firebase[\\/]/,
+              test: /node_modules\/@firebase\//,
             },
             {
               name: "monkeytype-packages",
-              test: /[\\/]node_modules[\\/]monkeytype[\\/]packages[\\/]/,
+              test: /node_modules\/monkeytype\/packages\//,
             },
             {
               name: "vendor",
-              test: /[\\/]node_modules[\\/]/,
+              test: /node_modules\//,
             },
           ],
         },
@@ -358,6 +341,16 @@ export default defineConfig(({ mode }): UserConfig => {
         //so we only want to watch one file
         ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
       },
+    },
+    resolve: {
+      alias: isDevelopment
+        ? []
+        : [
+            {
+              find: /\/constants\/firebase-config$/,
+              replacement: "/constants/firebase-config-live",
+            },
+          ],
     },
     clearScreen: false,
     root: "src",
