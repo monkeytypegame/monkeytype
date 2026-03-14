@@ -103,17 +103,19 @@ function getPlugins({
   const plugins: PluginOption[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
-    oxlintChecker({
-      debounceDelay: 125,
-      typeAware: true,
-      overlay: isDevelopment,
-    }),
     injectHTML() as PluginOption,
     tailwindcss(),
     solidPlugin(),
   ];
 
-  const devPlugins: PluginOption[] = [Inspect()];
+  const devPlugins: PluginOption[] = [
+    oxlintChecker({
+      debounceDelay: 125,
+      typeAware: true,
+      overlay: isDevelopment,
+    }),
+    Inspect(),
+  ];
 
   const prodPlugins: PluginOption[] = [
     fontPreview(),
