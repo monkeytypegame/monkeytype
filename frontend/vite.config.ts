@@ -250,6 +250,10 @@ function getBuildOptions({
               test: /node_modules\/@firebase\//,
             },
             {
+              name: "vendor-tanstack",
+              test: /node_modules\/@tanstack\//,
+            },
+            {
               name: "monkeytype-packages",
               test: /node_modules\/monkeytype\/packages\//,
             },
