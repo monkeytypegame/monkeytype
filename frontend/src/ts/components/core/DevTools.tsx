@@ -1,21 +1,26 @@
-import { type Component, type JSXElement, lazy, Show } from "solid-js";
+import { type JSXElement, lazy, Suspense } from "solid-js";
 
-let SolidQueryDevtools: Component | undefined;
+let DevComponents: (() => JSXElement) | undefined;
 
 if (import.meta.env.DEV) {
-  SolidQueryDevtools = lazy(async () => {
-    const m = await import("@tanstack/solid-query-devtools");
-    return { default: m.SolidQueryDevtools };
-  });
+  const LazyQueryDevtools = lazy(async () =>
+    import("@tanstack/solid-query-devtools").then((m) => ({
+      default: m.SolidQueryDevtools,
+    })),
+  );
+  const LazyDevOptionsModal = lazy(async () =>
+    import("../modals/DevOptionsModal").then((m) => ({
+      default: m.DevOptionsModal,
+    })),
+  );
+  DevComponents = () => (
+    <Suspense>
+      <LazyQueryDevtools />
+      <LazyDevOptionsModal />
+    </Suspense>
+  );
 }
 
 export function DevTools(): JSXElement {
-  return (
-    <Show when={SolidQueryDevtools}>
-      {(Devtools) => {
-        const C = Devtools();
-        return <C />;
-      }}
-    </Show>
-  );
+  return DevComponents?.() ?? null;
 }
