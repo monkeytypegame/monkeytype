@@ -259,10 +259,10 @@ function getBuildOptions({
               name: "monkeytype-packages",
               test: /monkeytype\/packages\//,
             },
-            // {
-            //   name: "monkeytype-components",
-            //   test: /src\/ts\/components\//,
-            // },
+            {
+              name: "vendor-chart",
+              test: /node_modules\/chart/,
+            },
             {
               name: "vendor",
               test: /node_modules\//,
