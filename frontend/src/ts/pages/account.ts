@@ -1146,7 +1146,10 @@ qs(".pageAccount .group.presetFilterButtons")?.onChild(
 );
 
 qs(".pageAccount .content .group.aboveHistory .exportCSV")?.on("click", () => {
-  void Misc.downloadResultsCSV(filteredResults);
+  showLoaderBar();
+  void Misc.downloadResultsCSV(filteredResults).finally(() => {
+    hideLoaderBar();
+  });
 });
 
 qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
