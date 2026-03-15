@@ -28,7 +28,8 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-import { getActivePage } from "../signals/core";
+import { createEffect, on } from "solid-js";
+import { getActivePage, onRestartTest } from "../signals/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -1444,6 +1445,8 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
     withSameWordset: true,
   });
 });
+
+createEffect(on(onRestartTest, () => restart(), { defer: true }));
 
 qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
   if (TestState.testRestarting) return;
