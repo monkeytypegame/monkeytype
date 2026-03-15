@@ -2132,6 +2132,7 @@ describe("user controller test", () => {
         quote: {},
         zen: {},
         custom: {},
+        story: {},
       },
     };
 
@@ -2948,6 +2949,7 @@ describe("user controller test", () => {
         custom: {},
         zen: {},
         quote: {},
+        story: {},
       },
       completedTests: 23,
       startedTests: 42,

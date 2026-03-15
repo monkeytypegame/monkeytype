@@ -217,6 +217,7 @@ describe("UserDal", () => {
             quote: {},
             zen: {},
             custom: {},
+            story: {},
           },
         },
       },
@@ -230,6 +231,7 @@ describe("UserDal", () => {
       quote: {},
       custom: {},
       zen: {},
+      story: {},
     });
     // when
     await UserDAL.clearPb(testUser.uid);
@@ -242,6 +244,7 @@ describe("UserDal", () => {
       quote: {},
       custom: {},
       zen: {},
+      story: {},
     });
   });
 
@@ -422,6 +425,7 @@ describe("UserDal", () => {
         quote: {},
         zen: {},
         custom: {},
+        story: {},
       };
       const { uid } = await UserTestData.createUser({
         tags: [
@@ -618,6 +622,7 @@ describe("UserDal", () => {
             quote: {},
             zen: {},
             custom: {},
+            story: {},
           },
         },
         tagThree,
