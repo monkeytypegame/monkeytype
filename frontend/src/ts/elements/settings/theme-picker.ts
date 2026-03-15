@@ -18,13 +18,13 @@ import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../signals/theme";
 
-export const sortedThemes: ThemeWithName[] = [
-  ...ThemesList.sort((a, b) => {
+export const sortedThemes: ThemeWithName[] = [...ThemesList].sort(
+  (a, b) => {
     const b1 = Colors.hexToHSL(a.bg);
     const b2 = Colors.hexToHSL(b.bg);
     return b2.lgt - b1.lgt;
-  }),
-];
+  },
+);
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
