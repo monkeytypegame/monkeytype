@@ -282,3 +282,22 @@ for (const entry of entryPoints) {
   printTree(entry, new Set([entry]), "", true, true);
   if (entryPoints.length > 1) console.log();
 }
+
+// --- Summary ---
+
+let totalDirect = 0;
+let totalTransitive = 0;
+let maxDepthSeen = 0;
+
+for (const entry of entryPoints) {
+  const info = cache.get(entry);
+  if (!info) continue;
+  totalDirect += info.directImports.length;
+  totalTransitive += info.totalReachable;
+  maxDepthSeen = Math.max(maxDepthSeen, info.maxDepth);
+}
+
+console.log(`${c.dim}───────────────────────────${c.reset}`);
+console.log(`Direct imports:     ${c.bold}${totalDirect}${c.reset}`);
+console.log(`Transitive imports: ${c.bold}${totalTransitive}${c.reset}`);
+console.log(`Max depth:          ${c.bold}${maxDepthSeen}${c.reset}`);
