@@ -266,6 +266,9 @@ function getBuildOptions({
           if (id.includes("monkeytype/packages")) {
             return "monkeytype-packages";
           }
+          if (id.includes("src/ts/constants")) {
+            return "monkeytype-constants";
+          }
           if (id.includes("node_modules")) {
             return "vendor";
           }
