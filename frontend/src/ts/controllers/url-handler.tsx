@@ -22,7 +22,6 @@ import { z } from "zod";
 
 import Ape from "../ape";
 import Config, { setConfig } from "../config";
-import * as ChallengeController from "../controllers/challenge-controller";
 import * as DB from "../db";
 import * as AuthEvent from "../observables/auth-event";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
@@ -35,7 +34,8 @@ import * as CustomText from "../test/custom-text";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import { restart as restartTest } from "../test/test-logic";
 import * as TestState from "../test/test-state";
-import * as Misc from "./misc";
+import * as Misc from "../utils/misc";
+import * as ChallengeController from "./challenge-controller";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;

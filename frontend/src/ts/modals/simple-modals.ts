@@ -20,11 +20,9 @@ import {
   reauthenticateWithPopup,
   unlink,
 } from "firebase/auth";
-import {
-  createErrorMessage,
-  isDevEnvironment,
-  reloadAfter,
-} from "../utils/misc";
+import { reloadAfter } from "../utils/misc";
+import { isDevEnvironment } from "../utils/env";
+import { createErrorMessage } from "../utils/error";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
 import * as AccountSettings from "../pages/account-settings";
@@ -33,7 +31,7 @@ import {
   PasswordInput,
   SimpleModal,
   TextInput,
-} from "../utils/simple-modal";
+} from "../elements/simple-modal";
 
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {

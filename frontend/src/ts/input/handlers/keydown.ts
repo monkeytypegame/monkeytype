@@ -26,6 +26,7 @@ import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
 } from "../../test/funbox/list";
+import { Keycode } from "../../constants/keys";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
@@ -122,7 +123,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     );
   } else {
     setCorrectShiftUsed(
-      ShiftTracker.isUsingOppositeShift(event.code as KeyConverter.Keycode),
+      ShiftTracker.isUsingOppositeShift(event.code as Keycode),
     );
   }
 }

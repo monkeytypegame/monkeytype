@@ -6,7 +6,7 @@ import {
 import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
-import { SimpleModal, TextArea } from "../../utils/simple-modal";
+import { SimpleModal, TextArea } from "../simple-modal";
 import { isAuthenticated } from "../../firebase";
 import { qs, qsr } from "../../utils/dom";
 
