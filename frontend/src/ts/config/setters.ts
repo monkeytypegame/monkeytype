@@ -1,8 +1,8 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configMetadata, ConfigMetadataObject } from "../config-metadata";
-import { isConfigValueValid } from "../config-validation";
+import { configMetadata, ConfigMetadataObject } from "./metadata";
+import { isConfigValueValid } from "./validation";
 import * as ConfigEvent from "../observables/config-event";
 import { showNoticeNotification } from "../stores/notifications";
 import {

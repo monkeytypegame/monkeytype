@@ -11,7 +11,7 @@ import {
   CaretStyleSchema,
 } from "@monkeytype/schemas/configs";
 import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
-import * as ConfigValidation from "../../src/ts/config-validation";
+import * as ConfigValidation from "../../src/ts/config/validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/stores/notifications";

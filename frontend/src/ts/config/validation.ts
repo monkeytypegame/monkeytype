@@ -1,6 +1,6 @@
-import { showErrorNotification } from "./stores/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import { ZodSchema, z } from "zod";
-import * as Sentry from "./sentry";
+import * as Sentry from "../sentry";
 
 // function isConfigKeyValid(name: string): boolean {
 //   if (name === null || name === undefined || name === "") return false;

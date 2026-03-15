@@ -1,5 +1,5 @@
 import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
-import { configMetadata } from "../config-metadata";
+import { configMetadata } from "./metadata";
 import { getDefaultConfig } from "../constants/default-config";
 import { resetPendingConfigSync } from "./persistence";
 import { Config } from "./store";

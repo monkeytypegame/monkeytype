@@ -24,7 +24,7 @@ import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { ElementWithUtils } from "../utils/dom";
-import { configMetadata } from "../config-metadata";
+import { configMetadata } from "../config/metadata";
 import { getConfigChanges as getConfigChangesFromConfig } from "../config/utils";
 
 const state = {
