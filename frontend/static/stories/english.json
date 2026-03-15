@@ -1,0 +1,96 @@
+{
+  "language": "english",
+  "meta": {
+    "lengths": {
+      "flash": "1 paragraph, ~50 words",
+      "short": "3 paragraphs, ~150 words",
+      "epic": "7 paragraphs, ~350 words"
+    }
+  },
+  "stories": [
+    {
+      "id": 1,
+      "title": "The Last Library",
+      "length": "flash",
+      "paragraphs": [
+        "She found the last library on a Tuesday. The door creaked, and dust rose from shelves no one had touched in years. One book remained. She opened it and began to read."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Morning Ritual",
+      "length": "flash",
+      "paragraphs": [
+        "Every morning, he made coffee for two. Every morning, he drank alone. The second cup cooled beside the window, watching the street below for someone who never came back."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Signal",
+      "length": "flash",
+      "paragraphs": [
+        "The radio picked up a signal from deep space. It was a pattern, rhythmic and deliberate. Scientists worked for weeks before realizing it was music. Old music. Human music. Sent back to us from somewhere far ahead."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "The Cartographer",
+      "length": "short",
+      "paragraphs": [
+        "Elena had mapped every country in the world except one. The unnamed territory sat in the center of her largest map like a held breath. No explorer had returned from it, and no satellite image showed anything but cloud.",
+        "She packed her bag anyway. Compass, journal, three days of food. Her colleagues called it madness. She called it curiosity.",
+        "On the third day inside the cloud, she found a city. It was familiar in a way she could not explain. The street signs were in her handwriting. The maps on the walls were hers. She had been here before, charting a place she had not yet found."
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Inheritance",
+      "length": "short",
+      "paragraphs": [
+        "My grandfather left me nothing except a key and an address. The address was a storage unit outside of town, padlocked and rusting in the summer heat.",
+        "Inside were boxes and boxes of letters. None of them were opened. None were addressed to him. They were addressed to people I did not know, in cities I had never visited, written in a dozen languages.",
+        "I opened one. It said only: I saw you at the market. You looked well. I hope you have found what you were looking for. I did not sign it, but I recognized the handwriting. It was mine."
+      ]
+    },
+    {
+      "id": 6,
+      "title": "The Night Shift",
+      "length": "short",
+      "paragraphs": [
+        "James worked the overnight shift at a hotel that had not had guests in six months. His job was to answer the phone if it rang and to keep the lobby lights on.",
+        "On the 180th night, the elevator opened. A woman stepped out carrying a single suitcase. She said she had a reservation. James checked the book. Her name was there, written in ink that had not faded despite the empty pages surrounding it.",
+        "He gave her a key. She smiled and said, I always come back to places where the lights are still on. James watched the elevator close and thought he understood something, though he could not say what."
+      ]
+    },
+    {
+      "id": 7,
+      "title": "The Architect of Fog",
+      "length": "epic",
+      "paragraphs": [
+        "In the city of Verath, fog was not weather. It was infrastructure. The fog rolled in each morning precisely at six, guided by a network of bronze pipes buried beneath the cobblestones. It softened the sharp edges of the city, muffled the arguments of merchants, and made strangers feel briefly intimate.",
+        "The architect of the fog system had died three centuries ago. His blueprints were stored in the municipal archive, studied but never fully understood. Engineers maintained the pipes but admitted they did not know how the system worked. It simply did.",
+        "Mara had been hired to modernize it. The city council wanted smart sensors, digital controls, a dashboard. She spent her first week in the archive, reading the original plans by candlelight.",
+        "What she found was not engineering. It was closer to poetry. The pipes were arranged not for efficiency but for resonance. The fog moved the way music moved, following harmonic intervals mapped onto the city grid. The architect had not built infrastructure. He had built an instrument.",
+        "Mara closed the archive and resigned. She sent a letter to the council explaining only that some systems should not be digitized. She moved to a small apartment near the oldest pipe junction and every morning, at six, opened her window and listened to the city breathe.",
+        "Years later, a young engineer came to interview her. He asked what she had found in the archive. She poured two cups of tea and said, I found that the fog is not for visibility. It never was. It is for forgiveness. The city needed a way to soften itself each morning, to begin again without sharp edges.",
+        "He did not understand. She had not expected him to. Understanding came with fog, and fog came at six, and six was still two hours away."
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Paper Town",
+      "length": "epic",
+      "paragraphs": [
+        "Cartographers used to hide fictional towns on maps to catch copyright thieves. If a rival publisher printed your map with your invented town, you had proof of theft. These towns were called trap streets, or paper towns. They existed only as ink.",
+        "Agloe, New York was one such invention. Two cartographers placed it in the Catskills in the 1930s. Decades later, a gas station appeared there. A store. Then a cluster of buildings. People had seen the name on the map, assumed the town was real, and built it.",
+        "Nina discovered this story during a research trip and could not let it go. She began to wonder: if belief could build a town, what else could it build?",
+        "She started small. She added a train station to her local map, a station that did not exist, at the edge of a field nobody used. She labeled it with a name she invented. Then she waited.",
+        "Six months later, she drove past the field. A platform had been built. Wooden, rough, clearly made by amateurs. A hand-painted sign bore the name she had given it. A teenager was sitting on the platform, waiting.",
+        "She stopped the car. She asked the teenager what they were waiting for. The train, he said, as if it were obvious. It comes on Thursdays.",
+        "Nina had invented the station on a Thursday.",
+        "She asked who had built the platform. He shrugged. People just started building it, he said. Once the map showed it, someone always does.",
+        "Nina drove home slowly. She sat at her desk for a long time. Then she opened her map again and began to draw, carefully, the outline of a world she wanted to see."
+      ]
+    }
+  ]
+}
