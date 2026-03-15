@@ -14,9 +14,15 @@ import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../signals/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
-import { ColorName, ThemesListSorted } from "../../constants/themes";
+import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../signals/theme";
+
+export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
+  const b1 = Colors.hexToHSL(a.bg);
+  const b2 = Colors.hexToHSL(b.bg);
+  return b2.lgt - b1.lgt;
+});
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -85,7 +91,7 @@ export async function fillPresetButtons(): Promise<void> {
     activeThemeName = ThemeController.randomTheme;
   }
 
-  const themes = ThemesListSorted;
+  const themes = sortedThemes;
 
   //first show favourites
   if (Config.favThemes.length > 0) {
