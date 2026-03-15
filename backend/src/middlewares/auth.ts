@@ -51,8 +51,7 @@ export function authenticateTsRestRequest<
   ): Promise<void> => {
     const options = {
       ...DEFAULT_OPTIONS,
-      ...((getMetadata(req)["authenticationOptions"] ??
-        {}) as EndpointMetadata),
+      ...((getMetadata(req).authenticationOptions ?? {}) as EndpointMetadata),
     };
 
     const startTime = performance.now();
@@ -302,7 +301,7 @@ async function authenticateWithApeKey(
 
 async function authenticateWithUid(token: string): Promise<DecodedToken> {
   if (!isDevEnvironment()) {
-    throw new MonkeyError(401, "Baerer type uid is not supported");
+    throw new MonkeyError(401, "Bearer type uid is not supported");
   }
   const [uid, email] = token.split("|");
 

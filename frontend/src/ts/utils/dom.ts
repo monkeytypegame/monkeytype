@@ -3,8 +3,81 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
+import { addBanner } from "../stores/banners";
 
-// Implementation
+/**
+ * list of deferred callbacks to be executed once we reached ready state
+ */
+let readyList: (() => void)[] | undefined;
+let isReady = false;
+
+/**
+ * Execute a callback function when the DOM is fully loaded.
+ * Tries to mimic the ready function of jQuery https://github.com/jquery/jquery/blob/main/src/core/ready.js
+ * If the document is already loaded, the callback is executed in the next event loop
+ */
+export function onDOMReady(callback: () => void): void {
+  bindReady();
+  if (isReady) {
+    setTimeout(callback);
+  } else {
+    readyList?.push(callback);
+  }
+}
+
+/**
+ * initialize the readyList and bind the necessary events
+ */
+function bindReady(): void {
+  // do nothing if we are bound already
+  if (readyList !== undefined) return;
+
+  readyList = [];
+
+  if (document.readyState !== "loading") {
+    // DOM is already loaded handle ready in the next event loop
+    // Handle it asynchronously to allow scripts the opportunity to delay ready
+    setTimeout(handleReady);
+  } else {
+    // register a single event listener for both events.
+    document.addEventListener("DOMContentLoaded", handleReady);
+    //load  event is used as a fallback "that will always work" according to jQuery source code
+    window.addEventListener("load", handleReady);
+  }
+}
+
+/**
+ * call all deferred ready callbacks and cleanup the event listener
+ */
+function handleReady(): void {
+  //make sure we only run once
+  if (isReady) return;
+
+  isReady = true;
+
+  //cleanup event listeners that are no longer needed
+  document.removeEventListener("DOMContentLoaded", handleReady);
+  window.removeEventListener("load", handleReady);
+
+  //call deferred callbacks and empty the list
+  //flush the list in a loop in case callbacks were added during the execution
+  while (readyList && readyList.length) {
+    const callbacks = readyList;
+    readyList = [];
+    callbacks.forEach((it) => {
+      //jQuery lets the callbacks fail independently
+      try {
+        it();
+      } catch (e) {
+        setTimeout(() => {
+          throw e;
+        });
+      }
+    });
+  }
+  readyList = undefined;
+}
+
 /**
  * Query Selector
  *
@@ -55,33 +128,6 @@ export function qsr<T extends HTMLElement = HTMLElement>(
 }
 
 /**
- * Execute a callback function when the DOM is fully loaded. If you need to wait
- * for all resources (images, stylesheets, scripts, etc.) to load, use `onWindowLoad` instead.
- * If the document is already loaded, the callback is executed immediately.
- */
-export function onDOMReady(callback: () => void): void {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", callback);
-  } else {
-    callback();
-  }
-}
-
-/**
- * Execute a callback function when the window 'load' event fires, which occurs
- * after the entire page (including all dependent resources such as images,
- * stylesheets, and scripts) has fully loaded.
- * If the window is already loaded, the callback is executed immediately.
- */
-export function onWindowLoad(callback: () => void): void {
-  if (document.readyState === "complete") {
-    callback();
-  } else {
-    window.addEventListener("load", callback);
-  }
-}
-
-/**
  * Creates an ElementWithUtils wrapping a newly created element.
  * @param tagName The tag name of the element to create.
  * @param options Optional options to set on the element.
@@ -117,11 +163,9 @@ type ElementWithValue =
 
 type ElementWithSelectableValue = HTMLInputElement | HTMLTextAreaElement;
 
-//TODO: after the migration from jQuery to dom-utils we might want to add currentTarget back to the event object, if we have a use-case for it.
-// For now we remove it because currentTarget is not the same element when using dom-utils intead of jQuery to get compile errors.
-export type OnChildEvent<T extends Event = Event> = Omit<T, "currentTarget"> & {
+export type OnChildEvent<T extends Event = Event> = T & {
   /**
-   * target element matching the selector. This emulates the behavior of `currentTarget` in jQuery events registered with `.on(events, selector, handler)`
+   * target element matching the selector.
    */
   childTarget: EventTarget | null;
 };
@@ -220,16 +264,24 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Check if the element has the "hidden" class
+   */
+  isHidden(): boolean {
+    return this.hasClass("hidden");
+  }
+
+  /**
    * Check if element is visible
    */
-
   isVisible(): boolean {
     return this.native.offsetWidth > 0 || this.native.offsetHeight > 0;
   }
 
-  scrollIntoView(options: ScrollIntoViewOptions): this {
+  /**
+   * Make element visible by scrolling the element's ancestor containers
+   */
+  scrollIntoView(options?: ScrollIntoViewOptions): this {
     this.native.scrollIntoView(options);
-
     return this;
   }
 
@@ -240,6 +292,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.add(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.addClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
+      }
       this.native.classList.add(className);
     }
     return this;
@@ -252,6 +309,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     if (Array.isArray(className)) {
       this.native.classList.remove(...className);
     } else {
+      if (className.includes(" ")) {
+        return this.removeClass(
+          className.split(" ").filter((cn) => cn.length > 0),
+        );
+      }
       this.native.classList.remove(className);
     }
     return this;
@@ -261,14 +323,20 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Check if the element has a class
    */
   hasClass(className: string): boolean {
+    if (className.includes(" ")) {
+      return className
+        .split(" ")
+        .filter((cn) => cn.length > 0)
+        .every((cn) => this.hasClass(cn));
+    }
     return this.native.classList.contains(className);
   }
 
   /**
    * Toggle a class on the element
    */
-  toggleClass(className: string): this {
-    this.native.classList.toggle(className);
+  toggleClass(className: string, force?: boolean): this {
+    this.native.classList.toggle(className, force);
     return this;
   }
 
@@ -473,11 +541,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Append a child element
    */
-  append(element: HTMLElement | ElementWithUtils): this {
-    if (element instanceof ElementWithUtils) {
-      this.native.appendChild(element.native);
+  append(
+    elementOrElements:
+      | HTMLElement
+      | ElementWithUtils
+      | HTMLElement[]
+      | ElementsWithUtils
+      | ElementWithUtils[],
+  ): this {
+    if (elementOrElements instanceof ElementsWithUtils) {
+      this.native.append(...elementOrElements.native);
+      return this;
+    }
+
+    if (Array.isArray(elementOrElements)) {
+      for (const element of elementOrElements) {
+        if (element instanceof ElementWithUtils) {
+          this.native.append(element.native);
+        } else {
+          this.native.append(element);
+        }
+      }
+      return this;
+    }
+
+    if (elementOrElements instanceof ElementWithUtils) {
+      this.native.appendChild(elementOrElements.native);
     } else {
-      this.native.append(element);
+      this.native.append(elementOrElements);
     }
     return this;
   }
@@ -499,14 +590,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the element's bounding client rect offset
+   * Get the element's screen bounds: top, left, width and height
    */
-  offset(): { top: number; left: number } {
+  screenBounds(): { top: number; left: number; width: number; height: number } {
     const rect = this.native.getBoundingClientRect();
     const scrollLeft =
       window.pageXOffset || document.documentElement.scrollLeft;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+    return {
+      top: rect.top + scrollTop,
+      left: rect.left + scrollLeft,
+      width: rect.width,
+      height: rect.height,
+    };
   }
 
   /**
@@ -551,8 +647,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get value of input or textarea
-   * @returns The value of the element, or undefined if the element is not an input or textarea.
+   * Get value of input, textarea or select
+   * @returns The value of the element, or undefined if the element is not an input, textarea or select.
    */
   getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
     if (this.hasValue()) {
@@ -579,6 +675,31 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   getChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
     if (this.native instanceof HTMLInputElement) {
       return this.native.checked;
+    }
+    return undefined;
+  }
+
+  /**
+   * Set selected state of option element
+   * @param selected The selected state to set
+   */
+  setSelected(
+    this: ElementWithUtils<HTMLOptionElement>,
+    selected: boolean,
+  ): this {
+    if (this.native instanceof HTMLOptionElement) {
+      this.native.selected = selected;
+    }
+    return this as unknown as this;
+  }
+
+  /**
+   * Get selected state of option element
+   * @returns The selected state of the element, or undefined if the element is not an option.
+   */
+  getSelected(this: ElementWithUtils<HTMLOptionElement>): boolean | undefined {
+    if (this.native instanceof HTMLOptionElement) {
+      return this.native.selected;
     }
     return undefined;
   }
@@ -625,6 +746,34 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's height + margin
+   */
+
+  getOuterHeight(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().height +
+      parseFloat(style.marginTop) +
+      parseFloat(style.marginBottom)
+    );
+  }
+
+  /**
+   * Get The element's width + margin
+   */
+
+  getOuterWidth(): number {
+    const style = getComputedStyle(this.native);
+
+    return (
+      this.native.getBoundingClientRect().width +
+      parseFloat(style.marginLeft) +
+      parseFloat(style.marginRight)
+    );
+  }
+
+  /**
    * Get the element's width
    */
   getOffsetWidth(): number {
@@ -653,6 +802,24 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Get the element's children wrapped in ElementWithUtils instances.
+   *
+   * Note: This method returns a new array of wrappers, but each wrapper maintains
+   * a reference to the actual DOM element. Any operations performed on the returned
+   * children (e.g., addClass, remove, setHtml) will modify the actual DOM elements
+   * and reflect their live DOM state.
+   *
+   * @returns An ElementsWithUtils array containing wrapped child elements
+   */
+  getChildren(): ElementsWithUtils {
+    const children = Array.from(this.native.children);
+    const convertedChildren = new ElementsWithUtils(
+      ...children.map((child) => new ElementWithUtils(child as HTMLElement)),
+    );
+    return convertedChildren;
+  }
+
+  /**
    * Animate the element using Anime.js
    * @param animationParams The Anime.js animation parameters
    * @returns The JSAnimation instance created by Anime.js
@@ -678,10 +845,93 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Animate the element sliding down (expanding height from 0 to full height)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideDown(duration = 250): Promise<void> {
+    this.show().setStyle({
+      height: "",
+      overflow: "hidden",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    this.setStyle({
+      height: "0px",
+      marginTop: "0px",
+      marginBottom: "0px",
+      paddingTop: "0px",
+      paddingBottom: "0px",
+    });
+    await this.promiseAnimate({
+      height: [0, height],
+      marginTop: [0, marginTop],
+      marginBottom: [0, marginBottom],
+      paddingTop: [0, paddingTop],
+      paddingBottom: [0, paddingBottom],
+      duration,
+      onComplete: () => {
+        this.setStyle({
+          height: "",
+          overflow: "",
+          marginTop: "",
+          marginBottom: "",
+        });
+      },
+    });
+  }
+
+  /**
+   * Animate the element sliding up (collapsing height from full height to 0)
+   * @param duration The duration of the animation in milliseconds (default: 250ms)
+   */
+  async slideUp(
+    duration = 250,
+    options?: {
+      hide?: boolean;
+    },
+  ): Promise<void> {
+    this.show().setStyle({
+      overflow: "hidden",
+      height: "",
+      marginTop: "",
+      marginBottom: "",
+      paddingTop: "",
+      paddingBottom: "",
+    });
+    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
+      getComputedStyle(this.native);
+    await this.promiseAnimate({
+      height: [height, 0],
+      marginTop: [marginTop, 0],
+      marginBottom: [marginBottom, 0],
+      paddingTop: [paddingTop, 0],
+      paddingBottom: [paddingBottom, 0],
+      duration,
+      onComplete: () => {
+        if (options?.hide ?? true) {
+          this.hide().setStyle({
+            height: "",
+            overflow: "",
+            marginTop: "",
+            marginBottom: "",
+            paddingTop: "",
+            paddingBottom: "",
+          });
+        }
+      },
+    });
+  }
+
+  /**
    * Focus the element
    */
-  focus(): void {
-    this.native.focus();
+  focus(options?: FocusOptions): this {
+    this.native.focus(options);
+    return this;
   }
 
   /**
@@ -835,6 +1085,16 @@ export class ElementsWithUtils<
   }
 
   /**
+   * Set value of all input elements in the array
+   */
+  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
+    for (const item of this) {
+      item.setValue(value);
+    }
+    return this as unknown as this;
+  }
+
+  /**
    * Query all elements in the array for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
@@ -885,6 +1145,7 @@ export class ElementsWithUtils<
     }
     return this;
   }
+
   /**
    * Set attribute value on all elements in the array
    */
@@ -893,6 +1154,20 @@ export class ElementsWithUtils<
       item.setAttribute(key, value);
     }
     return this;
+  }
+
+  /**
+   * Append HTML string to all elements in the array
+   */
+  appendHtml(htmlString: string): this {
+    for (const item of this) {
+      item.appendHtml(htmlString);
+    }
+    return this;
+  }
+
+  override indexOf(element: ElementWithUtils<T>): number {
+    return this.native.indexOf(element.native);
   }
 }
 
@@ -910,18 +1185,17 @@ function checkUniqueSelector(
     console.trace("Stack trace for qs/qsr call:");
     if (document.querySelector("#domUtilsQsWarning") !== null) return;
 
-    const bannerCenter = document.querySelector("#bannerCenter");
-    const warning = document.createElement("div");
-    warning.classList.add("psa", "bad", "content-grid");
-    warning.id = "domUtilsQsWarning";
-    warning.innerHTML = `
-        <div class="container">
-          <div class="icon lefticon"><i class="fas fa-fw fa-exclamation-triangle"></i></div>
-          <div class="text">
-             "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details."
-          </div>
-        </div>
-      </div>`;
-    bannerCenter?.appendChild(warning);
+    addBanner({
+      level: "error",
+      icon: "fas fa-exclamation-triangle",
+      text: "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details.",
+    });
   }
 }
+
+export const __testing = {
+  resetReady: () => {
+    isReady = false;
+    readyList = undefined;
+  },
+};

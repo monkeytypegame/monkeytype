@@ -143,6 +143,7 @@ export const PlaySoundOnClickSchema = z.enum([
   "13",
   "14",
   "15",
+  "16",
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 
@@ -180,6 +181,9 @@ export const HighlightModeSchema = z.enum([
   "next_three_words",
 ]);
 export type HighlightMode = z.infer<typeof HighlightModeSchema>;
+
+export const TypedEffectSchema = z.enum(["keep", "hide", "fade", "dots"]);
+export type TypedEffect = z.infer<typeof TypedEffectSchema>;
 
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);
 export type TapeMode = z.infer<typeof TapeModeSchema>;
@@ -279,6 +283,7 @@ export const FunboxNameSchema = z.enum([
   "choo_choo",
   "arrows",
   "rAnDoMcAsE",
+  "sPoNgEcAsE",
   "capitals",
   "layout_mirror",
   "layoutfluid",
@@ -358,11 +363,11 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
 export const CustomBackgroundSchema = z
   .string()
-  .url("Needs to be an URI.")
-  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
-  .regex(/^[^`'"]*$/, "May not contain quotes.")
-  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg|\.webp)/gi, "Unsupported image format.")
-  .max(2048, "URL is too long.")
+  .url("Needs to be an URI")
+  .regex(/^(https|http):\/\/.*/, "Unsupported protocol")
+  .regex(/^[^`'"]*$/, "May not contain quotes")
+  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg|\.webp)/gi, "Unsupported image format")
+  .max(2048, "URL is too long")
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
@@ -398,6 +403,7 @@ export const ConfigSchema = z
     difficulty: DifficultySchema,
     quickRestart: QuickRestartSchema,
     repeatQuotes: RepeatQuotesSchema,
+    resultSaving: z.boolean(),
     blindMode: z.boolean(),
     alwaysShowWordsHistory: z.boolean(),
     singleListCommandLine: SingleListCommandLineSchema,
@@ -448,6 +454,7 @@ export const ConfigSchema = z
     timerColor: TimerColorSchema,
     timerOpacity: TimerOpacitySchema,
     highlightMode: HighlightModeSchema,
+    typedEffect: TypedEffectSchema,
     tapeMode: TapeModeSchema,
     tapeMargin: TapeMarginSchema,
     smoothLineScroll: z.boolean(),

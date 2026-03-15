@@ -2,7 +2,7 @@ import Config from "../config";
 import * as JSONData from "../utils/json-data";
 import * as ConfigEvent from "../observables/config-event";
 import * as TTSEvent from "../observables/tts-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 
 let voice: SpeechSynthesisUtterance | undefined;
 
@@ -23,7 +23,7 @@ export function clear(): void {
 }
 
 export async function speak(text: string): Promise<void> {
-  if (ActivePage.get() !== "test") return;
+  if (getActivePage() !== "test") return;
   window.speechSynthesis.cancel();
   if (voice === undefined) await init();
 

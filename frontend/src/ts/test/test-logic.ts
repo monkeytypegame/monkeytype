@@ -7,7 +7,11 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
@@ -18,15 +22,13 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
-import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -53,7 +55,6 @@ import {
   CompletedEvent,
   CompletedEventCustomText,
 } from "@monkeytype/schemas/results";
-import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -68,13 +69,15 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
+import { qs } from "../utils/dom";
+import { setAccountButtonSpinner } from "../signals/header";
 
 let failReason = "";
 
@@ -132,7 +135,7 @@ export function startTest(now: number): boolean {
 type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
-  event?: JQuery.KeyDownEvent;
+  event?: KeyboardEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
   tribeOverride?: boolean;
@@ -160,9 +163,12 @@ export function restart(options = {} as RestartOptions): void {
 
   const noQuit = isFunboxActive("no_quit");
   if (TestState.isActive && noQuit) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     options.event?.preventDefault();
     return;
   }
@@ -180,7 +186,7 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
 
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
@@ -200,11 +206,10 @@ export function restart(options = {} as RestartOptions): void {
         } else if (Config.quickRestart === "enter") {
           message = "Press shift + enter or use your mouse to confirm.";
         }
-        Notifications.add(
+        showNoticeNotification(
           `Quick restart disabled in long tests. ${message}`,
-          0,
           {
-            duration: 4,
+            durationMs: 4000,
             important: true,
           },
         );
@@ -218,7 +223,7 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    if (TestState.savingEnabled) {
+    if (Config.resultSaving) {
       TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
       TestInput.pushAfkToHistory();
@@ -248,7 +253,7 @@ export function restart(options = {} as RestartOptions): void {
     !options.withSameWordset &&
     !options.practiseMissed
   ) {
-    Notifications.add("Reverting to previous settings.", 0);
+    showNoticeNotification("Reverting to previous settings.");
     if (PractiseWords.before.punctuation !== null) {
       setConfig("punctuation", PractiseWords.before.punctuation);
     }
@@ -391,24 +396,21 @@ async function init(): Promise<boolean> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
-  Loader.show();
+  showLoaderBar();
   const { data: language, error } = await tryCatch(
     JSONData.getLanguage(Config.language),
   );
-  Loader.hide();
+  hideLoaderBar();
 
   if (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to load language"),
-      -1,
-    );
+    showErrorNotification("Failed to load language", { error });
   }
 
   if (!language || language.name !== Config.language) {
     return await init();
   }
 
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     await Funbox.activate();
   }
 
@@ -428,13 +430,9 @@ async function init(): Promise<boolean> {
         JSONData.getLanguage(langName),
       );
       if (error) {
-        Notifications.add(
-          Misc.createErrorMessage(
-            error,
-            `Failed to load language: ${langName}`,
-          ),
-          -1,
-        );
+        showErrorNotification(`Failed to load language: ${langName}`, {
+          error,
+        });
       }
       return lang;
     });
@@ -446,9 +444,8 @@ async function init(): Promise<boolean> {
     if (Config.lazyMode && !anySupportsLazyMode) {
       LazyModeState.setRemember(true);
       if (!showedLazyModeNotification) {
-        Notifications.add(
+        showNoticeNotification(
           "None of the selected polyglot languages support lazy mode.",
-          0,
           {
             important: true,
           },
@@ -466,7 +463,7 @@ async function init(): Promise<boolean> {
     if (Config.lazyMode && !allowLazyMode) {
       LazyModeState.setRemember(true);
       if (!showedLazyModeNotification) {
-        Notifications.add("This language does not support lazy mode.", 0, {
+        showNoticeNotification("This language does not support lazy mode.", {
           important: true,
         });
         showedLazyModeNotification = true;
@@ -516,25 +513,22 @@ async function init(): Promise<boolean> {
     wordsHaveNewline = gen.hasNewline;
     ({ allRightToLeft, allLigatures } = gen);
   } catch (e) {
-    Loader.hide();
+    hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }
     console.error(e);
     if (e instanceof WordGenError) {
       if (e.message.length > 0) {
-        Notifications.add(e.message, 0, {
+        showNoticeNotification(e.message, {
           important: true,
         });
       }
     } else {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to generate words"),
-        -1,
-        {
-          important: true,
-        },
-      );
+      showErrorNotification("Failed to generate words", {
+        error: e,
+        important: true,
+      });
     }
 
     return await init();
@@ -650,9 +644,8 @@ export async function addWord(): Promise<void> {
       );
 
       if (section === false) {
-        Notifications.add(
+        showErrorNotification(
           "Error while getting section. Please try again later",
-          -1,
         );
         toggleFunbox(sectionFunbox.name);
         restart();
@@ -686,13 +679,10 @@ export async function addWord(): Promise<void> {
     TestUI.addWord(randomWord.word);
   } catch (e) {
     TimerEvent.dispatch("fail", "word generation error");
-    Notifications.add(
-      Misc.createErrorMessage(
-        e,
-        "Error while getting next word. Please try again later",
-      ),
-      -1,
+    showErrorNotification(
+      "Error while getting next word. Please try again later",
       {
+        error: e,
         important: true,
       },
     );
@@ -713,11 +703,10 @@ export async function retrySavingResult(): Promise<void> {
   const { completedEvent } = retrySaving;
 
   if (completedEvent === null) {
-    Notifications.add(
+    showNoticeNotification(
       "Could not retry saving the result as the result no longer exists.",
-      0,
       {
-        duration: 5,
+        durationMs: 5000,
         important: true,
       },
     );
@@ -730,9 +719,9 @@ export async function retrySavingResult(): Promise<void> {
   }
 
   retrySaving.canRetry = false;
-  $("#retrySavingResultButton").addClass("hidden");
+  qs("#retrySavingResultButton")?.hide();
 
-  Notifications.add("Retrying to save...");
+  showNoticeNotification("Retrying to save...");
 
   await saveResult(completedEvent, true);
 }
@@ -895,8 +884,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     opacity: 0,
     duration: Misc.applyReducedMotion(125),
   });
-  $(".pageTest #typingTest").addClass("hidden");
-  $(".pageTest .loading").removeClass("hidden");
+  qs(".pageTest #typingTest")?.hide();
+  qs(".pageTest .loading")?.show();
   await Misc.sleep(0); //allow ui update
 
   TestUI.onTestFinish();
@@ -934,7 +923,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
-    const burst = TestStats.calculateBurst();
+    const burst = TestStats.calculateBurst(now);
     TestInput.pushBurstToHistory(burst);
   }
 
@@ -945,7 +934,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // stats
   const stats = TestStats.calculateFinalStats();
-  if (stats.time % 1 !== 0 && Config.mode !== "time") {
+  if (
+    stats.time % 1 !== 0 &&
+    !(
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+    )
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
@@ -1003,9 +998,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (countUndefined(ce) > 0) {
     console.log(ce);
-    Notifications.add(
+    showErrorNotification(
       "Failed to build result object: One of the fields is undefined or NaN",
-      -1,
     );
     dontSave = true;
   }
@@ -1033,27 +1027,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
-    Notifications.add("Test invalid - inconsistent test duration", 0);
+    showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
     invalidReason = "inconsistent test duration";
     dontSave = true;
   } else if (difficultyFailed) {
-    Notifications.add(`Test failed - ${failReason}`, 0, {
-      duration: 1,
+    showNoticeNotification(`Test failed - ${failReason}`, {
+      durationMs: 1000,
     });
     dontSave = true;
-  } else if (afkDetected) {
-    Notifications.add("Test invalid - AFK detected", 0);
-    TestStats.setInvalid();
-    dontSave = true;
-    invalidReason = "afk detected";
-    TribeState.setAutoReady(false);
-  } else if (TestState.isRepeated) {
-    Notifications.add("Test invalid - repeated", 0);
-    TestStats.setInvalid();
-    dontSave = true;
-    invalidReason = "repeated test";
   } else if (
     completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
@@ -1073,11 +1056,22 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.getLimitValue() < 15) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
-    Notifications.add("Test invalid - too short", 0);
+    showNoticeNotification("Test invalid - too short");
     TestStats.setInvalid();
     invalidReason = "too short";
     tooShort = true;
     dontSave = true;
+  } else if (afkDetected) {
+    showNoticeNotification("Test invalid - AFK detected");
+    TestStats.setInvalid();
+    dontSave = true;
+    invalidReason = "afk detected";
+    TribeState.setAutoReady(false);
+  } else if (TestState.isRepeated) {
+    showNoticeNotification("Test invalid - repeated");
+    TestStats.setInvalid();
+    dontSave = true;
+    invalidReason = "repeated test";
   } else if (
     completedEvent.wpm < 0 ||
     (completedEvent.wpm > 350 &&
@@ -1087,7 +1081,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    Notifications.add("Test invalid - wpm", 0);
+    showNoticeNotification("Test invalid - wpm");
     TestStats.setInvalid();
     invalidReason = "wpm";
     dontSave = true;
@@ -1100,7 +1094,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    Notifications.add("Test invalid - raw", 0);
+    showNoticeNotification("Test invalid - raw");
     TestStats.setInvalid();
     invalidReason = "raw wpm";
     dontSave = true;
@@ -1110,7 +1104,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (DB.getSnapshot()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
-    Notifications.add("Test invalid - accuracy", 0);
+    showNoticeNotification("Test invalid - accuracy");
     TestStats.setInvalid();
     invalidReason = "accuracy";
     dontSave = true;
@@ -1152,8 +1146,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      Notifications.add("Long custom text progress saved", 1, {
-        duration: 5,
+      showSuccessNotification("Long custom text progress saved", {
+        durationMs: 5000,
         important: true,
       });
 
@@ -1165,8 +1159,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
       CustomText.setText(text);
-      Notifications.add("Long custom text completed", 1, {
-        duration: 5,
+      showSuccessNotification("Long custom text completed", {
+        durationMs: 5000,
         important: true,
       });
     }
@@ -1205,19 +1199,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     } else {
       TestStats.resetIncomplete();
 
-      if (completedEvent.testDuration > 122) {
-        completedEvent.chartData = "toolong";
-        completedEvent.keySpacing = "toolong";
-        completedEvent.keyDuration = "toolong";
-      }
-
       if (!completedEvent.bailedOut) {
         const challenge = ChallengeContoller.verify(completedEvent);
         if (challenge !== null) completedEvent.challenge = challenge;
       }
 
       completedEvent.uid = user.uid;
-      completedEvent.hash = objectHash(completedEvent);
 
       savingResultPromise = saveResult(completedEvent, false);
       void savingResultPromise.then((promise) => {
@@ -1298,15 +1285,12 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<SaveResultResponse> {
-  AccountButton.loading(true);
-
-  if (!TestState.savingEnabled) {
-    Notifications.add("Result not saved: disabled by user", -1, {
-      duration: 3,
+  if (!Config.resultSaving) {
+    showErrorNotification("Result not saved: disabled by user", {
+      durationMs: 3000,
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
     return {
       saved: false,
       message: "Disabled by user",
@@ -1315,14 +1299,13 @@ async function saveResult(
   }
 
   if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, {
-      duration: 2,
+    showErrorNotification("Result not saved: offline", {
+      durationMs: 2000,
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
     retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
+    qs("#retrySavingResultButton")?.removeClass("hidden");
     if (!isRetrying) {
       retrySaving.completedEvent = completedEvent;
     }
@@ -1333,9 +1316,24 @@ async function saveResult(
     };
   }
 
-  const response = await Ape.results.add({ body: { result: completedEvent } });
+  const result = structuredClone(completedEvent);
 
-  AccountButton.loading(false);
+  if (result.testDuration > 122) {
+    result.chartData = "toolong";
+    result.keySpacing = "toolong";
+    result.keyDuration = "toolong";
+  }
+  //@ts-expect-error just in case this is repeated and already has a hash
+  delete result.hash;
+  result.hash = objectHash(result);
+
+  console.trace();
+
+  setAccountButtonSpinner(true);
+
+  const response = await Ape.results.add({ body: { result } });
+
+  setAccountButtonSpinner(false);
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
@@ -1344,12 +1342,12 @@ async function saveResult(
       !TribeState.isInARoom()
     ) {
       retrySaving.canRetry = true;
-      $("#retrySavingResultButton").removeClass("hidden");
+      qs("#retrySavingResultButton")?.show();
       if (!isRetrying) {
-        retrySaving.completedEvent = completedEvent;
+        retrySaving.completedEvent = result;
       }
     }
-    console.log("Error saving result", completedEvent);
+    console.log("Error saving result", result);
     if (response.body.message === "Old key data format") {
       response.body.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
@@ -1360,7 +1358,7 @@ async function saveResult(
       response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    Notifications.add("Failed to save result", -1, { response });
+    showErrorNotification("Failed to save result", { response });
     return {
       saved: false,
       message: response.body.message,
@@ -1369,54 +1367,50 @@ async function saveResult(
   }
 
   const data = response.body.data;
-  $("#result .stats .tags .editTagsButton").attr(
+  qs("#result .stats .tags .editTagsButton")?.setAttribute(
     "data-result-id",
     data.insertedId,
   );
-  $("#result .stats .tags .editTagsButton").removeClass("invisible");
+  qs("#result .stats .tags .editTagsButton")?.removeClass("invisible");
 
-  const dataToSave: DB.SaveLocalResultData = {};
+  const localDataToSave: DB.SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
-    const snapxp = DB.getSnapshot()?.xp ?? 0;
-
-    void XPBar.update(
-      snapxp,
-      data.xp,
-      TestState.resultVisible ? data.xpBreakdown : undefined,
-    );
-    dataToSave.xp = data.xp;
+    localDataToSave.xp = data.xp;
+    if (TestState.resultVisible) {
+      localDataToSave.xpBreakdown = data.xpBreakdown;
+    }
   }
 
   if (data.streak !== undefined) {
-    dataToSave.streak = data.streak;
+    localDataToSave.streak = data.streak;
   }
 
   if (data.insertedId !== undefined) {
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
-    const result = structuredClone(
-      completedEvent,
+    const snapshotResult = structuredClone(
+      result,
     ) as unknown as SnapshotResult<Mode>;
-    result._id = data.insertedId;
+    snapshotResult._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
-      result.isPb = true;
+      snapshotResult.isPb = true;
     }
-    dataToSave.result = result;
+    localDataToSave.result = snapshotResult;
   }
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
     const localPb = await DB.getLocalPB(
-      completedEvent.mode,
-      completedEvent.mode2,
-      completedEvent.punctuation,
-      completedEvent.numbers,
-      completedEvent.language,
-      completedEvent.difficulty,
-      completedEvent.lazyMode,
-      getFunbox(completedEvent.funbox),
+      result.mode,
+      result.mode2,
+      result.punctuation,
+      result.numbers,
+      result.language,
+      result.difficulty,
+      result.lazyMode,
+      getFunbox(result.funbox),
     );
 
     if (localPb !== undefined) {
@@ -1424,7 +1418,7 @@ async function saveResult(
     }
     Result.showCrown("normal");
 
-    dataToSave.isPb = true;
+    localDataToSave.isPb = true;
   } else {
     Result.showErrorCrownIfNeeded();
   }
@@ -1444,17 +1438,16 @@ async function saveResult(
       duration: Misc.applyReducedMotion(250),
     });
 
-    $("#result .stats .dailyLeaderboard .bottom").html(
+    qs("#result .stats .dailyLeaderboard .bottom")?.setHtml(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" }),
     );
   }
 
-  $("#retrySavingResultButton").addClass("hidden");
+  qs("#retrySavingResultButton")?.hide();
   if (isRetrying) {
-    Notifications.add("Result saved", 1, { important: true });
+    showSuccessNotification("Result saved", { important: true });
   }
-
-  DB.saveLocalResult(dataToSave);
+  DB.saveLocalResult(localDataToSave);
   return {
     saved: true,
     message: response.body.message,
@@ -1470,7 +1463,7 @@ export function fail(reason: string): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);
-  if (!TestState.savingEnabled) return;
+  if (!Config.resultSaving) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
   let tt = Numbers.roundTo2(testSeconds - afkseconds);
@@ -1484,38 +1477,40 @@ export function fail(reason: string): void {
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
-    Notifications.add(
+    showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
         Strings.getLanguageDisplayString(Config.language),
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-      0,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }
   if (supports === "unknown") {
-    Notifications.add(
+    showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
         Strings.getLanguageDisplayString(Config.language),
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-      0,
       {
-        duration: 7,
+        durationMs: 7000,
       },
     );
   }
 });
 
-$(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
+qs(".pageTest")?.onChild(
+  "click",
+  "#testModesNotice .textButton.restart",
+  () => {
+    restart();
+  },
+);
+
+qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
   restart();
 });
 
-$(".pageTest").on("click", "#testInitFailed button.restart", () => {
-  restart();
-});
-
-$(".pageTest").on("click", "#restartTestButton", () => {
+qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
@@ -1531,9 +1526,13 @@ $(".pageTest").on("click", "#restartTestButton", () => {
   }
 });
 
-$(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
+qs(".pageTest")?.onChild(
+  "click",
+  "#retrySavingResultButton",
+  retrySavingResult,
+);
 
-$(".pageTest").on("click", "#nextTestButton", () => {
+qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
   if (TribeState.getRoom()) {
     Tribe.initRace();
   } else {
@@ -1542,15 +1541,15 @@ $(".pageTest").on("click", "#nextTestButton", () => {
   }
 });
 
-$(".pageTest").on("click", "#readyButton", () => {
+qs(".pageTest")?.onChild("click", "#readyButton", () => {
   if (TribeState.getRoom()) {
     Tribe.readyUp();
   }
 });
 
-$(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
+qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
+    showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
   ManualRestart.set();
@@ -1559,10 +1558,11 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
-$(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
+qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
   if (TestState.testRestarting) return;
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
+  if ((e.childTarget as HTMLElement).classList.contains("active")) return;
+  const mode = ((e.childTarget as HTMLElement)?.getAttribute("mode") ??
+    "time") as Mode;
   if (mode === undefined) return;
   if (setConfig("mode", mode)) {
     ManualRestart.set();
@@ -1570,9 +1570,9 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   }
 });
 
-$(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
+qs(".pageTest")?.onChild("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestState.testRestarting) return;
-  const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
+  const wrd = (e.childTarget as HTMLElement)?.getAttribute("wordCount") ?? "15";
   if (wrd !== "custom") {
     if (setConfig("words", parseInt(wrd))) {
       ManualRestart.set();
@@ -1581,9 +1581,10 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   }
 });
 
-$(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
+qs(".pageTest")?.onChild("click", "#testConfig .time .textButton", (e) => {
   if (TestState.testRestarting) return;
-  const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
+  const mode =
+    (e.childTarget as HTMLElement)?.getAttribute("timeConfig") ?? "10";
   if (mode !== "custom") {
     if (setConfig("time", parseInt(mode))) {
       ManualRestart.set();
@@ -1592,43 +1593,51 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   }
 });
 
-$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  if (TestState.testRestarting) return;
-  const lenAttr = $(e.currentTarget).attr("quoteLength");
-  if (lenAttr === "all") {
-    if (setQuoteLengthAll()) {
-      ManualRestart.set();
-      restart();
-    }
-  } else {
-    const len = parseInt(lenAttr ?? "1") as QuoteLength;
-
-    if (len !== -2) {
-      let arr: QuoteLengthConfig = [];
-
-      if (e.shiftKey) {
-        arr = [...Config.quoteLength, len];
-      } else {
-        arr = [len];
-      }
-
-      if (setConfig("quoteLength", arr)) {
+qs(".pageTest")?.onChild(
+  "click",
+  "#testConfig .quoteLength .textButton",
+  (e) => {
+    if (TestState.testRestarting) return;
+    const lenAttr = (e.childTarget as HTMLElement)?.getAttribute("quoteLength");
+    if (lenAttr === "all") {
+      if (setQuoteLengthAll()) {
         ManualRestart.set();
         restart();
       }
+    } else {
+      const len = parseInt(lenAttr ?? "1") as QuoteLength;
+
+      if (len !== -2) {
+        let arr: QuoteLengthConfig = [];
+
+        if (e.shiftKey) {
+          arr = [...Config.quoteLength, len];
+        } else {
+          arr = [len];
+        }
+
+        if (setConfig("quoteLength", arr)) {
+          ManualRestart.set();
+          restart();
+        }
+      }
     }
-  }
-});
+  },
+);
 
-$(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
-  if (TestState.testRestarting) return;
-  if (setConfig("punctuation", !Config.punctuation)) {
-    ManualRestart.set();
-    restart();
-  }
-});
+qs(".pageTest")?.onChild(
+  "click",
+  "#testConfig .punctuationMode.textButton",
+  () => {
+    if (TestState.testRestarting) return;
+    if (setConfig("punctuation", !Config.punctuation)) {
+      ManualRestart.set();
+      restart();
+    }
+  },
+);
 
-$(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
+qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
   if (TestState.testRestarting) return;
   if (setConfig("numbers", !Config.numbers)) {
     ManualRestart.set();
@@ -1636,15 +1645,10 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   }
 });
 
-$("header").on("click", "nav #startTestButton, #logo", () => {
-  if (ActivePage.get() === "test") restart();
-  // Result.showConfetti();
-});
-
 // ===============================
 
 ConfigEvent.subscribe(({ key, newValue, nosave }) => {
-  if (ActivePage.get() === "test") {
+  if (getActivePage() === "test") {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

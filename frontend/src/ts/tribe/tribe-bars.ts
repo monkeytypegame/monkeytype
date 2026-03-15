@@ -2,17 +2,21 @@ import * as TribeState from "./tribe-state";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
-import * as ThemeColors from "../elements/theme-colors";
 import { isConfigInfinite } from "./tribe-config";
 import { getAvatarElement } from "../utils/discord-avatar";
+import { ElementWithUtils, qs } from "../utils/dom";
+import { ColorName } from "../constants/themes";
+import { getTheme } from "../signals/theme";
 
 export function init(page: string): void {
-  let el: JQuery | undefined;
+  let el: ElementWithUtils | null;
 
   if (page === "test") {
-    el = $(".pageTest #typingTest .tribeBars");
+    el = qs(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
-    el = $(".pageTribe .lobby .tribeBars");
+    el = qs(".pageTribe .lobby .tribeBars");
+  } else {
+    el = null;
   }
 
   const room = TribeState.getRoom();
@@ -89,14 +93,14 @@ export function init(page: string): void {
       `;
   }
 
-  el.html(html);
+  el.setHtml(html);
 }
 
 export function show(page: string): void {
   if (page === "test") {
-    $(".pageTest #typingTest .tribeBars").removeClass("hidden");
+    qs(".pageTest #typingTest .tribeBars")?.removeClass("hidden");
   } else if (page === "tribe") {
-    $(".pageTribe .tribeBars").removeClass("hidden");
+    qs(".pageTribe .tribeBars")?.removeClass("hidden");
   }
 }
 
@@ -105,9 +109,9 @@ export function hide(page?: string): void {
     hide("test");
     hide("tribe");
   } else if (page === "test") {
-    $(".pageTest #typingTest .tribeBars").addClass("hidden");
+    qs(".pageTest #typingTest .tribeBars")?.addClass("hidden");
   } else if (page === "tribe") {
-    $(".pageTribe .tribeBars").addClass("hidden");
+    qs(".pageTribe .tribeBars")?.addClass("hidden");
   }
 }
 
@@ -116,9 +120,9 @@ export function reset(page?: string): void {
     reset("test");
     reset("tribe");
   } else if (page === "test") {
-    $(".pageTest #typingTest .tribeBars").empty();
+    qs(".pageTest #typingTest .tribeBars")?.empty();
   } else if (page === "tribe") {
-    $(".pageTribe .tribeBars").empty();
+    qs(".pageTribe .tribeBars")?.empty();
   }
 }
 
@@ -130,11 +134,13 @@ export function update(page: string, userId: string): void {
     update("tribe", userId);
     return;
   }
-  let el: JQuery | undefined;
+  let el: ElementWithUtils | null;
   if (page === "test") {
-    el = $(".pageTest #typingTest .tribeBars");
+    el = qs(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
-    el = $(".pageTribe .tribeBars");
+    el = qs(".pageTribe .tribeBars");
+  } else {
+    el = null;
   }
   const user = room.users[userId];
 
@@ -142,24 +148,20 @@ export function update(page: string, userId: string): void {
     return;
   }
 
-  el.find(`.player[id=${userId}] .wpm`).text(
-    Math.round(user?.progress?.wpm ?? 0),
+  el.qs(`.player[id=${userId}] .wpm`)?.setText(
+    `${Math.round(user?.progress?.wpm ?? 0)}`,
   );
-  el.find(`.player[id=${userId}] .acc`).text(
-    Math.floor(user.progress?.acc ?? 0) + "%",
+  el.qs(`.player[id=${userId}] .acc`)?.setText(
+    `${Math.floor(user.progress?.acc ?? 0)}%`,
   );
-  el.find(`.player[id=${userId}] .bar`)
-    .stop(true, false)
-    .animate(
-      {
-        width:
-          Config.mode === "time" || isConfigInfinite(room.config)
-            ? user.progress?.wpmProgress + "%"
-            : user.progress?.progress + "%",
-      },
-      SlowTimer.get() ? 0 : (TribeState.getRoom()?.updateRate ?? 500),
-      "linear",
-    );
+  el.qs(`.player[id=${userId}] .bar`)?.animate({
+    width:
+      Config.mode === "time" || isConfigInfinite(room.config)
+        ? user.progress?.wpmProgress + "%"
+        : user.progress?.progress + "%",
+    duration: SlowTimer.get() ? 0 : (TribeState.getRoom()?.updateRate ?? 500),
+    ease: "linear",
+  });
 }
 
 export function completeBar(page: string, userId: string): void {
@@ -168,53 +170,57 @@ export function completeBar(page: string, userId: string): void {
     completeBar("tribe", userId);
     return;
   }
-  let el: JQuery | undefined;
+  let el: ElementWithUtils | null;
   if (page === "test") {
-    el = $(".pageTest #typingTest .tribeBars");
+    el = qs(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
-    el = $(".pageTribe .tribeBars");
+    el = qs(".pageTribe .tribeBars");
+  } else {
+    el = null;
   }
   if (!el) {
     return;
   }
 
-  el.find(`.player[id=${userId}] .bar`)
-    .stop(true, false)
-    .animate(
-      {
-        width: "100%",
-      },
-      SlowTimer.get() ? 0 : 500,
-      "linear",
-    );
+  el.qs(`.player[id=${userId}] .bar`)?.animate({
+    width: "100%",
+    duration: SlowTimer.get() ? 0 : 500,
+    ease: "linear",
+  });
 }
 
 export function fadeUser(
   page: string | undefined,
   userId: string,
-  changeColor?: ThemeColors.ColorName,
+  changeColor?: ColorName,
 ): void {
   if (page === undefined) {
     fadeUser("test", userId, changeColor);
     fadeUser("tribe", userId, changeColor);
     return;
   }
-  let el: JQuery | undefined;
+  let el: ElementWithUtils | null;
   if (page === "test") {
-    el = $(".pageTest #typingTest .tribeBars");
+    el = qs(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
-    el = $(".pageTribe .tribeBars");
+    el = qs(".pageTribe .tribeBars");
+  } else {
+    el = null;
   }
+
   if (!el) {
     return;
   }
 
-  el.find(`.player[id=${userId}]`).addClass("faded");
+  el.qs(`.player[id=${userId}]`)?.addClass("faded");
 
   if (changeColor !== undefined) {
-    void ThemeColors.get(changeColor).then((color) => {
-      if (el === undefined) return;
-      el.find(`.player[id=${userId}] .bar`).css("background-color", color);
+    const theme = getTheme();
+    const color = theme[changeColor];
+    if (color === undefined) return;
+    if (el === undefined) return;
+    el.qs(`.player[id=${userId}] .bar`)?.setStyle({
+      backgroundColor: color,
     });
   }
 }

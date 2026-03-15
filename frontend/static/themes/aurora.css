@@ -1,16 +1,3 @@
-:root {
-  --bg-color: #011926;
-  --main-color: #00e980;
-  --caret-color: #00e980;
-  --sub-color: #245c69;
-  --sub-alt-color: #000c13;
-  --text-color: #fff;
-  --error-color: #b94da1;
-  --error-extra-color: #9b3a76;
-  --colorful-error-color: #b94da1;
-  --colorful-error-extra-color: #9b3a76;
-}
-
 @keyframes aurora {
   0% {
     color: #009fb4;
@@ -47,7 +34,6 @@
   }
 }
 
-.button.discord::after,
 #caret,
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
@@ -55,20 +41,20 @@
   animation: aurora-bg 5s linear infinite;
 }
 
-header.focus .button.discord::after,
-header .button.discord.dotHidden::after {
-  animation-name: none !important;
+[data-ui-element="logo"] h1 {
+  color: var(--main-color);
+}
+[data-ui-element="logoSubtext"],
+[data-ui-element="logo"]:hover h1,
+#result .stats .group .bottom,
+[data-nav-item]:hover,
+footer button:hover,
+a:not(.button):not([data-ui-variant="button"]):hover {
+  animation: aurora 5s linear infinite;
 }
 
-#logo .bottom,
-header .config .group .buttons .textButton.active,
-#result .stats .group .bottom,
-nav .textButton:hover,
-nav button.text:hover,
-header .config .group .buttons .textButton:hover,
-footer .textButton:hover,
-footer button.text:hover,
-a:not(.button):hover {
+[data-nav-item="account"]:hover svg {
+  color: transparent;
   animation: aurora 5s linear infinite;
 }
 

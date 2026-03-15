@@ -74,7 +74,7 @@ export type LoadingOptions = {
     }
 );
 
-type PageProperties<T> = {
+export type PageProperties<T> = {
   id: PageName;
   display?: string;
   element: ElementWithUtils;
@@ -102,16 +102,16 @@ export default class Page<T> {
   protected _beforeShow: (options: Options<T>) => Promise<void>;
   public afterShow: () => Promise<void>;
 
-  constructor(props: PageProperties<T>) {
-    this.id = props.id;
-    this.display = props.display;
-    this.element = props.element;
-    this.pathname = props.path;
-    this.loadingOptions = props.loadingOptions;
-    this.beforeHide = props.beforeHide ?? empty;
-    this.afterHide = props.afterHide ?? empty;
-    this._beforeShow = props.beforeShow ?? empty;
-    this.afterShow = props.afterShow ?? empty;
+  constructor(options: PageProperties<T>) {
+    this.id = options.id;
+    this.display = options.display;
+    this.element = options.element;
+    this.pathname = options.path;
+    this.loadingOptions = options.loadingOptions;
+    this.beforeHide = options.beforeHide ?? empty;
+    this.afterHide = options.afterHide ?? empty;
+    this._beforeShow = options.beforeShow ?? empty;
+    this.afterShow = options.afterShow ?? empty;
   }
 
   public async beforeShow(options: Options<T>): Promise<void> {
@@ -119,11 +119,11 @@ export default class Page<T> {
   }
 }
 
-type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
+export type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
   urlParams?: z.infer<U>;
 };
 
-type UrlParamsSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
+export type UrlParamsSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
 type PagePropertiesWithUrlParams<T, U extends UrlParamsSchema> = Omit<
   PageProperties<T>,
   "beforeShow"
@@ -138,10 +138,10 @@ export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
     options: OptionsWithUrlParams<T, U>,
   ) => Promise<void>;
 
-  constructor(props: PagePropertiesWithUrlParams<T, U>) {
-    super(props);
-    this.urlSchema = props.urlParamsSchema;
-    this._beforeShow = props.beforeShow ?? empty;
+  constructor(options: PagePropertiesWithUrlParams<T, U>) {
+    super(options);
+    this.urlSchema = options.urlParamsSchema;
+    this._beforeShow = options.beforeShow ?? empty;
   }
 
   private readUrlParams(): z.infer<U> | undefined {

@@ -29,10 +29,10 @@
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "madge": "8.0.0",
-    "oxlint": "1.36.0",
-    "oxlint-tsgolint": "0.10.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.14.2",
     "tsup": "8.4.0",
-    "typescript": "5.9.3",
+    "typescript": "6.0.0-beta",
     "vitest": "4.0.15"
   },
   "peerDependencies": {

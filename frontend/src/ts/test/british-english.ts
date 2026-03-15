@@ -700,6 +700,9 @@ export async function replace(
     ).join("-");
   } else {
     const cleanedWord = word.replace(/^[\W]+|[\W]+$/g, "").toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(replacementRules, cleanedWord)) {
+      return word;
+    }
     const rule = replacementRules[cleanedWord];
 
     if (rule === undefined) return word;
@@ -717,6 +720,7 @@ export async function replace(
       RegExp(`^(?:([\\W]*)(${cleanedWord})([\\W]*))$`, "gi"),
       (_, $1, $2, $3) =>
         $1 +
+        // oxlint-disable-next-line typescript/prefer-string-starts-ends-with
         (($2 as string).charAt(0) === ($2 as string).charAt(0).toUpperCase()
           ? $2 === ($2 as string).toUpperCase()
             ? britishWord.toUpperCase()

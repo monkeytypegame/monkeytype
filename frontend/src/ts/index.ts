@@ -1,11 +1,8 @@
 import "./event-handlers/global";
-import "./event-handlers/footer";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/about";
 import "./event-handlers/settings";
 import "./event-handlers/account";
-import "./event-handlers/leaderboards";
 import "./event-handlers/login";
 import "./event-handlers/tribe";
 
@@ -33,21 +30,17 @@ import "./test/caps-warning";
 import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
-import "./ready";
 import "./controllers/route-controller";
-import "./pages/about";
-import "./elements/scroll-to-top";
 import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
-import "./elements/fps-counter";
 import "./modals/tribe-browse-public-rooms";
 import { isDevEnvironment, addToGlobal } from "./utils/misc";
-import * as VersionButton from "./elements/version-button";
+
 import * as Focus from "./test/focus";
-import { getDevOptionsModal } from "./utils/async-modules";
+import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
@@ -55,6 +48,8 @@ import "./utils/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
+import { mountComponents } from "./components/mount";
+import "./ready";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -77,16 +72,17 @@ Object.defineProperty(window, "Math", {
 
 applyEngineSettings();
 void loadFromLocalStorage();
-void VersionButton.update();
+void fetchLatestVersion();
 Focus.set(true, true);
-void init(onAuthStateChanged);
-
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
   CookiesModal.show();
-} else {
-  Cookies.activateWhatsAccepted();
 }
+void init(onAuthStateChanged).then(() => {
+  if (accepted !== null) {
+    Cookies.activateWhatsAccepted();
+  }
+});
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -115,11 +111,4 @@ addToGlobal({
     : {}),
 });
 
-if (isDevEnvironment()) {
-  void import("jquery").then((jq) => {
-    addToGlobal({ $: jq.default });
-  });
-  void getDevOptionsModal().then((module) => {
-    module.appendButton();
-  });
-}
+mountComponents();

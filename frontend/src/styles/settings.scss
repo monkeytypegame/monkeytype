@@ -50,7 +50,6 @@
   .settingsGroup {
     display: grid;
     gap: 2rem;
-    overflow: hidden;
     &.quickNav {
       justify-content: center;
       .links {
@@ -427,6 +426,7 @@
 
       .theme.button {
         .favButton {
+          place-self: start;
           overflow: hidden;
           width: 1.25rem;
           transition: 0.25s;
@@ -455,6 +455,7 @@
       .customTheme.button {
         .delButton,
         .editButton {
+          place-self: start;
           overflow: hidden;
           width: 1.25rem;
           transition: 0.25s;

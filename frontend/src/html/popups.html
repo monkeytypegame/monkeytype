@@ -1,9 +1,3 @@
-<dialog id="registerCaptchaModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="g-recaptcha"></div>
-  </div>
-</dialog>
-
 <dialog id="forgotPasswordModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Forgot password</div>
@@ -53,72 +47,6 @@
     <div class="buttons">
       <button class="save">save</button>
       <button class="discard">discard</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog id="devOptionsModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="title">Dev options</div>
-    <button class="generateData">generate data</button>
-    <button class="quickLogin">quick login</button>
-    <button class="toggleMediaQueryDebug">toggle media query debug</button>
-    <button class="showTestNotifications">show test notifications</button>
-    <button class="showRealWordsInput">show real words input</button>
-    <button class="xpBarTest">xp bar test</button>
-    <button class="toggleFakeChartData">toggle fake chart data</button>
-    <button class="toggleCaretDebug">toggle caret debug</button>
-    <button class="disableSlowTimerFail">disable slow timer fail</button>
-  </div>
-</dialog>
-
-<dialog id="alertsPopup" class="modalWrapper hidden">
-  <div class="modal">
-    <button class="mobileClose">
-      <i class="fas fa-times"></i>
-      Close
-    </button>
-    <div class="scrollWrapper">
-      <div class="accountAlerts">
-        <div class="title">
-          <div class="left">
-            <i class="fas fa-inbox"></i>
-            Inbox
-          </div>
-          <div class="right"></div>
-        </div>
-        <button class="claimAll hidden">
-          <i class="fas fa-fw fa-gift"></i>
-          Claim all
-        </button>
-        <button class="deleteAll hidden">
-          <i class="fas fa-fw fa-trash"></i>
-          Delete all
-        </button>
-        <div class="list">
-          <div class="nothing">Nothing to show</div>
-        </div>
-      </div>
-      <div class="separator accountSeparator"></div>
-      <div class="psas">
-        <div class="title">
-          <i class="fas fa-bullhorn"></i>
-          Announcements
-        </div>
-        <div class="list">
-          <div class="nothing">Nothing to show</div>
-        </div>
-      </div>
-      <div class="separator"></div>
-      <div class="notificationHistory">
-        <div class="title">
-          <i class="fas fa-comment-alt"></i>
-          Notifications
-        </div>
-        <div class="list">
-          <div class="nothing">Nothing to show</div>
-        </div>
-      </div>
     </div>
   </div>
 </dialog>
@@ -906,13 +834,13 @@
     <div class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (
-      <key>esc</key>
+      <kbd>esc</kbd>
       or
-      <key>ctrl/cmd</key>
+      <kbd>ctrl/cmd</kbd>
       +
-      <key>shift</key>
+      <kbd>shift</kbd>
       +
-      <key>p</key>
+      <kbd>p</kbd>
       > Bail Out)
     </div>
     <button>ok</button>
@@ -929,13 +857,13 @@
       <br />
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (
-      <key>esc</key>
+      <kbd>esc</kbd>
       or
-      <key>ctrl/cmd</key>
+      <kbd>ctrl/cmd</kbd>
       +
-      <key>shift</key>
+      <kbd>shift</kbd>
       +
-      <key>p</key>
+      <kbd>p</kbd>
       > Bail Out)
     </div>
     <button>ok</button>
@@ -960,6 +888,7 @@
       <input
         id="searchBox"
         class="searchBox"
+        dir="auto"
         type="text"
         maxlength="200"
         autocomplete="off"
@@ -971,7 +900,7 @@
         <!-- favorites -->
       </button>
     </div>
-    <div id="quoteSearchResults" class="quoteSearchResults"></div>
+    <div dir="auto" id="quoteSearchResults" class="quoteSearchResults"></div>
     <div id="quoteSearchPageNavigator">
       <button class="prevPage" disabled>
         <i class="fas fa-fw fa-chevron-left"></i>
@@ -1003,7 +932,7 @@
       </li>
     </ul>
     <label>quote</label>
-    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
+    <textarea class="newQuoteText" autocomplete="off" dir="auto"></textarea>
     <label>source</label>
     <input class="newQuoteSource" type="text" autocomplete="off" />
     <label>language</label>
@@ -1023,7 +952,7 @@
       <span class="red">Please add comments in English only.</span>
     </div>
     <label>quote</label>
-    <div class="quote"></div>
+    <div class="quote" dir="auto"></div>
     <label>reason</label>
     <select name="report-reason" class="reason" title="reason">
       <option value="Grammatical error">Grammatical error</option>
@@ -1033,7 +962,7 @@
       <option value="Incorrect source">Incorrect source</option>
     </select>
     <label>comment</label>
-    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <textarea class="comment" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1060,7 +989,7 @@
       <option value="Suspected cheating">Suspected cheating</option>
     </select>
     <label>comment</label>
-    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <textarea class="comment" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1094,9 +1023,17 @@
       <br />
       <span class="red">You can only do this once!</span>
     </div>
-    <input type="number" min="-11" max="12" value="0" />
+    <div class="group">
+      <button class="decreaseOffset">
+        <i class="fas fa-fw fa-chevron-left"></i>
+      </button>
+      <input type="number" min="-11" max="12" value="0" step="0.5" />
+      <button class="increaseOffset">
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </button>
+    </div>
     <div class="preview"></div>
-    <button>set</button>
+    <button class="submit">set</button>
   </div>
 </dialog>
 <dialog id="editResultTagsModal" class="modalWrapper hidden">
@@ -1142,150 +1079,6 @@
       Include background information
     </label>
     <button>copy link to clipboard</button>
-  </div>
-</dialog>
-<dialog id="versionHistoryModal" class="modalWrapper hidden">
-  <div class="modal"></div>
-</dialog>
-<dialog id="supportModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="title">Support Monkeytype</div>
-    <div class="text">
-      Thank you so much for thinking about supporting this project. It would not
-      be possible without you and your continued support.
-      <i class="fas fa-heart"></i>
-    </div>
-    <div class="buttons">
-      <button class="ads">
-        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
-        <div class="text">Enable Ads</div>
-      </button>
-      <!-- <div class="button watchVideoAd">
-        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
-        <div class="text">
-          Watch
-          <br />
-          a Video Ad
-        </div>
-      </div> -->
-      <a
-        class="button"
-        href="https://ko-fi.com/monkeytype"
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        <div class="icon"><i class="fas fa-fw fa-donate"></i></div>
-        <div class="text">Donate</div>
-      </a>
-      <a
-        class="button"
-        href="https://www.patreon.com/monkeytype"
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        <div class="icon"><i class="fab fa-fw fa-patreon"></i></div>
-        <div class="text">Join Patreon</div>
-      </a>
-      <a
-        class="button"
-        href="https://monkeytype.store"
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
-        <div class="text">Buy Merch</div>
-      </a>
-    </div>
-  </div>
-</dialog>
-<dialog id="contactModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="title">Contact</div>
-    <div class="text">
-      Feel free to send an email to contact@monkeytype.com. For business
-      inquiries, email jack@monkeytype.com (the buttons below will open the
-      default mail client).
-      <br />
-      <br />
-      Please
-      <span>do not send</span>
-      requests to delete account, update email, update name or clear personal
-      bests - you can do that in the settings page.
-    </div>
-    <div class="buttons">
-      <a
-        class="button"
-        target="_blank"
-        href="mailto:contact@monkeytype.com?subject=[Question] "
-        rel="noopener"
-      >
-        <div class="icon"><i class="fas fa-question-circle"></i></div>
-        <div class="textGroup">
-          <div class="text">Question</div>
-          <!-- <div class="subtext">Confused about something?</div> -->
-        </div>
-      </a>
-      <a
-        class="button"
-        target="_blank"
-        href="mailto:contact@monkeytype.com?subject=[Feedback] "
-        rel="noopener"
-      >
-        <div class="icon"><i class="fas fa-comment-dots"></i></div>
-        <div class="textGroup">
-          <div class="text">Feedback</div>
-          <!-- <div class="subtext">Feel like the website could be improved?</div> -->
-        </div>
-      </a>
-      <a
-        class="button"
-        target="_blank"
-        href="mailto:support@monkeytype.com?subject=[Bug] "
-        rel="noopener"
-      >
-        <div class="icon"><i class="fas fa-bug"></i></div>
-        <div class="textGroup">
-          <div class="text">Bug Report</div>
-          <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
-        </div>
-      </a>
-      <a
-        class="button"
-        target="_blank"
-        href="mailto:support@monkeytype.com?subject=[Account] "
-        rel="noopener"
-      >
-        <div class="icon"><i class="fas fa-user-circle"></i></div>
-        <div class="textGroup">
-          <div class="text">Account Help</div>
-          <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
-        </div>
-      </a>
-      <a
-        class="button"
-        target="_blank"
-        href="mailto:jack@monkeytype.com?subject=[Business] "
-        rel="noopener"
-      >
-        <div class="icon"><i class="fas fa-briefcase"></i></div>
-        <div class="textGroup">
-          <div class="text">Business Inquiry</div>
-          <!-- <div class="subtext">Let's work together.</div> -->
-        </div>
-      </a>
-      <a
-        class="button"
-        target="_blank"
-        href="mailto:contact@monkeytype.com?subject=[Other] "
-        rel="noopener"
-      >
-        <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
-        <div class="textGroup">
-          <div class="text">Other</div>
-          <!-- <div class="subtext">We will try to help.</div> -->
-        </div>
-      </a>
-    </div>
   </div>
 </dialog>
 <dialog id="commandLine" class="modalWrapper hidden">
@@ -1335,21 +1128,11 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea
-        class="bio"
-        type="text"
-        autocomplete="off"
-        maxlength="250"
-      ></textarea>
+      <textarea class="bio" autocomplete="off" maxlength="250"></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea
-        class="keyboard"
-        type="text"
-        autocomplete="off"
-        maxlength="75"
-      ></textarea>
+      <textarea class="keyboard" autocomplete="off" maxlength="75"></textarea>
     </div>
     <div>
       <label>github</label>

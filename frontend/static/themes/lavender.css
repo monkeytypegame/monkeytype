@@ -1,30 +1,39 @@
-:root {
-  --bg-color: #ada6c2;
-  --main-color: #e4e3e9;
-  --caret-color: #e4e3e9;
-  --sub-color: #e4e3e9;
-  --sub-alt-color: #a19bb9;
-  --text-color: #2f2a41;
-  --error-color: #ca4754;
-  --error-extra-color: #7e2a33;
-  --colorful-error-color: #ca4754;
-  --colorful-error-extra-color: #7e2a33;
-}
-
-nav .textButton {
+[data-nav-item] {
   border-radius: 10rem !important;
-  background: var(--text-color);
-  color: var(--main-color);
+  --themable-button-bg: var(--text-color);
+  --themable-button-text: var(--main-color);
+  --themable-button-hover-bg: var(--text-color);
+  --themable-button-hover-text: var(--bg-color);
 }
 
-nav .textButton:hover {
-  color: var(--bg-color);
-  background: var(--text-color);
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
 }
 
-body.crtmode nav .textButton {
+[data-ui-element="userLevel"] {
+  --themable-flash-color: var(--text-color);
+  --themable-bg-color: var(--bg-color);
+  --themable-text-color: var(--main-color);
+  --themable-hover-bg-color: var(--bg-color);
+}
+
+body.crtmode [data-nav-item] {
   box-shadow:
     3px 0 1px var(--crt-text-color-glow),
     -3px 0 var(--crt-text-color-glow),
     0 0 3px;
+}
+
+header[data-focused] {
+  [data-nav-item="test"],
+  [data-nav-item="leaderboards"],
+  [data-nav-item="about"],
+  [data-nav-item="settings"] {
+    /* --themable-button-bg: var(--sub-color); */
+    --nav-focus-opacity: 0.5;
+  }
 }

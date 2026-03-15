@@ -1,18 +1,7 @@
 //this is very overkill for the modern world so dont worry too much about this width
-@media only screen and (max-width: 425px) {
-  #mediaQueryDebug {
-    background: #8d6e63;
-    &::before {
-      content: "brown";
-    }
-  }
-  header {
-    nav {
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-      gap: 0.1rem;
-    }
-  }
+@use "./media.scss" as *;
+
+@include media-query(brown) {
   .page404 {
     .content {
       grid-template-columns: 1fr;
@@ -56,50 +45,6 @@
   }
   .testActivity {
     display: none;
-  }
-
-  .pageLeaderboards {
-    .content .tableAndUser {
-      //font-size: 0.7rem;
-      .bigUser {
-        gap: 1em;
-        padding-left: 0.75em;
-        .stat.narrow:last-child {
-          font-size: 0.75em;
-        }
-        .userInfo {
-          font-size: 0.8em;
-        }
-        .rank {
-          margin-right: 0.5em;
-        }
-      }
-      .titleAndButtons {
-        // grid-template-columns: 1fr;
-        .title {
-          // text-align: center;
-          font-size: 1em;
-        }
-      }
-      table {
-        .avatarNameBadge .flagsAndBadge .badge .text {
-          display: block;
-        }
-        tbody td.date {
-          font-size: 0.75em;
-        }
-        .avatarNameBadge {
-          grid-template-columns: 1.25em 1fr;
-          grid-template-areas:
-            "avatar name"
-            "badges badges";
-          .flagsAndBadge {
-            grid-area: badges;
-            // justify-self: center;
-          }
-        }
-      }
-    }
   }
   .pageFriends {
     .content .friends table {

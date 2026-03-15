@@ -56,6 +56,10 @@ export const LanguageGroups: Record<string, Language[]> = {
   marathi: ["marathi"],
   chinese: [
     "chinese_traditional",
+    "chinese_traditional_1k",
+    "chinese_traditional_5k",
+    "chinese_traditional_10k",
+    "chinese_traditional_50k",
     "chinese_simplified",
     "chinese_simplified_1k",
     "chinese_simplified_5k",
@@ -115,7 +119,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "greeklish_25k",
   ],
   turkish: ["turkish", "turkish_1k", "turkish_5k"],
-  irish: ["irish"],
+  irish: ["irish", "irish_1k"],
   galician: ["galician"],
   thai: [
     "thai",
@@ -186,6 +190,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   georgian: ["georgian"],
   yoruba: ["yoruba_1k"],
   swahili: ["swahili_1k"],
+  kinyarwanda: ["kinyarwanda"],
   maori: ["maori_1k"],
   catalan: ["catalan", "catalan_1k"],
   bulgarian: [

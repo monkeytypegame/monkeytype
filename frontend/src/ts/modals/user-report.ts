@@ -1,6 +1,11 @@
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
@@ -29,14 +34,13 @@ let select: SlimSelect | undefined = undefined;
 
 export async function show(options: ShowOptions): Promise<void> {
   if (!isAuthenticated()) {
-    Notifications.add("You must be logged in to submit a report", 0);
+    showNoticeNotification("You must be logged in to submit a report");
     return;
   }
 
   if (!CaptchaController.isCaptchaAvailable()) {
-    Notifications.add(
+    showErrorNotification(
       "Could not show user report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1,
     );
     return;
   }
@@ -68,7 +72,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter(qsr("#userReportModal .comment"), 250);
+  new CharacterCounter(modal.getModal().qsr(".comment"), 250);
 }
 
 async function hide(): Promise<void> {
@@ -78,30 +82,33 @@ async function hide(): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("userReportModal");
   if (!captchaResponse) {
-    Notifications.add("Please complete the captcha");
+    showNoticeNotification("Please complete the captcha");
     return;
   }
 
-  const reason = $("#userReportModal .reason").val() as ReportUserReason;
-  const comment = $("#userReportModal .comment").val() as string;
+  const reason = qsr<HTMLSelectElement>(
+    "#userReportModal select.reason",
+  ).getValue() as ReportUserReason;
+  const comment = qsr<HTMLTextAreaElement>(
+    "#userReportModal .comment",
+  ).getValue() as string;
   const captcha = captchaResponse;
 
   if (!reason) {
-    Notifications.add("Please select a valid report reason");
+    showNoticeNotification("Please select a valid report reason");
     return;
   }
 
   if (!comment) {
-    Notifications.add("Please provide a comment");
+    showNoticeNotification("Please provide a comment");
     return;
   }
 
   if (reason === "Suspected cheating" && state.lbOptOut) {
-    Notifications.add(
+    showNoticeNotification(
       "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
-      0,
       {
-        duration: 10,
+        durationMs: 10000,
       },
     );
     return;
@@ -109,13 +116,13 @@ async function submitReport(): Promise<void> {
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    Notifications.add(
+    showNoticeNotification(
       `Report comment is ${characterDifference} character(s) too long`,
     );
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.users.report({
     body: {
       uid: state.userUid as string,
@@ -124,14 +131,14 @@ async function submitReport(): Promise<void> {
       captcha,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to report user", -1, { response });
+    showErrorNotification("Failed to report user", { response });
     return;
   }
 
-  Notifications.add("Report submitted. Thank you!", 1);
+  showSuccessNotification("Report submitted. Thank you!");
   void hide();
 }
 

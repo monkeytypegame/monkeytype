@@ -2,6 +2,12 @@ import { AnimationParams } from "animejs";
 import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 import { ElementWithUtils, qs } from "./dom";
+import {
+  isModalChained,
+  isModalOpen,
+  ModalId,
+  hideModal as storeHideModal,
+} from "../stores/modals";
 
 type CustomWrapperAndModalAnimations = {
   wrapper?: AnimationParams & {
@@ -35,6 +41,7 @@ export type ShowOptions<T = unknown> = ShowHideOptions<T> & {
   mode?: "modal" | "dialog";
   focusFirstInput?: true | "focusAndSelect";
   modalChain?: AnimatedModal;
+  chained?: boolean;
 };
 
 export type HideOptions<T = unknown> = ShowHideOptions<T> & {
@@ -44,6 +51,7 @@ export type HideOptions<T = unknown> = ShowHideOptions<T> & {
 
 type ConstructorParams<T> = {
   dialogId: string;
+  storeId?: ModalId;
   appendTo?: Skeleton.SkeletonAppendParents;
   customAnimations?: ConstructorCustomAnimations;
   showOptionsWhenInChain?: ShowOptions<T>;
@@ -63,6 +71,7 @@ export default class AnimatedModal<
   private wrapperEl: ElementWithUtils<HTMLDialogElement>;
   private modalEl: ElementWithUtils;
   private dialogId: string;
+  private storeId: ModalId | undefined;
   private open = false;
   private setupRan = false;
   private previousModalInChain: AnimatedModal | undefined;
@@ -116,6 +125,7 @@ export default class AnimatedModal<
     }
 
     this.dialogId = constructorParams.dialogId;
+    this.storeId = constructorParams.storeId;
     this.wrapperEl = dialogElement;
     this.modalEl = modalElement;
     this.customShowAnimations = constructorParams.customAnimations?.show;
@@ -145,7 +155,14 @@ export default class AnimatedModal<
           this.customEscapeHandler(e);
           void this.cleanup?.();
         } else {
-          await this.hide();
+          // If this modal is managed by the store (has a modalId and is open in store), notify it
+          if (this.storeId !== undefined && isModalOpen(this.storeId)) {
+            // Disable pointer events immediately to prevent further interactions
+            this.wrapperEl.setStyle({ pointerEvents: "none" });
+            storeHideModal(this.storeId);
+          } else {
+            await this.hide();
+          }
         }
       }
     });
@@ -156,7 +173,12 @@ export default class AnimatedModal<
           this.customWrapperClickHandler(e);
           void this.cleanup?.();
         } else {
-          await this.hide();
+          // If this modal is managed by the store (has a modalId and is open in store), notify it
+          if (this.storeId !== undefined && isModalOpen(this.storeId)) {
+            storeHideModal(this.storeId);
+          } else {
+            await this.hide();
+          }
         }
       }
     });
@@ -217,12 +239,16 @@ export default class AnimatedModal<
         return;
       }
 
+      // Check if this modal is being opened in chained mode from the store
+      const isChainedFromStore =
+        this.storeId !== undefined && isModalChained(this.storeId);
+
       const modalAnimationDuration = applyReducedMotion(
         (options?.customAnimation?.modal?.duration ??
           options?.animationDurationMs ??
           this.customShowAnimations?.modal?.duration ??
           DEFAULT_ANIMATION_DURATION) *
-          (options?.modalChain !== undefined
+          (options?.modalChain !== undefined || isChainedFromStore
             ? MODAL_ONLY_ANIMATION_MULTIPLIER
             : 1),
       );
@@ -271,7 +297,7 @@ export default class AnimatedModal<
       );
 
       const animationMode =
-        this.previousModalInChain !== undefined
+        this.previousModalInChain !== undefined || isChainedFromStore
           ? "modalOnly"
           : (options?.animationMode ?? "both");
 
@@ -360,8 +386,13 @@ export default class AnimatedModal<
           this.customHideAnimations?.wrapper?.duration ??
           DEFAULT_ANIMATION_DURATION,
       );
+
+      // Check if this modal is part of a chain from the store
+      const isChainedFromStore =
+        this.storeId !== undefined && isModalChained(this.storeId);
+
       const animationMode =
-        this.previousModalInChain !== undefined
+        this.previousModalInChain !== undefined || isChainedFromStore
           ? "modalOnly"
           : (options?.animationMode ?? "both");
 
@@ -385,6 +416,11 @@ export default class AnimatedModal<
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
             void this.cleanup?.();
+
+            // Notify the store that this modal has been hidden
+            if (this.storeId !== undefined) {
+              storeHideModal(this.storeId);
+            }
 
             if (
               this.previousModalInChain !== undefined &&
@@ -416,6 +452,11 @@ export default class AnimatedModal<
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
             void this.cleanup?.();
+
+            // Notify the store that this modal has been hidden
+            if (this.storeId !== undefined) {
+              storeHideModal(this.storeId);
+            }
 
             if (
               this.previousModalInChain !== undefined &&

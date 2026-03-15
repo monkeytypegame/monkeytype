@@ -1,4 +1,3 @@
-import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as TribePages from "./tribe-pages";
@@ -19,7 +18,6 @@ import * as TribeDelta from "./tribe-delta";
 import * as TestState from "../test/test-state";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
-import * as ActivePage from "../states/active-page";
 import * as TribeState from "./tribe-state";
 import { escapeRegExp, escapeHTML, isDevEnvironment } from "../utils/misc";
 import { getTribeMode } from "../utils/tribe";
@@ -30,11 +28,18 @@ import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
 import * as TribeTypes from "./types";
 import * as NavigationEvent from "../observables/navigation-event";
-import { ColorName } from "../elements/theme-colors";
 import * as TribeAutoJoin from "./tribe-auto-join";
 import { authPromise } from "../firebase";
 import * as Result from "../test/result";
 import { SimpleModal } from "../utils/simple-modal";
+import { qs } from "../utils/dom";
+import {
+  showErrorNotification,
+  showNoticeNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
+import { getActivePage } from "../signals/core";
+import { ColorName } from "../constants/themes";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -44,7 +49,7 @@ export const expectedVersion = isDevEnvironment() ? "dev" : "25.12.4";
 function updateClientState(state: TribeTypes.ClientState): void {
   TribeState.setState(state);
 
-  $("#tribeStateDisplay").text(
+  qs("#tribeStateDisplay")?.setText(
     `${TribeState.getState()} - ${TribeState.getRoom()?.state}`,
   );
 }
@@ -58,7 +63,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
   }
 
   TribeButtons.update();
-  $("#tribeStateDisplay").text(
+  qs("#tribeStateDisplay")?.setText(
     `${TribeState.getState()} - ${TribeState.getRoom()?.state}`,
   );
 
@@ -71,7 +76,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
     TribePageLobby.disableNameVisibilityButtons();
     const self = TribeState.getSelf();
     if (self && (self.isReady || self.isLeader)) {
-      Notifications.add("Race is starting...", 1, {
+      showSuccessNotification("Race is starting...", {
         customTitle: "Tribe",
       });
     }
@@ -86,7 +91,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
         user.isFinished = false;
       }
     }
-    $("#tribeMiniChartCustomTooltip").remove();
+    qs("#tribeMiniChartCustomTooltip")?.remove();
     TribeUserList.update("lobby");
     TribeChartController.destroyAllCharts();
   } else if (state === TribeTypes.ROOM_STATE.RACE_ONGOING) {
@@ -142,7 +147,7 @@ export async function init(): Promise<void> {
   }
 
   if (!isDevEnvironment()) {
-    $(".pageTribe .menu .devRoom").remove();
+    qs(".pageTribe .menu .devRoom")?.remove();
   }
 
   setTimeout(() => {
@@ -151,7 +156,7 @@ export async function init(): Promise<void> {
 }
 
 async function reset(): Promise<void> {
-  $("#result #tribeResultBottom").addClass("hidden");
+  qs("#result #tribeResultBottom")?.addClass("hidden");
   TribeUserList.reset();
   TribeResults.reset();
   TribeChat.reset("lobby");
@@ -176,7 +181,7 @@ async function onRoomJoined(room: TribeTypes.Room): Promise<void> {
 
 export function joinRoom(roomId: string, fromBrowser = false): void {
   if (!/^[a-f0-9]{6}$/i.test(roomId)) {
-    Notifications.add("Incorrect room code format", 0);
+    showNoticeNotification("Incorrect room code format");
     return;
   }
 
@@ -256,7 +261,7 @@ TribeSocket.in.system.connect(() => {
   void connect();
 });
 
-$(".tribechangename").on("click", () => {
+qs(".tribechangename")?.on("click", () => {
   const name = prompt("Name");
   if (name !== "" && name !== null) {
     window.localStorage.setItem("tribeName", name); //todo remove, only for dev
@@ -280,11 +285,10 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribeCountdown.hide();
   Result.updateTribeElements();
 
-  if (!$(".pageTribe").hasClass("active")) {
-    Notifications.add(
+  if (!qs(".pageTribe")?.hasClass("active")) {
+    showErrorNotification(
       //@ts-expect-error tribe
       `Disconnected: ${details?.["description"]} (${reason})`,
-      -1,
       {
         customTitle: "Tribe",
       },
@@ -308,8 +312,8 @@ TribeSocket.in.system.disconnect((reason, details) => {
 TribeSocket.in.system.connectFailed((err) => {
   updateClientState(TribeTypes.CLIENT_STATE.DISCONNECTED);
   console.error(err);
-  if (!$(".pageTribe").hasClass("active")) {
-    Notifications.add("Connection failed", -1, {
+  if (!qs(".pageTribe")?.hasClass("active")) {
+    showErrorNotification("Connection failed", {
       customTitle: "Tribe",
     });
   }
@@ -329,8 +333,8 @@ TribeSocket.in.system.connectFailed((err) => {
 TribeSocket.in.system.connectError((err) => {
   updateClientState(TribeTypes.CLIENT_STATE.DISCONNECTED);
   console.error(err);
-  if (!$(".pageTribe").hasClass("active")) {
-    Notifications.add("Connection error", -1, {
+  if (!qs(".pageTribe")?.hasClass("active")) {
+    showErrorNotification("Connection error", {
       customTitle: "Tribe",
     });
   }
@@ -348,13 +352,13 @@ TribeSocket.in.system.connectError((err) => {
 });
 
 TribeSocket.in.system.reconnect((attempt) => {
-  Notifications.add(`Reconnecting successful. (${attempt})`, 1, {
+  showSuccessNotification(`Reconnecting successful. (${attempt})`, {
     customTitle: "Tribe",
   });
 });
 
 TribeSocket.in.system.reconnectAttempt((attempt) => {
-  Notifications.add(`Reconnecting... (${attempt})`, 0, {
+  showNoticeNotification(`Reconnecting... (${attempt})`, {
     customTitle: "Tribe",
   });
 });
@@ -363,9 +367,20 @@ TribeSocket.in.system.notification((data) => {
   if (data.playMentionSound) {
     TribeSound.play("chat_mention");
   }
-  Notifications.add(data.message, data.level ?? 0, {
-    customTitle: "Tribe",
-  });
+
+  if (data.level === 1) {
+    showSuccessNotification(data.message, {
+      customTitle: "Tribe",
+    });
+  } else if ((data.level ?? 0) === 0) {
+    showNoticeNotification(data.message, {
+      customTitle: "Tribe",
+    });
+  } else if (data.level === -1) {
+    showErrorNotification(data.message, {
+      customTitle: "Tribe",
+    });
+  }
 });
 
 TribeSocket.in.room.joined((data) => {
@@ -406,7 +421,7 @@ TribeSocket.in.room.left(() => {
   TribeState.setRoom(undefined);
   updateClientState(TribeTypes.CLIENT_STATE.CONNECTED);
   TribePageMenu.enableButtons();
-  if (!$(".pageTribe").hasClass("active")) {
+  if (!qs(".pageTribe")?.hasClass("active")) {
     NavigationEvent.dispatch("/tribe");
   }
   TribeCarets.destroyAll();
@@ -486,13 +501,13 @@ TribeSocket.in.room.chatMessage((data) => {
   const nameregex = new RegExp(regexString, "i");
   if (!data.isSystem && data.from?.id !== TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
-      if (ActivePage.get() !== "tribe" && ActivePage.get() !== "test") {
-        Notifications.add(data.message, 0, {
+      if (getActivePage() !== "tribe" && getActivePage() !== "test") {
+        showNoticeNotification(data.message, {
           //allowing html because the message is already escaped on the server
-          duration: 3,
+          durationMs: 3000,
           customTitle: "Mention",
           customIcon: "at",
-          allowHTML: true,
+          useInnerHtml: true,
         });
       }
       TribeSound.play("chat_mention");
@@ -536,7 +551,7 @@ TribeSocket.in.room.initRace((data) => {
     TribeBars.show("test");
   } else {
     //TODO update lobby bars
-    if (ActivePage.get() !== "tribe") {
+    if (getActivePage() !== "tribe") {
       NavigationEvent.dispatch("/tribe", {
         tribeOverride: true,
       });
@@ -816,18 +831,26 @@ TribeSocket.in.room.finalPositions((data) => {
   }
 });
 
-$(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
-  .pageTest #tribeResultBottom .buttons .startTestButton`).on("click", (_e) => {
-  initRace();
-});
+qs(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
+  .pageTest #tribeResultBottom .buttons .startTestButton`)?.on(
+  "click",
+  (_e) => {
+    initRace();
+  },
+);
 
-$(".pageTribe .tribePage.preloader button.reconnectButton").on("click", () => {
-  TribePagePreloader.hideReconnectButton();
-  void init();
-});
+qs(".pageTribe .tribePage.preloader button.reconnectButton")?.on(
+  "click",
+  () => {
+    TribePagePreloader.hideReconnectButton();
+    void init();
+  },
+);
 
-$(".pageTribe .menu .customRooms #enterRoomCode").on("click", (e) => {
-  if ($(e.currentTarget).hasClass("disabled")) return;
+qs(".pageTribe .menu .customRooms #enterRoomCode")?.on("click", (e) => {
+  if ((e.currentTarget as HTMLElement | null)?.classList.contains("disabled")) {
+    return; //todo is this check needed
+  }
   enterRoomCodeModal.show([], {});
 });
 
@@ -862,7 +885,7 @@ const enterRoomCodeModal = new SimpleModal({
   execFn: async (_thisPopup, code) => {
     joinRoom(code);
     return {
-      status: 1,
+      status: "success",
       message: "",
       showNotification: false,
     };
@@ -877,7 +900,7 @@ const startRaceModal = new SimpleModal({
   execFn: async (_thisPopup) => {
     TribeSocket.out.room.init();
     return {
-      status: 1,
+      status: "success",
       message: "",
       showNotification: false,
     };

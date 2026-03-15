@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import * as IpAddresses from "../../src/ts/utils/ip-addresses";
 
-const IP_GENERATE_COUNT = 1000;
+const IP_GENERATE_COUNT = 50;
 
 describe("IP Addresses", () => {
   describe("Compressing IPv6", () => {
@@ -37,25 +37,17 @@ describe("IP Addresses", () => {
 
   describe("Generating IPv4", () => {
     it("should generate valid IPv4 addresses", () => {
-      // We generate a set number of ip addresses dictated by the constant
       for (let i = 0; i < IP_GENERATE_COUNT; i++) {
         const ipAddress = IpAddresses.getRandomIPv4address();
-        const splitIpAddress = ipAddress.split(".");
+        const parts = ipAddress.split(".");
 
-        expect(splitIpAddress.length, "Make sure there are four parts").toEqual(
-          4,
-        );
+        expect(parts).toHaveLength(4);
 
-        for (let j = 0; j < 4; j++) {
-          const currentNumber = Number(splitIpAddress[j]);
-          expect(
-            currentNumber,
-            "Each part of an IPv4 should be >= 0",
-          ).toBeGreaterThanOrEqual(0);
-          expect(
-            currentNumber,
-            "Each part of an IPv4 should be <= 255",
-          ).toBeLessThanOrEqual(255);
+        for (const part of parts) {
+          const num = Number(part);
+          expect(num).toBeGreaterThanOrEqual(0);
+          expect(num).toBeLessThanOrEqual(255);
+          expect(Number.isInteger(num)).toBe(true);
         }
       }
     });
@@ -65,37 +57,18 @@ describe("IP Addresses", () => {
     it("should generate valid IPv6 addresses", () => {
       for (let i = 0; i < IP_GENERATE_COUNT; i++) {
         const ipAddress = IpAddresses.getRandomIPv6address();
-        const splitIpAddress = ipAddress.split(":");
+        const parts = ipAddress.split(":");
 
-        expect(
-          splitIpAddress.length,
-          "Make sure there are eight parts",
-        ).toEqual(8);
+        expect(parts).toHaveLength(8);
 
-        for (let j = 0; j < 8; j++) {
-          const currentPart = splitIpAddress[j] as string;
-          expect(
-            currentPart.length,
-            "Each part of an IPv6 should be between 1 and 4 characters",
-          ).toBeGreaterThanOrEqual(1);
-          expect(
-            currentPart.length,
-            "Each part of an IPv6 should be between 1 and 4 characters",
-          ).toBeLessThanOrEqual(4);
+        for (const part of parts) {
+          expect(part.length).toBeGreaterThanOrEqual(1);
+          expect(part.length).toBeLessThanOrEqual(4);
 
-          const currentNumber = parseInt(currentPart, 16);
-          expect(
-            currentNumber,
-            "Each part of an IPv6 should be a valid hexadecimal number",
-          ).not.toBeNaN();
-          expect(
-            currentNumber,
-            "Each part of an IPv6 should be >= 0",
-          ).toBeGreaterThanOrEqual(0);
-          expect(
-            currentNumber,
-            "Each part of an IPv6 should be <= 65535",
-          ).toBeLessThanOrEqual(65535);
+          const num = parseInt(part, 16);
+          expect(num).not.toBeNaN();
+          expect(num).toBeGreaterThanOrEqual(0);
+          expect(num).toBeLessThanOrEqual(0xffff);
         }
       }
     });

@@ -114,12 +114,20 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "arrows",
   },
   rAnDoMcAsE: {
-    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    description: "raNdomIze ThE CApitaLizatIon Of EveRY LeTtEr.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "rAnDoMcAsE",
+  },
+  sPoNgEcAsE: {
+    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    canGetPb: false,
+    difficultyLevel: 2,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "sPoNgEcAsE",
   },
   capitals: {
     description: "Capitalize Every Word.",
@@ -476,6 +484,22 @@ const list: Record<FunboxName, FunboxMetadata> = {
   },
 };
 
+export function getObject(): Record<FunboxName, FunboxMetadata> {
+  return list;
+}
+
+export function getFunboxNames(): FunboxName[] {
+  return Object.keys(list) as FunboxName[];
+}
+
+export function getList(): FunboxMetadata[] {
+  const out: FunboxMetadata[] = [];
+  for (const name of getFunboxNames()) {
+    out.push(list[name]);
+  }
+  return out;
+}
+
 export function getFunbox(name: FunboxName): FunboxMetadata;
 export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
@@ -502,20 +526,4 @@ export function getFunbox(
 
     return out;
   }
-}
-
-export function getObject(): Record<FunboxName, FunboxMetadata> {
-  return list;
-}
-
-export function getList(): FunboxMetadata[] {
-  const out: FunboxMetadata[] = [];
-  for (const name of getFunboxNames()) {
-    out.push(list[name]);
-  }
-  return out;
-}
-
-export function getFunboxNames(): FunboxName[] {
-  return Object.keys(list) as FunboxName[];
 }

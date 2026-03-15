@@ -1,5 +1,5 @@
 import FileStorage from "../../utils/file-storage";
-import * as Notifications from "../notifications";
+import { showNoticeNotification } from "../../stores/notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(
@@ -52,8 +52,8 @@ uploadContainerEl
     }
 
     // check type
-    if (!file.type.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
-      Notifications.add("Unsupported image format", 0);
+    if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
+      showNoticeNotification("Unsupported image format");
       fileInput.value = "";
       return;
     }

@@ -8,10 +8,14 @@ import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -30,7 +34,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { Theme, ThemesList } from "../constants/themes";
+import { ThemesList, ThemeWithName } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
@@ -43,7 +47,8 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs, qsa, qsr, onWindowLoad } from "../utils/dom";
+import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
+import { showPopup } from "../modals/simple-modals-base";
 import { configurationPromise } from "../ape/server-configuration";
 import { getTribeMode } from "../utils/tribe";
 
@@ -81,6 +86,7 @@ async function initGroups(): Promise<void> {
   );
   groups["difficulty"] = new SettingsGroup("difficulty", "button");
   groups["quickRestart"] = new SettingsGroup("quickRestart", "button");
+  groups["resultSaving"] = new SettingsGroup("resultSaving", "button");
   groups["showAverage"] = new SettingsGroup("showAverage", "button");
   groups["keymapMode"] = new SettingsGroup("keymapMode", "button", {
     updateCallback: () => {
@@ -208,6 +214,7 @@ async function initGroups(): Promise<void> {
   groups["liveAccStyle"] = new SettingsGroup("liveAccStyle", "button");
   groups["liveBurstStyle"] = new SettingsGroup("liveBurstStyle", "button");
   groups["highlightMode"] = new SettingsGroup("highlightMode", "button");
+  groups["typedEffect"] = new SettingsGroup("typedEffect", "button");
   groups["tapeMode"] = new SettingsGroup("tapeMode", "button");
   groups["tapeMargin"] = new SettingsGroup("tapeMargin", "input", {
     validation: { schema: true, inputValueConvert: Number },
@@ -602,7 +609,7 @@ export async function update(
     eventKey?: ConfigEvent.ConfigEventKey;
   } = {},
 ): Promise<void> {
-  if (ActivePage.get() !== "settings") {
+  if (getActivePage() !== "settings") {
     return;
   }
 
@@ -624,7 +631,7 @@ export async function update(
   setActiveFunboxButton();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs(true);
+  ThemePicker.setCustomInputs();
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
@@ -733,7 +740,7 @@ export async function update(
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&
@@ -764,27 +771,17 @@ function toggleSettingsGroup(groupName: string): void {
 
   const groupEl = qs(`.pageSettings .settingsGroup.${groupName}`);
   if (!groupEl?.hasClass("slideup")) {
-    groupEl?.animate({
-      height: 0,
-      duration: 250,
-      onComplete: () => {
-        groupEl?.hide();
-      },
+    void groupEl?.slideUp(250, {
+      hide: false,
     });
     groupEl?.addClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.addClass(
       "rotateIcon",
     );
   } else {
-    groupEl?.show();
-    groupEl?.setStyle({ height: "" });
-    const height = groupEl.getOffsetHeight();
-    groupEl?.animate({
-      height: [0, height],
-      duration: 250,
-    });
+    void groupEl?.slideDown(250);
     groupEl?.removeClass("slideup");
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
+    qs(`.pageSettings .sectionGroupTitle[group=${groupName}]`)?.removeClass(
       "rotateIcon",
     );
   }
@@ -833,7 +830,7 @@ qs("#exportSettingsButton")?.on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      Notifications.add("JSON Copied to clipboard", 0);
+      showNoticeNotification("JSON Copied to clipboard");
     },
     function () {
       ImportExportSettingsModal.show("export");
@@ -858,9 +855,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
+    showSuccessNotification("Saved", { durationMs: 1000 });
   }
 });
 
@@ -876,9 +871,7 @@ qs(
     ),
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
+    showSuccessNotification("Saved", { durationMs: 1000 });
   }
 });
 
@@ -895,16 +888,17 @@ qs(
       ),
     );
     if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
+      showSuccessNotification("Saved", { durationMs: 1000 });
     }
   }
 });
 
 qsa(".pageSettings .quickNav .links a")?.on("click", (e) => {
-  const target = e.currentTarget as HTMLElement;
-  const settingsGroup = target.innerText;
+  const target = e.currentTarget as HTMLAnchorElement;
+  const href = target.getAttribute("href") ?? "";
+  if (!href.startsWith("#group_")) return;
+  const settingsGroup = href.slice("#group_".length);
+  if (settingsGroup === "") return;
   const isClosed = qs(
     `.pageSettings .settingsGroup.${settingsGroup}`,
   )?.hasClass("slideup");
@@ -947,7 +941,7 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
 }
 
 function getThemeDropdownData(
-  isActive: (theme: Theme) => boolean,
+  isActive: (theme: ThemeWithName) => boolean,
 ): DataArrayPartial {
   return ThemesList.map((theme) => ({
     value: theme.name,
@@ -992,12 +986,53 @@ qsa(".pageSettings .section .groupTitle button")?.on("click", (e) => {
   navigator.clipboard
     .writeText(window.location.toString())
     .then(() => {
-      Notifications.add("Link copied to clipboard", 1);
+      showSuccessNotification("Link copied to clipboard");
     })
     .catch((e: unknown) => {
-      const msg = Misc.createErrorMessage(e, "Failed to copy to clipboard");
-      Notifications.add(msg, -1);
+      showErrorNotification("Failed to copy to clipboard", { error: e });
     });
+});
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .delButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("deleteCustomTheme", [customThemeId]);
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section.themes .customTheme .editButton",
+  (e) => {
+    const parentElement = (e.childTarget as HTMLElement | null)?.closest(
+      ".customTheme.button",
+    );
+    const customThemeId = parentElement?.getAttribute(
+      "customThemeId",
+    ) as string;
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
+  },
+);
+
+qs(".pageSettings")?.onChild(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont");
+  },
+);
+
+qs(".pageSettings #resetSettingsButton")?.on("click", () => {
+  showPopup("resetSettings");
 });
 
 ConfigEvent.subscribe(({ key, newValue }) => {
@@ -1014,7 +1049,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled) return;
-  if (ActivePage.get() === "settings" && key !== "theme") {
+  if (getActivePage() === "settings" && key !== "theme") {
     void (key === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey: key }));
@@ -1051,6 +1086,6 @@ export const page = new PageWithUrlParams({
   },
 });
 
-onWindowLoad(async () => {
+onDOMReady(async () => {
   Skeleton.save("pageSettings");
 });

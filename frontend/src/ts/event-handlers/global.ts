@@ -3,8 +3,8 @@ import * as PageTransition from "../states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
-import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
+import { showErrorNotification } from "../stores/notifications";
+import { getActivePage } from "../signals/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
@@ -20,7 +20,7 @@ document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
-  const pageTestActive: boolean = ActivePage.get() === "test";
+  const pageTestActive: boolean = getActivePage() === "test";
   if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
@@ -54,9 +54,9 @@ document.addEventListener("keydown", async (e) => {
       e.shiftKey) ||
     (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
   ) {
-    e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
     if (!popupVisible) {
+      e.preventDefault();
       Commandline.show();
     }
   }
@@ -82,7 +82,7 @@ document.addEventListener("keydown", async (e) => {
       e.preventDefault();
 
       if (TribeState.isInARoom()) {
-        if (ActivePage.get() === "tribe") {
+        if (getActivePage() === "tribe") {
           if (TribeState.isRaceActive()) return;
           if (isAnyChatSuggestionVisible()) return;
           if (TribeState.isLeader()) {
@@ -90,7 +90,7 @@ document.addEventListener("keydown", async (e) => {
           } else {
             Tribe.readyUp();
           }
-        } else if (ActivePage.get() === "test") {
+        } else if (getActivePage() === "test") {
           if (TribeState.isRaceActive()) return;
           if (isAnyChatSuggestionVisible()) return;
           if (TribeState.isLeader()) {
@@ -105,7 +105,7 @@ document.addEventListener("keydown", async (e) => {
         return;
       }
 
-      if (ActivePage.get() === "test") {
+      if (getActivePage() === "test") {
         if (e.shiftKey) {
           ManualRestart.set();
         }
@@ -129,22 +129,22 @@ window.addEventListener("keydown", function (e) {
 
 window.onerror = function (message, url, line, column, error): void {
   if (Misc.isDevEnvironment()) {
-    Notifications.add(error?.message ?? "Undefined message", -1, {
+    showErrorNotification(error?.message ?? "Undefined message", {
       customTitle: "DEV: Unhandled error",
-      duration: 5,
+      durationMs: 5000,
       important: true,
     });
+    console.error({ message, url, line, column, error });
   }
 };
 
 window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
-    Notifications.add(
+    showErrorNotification(
       (e.reason as Error).message ?? e.reason ?? "Undefined message",
-      -1,
       {
         customTitle: "DEV: Unhandled rejection",
-        duration: 5,
+        durationMs: 5000,
         important: true,
       },
     );

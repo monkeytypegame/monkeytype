@@ -1,12 +1,11 @@
 import Config from "../config";
-import * as ThemeColors from "./theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
-import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
+import { showErrorNotification } from "../stores/notifications";
+import { getActivePage } from "../signals/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
 import * as ShiftTracker from "../test/shift-tracker";
@@ -18,6 +17,9 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { getTheme } from "../signals/theme";
+
+import { createEffectOn } from "../hooks/effects";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -60,6 +62,11 @@ const stenoKeys: LayoutObject = {
     row5: [],
   },
 };
+
+createEffectOn(getTheme, () => {
+  //reset calculated style on all keys
+  keymap.qsa(".keymapKey").setStyle({});
+});
 
 function findKeyElements(char: string): ElementsWithUtils | null {
   if (char === "\n") return null;
@@ -106,7 +113,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
     const elements = findKeyElements(key);
     if (elements === null || elements.length === 0) return;
 
-    const themecolors = await ThemeColors.getAll();
+    const themecolors = getTheme();
 
     try {
       let startingStyle = {
@@ -141,11 +148,11 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
 }
 
 export function hide(): void {
-  keymap.addClass("hidden");
+  keymap.hide();
 }
 
 export function show(): void {
-  keymap.removeClass("hidden");
+  keymap.show();
 }
 
 function buildRow(options: {
@@ -398,7 +405,7 @@ export async function refresh(): Promise<void> {
       : Config.layout;
 
   if (Config.keymapMode === "off") return;
-  if (ActivePage.get() !== "test") return;
+  if (getActivePage() !== "test") return;
   if (!layoutName) return;
   try {
     let layoutNameDisplayString = layoutName;
@@ -417,10 +424,9 @@ export async function refresh(): Promise<void> {
         layoutNameDisplayString = Config.keymapLayout;
       }
     } catch (e) {
-      Notifications.add(
-        Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
-        -1,
-      );
+      showErrorNotification(`Failed to load keymap ${layoutName}`, {
+        error: e,
+      });
       return;
     }
 
@@ -553,7 +559,7 @@ async function updateLegends(): Promise<void> {
 
   const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
   if (layout === undefined) {
-    Notifications.add("Failed to load keymap layout", -1);
+    showErrorNotification("Failed to load keymap layout");
 
     return;
   }

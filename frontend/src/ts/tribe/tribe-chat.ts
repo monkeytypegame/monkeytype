@@ -1,4 +1,3 @@
-import * as Notifications from "../elements/notifications";
 import * as TribeState from "../tribe/tribe-state";
 import * as Misc from "../utils/misc";
 import tribeSocket from "./tribe-socket";
@@ -8,8 +7,9 @@ import {
 } from "../elements/input-suggestions";
 import { getEmojiList } from "../utils/json-data";
 import * as TribeTypes from "./types";
-import { qsr } from "../utils/dom";
-import * as ActivePage from "../states/active-page";
+import { qs, qsa, qsr } from "../utils/dom";
+import { getActivePage } from "../signals/core";
+import { showNoticeNotification } from "../stores/notifications";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
@@ -105,11 +105,11 @@ export function updateSuggestionData(): void {
 
 export function reset(where: "lobby" | "result"): void {
   if (where === "lobby") {
-    $(".pageTribe .lobby .chat .messages").empty();
+    qs(".pageTribe .lobby .chat .messages")?.empty();
     lobbyChatSuggestions1.destroy();
     lobbyChatSuggestions2.destroy();
   } else if (where === "result") {
-    $(".pageTest #result #tribeResultBottom .chat .messages").empty();
+    qs(".pageTest #result #tribeResultBottom .chat .messages")?.empty();
     resultChatSuggestions1.destroy();
     resultChatSuggestions2.destroy();
   }
@@ -127,14 +127,18 @@ function sendChattingUpdate(bool: boolean): void {
 }
 
 export function scrollChat(): void {
-  const chatEl = $(".pageTribe .lobby .chat .messages")[0] as HTMLElement;
-  const chatEl2 = $(
+  const chatEl = qsa(".pageTribe .lobby .chat .messages")[0];
+  const chatEl2 = qsa(
     ".pageTest #result #tribeResultBottom .chat .messages",
-  )[0] as HTMLElement;
+  )[0];
+
+  if (chatEl === undefined || chatEl2 === undefined) {
+    return;
+  }
 
   if (shouldScrollChat) {
-    chatEl.scrollTop = chatEl.scrollHeight;
-    chatEl2.scrollTop = chatEl2.scrollHeight;
+    chatEl.native.scrollTop = chatEl?.native.scrollHeight;
+    chatEl2.native.scrollTop = chatEl2?.native.scrollHeight;
     shouldScrollChat = true;
   }
 }
@@ -142,8 +146,8 @@ export function scrollChat(): void {
 export function updateIsTyping(): void {
   const room = TribeState.getRoom();
   if (!room) {
-    $(".pageTribe .lobby .chat .whoIsTyping").html("");
-    $(".pageTest #result #tribeResultBottom .chat .whoIsTyping").html("");
+    qs(".pageTribe .lobby .chat .whoIsTyping")?.setHtml("");
+    qs(".pageTest #result #tribeResultBottom .chat .whoIsTyping")?.setHtml("");
     return;
   }
   let string = "";
@@ -179,8 +183,10 @@ export function updateIsTyping(): void {
     string = " ";
   }
 
-  $(".pageTribe .lobby .chat .whoIsTyping").html(string);
-  $(".pageTest #result #tribeResultBottom .chat .whoIsTyping").html(string);
+  qs(".pageTribe .lobby .chat .whoIsTyping")?.setHtml(string);
+  qs(".pageTest #result #tribeResultBottom .chat .whoIsTyping")?.setHtml(
+    string,
+  );
 }
 
 async function insertImageEmoji(text: string): Promise<string> {
@@ -225,7 +231,7 @@ export function appendMessage(
 
   void displayMessage(
     chatHistory.length - 1,
-    ActivePage.get() === "test" ? "result" : "lobby",
+    getActivePage() === "test" ? "result" : "lobby",
   );
 }
 
@@ -269,11 +275,11 @@ export async function displayMessage(
   }
 
   if (where === "lobby") {
-    $(".pageTribe .lobby .chat .messages").append(`
+    qs(".pageTribe .lobby .chat .messages")?.appendHtml(`
     <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
   } else if (where === "result") {
-    $(".pageTest #result #tribeResultBottom .chat .messages").append(`
+    qs(".pageTest #result #tribeResultBottom .chat .messages")?.appendHtml(`
     <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
   }
@@ -285,7 +291,7 @@ function sendMessage(msg: string): void {
   msg = msg.trim();
   if (msg === "") return;
   if (msg.length > 512) {
-    Notifications.add("Message cannot be longer than 512 characters.", 0);
+    showNoticeNotification("Message cannot be longer than 512 characters.");
     return;
   }
   if (performance.now() < lastMessageTimestamp + 500) return;
@@ -293,44 +299,50 @@ function sendMessage(msg: string): void {
   sendChattingUpdate(false);
   tribeSocket.out.room.chatMessage(msg);
   shouldScrollChat = true;
-  $(".pageTribe .lobby .chat .input input").val("");
-  $(".pageTest #result #tribeResultBottom .chat .input input").val("");
+  qs<HTMLInputElement>(".pageTribe .lobby .chat .input input")?.setValue("");
+  qs<HTMLInputElement>(
+    ".pageTest #result #tribeResultBottom .chat .input input",
+  )?.setValue("");
 }
 
-$(".pageTribe .tribePage.lobby .chat .input input").on("keyup", (e) => {
+qs(".pageTribe .tribePage.lobby .chat .input input")?.on("keyup", (e) => {
   if (e.key === "Enter") {
     if (isAnyChatSuggestionVisible()) return;
-    const msg = $(".pageTribe .lobby .chat .input input").val();
+    const msg = qs<HTMLInputElement>(
+      ".pageTribe .lobby .chat .input input",
+    )?.getValue();
     sendMessage(msg as string);
   }
 });
 
-$(".pageTest #result #tribeResultBottom .chat .input input").on(
+qs(".pageTest #result #tribeResultBottom .chat .input input")?.on(
   "keyup",
   (e) => {
     if (e.key === "Enter") {
       if (isAnyChatSuggestionVisible()) return;
-      const msg = $(
+      const msg = qs<HTMLInputElement>(
         ".pageTest #result #tribeResultBottom .chat .input input",
-      ).val();
+      )?.getValue();
       sendMessage(msg as string);
     }
   },
 );
 
-$(document).on("keydown", (e) => {
+qs("document")?.on("keydown", (e) => {
   if (!TribeState.isInARoom()) return;
 
   if (TribeState.getRoomState() === TribeTypes.ROOM_STATE.LOBBY) {
     if (
       e.key === "/" &&
-      !$(".pageTribe .lobby .chat .input input").is(":focus")
+      !qs<HTMLInputElement>(".pageTribe .lobby .chat .input input")?.isFocused()
     ) {
-      $(".pageTribe .lobby .chat .input input").trigger("focus");
+      qs<HTMLInputElement>(".pageTribe .lobby .chat .input input")?.dispatch(
+        "focus",
+      );
       e.preventDefault();
     }
   } else if (
-    ActivePage.get() === "test" &&
+    getActivePage() === "test" &&
     (TribeState.getRoomState() === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED ||
       TribeState.getRoomState() ===
         TribeTypes.ROOM_STATE.RACE_AWAITING_RESULTS ||
@@ -339,21 +351,25 @@ $(document).on("keydown", (e) => {
   ) {
     if (
       e.key === "/" &&
-      !$(".pageTest #result #tribeResultBottom .chat .input input").is(":focus")
+      !qs<HTMLInputElement>(
+        ".pageTest #result #tribeResultBottom .chat .input input",
+      )?.isFocused()
     ) {
-      $(".pageTest #result #tribeResultBottom .chat .input input").trigger(
-        "focus",
-      );
+      qs<HTMLInputElement>(
+        ".pageTest #result #tribeResultBottom .chat .input input",
+      )?.dispatch("focus");
       e.preventDefault();
     }
   }
 });
 
-$(".pageTribe .tribePage.lobby .chat .input input").on("input", (_e) => {
-  const val = $(
+qs(".pageTribe .tribePage.lobby .chat .input input")?.on("input", (_e) => {
+  const val = qs<HTMLInputElement>(
     ".pageTribe .tribePage.lobby .chat .input input",
-  ).val() as string;
-  $(".pageTest #result #tribeResultBottom .chat .input input").val(val);
+  )?.getValue() as string;
+  qs<HTMLInputElement>(
+    ".pageTest #result #tribeResultBottom .chat .input input",
+  )?.setValue(val);
   const vallen = val.length;
   if (vallen === 1) {
     sendChattingUpdate(true);
@@ -362,13 +378,15 @@ $(".pageTribe .tribePage.lobby .chat .input input").on("input", (_e) => {
   }
 });
 
-$(".pageTest #result #tribeResultBottom .chat .input input").on(
+qs(".pageTest #result #tribeResultBottom .chat .input input")?.on(
   "input",
   (_e) => {
-    const val = $(
+    const val = qs<HTMLInputElement>(
       ".pageTest #result #tribeResultBottom .chat .input input",
-    ).val() as string;
-    $(".pageTribe .tribePage.lobby .chat .input input").val(val);
+    )?.getValue() as string;
+    qs<HTMLInputElement>(
+      ".pageTribe .tribePage.lobby .chat .input input",
+    )?.setValue(val);
     const vallen = val.length;
     if (vallen === 1) {
       sendChattingUpdate(true);
@@ -378,11 +396,12 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
   },
 );
 
-$(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {
-  const el = $(".pageTribe .lobby .chat .messages")[0];
-  const scrollHeight = el?.scrollHeight as number;
-  const scrollTop = el?.scrollTop as number;
-  const height = el?.clientHeight as number;
+qs(".pageTribe .lobby .chat .messages")?.on("scroll", (_e) => {
+  const el = qsa(".pageTribe .lobby .chat .messages")[0];
+  if (el === undefined) return;
+  const scrollHeight = el.native.scrollHeight;
+  const scrollTop = el.native.scrollTop;
+  const height = el.native.clientHeight;
   if (height + scrollTop < scrollHeight - 20) {
     shouldScrollChat = false;
   } else {
@@ -390,17 +409,21 @@ $(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {
   }
 });
 
-$(".pageTest #result #tribeResultBottom .chat .messages").on("scroll", (_e) => {
-  const el = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
-  const scrollHeight = el?.scrollHeight as number;
-  const scrollTop = el?.scrollTop as number;
-  const height = el?.clientHeight as number;
-  if (height + scrollTop < scrollHeight - 20) {
-    shouldScrollChat = false;
-  } else {
-    shouldScrollChat = true;
-  }
-});
+qs(".pageTest #result #tribeResultBottom .chat .messages")?.on(
+  "scroll",
+  (_e) => {
+    const el = qsa(".pageTest #result #tribeResultBottom .chat .messages")[0];
+    if (el === undefined) return;
+    const scrollHeight = el.native.scrollHeight;
+    const scrollTop = el.native.scrollTop;
+    const height = el.native.clientHeight;
+    if (height + scrollTop < scrollHeight - 20) {
+      shouldScrollChat = false;
+    } else {
+      shouldScrollChat = true;
+    }
+  },
+);
 
 lobbyChatSuggestions1.applyEventListeners();
 lobbyChatSuggestions2.applyEventListeners();

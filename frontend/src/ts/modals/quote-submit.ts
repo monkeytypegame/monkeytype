@@ -1,7 +1,12 @@
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
 import Config from "../config";
@@ -17,9 +22,12 @@ async function initDropdown(): Promise<void> {
 
   for (const group of LanguageGroupNames) {
     if (group === "swiss_german") continue;
-    $("#quoteSubmitModal .newQuoteLanguage").append(
-      `<option value="${group}">${group.replace(/_/g, " ")}</option>`,
-    );
+    modal
+      .getModal()
+      .qsr(".newQuoteLanguage")
+      .appendHtml(
+        `<option value="${group}">${group.replace(/_/g, " ")}</option>`,
+      );
   }
   dropdownReady = true;
 }
@@ -27,38 +35,44 @@ async function initDropdown(): Promise<void> {
 let select: SlimSelect | undefined = undefined;
 
 async function submitQuote(): Promise<void> {
-  const text = $("#quoteSubmitModal .newQuoteText").val() as string;
-  const source = $("#quoteSubmitModal .newQuoteSource").val() as string;
-  const language = $("#quoteSubmitModal .newQuoteLanguage").val() as Language;
+  const modalEl = modal.getModal();
+  const text = modalEl
+    .qsr<HTMLTextAreaElement>(".newQuoteText")
+    .getValue() as string;
+  const source = modalEl
+    .qsr<HTMLInputElement>(".newQuoteSource")
+    .getValue() as string;
+  const language = modalEl
+    .qsr<HTMLSelectElement>("select.newQuoteLanguage")
+    .getValue() as Language;
   const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
-    Notifications.add("Please fill in all fields", 0);
+    showNoticeNotification("Please fill in all fields");
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.quotes.add({
     body: { text, source, language, captcha },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote", -1, { response });
+    showErrorNotification("Failed to submit quote", { response });
     return;
   }
 
-  Notifications.add("Quote submitted.", 1);
-  $("#quoteSubmitModal .newQuoteText").val("");
-  $("#quoteSubmitModal .newQuoteSource").val("");
+  showSuccessNotification("Quote submitted.");
+  modalEl.qsr<HTMLTextAreaElement>(".newQuoteText").setValue("");
+  modalEl.qsr<HTMLInputElement>(".newQuoteSource").setValue("");
   CaptchaController.reset("submitQuote");
 }
 
 export async function show(showOptions: ShowOptions): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
-    Notifications.add(
+    showErrorNotification(
       "Could not show quote submit popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1,
     );
     return;
   }
@@ -67,9 +81,9 @@ export async function show(showOptions: ShowOptions): Promise<void> {
     ...showOptions,
     mode: "dialog",
     focusFirstInput: true,
-    afterAnimation: async () => {
+    afterAnimation: async (modalEl) => {
       CaptchaController.render(
-        document.querySelector("#quoteSubmitModal .g-recaptcha") as HTMLElement,
+        modalEl.qsr(".g-recaptcha").native,
         "submitQuote",
       );
       await initDropdown();
@@ -78,13 +92,15 @@ export async function show(showOptions: ShowOptions): Promise<void> {
         select: "#quoteSubmitModal .newQuoteLanguage",
       });
 
-      $("#quoteSubmitModal .newQuoteLanguage").val(
-        Strings.removeLanguageSize(Config.language),
-      );
-      $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
-      $("#quoteSubmitModal input").val("");
+      modalEl
+        .qsr<HTMLSelectElement>("select.newQuoteLanguage")
+        .setValue(Strings.removeLanguageSize(Config.language));
+      modalEl
+        .qsr<HTMLSelectElement>("select.newQuoteLanguage")
+        .dispatch("change");
+      modalEl.qsr<HTMLInputElement>("input").setValue("");
 
-      new CharacterCounter(qsr("#quoteSubmitModal .newQuoteText"), 250);
+      new CharacterCounter(modalEl.qsr(".newQuoteText"), 250);
     },
   });
 }

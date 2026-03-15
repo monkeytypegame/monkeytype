@@ -62,7 +62,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
   const parseLintOutput = (
     output: string,
   ): Pick<LintResult, "errorCount" | "warningCount"> => {
-    const summaryMatch = output.match(OXLINT_SUMMARY_REGEX);
+    const summaryMatch = OXLINT_SUMMARY_REGEX.exec(output);
     if (summaryMatch?.[1] !== undefined && summaryMatch?.[2] !== undefined) {
       return {
         warningCount: parseInt(summaryMatch[1], 10),
@@ -185,7 +185,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       }
     }
 
-    // First pass clean - run type-aware check if enabled
+    // Run type-aware check if enabled
     if (!typeAware) {
       sendLintResult({ errorCount: 0, warningCount: 0, running: false });
       return;
@@ -220,8 +220,8 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
   return {
     name: "vite-plugin-oxlint-checker",
 
-    config(_, { command }) {
-      isProduction = command === "build";
+    config(_, { mode }) {
+      isProduction = mode === "production";
     },
 
     configureServer(devServer: ViteDevServer) {
@@ -245,7 +245,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
     },
 
     transformIndexHtml() {
-      if (!overlay) {
+      if (isProduction || !overlay) {
         return [];
       }
 
@@ -275,14 +275,16 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       console.log("\n\x1b[1mRunning oxlint...\x1b[0m");
 
       try {
-        const output = execSync(
-          "npx oxlint . && npx oxlint . --type-aware --type-check",
-          {
-            cwd: process.cwd(),
-            encoding: "utf-8",
-            env: { ...process.env, FORCE_COLOR: "3" },
-          },
-        );
+        const commands = ["npx oxlint ."];
+        if (typeAware) {
+          commands.push("npx oxlint . --type-aware --type-check");
+        }
+
+        const output = execSync(commands.join(" && "), {
+          cwd: process.cwd(),
+          encoding: "utf-8",
+          env: { ...process.env, FORCE_COLOR: "3" },
+        });
 
         if (output) {
           console.log(output);

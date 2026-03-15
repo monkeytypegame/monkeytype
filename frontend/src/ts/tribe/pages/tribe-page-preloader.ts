@@ -1,33 +1,35 @@
+import { qs } from "../../utils/dom";
+
 export function updateIcon(iconName: string, spinning = false): void {
-  $(".pageTribe .tribePage.preloader .icon").html(
+  qs(".pageTribe .tribePage.preloader .icon")?.setHtml(
     `<i class="fas fa-fw fa-${iconName} ${spinning ? "fa-spin" : ""}"></i>`,
   );
 }
 
 export function updateText(text: string, html = false): void {
   if (html) {
-    $(".pageTribe .tribePage.preloader .text").html(text);
+    qs(".pageTribe .tribePage.preloader .text")?.setHtml(text);
   } else {
-    $(".pageTribe .tribePage.preloader .text").text(text);
+    qs(".pageTribe .tribePage.preloader .text")?.setText(text);
   }
 }
 
 export function updateSubtext(text: string, html = false): void {
   if (html) {
-    $(".pageTribe .tribePage.preloader .subtext").html(text);
+    qs(".pageTribe .tribePage.preloader .subtext")?.setHtml(text);
   } else {
-    $(".pageTribe .tribePage.preloader .subtext").text(text);
+    qs(".pageTribe .tribePage.preloader .subtext")?.setText(text);
   }
 }
 
 export function showReconnectButton(): void {
-  $(".pageTribe .tribePage.preloader button.reconnectButton").removeClass(
+  qs(".pageTribe .tribePage.preloader button.reconnectButton")?.removeClass(
     `hidden`,
   );
 }
 
 export function hideReconnectButton(): void {
-  $(".pageTribe .tribePage.preloader button.reconnectButton").addClass(
+  qs(".pageTribe .tribePage.preloader button.reconnectButton")?.addClass(
     `hidden`,
   );
 }

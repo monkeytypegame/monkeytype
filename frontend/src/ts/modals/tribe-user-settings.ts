@@ -1,13 +1,12 @@
 import * as TribeState from "../tribe/tribe-state";
-import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import AnimatedModal from "../utils/animated-modal";
+import { showErrorNotification } from "../stores/notifications";
 
 export function show(userId: string): void {
   if (!userId) {
-    Notifications.add(
+    showErrorNotification(
       "Cannot show user settings without passing in user id",
-      -1,
     );
     return;
   }

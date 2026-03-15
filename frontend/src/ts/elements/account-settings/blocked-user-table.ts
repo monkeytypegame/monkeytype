@@ -1,14 +1,14 @@
-import * as Notifications from "../../elements/notifications";
+import { showErrorNotification } from "../../stores/notifications";
 import { Connection } from "@monkeytype/schemas/connections";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
 import { getReceiverUid } from "../../pages/friends";
 import * as DB from "../../db";
-import { updateFriendRequestsIndicator } from "../account-button";
+import { qsr } from "../../utils/dom";
 
 let blockedUsers: Connection[] = [];
-const element = $("#pageAccountSettings .tab[data-tab='blockedUsers']");
+const element = qsr("#pageAccountSettings .tab[data-tab='blockedUsers']");
 
 async function getData(): Promise<boolean> {
   showLoaderRow();
@@ -24,7 +24,7 @@ async function getData(): Promise<boolean> {
 
   if (response.status !== 200) {
     blockedUsers = [];
-    Notifications.add("Error getting blocked users", -1, { response });
+    showErrorNotification("Error getting blocked users", { response });
     return false;
   }
 
@@ -37,19 +37,19 @@ export async function update(): Promise<void> {
 }
 
 function showLoaderRow(): void {
-  const table = element.find("table tbody");
+  const table = element.qs("table tbody");
 
-  table.empty();
-  table.append(
+  table?.empty();
+  table?.appendHtml(
     "<tr><td colspan='3' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>",
   );
 }
 
 function refreshList(): void {
-  const table = element.find("table tbody");
-  table.empty();
+  const table = element.qs("table tbody");
+  table?.empty();
   if (blockedUsers.length === 0) {
-    table.append(
+    table?.appendHtml(
       "<tr><td colspan='3' style='text-align: center;'>No blocked users</td></tr>",
     );
     return;
@@ -57,9 +57,7 @@ function refreshList(): void {
   const content = blockedUsers.map(
     (blocked) => `
     <tr data-id="${blocked._id}" data-uid="${getReceiverUid(blocked)}">
-       <td><a href="${location.origin}/profile/${
-         blocked.initiatorUid
-       }?isUid" router-link>${blocked.initiatorName}</a></td>
+       <td><a href="${location.origin}/profile/${blocked.initiatorName}" router-link>${blocked.initiatorName}</a></td>
        <td>${format(new Date(blocked.lastModified), "dd MMM yyyy HH:mm")}</td>
        <td>
          <button class="delete">
@@ -69,12 +67,12 @@ function refreshList(): void {
     </tr>
     `,
   );
-  table.append(content.join());
+  table?.appendHtml(content.join());
 }
 
-element.on("click", "table button.delete", async (e) => {
-  const row = (e.target as HTMLElement).closest("tr") as HTMLElement;
-  const id = row.dataset["id"];
+element.onChild("click", "table button.delete", async (e) => {
+  const row = (e.childTarget as HTMLElement).closest("tr") as HTMLElement;
+  const id = row?.dataset["id"];
 
   if (id === undefined) {
     throw new Error("Cannot find id of target.");
@@ -84,7 +82,7 @@ element.on("click", "table button.delete", async (e) => {
 
   const response = await Ape.connections.delete({ params: { id } });
   if (response.status !== 200) {
-    Notifications.add(`Cannot unblock user: ${response.body.message}`, -1);
+    showErrorNotification(`Cannot unblock user: ${response.body.message}`);
   } else {
     blockedUsers = blockedUsers.filter((it) => it._id !== id);
     refreshList();
@@ -98,7 +96,7 @@ element.on("click", "table button.delete", async (e) => {
 
       // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
       delete snapshot.connections[uid];
-      updateFriendRequestsIndicator();
+      DB.setSnapshot(snapshot);
     }
   }
 });

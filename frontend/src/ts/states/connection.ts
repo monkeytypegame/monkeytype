@@ -1,7 +1,9 @@
 import { debounce } from "throttle-debounce";
-import * as Notifications from "../elements/notifications";
+import { showSuccessNotification } from "../stores/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
+import { onDOMReady } from "../utils/dom";
+import { addBanner, removeBanner } from "../stores/banners";
 
 let state = navigator.onLine;
 
@@ -15,27 +17,25 @@ let bannerAlreadyClosed = false;
 
 export function showOfflineBanner(): void {
   if (bannerAlreadyClosed) return;
-  noInternetBannerId ??= Notifications.addPSA(
-    "No internet connection",
-    0,
-    "exclamation-triangle",
-    false,
-    () => {
+  noInternetBannerId ??= addBanner({
+    level: "notice",
+    text: "No internet connection",
+    icon: "fas fa-exclamation-triangle",
+    onClose: () => {
       bannerAlreadyClosed = true;
       noInternetBannerId = undefined;
     },
-  );
+  });
 }
 
 const throttledHandleState = debounce(5000, () => {
   if (state) {
     if (noInternetBannerId !== undefined) {
-      Notifications.add("You're back online", 1, {
+      showSuccessNotification("You're back online", {
         customTitle: "Connection",
       });
-      $(
-        `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`,
-      ).trigger("click");
+      removeBanner(noInternetBannerId);
+      noInternetBannerId = undefined;
     }
     bannerAlreadyClosed = false;
   } else if (!TestState.isActive) {
@@ -48,7 +48,7 @@ ConnectionEvent.subscribe((newState) => {
   throttledHandleState();
 });
 
-window.addEventListener("load", () => {
+onDOMReady(() => {
   state = navigator.onLine;
   if (!state) {
     showOfflineBanner();

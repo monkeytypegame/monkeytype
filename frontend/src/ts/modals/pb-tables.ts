@@ -14,8 +14,8 @@ function update(mode: Mode): void {
   const modalEl = modal.getModal();
 
   modalEl.qs("table tbody")?.empty();
-  modalEl.qs("table thead tr td")?.setText(mode);
-  modalEl.qs("table thead tr td span.unit")?.setText(Config.typingSpeedUnit);
+  modalEl.qs("thead td:first-child")?.setText(mode);
+  modalEl.qs("thead span.unit")?.setText(Config.typingSpeedUnit);
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;

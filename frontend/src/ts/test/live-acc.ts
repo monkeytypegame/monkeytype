@@ -2,13 +2,11 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { applyReducedMotion } from "../utils/misc";
-import { animate } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { qs } from "../utils/dom";
 
-const textEl = document.querySelector(
-  "#liveStatsTextBottom .liveAcc",
-) as HTMLElement;
-const miniEl = document.querySelector("#liveStatsMini .acc") as HTMLElement;
+const textEl = qs("#liveStatsTextBottom .liveAcc");
+const miniEl = qs("#liveStatsMini .acc");
 
 export function update(acc: number): void {
   requestDebouncedAnimationFrame("live-acc.update", () => {
@@ -16,15 +14,15 @@ export function update(acc: number): void {
     if (Config.blindMode) {
       number = 100;
     }
-    miniEl.innerHTML = number + "%";
-    textEl.innerHTML = number + "%";
+    miniEl?.setHtml(number + "%");
+    textEl?.setHtml(number + "%");
   });
 }
 
 export function reset(): void {
   requestDebouncedAnimationFrame("live-acc.reset", () => {
-    miniEl.innerHTML = "100%";
-    textEl.innerHTML = "100%";
+    miniEl?.setHtml("100%");
+    textEl?.setHtml("100%");
   });
 }
 
@@ -36,14 +34,14 @@ export function show(): void {
   if (state) return;
   requestDebouncedAnimationFrame("live-acc.show", () => {
     if (Config.liveAccStyle === "mini") {
-      miniEl.classList.remove("hidden");
-      animate(miniEl, {
+      miniEl?.show();
+      miniEl?.animate({
         opacity: [0, 1],
         duration: applyReducedMotion(125),
       });
     } else {
-      textEl.classList.remove("hidden");
-      animate(textEl, {
+      textEl?.show();
+      textEl?.animate({
         opacity: [0, 1],
         duration: applyReducedMotion(125),
       });
@@ -55,18 +53,18 @@ export function show(): void {
 export function hide(): void {
   if (!state) return;
   requestDebouncedAnimationFrame("live-acc.hide", () => {
-    animate(textEl, {
+    textEl?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
       onComplete: () => {
-        textEl.classList.add("hidden");
+        textEl?.hide();
       },
     });
-    animate(miniEl, {
+    miniEl?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
       onComplete: () => {
-        miniEl.classList.add("hidden");
+        miniEl?.hide();
       },
     });
     state = false;
@@ -76,10 +74,10 @@ export function hide(): void {
 export function instantHide(): void {
   if (!state) return;
 
-  textEl.classList.add("hidden");
-  textEl.style.opacity = "0";
-  miniEl.classList.add("hidden");
-  miniEl.style.opacity = "0";
+  textEl?.hide();
+  textEl?.setStyle({ opacity: "0" });
+  miniEl?.hide();
+  miniEl?.setStyle({ opacity: "0" });
 
   state = false;
 }

@@ -10,7 +10,7 @@ import {
   COMPATIBILITY_CHECK,
   COMPATIBILITY_CHECK_HEADER,
 } from "@monkeytype/contracts";
-import * as Notifications from "../../elements/notifications";
+import { addBanner } from "../../stores/banners";
 
 let bannerShownThisSession = false;
 
@@ -63,9 +63,12 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         if (backendCheck !== COMPATIBILITY_CHECK) {
           const message =
             backendCheck > COMPATIBILITY_CHECK
-              ? `Looks like the client and server versions are mismatched (backend is newer). Please <a onClick="location.reload(true)">refresh</a> the page.`
+              ? `Looks like the client and server versions are mismatched (backend is newer). Please refresh the page.`
               : `Looks like our monkeys didn't deploy the new server version correctly. If this message persists contact support.`;
-          Notifications.addPSA(message, 1, undefined, false, undefined, true);
+          addBanner({
+            level: "error",
+            text: message,
+          });
           bannerShownThisSession = true;
         }
       }

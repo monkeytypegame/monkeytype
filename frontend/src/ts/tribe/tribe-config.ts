@@ -8,6 +8,7 @@ import { debounce } from "throttle-debounce";
 import { configMetadata } from "../config-metadata";
 import * as CustomText from "../test/custom-text";
 import { typedKeys } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 export function getConfigString(config: TribeTypes.RoomConfig): string {
   const ret: string[] = [];
@@ -106,13 +107,13 @@ export async function apply(config: TribeTypes.RoomConfig): Promise<void> {
 
 export function setLoadingIndicator(bool: boolean): void {
   if (bool) {
-    $(
+    qs(
       ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator",
-    ).removeClass("hidden");
+    )?.removeClass("hidden");
   } else {
-    $(".pageTribe .tribePage.lobby .currentConfig .loadingIndicator").addClass(
-      "hidden",
-    );
+    qs(
+      ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator",
+    )?.addClass("hidden");
   }
 }
 

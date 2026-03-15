@@ -319,6 +319,10 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
+
+    .wordRtl {
+      unicode-bidi: bidi-override;
+    }
   }
   &.withLigatures {
     .word {
@@ -347,7 +351,7 @@
   &.blind {
     .word {
       & letter.extra {
-        display: none;
+        display: none !important;
       }
       & letter.incorrect {
         color: var(--correct-letter-color);
@@ -392,6 +396,8 @@
     --untyped-letter-color: var(--sub-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    --c-dot: var(--main-color);
+    --c-dot--error: var(--colorful-error-color);
     &.blind .word.error {
       border-bottom: 2px solid transparent;
     }
@@ -511,6 +517,86 @@
       letter {
         color: var(--incorrect-letter-color);
         animation: var(--incorrect-letter-animation);
+      }
+    }
+  }
+
+  &.typed-effect-hide {
+    .word.typed {
+      opacity: 0;
+    }
+  }
+
+  &.typed-effect-fade {
+    .word.typed {
+      animation: fadeOut 250ms ease-in 1 forwards;
+    }
+  }
+
+  &.typed-effect-dots {
+    /* transform already typed letters into appropriately colored dots */
+
+    &:not(.withLigatures) .word,
+    &.withLigatures .word.broken-ligatures {
+      letter {
+        position: relative;
+        display: inline-block;
+        &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 1em;
+          aspect-ratio: 1;
+          border-radius: 50%;
+          opacity: 0;
+        }
+      }
+    }
+    // unify dot spacing
+    &.withLigatures .word.broken-ligatures {
+      letter {
+        width: 0.4em;
+      }
+    }
+    .word.broken-ligatures:not(.needs-wrap) {
+      white-space: nowrap;
+    }
+
+    &:not(.withLigatures) .word.typed,
+    &.withLigatures .word.broken-ligatures.typed {
+      letter {
+        color: var(--bg-color);
+        animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
+        &::after {
+          animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards;
+          background: var(--c-dot);
+        }
+      }
+    }
+
+    &:not(.withLigatures):not(.blind) {
+      .word letter.incorrect::after {
+        background: var(--c-dot--error);
+      }
+    }
+    &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
+      background: var(--c-dot--error);
+    }
+
+    @media (prefers-reduced-motion) {
+      &:not(.withLigatures) .word.typed,
+      &.withLigatures .word.broken-ligatures.typed {
+        letter {
+          animation: none !important;
+          transform: scale(0.4);
+          color: transparent;
+          &::after {
+            animation: none !important;
+            opacity: 1;
+          }
+        }
       }
     }
   }
@@ -788,6 +874,10 @@
         &.rightToLeftTest {
           //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
           direction: rtl;
+
+          .wordRtl {
+            unicode-bidi: bidi-override;
+          }
         }
         &.withLigatures {
           .word {
@@ -1411,6 +1501,9 @@
         rgba(0, 0, 0, 0) 99%
       );
     }
+
+    --c-dot: var(--text-color);
+    --c-dot--error: var(--error-color);
   }
   #memoryTimer,
   #layoutfluidTimer {
@@ -1552,14 +1645,16 @@
 }
 
 main.focus .pageTest {
-  #testModesNotice {
-    opacity: 0 !important;
-  }
-  #testConfig {
-    opacity: 0 !important;
-  }
+  #testModesNotice,
+  #testConfig,
   #mobileTestConfigButton {
     opacity: 0 !important;
+  }
+  #restartTestButton {
+    opacity: 0 !important;
+    &:focus-visible {
+      opacity: 1 !important;
+    }
   }
 }
 

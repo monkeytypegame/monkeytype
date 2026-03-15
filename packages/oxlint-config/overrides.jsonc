@@ -78,8 +78,17 @@
         "no-empty-object-type": "off", //2
         "typescript/strict-boolean-expressions": "off", //1
         "typescript/no-unnecessary-type-assertion": "off", //1
+        "typescript/strict-void-return": "off",
 
         "prefer-nullish-coalescing": "off",
+        "no-shadow": "off",
+        "no-non-null-assertion": "off",
+      },
+    },
+    {
+      "files": ["private/script.js"],
+      "rules": {
+        "no-shadow": "off",
       },
     },
   ],

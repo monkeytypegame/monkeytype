@@ -1,11 +1,10 @@
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import { createErrorMessage } from "../utils/misc";
 import { randomElementFromArray } from "../utils/arrays";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../stores/notifications";
 
 import type { Howl } from "howler";
 import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
@@ -35,11 +34,21 @@ let clickSounds: ClickSounds | null = null;
 
 let timeWarning: Howl | null = null;
 
+let fartReverb: Howl | null = null;
+
 async function initTimeWarning(): Promise<void> {
   const Howl = (await gethowler()).Howl;
   if (timeWarning !== null) return;
   timeWarning = new Howl({
     src: "../sound/timeWarning.wav",
+  });
+}
+
+async function initFartReverb(): Promise<void> {
+  const Howl = (await gethowler()).Howl;
+  if (fartReverb !== null) return;
+  fartReverb = new Howl({
+    src: "../sound/fart-reverb.wav",
   });
 }
 
@@ -396,6 +405,85 @@ async function init(): Promise<void> {
         counter: 0,
       },
     ],
+    16: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_1.wav" }),
+          new Howl({ src: "../sound/click16/click16_1.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_2.wav" }),
+          new Howl({ src: "../sound/click16/click16_2.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_3.wav" }),
+          new Howl({ src: "../sound/click16/click16_3.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_4.wav" }),
+          new Howl({ src: "../sound/click16/click16_4.wav" }),
+        ],
+        counter: 0,
+      },
+      // {
+      //   sounds: [
+      //     new Howl({ src: "../sound/click16/click16_5.wav" }),
+      //     new Howl({ src: "../sound/click16/click16_5.wav" }),
+      //   ],
+      //   counter: 0,
+      // },
+      // {
+      //   sounds: [
+      //     new Howl({ src: "../sound/click16/click16_6.wav" }),
+      //     new Howl({ src: "../sound/click16/click16_6.wav" }),
+      //   ],
+      //   counter: 0,
+      // },
+      // {
+      //   sounds: [
+      //     new Howl({ src: "../sound/click16/click16_7.wav" }),
+      //     new Howl({ src: "../sound/click16/click16_7.wav" }),
+      //   ],
+      //   counter: 0,
+      // },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_8.wav" }),
+          new Howl({ src: "../sound/click16/click16_8.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_9.wav" }),
+          new Howl({ src: "../sound/click16/click16_9.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_10.wav" }),
+          new Howl({ src: "../sound/click16/click16_10.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click16/click16_11.wav" }),
+          new Howl({ src: "../sound/click16/click16_11.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
   };
   Howler.volume(Config.soundVolume);
 }
@@ -531,10 +619,11 @@ function initAudioContext(): void {
   } catch (e) {
     audioCtx = null;
     console.error(e);
-    Notifications.add(
-      createErrorMessage(e, "Error initializing audio context") +
-        ". Notes will not play.",
-      -1,
+    showErrorNotification(
+      "Error initializing audio context. Notes will not play.",
+      {
+        error: e,
+      },
     );
   }
 }
@@ -633,6 +722,14 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
 export async function playTimeWarning(): Promise<void> {
   if (timeWarning === null) await initTimeWarning();
   const soundToPlay = timeWarning as Howl;
+  soundToPlay.stop();
+  soundToPlay.seek(0);
+  soundToPlay.play();
+}
+
+export async function playFartReverb(): Promise<void> {
+  if (fartReverb === null) await initFartReverb();
+  const soundToPlay = fartReverb as Howl;
   soundToPlay.stop();
   soundToPlay.seek(0);
   soundToPlay.play();

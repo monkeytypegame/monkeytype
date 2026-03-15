@@ -31,11 +31,19 @@
       "persistent": true,
       "cache": false
     },
+    "storybook": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
     "start": {
       "dependsOn": ["build"]
     },
     "@monkeytype/frontend#check-assets": {
       "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
+    },
+    "@monkeytype/frontend#lint-json": {
+      "dependsOn": ["^parallel"]
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],

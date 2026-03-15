@@ -1,13 +1,14 @@
 import { Chart, ChartConfiguration, ChartDataset } from "chart.js";
 import * as TribeState from "./tribe-state";
-import * as ThemeColors from "../elements/theme-colors";
-import * as Notifications from "../elements/notifications";
 import { createErrorMessage } from "../utils/misc";
 import tribeSocket from "./tribe-socket";
 import { blendTwoHexColors } from "../utils/colors";
 import { smoothWithValueWindow } from "../utils/arrays";
 import Config from "../config";
 import * as TestStats from "../test/test-stats";
+import { getTheme } from "../signals/theme";
+import { qsa } from "../utils/dom";
+import { showErrorNotification } from "../stores/notifications";
 
 const charts: Record<string, Chart> = {};
 
@@ -279,11 +280,11 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   }
 
   // const bgcolor = await ThemeColors.get("bg");
-  const subcolor = await ThemeColors.get("sub");
-  const subaltcolor = await ThemeColors.get("subAlt");
-  const maincolor = await ThemeColors.get("main");
-  const errorcolor = await ThemeColors.get("error");
-  const textcolor = await ThemeColors.get("text");
+  const subcolor = getTheme().sub;
+  const subaltcolor = getTheme().subAlt;
+  const maincolor = getTheme().main;
+  const errorcolor = getTheme().error;
+  const textcolor = getTheme().text;
   const gridcolor = subaltcolor;
 
   for (const scale of Object.values(chart.options.scales ?? {})) {
@@ -371,29 +372,29 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
 export async function drawChart(userId: string): Promise<void> {
   try {
     if (charts[userId]) return;
-    const element = $(
+    const element = qsa<HTMLCanvasElement>(
       `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`,
-    )[0] as HTMLCanvasElement | undefined;
+    )[0];
 
     const room = TribeState.getRoom();
-    if (!room || !room.users[userId]?.result || !element) {
+    if (!room || !room.users[userId]?.result || element === undefined) {
       return;
     }
 
-    const chart = new Chart(element, $.extend(true, {}, settings));
+    const chart = new Chart(element.native, structuredClone(settings));
 
     await fillData(chart, userId);
 
     charts[userId] = chart;
-    $(
+    qsa(
       `.pageTest #result #tribeResults table tbody tr#${userId} .minichart`,
     ).removeClass("hidden");
-    $(
+    qsa(
       `.pageTest #result #tribeResults table tbody tr#${userId} .progress`,
     ).addClass("hidden");
     return;
   } catch (e) {
-    Notifications.add(createErrorMessage(e, "Error drawing mini chart"), -1);
+    showErrorNotification(createErrorMessage(e, "Error drawing mini chart"));
     return;
   }
 }

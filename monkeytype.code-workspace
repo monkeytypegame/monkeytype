@@ -38,19 +38,23 @@
       "**/.firebase/**": true,
       "**/.turbo/**": true,
     },
-    "oxc.fmt.experimental": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.automaticallyOpenTestResults": "neverOpen",
+    "vitest.maximumConfigs": 10,
+    "oxc.typeAware": true,
+    "typescript.format.enable": false,
+    "oxc.fmt.configPath": ".oxfmtrc-editor.json",
+    "oxc.fixKind": "safe_fix_or_suggestion",
     "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.defaultFormatter": "oxc.oxc-vscode",
     },
     "[html]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.defaultFormatter": "oxc.oxc-vscode",
     },
     "[scss]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.defaultFormatter": "oxc.oxc-vscode",
     },
     "[javascript]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
@@ -58,9 +62,12 @@
     "[typescript]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
-    "vitest.maximumConfigs": 10,
-    "oxc.typeAware": true,
-    "typescript.format.enable": false,
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
   },
 
   "launch": {
@@ -92,6 +99,8 @@
       "huntertran.auto-markdown-toc",
       "dbaeumer.vscode-eslint",
       "oxc.oxc-vscode",
+      "bradlc.vscode-tailwindcss",
+      "csstools.postcss",
     ],
   },
 }

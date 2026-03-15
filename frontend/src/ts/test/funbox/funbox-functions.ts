@@ -7,7 +7,10 @@ import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
 import * as TTSEvent from "../../observables/tts-event";
-import * as Notifications from "../../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../stores/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
@@ -23,6 +26,7 @@ import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+import { qs } from "../../utils/dom";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -61,9 +65,9 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
         TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
-    $("#words").addClass("read_ahead_disabled");
+    qs("#words")?.addClass("read_ahead_disabled");
   } else if (event.key === " ") {
-    $("#words").removeClass("read_ahead_disabled");
+    qs("#words")?.removeClass("read_ahead_disabled");
   }
 }
 
@@ -226,7 +230,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     toggleScript(params: string[]): void {
       if (window.speechSynthesis === undefined) {
-        Notifications.add("Failed to load text-to-speech script", -1);
+        showErrorNotification("Failed to load text-to-speech script");
         return;
       }
       if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
@@ -318,18 +322,32 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   rAnDoMcAsE: {
     alterText(word: string): string {
-      let randomcaseword = word[0] as string;
-      for (let i = 1; i < word.length; i++) {
-        if (
-          randomcaseword[i - 1] ===
-          (randomcaseword[i - 1] as string).toUpperCase()
-        ) {
-          randomcaseword += (word[i] as string).toLowerCase();
+      let randomCaseWord = "";
+
+      for (let letter of word) {
+        if (Math.random() < 0.5) {
+          randomCaseWord += letter.toUpperCase();
         } else {
-          randomcaseword += (word[i] as string).toUpperCase();
+          randomCaseWord += letter.toLowerCase();
         }
       }
-      return randomcaseword;
+
+      return randomCaseWord;
+    },
+  },
+  sPoNgEcAsE: {
+    alterText(word: string): string {
+      let spongeCaseWord = "";
+
+      for (let i = 0; i < word.length; i++) {
+        if (i % 2 === 0) {
+          spongeCaseWord += word[i]?.toLowerCase();
+        } else {
+          spongeCaseWord += word[i]?.toUpperCase();
+        }
+      }
+
+      return spongeCaseWord;
     },
   },
   rot13: {
@@ -496,7 +514,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   memory: {
     applyConfig(): void {
-      $("#wordsWrapper").addClass("hidden");
+      qs("#wordsWrapper")?.hide();
       setConfig("showAllLines", true, {
         nosave: true,
       });
@@ -515,11 +533,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     start(): void {
       MemoryTimer.reset();
-      $("#words").addClass("hidden");
+      qs("#words")?.hide();
     },
     restart(): void {
       MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
-      $("#words").removeClass("hidden");
+      qs("#words")?.show();
       if (Config.keymapMode === "next") {
         setConfig("keymapMode", "react");
       }
@@ -639,33 +657,33 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       );
       if (isSafari) {
         //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-        const versionMatch = navigator.userAgent.match(
-          /.*Version\/([0-9]*)\.([0-9]*).*/,
+        const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(
+          navigator.userAgent,
         );
         const mainVersion =
           versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
         const minorVersion =
           versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
         if (mainVersion <= 16 && minorVersion <= 5) {
-          Notifications.add(
+          showNoticeNotification(
             "CRT is not available on Safari 16.5 or earlier.",
-            0,
             {
-              duration: 5,
+              durationMs: 5000,
             },
           );
           toggleFunbox("crt");
           return;
         }
       }
-      $("body").append('<div id="scanline" />');
-      $("body").addClass("crtmode");
-      $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
+      qs("#scanline")?.remove();
+      qs("body")?.appendHtml('<div id="scanline" />');
+      qs("body")?.addClass("crtmode");
+      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
     },
     clearGlobal(): void {
-      $("#scanline").remove();
-      $("body").removeClass("crtmode");
-      $("#globalFunBoxTheme").attr("href", ``);
+      qs("#scanline")?.remove();
+      qs("body")?.removeClass("crtmode");
+      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
     },
   },
   ALL_CAPS: {
@@ -677,9 +695,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     async withWords(_words) {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
-          Notifications.add(
+          showNoticeNotification(
             `Failed to load language: ${language}. It will be ignored.`,
-            0,
           );
           return null;
         }),
@@ -704,13 +721,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           nosave: true,
         });
         toggleFunbox("polyglot", true);
-        Notifications.add(
+        showNoticeNotification(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
           )}).`,
-          0,
           {
-            duration: 7,
+            durationMs: 7000,
           },
         );
         throw new WordGenError("");
@@ -728,10 +744,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
         setConfig("language", fallbackLanguage);
-        Notifications.add(
+        showNoticeNotification(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
-          0,
-          { duration: 5 },
+          { durationMs: 5000 },
         );
         throw new WordGenError("");
       }

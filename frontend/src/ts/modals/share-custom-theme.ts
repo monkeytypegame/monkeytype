@@ -1,7 +1,11 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import AnimatedModal from "../utils/animated-modal";
+import { getTheme } from "../signals/theme";
 
 type State = {
   includeBackground: boolean;
@@ -27,12 +31,7 @@ async function generateUrl(): Promise<string> {
     s?: string; //size
     f?: object; //filter
   } = {
-    c: ThemeController.colorVars.map(
-      (color) =>
-        $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
-          "value",
-        ) as string,
-    ),
+    c: ThemeController.convertThemeToCustomColors(getTheme()),
   };
 
   if (state.includeBackground) {
@@ -51,14 +50,13 @@ async function copy(): Promise<void> {
 
   try {
     await navigator.clipboard.writeText(url);
-    Notifications.add("URL Copied to clipboard", 1);
+    showSuccessNotification("URL Copied to clipboard");
     void modal.hide();
   } catch (e) {
-    Notifications.add(
+    showNoticeNotification(
       "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
-      0,
       {
-        duration: 5,
+        durationMs: 5000,
       },
     );
     void urlModal.show({

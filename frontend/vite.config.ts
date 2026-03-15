@@ -18,57 +18,77 @@ import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
-import { jqueryInject } from "./vite-plugins/jquery-inject";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
+import { injectPreload } from "./vite-plugins/inject-preload";
 import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import replace from "vite-plugin-filter-replace";
-// eslint-disable-next-line import/no-unresolved
-import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
+import solidPlugin from "vite-plugin-solid";
+import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig(({ mode }): UserConfig => {
-  // Load .env.tribedev when mode is 'tribedev'
-  const envFile = mode === "tribedev" ? ".env.tribedev" : "";
-  const env = loadEnv(mode, process.cwd(), ["", envFile]);
+function getFontsConfig(): string {
+  return (
+    "\n" +
+    Object.keys(Fonts)
+      .sort()
+      .map((name: string) => {
+        const config = Fonts[name as KnownFontName];
+        if (config.systemFont === true) return "";
+        return `"${name.replaceAll("_", " ")}": (
+        "src": "${config.fileName}",
+        "weight": ${config.weight ?? 400},
+        ),`;
+      })
+      .join("\n") +
+    "\n"
+  );
+}
 
-  const useSentry = env["SENTRY"] !== undefined;
-  const isDevelopment = mode !== "production" && mode !== "tribedev";
+function pad(
+  numbers: number[],
+  maxLength: number,
+  fillString: string,
+): string[] {
+  return numbers.map((number) =>
+    number.toString().padStart(maxLength, fillString),
+  );
+}
 
-  if (!isDevelopment) {
-    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
-      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
-    }
-    if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
-      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
-    }
+function getClientVersion(isDevelopment: boolean): string {
+  if (isDevelopment) {
+    return "DEVELOPMENT_CLIENT";
   }
+  const date = new Date();
+  const versionPrefix = pad(
+    [date.getFullYear(), date.getMonth() + 1, date.getDate()],
+    2,
+    "0",
+  ).join(".");
+  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
+    ".",
+  );
+  const version = [versionPrefix, versionSuffix].join("_");
 
-  return {
-    plugins: getPlugins({ isDevelopment, useSentry: useSentry, env }),
-    build: getBuildOptions({ enableSourceMaps: useSentry }),
-    css: getCssOptions({ isDevelopment }),
-    server: {
-      open: env["SERVER_OPEN"] !== "false",
-      port: 3000,
-      host: env["BACKEND_URL"] !== undefined,
-      watch: {
-        //we rebuild the whole contracts package when a file changes
-        //so we only want to watch one file
-        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
-      },
-    },
-    clearScreen: false,
-    root: "src",
-    publicDir: "../static",
-    optimizeDeps: {
-      include: ["jquery"],
-      exclude: ["@fortawesome/fontawesome-free"],
-    },
-  };
-});
+  try {
+    const commitHash = childProcess
+      .execSync("git rev-parse --short HEAD")
+      .toString();
+
+    return `${version}_${commitHash}`.replace(/\n/g, "");
+  } catch (e) {
+    return `${version}_unknown-hash`;
+  }
+}
+
+/** Enable for font awesome v6 */
+/*
+function sassList(values) {
+  return values.map((it) => `"${it}"`).join(",");
+}
+*/
 
 function getPlugins({
   isDevelopment,
@@ -87,10 +107,11 @@ function getPlugins({
     oxlintChecker({
       debounceDelay: 125,
       typeAware: true,
-      overlay: true,
+      overlay: isDevelopment,
     }),
-    jqueryInject(),
-    injectHTML(),
+    injectHTML() as PluginOption,
+    tailwindcss(),
+    solidPlugin(),
   ];
 
   const devPlugins: PluginOption[] = [Inspect()];
@@ -179,30 +200,8 @@ function getPlugins({
           to: `"./ts/constants/firebase-config-live"`,
         },
       },
-    ]),
-    UnpluginInjectPreload({
-      files: [
-        {
-          outputMatch: /css\/.*\.css$/,
-          attributes: {
-            as: "style",
-            type: "text/css",
-            rel: "preload",
-            crossorigin: true,
-          },
-        },
-        {
-          outputMatch: /.*\.woff2$/,
-          attributes: {
-            as: "font",
-            type: "font/woff2",
-            rel: "preload",
-            crossorigin: true,
-          },
-        },
-      ],
-      injectTo: "head-prepend",
-    }),
+    ]) as PluginOption,
+    injectPreload(),
     minifyJson(),
   ];
 
@@ -261,9 +260,6 @@ function getBuildOptions({
           if (id.includes("@sentry")) {
             return "vendor-sentry";
           }
-          if (id.includes("jquery")) {
-            return "vendor-jquery";
-          }
           if (id.includes("@firebase")) {
             return "vendor-firebase";
           }
@@ -288,10 +284,7 @@ function getCssOptions({
   return {
     devSourcemap: true,
     postcss: {
-      plugins: [
-        // @ts-expect-error  this is fine
-        autoprefixer({}),
-      ],
+      plugins: [autoprefixer({})],
     },
     preprocessorOptions: {
       scss: {
@@ -331,63 +324,40 @@ function getCssOptions({
   };
 }
 
-function getFontsConfig(): string {
-  return (
-    "\n" +
-    Object.keys(Fonts)
-      .sort()
-      .map((name: string) => {
-        const config = Fonts[name as KnownFontName];
-        if (config.systemFont === true) return "";
-        return `"${name.replaceAll("_", " ")}": (
-        "src": "${config.fileName}",
-        "weight": ${config.weight ?? 400},
-        ),`;
-      })
-      .join("\n") +
-    "\n"
-  );
-}
+export default defineConfig(({ mode }): UserConfig => {
+  const envFile = mode === "tribedev" ? ".env.tribedev" : "";
+  const env = loadEnv(mode, process.cwd(), ["", envFile]);
+  const useSentry = env["SENTRY"] !== undefined;
+  const isDevelopment = mode !== "production" && mode !== "tribedev";
 
-function pad(
-  numbers: number[],
-  maxLength: number,
-  fillString: string,
-): string[] {
-  return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString),
-  );
-}
-
-/** Enable for font awesome v6 */
-/*
-function sassList(values) {
-  return values.map((it) => `"${it}"`).join(",");
-}
-*/
-
-function getClientVersion(isDevelopment: boolean): string {
-  if (isDevelopment) {
-    return "DEVELOPMENT_CLIENT";
+  if (!isDevelopment) {
+    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
+      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
+    }
+    if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
+      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
+    }
   }
-  const date = new Date();
-  const versionPrefix = pad(
-    [date.getFullYear(), date.getMonth() + 1, date.getDate()],
-    2,
-    "0",
-  ).join(".");
-  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
-    ".",
-  );
-  const version = [versionPrefix, versionSuffix].join("_");
 
-  try {
-    const commitHash = childProcess
-      .execSync("git rev-parse --short HEAD")
-      .toString();
-
-    return `${version}_${commitHash}`.replace(/\n/g, "");
-  } catch (e) {
-    return `${version}_unknown-hash`;
-  }
-}
+  return {
+    plugins: getPlugins({ isDevelopment, useSentry: useSentry, env }),
+    build: getBuildOptions({ enableSourceMaps: useSentry }),
+    css: getCssOptions({ isDevelopment }),
+    server: {
+      open: env["SERVER_OPEN"] !== "false",
+      port: 3000,
+      host: env["BACKEND_URL"] !== undefined,
+      watch: {
+        //we rebuild the whole contracts package when a file changes
+        //so we only want to watch one file
+        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
+      },
+    },
+    clearScreen: false,
+    root: "src",
+    publicDir: "../static",
+    optimizeDeps: {
+      exclude: ["@fortawesome/fontawesome-free"],
+    },
+  };
+});

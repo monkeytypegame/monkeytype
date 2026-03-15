@@ -1,5 +1,4 @@
 import * as TribeState from "../tribe-state";
-import * as Notifications from "../../elements/notifications";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
 import tribeSocket from "../tribe-socket";
@@ -7,6 +6,10 @@ import { RoomConfig } from "../types";
 import { configMetadata } from "../../config-metadata";
 import { qsa, qsr } from "../../utils/dom";
 import { SimpleModal } from "../../utils/simple-modal";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 
 const configButtonEls = qsa(
   ".pageTribe .tribePage.lobby .currentConfig button",
@@ -303,9 +306,9 @@ roomCodeEls
 roomLinkEls.on("click", async () => {
   try {
     await navigator.clipboard.writeText(roomLinkEls[0]?.native.innerText ?? "");
-    Notifications.add("Code copied", 1);
+    showSuccessNotification("Code copied");
   } catch (e) {
-    Notifications.add("Could not copy to clipboard: " + String(e), -1);
+    showErrorNotification("Could not copy to clipboard: " + String(e));
   }
 });
 
@@ -330,13 +333,13 @@ const roomNameModal = new SimpleModal({
   execFn: async (_modal, newName) => {
     if (newName === null || newName.trim() === "") {
       return {
-        status: -1,
+        status: "error",
         message: "Room name cannot be empty",
       };
     }
     tribeSocket.out.room.updateName(newName.trim());
     return {
-      status: 1,
+      status: "success",
       message: "Room name changed",
       showNotification: false,
     };

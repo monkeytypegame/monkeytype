@@ -38,8 +38,6 @@ function updateData(data: ChartData): void {
     ChartController.miniResult.getScale("wpm").min = 0;
     ChartController.miniResult.getScale("burst").min = 0;
   }
-
-  void ChartController.miniResult.updateColors();
 }
 
 export function show(data: ChartData): void {

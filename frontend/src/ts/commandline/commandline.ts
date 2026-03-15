@@ -5,10 +5,14 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
-import * as ActivePage from "../states/active-page";
-import * as Loader from "../elements/loader";
+import {
+  getActivePage,
+  getCommandlineSubgroup,
+  setCommandlineSubgroup,
+} from "../signals/core";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
@@ -20,6 +24,14 @@ import {
 } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import { createEffect } from "solid-js";
+import {
+  getModalVisibility,
+  hideModal as storeHideModal,
+  hideModalAndClearChain as storeClearChain,
+  isModalOpen,
+} from "../stores/modals";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -29,6 +41,8 @@ type InputModeParams = {
   icon: string | null;
   validation?: ValidationResult;
 };
+
+const MODAL_STORE_ID = "Commandline";
 
 let activeIndex = 0;
 let usingSingleList = false;
@@ -70,7 +84,10 @@ function addCommandlineBackground(): void {
 }
 
 type ShowSettings = {
-  subgroupOverride?: CommandsSubgroup | string;
+  subgroupOverride?:
+    | CommandsSubgroup
+    | CommandlineLists.ListsObjectKeys
+    | ConfigKey;
   commandOverride?: string;
   singleListOverride?: boolean;
 };
@@ -94,27 +111,32 @@ export function show(
         value: null,
         icon: null,
       };
-      if (settings?.subgroupOverride !== undefined) {
-        if (typeof settings.subgroupOverride === "string") {
-          const exists = CommandlineLists.doesListExist(
-            settings.subgroupOverride,
-          );
+      const subgroupSignal = getCommandlineSubgroup();
+
+      const overrideStringOrGroup =
+        settings?.subgroupOverride ?? subgroupSignal ?? null;
+
+      if (
+        overrideStringOrGroup !== undefined &&
+        overrideStringOrGroup !== null
+      ) {
+        if (typeof overrideStringOrGroup === "string") {
+          const exists = CommandlineLists.doesListExist(overrideStringOrGroup);
           if (exists) {
-            Loader.show();
+            showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              settings.subgroupOverride as CommandlineLists.ListsObjectKeys,
+              overrideStringOrGroup,
             );
-            Loader.hide();
+            hideLoaderBar();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
-            Notifications.add(
-              `Command list ${settings.subgroupOverride} not found`,
-              0,
+            showNoticeNotification(
+              `Command list ${overrideStringOrGroup} not found`,
             );
           }
         } else {
-          subgroupOverride = settings.subgroupOverride;
+          subgroupOverride = overrideStringOrGroup;
         }
         usingSingleList = false;
       } else {
@@ -129,11 +151,12 @@ export function show(
           (c) => c.id === settings.commandOverride,
         );
         if (command === undefined) {
-          Notifications.add(`Command ${settings.commandOverride} not found`, 0);
+          showNoticeNotification(
+            `Command ${settings.commandOverride} not found`,
+          );
         } else if (command?.input !== true) {
-          Notifications.add(
+          showNoticeNotification(
             `Command ${settings.commandOverride} is not an input command`,
-            0,
           );
         } else {
           showInputCommand = command;
@@ -176,17 +199,31 @@ function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
   isAnimating = true;
-  void modal.hide({
-    clearModalChain,
-    afterAnimation: async () => {
-      hideWarning();
-      addCommandlineBackground();
-      if (ActivePage.get() !== "test") {
-        (document.activeElement as HTMLElement | undefined)?.blur();
-      }
-      isAnimating = false;
-    },
-  });
+
+  // If managed by store, notify the store
+  if (isModalOpen(MODAL_STORE_ID)) {
+    if (clearModalChain) {
+      storeClearChain(MODAL_STORE_ID);
+    } else {
+      storeHideModal(MODAL_STORE_ID);
+    }
+    // Cleanup will happen in the effect when visibility changes
+  } else {
+    // Old modal system, hide directly
+    void modal.hide({
+      clearModalChain,
+      afterAnimation: async () => {
+        hideWarning();
+        addCommandlineBackground();
+        if (getActivePage() !== "test") {
+          (document.activeElement as HTMLElement | undefined)?.blur();
+        }
+        isAnimating = false;
+        subgroupOverride = null;
+        setCommandlineSubgroup(null);
+      },
+    });
+  }
 }
 
 async function goBackOrHide(): Promise<void> {
@@ -507,16 +544,16 @@ async function showCommands(): Promise<void> {
         <i class="fas fa-star"></i>
       </div>
       <div class="themeBubbles" style="background: ${
-        command.customData["bgColor"]
-      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        command.customData["bg"]
+      };outline: 0.25rem solid ${command.customData["bg"]};">
         <div class="themeBubble" style="background: ${
-          command.customData["mainColor"]
+          command.customData["main"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["subColor"]
+          command.customData["sub"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["textColor"]
+          command.customData["text"]
         }"></div>
       </div>
       </div>`;
@@ -562,7 +599,7 @@ async function updateActiveCommand(): Promise<void> {
   activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
     clearFontPreview();
-    void ThemeController.clearPreview(false);
+    void ThemeController.clearPreview();
     addCommandlineBackground();
     return;
   }
@@ -826,6 +863,7 @@ function createValidationHandler(command: Command): void {
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
+  storeId: MODAL_STORE_ID,
   customEscapeHandler: (): void => {
     //
   },
@@ -969,4 +1007,46 @@ const modal = new AnimatedModal({
       await runActiveCommand();
     });
   },
+});
+
+let lastVisibility: { visible: boolean; chained: boolean } | null = null;
+
+createEffect(() => {
+  const visibility = getModalVisibility(MODAL_STORE_ID);
+  const isVisible = visibility?.visible ?? false;
+  const wasVisible = lastVisibility?.visible ?? false;
+
+  // Show when visibility changes from false to true
+  if (isVisible && !wasVisible) {
+    show();
+  }
+  // Hide when visibility changes from true to false (triggered by store)
+  else if (!isVisible && wasVisible) {
+    // Only trigger hide if modal is actually open
+    if (modal.isOpen()) {
+      clearFontPreview();
+      void ThemeController.clearPreview();
+      // The store already updated, just trigger the animation
+      void modal.hide({
+        clearModalChain: !visibility?.chained,
+        afterAnimation: async () => {
+          hideWarning();
+          addCommandlineBackground();
+          if (getActivePage() !== "test") {
+            (document.activeElement as HTMLElement | undefined)?.blur();
+          }
+          isAnimating = false;
+          subgroupOverride = null;
+          setCommandlineSubgroup(null);
+
+          // After animation completes, notify store to show pending modal
+          if (visibility?.chained) {
+            storeHideModal(MODAL_STORE_ID);
+          }
+        },
+      });
+    }
+  }
+
+  lastVisibility = visibility ? { ...visibility } : null;
 });

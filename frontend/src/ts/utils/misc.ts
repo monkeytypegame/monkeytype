@@ -1,4 +1,4 @@
-import * as Loader from "../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Random from "../utils/random";
 import { envConfig } from "virtual:env-config";
 import { lastElementFromArray } from "./arrays";
@@ -169,8 +169,6 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
-// TODO INVESTIGATE IF THIS IS NEEDED
-// oxlint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp,
 ): number {
@@ -264,7 +262,7 @@ export function getMode2<M extends keyof PersonalBests>(
 }
 
 export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const csvString = [
     [
       "_id",
@@ -333,7 +331,7 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
 
   link.click();
   link.remove();
-  Loader.hide();
+  hideLoaderBar();
 }
 
 export function getErrorMessage(error: unknown): string | undefined {
@@ -382,12 +380,15 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return isElementVisible(`#popups #${popupId}`);
+  return (
+    isElementVisible(`#popups #${popupId}`) ||
+    isElementVisible(`#solidmodals #${popupId}`)
+  );
 }
 
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper",
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
   );
   let popupVisible = false;
   for (const popup of popups) {
@@ -398,40 +399,6 @@ export function isAnyPopupVisible(): boolean {
   }
   return popupVisible;
 }
-
-export type JQueryEasing =
-  | "linear"
-  | "swing"
-  | "easeInSine"
-  | "easeOutSine"
-  | "easeInOutSine"
-  | "easeInQuad"
-  | "easeOutQuad"
-  | "easeInOutQuad"
-  | "easeInCubic"
-  | "easeOutCubic"
-  | "easeInOutCubic"
-  | "easeInQuart"
-  | "easeOutQuart"
-  | "easeInOutQuart"
-  | "easeInQuint"
-  | "easeOutQuint"
-  | "easeInOutQuint"
-  | "easeInExpo"
-  | "easeOutExpo"
-  | "easeInOutExpo"
-  | "easeInCirc"
-  | "easeOutCirc"
-  | "easeInOutCirc"
-  | "easeInBack"
-  | "easeOutBack"
-  | "easeInOutBack"
-  | "easeInElastic"
-  | "easeOutElastic"
-  | "easeInOutElastic"
-  | "easeInBounce"
-  | "easeOutBounce"
-  | "easeInOutBounce";
 
 export async function promiseAnimate(
   el: HTMLElement | string,
@@ -453,9 +420,9 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function isPasswordStrong(password: string): boolean {
-  const hasCapital = !!password.match(/[A-Z]/);
-  const hasNumber = !!password.match(/[\d]/);
-  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const hasCapital = !!/[A-Z]/.exec(password);
+  const hasNumber = !!/[\d]/.exec(password);
+  const hasSpecial = !!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.exec(password);
   const isLong = password.length >= 8;
   const isShort = password.length <= 64;
   return hasCapital && hasNumber && hasSpecial && isLong && isShort;
@@ -612,7 +579,7 @@ export function promiseWithResolvers<T = void>(): {
 
   const promiseLike = {
     // oxlint-disable-next-line no-thenable promise-function-async require-await
-    then<TResult1 = T, TResult2 = never>(
+    async then<TResult1 = T, TResult2 = never>(
       onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
       onrejected?:
         | ((reason: unknown) => TResult2 | PromiseLike<TResult2>)
@@ -620,14 +587,12 @@ export function promiseWithResolvers<T = void>(): {
     ): Promise<TResult1 | TResult2> {
       return currentPromise.then(onfulfilled, onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
-    catch<TResult = never>(
+    async catch<TResult = never>(
       onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
     ): Promise<T | TResult> {
       return currentPromise.catch(onrejected);
     },
-    // oxlint-disable-next-line promise-function-async
-    finally(onfinally?: (() => void) | null): Promise<T> {
+    async finally(onfinally?: (() => void) | null): Promise<T> {
       return currentPromise.finally(onfinally);
     },
     [Symbol.toStringTag]: "Promise" as const,
@@ -724,7 +689,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 }
 
 export function triggerResize(): void {
-  $(window).trigger("resize");
+  window.dispatchEvent(new Event("resize"));
 }
 
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
@@ -740,13 +705,17 @@ function isPlatform(searchTerm: string | RegExp): boolean {
   }
 }
 
-export function isLinux(): boolean {
-  return isPlatform("Linux");
-}
+//function isWindows(): boolean {
+//return isPlatform("Win");
+//}
 
-export function isMac(): boolean {
-  return isPlatform("Mac");
-}
+//function isLinux(): boolean {
+//return isPlatform("Linux");
+//}
+
+//function isMac(): boolean {
+//return isPlatform("Mac");
+//}
 
 export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
@@ -763,7 +732,8 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   });
 }
 
-export function formatTopPercentage(lbRank: RankAndCount): string {
+export function formatTopPercentage(lbRank?: RankAndCount): string {
+  if (lbRank === undefined) return "";
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
@@ -776,7 +746,11 @@ export function formatTypingStatsRatio(stats: {
   completedPercentage: string;
   restartRatio: string;
 } {
-  if (stats.completedTests === undefined || stats.startedTests === undefined) {
+  if (
+    stats.completedTests === undefined ||
+    stats.startedTests === undefined ||
+    stats.startedTests === 0
+  ) {
     return { completedPercentage: "", restartRatio: "" };
   }
   return {

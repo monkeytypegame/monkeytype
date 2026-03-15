@@ -3,15 +3,16 @@ import * as TribeUserSettingsPopup from "../modals/tribe-user-settings";
 import tribeSocket from "./tribe-socket";
 import { User } from "./types";
 import { getAvatarElement } from "../utils/discord-avatar";
+import { qs } from "../utils/dom";
 
 export function reset(page?: string): void {
   if (page === undefined) {
-    $(".pageTribe .tribePage.lobby .userlist .list").empty();
-    $(".pageTest #result #tribeResultBottom .userlist .list").empty();
+    qs(".pageTribe .tribePage.lobby .userlist .list")?.empty();
+    qs(".pageTest #result #tribeResultBottom .userlist .list")?.empty();
   } else if (page === "lobby") {
-    $(".pageTribe .tribePage.lobby .userlist .list").empty();
+    qs(".pageTribe .tribePage.lobby .userlist .list")?.empty();
   } else if (page === "result") {
-    $(".pageTest #result #tribeResultBottom .userlist .list").empty();
+    qs(".pageTest #result #tribeResultBottom .userlist .list")?.empty();
   }
 }
 
@@ -82,20 +83,22 @@ export function update(page?: string): void {
     </div>
     `;
     if (page === "lobby") {
-      $(".pageTribe .lobby .userlist .list").append(appendData);
+      qs(".pageTribe .lobby .userlist .list")?.appendHtml(appendData);
     } else if (page === "result") {
-      $(".pageTest #result #tribeResultBottom .userlist .list").append(
+      qs(".pageTest #result #tribeResultBottom .userlist .list")?.appendHtml(
         appendData,
       );
     }
   });
 }
 
-$(document).on(
+qs("document")?.onChild(
   "click",
   ".pageTribe .lobby .userlist .list .user .userSettings, .pageTest #result #tribeResultBottom .userlist .list .user .userSettings",
   (e) => {
-    const userId = $(e.currentTarget).attr("userid") as string;
+    const userId = (e.currentTarget as HTMLElement | null)?.getAttribute(
+      "userid",
+    ) as string;
     TribeUserSettingsPopup.show(userId);
   },
 );

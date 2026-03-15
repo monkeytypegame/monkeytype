@@ -24,7 +24,7 @@ export async function change(
       async () => {
         active = page;
         activePage?.removeClass("active");
-        $(`.page.pageTribe .tribePage.${page}`).addClass("active");
+        qs(`.page.pageTribe .tribePage.${page}`)?.addClass("active");
         transition = false;
         // await finishCallback();
         if (page === "menu") {

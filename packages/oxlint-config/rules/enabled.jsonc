@@ -80,5 +80,6 @@
     "unicorn/prefer-structured-clone": "error",
     "curly": ["error", "multi-line", "consistent"],
     "no-sequences": "error",
+    "import/no-cycle": "error",
   },
 }

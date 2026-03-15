@@ -55,7 +55,7 @@ export function apply(): void {
 
 function syncSliders(): void {
   section
-    .qs<HTMLInputElement>(".blur input")
+    .qs<HTMLInputElement>(".blur-filter input")
     ?.setValue(filters.blur.value.toString());
   section
     .qs<HTMLInputElement>(".brightness input")
@@ -69,7 +69,7 @@ function syncSliders(): void {
 }
 
 function updateNumbers(): void {
-  section.qs(".blur .value")?.setHtml(filters.blur.value.toFixed(1));
+  section.qs(".blur-filter .value")?.setHtml(filters.blur.value.toFixed(1));
   section
     .qs(".brightness .value")
     ?.setHtml(filters.brightness.value.toFixed(1));
@@ -90,9 +90,9 @@ function loadConfig(config: CustomBackgroundFilter): void {
   updateUI();
 }
 
-section.qs(".blur input")?.on("input", () => {
+section.qs(".blur-filter input")?.on("input", () => {
   filters.blur.value = parseFloat(
-    section.qs<HTMLInputElement>(".blur input")?.getValue() ?? "0",
+    section.qs<HTMLInputElement>(".blur-filter input")?.getValue() ?? "0",
   );
   updateNumbers();
   apply();

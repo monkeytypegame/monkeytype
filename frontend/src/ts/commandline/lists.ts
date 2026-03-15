@@ -1,7 +1,6 @@
 import MinBurstCommands from "./lists/min-burst";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
-import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundCommands from "./lists/custom-background";
@@ -22,16 +21,24 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
-import * as Notifications from "../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+  clearAllNotifications,
+} from "../stores/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
-import * as FPSCounter from "../elements/fps-counter";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import {
+  hideFpsCounter,
+  showFpsCounter,
+} from "../components/layout/overlays/FpsCounter";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -44,26 +51,12 @@ challengesPromise
     );
   });
 
-const languageCommand = buildCommandForConfigKey("language");
-const difficultyCommand = buildCommandForConfigKey("difficulty");
-const blindModeCommand = buildCommandForConfigKey("blindMode");
-const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
-const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
-const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
-const lazyModeCommand = buildCommandForConfigKey("lazyMode");
-const layoutCommand = buildCommandForConfigKey("layout");
-const showAverageCommand = buildCommandForConfigKey("showAverage");
-const showPbCommand = buildCommandForConfigKey("showPb");
-const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
-const customThemeCommand = buildCommandForConfigKey("customTheme");
-const adsCommand = buildCommandForConfigKey("ads");
-const minSpeedCommand = buildCommandForConfigKey("minWpm");
-const minAccCommand = buildCommandForConfigKey("minAcc");
-const paceCaretCommand = buildCommandForConfigKey("paceCaret");
+const adsCommands = buildCommands("ads");
 const modeCommand = buildCommandForConfigKey("mode");
 const timeCommand = buildCommandForConfigKey("time");
 const wordsCommand = buildCommandForConfigKey("words");
 const quoteLengthCommand = buildCommandForConfigKey("quoteLength");
+const languageCommand = buildCommandForConfigKey("language");
 const punctuationCommand = buildCommandForConfigKey("punctuation");
 const numbersCommand = buildCommandForConfigKey("numbers");
 
@@ -113,18 +106,18 @@ export const commands: CommandsSubgroup = {
     //account
     ...TagsCommands,
     ...PresetsCommands,
-    ...ResultSavingCommands,
 
     //behavior
     ...buildCommands(
-      difficultyCommand,
+      "resultSaving",
+      "difficulty",
       "quickRestart",
       "repeatQuotes",
-      blindModeCommand,
+      "blindMode",
       "alwaysShowWordsHistory",
       "singleListCommandLine",
-      minSpeedCommand,
-      minAccCommand,
+      "minWpm",
+      "minAcc",
       ...MinBurstCommands,
       "britishEnglish",
       ...FunboxCommands,
@@ -136,15 +129,15 @@ export const commands: CommandsSubgroup = {
     ...buildCommands(
       "freedomMode",
       "strictSpace",
-      oppositeShiftModeCommand,
-      stopOnErrorCommand,
-      confidenceModeCommand,
+      "oppositeShiftMode",
+      "stopOnError",
+      "confidenceMode",
       "quickEnd",
       "indicateTypos",
       "compositionDisplay",
       "hideExtraLetters",
-      lazyModeCommand,
-      layoutCommand,
+      "lazyMode",
+      "layout",
       "codeUnindentOnBackspace",
     ),
 
@@ -163,7 +156,7 @@ export const commands: CommandsSubgroup = {
     ...buildCommands(
       "smoothCaret",
       "caretStyle",
-      paceCaretCommand,
+      "paceCaret",
       "repeatedPace",
       "paceCaretStyle",
     ),
@@ -178,6 +171,7 @@ export const commands: CommandsSubgroup = {
       "timerColor",
       "timerOpacity",
       "highlightMode",
+      "typedEffect",
 
       "tapeMode",
       "tapeMargin",
@@ -193,14 +187,14 @@ export const commands: CommandsSubgroup = {
       "keymapStyle",
       "keymapLegendStyle",
       "keymapSize",
-      keymapLayoutCommand,
+      "keymapLayout",
       "keymapShowTopRow",
     ),
 
     //theme
     ...buildCommands(
       ...ThemesCommands,
-      customThemeCommand,
+      "customTheme",
 
       ...CustomThemesListCommands,
       "flipTestColors",
@@ -227,14 +221,14 @@ export const commands: CommandsSubgroup = {
       "showKeyTips",
       "showOutOfFocusWarning",
       "capsLockWarning",
-      showAverageCommand,
-      showPbCommand,
+      "showAverage",
+      "showPb",
       "monkeyPowerLevel",
       "monkey",
     ),
 
     //danger zone
-    adsCommand,
+    ...adsCommands,
 
     //other
     ...LoadChallengeCommands,
@@ -275,7 +269,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-trash-alt",
       alias: "dismiss",
       exec: async (): Promise<void> => {
-        Notifications.clearAllNotifications();
+        clearAllNotifications();
       },
     },
     {
@@ -307,14 +301,10 @@ export const commands: CommandsSubgroup = {
         navigator.clipboard
           .writeText(JSON.stringify(TestStats.getStats()))
           .then(() => {
-            Notifications.add("Copied to clipboard", 1);
+            showSuccessNotification("Copied to clipboard");
           })
           .catch((e: unknown) => {
-            const message = Misc.createErrorMessage(
-              e,
-              "Failed to copy to clipboard",
-            );
-            Notifications.add(message, -1);
+            showErrorNotification("Failed to copy to clipboard", { error: e });
           });
       },
     },
@@ -331,7 +321,7 @@ export const commands: CommandsSubgroup = {
             display: "show",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.start();
+              showFpsCounter();
             },
           },
           {
@@ -339,7 +329,7 @@ export const commands: CommandsSubgroup = {
             display: "hide",
             icon: "fa-cog",
             exec: (): void => {
-              FPSCounter.stop();
+              hideFpsCounter();
             },
           },
         ],
@@ -391,28 +381,12 @@ export const commands: CommandsSubgroup = {
 };
 
 const lists = {
-  keymapLayouts: keymapLayoutCommand.subgroup,
-  enableAds: adsCommand.subgroup,
-  customThemesList: customThemeCommand.subgroup,
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
-  languages: languageCommand.subgroup,
-  difficulty: difficultyCommand.subgroup,
-  lazyMode: lazyModeCommand.subgroup,
-  paceCaretMode: paceCaretCommand.subgroup,
-  showAverage: showAverageCommand.subgroup,
-  showPb: showPbCommand.subgroup,
-  minWpm: minSpeedCommand.subgroup,
-  minAcc: minAccCommand.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
-  confidenceMode: confidenceModeCommand.subgroup,
-  stopOnError: stopOnErrorCommand.subgroup,
-  layouts: layoutCommand.subgroup,
-  oppositeShiftMode: oppositeShiftModeCommand.subgroup,
   tags: TagsCommands[0]?.subgroup,
-  resultSaving: ResultSavingCommands[0]?.subgroup,
-  blindMode: blindModeCommand.subgroup,
+  ads: adsCommands[0]?.subgroup,
   mode: modeCommand.subgroup,
   time: timeCommand.subgroup,
   words: wordsCommand.subgroup,
@@ -421,18 +395,33 @@ const lists = {
   numbers: numbersCommand.subgroup,
 };
 
+const subgroupByConfigKey = Object.fromEntries(
+  commands.list
+    .filter((it) => it.subgroup?.configKey !== undefined)
+    .map((it) => [it.subgroup?.configKey, it.subgroup]),
+) as Record<string, CommandsSubgroup>;
+
 export function doesListExist(listName: string): boolean {
+  if (subgroupByConfigKey[listName] !== undefined) {
+    return true;
+  }
+
   return lists[listName as ListsObjectKeys] !== undefined;
 }
 
 export async function getList(
-  listName: ListsObjectKeys,
+  listName: ListsObjectKeys | ConfigKey,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
-  const list = lists[listName];
+  const subGroup = subgroupByConfigKey[listName];
+  if (subGroup !== undefined) {
+    return subGroup;
+  }
+
+  const list = lists[listName as ListsObjectKeys];
   if (!list) {
-    Notifications.add(`List not found: ${listName}`, -1);
+    showErrorNotification(`List not found: ${listName}`);
     throw new Error(`List ${listName} not found`);
   }
   return list;

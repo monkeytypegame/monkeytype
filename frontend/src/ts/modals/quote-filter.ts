@@ -15,7 +15,7 @@ function refresh(): void {
 
 export const quoteFilterModal = new SimpleModal({
   id: "quoteFilter",
-  title: "Enter minimum and maximum values",
+  title: "Enter minimum and maximum number of words",
   inputs: [
     {
       placeholder: "1",
@@ -32,7 +32,7 @@ export const quoteFilterModal = new SimpleModal({
     const maxNum = parseInt(max, 10);
     if (isNaN(minNum) || isNaN(maxNum)) {
       return {
-        status: 0,
+        status: "notice",
         message: "Invalid min/max values",
       };
     }
@@ -41,8 +41,8 @@ export const quoteFilterModal = new SimpleModal({
     maxFilterLength = maxNum;
     refresh();
 
-    let message: string = "saved custom filter";
-    return { status: 1, message };
+    let message: string = "Saved custom filter";
+    return { status: "success", message };
   },
   afterClickAway: () => {
     setRemoveCustom(true);

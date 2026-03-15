@@ -1,5 +1,8 @@
 import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -14,13 +17,13 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     body: { result: notSignedInLastResult },
   });
   if (response.status !== 200) {
-    Notifications.add("Failed to save last result", -1, { response });
+    showErrorNotification("Failed to save last result", { response });
     return;
   }
 
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cuase issues but worth investigating
+  // into a snapshot result - might not cause issues but worth investigating
   const result = structuredClone(
     notSignedInLastResult,
   ) as unknown as SnapshotResult<Mode>;
@@ -38,8 +41,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   }
   DB.saveLocalResult(dataToSave);
   TestLogic.clearNotSignedInResult();
-  Notifications.add(
+  showSuccessNotification(
     `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
-    1,
   );
 }

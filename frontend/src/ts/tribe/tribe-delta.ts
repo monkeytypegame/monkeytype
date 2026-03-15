@@ -38,12 +38,16 @@ export function update(): void {
 
   if (userIsLeading) {
     // positive state
-    const delta = user.progress?.wpm ?? 0 - (secondUser.progress?.wpm ?? 0);
+    const userProgress = user.progress?.wpm ?? 0;
+    const secondUserProgress = secondUser.progress?.wpm ?? 0;
+    const delta = userProgress - secondUserProgress;
     lastState = state;
     state = delta;
   } else {
     // negative state
-    const delta = (leadingUser.progress?.wpm ?? 0) - (user.progress?.wpm ?? 0);
+    const leadingUserProgress = leadingUser.progress?.wpm ?? 0;
+    const userProgress = user.progress?.wpm ?? 0;
+    const delta = leadingUserProgress - userProgress;
     lastState = state;
     state = -delta;
   }

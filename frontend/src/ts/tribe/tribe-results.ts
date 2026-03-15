@@ -6,6 +6,7 @@ import { FinalPositions } from "./tribe-socket/routes/room";
 import { getOrdinalNumberString } from "@monkeytype/util/numbers";
 import * as TribeTypes from "./types";
 import { isConfigInfinite } from "./tribe-config";
+import { ElementWithUtils, qs } from "../utils/dom";
 
 const initialised: Record<string, boolean | object> = {};
 
@@ -18,8 +19,8 @@ export function reset(page?: string): void {
     reset("result");
   } else if (page === "result") {
     initialised[page] = {};
-    $(".pageTest #result #tribeResults table tbody").empty();
-    $(".pageTest #result #tribeResults").addClass("hidden");
+    qs(".pageTest #result #tribeResults table tbody")?.empty();
+    qs(".pageTest #result #tribeResults")?.addClass("hidden");
   }
 }
 
@@ -27,14 +28,14 @@ export function init(page: string): void {
   if (page === "result") {
     reset(page);
 
-    const el = $(".pageTest #result #tribeResults table tbody");
+    const el = qs(".pageTest #result #tribeResults table tbody");
 
     const room = TribeState.getRoom();
     if (!room) return;
 
     for (const [userId, user] of Object.entries(room.users)) {
       if (user.isAfk) continue;
-      el.append(`
+      el?.appendHtml(`
         <tr class="user ${
           userId === tribeSocket.getId() ? "me" : ""
         }" id="${userId}">
@@ -88,7 +89,7 @@ export function init(page: string): void {
       `);
     }
 
-    $(".pageTest #result #tribeResults").removeClass("hidden");
+    qs(".pageTest #result #tribeResults")?.removeClass("hidden");
     initialised[page] = true;
   }
 }
@@ -101,7 +102,7 @@ export function updateBar(
   const room = TribeState.getRoom();
   if (!room) return;
   if (page === "result") {
-    const el = $(
+    const el = qs(
       `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`,
     );
     const user = room.users[userId];
@@ -113,13 +114,11 @@ export function updateBar(
     if (percentOverride !== undefined && percentOverride !== 0) {
       percent = percentOverride + "%";
     }
-    el.stop(true, false).animate(
-      {
-        width: percent,
-      },
-      SlowTimer.get() ? 0 : 1000,
-      "linear",
-    );
+    el?.animate({
+      width: percent,
+      duration: SlowTimer.get() ? 0 : 1000,
+      ease: "linear",
+    });
   }
 }
 
@@ -132,11 +131,11 @@ export function updateWpmAndAcc(
   const room = TribeState.getRoom();
   if (!room) return;
   if (page === "result") {
-    const el = $(`.pageTest #result #tribeResults table tbody tr#${userId}`);
+    const el = qs(`.pageTest #result #tribeResults table tbody tr#${userId}`);
     const user = room.users[userId];
     if (!user) return;
-    el.find(".wpm .text").text(wpm);
-    el.find(".acc .text").text(`${acc}%`);
+    el?.qs(".wpm .text")?.setText(`${wpm}`);
+    el?.qs(".acc .text")?.setText(`${acc}%`);
   }
 }
 
@@ -148,41 +147,47 @@ export function updatePositions(
   if (page === "result") {
     for (const [position, users] of Object.entries(positions)) {
       for (const user of users) {
-        const userEl = $(
+        const userEl = qs(
           `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`,
         );
         const string = getOrdinalNumberString(parseInt(position));
-        userEl.find(".pos").text(string);
+        userEl?.qs(".pos")?.setText(string);
         userEl
-          .find(".points")
-          .text(`+${user.newPoints}${user.newPoints === 1 ? "pt" : "pts"}`);
+          ?.qs(".points")
+          ?.setText(`+${user.newPoints}${user.newPoints === 1 ? "pt" : "pts"}`);
       }
     }
 
     //todo once i use state and redraw elements as needed instead of always keeping elements in the dom
     //reorder table rows based on the ordered list
     if (reorder) {
-      const elements: Record<string, JQuery> = {};
-      const el = $(".pageTest #result #tribeResults table tbody");
-      el.find("tr.user").each((_, userEl) => {
-        const id = $(userEl).attr("id");
-        if (id !== undefined) {
-          elements[id] = $(userEl);
+      const elements: Record<string, ElementWithUtils> = {};
+      const el = qs(".pageTest #result #tribeResults table tbody");
+      for (const user of el?.qsa("tr.user") ?? []) {
+        const id = user.getAttribute("id");
+        if (id !== null) {
+          elements[id] = user;
         }
-      });
+      }
 
-      el.empty();
+      el?.empty();
       //add in the correct order, then add the rest
 
       for (const [_pos, users] of Object.entries(positions)) {
         for (const user of users) {
-          el.append(elements[user.id] as JQuery);
+          const userEl = elements[user.id];
+          if (userEl) {
+            el?.append(userEl);
+          }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete elements[user.id];
         }
       }
       for (const id of Object.keys(elements)) {
-        el.append(elements[id] as JQuery);
+        const userEl = elements[id];
+        if (userEl) {
+          el?.append(userEl);
+        }
       }
     }
   }
@@ -196,10 +201,10 @@ export function updateMiniCrowns(
     for (const crown of Object.keys(miniCrowns)) {
       const userIds = miniCrowns[crown as keyof typeof miniCrowns];
       for (const userId of userIds) {
-        const userEl = $(
+        const userEl = qs(
           `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
         );
-        userEl.find(`.${crown}`).append(`
+        userEl?.qs(`.${crown}`)?.appendHtml(`
         <div class="miniCrown">
         <i class="fas fa-fw fa-crown"></i>
         </div>
@@ -215,14 +220,14 @@ export function showCrown(
   isGlowing: boolean,
 ): void {
   if (page === "result") {
-    const userEl = $(
+    const userEl = qs(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
     );
-    userEl.find(`.crown .icon`).removeClass("invisible");
+    userEl?.qs(`.crown .icon`)?.removeClass("invisible");
     if (isGlowing) {
-      userEl.find(".crown").attr("aria-label", "Dominated");
-      userEl.find(".crown").attr("data-balloon-pos", "up");
-      userEl.find(`.crown .glow`).removeClass("invisible");
+      userEl?.qs(".crown")?.setAttribute("aria-label", "Dominated");
+      userEl?.qs(".crown")?.setAttribute("data-balloon-pos", "up");
+      userEl?.qs(`.crown .glow`)?.removeClass("invisible");
     }
   }
 }
@@ -231,29 +236,29 @@ function updateUser(page: string, userId: string): void {
   const room = TribeState.getRoom();
   if (!room) return;
   if (page === "result") {
-    const userEl = $(
+    const userEl = qs(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
     );
     const user = room.users[userId];
     if (!user) {
-      userEl.find(`.other .text`).text("left");
+      userEl?.qs(`.other .text`)?.setText("left");
       return;
     }
     const userResult = user.result;
     if (!userResult) {
-      userEl.find(`.wpm .text`).text("-");
-      userEl.find(`.raw .text`).text("-");
-      userEl.find(`.acc .text`).text("-");
-      userEl.find(`.consistency .text`).text("-");
-      userEl.find(`.other .text`).text("missing result data");
+      userEl?.qs(`.wpm .text`)?.setText("-");
+      userEl?.qs(`.raw .text`)?.setText("-");
+      userEl?.qs(`.acc .text`)?.setText("-");
+      userEl?.qs(`.consistency .text`)?.setText("-");
+      userEl?.qs(`.other .text`)?.setText("missing result data");
       return;
     }
     if (user.isFinished) {
-      userEl.find(`.wpm .text`).text(userResult.wpm);
-      userEl.find(`.raw .text`).text(userResult.raw);
-      userEl.find(`.acc .text`).text(userResult.acc + "%");
-      userEl.find(`.consistency .text`).text(userResult.consistency + "%");
-      userEl.find(`.char .text`).text(
+      userEl?.qs(`.wpm .text`)?.setText(`${userResult.wpm}`);
+      userEl?.qs(`.raw .text`)?.setText(`${userResult.raw}`);
+      userEl?.qs(`.acc .text`)?.setText(`${userResult.acc}%`);
+      userEl?.qs(`.consistency .text`)?.setText(`${userResult.consistency}%`);
+      userEl?.qs(`.char .text`)?.setText(
         `
         ${userResult.charStats[0]}/${userResult.charStats[1]}/${userResult.charStats[2]}/${userResult.charStats[3]}
         `,
@@ -274,7 +279,7 @@ function updateUser(page: string, userId: string): void {
       } else if ("saved" in resolve && resolve.saved && resolve.isPb) {
         otherText = "new pb";
       }
-      userEl.find(`.other .text`).text(otherText);
+      userEl?.qs(`.other .text`)?.setText(otherText);
     }
   }
 }
@@ -294,10 +299,10 @@ export function update(page: string, userId?: string): void {
 
 export function fadeUser(page: string, userId: string): void {
   if (page === "result") {
-    const userEl = $(
+    const userEl = qs(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`,
     );
-    userEl.addClass("faded");
+    userEl?.addClass("faded");
   }
 }
 
@@ -310,24 +315,28 @@ export function updateTimerText(text: string): void {
 
 export function updateTimer(value: string): void {
   if (!timerVisible) showTimer();
-  $(".pageTest #result #tribeResults .timer").text(
+  qs(".pageTest #result #tribeResults .timer")?.setText(
     timerText + ": " + value + "s",
   );
 }
 
 function showTimer(): void {
   timerVisible = true;
-  $(".pageTest #result #tribeResults .timer")
-    .removeClass("invisible")
-    .css({ opacity: 0 })
-    .animate({ opacity: 1 }, 125);
+  qs(".pageTest #result #tribeResults .timer")
+    ?.removeClass("invisible")
+    .setStyle({ opacity: "0" })
+    .animate({ opacity: 1, duration: 125 });
 }
 
 export function hideTimer(): void {
   timerVisible = false;
-  $(".pageTest #result #tribeResults .timer")
-    .css({ opacity: 1 })
-    .animate({ opacity: 0 }, 125, () => {
-      $(".pageTest #result #tribeResults .timer").addClass("invisible");
+  qs(".pageTest #result #tribeResults .timer")
+    ?.setStyle({ opacity: "1" })
+    .animate({
+      opacity: 0,
+      duration: 125,
+      onComplete: () => {
+        qs(".pageTest #result #tribeResults .timer")?.addClass("invisible");
+      },
     });
 }

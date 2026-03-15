@@ -1,10 +1,10 @@
 import AnimatedModal from "../utils/animated-modal";
 import { qs } from "../utils/dom";
-import * as Loader from "../elements/loader";
 import * as TribeConfig from "../tribe/tribe-config";
 import TribeSocket from "../tribe/tribe-socket";
 import * as TribeType from "../tribe/types";
 import * as Tribe from "../tribe/tribe";
+import { hideLoaderBar, showLoaderBar } from "../signals/loader-bar";
 
 function updateList(list: TribeType.PublicRoomData[]): void {
   const el = modal.getModal();
@@ -47,9 +47,9 @@ function updateList(list: TribeType.PublicRoomData[]): void {
 }
 
 export function show(): void {
-  Loader.show();
+  showLoaderBar();
   void TribeSocket.out.room.getPublicRooms(0, "").then((r) => {
-    Loader.hide();
+    hideLoaderBar();
     updateList(r.rooms);
   });
   void modal.show();
