@@ -1,9 +1,12 @@
 import { JSXElement, Show } from "solid-js";
 
-import * as Commandline from "../../../commandline/commandline";
 import Config, { setConfig } from "../../../config";
 import { isAuthenticated } from "../../../firebase";
-import { getThemeIndicator } from "../../../signals/core";
+import {
+  getThemeIndicator,
+  setCommandlineSubgroup,
+} from "../../../signals/core";
+import { showModal } from "../../../stores/modals";
 import { showNoticeNotification } from "../../../stores/notifications";
 import { getSnapshot } from "../../../stores/snapshot";
 import { Fa } from "../../common/Fa";
@@ -23,9 +26,8 @@ export function ThemeIndicator(): JSXElement {
       setConfig("customTheme", true);
     } else {
       const subgroup = Config.customTheme ? "customTheme" : "themes";
-      Commandline.show({
-        subgroupOverride: subgroup,
-      });
+      setCommandlineSubgroup(subgroup);
+      showModal("Commandline");
     }
   };
 
