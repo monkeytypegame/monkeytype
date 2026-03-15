@@ -123,7 +123,7 @@ export function show(
           if (exists) {
             showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              overrideStringOrGroup,
+              overrideStringOrGroup as CommandlineLists.ListsObjectKeys,
             );
             hideLoaderBar();
           } else {
