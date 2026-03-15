@@ -1,6 +1,6 @@
 import * as Commandline from "../commandline/commandline";
 import * as CustomWordAmount from "../modals/custom-word-amount";
-import Config from "../config";
+import Config, { setStoryLength } from "../config";
 import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
@@ -21,6 +21,7 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
+import type { StoryLength } from "@monkeytype/schemas/configs";
 
 const testPage = qs(".pageTest");
 
@@ -119,4 +120,17 @@ qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {
       null,
     )}&goToUserPage=true`,
   );
+});
+
+testPage?.onChild("click", "#testConfig .storyLength .textButton", (event) => {
+  const target = event.childTarget as HTMLElement;
+
+  const length = target?.getAttribute("storyLength") as StoryLength | null;
+  if (!length) return;
+  const validLength: StoryLength[] = ["flash", "short", "epic"];
+  if (!validLength.includes(length)) return;
+
+  if (Config.storyLength === length) return;
+
+  setStoryLength(length);
 });
