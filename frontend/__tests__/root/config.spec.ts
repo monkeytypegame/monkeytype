@@ -73,9 +73,7 @@ describe("Config", () => {
     it("should throw if config key in not found in metadata", () => {
       expect(() => {
         Config.setConfig("nonExistentKey" as ConfigKey, true);
-      }).toThrowError(
-        `Config metadata for key "nonExistentKey" is not defined.`,
-      );
+      }).toThrow(`Config metadata for key "nonExistentKey" is not defined.`);
     });
 
     it("fails if test is active and funbox no_quit", () => {

@@ -55,16 +55,11 @@ export async function init(callback: ReadyCallback): Promise<void> {
   try {
     let firebaseConfig: FirebaseOptions | null;
 
-    const constants = import.meta.glob("./constants/firebase-config.ts");
-    const loader = constants["./constants/firebase-config.ts"];
-    if (loader) {
-      firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
-        .firebaseConfig;
-    } else {
-      throw new Error(
-        "No config file found. Make sure frontend/src/ts/constants/firebase-config.ts exists",
-      );
-    }
+    firebaseConfig = (
+      (await import("./constants/firebase-config")) as {
+        firebaseConfig: FirebaseOptions;
+      }
+    ).firebaseConfig;
 
     readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
