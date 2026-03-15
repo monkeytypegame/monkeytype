@@ -178,6 +178,20 @@ export const configMetadata: ConfigMetadataObject = {
       return {};
     },
   },
+  storyLength: {
+    icon: "fa-book",
+    displayString: "story length",
+    changeRequiresRestart: true,
+    group: "test",
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "story") {
+        return {
+          mode: "story",
+        };
+      }
+      return {};
+    },
+  },
   language: {
     icon: "fa-language",
     displayString: "language",
