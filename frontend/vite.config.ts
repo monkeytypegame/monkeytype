@@ -264,6 +264,10 @@ function getBuildOptions({
               test: /node_modules\/chart/,
             },
             {
+              name: "monkeytype-constants",
+              test: /src\/ts\/constants\//,
+            },
+            {
               name: "vendor",
               test: /node_modules\//,
             },
