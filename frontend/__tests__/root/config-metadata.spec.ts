@@ -28,6 +28,7 @@ describe("ConfigMeta", () => {
         "time",
         "mode",
         "quoteLength",
+        "storyLength",
         "language",
         "difficulty",
         "minWpmCustomSpeed",

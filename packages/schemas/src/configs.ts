@@ -5,6 +5,9 @@ import * as Layouts from "./layouts";
 import { LanguageSchema } from "./languages";
 import { FontNameSchema } from "./fonts";
 
+export const StoryLengthSchema = z.enum(["flash", "short", "epic"]);
+export type StoryLength = z.infer<typeof StoryLengthSchema>;
+
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
 
@@ -387,6 +390,7 @@ export const ConfigSchema = z
     time: TimeConfigSchema,
     mode: Shared.ModeSchema,
     quoteLength: QuoteLengthConfigSchema,
+    storyLength: StoryLengthSchema,
     language: LanguageSchema,
     burstHeatmap: z.boolean(),
 

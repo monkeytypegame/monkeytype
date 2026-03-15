@@ -613,6 +613,7 @@ export function areAllTestWordsGenerated(): boolean {
     (Config.mode === "quote" &&
       TestWords.words.length >=
         (TestWords.currentQuote?.textSplit?.length ?? 0)) ||
+    Config.mode === "story" ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "section" &&
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
@@ -1552,6 +1553,7 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
       restart();
     }
     if (key === "difficulty" && !nosave) restart();
+    if (key === "storyLength" && !nosave) restart();
     if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
       restart();
     }

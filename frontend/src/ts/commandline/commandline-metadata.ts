@@ -150,6 +150,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       },
     },
   },
+  storyLength: {
+    subgroup: {
+      options: "fromSchema",
+      afterExec: () => {
+        TestLogic.restart();
+      },
+    },
+  },
   quoteLength: {
     alias: "quotes",
     subgroup: {

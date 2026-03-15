@@ -98,6 +98,7 @@ const defaultSnap = {
     words: {},
     quote: {},
     zen: {},
+    story: {},
     custom: {},
   },
   name: "",

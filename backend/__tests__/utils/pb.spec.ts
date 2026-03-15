@@ -47,6 +47,7 @@ describe("Pb Utils", () => {
         custom: {},
         quote: {},
         zen: {},
+        story: {},
       };
       const result = {
         difficulty: "normal",
@@ -94,6 +95,7 @@ describe("Pb Utils", () => {
         custom: {},
         quote: {},
         zen: {},
+        story: {},
       };
       const result = {
         difficulty: "normal",
@@ -155,6 +157,7 @@ describe("Pb Utils", () => {
       custom: {},
       quote: {},
       zen: {},
+      story: {},
     };
     it("should update leaderboard personal bests if they dont exist or the structure is incomplete", () => {
       const lbpbstartingvalues = [

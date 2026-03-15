@@ -1415,6 +1415,7 @@
   .wordCount,
   .puncAndNum,
   .quoteLength,
+  .storyLength,
   .customText,
   .zen {
     display: grid;
@@ -1436,6 +1437,7 @@
   }
   .time,
   .wordCount,
+  .storyLength,
   .customText,
   .zen,
   .quoteLength {

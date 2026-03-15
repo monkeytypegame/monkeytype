@@ -2,6 +2,8 @@ import { literal, z } from "zod";
 import { StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 
+import { StoryLengthSchema } from "./stories";
+
 //used by config and shared
 export const DifficultySchema = z.enum(["normal", "expert", "master"]);
 export type Difficulty = z.infer<typeof DifficultySchema>;
@@ -32,6 +34,7 @@ export const PersonalBestsSchema = z.object({
     z.array(PersonalBestSchema),
   ),
   quote: z.record(StringNumberSchema, z.array(PersonalBestSchema)),
+  story: z.record(StoryLengthSchema, z.array(PersonalBestSchema)),
   custom: z.record(z.literal("custom"), z.array(PersonalBestSchema)),
   zen: z.record(z.literal("zen"), z.array(PersonalBestSchema)),
 });
@@ -69,10 +72,11 @@ export const ModeSchema = PersonalBestsSchema.keyof();
 export type Mode = z.infer<typeof ModeSchema>;
 
 export const Mode2Schema = z.union(
-  [StringNumberSchema, literal("zen"), literal("custom")],
+  [StringNumberSchema, literal("zen"), literal("custom"), StoryLengthSchema],
   {
     errorMap: () => ({
-      message: 'Needs to be either a number, "zen" or "custom".',
+      message:
+        'Needs to be either a number, "zen", "custom" or a story length.',
     }),
   },
 );

@@ -25,6 +25,7 @@ async function createDummyData(
       quote: {},
       custom: {},
       zen: {},
+      story: {},
     },
   };
 

@@ -29,6 +29,7 @@ import { setAccountButtonSpinner } from "./signals/header";
 import { deleteConfig, saveConfig } from "./ape/config";
 import Ape from "./ape";
 import { SnapshotInitError } from "./db";
+import type { StoryLength } from "@monkeytype/schemas/stories";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -267,6 +268,16 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "punctuation",
   "funbox",
 ]);
+
+/**
+ * StoryLength
+ */
+export function setStoryLength(
+  storyLength: StoryLength,
+  nosave?: boolean,
+): boolean {
+  return setConfig("storyLength", storyLength, { nosave });
+}
 
 export async function applyConfig(
   partialConfig: Partial<Config>,

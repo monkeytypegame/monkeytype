@@ -792,6 +792,8 @@ function updateTestType(randomQuote: Quote | null): void {
     if (randomQuote?.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
+  } else if (Config.mode === "story") {
+    testType += " " + Config.storyLength;
   }
   const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
   if (Config.mode !== "custom" && !ignoresLanguage) {

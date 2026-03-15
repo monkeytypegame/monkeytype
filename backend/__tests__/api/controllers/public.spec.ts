@@ -72,7 +72,7 @@ describe("PublicController", () => {
         validationErrors: [
           '"language" Required',
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"mode2" Needs to be either a number, "zen", "custom" or a story length.',
         ],
       });
     });
@@ -90,7 +90,7 @@ describe("PublicController", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'story' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });

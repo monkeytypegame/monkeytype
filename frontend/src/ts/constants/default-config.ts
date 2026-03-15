@@ -1,4 +1,5 @@
 import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
+import type { StoryLength } from "@monkeytype/schemas/stories";
 
 const obj: Config = {
   theme: "serika_dark",
@@ -29,6 +30,7 @@ const obj: Config = {
   time: 30,
   mode: "time",
   quoteLength: [1],
+  storyLength: "flash" as StoryLength,
   language: "english",
   fontSize: 2,
   freedomMode: false,
