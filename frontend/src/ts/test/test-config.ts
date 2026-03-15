@@ -30,6 +30,7 @@ export async function instantUpdate(): Promise<void> {
   qs("#testConfig .wordCount")?.hide();
   qs("#testConfig .customText")?.hide();
   qs("#testConfig .quoteLength")?.hide();
+  qs("#testConfig .storyLength")?.hide();
   qs("#testConfig .zen")?.hide();
 
   if (Config.mode === "time") {
@@ -57,6 +58,11 @@ export async function instantUpdate(): Promise<void> {
     qs("#testConfig .quoteLength")?.show();
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
+  } else if (Config.mode === "story") {
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .storyLength")?.show();
+
+    updateActiveExtraButtons("storyLength", Config.storyLength);
   } else if (Config.mode === "custom") {
     qs("#testConfig .puncAndNum")?.show()?.setStyle({
       width: "",
@@ -81,6 +87,8 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     updateActiveExtraButtons("words", Config.words);
   } else if (current === "quote") {
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
+  } else if (current === "story") {
+    updateActiveExtraButtons("storyLength", Config.storyLength);
   }
 
   const submenu = {
@@ -88,6 +96,7 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     words: "wordCount",
     custom: "customText",
     quote: "quoteLength",
+    story: "storyLength",
     zen: "zen",
   };
 
@@ -105,6 +114,7 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     words: true,
     custom: true,
     quote: false,
+    story: false,
     zen: false,
   };
 
@@ -288,6 +298,14 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
         )?.addClass("active");
       });
     }
+  } else if (key === "storyLength") {
+    qsa("#testConfig .storyLength .textButton")?.removeClass("active");
+
+    qs(
+      "#testConfig .storyLength .textButton[storyLength='" +
+        (value as string) +
+        "']",
+    )?.addClass("active");
   } else if (key === "numbers") {
     if (value === false) {
       qs("#testConfig .numbersMode.textButton")?.removeClass("active");
@@ -331,9 +349,14 @@ ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
   if (key === "mode") {
     void update(previousValue, newValue);
   } else if (
-    ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
-      key ?? "",
-    )
+    [
+      "time",
+      "quoteLength",
+      "storyLength",
+      "words",
+      "numbers",
+      "punctuation",
+    ].includes(key ?? "")
   ) {
     if (newValue !== undefined) {
       updateActiveExtraButtons(key, newValue);
