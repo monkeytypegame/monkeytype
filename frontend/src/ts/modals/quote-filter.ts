@@ -1,4 +1,4 @@
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 
 export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;

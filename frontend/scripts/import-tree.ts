@@ -287,17 +287,52 @@ for (const entry of entryPoints) {
 
 let totalDirect = 0;
 let totalTransitive = 0;
+const uniqueDirect = new Set<string>();
+const uniqueTransitive = new Set<string>();
+let maxDirect = 0;
+let maxDirectFile = "";
+let maxTransitive = 0;
+let maxTransitiveFile = "";
 let maxDepthSeen = 0;
+let maxDepthFile = "";
 
 for (const entry of entryPoints) {
   const info = cache.get(entry);
   if (!info) continue;
   totalDirect += info.directImports.length;
   totalTransitive += info.totalReachable;
-  maxDepthSeen = Math.max(maxDepthSeen, info.maxDepth);
+  for (const dep of info.directImports) {
+    uniqueDirect.add(dep);
+  }
+  for (const dep of getAllReachable(entry, new Set())) {
+    uniqueTransitive.add(dep);
+  }
+  if (info.directImports.length > maxDirect) {
+    maxDirect = info.directImports.length;
+    maxDirectFile = entry;
+  }
+  if (info.totalReachable > maxTransitive) {
+    maxTransitive = info.totalReachable;
+    maxTransitiveFile = entry;
+  }
+  if (info.maxDepth > maxDepthSeen) {
+    maxDepthSeen = info.maxDepth;
+    maxDepthFile = entry;
+  }
 }
 
 console.log(`${c.dim}───────────────────────────${c.reset}`);
-console.log(`Direct imports:     ${c.bold}${totalDirect}${c.reset}`);
-console.log(`Transitive imports: ${c.bold}${totalTransitive}${c.reset}`);
-console.log(`Max depth:          ${c.bold}${maxDepthSeen}${c.reset}`);
+console.log(`Target:             ${c.bold}${displayPath(resolved)}${c.reset}`);
+console.log(`Total direct:       ${c.bold}${totalDirect}${c.reset}`);
+console.log(`Total transitive:   ${c.bold}${totalTransitive}${c.reset}`);
+console.log(`Unique direct:      ${c.bold}${uniqueDirect.size}${c.reset}`);
+console.log(`Unique transitive:  ${c.bold}${uniqueTransitive.size}${c.reset}`);
+console.log(
+  `Max direct:         ${c.bold}${maxDirect}${c.reset} ${c.dim}(${displayPath(maxDirectFile)})${c.reset}`,
+);
+console.log(
+  `Max transitive:     ${c.bold}${maxTransitive}${c.reset} ${c.dim}(${displayPath(maxTransitiveFile)})${c.reset}`,
+);
+console.log(
+  `Max depth:          ${c.bold}${maxDepthSeen}${c.reset} ${c.dim}(${displayPath(maxDepthFile)})${c.reset}`,
+);
