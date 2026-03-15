@@ -921,7 +921,7 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
   const icon = qs(".pageTest #result #favoriteQuoteButton .icon");
 
   if (Config.mode !== "quote" || !isAuthenticated()) {
-    icon?.getParent()?.setStyle({ display: "none" });
+    icon?.getParent()?.hide();
     return;
   }
 
