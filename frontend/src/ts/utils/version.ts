@@ -4,7 +4,7 @@ import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { isDevEnvironment } from "./env";
 import { createErrorMessage } from "./error";
-import { setVersion } from "../signals/core";
+import { setVersion } from "../states/core";
 
 const memoryLS = new LocalStorageWithSchema({
   key: "lastSeenVersion",

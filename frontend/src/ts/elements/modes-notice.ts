@@ -6,7 +6,7 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";
-import * as CustomTextState from "../states/custom-text-name";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";

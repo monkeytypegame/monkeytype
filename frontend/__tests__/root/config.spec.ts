@@ -11,7 +11,7 @@ import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
 import * as ApeConfig from "../../src/ts/ape/config";
-import * as Notifications from "../../src/ts/stores/notifications";
+import * as Notifications from "../../src/ts/states/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {

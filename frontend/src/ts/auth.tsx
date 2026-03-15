@@ -25,13 +25,13 @@ import {
 import { showPopup } from "./modals/simple-modals-base";
 import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
-import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import { addBanner } from "./stores/banners";
+import { addBanner } from "./states/banners";
+import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "./stores/notifications";
+} from "./states/notifications";
 import { createErrorMessage } from "./utils/error";
 
 export const gmailProvider = new GoogleAuthProvider();

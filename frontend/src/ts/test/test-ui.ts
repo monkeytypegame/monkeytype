@@ -1,7 +1,7 @@
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import Config, { setConfig } from "../config";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
@@ -12,11 +12,11 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as CompositionState from "../states/composition";
+import * as CompositionState from "../legacy-states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
@@ -47,7 +47,7 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
@@ -65,8 +65,8 @@ import {
   qsa,
   qsr,
 } from "../utils/dom";
-import { getTheme } from "../signals/theme";
-import { skipBreakdown } from "../signals/header";
+import { getTheme } from "../states/theme";
+import { skipBreakdown } from "../states/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,

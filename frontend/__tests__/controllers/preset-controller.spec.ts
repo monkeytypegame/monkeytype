@@ -3,7 +3,7 @@ import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
 import * as DB from "../../src/ts/db";
 import * as UpdateConfig from "../../src/ts/config";
-import * as Notifications from "../../src/ts/stores/notifications";
+import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TagController from "../../src/ts/controllers/tag-controller";
 

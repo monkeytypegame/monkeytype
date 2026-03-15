@@ -8,7 +8,7 @@ import * as TodayTracker from "../test/today-tracker";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
@@ -19,10 +19,10 @@ import { format } from "date-fns/format";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 import { getAuthenticatedUser } from "../firebase";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../singletons/format";
 import { ChartData } from "@monkeytype/schemas/results";

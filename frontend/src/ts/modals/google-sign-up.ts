@@ -3,7 +3,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import {
   sendEmailVerification,
   updateProfile,
@@ -15,7 +15,7 @@ import * as LoginPage from "../pages/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";

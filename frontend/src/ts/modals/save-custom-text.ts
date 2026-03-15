@@ -3,8 +3,8 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
-import * as CustomTextState from "../states/custom-text-name";
+} from "../states/notifications";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { z } from "zod";

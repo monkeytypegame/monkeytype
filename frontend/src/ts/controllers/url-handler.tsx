@@ -24,12 +24,12 @@ import Ape from "../ape";
 import Config, { setConfig } from "../config";
 import * as DB from "../db";
 import * as AuthEvent from "../observables/auth-event";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import { restart as restartTest } from "../test/test-logic";

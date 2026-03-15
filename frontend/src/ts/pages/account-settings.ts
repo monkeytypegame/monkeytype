@@ -1,15 +1,15 @@
 import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
-import { showLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar } from "../states/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";

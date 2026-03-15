@@ -3,14 +3,14 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage, getFocus } from "../../../signals/core";
+import { getActivePage, getFocus } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
   setAnimatedLevel,
-} from "../../../signals/header";
-import { showModal } from "../../../stores/modals";
-import { getSnapshot } from "../../../stores/snapshot";
+} from "../../../states/header";
+import { showModal } from "../../../states/modals";
+import { getSnapshot } from "../../../states/snapshot";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";

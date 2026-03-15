@@ -1,4 +1,4 @@
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";

@@ -4,7 +4,7 @@ import * as CustomText from "../test/custom-text";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,

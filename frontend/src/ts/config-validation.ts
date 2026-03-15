@@ -1,4 +1,4 @@
-import { showErrorNotification } from "./stores/notifications";
+import { showErrorNotification } from "./states/notifications";
 import { ZodSchema, z } from "zod";
 import * as Sentry from "./sentry";
 

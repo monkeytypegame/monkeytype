@@ -3,7 +3,7 @@ import * as TestInput from "./test-input";
 import * as TestState from "../test/test-state";
 import { subscribe } from "../observables/config-event";
 import { Caret } from "../elements/caret";
-import * as CompositionState from "../states/composition";
+import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
 
 export function stopAnimation(): void {

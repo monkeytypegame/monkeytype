@@ -7,7 +7,7 @@ import {
   isModalOpen,
   ModalId,
   hideModal as storeHideModal,
-} from "../stores/modals";
+} from "../states/modals";
 
 type CustomWrapperAndModalAnimations = {
   wrapper?: AnimationParams & {

@@ -32,8 +32,8 @@ import {
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
-import { addBanner } from "./stores/banners";
-import { setUserId } from "./signals/core";
+import { addBanner } from "./states/banners";
+import { setUserId } from "./states/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;

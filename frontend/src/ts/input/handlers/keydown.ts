@@ -10,13 +10,13 @@ import * as JSONData from "../../utils/json-data";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
-import * as CustomTextState from "../../states/custom-text-name";
+import * as CustomTextState from "../../legacy-states/custom-text-name";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
