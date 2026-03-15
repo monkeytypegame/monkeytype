@@ -27,13 +27,7 @@ onDOMReady(async () => {
     duration: Misc.applyReducedMotion(250),
   });
 
-  void ServerConfiguration.sync().then(() => {
-    if (!ServerConfiguration.get()?.users.signUp) {
-      qs(".register")?.hide();
-      qs(".login")?.hide();
-      qs(".disabledNotification")?.show();
-    }
-  });
+  void ServerConfiguration.sync();
 
   MonkeyPower.init();
 
