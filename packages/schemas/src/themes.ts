@@ -53,6 +53,7 @@ export const ThemeNameSchema = z.enum(
     "dualshot",
     "earthsong",
     "everblush",
+    "evergarden",
     "evil_eye",
     "ez_mode",
     "fire",
