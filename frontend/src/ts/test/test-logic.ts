@@ -815,12 +815,12 @@ function buildCompletedEvent(
 
   const duration = parseFloat(stats.time.toString());
   const afkDuration = TestStats.calculateAfkSeconds(duration);
+  let quoteLength = -1;
   let language = Config.language;
   if (Config.mode === "quote") {
     language = Strings.removeLanguageSize(Config.language);
+    quoteLength = TestWords.currentQuote?.group ?? quoteLength;
   }
-
-  const quoteLength = TestWords.currentQuote?.group ?? -1;
 
   const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: stats.wpm,
