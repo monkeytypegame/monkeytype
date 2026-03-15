@@ -2381,7 +2381,7 @@ describe("user controller test", () => {
         message: "Invalid request data schema",
         validationErrors: [
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"mode2" Needs to be either a number, "zen", "custom" or a story length.',
           '"language" Required',
           '"rank" Required',
         ],
@@ -2730,7 +2730,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid query schema",
         validationErrors: [
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'mood'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'story' | 'custom' | 'zen', received 'mood'`,
           `"mode2" Needs to be a number or a number represented as a string e.g. "10".`,
         ],
       });

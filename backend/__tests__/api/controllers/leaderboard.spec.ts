@@ -217,7 +217,7 @@ describe("Loaderboard Controller", () => {
         validationErrors: [
           '"language" Required',
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"mode2" Needs to be either a number, "zen", "custom" or a story length.',
         ],
       });
     });
@@ -237,7 +237,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'story' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
           '"page" Number must be greater than or equal to 0',
           '"pageSize" Number must be less than or equal to 200',
@@ -431,7 +431,7 @@ describe("Loaderboard Controller", () => {
         validationErrors: [
           '"language" Required',
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"mode2" Needs to be either a number, "zen", "custom" or a story length.',
         ],
       });
     });
@@ -450,7 +450,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'story' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
@@ -772,7 +772,7 @@ describe("Loaderboard Controller", () => {
         validationErrors: [
           '"language" Required',
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"mode2" Needs to be either a number, "zen", "custom" or a story length.',
         ],
       });
     });
@@ -791,7 +791,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'story' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
@@ -989,7 +989,7 @@ describe("Loaderboard Controller", () => {
         validationErrors: [
           '"language" Required',
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"mode2" Needs to be either a number, "zen", "custom" or a story length.',
         ],
       });
     });
@@ -1009,7 +1009,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'story' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });

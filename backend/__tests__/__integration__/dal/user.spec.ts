@@ -1142,6 +1142,7 @@ describe("UserDal", () => {
         time: {},
         words: {},
         zen: {},
+        story: {},
       });
     });
   });
@@ -1160,6 +1161,7 @@ describe("UserDal", () => {
         time: {},
         words: {},
         zen: {},
+        story: {},
       });
     });
   });
@@ -1226,6 +1228,7 @@ describe("UserDal", () => {
         time: {},
         words: {},
         zen: {},
+        story: {},
       });
     });
   });
@@ -1270,6 +1273,7 @@ describe("UserDal", () => {
         quote: {},
         zen: {},
         custom: {},
+        story: {},
       });
     });
   });

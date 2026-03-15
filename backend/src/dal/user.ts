@@ -437,6 +437,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
           words: {},
           quote: {},
           zen: {},
+          story: {},
           custom: {},
         },
       },
