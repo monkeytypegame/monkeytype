@@ -23,6 +23,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.0.15
         version: 4.0.15(vitest@4.1.0(@types/node@20.5.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@20.5.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))
+      caniuse-lite:
+        specifier: 1.0.30001778
+        version: 1.0.30001778
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
@@ -450,10 +453,13 @@ importers:
         version: 5.0.2
       '@vitest/coverage-v8':
         specifier: 4.0.15
-        version: 4.0.15(vitest@4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))
+        version: 4.0.15(vitest@4.1.0(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))
       autoprefixer:
         specifier: 10.4.27
         version: 10.4.27(postcss@8.5.8)
+      caniuse-lite:
+        specifier: 1.0.30001778
+        version: 1.0.30001778
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
@@ -540,7 +546,7 @@ importers:
         version: 2.11.11(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+        version: 4.1.0(@types/node@24.9.1)(@vitest/browser-playwright@4.0.18)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
 
   frontend/storybook:
     devDependencies:
@@ -628,7 +634,7 @@ importers:
         version: 6.0.0-beta
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+        version: 4.1.0(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
 
   packages/funbox:
     dependencies:
@@ -662,7 +668,7 @@ importers:
         version: 6.0.0-beta
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+        version: 4.1.0(@types/node@24.9.1)(@vitest/browser-playwright@4.0.18)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
 
   packages/oxlint-config:
     devDependencies:
@@ -721,7 +727,7 @@ importers:
         version: 6.0.0-beta
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+        version: 4.1.0(@types/node@24.9.1)(@vitest/browser-playwright@4.0.18)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
 
   packages/tsup-config:
     dependencies:
@@ -769,7 +775,7 @@ importers:
         version: 6.0.0-beta
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+        version: 4.1.0(@types/node@24.9.1)(@vitest/browser-playwright@4.0.18)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -4743,9 +4749,6 @@ packages:
 
   camelize@1.0.1:
     resolution: {integrity: sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==}
-
-  caniuse-lite@1.0.30001774:
-    resolution: {integrity: sha512-DDdwPGz99nmIEv216hKSgLD+D4ikHQHjBC/seF98N9CPqRX4M5mSxT9eTV6oyisnJcuzxtZy4n17yKKQYmYQOA==}
 
   caniuse-lite@1.0.30001778:
     resolution: {integrity: sha512-PN7uxFL+ExFJO61aVmP1aIEG4i9whQd4eoSCebav62UwDyp5OHh06zN4jqKSMePVgxHifCw1QJxdRkA1Pisekg==}
@@ -14128,6 +14131,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitest/coverage-v8@4.0.15(vitest@4.1.0(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))':
+    dependencies:
+      '@bcoe/v8-coverage': 1.0.2
+      '@vitest/utils': 4.0.15
+      ast-v8-to-istanbul: 0.3.12
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.2.0
+      magicast: 0.5.1
+      obug: 2.1.1
+      std-env: 3.10.0
+      tinyrainbow: 3.0.3
+      vitest: 4.1.0(@types/node@24.9.1)(@vitest/browser-playwright@4.0.18)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+    transitivePeerDependencies:
+      - supports-color
+
   '@vitest/coverage-v8@4.0.18(@vitest/browser@4.0.18(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))(vitest@4.1.0))(vitest@4.1.0)':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
@@ -14176,6 +14196,14 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 8.0.0(@types/node@20.5.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
+
+  '@vitest/mocker@4.1.0(vite@8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))':
+    dependencies:
+      '@vitest/spy': 4.1.0
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
 
   '@vitest/mocker@4.1.0(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))':
     dependencies:
@@ -14751,7 +14779,7 @@ snapshots:
   browserslist@4.28.1:
     dependencies:
       baseline-browser-mapping: 2.9.11
-      caniuse-lite: 1.0.30001774
+      caniuse-lite: 1.0.30001778
       electron-to-chromium: 1.5.302
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
@@ -14866,8 +14894,6 @@ snapshots:
   camelcase@6.3.0: {}
 
   camelize@1.0.1: {}
-
-  caniuse-lite@1.0.30001774: {}
 
   caniuse-lite@1.0.30001778: {}
 
@@ -21289,6 +21315,24 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.1
 
+  vite@8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1):
+    dependencies:
+      '@oxc-project/runtime': 0.115.0
+      lightningcss: 1.32.0
+      picomatch: 4.0.3
+      postcss: 8.5.8
+      rolldown: 1.0.0-rc.9
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 24.9.1
+      esbuild: 0.25.11
+      fsevents: 2.3.3
+      jiti: 2.6.1
+      sass: 1.70.0
+      terser: 5.46.0
+      tsx: 4.21.0
+      yaml: 2.8.1
+
   vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       '@oxc-project/runtime': 0.115.0
@@ -21395,6 +21439,35 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.9.1
       '@vitest/browser-playwright': 4.0.18(playwright@1.58.2)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))(vitest@4.1.0)
+      happy-dom: 20.0.10
+      jsdom: 27.4.0
+    transitivePeerDependencies:
+      - msw
+
+  vitest@4.1.0(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)):
+    dependencies:
+      '@vitest/expect': 4.1.0
+      '@vitest/mocker': 4.1.0(vite@8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+      '@vitest/pretty-format': 4.1.0
+      '@vitest/runner': 4.1.0
+      '@vitest/snapshot': 4.1.0
+      '@vitest/spy': 4.1.0
+      '@vitest/utils': 4.1.0
+      es-module-lexer: 2.0.0
+      expect-type: 1.3.0
+      magic-string: 0.30.21
+      obug: 2.1.1
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 4.0.0
+      tinybench: 2.9.0
+      tinyexec: 1.0.4
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.1.0
+      vite: 8.0.0(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 24.9.1
       happy-dom: 20.0.10
       jsdom: 27.4.0
     transitivePeerDependencies:

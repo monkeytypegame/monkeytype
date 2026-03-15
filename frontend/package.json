@@ -20,7 +20,8 @@
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
     "docker": "docker compose -f docker/compose.dev.yml up",
-    "storybook": "cd storybook && pnpm run storybook"
+    "storybook": "cd storybook && pnpm run storybook",
+    "import-tree": "tsx ./scripts/import-tree.ts"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -89,6 +90,7 @@
     "@types/throttle-debounce": "5.0.2",
     "@vitest/coverage-v8": "4.0.15",
     "autoprefixer": "10.4.27",
+    "caniuse-lite": "1.0.30001778",
     "concurrently": "8.2.2",
     "eslint": "9.39.1",
     "eslint-plugin-compat": "7.0.0",
