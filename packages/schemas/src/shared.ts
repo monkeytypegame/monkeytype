@@ -72,10 +72,11 @@ export const ModeSchema = PersonalBestsSchema.keyof();
 export type Mode = z.infer<typeof ModeSchema>;
 
 export const Mode2Schema = z.union(
-  [StringNumberSchema, literal("zen"), literal("custom")],
+  [StringNumberSchema, literal("zen"), literal("custom"), StoryLengthSchema],
   {
     errorMap: () => ({
-      message: 'Needs to be either a number, "zen" or "custom".',
+      message:
+        'Needs to be either a number, "zen", "custom" or a story length.',
     }),
   },
 );
