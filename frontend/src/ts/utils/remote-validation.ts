@@ -1,4 +1,4 @@
-import { IsValidResponse } from "../elements/input-validation";
+import { IsValidResponse } from "../types/validation";
 
 type IsValidResonseOrFunction =
   | ((message: string) => IsValidResponse)

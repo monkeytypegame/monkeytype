@@ -1,6 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 import Ape from "../ape";
 import {
   intervalToDuration,
@@ -19,7 +19,7 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 import { formatXp, getXpDetails } from "../utils/levels";
 import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { SortedTable, SortSchema } from "../utils/sorted-table";
 import { getAvatarElement } from "../utils/discord-avatar";
