@@ -27,6 +27,7 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
+import { strView } from "./strings-view";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -149,19 +150,56 @@ class PseudolangWordGenerator extends Wordset {
 }
 
 export class PolyglotWordset extends Wordset {
-  public wordsWithLanguage: Map<string, Language>;
-  public languageProperties: Map<Language, JSONData.LanguageProperties>;
+  readonly wordsetMap: Map<Language, Wordset>;
+  readonly languageProperties: Map<Language, JSONData.LanguageProperties>;
+  private currLang: Language;
+  readonly langs: Language[];
 
   constructor(
-    wordsWithLanguage: Map<string, Language>,
+    words: string[],
+    wordsetMap: Map<Language, Wordset>,
     languageProperties: Map<Language, JSONData.LanguageProperties>,
   ) {
-    // build and shuffle the word array
-    const wordArray = Array.from(wordsWithLanguage.keys());
-    Arrays.shuffle(wordArray);
-    super(wordArray);
-    this.wordsWithLanguage = wordsWithLanguage;
+    super(words);
     this.languageProperties = languageProperties;
+    this.langs = Array.from(languageProperties.keys());
+    this.wordsetMap = wordsetMap;
+    this.resetIndexes();
+    this.length = words.length;
+    this.currLang = this.langs[0] as Language;
+  }
+
+  get currentLanguage(): Language {
+    return this.currLang;
+  }
+
+  override resetIndexes(): void {
+    this.wordsetMap.forEach((ws) => {
+      ws.resetIndexes();
+    });
+  }
+
+  private uniformLang(): Language {
+    const index = Math.floor(Math.random() * this.langs.length);
+    this.currLang = this.langs[index] as Language;
+    return this.currLang;
+  }
+
+  private getWordset(): Wordset {
+    const lang = this.uniformLang();
+    return this.wordsetMap.get(lang) as Wordset;
+  }
+
+  override randomWord(mode: FunboxWordsFrequency): string {
+    return this.getWordset().randomWord(mode);
+  }
+
+  override shuffledWord(): string {
+    return this.getWordset().shuffledWord();
+  }
+
+  override nextWord(): string {
+    return this.getWordset().nextWord();
   }
 }
 
@@ -763,14 +801,16 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           },
         ]),
       );
-
-      const wordsWithLanguage = new Map(
-        languages.flatMap((lang) =>
-          lang.words.map((word) => [word, lang.name]),
-        ),
-      );
-
-      return new PolyglotWordset(wordsWithLanguage, languageProperties);
+      const wordsetMap = new Map<Language, Wordset>();
+      let end = 0;
+      const words: string[] = [];
+      for (const lang of languages) {
+        const start = end;
+        end += lang.words.length;
+        words.push(...lang.words);
+        wordsetMap.set(lang.name, new Wordset(strView(words, start, end)));
+      }
+      return new PolyglotWordset(words, wordsetMap, languageProperties);
     },
   },
 };
