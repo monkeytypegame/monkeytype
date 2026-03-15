@@ -4,6 +4,7 @@ import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-background-picker";
 import { showNoticeNotification } from "../../stores/notifications";
+import Config, { setConfig } from "../../config";
 
 const fromMeta = buildCommandForConfigKey("customBackground");
 
@@ -86,6 +87,18 @@ const customBackgroundCommand: Command = {
               "Error removing background: " + (e as Error).message,
             );
           }
+        },
+      },
+      {
+        id: "removeUrlBackground",
+        display: "Remove URL background",
+        icon: "fa-trash",
+        alias: "remove background",
+        available: async (): Promise<boolean> => {
+          return Config.customBackground !== "";
+        },
+        exec: async (): Promise<void> => {
+          setConfig("customBackground", "");
         },
       },
     ],
