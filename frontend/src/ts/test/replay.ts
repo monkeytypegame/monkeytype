@@ -2,8 +2,7 @@ import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
 import { qs, qsr } from "../utils/dom";
-import Config from "../config";
-
+import { Config } from "../config/store";
 type ReplayAction =
   | "correctLetter"
   | "incorrectLetter"

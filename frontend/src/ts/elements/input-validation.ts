@@ -6,7 +6,8 @@ import {
   ConfigSchema,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import { showSuccessNotification } from "../stores/notifications";
 import { ElementWithUtils } from "../utils/dom";
 import { Validation, ValidationResult } from "../types/validation";

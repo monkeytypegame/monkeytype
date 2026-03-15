@@ -1,7 +1,8 @@
 import * as TestWords from "./test-words";
 import { showNoticeNotification } from "../stores/notifications";
 
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";

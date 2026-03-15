@@ -1,4 +1,4 @@
-import Config from "./config";
+import { Config } from "./config/store";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import * as TestState from "./test/test-state";

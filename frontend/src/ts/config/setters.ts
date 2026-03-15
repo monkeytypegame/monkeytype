@@ -11,7 +11,7 @@ import {
 } from "../test/funbox/funbox-validation";
 import * as TestState from "../test/test-state";
 import { typedKeys, triggerResize } from "../utils/misc";
-import Config from "./store";
+import { Config } from "./store";
 import { FunboxName } from "@monkeytype/schemas/configs";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(

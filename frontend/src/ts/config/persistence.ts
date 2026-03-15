@@ -1,7 +1,7 @@
 import { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import { saveConfig } from "../ape/config";
 import { setAccountButtonSpinner } from "../signals/header";
-import Config from "./store";
+import { Config } from "./store";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { migrateConfig } from "../utils/config";
@@ -56,7 +56,7 @@ export const saveToDatabase = debounce(1000, () => {
   configToSend = {} as ConfigSchemas.Config;
 });
 
-export function setConfigToSendPersistence(
+export function resetPendingConfigSync(
   newConfigToSend: ConfigSchemas.Config,
 ): void {
   configToSend = newConfigToSend;

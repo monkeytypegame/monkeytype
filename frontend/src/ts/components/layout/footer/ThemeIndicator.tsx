@@ -1,7 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
-import { setConfig } from "../../../config";
-import Config from "../../../config/store";
+import { setConfig } from "../../../config/setters";
+import { Config } from "../../../config/store";
 import { isAuthenticated } from "../../../firebase";
 import {
   getThemeIndicator,

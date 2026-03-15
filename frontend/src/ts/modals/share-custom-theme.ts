@@ -1,5 +1,5 @@
 import * as ThemeController from "../controllers/theme-controller";
-import Config from "../config";
+import { Config } from "../config/store";
 import {
   showNoticeNotification,
   showSuccessNotification,

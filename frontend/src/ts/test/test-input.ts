@@ -1,7 +1,7 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
-import Config from "../config";
+import { Config } from "../config/store";
 import { getInputElementValue } from "../input/input-element";
 
 const keysToTrack = new Set([

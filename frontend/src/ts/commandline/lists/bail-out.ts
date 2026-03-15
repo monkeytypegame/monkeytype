@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
 import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";

@@ -5,10 +5,11 @@ import {
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
-import Config, {
+import { Config } from "../../config/store";
+import {
   toggleFunbox as configToggleFunbox,
   setConfig,
-} from "../../config";
+} from "../../config/setters";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";

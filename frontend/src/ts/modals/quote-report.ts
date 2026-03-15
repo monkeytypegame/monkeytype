@@ -1,7 +1,6 @@
 import { ElementWithUtils, qsr } from "../utils/dom";
 import Ape from "../ape";
-import Config from "../config";
-
+import { Config } from "../config/store";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import {
   showNoticeNotification,

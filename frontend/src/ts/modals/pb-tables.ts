@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import { format } from "date-fns/format";
 import { getLanguageDisplayString } from "../utils/strings";
-import Config from "../config";
+import { Config } from "../config/store";
 import Format from "../singletons/format";
 import AnimatedModal from "../utils/animated-modal";
 import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";

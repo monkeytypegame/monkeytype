@@ -72,8 +72,8 @@ import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../signals/header";
-import Config, { setQuoteLengthAll, toggleFunbox, setConfig } from "../config";
-
+import { Config } from "../config/store";
+import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 let failReason = "";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {

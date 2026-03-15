@@ -1,6 +1,7 @@
 import { Preset } from "@monkeytype/schemas/presets";
 
-import Config, { applyConfig } from "../config";
+import { Config } from "../config/store";
+import { applyConfig } from "../config/lifecycle";
 import * as DB from "../db";
 import {
   showNoticeNotification,

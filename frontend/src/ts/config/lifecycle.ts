@@ -1,10 +1,10 @@
-import { Config } from "@monkeytype/schemas/configs";
+import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import {
   configLS,
   saveToLocalStorage,
   saveFullConfigToLocalStorage,
 } from "./persistence";
-import config, { loadDone } from "./store";
+import { Config, loadDone } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import * as ConfigEvent from "../observables/config-event";
 import { migrateConfig } from "../utils/config";
@@ -23,7 +23,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   }
   loadDone();
 }
-export const lastConfigsToApply: Set<keyof Config> = new Set([
+export const lastConfigsToApply: Set<keyof ConfigSchema> = new Set([
   "keymapMode",
   "minWpm",
   "minAcc",
@@ -38,22 +38,22 @@ export const lastConfigsToApply: Set<keyof Config> = new Set([
   "funbox",
 ]);
 export async function applyConfig(
-  partialConfig: Partial<Config>,
+  partialConfig: Partial<ConfigSchema>,
 ): Promise<void> {
   if (partialConfig === undefined || partialConfig === null) return;
 
   //migrate old values if needed, remove additional keys and merge with default config
-  const fullConfig: Config = migrateConfig(partialConfig);
+  const fullConfig: ConfigSchema = migrateConfig(partialConfig);
 
   ConfigEvent.dispatch({ key: "fullConfigChange" });
 
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullConfig)) {
     //@ts-expect-error this is fine, both are of type config
-    config[key] = defaultConfig[key];
+    Config[key] = defaultConfig[key];
   }
 
-  const configKeysToReset: (keyof Config)[] = [];
+  const configKeysToReset: (keyof ConfigSchema)[] = [];
 
   const firstKeys = typedKeys(fullConfig).filter(
     (key) => !lastConfigsToApply.has(key),
@@ -81,15 +81,15 @@ export async function resetConfig(): Promise<void> {
   saveFullConfigToLocalStorage(true);
 }
 
-export function getConfigChanges(): Partial<Config> {
-  const configChanges: Partial<Config> = {};
-  typedKeys(config)
+export function getConfigChanges(): Partial<ConfigSchema> {
+  const configChanges: Partial<ConfigSchema> = {};
+  typedKeys(Config)
     .filter((key) => {
-      return config[key] !== getDefaultConfig()[key];
+      return Config[key] !== getDefaultConfig()[key];
     })
     .forEach((key) => {
       //@ts-expect-error this is fine
-      configChanges[key] = config[key];
+      configChanges[key] = Config[key];
     });
   return configChanges;
 }

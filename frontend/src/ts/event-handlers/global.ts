@@ -1,6 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as PageTransition from "../states/page-transition";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import { showErrorNotification } from "../stores/notifications";

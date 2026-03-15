@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import { showErrorNotification } from "../stores/notifications";

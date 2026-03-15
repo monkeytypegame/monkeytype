@@ -25,7 +25,7 @@ import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { ElementWithUtils } from "../utils/dom";
 import { configMetadata } from "../config-metadata";
-import { getConfigChanges as getConfigChangesFromConfig } from "../config/apply";
+import { getConfigChanges as getConfigChangesFromConfig } from "../config/lifecycle";
 
 const state = {
   presetType: "full" as PresetType,

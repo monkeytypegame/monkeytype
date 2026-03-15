@@ -1,18 +1,18 @@
-import { Config } from "@monkeytype/schemas/configs";
+import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import { configMetadata } from "../config-metadata";
 import { getDefaultConfig } from "../constants/default-config";
-import { setConfigToSendPersistence } from "./persistence";
-import config from "./store";
+import { resetPendingConfigSync } from "./persistence";
+import { Config } from "./store";
 
 export const __testing = {
   configMetadata,
-  replaceConfig: (setConfig: Partial<Config>): void => {
+  replaceConfig: (setConfig: Partial<ConfigSchema>): void => {
     const newConfig = { ...getDefaultConfig(), ...setConfig };
-    for (const key of Object.keys(config)) {
-      Reflect.deleteProperty(config, key);
+    for (const key of Object.keys(Config)) {
+      Reflect.deleteProperty(Config, key);
     }
-    Object.assign(config, newConfig);
-    setConfigToSendPersistence({} as Config);
+    Object.assign(Config, newConfig);
+    resetPendingConfigSync({} as ConfigSchema);
   },
-  getConfig: () => config,
+  getConfig: () => Config,
 };

@@ -2,8 +2,7 @@ import { subscribe } from "../observables/config-event";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { createStore } from "solid-js/store";
 import { getDefaultConfig } from "../constants/default-config";
-import { getConfig as getLegacyConfig } from "../config";
-
+import { getConfig as getLegacyConfig } from "../config/store";
 const [getConfig, setConfigStore] = createStore<ConfigType>(getDefaultConfig());
 export { getConfig };
 

@@ -1,15 +1,14 @@
-import { Config } from "@monkeytype/schemas/configs";
+import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { promiseWithResolvers } from "../utils/misc";
 
-let config: Config = {
+let Config: ConfigSchema = {
   ...getDefaultConfig(),
 };
 
-const getConfig = (): Config => config;
+const getConfig = (): ConfigSchema => Config;
 
 const { promise: configLoadPromise, resolve: loadDone } =
   promiseWithResolvers();
 
-export { configLoadPromise, loadDone, getConfig };
-export default config;
+export { Config, configLoadPromise, loadDone, getConfig };

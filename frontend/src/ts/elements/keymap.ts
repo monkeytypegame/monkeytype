@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";

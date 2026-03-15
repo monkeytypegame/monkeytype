@@ -1,4 +1,5 @@
-import Config, { setConfig } from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 import { Command, CommandsSubgroup } from "../types";
 

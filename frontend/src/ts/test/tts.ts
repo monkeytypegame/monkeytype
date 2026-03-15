@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as JSONData from "../utils/json-data";
 import * as ConfigEvent from "../observables/config-event";
 import * as TTSEvent from "../observables/tts-event";

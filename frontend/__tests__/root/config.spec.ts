@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
-import * as Config from "../../src/ts/config";
+import * as Config from "../../src/ts/config/setters";
+import * as Lifecycle from "../../src/ts/config/lifecycle";
+import { __testing } from "../../src/ts/config/testing";
 import * as Misc from "../../src/ts/utils/misc";
 import * as Env from "../../src/ts/utils/env";
 import {
@@ -12,7 +14,7 @@ import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/stores/notifications";
-const { replaceConfig, getConfig } = Config.__testing;
+const { replaceConfig, getConfig } = __testing;
 
 describe("Config", () => {
   const isDevEnvironmentMock = vi.spyOn(Env, "isDevEnvironment");
@@ -281,7 +283,7 @@ describe("Config", () => {
       replaceConfig({
         mode: "words",
       });
-      await Config.applyConfig({
+      await Lifecycle.applyConfig({
         numbers: true,
         punctuation: true,
       });
@@ -326,7 +328,7 @@ describe("Config", () => {
       ];
 
       it.each(testCases)("$display", async ({ value, expected }) => {
-        await Config.applyConfig(value);
+        await Lifecycle.applyConfig(value);
 
         const config = getConfig();
         const applied = Object.fromEntries(
@@ -363,7 +365,7 @@ describe("Config", () => {
       ];
 
       it.each(testCases)("$display", async ({ value, expected }) => {
-        await Config.applyConfig(value);
+        await Lifecycle.applyConfig(value);
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>
@@ -378,8 +380,8 @@ describe("Config", () => {
       replaceConfig({
         numbers: true,
       });
-      await Config.applyConfig({
-        ...Config.getConfigChanges(),
+      await Lifecycle.applyConfig({
+        ...Lifecycle.getConfigChanges(),
         punctuation: true,
       });
       const config = getConfig();
@@ -390,7 +392,7 @@ describe("Config", () => {
       replaceConfig({
         minWpm: "off",
       });
-      await Config.applyConfig({
+      await Lifecycle.applyConfig({
         minWpmCustomSpeed: 100,
       });
       const config = getConfig();
@@ -402,7 +404,7 @@ describe("Config", () => {
       replaceConfig({
         minWpm: "off",
       });
-      await Config.applyConfig({
+      await Lifecycle.applyConfig({
         minWpm: "custom",
         minWpmCustomSpeed: 100,
       });
@@ -413,7 +415,7 @@ describe("Config", () => {
 
     it("should keep the keymap off when applying keymapLayout", async () => {
       replaceConfig({});
-      await Config.applyConfig({
+      await Lifecycle.applyConfig({
         keymapLayout: "qwerty",
       });
       const config = getConfig();

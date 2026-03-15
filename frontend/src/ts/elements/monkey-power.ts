@@ -1,5 +1,5 @@
 import * as SlowTimer from "../states/slow-timer";
-import Config from "../config";
+import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { ElementWithUtils, qsr } from "../utils/dom";

@@ -5,12 +5,12 @@ import {
   showErrorNotification,
 } from "../stores/notifications";
 import { migrateConfig } from "../utils/config";
-import { applyConfig } from "./apply";
+import { applyConfig } from "./lifecycle";
 import { saveFullConfigToLocalStorage } from "./persistence";
 import Ape from "../ape";
 import { SnapshotInitError } from "../db";
 import { getDefaultConfig } from "../constants/default-config";
-import config from "./store";
+import { Config } from "./store";
 
 export async function applyConfigFromJson(json: string): Promise<void> {
   try {
@@ -39,9 +39,9 @@ export async function updateFromServer(): Promise<void> {
   const remoteConfig = await getRemoteConfig();
 
   const areConfigsEqual =
-    JSON.stringify(config) === JSON.stringify(remoteConfig);
+    JSON.stringify(Config) === JSON.stringify(remoteConfig);
 
-  if (config === undefined || !areConfigsEqual) {
+  if (Config === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db",
     );

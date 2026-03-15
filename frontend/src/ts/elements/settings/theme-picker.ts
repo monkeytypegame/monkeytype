@@ -1,4 +1,5 @@
-import Config, { setConfig } from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";

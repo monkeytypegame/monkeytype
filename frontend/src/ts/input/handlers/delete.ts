@@ -4,7 +4,7 @@ import * as TestInput from "../../test/test-input";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
 import * as Replay from "../../test/replay";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
 

@@ -2,7 +2,8 @@ import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
 import * as ChartController from "../controllers/chart-controller";
 
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
