@@ -1,6 +1,6 @@
 import * as Commandline from "../commandline/commandline";
 import * as CustomWordAmount from "../modals/custom-word-amount";
-import Config, { setStoryLength } from "../config";
+import Config, { setConfig, setStoryLength } from "../config";
 import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
@@ -22,6 +22,7 @@ import { ConfigKey } from "@monkeytype/schemas/configs";
 import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
 import type { StoryLength } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 
 const testPage = qs(".pageTest");
 
@@ -122,6 +123,13 @@ qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {
   );
 });
 
+//Story Mode
+testPage?.onChild("click", "#testConfig [mode='story']", () => {
+  if (Config.mode === "story") return;
+  setConfig("mode", "story" as Mode);
+});
+
+//Story Mode Length
 testPage?.onChild("click", "#testConfig .storyLength .textButton", (event) => {
   const target = event.childTarget as HTMLElement;
 
