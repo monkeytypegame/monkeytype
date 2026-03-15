@@ -459,19 +459,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     getResultContent(): string {
       return Config.customLayoutfluid.join(" ");
     },
-    restart(): void {
-      if (this.applyConfig) this.applyConfig();
-      setTimeout(() => {
-        void KeymapEvent.highlight(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1,
-            ),
-        );
-      }, 1);
-    },
   },
   gibberish: {
     getWord(): string {
