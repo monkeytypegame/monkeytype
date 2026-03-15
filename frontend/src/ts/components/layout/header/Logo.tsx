@@ -3,7 +3,7 @@ import { JSXElement } from "solid-js";
 import { getActivePage, getFocus } from "../../../signals/core";
 import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
-import { isDevEnvironment } from "../../../utils/misc";
+import { isDevEnvironment } from "../../../utils/env";
 
 export function Logo(): JSXElement {
   return (

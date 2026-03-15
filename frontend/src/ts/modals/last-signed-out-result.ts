@@ -7,7 +7,6 @@ import {
 } from "../stores/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import { syncNotSignedInLastResult } from "../utils/results";
 import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
@@ -132,7 +131,7 @@ const modal = new AnimatedModal({
     modalEl.qs("button.save")?.on("click", async () => {
       const user = getAuthenticatedUser();
       if (user !== null) {
-        void syncNotSignedInLastResult(user.uid);
+        void TestLogic.syncNotSignedInLastResult(user.uid);
       }
       hide();
     });

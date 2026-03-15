@@ -6,7 +6,7 @@ import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { getActivePage, getGlobalOffsetTop } from "./signals/core";
-import { isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
