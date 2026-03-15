@@ -445,6 +445,9 @@ export function getLimit(): number {
     if (Config.mode === "quote") {
       limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
     }
+    if (Config.mode === "story") {
+      limit = Story.getCurrentWordList().length;
+    }
   }
 
   //infinite words
@@ -480,6 +483,10 @@ export function getLimit(): number {
     (currentQuote as QuoteWithTextSplit).textSplit.length < limit
   ) {
     limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
+  }
+
+  if (Config.mode === "story" && Story.getCurrentWordList().length < limit) {
+    limit = Story.getCurrentWordList().length;
   }
 
   if (
@@ -722,12 +729,16 @@ export async function generateWords(
     ret.words.some((w) => w.includes("\t")) ||
     currentWordset.words.some((w) => w.includes("\t")) ||
     (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t"))) ||
+    (Config.mode === "story" &&
+      Story.getCurrentWordList().some((w) => w.includes("\t")));
   ret.hasNewline =
     ret.words.some((w) => w.includes("\n")) ||
     currentWordset.words.some((w) => w.includes("\n")) ||
     (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n"))) ||
+    (Config.mode === "story" &&
+      Story.getCurrentWordList().some((w) => w.includes("\n")));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
@@ -769,10 +780,14 @@ export async function getNextWord(
     throw new WordGenError("Current language is null");
   }
 
-  //because quote test can be repeated in the middle of a test
+  //because quote/story test can be repeated in the middle of a test
   //we cant rely on data inside previousGetNextWordReturns
-  //because it might not include the full quote
-  if (TestState.isRepeated && Config.mode !== "quote") {
+  //because it might not include the full quote/story
+  if (
+    TestState.isRepeated &&
+    Config.mode !== "quote" &&
+    Config.mode !== "story"
+  ) {
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {
@@ -820,7 +835,7 @@ export async function getNextWord(
   if (currentSection.length === 0) {
     const funboxSection = await getFunboxSection();
 
-    if (Config.mode === "quote") {
+    if (Config.mode === "quote" || Config.mode === "story") {
       randomWord = currentWordset.nextWord();
     } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
       randomWord = currentWordset.nextWord();
@@ -916,6 +931,7 @@ export async function getNextWord(
   if (
     Config.mode !== "custom" &&
     Config.mode !== "quote" &&
+    Config.mode !== "story" &&
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
     !randomWordLanguage.startsWith("german") &&

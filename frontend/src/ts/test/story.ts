@@ -29,7 +29,7 @@ async function loadStoryFile(language: string): Promise<StoryFile | null> {
   }
 
   try {
-    const response = await fetch(`/static/stories/${language}.json`);
+    const response = await fetch(`/stories/${language}.json`);
     if (!response.ok) {
       // Fallback to english if language-specific file not found
       if (language !== "english") {

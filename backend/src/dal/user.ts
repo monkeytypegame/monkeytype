@@ -94,6 +94,7 @@ export async function addUser(
       words: {},
       quote: {},
       zen: {},
+      story: {},
       custom: {},
     },
     testActivity: {},
@@ -124,6 +125,7 @@ export async function resetUser(uid: string): Promise<void> {
           words: {},
           quote: {},
           zen: {},
+          story: {},
           custom: {},
         },
         lbPersonalBests: {
@@ -203,6 +205,7 @@ export async function clearPb(uid: string): Promise<void> {
           words: {},
           quote: {},
           zen: {},
+          story: {},
           custom: {},
         },
         lbPersonalBests: {
@@ -374,6 +377,7 @@ export async function addTag(uid: string, name: string): Promise<DBUserTag> {
       words: {},
       quote: {},
       zen: {},
+      story: {},
       custom: {},
     },
   };
@@ -484,6 +488,7 @@ export async function checkIfPb(
     quote: {},
     words: {},
     zen: {},
+    story: {},
   };
   user.lbPersonalBests ??= {
     time: {},
@@ -547,6 +552,7 @@ export async function checkIfTagPb(
       words: {},
       quote: {},
       zen: {},
+      story: {},
       custom: {},
     };
 
@@ -573,6 +579,7 @@ export async function resetPb(uid: string): Promise<void> {
           words: {},
           quote: {},
           zen: {},
+          story: {},
           custom: {},
         },
       },
@@ -1377,6 +1384,7 @@ function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
     words: {},
     quote: {},
     zen: {},
+    story: {},
     custom: {},
   };
 

@@ -2,6 +2,8 @@ import { literal, z } from "zod";
 import { StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 
+import { StoryLengthSchema } from "./stories";
+
 //used by config and shared
 export const DifficultySchema = z.enum(["normal", "expert", "master"]);
 export type Difficulty = z.infer<typeof DifficultySchema>;
@@ -32,7 +34,7 @@ export const PersonalBestsSchema = z.object({
     z.array(PersonalBestSchema),
   ),
   quote: z.record(StringNumberSchema, z.array(PersonalBestSchema)),
-  story: z.record(z.literal("story"), z.array(PersonalBestSchema)),
+  story: z.record(StoryLengthSchema, z.array(PersonalBestSchema)),
   custom: z.record(z.literal("custom"), z.array(PersonalBestSchema)),
   zen: z.record(z.literal("zen"), z.array(PersonalBestSchema)),
 });

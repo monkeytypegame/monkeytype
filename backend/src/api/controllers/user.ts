@@ -575,6 +575,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
     words: {},
     quote: {},
     zen: {},
+    story: {},
     custom: {},
   };
 

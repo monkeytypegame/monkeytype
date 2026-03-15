@@ -233,6 +233,7 @@ async function updateUser(uid: string): Promise<void> {
     custom: {},
     words: {},
     zen: {},
+    story: {},
     quote: {},
   };
   const modes = stats.map(

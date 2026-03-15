@@ -54,6 +54,7 @@ const actionModals: Record<Action, SimpleModal> = {
           words: {},
           quote: {},
           zen: {},
+          story: {},
           custom: {},
         },
       });
@@ -164,6 +165,7 @@ const actionModals: Record<Action, SimpleModal> = {
           words: {},
           quote: {},
           zen: {},
+          story: {},
           custom: {},
         };
       }
