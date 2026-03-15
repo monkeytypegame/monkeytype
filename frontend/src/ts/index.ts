@@ -42,6 +42,7 @@ import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
 import "./ready";
+import { setVersion } from "./signals/core";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -64,7 +65,11 @@ Object.defineProperty(window, "Math", {
 
 applyEngineSettings();
 void loadFromLocalStorage();
-void fetchLatestVersion();
+void fetchLatestVersion().then((data) => {
+  if (data === null) return;
+  setVersion(data);
+});
+
 Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {

@@ -4,7 +4,6 @@ import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { isDevEnvironment } from "./env";
 import { createErrorMessage } from "./error";
-import { setVersion } from "../signals/core";
 
 const memoryLS = new LocalStorageWithSchema({
   key: "lastSeenVersion",
@@ -19,8 +18,11 @@ function purgeCaches(): void {
   });
 }
 
-export async function fetchLatestVersion(): Promise<void> {
-  if (isDevEnvironment()) return;
+export async function fetchLatestVersion(): Promise<{
+  text: string;
+  isNew: boolean;
+} | null> {
+  if (isDevEnvironment()) return null;
 
   const { data: currentVersion, error } = await tryCatch(
     getLatestReleaseFromGitHub(),
@@ -32,19 +34,19 @@ export async function fetchLatestVersion(): Promise<void> {
       "Failed to fetch version number from GitHub",
     );
     console.error(msg);
-    return;
+    return null;
   }
 
   const memoryVersion = memoryLS.get();
   const isNew = memoryVersion === "" ? false : memoryVersion !== currentVersion;
 
-  setVersion({
-    text: currentVersion,
-    isNew: isNew,
-  });
-
   if (isNew || memoryVersion === "") {
     memoryLS.set(currentVersion);
     purgeCaches();
   }
+
+  return {
+    text: currentVersion,
+    isNew,
+  };
 }
