@@ -1,5 +1,8 @@
-import AnimatedModal, { HideOptions, ShowOptions } from "./animated-modal";
-import { Attributes, buildTag } from "./tag-builder";
+import AnimatedModal, {
+  HideOptions,
+  ShowOptions,
+} from "../utils/animated-modal";
+import { Attributes, buildTag } from "../utils/tag-builder";
 import { format as dateFormat } from "date-fns/format";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
@@ -9,13 +12,15 @@ import {
   AddNotificationOptions,
 } from "../stores/notifications";
 import {
-  IsValidResponse,
   ValidatedHtmlInputElement,
-  Validation,
   ValidationOptions,
+} from "./input-validation";
+import { ElementWithUtils, qsr } from "../utils/dom";
+import {
+  IsValidResponse,
+  Validation,
   ValidationResult,
-} from "../elements/input-validation";
-import { ElementWithUtils, qsr } from "./dom";
+} from "../types/validation";
 
 const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 

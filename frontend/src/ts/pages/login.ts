@@ -1,14 +1,14 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import TypoList from "../utils/typo-list";
+import TypoList from "../constants/typo-list";
 import {
   PasswordSchema,
   UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../utils/env";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";

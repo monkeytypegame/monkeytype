@@ -24,7 +24,7 @@ import { getAuthenticatedUser } from "../firebase";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { ChartData } from "@monkeytype/schemas/results";
 import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";

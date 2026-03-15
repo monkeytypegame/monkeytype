@@ -5,7 +5,7 @@ import { envConfig } from "virtual:env-config";
 import { lastSeenServerCompatibility } from "../../../ape/adapters/ts-rest-adapter";
 import { getVersion } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
-import { isDevEnvironment } from "../../../utils/misc";
+import { isDevEnvironment } from "../../../utils/env";
 import { Fa } from "../../common/Fa";
 
 export function VersionButton(): JSXElement {

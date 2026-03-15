@@ -4,7 +4,7 @@ import { envConfig } from "virtual:env-config";
 import { getIsScreenshotting } from "../../../signals/core";
 import { showModal } from "../../../stores/modals";
 import { cn } from "../../../utils/cn";
-import { isDevEnvironment } from "../../../utils/misc";
+import { isDevEnvironment } from "../../../utils/env";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { ScrollToTop } from "../footer/ScrollToTop";

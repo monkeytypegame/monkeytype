@@ -22,11 +22,9 @@ import {
   indexedDBLocalPersistence,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import {
-  createErrorMessage,
-  isDevEnvironment,
-  promiseWithResolvers,
-} from "./utils/misc";
+import { promiseWithResolvers } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
+import { createErrorMessage } from "./utils/error";
 
 import {
   Analytics as AnalyticsType,

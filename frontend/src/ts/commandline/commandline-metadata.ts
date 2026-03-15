@@ -8,12 +8,12 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { Validation } from "../elements/input-validation";
 import { getActivePage } from "../signals/core";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
 import { typedKeys } from "../utils/misc";
+import { Validation } from "../types/validation";
 
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"
