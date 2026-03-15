@@ -1,7 +1,6 @@
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
-import Config, { setConfig, setQuoteLengthAll, toggleFunbox } from "../config";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
@@ -73,6 +72,7 @@ import { debounce } from "throttle-debounce";
 import * as Time from "../states/time";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../signals/header";
+import Config, { setQuoteLengthAll, toggleFunbox, setConfig } from "../config";
 
 let failReason = "";
 

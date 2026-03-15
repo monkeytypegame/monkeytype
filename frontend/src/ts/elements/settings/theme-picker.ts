@@ -1,4 +1,4 @@
-import Config, { setConfig, saveFullConfigToLocalStorage } from "../../config";
+import Config, { setConfig } from "../../config";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
@@ -17,6 +17,7 @@ import { captureException } from "../../sentry";
 import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../signals/theme";
+import { saveFullConfigToLocalStorage } from "../../config/persistence";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
   const b1 = Colors.hexToHSL(a.bg);

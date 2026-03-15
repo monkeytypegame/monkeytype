@@ -13,7 +13,7 @@ import * as DB from "./db";
 import "./ui";
 import "./elements/settings/account-settings-notice";
 import "./controllers/ad-controller";
-import Config, { loadFromLocalStorage } from "./config";
+import Config from "./config";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
@@ -43,6 +43,7 @@ import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
 import "./ready";
 import { setVersion } from "./signals/core";
+import { loadFromLocalStorage } from "./config/apply";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

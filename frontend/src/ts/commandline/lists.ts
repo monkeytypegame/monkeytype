@@ -16,7 +16,7 @@ import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
 
-import Config, { applyConfigFromJson, setConfig } from "../config";
+import Config, { setConfig } from "../config";
 import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
@@ -39,6 +39,7 @@ import {
   hideFpsCounter,
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
+import { applyConfigFromJson } from "../config/sync";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise

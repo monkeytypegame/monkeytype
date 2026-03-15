@@ -1,4 +1,4 @@
-import { applyConfigFromJson } from "../config";
+import { applyConfigFromJson } from "../config/sync";
 import AnimatedModal from "../utils/animated-modal";
 
 type State = {

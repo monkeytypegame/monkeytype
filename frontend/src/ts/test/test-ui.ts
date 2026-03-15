@@ -2,6 +2,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../stores/notifications";
+
 import Config, { setConfig } from "../config";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";

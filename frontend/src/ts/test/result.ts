@@ -1,5 +1,6 @@
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
+
 import Config, { setConfig } from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";

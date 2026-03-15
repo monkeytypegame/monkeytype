@@ -3,6 +3,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
+
 import Config, { setConfig } from "../config";
 import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";

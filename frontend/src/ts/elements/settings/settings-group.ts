@@ -1,5 +1,4 @@
 import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
-
 import Config, { setConfig } from "../../config";
 import { showErrorNotification } from "../../stores/notifications";
 import SlimSelect from "slim-select";

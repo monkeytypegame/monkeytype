@@ -1,5 +1,6 @@
 import * as TestWords from "./test-words";
 import { showNoticeNotification } from "../stores/notifications";
+
 import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
