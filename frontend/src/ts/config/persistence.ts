@@ -4,7 +4,7 @@ import { setAccountButtonSpinner } from "../signals/header";
 import { Config } from "./store";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-import { migrateConfig } from "../utils/config";
+import { migrateConfig } from "./utils";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { isObject } from "../utils/misc";
 import { debounce } from "throttle-debounce";
@@ -46,7 +46,7 @@ export const configLS = new LocalStorageWithSchema({
   },
 });
 let configToSend: Partial<ConfigSchemas.Config> = {};
-export const saveToDatabase = debounce(1000, () => {
+const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     setAccountButtonSpinner(true);
     void saveConfig(configToSend).finally(() => {

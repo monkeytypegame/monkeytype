@@ -5,6 +5,7 @@ import * as DB from "../../src/ts/db";
 import { setConfig } from "../../src/ts/config/setters";
 import { Config } from "../../src/ts/config/store";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
+import * as ConfigUtils from "../../src/ts/config/utils";
 import * as Persistence from "../../src/ts/config/persistence";
 import * as Notifications from "../../src/ts/stores/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
@@ -24,7 +25,10 @@ describe("PresetController", () => {
       Persistence,
       "saveFullConfigToLocalStorage",
     );
-    const configGetConfigChangesMock = vi.spyOn(Lifecycle, "getConfigChanges");
+    const configGetConfigChangesMock = vi.spyOn(
+      ConfigUtils,
+      "getConfigChanges",
+    );
     const notificationAddMock = vi.spyOn(
       Notifications,
       "showSuccessNotification",

@@ -7,7 +7,7 @@ import {
 import { Config, loadDone } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import * as ConfigEvent from "../observables/config-event";
-import { migrateConfig } from "../utils/config";
+import { migrateConfig } from "./utils";
 import { typedKeys } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
@@ -79,17 +79,4 @@ export async function resetConfig(): Promise<void> {
   await applyConfig(getDefaultConfig());
   await deleteConfig();
   saveFullConfigToLocalStorage(true);
-}
-
-export function getConfigChanges(): Partial<ConfigSchema> {
-  const configChanges: Partial<ConfigSchema> = {};
-  typedKeys(Config)
-    .filter((key) => {
-      return Config[key] !== getDefaultConfig()[key];
-    })
-    .forEach((key) => {
-      //@ts-expect-error this is fine
-      configChanges[key] = Config[key];
-    });
-  return configChanges;
 }

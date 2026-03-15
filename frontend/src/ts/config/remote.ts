@@ -4,7 +4,7 @@ import {
   showSuccessNotification,
   showErrorNotification,
 } from "../stores/notifications";
-import { migrateConfig } from "../utils/config";
+import { migrateConfig } from "./utils";
 import { applyConfig } from "./lifecycle";
 import { saveFullConfigToLocalStorage } from "./persistence";
 import Ape from "../ape";

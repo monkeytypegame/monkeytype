@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
+import * as ConfigUtils from "../../src/ts/config/utils";
 import { __testing } from "../../src/ts/config/testing";
 import * as Misc from "../../src/ts/utils/misc";
 import * as Env from "../../src/ts/utils/env";
@@ -381,7 +382,7 @@ describe("Config", () => {
         numbers: true,
       });
       await Lifecycle.applyConfig({
-        ...Lifecycle.getConfigChanges(),
+        ...ConfigUtils.getConfigChanges(),
         punctuation: true,
       });
       const config = getConfig();
