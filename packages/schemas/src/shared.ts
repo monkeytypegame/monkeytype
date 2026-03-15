@@ -32,6 +32,7 @@ export const PersonalBestsSchema = z.object({
     z.array(PersonalBestSchema),
   ),
   quote: z.record(StringNumberSchema, z.array(PersonalBestSchema)),
+  story: z.record(z.literal("story"), z.array(PersonalBestSchema)),
   custom: z.record(z.literal("custom"), z.array(PersonalBestSchema)),
   zen: z.record(z.literal("zen"), z.array(PersonalBestSchema)),
 });
