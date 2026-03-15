@@ -4,7 +4,7 @@ import * as TestLogic from "../test/test-logic";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
 import * as AuthEvent from "../observables/auth-event";

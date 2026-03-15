@@ -5,13 +5,13 @@ import {
   getFocus,
   getGlobalOffsetTop,
   getIsScreenshotting,
-} from "../../../signals/core";
+} from "../../../states/core";
 import {
   Notification,
   getNotifications,
   removeNotification,
   clearAllNotifications,
-} from "../../../stores/notifications";
+} from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import { Anime } from "../../common/anime/Anime";
 import { AnimePresence } from "../../common/anime/AnimePresence";

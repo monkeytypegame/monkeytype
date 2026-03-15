@@ -12,10 +12,10 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";

@@ -8,10 +8,10 @@ import {
   getSupportersQueryOptions,
   getTypingStatsQueryOptions,
 } from "../../queries/public";
-import { getConfig } from "../../signals/config";
-import { getActivePage } from "../../signals/core";
-import { getTheme } from "../../signals/theme";
-import { showModal } from "../../stores/modals";
+import { getConfig } from "../../states/config";
+import { getActivePage } from "../../states/core";
+import { showModal } from "../../states/modals";
+import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";

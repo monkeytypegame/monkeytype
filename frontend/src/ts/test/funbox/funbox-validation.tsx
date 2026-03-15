@@ -2,7 +2,7 @@ import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
 import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
 
-import { showNoticeNotification } from "../../stores/notifications";
+import { showNoticeNotification } from "../../states/notifications";
 import { escapeHTML } from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 

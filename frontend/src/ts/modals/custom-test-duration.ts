@@ -1,7 +1,7 @@
 import Config, { setConfig } from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { ElementWithUtils } from "../utils/dom";
 

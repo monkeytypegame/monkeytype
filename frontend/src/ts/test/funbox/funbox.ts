@@ -1,7 +1,7 @@
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";

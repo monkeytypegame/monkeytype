@@ -16,8 +16,8 @@ import { signIn, signInWithGitHub, signInWithGoogle, signUp } from "../auth";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
-import * as ConnectionState from "../states/connection";
+} from "../states/notifications";
+import * as ConnectionState from "../legacy-states/connection";
 
 let registerForm: {
   name?: string;

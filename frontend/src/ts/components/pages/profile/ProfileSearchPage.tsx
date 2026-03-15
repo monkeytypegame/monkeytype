@@ -9,7 +9,7 @@ import {
   getActivePage,
   getSelectedProfileName,
   setSelectedProfileName,
-} from "../../../signals/core";
+} from "../../../states/core";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { ValidatedInput } from "../../ui/ValidatedInput";

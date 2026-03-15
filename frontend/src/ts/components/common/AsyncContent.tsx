@@ -9,7 +9,7 @@ import {
   Switch,
 } from "solid-js";
 
-import { showErrorNotification } from "../../stores/notifications";
+import { showErrorNotification } from "../../states/notifications";
 import { createErrorMessage } from "../../utils/error";
 import { typedKeys } from "../../utils/misc";
 import { Conditional } from "./Conditional";

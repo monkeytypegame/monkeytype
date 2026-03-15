@@ -12,11 +12,11 @@ import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as Caret from "./caret";
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import * as TestState from "./test-state";
-import * as Time from "../states/time";
+import * as Time from "../legacy-states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";

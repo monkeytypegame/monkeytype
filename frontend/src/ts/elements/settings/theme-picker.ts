@@ -6,17 +6,17 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
-import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+} from "../../states/notifications";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
-import { getActivePage } from "../../signals/core";
+import { getActivePage } from "../../states/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
-import { getTheme, updateThemeColor } from "../../signals/theme";
+import { getTheme, updateThemeColor } from "../../states/theme";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
   const b1 = Colors.hexToHSL(a.bg);
