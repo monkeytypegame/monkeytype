@@ -3,6 +3,8 @@ import Config from "../config";
 import * as DB from "../db";
 import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
+import * as CustomText from "./custom-text";
+import * as WordsGenerator from "./words-generator";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../utils/caret";
@@ -139,16 +141,28 @@ export async function update(expectedStepEnd: number): Promise<void> {
     return;
   }
 
+  const nextExpectedStepEnd =
+    expectedStepEnd + (currentSettings.spc ?? 0) * 1000;
+
+  if (!incrementLetterIndex()) {
+    if (shouldRetryWhenWordsMayStillGenerate(currentSettings)) {
+      scheduleUpdate(
+        currentSettings,
+        nextExpectedStepEnd,
+        Math.max(16, getDelayUntilStepEnd(nextExpectedStepEnd)),
+      );
+    } else {
+      settings = null;
+    }
+    return;
+  }
+
   if (caret.isHidden()) {
     caret.show();
   }
 
-  incrementLetterIndex();
-
   try {
-    const now = performance.now();
-    const absoluteStepEnd = startTimestamp + expectedStepEnd;
-    const duration = absoluteStepEnd - now;
+    const duration = getDelayUntilStepEnd(expectedStepEnd);
 
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
@@ -162,22 +176,67 @@ export async function update(expectedStepEnd: number): Promise<void> {
       },
     });
 
-    currentSettings.timeout = setTimeout(
-      () => {
-        if (settings !== currentSettings) return;
-        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
-          () => {
-            if (settings === currentSettings) settings = null;
-          },
-        );
-      },
-      Math.max(0, duration),
-    );
+    scheduleUpdate(currentSettings, nextExpectedStepEnd, Math.max(0, duration));
   } catch (e) {
     console.error(e);
     caret.hide();
     return;
   }
+}
+
+function getDelayUntilStepEnd(stepEnd: number): number {
+  return startTimestamp + stepEnd - performance.now();
+}
+
+function scheduleUpdate(
+  currentSettings: Settings,
+  nextExpectedStepEnd: number,
+  delay: number,
+): void {
+  currentSettings.timeout = setTimeout(() => {
+    if (settings !== currentSettings) return;
+    update(nextExpectedStepEnd).catch(() => {
+      if (settings === currentSettings) settings = null;
+    });
+  }, delay);
+}
+
+function shouldRetryWhenWordsMayStillGenerate(
+  currentSettings: Settings,
+): boolean {
+  if (settings !== currentSettings) return false;
+  return !areAllTestWordsGenerated();
+}
+
+function areAllTestWordsGenerated(): boolean {
+  if (Config.mode === "words") {
+    return TestWords.words.length >= Config.words && Config.words > 0;
+  }
+
+  if (Config.mode === "quote") {
+    return (
+      TestWords.words.length >= (TestWords.currentQuote?.textSplit?.length ?? 0)
+    );
+  }
+
+  if (Config.mode === "custom") {
+    const limitMode = CustomText.getLimitMode();
+    const limitValue = CustomText.getLimitValue();
+
+    if (limitMode === "word") {
+      return TestWords.words.length >= limitValue && limitValue !== 0;
+    }
+
+    if (limitMode === "section") {
+      return (
+        WordsGenerator.sectionIndex >= limitValue &&
+        WordsGenerator.currentSection.length === 0 &&
+        limitValue !== 0
+      );
+    }
+  }
+
+  return false;
 }
 
 export function reset(): void {
@@ -188,8 +247,12 @@ export function reset(): void {
   startTimestamp = 0;
 }
 
-function incrementLetterIndex(): void {
-  if (settings === null) return;
+function incrementLetterIndex(): boolean {
+  if (settings === null) return false;
+
+  const previousWordIndex = settings.currentWordIndex;
+  const previousLetterIndex = settings.currentLetterIndex;
+  const previousCorrection = settings.correction;
 
   try {
     settings.currentLetterIndex++;
@@ -228,13 +291,15 @@ function incrementLetterIndex(): void {
         }
       }
     }
-  } catch (e) {
-    //out of words
-    settings = null;
-    console.log("pace caret out of words");
+  } catch {
+    settings.currentWordIndex = previousWordIndex;
+    settings.currentLetterIndex = previousLetterIndex;
+    settings.correction = previousCorrection;
     caret.hide();
-    return;
+    return false;
   }
+
+  return true;
 }
 
 export function handleSpace(correct: boolean, currentWord: string): void {
