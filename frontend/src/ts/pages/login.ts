@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import TypoList from "../utils/typo-list";
+import TypoList from "../constants/typo-list";
 import {
   PasswordSchema,
   UserEmailSchema,
