@@ -1,7 +1,10 @@
 import { JSXElement } from "solid-js";
 
-import { getActivePage, getFocus } from "../../../signals/core";
-import { restart } from "../../../test/test-logic";
+import {
+  dispatchRestartTest,
+  getActivePage,
+  getFocus,
+} from "../../../signals/core";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
@@ -18,7 +21,7 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getActivePage() === "test") restart();
+        if (getActivePage() === "test") dispatchRestartTest();
       }}
     >
       <svg
