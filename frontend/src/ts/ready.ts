@@ -1,5 +1,4 @@
 import * as Misc from "./utils/misc";
-import * as env from "./utils/env";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
 //@ts-expect-error no types for this package
@@ -9,6 +8,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs } from "./utils/dom";
+import { isDevEnvironment } from "./utils/env";
 
 onDOMReady(async () => {
   await configLoadPromise;
@@ -42,7 +42,7 @@ onDOMReady(async () => {
   // oxlint-disable-next-line no-unsafe-call
   new Konami("https://keymash.io/");
 
-  if (env.isDevEnvironment()) {
+  if (isDevEnvironment()) {
     void navigator.serviceWorker
       .getRegistrations()
       .then(function (registrations) {
