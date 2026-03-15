@@ -1,5 +1,4 @@
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import { envConfig } from "virtual:env-config";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
@@ -8,6 +7,7 @@ import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
 import { ElementWithUtils } from "./dom";
+import { isDevEnvironment } from "./env";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -341,42 +341,6 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
   hideLoaderBar();
 }
 
-export function getErrorMessage(error: unknown): string | undefined {
-  let message = "";
-
-  if (error instanceof Error) {
-    message = error.message;
-  } else if (
-    error !== null &&
-    typeof error === "object" &&
-    "message" in error &&
-    (typeof error.message === "string" || typeof error.message === "number")
-  ) {
-    message = `${error.message}`;
-  } else if (typeof error === "string") {
-    message = error;
-  } else if (typeof error === "number") {
-    message = `${error}`;
-  }
-
-  if (message === "") {
-    return undefined;
-  }
-
-  return message;
-}
-
-export function createErrorMessage(error: unknown, message: string): string {
-  const errorMessage = getErrorMessage(error);
-
-  if (errorMessage === undefined) {
-    console.error("Could not get error message from error", error);
-    return `${message}: Unknown error`;
-  }
-
-  return `${message}: ${errorMessage}`;
-}
-
 export function isElementVisible(query: string): boolean {
   const el = document.querySelector(query);
   if (!el) {
@@ -458,10 +422,6 @@ export function loadCSS(href: string, prepend = false): void {
   } else {
     head.appendChild(link);
   }
-}
-
-export function isDevEnvironment(): boolean {
-  return envConfig.isDevelopment;
 }
 
 export function zipfyRandomArrayIndex(dictLength: number): number {

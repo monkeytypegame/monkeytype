@@ -4,7 +4,7 @@ import {
   setAnalyticsCollectionEnabled,
 } from "firebase/analytics";
 import { getAnalytics } from "../firebase";
-import { createErrorMessage } from "../utils/misc";
+import { createErrorMessage } from "../utils/error";
 import { qs } from "../utils/dom";
 
 let analytics: AnalyticsType;

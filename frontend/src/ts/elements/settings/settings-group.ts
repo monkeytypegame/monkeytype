@@ -4,12 +4,9 @@ import Config, { setConfig } from "../../config";
 import { showErrorNotification } from "../../stores/notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
-import {
-  handleConfigInput,
-  ConfigInputOptions,
-  Validation,
-} from "../input-validation";
+import { handleConfigInput, ConfigInputOptions } from "../input-validation";
 import { ElementWithUtils, qs, qsa } from "../../utils/dom";
+import { Validation } from "../../types/validation";
 
 type Mode = "select" | "button" | "range" | "input";
 

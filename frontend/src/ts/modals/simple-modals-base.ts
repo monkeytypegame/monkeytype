@@ -1,6 +1,6 @@
 import { showErrorNotification } from "../stores/notifications";
 import { ShowOptions } from "../utils/animated-modal";
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 
 export type PopupKey =
   | "updateEmail"

@@ -36,7 +36,7 @@ import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
-import "./utils/url-handler";
+import "./controllers/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
