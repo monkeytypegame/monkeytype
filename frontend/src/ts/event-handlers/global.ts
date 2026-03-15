@@ -12,6 +12,7 @@ import { navigate } from "../controllers/route-controller";
 import { isInputElementFocused } from "../input/input-element";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestState from "../test/test-state";
+import { isDevEnvironment } from "../utils/env";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
@@ -97,7 +98,7 @@ window.addEventListener("keydown", function (e) {
 });
 
 window.onerror = function (message, url, line, column, error): void {
-  if (Misc.isDevEnvironment()) {
+  if (isDevEnvironment()) {
     showErrorNotification(error?.message ?? "Undefined message", {
       customTitle: "DEV: Unhandled error",
       durationMs: 5000,
@@ -108,7 +109,7 @@ window.onerror = function (message, url, line, column, error): void {
 };
 
 window.onunhandledrejection = function (e): void {
-  if (Misc.isDevEnvironment()) {
+  if (isDevEnvironment()) {
     showErrorNotification(
       (e.reason as Error).message ?? e.reason ?? "Undefined message",
       {

@@ -8,7 +8,7 @@ import {
   UserNameSchema,
 } from "@monkeytype/schemas/users";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../utils/env";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";

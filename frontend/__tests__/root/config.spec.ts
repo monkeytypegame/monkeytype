@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config";
 import * as Misc from "../../src/ts/utils/misc";
+import * as Env from "../../src/ts/utils/env";
 import {
   ConfigKey,
   Config as ConfigType,
@@ -14,7 +15,7 @@ import * as Notifications from "../../src/ts/stores/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
-  const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
+  const isDevEnvironmentMock = vi.spyOn(Env, "isDevEnvironment");
   beforeEach(() => {
     isDevEnvironmentMock.mockClear();
     replaceConfig({});
