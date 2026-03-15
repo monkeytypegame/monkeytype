@@ -27,6 +27,7 @@ import { WordGenError } from "../utils/word-gen-error";
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
+import * as Story from "./story";
 
 //pin implementation
 const random = Math.random;
@@ -637,6 +638,13 @@ export async function generateWords(
     wordList = CustomText.getText();
   } else if (Config.mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
+  } else if (Config.mode === "story") {
+    const storyWords = await Story.initStory();
+
+    if (storyWords === null) {
+      throw new WordGenError("Failed to load story words");
+    }
+    wordList = storyWords;
   } else if (Config.mode === "zen") {
     wordList = [];
   }
