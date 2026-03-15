@@ -111,6 +111,8 @@ export const ThemeNameSchema = z.enum(
     "modern_dolch_light",
     "modern_ink",
     "monokai",
+    "monospace_dark",
+    "monospace_light",
     "moonlight",
     "mountain",
     "mr_sleeves",
