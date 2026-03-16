@@ -13,10 +13,10 @@ import { z } from "zod";
 import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { getSnapshot } from "../../../db";
-import { IsValidResponse } from "../../../elements/input-validation";
+import { SimpleModal } from "../../../elements/simple-modal";
 import { getConfig } from "../../../signals/config";
 import { FaSolidIcon } from "../../../types/font-awesome";
-import { SimpleModal } from "../../../utils/simple-modal";
+import { IsValidResponse } from "../../../types/validation";
 import {
   getLanguageDisplayString,
   replaceSpacesWithUnderscores,

@@ -60,8 +60,7 @@ const pages = {
             "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
           );
         }
-        //TODO prefetch
-        await resultsCollection.utils.refetch();
+        await resultsCollection.stateWhenReady();
       },
       style: "bar",
       keyframes: [

@@ -20,7 +20,7 @@ export function DailyActivityChart(props: {
   typingSpeedUnit: TypingSpeedUnitSettings;
   format: Formatting;
 }): JSXElement {
-  const dataQuery = useResultStatsLiveQuery(props.queryState, {
+  const dataQuery = useResultStatsLiveQuery(() => props.queryState(), {
     groupByDay: true,
   });
 

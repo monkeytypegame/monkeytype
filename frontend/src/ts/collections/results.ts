@@ -308,7 +308,7 @@ function valueFilter<T extends string, U = T>(
   mapping?: Record<T, U>,
 ): U[] {
   return Object.entries(val)
-    .filter(([_, v]) => v as boolean) //TODO remove as?
+    .filter(([_, v]) => v === true)
     .map(([k]) => k as T)
     .map((it) => (mapping ? mapping[it] : (it as unknown as U)));
 }

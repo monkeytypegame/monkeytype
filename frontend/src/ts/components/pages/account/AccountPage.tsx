@@ -20,7 +20,6 @@ import { Table } from "./Table";
 import { TestStats } from "./TestStats";
 
 export function AccountPage(): JSXElement {
-  //TODO change page
   const isOpen = (): boolean => getActivePage() === "account";
   const [limit, setLimit] = createSignal(10);
 
