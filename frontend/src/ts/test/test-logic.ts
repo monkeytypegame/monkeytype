@@ -1,6 +1,5 @@
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
-import * as ManualRestart from "./manual-restart-tracker";
 import Config, { setConfig, setQuoteLengthAll, toggleFunbox } from "../config";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
@@ -170,6 +169,7 @@ type RestartOptions = {
   event?: KeyboardEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
+  isQuickRestart?: boolean;
 };
 
 export function restart(options = {} as RestartOptions): void {
@@ -178,6 +178,7 @@ export function restart(options = {} as RestartOptions): void {
     practiseMissed: false,
     noAnim: false,
     nosave: false,
+    isQuickRestart: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -201,8 +202,8 @@ export function restart(options = {} as RestartOptions): void {
     options.event?.preventDefault();
     return;
   }
-  if (getActivePage() === "test") {
-    if (!ManualRestart.get()) {
+  if (TestState.isActive) {
+    if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(
@@ -231,9 +232,7 @@ export function restart(options = {} as RestartOptions): void {
         return;
       }
     }
-  }
 
-  if (TestState.isActive) {
     if (TestState.isRepeated) {
       options.withSameWordset = true;
     }
@@ -289,7 +288,6 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
-  ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
   TestInput.restart();
@@ -372,7 +370,6 @@ export function restart(options = {} as RestartOptions): void {
         },
         duration: animationTime,
         onComplete: () => {
-          ManualRestart.reset();
           TestState.setTestRestarting(false);
         },
       });
@@ -1409,7 +1406,6 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
-  ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
     TestState.isActive &&
@@ -1431,7 +1427,6 @@ qs(".pageTest")?.onChild(
 );
 
 qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
-  ManualRestart.set();
   restart();
 });
 
@@ -1440,7 +1435,6 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  ManualRestart.set();
   restart({
     withSameWordset: true,
   });
@@ -1455,7 +1449,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
     "time") as Mode;
   if (mode === undefined) return;
   if (setConfig("mode", mode)) {
-    ManualRestart.set();
     restart();
   }
 });
@@ -1465,7 +1458,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .wordCount .textButton", (e) => {
   const wrd = (e.childTarget as HTMLElement)?.getAttribute("wordCount") ?? "15";
   if (wrd !== "custom") {
     if (setConfig("words", parseInt(wrd))) {
-      ManualRestart.set();
       restart();
     }
   }
@@ -1477,7 +1469,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .time .textButton", (e) => {
     (e.childTarget as HTMLElement)?.getAttribute("timeConfig") ?? "10";
   if (mode !== "custom") {
     if (setConfig("time", parseInt(mode))) {
-      ManualRestart.set();
       restart();
     }
   }
@@ -1491,7 +1482,6 @@ qs(".pageTest")?.onChild(
     const lenAttr = (e.childTarget as HTMLElement)?.getAttribute("quoteLength");
     if (lenAttr === "all") {
       if (setQuoteLengthAll()) {
-        ManualRestart.set();
         restart();
       }
     } else {
@@ -1507,7 +1497,6 @@ qs(".pageTest")?.onChild(
         }
 
         if (setConfig("quoteLength", arr)) {
-          ManualRestart.set();
           restart();
         }
       }
@@ -1521,7 +1510,6 @@ qs(".pageTest")?.onChild(
   () => {
     if (TestState.testRestarting) return;
     if (setConfig("punctuation", !Config.punctuation)) {
-      ManualRestart.set();
       restart();
     }
   },
@@ -1530,7 +1518,6 @@ qs(".pageTest")?.onChild(
 qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
   if (TestState.testRestarting) return;
   if (setConfig("numbers", !Config.numbers)) {
-    ManualRestart.set();
     restart();
   }
 });
