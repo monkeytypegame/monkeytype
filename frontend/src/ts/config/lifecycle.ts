@@ -4,11 +4,11 @@ import {
   saveToLocalStorage,
   saveFullConfigToLocalStorage,
 } from "./persistence";
-import { Config, loadDone } from "./store";
+import { Config } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import * as ConfigEvent from "../observables/config-event";
 import { migrateConfig } from "./utils";
-import { typedKeys } from "../utils/misc";
+import { promiseWithResolvers, typedKeys } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
 
@@ -80,3 +80,7 @@ export async function resetConfig(): Promise<void> {
   await deleteConfig();
   saveFullConfigToLocalStorage(true);
 }
+const { promise: configLoadPromise, resolve: loadDone } =
+  promiseWithResolvers();
+
+export { configLoadPromise };

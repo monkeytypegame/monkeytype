@@ -1,6 +1,7 @@
 import SettingsGroup from "../elements/settings/settings-group";
 
-import { Config, configLoadPromise } from "../config/store";
+import { Config } from "../config/store";
+import { configLoadPromise } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
