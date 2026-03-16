@@ -83,25 +83,27 @@ export function Filters(props: {
   }): JSXElement => {
     return (
       <Show when={props.presets.length > 0}>
-        <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
-        <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
-          <For each={props.presets}>
-            {(preset) => (
-              <div class="flex w-full flex-row gap-2">
-                <Button
-                  class="w-full"
-                  text={replaceUnderscoresWithSpaces(preset.name)}
-                  onClick={() => props.onChangeFilters(preset)}
-                />
-                <Button
-                  fa={{ icon: "fa-trash", fixedWidth: true }}
-                  onClick={() =>
-                    resultFilterPresetsCollection.delete(preset._id)
-                  }
-                />
-              </div>
-            )}
-          </For>
+        <div>
+          <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
+          <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
+            <For each={props.presets}>
+              {(preset) => (
+                <div class="flex w-full flex-row gap-2">
+                  <Button
+                    class="w-full"
+                    text={replaceUnderscoresWithSpaces(preset.name)}
+                    onClick={() => props.onChangeFilters(preset)}
+                  />
+                  <Button
+                    fa={{ icon: "fa-trash", fixedWidth: true }}
+                    onClick={() =>
+                      resultFilterPresetsCollection.delete(preset._id)
+                    }
+                  />
+                </div>
+              )}
+            </For>
+          </div>
         </div>
       </Show>
     );

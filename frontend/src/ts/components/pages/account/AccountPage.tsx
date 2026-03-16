@@ -51,34 +51,36 @@ export function AccountPage(): JSXElement {
 
   return (
     <Show when={isLoggedIn() && isOpen()}>
-      <VerifyNotice />
-      <MyProfile />
+      <div class="flex flex-col gap-8">
+        <VerifyNotice />
+        <MyProfile />
 
-      <Advertisement id="ad-account-1" visible="sellout" />
+        <Advertisement id="ad-account-1" visible="sellout" />
 
-      <Filters filters={filters} onChangeFilters={setFilters} />
+        <Filters filters={filters} onChangeFilters={setFilters} />
 
-      <Charts filters={filters} queryState={queryState} />
-      <TestStats queryState={queryState} />
+        <Charts filters={filters} queryState={queryState} />
+        <TestStats queryState={queryState} />
 
-      <Advertisement id="ad-account-2" visible="sellout" />
+        <Advertisement id="ad-account-2" visible="sellout" />
 
-      <AsyncContent collection={data}>
-        {(results) => (
-          <>
-            <Table
-              data={[...results]}
-              onSortingChange={(val) => setSorting(val)}
-            />
-            <Button
-              text="load more"
-              disabled={data.isLoading || data().length < limit() + 10}
-              onClick={() => setLimit((limit) => limit + 10)}
-              class="w-full text-center"
-            />
-          </>
-        )}
-      </AsyncContent>
+        <AsyncContent collection={data}>
+          {(results) => (
+            <>
+              <Table
+                data={[...results]}
+                onSortingChange={(val) => setSorting(val)}
+              />
+              <Button
+                text="load more"
+                disabled={data.isLoading || data().length < limit() + 10}
+                onClick={() => setLimit((limit) => limit + 10)}
+                class="w-full text-center"
+              />
+            </>
+          )}
+        </AsyncContent>
+      </div>
     </Show>
   );
 }
