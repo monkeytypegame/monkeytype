@@ -11,6 +11,7 @@ import { showModal } from "../../../stores/modals";
 import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
+import { Conditional } from "../../common/Conditional";
 import { Fa, FaProps } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
@@ -199,19 +200,40 @@ function getColumns<M extends Mode>({
     defineColumn("tags", {
       header: "tags",
       cell: (info) => (
-        <Show when={info.getValue().length > 0}>
-          <span
-            data-balloon-pos="up"
-            aria-label={info
-              .getValue()
-              .map(
-                (it) => getSnapshot()?.tags.find((tag) => tag._id === it)?.name,
-              )
-              .join(", ")}
-          >
-            <Fa icon="fa-tags" fixedWidth />
-          </span>
-        </Show>
+        <Conditional
+          if={info.getValue().length === 0}
+          then={
+            <Button
+              variant="text"
+              fa={{
+                icon: "fa-tag",
+                fixedWidth: true,
+              }}
+              balloon={{
+                text: "no tags",
+              }}
+            />
+          }
+          else={
+            <Button
+              variant="text"
+              class="[--themable-button-text:var(--text-color)]"
+              fa={{
+                icon: "fa-tags",
+                fixedWidth: true,
+              }}
+              balloon={{
+                text: info
+                  .getValue()
+                  .map(
+                    (it) =>
+                      getSnapshot()?.tags.find((tag) => tag._id === it)?.name,
+                  )
+                  .join(", "),
+              }}
+            />
+          }
+        />
       ),
       meta: {
         breakpoint: "md",
