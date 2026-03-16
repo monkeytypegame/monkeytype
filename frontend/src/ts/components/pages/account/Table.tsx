@@ -106,6 +106,14 @@ function getColumns<M extends Mode>({
         breakpoint: "xs",
       },
     }),
+    defineColumn("charStats", {
+      header: "chars",
+      cell: (info) =>
+        `${info.row.original.charStats[0]}/${info.row.original.charStats[1]}/${info.row.original.charStats[2]}/${info.row.original.charStats[3]}`,
+      meta: {
+        breakpoint: "xs",
+      },
+    }),
     defineColumn("mode", {
       header: "mode",
       cell: (info) =>
