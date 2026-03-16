@@ -189,7 +189,7 @@ export function DataTable<TData, TValue = any>(
           <TableHeader>
             <For each={table.getHeaderGroups()}>
               {(headerGroup) => (
-                <TableRow class="odd:bg-bg">
+                <TableRow>
                   <For each={headerGroup.headers}>
                     {(header) => (
                       <Conditional

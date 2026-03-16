@@ -34,16 +34,13 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   let chart: Chart<T, TData> | undefined;
 
   onMount(() => {
-    chart = new Chart(
-      //oxlint-disable-next-line no-non-null-assertion
-      canvasEl()!.native,
-      {
-        type: props.type,
-        data: props.data,
-        //@ts-expect-error it's too difficult to figure out these types, but this works
-        options: addColorsToOptions(props.options, getTheme),
-      },
-    );
+    const canvas = canvasEl();
+    if (canvas === undefined) return;
+    chart = new Chart(canvas.native, {
+      type: props.type,
+      data: props.data,
+      options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
+    });
 
     props.onChartInit?.(chart);
   });

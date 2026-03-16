@@ -13,6 +13,7 @@ export function UserBadge(props: {
   iconOnly?: true;
   class?: string;
   balloon?: Omit<BalloonProps, "text">;
+  hideTextOnSmallScreens?: boolean;
 }): JSXElement {
   const badge = (): UserBadgeType | undefined =>
     props.id !== undefined ? badges[props.id] : undefined;
@@ -37,7 +38,14 @@ export function UserBadge(props: {
             fixedWidth={props.iconOnly === true}
           />
           <Show when={!props.iconOnly}>
-            <span class="hidden pl-[0.75em] md:inline">{badge()?.name}</span>
+            <span
+              class={cn(
+                "pl-[0.75em]",
+                (props.hideTextOnSmallScreens ?? true) && "hidden md:inline",
+              )}
+            >
+              {badge()?.name}
+            </span>
           </Show>
         </Show>
       </Balloon>

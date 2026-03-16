@@ -29,6 +29,7 @@ import { getLastResult, getSnapshot } from "../../../stores/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
+import { formatTypingStatsRatio } from "../../../utils/misc";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
@@ -303,6 +304,8 @@ function AvatarAndName(props: {
               position: balloonPosition(),
               length: balloonPosition() === "up" ? "medium" : undefined,
             }}
+            class="w-max"
+            hideTextOnSmallScreens={false}
           />
           <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
             <div class="flex flex-row gap-1">
@@ -395,15 +398,27 @@ function BioAndKeyboard(props: {
           props.variant === "full" && "md:col-span-2 lg:order-4 lg:col-span-1",
         )}
       >
-        <div>
-          <div class="text-sub">bio</div>
-          <div>{props.details?.bio}</div>
-        </div>
-
-        <div>
-          <div class="text-sub">keyboard</div>
-          <div>{props.details?.keyboard}</div>
-        </div>
+        <Show
+          when={
+            props.details?.bio !== undefined && props.details.bio.length > 0
+          }
+        >
+          <div>
+            <div class="text-sub">bio</div>
+            <div>{props.details?.bio}</div>
+          </div>
+        </Show>
+        <Show
+          when={
+            props.details?.keyboard !== undefined &&
+            props.details.keyboard.length > 0
+          }
+        >
+          <div>
+            <div class="text-sub">keyboard</div>
+            <div>{props.details?.keyboard}</div>
+          </div>
+        </Show>
       </div>
     </>
   );
@@ -413,6 +428,8 @@ function TypingStats(props: {
   typingStats: TypingStatsType;
   variant: Variant;
 }): JSXElement {
+  const stats = () => formatTypingStatsRatio(props.typingStats);
+
   return (
     <>
       <div
@@ -444,12 +461,19 @@ function TypingStats(props: {
             {props.typingStats.startedTests}
           </div>
         </div>
-        <div class="flex flex-col">
+        <Balloon
+          class="flex w-max flex-col"
+          text={
+            stats().completedPercentage !== ""
+              ? `${stats().completedPercentage}% (${stats().restartRatio} restarts per completed test)`
+              : undefined
+          }
+        >
           <div class="text-em-sm text-sub">tests completed</div>
           <div class="text-em-2xl leading-8">
             {props.typingStats.completedTests}
           </div>
-        </div>
+        </Balloon>
         <div class="flex flex-col">
           <div class="text-em-sm text-sub">time typing</div>
           <div class="text-em-2xl leading-8">
@@ -484,14 +508,20 @@ function Socials(props: {
           props.variant === "full" && "lg:order-6",
         )}
       >
-        <div
-          class={cn(
-            "text-sm text-sub md:hidden",
-            props.variant === "full" && "md:block lg:hidden",
+        <Show
+          when={Object.values(props.socials ?? {}).some(
+            (it) => it !== undefined && it.length > 0,
           )}
         >
-          socials
-        </div>
+          <div
+            class={cn(
+              "text-sm text-sub md:hidden",
+              props.variant === "full" && "md:block lg:hidden",
+            )}
+          >
+            socials
+          </div>
+        </Show>
         <div
           class={cn(
             "flex gap-2 text-2xl text-text md:flex-col lg:h-full lg:flex-col lg:justify-around [&>a]:p-0 [&>a]:text-text [&>a]:hover:text-main",

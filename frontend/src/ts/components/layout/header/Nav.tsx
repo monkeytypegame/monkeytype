@@ -3,7 +3,11 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage, getFocus } from "../../../signals/core";
+import {
+  dispatchRestartTest,
+  getActivePage,
+  getFocus,
+} from "../../../signals/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -11,7 +15,6 @@ import {
 } from "../../../signals/header";
 import { showModal } from "../../../stores/modals";
 import { getSnapshot } from "../../../stores/snapshot";
-import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
@@ -77,7 +80,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") restart();
+          if (getActivePage() === "test") dispatchRestartTest();
         }}
       />
       <Button
@@ -153,7 +156,8 @@ export function Nav(): JSXElement {
             <div
               class={cn(
                 "relative",
-                "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
+                !getFocus() &&
+                  "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
                 "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
               )}
             >
