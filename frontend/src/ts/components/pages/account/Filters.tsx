@@ -12,9 +12,9 @@ import { z } from "zod";
 
 import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
 import defaultResultFilters from "../../../constants/default-result-filters";
-import { getSnapshot } from "../../../db";
 import { SimpleModal } from "../../../elements/simple-modal";
 import { getConfig } from "../../../signals/config";
+import { getSnapshot } from "../../../stores/snapshot";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";
 import {
@@ -22,6 +22,7 @@ import {
   replaceSpacesWithUnderscores,
   replaceUnderscoresWithSpaces,
 } from "../../../utils/strings";
+import { AnimeShow } from "../../common/anime";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
@@ -226,7 +227,7 @@ export function Filters(props: {
     );
   };
 
-  const [isShowAdvanced, setShowAdvanced] = createSignal(true);
+  const [isShowAdvanced, setShowAdvanced] = createSignal(false);
 
   const setFilter = (
     key: ResultFiltersKeys,
@@ -285,7 +286,7 @@ export function Filters(props: {
         }
       />
 
-      <Show when={isShowAdvanced()}>
+      <AnimeShow when={isShowAdvanced()} slide>
         <H3 fa={{ icon: "fa-tools" }} text="advanced filters" class="mt-8" />
 
         <Button
@@ -333,7 +334,7 @@ export function Filters(props: {
             format={getLanguageDisplayString}
           />
         </div>
-      </Show>
+      </AnimeShow>
     </>
   );
 }

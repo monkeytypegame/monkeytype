@@ -78,26 +78,31 @@ export function HistogramChart(props: {
     </div>
   );
 }
-
 function groupIntoBuckets(
   arr: number[],
   bucketSize: number,
 ): { x: string; y: number }[] {
-  const buckets: Record<string, number> = {};
+  if (arr.length === 0) return [];
+  const buckets: Record<number, number> = {};
+  const maxValue = Math.max(...arr);
+  const maxBucketStart = Math.floor(maxValue / bucketSize) * bucketSize;
 
   for (const item of arr) {
     const bucketStart = Math.floor(item / bucketSize) * bucketSize;
-    const bucketEnd = bucketStart + bucketSize - 1;
-    const label = `${bucketStart}-${bucketEnd}`;
-
-    buckets[label] = (buckets[label] ?? 0) + 1;
+    buckets[bucketStart] = (buckets[bucketStart] ?? 0) + 1;
   }
 
-  return Object.entries(buckets)
-    .sort(([a], [b]) => {
-      const startA = Number(a.split("-")[0]);
-      const startB = Number(b.split("-")[0]);
-      return startA - startB;
-    })
-    .map(([x, y]) => ({ x, y }));
+  const result: { x: string; y: number }[] = [];
+
+  for (let start = 0; start <= maxBucketStart; start += bucketSize) {
+    const end = start + bucketSize - 1;
+    const label = `${start}-${end}`;
+
+    result.push({
+      x: label,
+      y: buckets[start] ?? 0,
+    });
+  }
+
+  return result;
 }

@@ -11,6 +11,7 @@ import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
 import { isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
+import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Charts } from "./Charts";
@@ -48,16 +49,19 @@ export function AccountPage(): JSXElement {
 
   const data = useResultsLiveQuery({ queryState, sorting, limit });
 
-  //TODO ads
   return (
     <Show when={isLoggedIn() && isOpen()}>
       <VerifyNotice />
       <MyProfile />
 
+      <Advertisement id="ad-account-1" visible="sellout" />
+
       <Filters filters={filters} onChangeFilters={setFilters} />
 
       <Charts filters={filters} queryState={queryState} />
       <TestStats queryState={queryState} />
+
+      <Advertisement id="ad-account-2" visible="sellout" />
 
       <AsyncContent collection={data}>
         {(results) => (
