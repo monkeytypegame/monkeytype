@@ -1,19 +1,43 @@
-import { attachDevtoolsOverlay } from "@solid-devtools/overlay";
-import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
-//enable solidjs-devtools
-import "solid-devtools/setup";
-import { JSXElement } from "solid-js";
+import { JSXElement, lazy, onMount, Suspense } from "solid-js";
 
-export function DevTools(): JSXElement {
-  return (
-    <>
-      <h2>Dev tools active</h2>
-      <SolidQueryDevtools />
-    </>
+let DevComponents: (() => JSXElement) | undefined;
+
+if (import.meta.env.DEV) {
+  const LazyQueryDevtools = lazy(async () =>
+    import("@tanstack/solid-query-devtools").then((m) => ({
+      default: m.SolidQueryDevtools,
+    })),
+  );
+  const LazyDevOptionsModal = lazy(async () =>
+    import("../modals/DevOptionsModal").then((m) => ({
+      default: m.DevOptionsModal,
+    })),
+  );
+
+  const LazySolidDevtoolsOverlay = lazy(async () =>
+    import("@solid-devtools/overlay").then((m) => ({
+      default: () => {
+        onMount(() => {
+          m.attachDevtoolsOverlay({
+            defaultOpen: true,
+            noPadding: true,
+          });
+        });
+
+        return null;
+      },
+    })),
+  );
+
+  DevComponents = () => (
+    <Suspense>
+      <LazyQueryDevtools />
+      <LazyDevOptionsModal />
+      <LazySolidDevtoolsOverlay />
+    </Suspense>
   );
 }
 
-attachDevtoolsOverlay({
-  defaultOpen: true, // or alwaysOpen
-  noPadding: true,
-});
+export function DevTools(): JSXElement {
+  return DevComponents?.() ?? null;
+}

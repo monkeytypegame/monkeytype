@@ -17,7 +17,7 @@ import LoadChallengeCommands, {
 } from "./lists/load-challenge";
 
 import Config, { applyConfigFromJson, setConfig } from "../config";
-import * as Misc from "../utils/misc";
+import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
@@ -47,7 +47,10 @@ challengesPromise
   })
   .catch((e: unknown) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update challenges commands"),
+      getErrorMessage.createErrorMessage(
+        e,
+        "Failed to update challenges commands",
+      ),
     );
   });
 

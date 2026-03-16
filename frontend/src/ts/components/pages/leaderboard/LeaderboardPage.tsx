@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { getSnapshot, updateLbMemory } from "../../../db";
+import { createEffectOn } from "../../../hooks/effects";
 import { PageName } from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import {
@@ -23,7 +24,6 @@ import {
 } from "../../../stores/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
-import { Conditional } from "../../common/Conditional";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Separator } from "../../common/Separator";
 import { Navigation } from "./Navigation";
@@ -39,6 +39,18 @@ export function LeaderboardPage(): JSXElement {
   const isOpen = () => getActivePage() === pageName;
 
   const [scrollToUser, setScrollToUser] = createSignal(false);
+
+  //invalidate cache for daily and weekly lb on close
+  createEffectOn(isOpen, (open) => {
+    if (!open) {
+      void queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey.length >= 3 &&
+          query.queryKey[1] === "leaderboard" &&
+          ["weekly", "daily"].includes(query.queryKey[2] as string),
+      });
+    }
+  });
 
   //prefetch next page
   createEffect(() => {
@@ -192,32 +204,24 @@ export function LeaderboardPage(): JSXElement {
               errorClass="rounded bg-sub-alt p-4"
             >
               {({ data, rank, config }) => (
-                <Conditional
-                  if={rank !== undefined && rank !== null}
-                  then={
-                    <UserRank
-                      type={getSelection().type === "weekly" ? "xp" : "speed"}
-                      data={rank}
-                      friendsOnly={getSelection().friendsOnly}
-                      total={data?.count}
-                      minWpm={
-                        data && "minWpm" in data
-                          ? (data.minWpm as number)
-                          : undefined
-                      }
-                      memoryDifference={getLbMemoryDifference(
-                        getSelection(),
-                        rank?.rank,
-                      )}
-                      isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                      isBanned={getSnapshot()?.banned ?? false}
-                      minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                      userTimeTyping={
-                        getSnapshot()?.typingStats.timeTyping ?? 0
-                      }
-                    />
+                <UserRank
+                  type={getSelection().type === "weekly" ? "xp" : "speed"}
+                  data={rank}
+                  friendsOnly={getSelection().friendsOnly}
+                  total={data?.count}
+                  minWpm={
+                    data && "minWpm" in data
+                      ? (data.minWpm as number)
+                      : undefined
                   }
-                  else={<Separator />}
+                  memoryDifference={getLbMemoryDifference(
+                    getSelection(),
+                    rank?.rank,
+                  )}
+                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                  isBanned={getSnapshot()?.banned ?? false}
+                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
+                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}
             </AsyncContent>
