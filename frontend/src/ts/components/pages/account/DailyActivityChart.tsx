@@ -34,7 +34,7 @@ export function DailyActivityChart(props: {
           <ChartJs
             type="bar"
             data={{
-              labels: data.map((it) => it.dayTimeamp),
+              labels: data.map((it) => it.dayTimestamp),
               datasets: [
                 {
                   yAxisID: "count",
@@ -145,7 +145,7 @@ export function DailyActivityChart(props: {
                       if (item === undefined) return "unknown";
 
                       return dateFormat(
-                        new Date(item.dayTimeamp as number),
+                        new Date(item.dayTimestamp as number),
                         "dd MMM yyy",
                       );
                     },

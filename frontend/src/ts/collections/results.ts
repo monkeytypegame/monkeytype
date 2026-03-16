@@ -95,7 +95,7 @@ export function useResultStatsLiveQuery(
     }
 
     return query.select(({ r }) => ({
-      dayTimeamp: isGroupByDay ? r.dayTimestamp : undefined,
+      dayTimestamp: isGroupByDay ? r.dayTimestamp : undefined,
       words: sum(r.words),
       completed: count(r._id),
       restarted: sum(r.restartCount),
