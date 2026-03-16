@@ -31,6 +31,10 @@ import {
   showSuccessNotification,
 } from "../stores/notifications";
 import * as CustomText from "../test/custom-text";
+<<<<<<< quick-restart
+=======
+import * as ManualRestart from "../test/manual-restart-tracker";
+>>>>>>> master
 import { restart as restartTest } from "../test/test-logic";
 import * as TestState from "../test/test-state";
 import * as Misc from "../utils/misc";
@@ -204,6 +208,10 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else if (mode === "quote") {
       setConfig("quoteLength", [-2]);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
+<<<<<<< quick-restart
+=======
+      ManualRestart.set();
+>>>>>>> master
     }
     applied["mode2"] = de[1];
   }

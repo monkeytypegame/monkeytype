@@ -255,7 +255,7 @@ async function updateResults(searchText: string): Promise<void> {
 
   if (exactSearchQueries[0]) {
     const searchQueriesRaw = exactSearchQueries.map(
-      (query) => new RegExp(query[1] ?? "", "i"),
+      (query) => new RegExp(RegExp.escape(query[1] ?? ""), "i"),
     );
 
     [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
