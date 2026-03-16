@@ -1,5 +1,4 @@
 Contact: mailto:contact@monkeytype.com
-Contact: message @Miodec on discord.gg/monkeytype
 Expires: 2026-12-31T23:59:59.999Z
 Preferred-Languages: en
 Canonical: https://monkeytype.com/.well-known/security.txt
