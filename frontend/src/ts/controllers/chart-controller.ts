@@ -1356,10 +1356,7 @@ createDebouncedEffectOn(125, getTheme, (theme) => {
 
 ConfigEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {
-    updateResults();
-    updateAccuracy();
-    updateAverage10();
-    updateAverage100();
+    updateAccountChartButtons();
     accountHistory.update();
   }
   if (key === "fontFamily") setDefaultFontFamily(newValue);

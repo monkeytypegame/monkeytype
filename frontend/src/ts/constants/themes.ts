@@ -1,5 +1,4 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
-import { hexToHSL } from "../utils/colors";
 import { z } from "zod";
 
 const hexColorSchema = z
@@ -2238,7 +2237,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#b25959",
     colorfulError: "#ff8080",
     colorfulErrorExtra: "#b25959",
-    hasCss: true,
   },
   vesper_light: {
     bg: "#ffffff",
@@ -2251,7 +2249,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#ff6c72",
     colorfulError: "#ed2839",
     colorfulErrorExtra: "#ff6c72",
-    hasCss: true,
   },
   viridescent: {
     bg: "#2c3333",
@@ -2337,11 +2334,3 @@ export const ThemesList: ThemeWithName[] = Object.keys(themes)
         name: it as ThemeName,
       }) as Theme & { name: ThemeName },
   );
-
-export const ThemesListSorted: ThemeWithName[] = [
-  ...ThemesList.sort((a, b) => {
-    const b1 = hexToHSL(a.bg);
-    const b2 = hexToHSL(b.bg);
-    return b2.lgt - b1.lgt;
-  }),
-];

@@ -1,9 +1,3 @@
-<dialog id="registerCaptchaModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="g-recaptcha"></div>
-  </div>
-</dialog>
-
 <dialog id="forgotPasswordModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Forgot password</div>
@@ -53,72 +47,6 @@
     <div class="buttons">
       <button class="save">save</button>
       <button class="discard">discard</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog id="devOptionsModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="title">Dev options</div>
-    <button class="generateData">generate data</button>
-    <button class="quickLogin">quick login</button>
-    <button class="toggleMediaQueryDebug">toggle media query debug</button>
-    <button class="showTestNotifications">show test notifications</button>
-    <button class="showRealWordsInput">show real words input</button>
-    <button class="xpBarTest">xp bar test</button>
-    <button class="toggleFakeChartData">toggle fake chart data</button>
-    <button class="toggleCaretDebug">toggle caret debug</button>
-    <button class="disableSlowTimerFail">disable slow timer fail</button>
-  </div>
-</dialog>
-
-<dialog id="alertsPopup" class="modalWrapper hidden">
-  <div class="modal">
-    <button class="mobileClose">
-      <i class="fas fa-times"></i>
-      Close
-    </button>
-    <div class="scrollWrapper">
-      <div class="accountAlerts">
-        <div class="title">
-          <div class="left">
-            <i class="fas fa-inbox"></i>
-            Inbox
-          </div>
-          <div class="right"></div>
-        </div>
-        <button class="claimAll hidden">
-          <i class="fas fa-fw fa-gift"></i>
-          Claim all
-        </button>
-        <button class="deleteAll hidden">
-          <i class="fas fa-fw fa-trash"></i>
-          Delete all
-        </button>
-        <div class="list">
-          <div class="nothing">Nothing to show</div>
-        </div>
-      </div>
-      <div class="separator accountSeparator"></div>
-      <div class="psas">
-        <div class="title">
-          <i class="fas fa-bullhorn"></i>
-          Announcements
-        </div>
-        <div class="list">
-          <div class="nothing">Nothing to show</div>
-        </div>
-      </div>
-      <div class="separator"></div>
-      <div class="notificationHistory">
-        <div class="title">
-          <i class="fas fa-comment-alt"></i>
-          Notifications
-        </div>
-        <div class="list">
-          <div class="nothing">Nothing to show</div>
-        </div>
-      </div>
     </div>
   </div>
 </dialog>
@@ -926,6 +854,7 @@
       <input
         id="searchBox"
         class="searchBox"
+        dir="auto"
         type="text"
         maxlength="200"
         autocomplete="off"
@@ -937,7 +866,7 @@
         <!-- favorites -->
       </button>
     </div>
-    <div id="quoteSearchResults" class="quoteSearchResults"></div>
+    <div dir="auto" id="quoteSearchResults" class="quoteSearchResults"></div>
     <div id="quoteSearchPageNavigator">
       <button class="prevPage" disabled>
         <i class="fas fa-fw fa-chevron-left"></i>
@@ -969,7 +898,7 @@
       </li>
     </ul>
     <label>quote</label>
-    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
+    <textarea class="newQuoteText" autocomplete="off" dir="auto"></textarea>
     <label>source</label>
     <input class="newQuoteSource" type="text" autocomplete="off" />
     <label>language</label>
@@ -989,7 +918,7 @@
       <span class="red">Please add comments in English only.</span>
     </div>
     <label>quote</label>
-    <div class="quote"></div>
+    <div class="quote" dir="auto"></div>
     <label>reason</label>
     <select name="report-reason" class="reason" title="reason">
       <option value="Grammatical error">Grammatical error</option>
@@ -999,7 +928,7 @@
       <option value="Incorrect source">Incorrect source</option>
     </select>
     <label>comment</label>
-    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <textarea class="comment" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1026,7 +955,7 @@
       <option value="Suspected cheating">Suspected cheating</option>
     </select>
     <label>comment</label>
-    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <textarea class="comment" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1165,21 +1094,11 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea
-        class="bio"
-        type="text"
-        autocomplete="off"
-        maxlength="250"
-      ></textarea>
+      <textarea class="bio" autocomplete="off" maxlength="250"></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea
-        class="keyboard"
-        type="text"
-        autocomplete="off"
-        maxlength="75"
-      ></textarea>
+      <textarea class="keyboard" autocomplete="off" maxlength="75"></textarea>
     </div>
     <div>
       <label>github</label>

@@ -1,11 +1,14 @@
 import { JSXElement, Show } from "solid-js";
 
-import * as Commandline from "../../../commandline/commandline";
 import Config, { setConfig } from "../../../config";
-import * as DB from "../../../db";
-import * as Notifications from "../../../elements/notifications";
 import { isAuthenticated } from "../../../firebase";
-import { getThemeIndicator } from "../../../signals/core";
+import {
+  getThemeIndicator,
+  setCommandlineSubgroup,
+} from "../../../signals/core";
+import { showModal } from "../../../stores/modals";
+import { showNoticeNotification } from "../../../stores/notifications";
+import { getSnapshot } from "../../../stores/snapshot";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
@@ -15,20 +18,16 @@ export function ThemeIndicator(): JSXElement {
         setConfig("customTheme", false);
         return;
       }
-      if (
-        isAuthenticated() &&
-        (DB.getSnapshot()?.customThemes?.length ?? 0) < 1
-      ) {
-        Notifications.add("No custom themes!", 0);
+      if (isAuthenticated() && (getSnapshot()?.customThemes?.length ?? 0) < 1) {
+        showNoticeNotification("No custom themes!");
         setConfig("customTheme", false);
         return;
       }
       setConfig("customTheme", true);
     } else {
       const subgroup = Config.customTheme ? "customTheme" : "themes";
-      Commandline.show({
-        subgroupOverride: subgroup,
-      });
+      setCommandlineSubgroup(subgroup);
+      showModal("Commandline");
     }
   };
 

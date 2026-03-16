@@ -9,10 +9,9 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
+import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
 import { updateFromServer as updateConfigFromServer } from "./config";
-import { navigate } from "./controllers/route-controller";
 import * as DB from "./db";
-import * as Notifications from "./elements/notifications";
 import {
   isAuthAvailable,
   getAuthenticatedUser,
@@ -23,38 +22,35 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "./firebase";
-import * as RegisterCaptchaModal from "./modals/register-captcha";
 import { showPopup } from "./modals/simple-modals-base";
 import * as AuthEvent from "./observables/auth-event";
-import * as LoginPage from "./pages/login";
 import * as Sentry from "./sentry";
 import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import * as ConnectionState from "./states/connection";
 import { addBanner } from "./stores/banners";
-import { qs, qsa } from "./utils/dom";
-import * as Misc from "./utils/misc";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "./stores/notifications";
+import { createErrorMessage } from "./utils/error";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
-async function sendVerificationEmail(): Promise<void> {
+export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
 
   showLoaderBar();
-  qs(".sendVerificationEmail")?.disable();
   const response = await Ape.users.verificationEmail();
-  qs(".sendVerificationEmail")?.enable();
   if (response.status !== 200) {
     hideLoaderBar();
-    Notifications.add("Failed to request verification email", -1, { response });
+    showErrorNotification("Failed to request verification email", { response });
   } else {
     hideLoaderBar();
-    Notifications.add("Verification email sent", 1);
+    showSuccessNotification("Verification email sent");
   }
 }
 
@@ -97,30 +93,25 @@ async function getDataAndInit(): Promise<boolean> {
     return true;
   } catch (error) {
     console.error(error);
-    LoginPage.enableInputs();
-    qs("header nav .view-account")?.setStyle({ opacity: "1" });
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
-        Notifications.add(
+        showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-          0,
           {
-            duration: 0,
+            durationMs: 0,
           },
         );
-        Notifications.add(
+        showNoticeNotification(
           "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-          0,
           {
-            duration: 0,
+            durationMs: 0,
           },
         );
       }
 
-      Notifications.add("Failed to get user data: " + error.message, -1);
+      showErrorNotification("Failed to get user data: " + error.message);
     } else {
-      const message = Misc.createErrorMessage(error, "Failed to get user data");
-      Notifications.add(message, -1);
+      showErrorNotification("Failed to get user data", { error });
     }
     return false;
   }
@@ -155,127 +146,95 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
-  let keyframes = [
-    {
-      percentage: 90,
-      durationMs: 1000,
-      text: "Downloading user data...",
-    },
-  ];
-
-  //undefined means navigate to whatever the current window.location.pathname is
-  await navigate(undefined, {
-    force: true,
-    loadingOptions: {
-      loadingMode: () => {
-        if (user !== null) {
-          return "sync";
-        } else {
-          return "none";
-        }
-      },
-      loadingPromise: async () => {
-        await userPromise;
-      },
-      style: "bar",
-      keyframes: keyframes,
-    },
-  });
-
   AuthEvent.dispatch({
     type: "authStateChanged",
-    data: { isUserSignedIn: user !== null },
+    data: { isUserSignedIn: user !== null, loadPromise: userPromise },
   });
 }
 
-export async function signIn(email: string, password: string): Promise<void> {
+export async function signIn(
+  email: string,
+  password: string,
+  rememberMe: boolean,
+): Promise<
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    }
+> {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1);
-    return;
+    return { success: false, message: "Authentication uninitialized" };
   }
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
-  LoginPage.showPreloader();
-  LoginPage.disableInputs();
-  LoginPage.disableSignUpButton();
-
-  if (email === "" || password === "") {
-    Notifications.add("Please fill in all fields", 0);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.enableSignUpButton();
-    return;
-  }
-
-  const rememberMe =
-    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
-    false;
 
   const { error } = await tryCatch(
     signInWithEmailAndPassword(email, password, rememberMe),
   );
 
   if (error !== null) {
-    Notifications.add(error.message, -1);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
+    return { success: false, message: error.message };
   }
+  return { success: true };
 }
 
-async function signInWithProvider(provider: AuthProvider): Promise<void> {
+async function signInWithProvider(
+  provider: AuthProvider,
+  rememberMe: boolean,
+): Promise<
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    }
+> {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
+    return { success: false, message: "Authentication uninitialized" };
   }
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
-  LoginPage.showPreloader();
-  LoginPage.disableInputs();
-  LoginPage.disableSignUpButton();
-  const rememberMe =
-    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
-    false;
 
   const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
   if (error !== null) {
     if (error.message !== "") {
-      Notifications.add(error.message, -1);
+      showErrorNotification(error.message);
     }
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
+    return { success: false, message: error.message };
   }
+  return { success: true };
 }
 
-async function signInWithGoogle(): Promise<void> {
-  return signInWithProvider(gmailProvider);
+export async function signInWithGoogle(rememberMe: boolean): Promise<
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    }
+> {
+  return signInWithProvider(gmailProvider, rememberMe);
 }
 
-async function signInWithGitHub(): Promise<void> {
-  return signInWithProvider(githubProvider);
+export async function signInWithGitHub(rememberMe: boolean): Promise<
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    }
+> {
+  return signInWithProvider(githubProvider, rememberMe);
 }
 
-async function addGoogleAuth(): Promise<void> {
+export async function addGoogleAuth(): Promise<void> {
   return addAuthProvider("Google", gmailProvider);
 }
 
-async function addGithubAuth(): Promise<void> {
+export async function addGithubAuth(): Promise<void> {
   return addAuthProvider("GitHub", githubProvider);
 }
 
@@ -283,16 +242,8 @@ async function addAuthProvider(
   providerName: string,
   provider: AuthProvider,
 ): Promise<void> {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   showLoaderBar();
@@ -301,61 +252,45 @@ async function addAuthProvider(
   try {
     await linkWithPopup(user, provider);
     hideLoaderBar();
-    Notifications.add(`${providerName} authentication added`, 1);
+    showSuccessNotification(`${providerName} authentication added`);
     AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
-    const message = Misc.createErrorMessage(
+    showErrorNotification(`Failed to add ${providerName} authentication`, {
       error,
-      `Failed to add ${providerName} authentication`,
-    );
-    Notifications.add(message, -1);
+    });
   }
 }
 
 export function signOut(): void {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
+    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   if (!isAuthenticated()) return;
   void authSignOut();
 }
 
-async function signUp(): Promise<void> {
+export async function signUp(
+  name: string,
+  email: string,
+  password: string,
+): Promise<
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    }
+> {
   if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
+    return { success: false, message: "Authentication uninitialized" };
   }
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-  await RegisterCaptchaModal.show();
-  const captchaToken = await RegisterCaptchaModal.promise;
+  const captchaToken = await showRegisterCaptchaModal();
   if (captchaToken === undefined || captchaToken === "") {
-    Notifications.add("Please complete the captcha", -1);
-    return;
+    return { success: false, message: "Please complete the captcha" };
   }
-  LoginPage.disableInputs();
-  LoginPage.disableSignUpButton();
-  LoginPage.showPreloader();
-
-  const signupData = LoginPage.getSignupData();
-  if (signupData === false) {
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    Notifications.add("Please fill in all fields", 0);
-    return;
-  }
-  const { name: nname, email, password } = signupData;
 
   try {
     const createdAuthUser = await createUserWithEmailAndPassword(
@@ -365,7 +300,7 @@ async function signUp(): Promise<void> {
 
     const signInResponse = await Ape.users.create({
       body: {
-        name: nname,
+        name: name,
         captcha: captchaToken,
         email,
         uid: createdAuthUser.user.uid,
@@ -375,80 +310,27 @@ async function signUp(): Promise<void> {
       throw new Error(`Failed to sign in: ${signInResponse.body.message}`);
     }
 
-    await updateProfile(createdAuthUser.user, { displayName: nname });
+    await updateProfile(createdAuthUser.user, { displayName: name });
     await sendVerificationEmail();
-    LoginPage.hidePreloader();
     await onAuthStateChanged(true, createdAuthUser.user);
     resetIgnoreAuthCallback();
 
-    Notifications.add("Account created", 1);
+    showSuccessNotification("Account created");
+    return { success: true };
   } catch (e) {
-    let message = Misc.createErrorMessage(e, "Failed to create account");
+    let message = createErrorMessage(e, "Failed to create account");
 
     if (e instanceof Error) {
       if ("code" in e && e.code === "auth/email-already-in-use") {
-        message = Misc.createErrorMessage(
+        message = createErrorMessage(
           { message: "Email already in use" },
           "Failed to create account",
         );
       }
     }
 
-    Notifications.add(message, -1);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
+    showErrorNotification(message);
     signOut();
-    return;
+    return { success: false, message };
   }
 }
-
-qs(".pageLogin .login form")?.on("submit", (e) => {
-  e.preventDefault();
-  const email =
-    qsa<HTMLInputElement>(".pageLogin .login input")?.[0]?.getValue() ?? "";
-  const password =
-    qsa<HTMLInputElement>(".pageLogin .login input")?.[1]?.getValue() ?? "";
-  void signIn(email, password);
-});
-
-qs(".pageLogin .login button.signInWithGoogle")?.on("click", () => {
-  void signInWithGoogle();
-});
-
-qs(".pageLogin .login button.signInWithGitHub")?.on("click", () => {
-  void signInWithGitHub();
-});
-
-qs("nav .accountButtonAndMenu .menu button.signOut")?.on("click", () => {
-  if (!isAuthAvailable()) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
-  }
-  signOut();
-});
-
-qs(".pageLogin .register form")?.on("submit", (e) => {
-  e.preventDefault();
-  void signUp();
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
-  void addGoogleAuth();
-});
-
-qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
-  void addGithubAuth();
-});
-
-qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-  void sendVerificationEmail();
-});

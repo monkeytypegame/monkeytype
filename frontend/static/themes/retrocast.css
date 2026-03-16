@@ -1,20 +1,26 @@
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"],
+[data-nav-item="leaderboards"],
+[data-nav-item="about"] {
   color: #88dbdf;
+  &:hover {
+    color: color-mix(in srgb, #88dbdf 75%, black 25%);
+  }
 }
 
-nav > .textButton:nth-child(2) {
-  color: #88dbdf;
-}
-
-nav > .textButton:nth-child(3) {
-  color: #88dbdf;
-}
-
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   color: #ff585d;
+  &:hover {
+    color: color-mix(in srgb, #ff585d 75%, black 25%);
+  }
 }
 
-nav > .textButton:nth-child(5),
-nav > .textButton:nth-child(6) {
-  color: #f3e03b;
+[data-nav-item="alerts"],
+[data-nav-item="account"],
+[data-nav-item="login"] {
+  --themable-button-text: #f3e03b;
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    black 25%
+  );
 }

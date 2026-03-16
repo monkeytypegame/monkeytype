@@ -82,6 +82,7 @@
 
         "prefer-nullish-coalescing": "off",
         "no-shadow": "off",
+        "no-non-null-assertion": "off",
       },
     },
     {

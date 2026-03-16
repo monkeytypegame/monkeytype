@@ -6,7 +6,7 @@ import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { getActivePage, getGlobalOffsetTop } from "./signals/core";
-import { isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
@@ -19,7 +19,9 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
+    '"' +
+      font.replaceAll(/_/g, " ") +
+      '", "Roboto Mono", "Vazirharf", "monospace"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -44,7 +46,6 @@ export function setMediaQueryDebugLevel(level: number): void {
 }
 
 if (isDevEnvironment()) {
-  qs("header #logo .top")?.setText("localhost");
   qs("head title")?.setText(
     (qs("head title")?.native.textContent ?? "") + " (localhost)",
   );

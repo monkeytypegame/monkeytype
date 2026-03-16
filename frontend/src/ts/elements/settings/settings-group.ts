@@ -1,15 +1,12 @@
 import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
 
 import Config, { setConfig } from "../../config";
-import * as Notifications from "../notifications";
+import { showErrorNotification } from "../../stores/notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
-import {
-  handleConfigInput,
-  ConfigInputOptions,
-  Validation,
-} from "../input-validation";
+import { handleConfigInput, ConfigInputOptions } from "../input-validation";
 import { ElementWithUtils, qs, qsa } from "../../utils/dom";
+import { Validation } from "../../types/validation";
 
 type Mode = "select" | "button" | "range" | "input";
 
@@ -117,9 +114,8 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
             console.error(
               `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`,
             );
-            Notifications.add(
+            showErrorNotification(
               "Button is missing data property. Please report this.",
-              -1,
             );
             return;
           }

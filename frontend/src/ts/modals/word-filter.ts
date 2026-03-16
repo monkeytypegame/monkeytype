@@ -1,7 +1,10 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -177,10 +180,7 @@ async function filter(language: Language): Promise<string[]> {
     JSONData.getLanguage(language),
   );
   if (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to filter language words"),
-      -1,
-    );
+    showErrorNotification("Failed to filter language words", { error });
     return [];
   }
 
@@ -219,12 +219,12 @@ async function filter(language: Language): Promise<string[]> {
 async function apply(set: boolean): Promise<void> {
   const language = modal
     .getModal()
-    .qsr<HTMLSelectElement>(".languageInput")
+    .qsr<HTMLSelectElement>("select.languageInput")
     .getValue() as Language;
   const filteredWords = await filter(language);
 
   if (filteredWords.length === 0) {
-    Notifications.add("No words found", 0);
+    showNoticeNotification("No words found");
     enableButtons();
     return;
   }
@@ -271,16 +271,16 @@ async function setup(): Promise<void> {
 
   modalEl.qsr("button.generateButton").on("click", async () => {
     const presetName = modalEl
-      .qsr<HTMLSelectElement>(".presetInput")
+      .qsr<HTMLSelectElement>("select.presetInput")
       .getValue() as string;
     const layoutName = modalEl
-      .qsr<HTMLSelectElement>(".layoutInput")
+      .qsr<HTMLSelectElement>("select.layoutInput")
       .getValue() as string;
 
     const presetToApply = presets[presetName];
 
     if (presetToApply === undefined) {
-      Notifications.add(`Preset ${presetName} not found`, -1);
+      showErrorNotification(`Preset ${presetName} not found`);
       return;
     }
 

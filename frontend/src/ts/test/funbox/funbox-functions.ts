@@ -7,7 +7,10 @@ import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
 import * as TTSEvent from "../../observables/tts-event";
-import * as Notifications from "../../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../stores/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
@@ -227,7 +230,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     toggleScript(params: string[]): void {
       if (window.speechSynthesis === undefined) {
-        Notifications.add("Failed to load text-to-speech script", -1);
+        showErrorNotification("Failed to load text-to-speech script");
         return;
       }
       if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
@@ -662,17 +665,17 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const minorVersion =
           versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
         if (mainVersion <= 16 && minorVersion <= 5) {
-          Notifications.add(
+          showNoticeNotification(
             "CRT is not available on Safari 16.5 or earlier.",
-            0,
             {
-              duration: 5,
+              durationMs: 5000,
             },
           );
           toggleFunbox("crt");
           return;
         }
       }
+      qs("#scanline")?.remove();
       qs("body")?.appendHtml('<div id="scanline" />');
       qs("body")?.addClass("crtmode");
       qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
@@ -692,9 +695,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     async withWords(_words) {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
-          Notifications.add(
+          showNoticeNotification(
             `Failed to load language: ${language}. It will be ignored.`,
-            0,
           );
           return null;
         }),
@@ -719,13 +721,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           nosave: true,
         });
         toggleFunbox("polyglot", true);
-        Notifications.add(
+        showNoticeNotification(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
           )}).`,
-          0,
           {
-            duration: 7,
+            durationMs: 7000,
           },
         );
         throw new WordGenError("");
@@ -743,10 +744,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
         setConfig("language", fallbackLanguage);
-        Notifications.add(
+        showNoticeNotification(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
-          0,
-          { duration: 5 },
+          { durationMs: 5000 },
         );
         throw new WordGenError("");
       }

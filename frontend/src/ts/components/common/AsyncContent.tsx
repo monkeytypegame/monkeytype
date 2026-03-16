@@ -1,5 +1,6 @@
 import { UseQueryResult } from "@tanstack/solid-query";
 import {
+  Accessor,
   createMemo,
   ErrorBoundary,
   JSXElement,
@@ -8,8 +9,9 @@ import {
   Switch,
 } from "solid-js";
 
-import * as Notifications from "../../elements/notifications";
-import { createErrorMessage, typedKeys } from "../../utils/misc";
+import { showErrorNotification } from "../../stores/notifications";
+import { createErrorMessage } from "../../utils/error";
+import { typedKeys } from "../../utils/misc";
 import { Conditional } from "./Conditional";
 import { LoadingCircle } from "./LoadingCircle";
 
@@ -18,6 +20,11 @@ type AsyncEntry<T> = {
   isLoading: () => boolean;
   isError: () => boolean;
   error?: () => unknown;
+};
+
+type Collection<T> = Accessor<T> & {
+  isLoading: boolean;
+  isError: boolean;
 };
 
 type QueryMapping = Record<string, unknown> | unknown;
@@ -29,16 +36,23 @@ type BaseProps = {
   errorMessage?: string;
   ignoreError?: true;
   loader?: JSXElement;
+  errorClass?: string;
 };
 
 type QueryProps<T extends QueryMapping> = {
   queries: { [K in keyof T]: UseQueryResult<T[K]> };
-  query?: never;
 };
 
 type SingleQueryProps<T> = {
   query: UseQueryResult<T>;
-  queries?: never;
+};
+
+type CollectionProps<T extends QueryMapping> = {
+  collections: { [K in keyof T]: Collection<T[K]> };
+};
+
+type SingleCollectionProps<T> = {
+  collection: Collection<T>;
 };
 
 type DeferredChildren<T extends QueryMapping> = {
@@ -53,7 +67,12 @@ type EagerChildren<T extends QueryMapping> = {
 };
 
 export type Props<T extends QueryMapping> = BaseProps &
-  (QueryProps<T> | SingleQueryProps<T>) &
+  (
+    | QueryProps<T>
+    | SingleQueryProps<T>
+    | CollectionProps<T>
+    | SingleCollectionProps<T>
+  ) &
   (DeferredChildren<T> | EagerChildren<T>);
 
 export default function AsyncContent<T extends QueryMapping>(
@@ -61,10 +80,14 @@ export default function AsyncContent<T extends QueryMapping>(
 ): JSXElement {
   //@ts-expect-error this is fine
   const source = createMemo<AsyncMap<T>>(() => {
-    if (props.query !== undefined) {
+    if ("query" in props) {
       return fromQueries({ defaultQuery: props.query });
-    } else {
+    } else if ("queries" in props) {
       return fromQueries(props.queries);
+    } else if ("collection" in props) {
+      return fromCollections({ defaultQuery: props.collection });
+    } else if ("collections" in props) {
+      return fromCollections(props.collections);
     }
   });
 
@@ -87,21 +110,23 @@ export default function AsyncContent<T extends QueryMapping>(
     );
     console.error("AsyncMultiContent failed", message, err);
 
-    Notifications.add(message, -1);
+    showErrorNotification(props.errorMessage ?? "An error occurred", {
+      error: err,
+    });
 
     return message;
   };
 
-  function allResolved(
+  const allResolved = (
     data: ReturnType<typeof value>,
-  ): data is { [K in keyof T]: T[K] } {
+  ): data is { [K in keyof T]: T[K] } => {
     //single query
     if (data === undefined || data === null) {
       return false;
     }
 
     return Object.values(data).every((v) => v !== undefined && v !== null);
-  }
+  };
 
   const isLoading = (): boolean =>
     Object.values(source() as AsyncEntry<unknown>[]).some((s) => s.isLoading());
@@ -115,7 +140,9 @@ export default function AsyncContent<T extends QueryMapping>(
     props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
 
   const errorText = (err: unknown): JSXElement | undefined =>
-    props.ignoreError ? undefined : <div class="error">{handleError(err)}</div>;
+    props.ignoreError ? undefined : (
+      <div class={props.errorClass}>{handleError(err)}</div>
+    );
 
   return (
     <ErrorBoundary fallback={props.ignoreError ? undefined : errorText}>
@@ -158,6 +185,20 @@ function fromQueries<T extends Record<string, unknown>>(queries: {
       isLoading: () => q.isLoading,
       isError: () => q.isError,
       error: () => q.error,
+    };
+    return acc;
+  }, {} as AsyncMap<T>);
+}
+
+function fromCollections<T extends Record<string, unknown>>(collections: {
+  [K in keyof T]: Collection<T[K]>;
+}): AsyncMap<T> {
+  return typedKeys(collections).reduce((acc, key) => {
+    const q = collections[key];
+    acc[key] = {
+      value: () => q(),
+      isLoading: () => q.isLoading,
+      isError: () => q.isError,
     };
     return acc;
   }, {} as AsyncMap<T>);

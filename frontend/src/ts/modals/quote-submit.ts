@@ -2,7 +2,11 @@ import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
 import Config from "../config";
@@ -39,12 +43,12 @@ async function submitQuote(): Promise<void> {
     .qsr<HTMLInputElement>(".newQuoteSource")
     .getValue() as string;
   const language = modalEl
-    .qsr<HTMLSelectElement>(".newQuoteLanguage")
+    .qsr<HTMLSelectElement>("select.newQuoteLanguage")
     .getValue() as Language;
   const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
-    Notifications.add("Please fill in all fields", 0);
+    showNoticeNotification("Please fill in all fields");
     return;
   }
 
@@ -55,11 +59,11 @@ async function submitQuote(): Promise<void> {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote", -1, { response });
+    showErrorNotification("Failed to submit quote", { response });
     return;
   }
 
-  Notifications.add("Quote submitted.", 1);
+  showSuccessNotification("Quote submitted.");
   modalEl.qsr<HTMLTextAreaElement>(".newQuoteText").setValue("");
   modalEl.qsr<HTMLInputElement>(".newQuoteSource").setValue("");
   CaptchaController.reset("submitQuote");
@@ -67,9 +71,8 @@ async function submitQuote(): Promise<void> {
 
 export async function show(showOptions: ShowOptions): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
-    Notifications.add(
+    showErrorNotification(
       "Could not show quote submit popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1,
     );
     return;
   }
@@ -90,9 +93,11 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       });
 
       modalEl
-        .qsr<HTMLSelectElement>(".newQuoteLanguage")
+        .qsr<HTMLSelectElement>("select.newQuoteLanguage")
         .setValue(Strings.removeLanguageSize(Config.language));
-      modalEl.qsr<HTMLSelectElement>(".newQuoteLanguage").dispatch("change");
+      modalEl
+        .qsr<HTMLSelectElement>("select.newQuoteLanguage")
+        .dispatch("change");
       modalEl.qsr<HTMLInputElement>("input").setValue("");
 
       new CharacterCounter(modalEl.qsr(".newQuoteText"), 250);

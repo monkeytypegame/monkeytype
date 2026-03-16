@@ -4,8 +4,11 @@ import * as Config from "../config";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as Settings from "../pages/settings";
-import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import {
   PresetNameSchema,
@@ -36,13 +39,6 @@ const state = {
 let presetNameEl: ValidatedHtmlInputElement | null = null;
 
 export function show(action: string, id?: string, name?: string): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
@@ -71,7 +67,7 @@ export function show(action: string, id?: string, name?: string): void {
         modalEl.setAttribute("data-preset-id", id);
         modalEl.qsr(".popupTitle").setHtml("Edit preset");
         modalEl.qsr(".submit").setHtml(`save`);
-        presetNameEl?.setValue(name);
+        presetNameEl?.setValue(name.replaceAll(" ", "_"));
         presetNameEl?.getParent()?.show();
 
         modalEl.qsa("input").show();
@@ -110,7 +106,7 @@ async function initializeEditState(id: string): Promise<void> {
   }
   const edittedPreset = await getPreset(id);
   if (edittedPreset === undefined) {
-    Notifications.add("Preset not found", -1);
+    showErrorNotification("Preset not found");
     return;
   }
   if (
@@ -226,10 +222,9 @@ function hide(): void {
 async function apply(): Promise<void> {
   const modalEl = modal.getModal();
   const action = modalEl.getAttribute("data-action");
-  const propPresetName = modalEl
+  const presetName = modalEl
     .qsr<HTMLInputElement>(".group input[title='presets']")
     .getValue() as string;
-  const presetName = propPresetName.replaceAll(" ", "_");
   const presetId = modalEl.getAttribute("data-preset-id") as string;
 
   const updateConfig = modalEl
@@ -247,9 +242,8 @@ async function apply(): Promise<void> {
     state.presetType === "partial" &&
     Array.from(state.checkboxes.values()).every((val: boolean) => !val);
   if (noPartialGroupSelected) {
-    Notifications.add(
+    showNoticeNotification(
       "At least one setting group must be active while saving partial presets",
-      0,
     );
     return;
   }
@@ -261,12 +255,12 @@ async function apply(): Promise<void> {
     const noPresetName: boolean =
       presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
     if (noPresetName) {
-      Notifications.add("Preset name cannot be empty", 0);
+      showNoticeNotification("Preset name cannot be empty");
       return;
     }
 
     if (presetNameEl?.getValidationResult().status === "failed") {
-      Notifications.add("Preset name is not valid", 0);
+      showNoticeNotification("Preset name is not valid");
       return;
     }
   }
@@ -289,22 +283,16 @@ async function apply(): Promise<void> {
     });
 
     if (response.status !== 200 || response.body.data === null) {
-      Notifications.add(
-        "Failed to add preset" +
-          response.body.message.replace(presetName, propPresetName),
-        -1,
-      );
+      showErrorNotification("Failed to add preset: " + response.body.message);
     } else {
-      Notifications.add("Preset added", 1, {
-        duration: 2,
-      });
+      showSuccessNotification("Preset added", { durationMs: 2000 });
       snapshotPresets.push({
         name: presetName,
         config: configChanges,
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
         }),
-        display: propPresetName,
+        display: presetName.replaceAll("_", " "),
         _id: response.body.data.presetId,
       } as SnapshotPreset);
     }
@@ -313,7 +301,7 @@ async function apply(): Promise<void> {
       (preset: SnapshotPreset) => preset._id === presetId,
     ) as SnapshotPreset;
     if (preset === undefined) {
-      Notifications.add("Preset not found", -1);
+      showErrorNotification("Preset not found");
       return;
     }
     const configChanges = getConfigChanges();
@@ -331,12 +319,12 @@ async function apply(): Promise<void> {
     });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to edit preset", -1, { response });
+      showErrorNotification("Failed to edit preset", { response });
     } else {
-      Notifications.add("Preset updated", 1);
+      showSuccessNotification("Preset updated");
 
       preset.name = presetName;
-      preset.display = presetName.replace(/_/g, " ");
+      preset.display = presetName.replaceAll("_", " ");
       if (updateConfig) {
         preset.config = configChanges;
         if (state.presetType === "partial") {
@@ -350,9 +338,9 @@ async function apply(): Promise<void> {
     const response = await Ape.presets.delete({ params: { presetId } });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to remove preset", -1, { response });
+      showErrorNotification("Failed to remove preset", { response });
     } else {
-      Notifications.add("Preset removed", 1);
+      showSuccessNotification("Preset removed");
       snapshotPresets.forEach((preset: SnapshotPreset, index: number) => {
         if (preset._id === presetId) {
           snapshotPresets.splice(index, 1);

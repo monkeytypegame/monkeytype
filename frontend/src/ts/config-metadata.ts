@@ -1,9 +1,10 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
-import * as Notifications from "./elements/notifications";
+import { showNoticeNotification } from "./stores/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter } from "./utils/misc";
+import { reloadAfter } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";
@@ -160,7 +161,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
     afterSet: ({ currentConfig }) => {
       if (currentConfig.mode === "zen" && currentConfig.paceCaret !== "off") {
-        Notifications.add(`Pace caret will not work with zen mode.`, 0);
+        showNoticeNotification(`Pace caret will not work with zen mode.`);
       }
     },
   },
@@ -206,6 +207,12 @@ export const configMetadata: ConfigMetadataObject = {
   repeatQuotes: {
     icon: "fa-sync-alt",
     displayString: "repeat quotes",
+    changeRequiresRestart: false,
+    group: "behavior",
+  },
+  resultSaving: {
+    icon: "fa-save",
+    displayString: "result saving",
     changeRequiresRestart: false,
     group: "behavior",
   },
@@ -291,20 +298,18 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     isBlocked: ({ value, currentConfig }) => {
       if (!checkCompatibility(value)) {
-        Notifications.add(
+        showNoticeNotification(
           `${capitalizeFirstLetter(
             value.join(", "),
           )} is an invalid combination of funboxes`,
-          0,
         );
         return true;
       }
 
       for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
-          Notifications.add(
+          showNoticeNotification(
             `${value}" cannot be enabled with the current config`,
-            0,
           );
           return true;
         }
@@ -478,9 +483,8 @@ export const configMetadata: ConfigMetadataObject = {
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
-          Notifications.add(
+          showNoticeNotification(
             `Pace caret "pb" and "tag pb" are unavailable without an account`,
-            0,
           );
           return true;
         }
@@ -599,7 +603,7 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     isBlocked: ({ value, currentConfig }) => {
       if (value && currentConfig.tapeMode !== "off") {
-        Notifications.add("Show all lines doesn't support tape mode.", 0);
+        showNoticeNotification("Show all lines doesn't support tape mode.");
         return true;
       }
       return false;
@@ -757,23 +761,20 @@ export const configMetadata: ConfigMetadataObject = {
       if (value === "custom") {
         const snapshot = DB.getSnapshot();
         if (!isAuthenticated()) {
-          Notifications.add(
+          showNoticeNotification(
             "Random theme 'custom' is unavailable without an account",
-            0,
           );
           return true;
         }
         if (!snapshot) {
-          Notifications.add(
+          showNoticeNotification(
             "Random theme 'custom' requires a snapshot to be set",
-            0,
           );
           return true;
         }
         if (snapshot?.customThemes?.length === 0) {
-          Notifications.add(
+          showNoticeNotification(
             "Random theme 'custom' requires at least one custom theme to be saved",
-            0,
           );
           return true;
         }
@@ -892,7 +893,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {
-        Notifications.add("Ads are disabled in development mode.", 0);
+        showNoticeNotification("Ads are disabled in development mode.");
         return true;
       }
       return false;
@@ -900,7 +901,7 @@ export const configMetadata: ConfigMetadataObject = {
     afterSet: ({ nosave }) => {
       if (!nosave && !isDevEnvironment()) {
         reloadAfter(3);
-        Notifications.add("Ad settings changed. Refreshing...", 0);
+        showNoticeNotification("Ad settings changed. Refreshing...");
       }
     },
   },

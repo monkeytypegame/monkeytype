@@ -1,7 +1,10 @@
 import { Preset } from "@monkeytype/schemas/presets";
 import Config, { applyConfig, saveFullConfigToLocalStorage } from "../config";
 import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
@@ -37,9 +40,7 @@ export async function apply(_id: string): Promise<void> {
     }
   }
   TestLogic.restart();
-  Notifications.add("Preset applied", 1, {
-    duration: 2,
-  });
+  showSuccessNotification("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
 }
 function isPartialPreset(preset: SnapshotPreset): boolean {
@@ -55,7 +56,7 @@ export async function getPreset(_id: string): Promise<Preset | undefined> {
   const preset = snapshot.presets?.find((preset) => preset._id === _id);
 
   if (preset === undefined) {
-    Notifications.add("Preset not found", 0);
+    showNoticeNotification("Preset not found");
     return;
   }
   return preset;

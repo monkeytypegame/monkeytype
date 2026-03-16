@@ -1,14 +1,16 @@
-import * as Notifications from "./elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "./stores/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
-import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
-  createErrorMessage,
   isObject,
   promiseWithResolvers,
   triggerResize,
@@ -23,6 +25,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { setAccountButtonSpinner } from "./signals/header";
 import { deleteConfig, saveConfig } from "./ape/config";
 import Ape from "./ape";
 import { SnapshotInitError } from "./db";
@@ -48,9 +51,9 @@ let config: Config = {
 let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
-    AccountButton.loading(true);
-    void saveConfig(configToSend).then(() => {
-      AccountButton.loading(false);
+    setAccountButtonSpinner(true);
+    void saveConfig(configToSend).finally(() => {
+      setAccountButtonSpinner(false);
     });
   }
   configToSend = {} as Config;
@@ -74,17 +77,21 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   configLS.set(config);
   if (!noDbCheck) {
-    AccountButton.loading(true);
-    void saveConfig(config);
-    AccountButton.loading(false);
+    setAccountButtonSpinner(true);
+    void saveConfig(config).finally(() => {
+      setAccountButtonSpinner(false);
+    });
   }
 }
 
 function isConfigChangeBlocked(): boolean {
   if (TestState.isActive && config.funbox.includes("no_quit")) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     return true;
   }
   return false;
@@ -117,9 +124,12 @@ export function setConfig<T extends keyof Config>(
     TestState.isActive &&
     config.funbox.includes("no_quit")
   ) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
         value,
@@ -344,11 +354,10 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     );
     await applyConfig(parsedConfig);
     saveFullConfigToLocalStorage();
-    Notifications.add("Done", 1);
+    showSuccessNotification("Done");
   } catch (e) {
-    const msg = createErrorMessage(e, "Failed to import settings");
-    console.error(msg);
-    Notifications.add(msg, -1);
+    console.error(e);
+    showErrorNotification("Failed to import settings", { error: e });
   }
 }
 

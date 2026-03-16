@@ -1,104 +1,122 @@
-nav {
-  gap: 0.5rem;
-}
-
-header.focus nav > .textButton,
-header.focus nav:before,
-header.focus nav:after {
+header[data-focused] [data-nav-item],
+header[data-focused] nav:before,
+header[data-focused] nav:after {
   background: #99989f;
 }
 
-nav > .textButton {
+[data-nav-item] {
   border-radius: 10rem !important;
-  color: var(--bg-color);
+  --themable-button-text: var(--bg-color);
 }
 
-nav > .textButton:nth-child(1) {
+[data-nav-item]:hover {
+  filter: brightness(1.25);
+}
+
+[data-nav-item="test"] {
   background: #553d94;
 }
 
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   background: #6851a4;
 }
 
-nav > .textButton:nth-child(3) {
+[data-nav-item="about"] {
   background: #7962b3;
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   background: #8c76c3;
 }
 
-nav > .textButton:nth-child(5) {
+[data-nav-item="alerts"],
+[data-nav-item="login"] {
   background: #9f8ad4;
 }
 
-nav > .textButton:nth-child(6),
-nav > .textButton:nth-child(7) {
-  background: #9f8ad4;
+[data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg {
+  fill: var(--bg-color);
 }
 
-nav > .textButton:nth-child(8) {
-  background: #a692d7;
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--bg-color);
+  }
 }
 
-header.focus nav > .textButton.discord::after {
-  border-color: transparent;
+[data-nav-item="account"] {
+  --themable-button-text: var(--bg-color);
+  --themable-button-bg: var(--sub-color);
+  --themable-button-hover-bg: color-mix(
+    in srgb,
+    var(--sub-color) 75%,
+    white 15%
+  );
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    white 15%
+  );
+  [data-ui-element="userLevel"] {
+    background: var(--themable-button-text);
+    color: var(--themable-button-bg);
+  }
 }
 
-body.crtmode nav > .textButton:nth-child(1) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #553d94 20%, transparent),
-    -3px 0 color-mix(in srgb, #553d94 30%, transparent),
-    0 0 3px;
+header[data-focused] {
+  [data-nav-item="test"],
+  [data-nav-item="leaderboards"],
+  [data-nav-item="about"],
+  [data-nav-item="settings"] {
+    --themable-button-bg: var(--sub-alt-color);
+    --nav-focus-opacity: 0.5;
+  }
 }
 
-body.crtmode nav > .textButton:nth-child(2) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #6851a4 20%, transparent),
-    -3px 0 color-mix(in srgb, #6851a4 30%, transparent),
-    0 0 3px;
-}
+body.crtmode {
+  & [data-nav-item="test"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #553d94 20%, transparent),
+      -3px 0 color-mix(in srgb, #553d94 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode nav > .textButton:nth-child(3) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #7962b3 20%, transparent),
-    -3px 0 color-mix(in srgb, #7962b3 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="leaderboards"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #6851a4 20%, transparent),
+      -3px 0 color-mix(in srgb, #6851a4 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode nav > .textButton:nth-child(4) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #8c76c3 20%, transparent),
-    -3px 0 color-mix(in srgb, #8c76c3 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="about"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #7962b3 20%, transparent),
+      -3px 0 color-mix(in srgb, #7962b3 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode nav > .textButton:nth-child(5) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
-    -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="settings"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #8c76c3 20%, transparent),
+      -3px 0 color-mix(in srgb, #8c76c3 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode nav > .textButton:nth-child(6),
-body.crtmode nav > .textButton:nth-child(7) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
-    -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
-    0 0 3px;
-}
+  & [data-nav-item="alerts"],
+  & [data-nav-item="account"],
+  & [data-nav-item="login"] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #9f8ad4 20%, transparent),
+      -3px 0 color-mix(in srgb, #9f8ad4 30%, transparent),
+      0 0 3px;
+  }
 
-body.crtmode nav > .textButton:nth-child(8) {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #a692d7 20%, transparent),
-    -3px 0 color-mix(in srgb, #a692d7 30%, transparent),
-    0 0 3px;
-}
-
-body.crtmode header.focus nav > .textButton {
-  box-shadow:
-    3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
-    -3px 0 color-mix(in srgb, #99989f 30%, transparent),
-    0 0 3px;
+  & header[data-focused] [data-nav-item] {
+    box-shadow:
+      3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
+      -3px 0 color-mix(in srgb, #99989f 30%, transparent),
+      0 0 3px;
+  }
 }

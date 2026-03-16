@@ -1,6 +1,14 @@
 import { createStore } from "solid-js/store";
 
-export type ModalId = "VersionHistory" | "Contact" | "Support" | "Commandline";
+export type ModalId =
+  | "VersionHistory"
+  | "Contact"
+  | "Support"
+  | "Commandline"
+  | "DevOptions"
+  | "DevInboxPicker"
+  | "RegisterCaptcha"
+  | "Alerts";
 
 export type ModalVisibility = {
   visible: boolean;

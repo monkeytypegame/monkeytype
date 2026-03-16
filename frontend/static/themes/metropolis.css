@@ -1,23 +1,10 @@
-header #logo .bottom {
+[data-ui-element="logo"] h1 {
   color: #f4bc46;
 }
 
-nav > .textButton:nth-child(1) {
-  color: #d44729;
-}
-
-nav > .textButton:nth-child(2) {
-  color: #d44729;
-}
-
-nav > .textButton:nth-child(3) {
-  color: #d44729;
-}
-
-nav > .textButton:nth-child(4) {
-  color: #d44729;
-}
-
-nav > .textButton:nth-child(5) {
-  color: #d44729;
+[data-nav-item="test"],
+[data-nav-item="leaderboards"],
+[data-nav-item="about"],
+[data-nav-item="settings"] {
+  --themable-button-text: #d44729;
 }

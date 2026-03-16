@@ -1,5 +1,5 @@
 import { debounce } from "throttle-debounce";
-import { z, ZodType } from "zod";
+import { ZodType } from "zod";
 import { InputIndicator } from "./input-indicator";
 import {
   ConfigKey,
@@ -7,35 +7,9 @@ import {
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
 import Config, { setConfig } from "../config";
-import * as Notifications from "../elements/notifications";
+import { showSuccessNotification } from "../stores/notifications";
 import { ElementWithUtils } from "../utils/dom";
-
-export type ValidationResult = {
-  status: "checking" | "success" | "failed" | "warning";
-  errorMessage?: string;
-};
-
-export type IsValidResponse = true | string | { warning: string };
-
-export type Validation<T> = {
-  /**
-   * Zod schema to validate the input value against.
-   * The indicator will show the error messages from the schema.
-   */
-  schema?: z.Schema<T>;
-
-  /**
-   * Custom async validation method.
-   * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
-   * @param value current input value
-   * @param thisPopup the current modal
-   * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
-   */
-  isValid?: (value: T) => Promise<IsValidResponse>;
-
-  /** custom debounce delay for `isValid` call. defaults to 100 */
-  debounceDelay?: number;
-};
+import { Validation, ValidationResult } from "../types/validation";
 
 // oxlint-disable-next-line no-explicit-any
 export function debounceIfNeeded<T extends (...args: any[]) => any>(
@@ -77,17 +51,19 @@ export function createInputEventHandler<T>(
             }
 
             if (result === true) {
-              callback({ status: "success" });
+              callback({ status: "success", success: true });
             } else {
               if (typeof result === "object" && "warning" in result) {
                 callback({
                   status: "warning",
                   errorMessage: result.warning,
+                  success: false,
                 });
               } else {
                 callback({
                   status: "failed",
                   errorMessage: result,
+                  success: false,
                 });
               }
             }
@@ -104,24 +80,30 @@ export function createInputEventHandler<T>(
       checkValue = inputValueConvert(currentValue);
     }
 
-    callback({ status: "checking" });
+    callback({ status: "checking", success: false });
 
     if (validation.schema !== undefined) {
       const schemaResult = validation.schema.safeParse(checkValue);
 
       if (!schemaResult.success) {
         callback({
+          success: false,
           status: "failed",
-          errorMessage: schemaResult.error.errors
-            .map((err) => err.message)
-            .join(", "),
+          errorMessage:
+            schemaResult.error.errors
+              .map((err) =>
+                err.message.at(-1) === "."
+                  ? err.message.slice(0, -1)
+                  : err.message,
+              )
+              .join(", ") + ".",
         });
         return;
       }
     }
 
     if (callIsValid === undefined) {
-      callback({ status: "success" });
+      callback({ status: "success", success: true });
       //call original handler if defined
       originalInput.oninput?.(e as InputEvent);
       return;
@@ -149,6 +131,7 @@ export class ValidatedHtmlInputElement<
   private indicator: InputIndicator;
   private currentStatus: ValidationResult = {
     status: "checking",
+    success: false,
   };
 
   constructor(
@@ -207,7 +190,7 @@ export class ValidatedHtmlInputElement<
   override setValue(val: string | null): this {
     if (val === null) {
       this.indicator.hide();
-      this.currentStatus = { status: "checking" };
+      this.currentStatus = { status: "checking", success: false };
     } else {
       super.setValue(val);
       this.dispatch("input");
@@ -297,9 +280,7 @@ export function handleConfigInput<T extends ConfigKey>({
     const didConfigSave = setConfig(configName, value);
 
     if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
+      showSuccessNotification("Saved", { durationMs: 1000 });
     }
   };
 

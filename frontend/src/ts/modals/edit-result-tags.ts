@@ -2,9 +2,11 @@ import Ape from "../ape";
 import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as AccountPage from "../pages/account";
-import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
@@ -28,16 +30,9 @@ export function show(
   tags: string[],
   source: "accountPage" | "resultPage",
 ): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   if (resultId === "") {
-    Notifications.add(
+    showErrorNotification(
       "Failed to show edit result tags modal: result id is empty",
-      -1,
     );
     return;
   }
@@ -63,9 +58,8 @@ function appendButtons(): void {
   const buttonsEl = modal.getModal().qs(".buttons");
 
   if (buttonsEl === null) {
-    Notifications.add(
+    showErrorNotification(
       "Failed to append buttons to edit result tags modal: could not find buttons element",
-      -1,
     );
     return;
   }
@@ -123,16 +117,14 @@ async function save(): Promise<void> {
   state.tags = state.tags.filter((el) => el !== undefined);
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update result tags", -1, { response });
+    showErrorNotification("Failed to update result tags", { response });
     return;
   }
 
   //can do this because the response will not be null if the status is 200
   const responseTagPbs = response.body.data?.tagPbs ?? [];
 
-  Notifications.add("Tags updated", 1, {
-    duration: 2,
-  });
+  showSuccessNotification("Tags updated", { durationMs: 2000 });
 
   DB.getSnapshot()?.results?.forEach((result) => {
     if (result._id === state.resultId) {

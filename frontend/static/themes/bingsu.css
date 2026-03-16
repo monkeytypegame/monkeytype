@@ -1,7 +1,6 @@
-/* .word.error{
-  border-bottom: double 4px var(--error-color);
-} */
-
-nav .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: var(--caret-color);
+  &:hover {
+    color: var(--sub-color);
+  }
 }

@@ -37,9 +37,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     if (fallback === undefined) {
       throw new Error(`Invalid JSON: ` + error.message);
     }
-    // todo fix me
-    // oxlint-disable-next-line no-unsafe-return
-    return fallback as z.infer<T>;
+    return fallback as unknown;
   }
 
   const safeParse = schema.safeParse(jsonParsed);
@@ -66,9 +64,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
           .join(", ")}`,
       );
     }
-    // todo fix me
-    // oxlint-disable-next-line no-unsafe-return
-    return fallback as z.infer<T>;
+    return fallback as unknown;
   }
 
   return safeParseMigrated.data as T;

@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -93,7 +93,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 
 function applyPreset(): void {
   const modalEl = modal.getModal();
-  const presetName = modalEl.qs<HTMLSelectElement>(".presetInput")?.getValue();
+  const presetName = modalEl
+    .qs<HTMLSelectElement>("select.presetInput")
+    ?.getValue();
 
   if (presetName !== undefined && presetName !== "" && presets[presetName]) {
     const preset = presets[presetName];
@@ -129,7 +131,7 @@ function generateWords(): string[] {
     ) || 100;
 
   if (characterInput === undefined || characterInput.trim() === "") {
-    Notifications.add("Character set cannot be empty", 0);
+    showNoticeNotification("Character set cannot be empty");
     return [];
   }
 

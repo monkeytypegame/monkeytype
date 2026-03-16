@@ -22,11 +22,9 @@ import {
   indexedDBLocalPersistence,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import {
-  createErrorMessage,
-  isDevEnvironment,
-  promiseWithResolvers,
-} from "./utils/misc";
+import { promiseWithResolvers } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
+import { createErrorMessage } from "./utils/error";
 
 import {
   Analytics as AnalyticsType,
@@ -35,6 +33,7 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
 import { addBanner } from "./stores/banners";
+import { setUserId } from "./signals/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -54,16 +53,11 @@ export async function init(callback: ReadyCallback): Promise<void> {
   try {
     let firebaseConfig: FirebaseOptions | null;
 
-    const constants = import.meta.glob("./constants/firebase-config.ts");
-    const loader = constants["./constants/firebase-config.ts"];
-    if (loader) {
-      firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
-        .firebaseConfig;
-    } else {
-      throw new Error(
-        "No config file found. Make sure frontend/src/ts/constants/firebase-config.ts exists",
-      );
-    }
+    firebaseConfig = (
+      (await import("./constants/firebase-config")) as {
+        firebaseConfig: FirebaseOptions;
+      }
+    ).firebaseConfig;
 
     readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -76,6 +70,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
         await callback(true, user);
+        setUserId(user?.uid ?? null);
       }
     });
   } catch (e) {
@@ -83,6 +78,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
     await callback(false, null);
+    setUserId(null);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",

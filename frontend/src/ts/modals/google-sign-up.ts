@@ -1,5 +1,9 @@
 import { ElementWithUtils, qsr } from "../utils/dom";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import {
   sendEmailVerification,
   updateProfile,
@@ -7,7 +11,6 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
@@ -30,9 +33,8 @@ function show(credential: UserCredential): void {
       signedInUser = credential;
 
       if (!CaptchaController.isCaptchaAvailable()) {
-        Notifications.add(
-          "Could not show google sign up popup: Captcha is not avilable. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-          -1,
+        showErrorNotification(
+          "Could not show google sign up popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
         );
         return;
       }
@@ -57,8 +59,8 @@ async function hide(): Promise<void> {
     afterAnimation: async () => {
       resetIgnoreAuthCallback();
       if (signedInUser !== undefined) {
-        Notifications.add("Sign up process cancelled", 0, {
-          duration: 5,
+        showNoticeNotification("Sign up process cancelled", {
+          durationMs: 5000,
         });
         LoginPage.hidePreloader();
         LoginPage.enableInputs();
@@ -77,16 +79,15 @@ async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if (!signedInUser) {
-    Notifications.add(
+    showErrorNotification(
       "Missing user credential. Please close the popup and try again.",
-      -1,
     );
     return;
   }
 
   const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    Notifications.add("Please complete the captcha", 0);
+    showNoticeNotification("Please complete the captcha");
     return;
   }
 
@@ -108,7 +109,7 @@ async function apply(): Promise<void> {
     if (response.status === 200) {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
-      Notifications.add("Account created", 1);
+      showSuccessNotification("Account created");
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
@@ -119,8 +120,7 @@ async function apply(): Promise<void> {
     }
   } catch (e) {
     console.log(e);
-    const message = createErrorMessage(e, "Failed to sign in with Google");
-    Notifications.add(message, -1);
+    showErrorNotification("Failed to sign in with Google", { error: e });
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();

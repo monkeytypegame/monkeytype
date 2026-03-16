@@ -1,10 +1,12 @@
 import AnimatedModal from "../utils/animated-modal";
 
 import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import { syncNotSignedInLastResult } from "../utils/results";
 import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
@@ -97,9 +99,8 @@ function fillGroup(
 
 export function show(): void {
   if (!TestLogic.notSignedInLastResult) {
-    Notifications.add(
+    showErrorNotification(
       "Failed to show last signed out result modal: no last result",
-      -1,
     );
     return;
   }
@@ -130,13 +131,13 @@ const modal = new AnimatedModal({
     modalEl.qs("button.save")?.on("click", async () => {
       const user = getAuthenticatedUser();
       if (user !== null) {
-        void syncNotSignedInLastResult(user.uid);
+        void TestLogic.syncNotSignedInLastResult(user.uid);
       }
       hide();
     });
     modalEl.qs("button.discard")?.on("click", () => {
       TestLogic.clearNotSignedInResult();
-      Notifications.add("Last test result discarded", 0);
+      showNoticeNotification("Last test result discarded");
       hide();
     });
   },

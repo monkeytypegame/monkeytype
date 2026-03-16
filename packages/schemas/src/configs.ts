@@ -363,11 +363,11 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
 export const CustomBackgroundSchema = z
   .string()
-  .url("Needs to be an URI.")
-  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
-  .regex(/^[^`'"]*$/, "May not contain quotes.")
-  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg|\.webp)/gi, "Unsupported image format.")
-  .max(2048, "URL is too long.")
+  .url("Needs to be an URI")
+  .regex(/^(https|http):\/\/.*/, "Unsupported protocol")
+  .regex(/^[^`'"]*$/, "May not contain quotes")
+  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg|\.webp)/gi, "Unsupported image format")
+  .max(2048, "URL is too long")
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
@@ -394,6 +394,7 @@ export const ConfigSchema = z
     difficulty: DifficultySchema,
     quickRestart: QuickRestartSchema,
     repeatQuotes: RepeatQuotesSchema,
+    resultSaving: z.boolean(),
     blindMode: z.boolean(),
     alwaysShowWordsHistory: z.boolean(),
     singleListCommandLine: SingleListCommandLineSchema,

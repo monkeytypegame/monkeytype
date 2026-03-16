@@ -5,7 +5,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
@@ -18,10 +18,7 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
 import { intersect } from "@monkeytype/util/arrays";
-import {
-  createInputEventHandler,
-  ValidationResult,
-} from "../elements/input-validation";
+import { createInputEventHandler } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { ConfigKey } from "@monkeytype/schemas/configs";
@@ -32,6 +29,7 @@ import {
   hideModalAndClearChain as storeClearChain,
   isModalOpen,
 } from "../stores/modals";
+import { ValidationResult } from "../types/validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -125,15 +123,14 @@ export function show(
           if (exists) {
             showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              overrideStringOrGroup,
+              overrideStringOrGroup as CommandlineLists.ListsObjectKeys,
             );
             hideLoaderBar();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
-            Notifications.add(
+            showNoticeNotification(
               `Command list ${overrideStringOrGroup} not found`,
-              0,
             );
           }
         } else {
@@ -152,11 +149,12 @@ export function show(
           (c) => c.id === settings.commandOverride,
         );
         if (command === undefined) {
-          Notifications.add(`Command ${settings.commandOverride} not found`, 0);
+          showNoticeNotification(
+            `Command ${settings.commandOverride} not found`,
+          );
         } else if (command?.input !== true) {
-          Notifications.add(
+          showNoticeNotification(
             `Command ${settings.commandOverride} is not an input command`,
-            0,
           );
         } else {
           showInputCommand = command;

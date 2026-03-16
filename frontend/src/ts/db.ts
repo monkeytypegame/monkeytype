@@ -1,7 +1,9 @@
 import Ape from "./ape";
-import * as Notifications from "./elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "./stores/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
-import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
@@ -33,6 +35,12 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import {
+  setLastResult,
+  setSnapshot as setSolidSnapshot,
+} from "./stores/snapshot";
+import { XpBreakdown } from "@monkeytype/schemas/results";
+import { setXpBarData } from "./signals/header";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -42,8 +50,6 @@ export class SnapshotInitError extends Error {
   constructor(message: string, responseCode: number) {
     super(message);
     this.name = "SnapshotInitError";
-    // TODO INVESTIGATE
-    // oxlint-disable-next-line
     this.responseCode = responseCode;
   }
 }
@@ -80,6 +86,8 @@ export function setSnapshot(
   if (options?.dispatchEvent !== false) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
+
+  setSolidSnapshot(newSnapshot);
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -247,10 +255,13 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.connections = convertConnections(connectionsData);
 
     dbSnapshot = snap;
+
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();
     throw e;
+  } finally {
+    setSolidSnapshot(dbSnapshot);
   }
 }
 
@@ -265,14 +276,10 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  if (!ConnectionState.get()) {
-    return false;
-  }
-
   const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    Notifications.add("Error getting results", -1, { response });
+    showErrorNotification("Error getting results", { response });
     return false;
   }
 
@@ -309,6 +316,8 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   } else {
     dbSnapshot.results = results;
   }
+
+  setLastResult(results[0]);
   return true;
 }
 
@@ -324,18 +333,18 @@ export async function addCustomTheme(
   dbSnapshot.customThemes ??= [];
 
   if (dbSnapshot.customThemes.length >= 20) {
-    Notifications.add("Too many custom themes!", 0);
+    showNoticeNotification("Too many custom themes!");
     return false;
   }
 
   const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    Notifications.add("Error adding custom theme", -1, { response });
+    showErrorNotification("Error adding custom theme", { response });
     return false;
   }
 
   if (response.body.data === null) {
-    Notifications.add("Error adding custom theme: No data returned", -1);
+    showErrorNotification("Error adding custom theme: No data returned");
     return false;
   }
 
@@ -359,9 +368,8 @@ export async function editCustomTheme(
 
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
-    Notifications.add(
+    showErrorNotification(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
-      -1,
     );
     return false;
   }
@@ -370,7 +378,7 @@ export async function editCustomTheme(
     body: { themeId, theme: newTheme },
   });
   if (response.status !== 200) {
-    Notifications.add("Error editing custom theme", -1, { response });
+    showErrorNotification("Error editing custom theme", { response });
     return false;
   }
 
@@ -394,7 +402,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
 
   const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    Notifications.add("Error deleting custom theme", -1, { response });
+    showErrorNotification("Error deleting custom theme", { response });
     return false;
   }
 
@@ -917,11 +925,12 @@ export async function updateLocalTagPB<M extends Mode>(
 
 export async function updateLbMemory<M extends Mode>(
   mode: M,
-  mode2: Mode2<M>,
+  mode2: Mode2<M> | undefined,
   language: Language,
   rank: number,
   api = false,
 ): Promise<void> {
+  if (mode2 === undefined) return;
   if (mode === "time") {
     const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
@@ -952,6 +961,7 @@ export async function updateLbMemory<M extends Mode>(
 
 export type SaveLocalResultData = {
   xp?: number;
+  xpBreakdown?: XpBreakdown;
   streak?: number;
   result?: SnapshotResult<Mode>;
   isPb?: boolean;
@@ -965,6 +975,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     if (snapshot?.results !== undefined) {
       snapshot.results.unshift(data.result);
     }
+    setLastResult(data.result);
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
     }
@@ -1016,9 +1027,16 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   setSnapshot(snapshot, {
     dispatchEvent: false,
   });
+  if (data.xp !== undefined) {
+    setXpBarData({
+      addedXp: data.xp,
+      resultingXp: snapshot.xp,
+      breakdown: data.xpBreakdown,
+    });
+  }
 }
 
-export function addXp(xp: number): void {
+export function addXp(xp: number, breakdown?: XpBreakdown): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -1026,6 +1044,11 @@ export function addXp(xp: number): void {
   snapshot.xp += xp;
   setSnapshot(snapshot, {
     dispatchEvent: false,
+  });
+  setXpBarData({
+    addedXp: xp,
+    resultingXp: snapshot.xp,
+    breakdown: breakdown,
   });
 }
 
@@ -1061,14 +1084,10 @@ export async function getTestActivityCalendar(
   }
 
   if (dbSnapshot.testActivityByYear === undefined) {
-    if (!ConnectionState.get()) {
-      return undefined;
-    }
-
     showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
-      Notifications.add("Error getting test activities", -1, { response });
+      showErrorNotification("Error getting test activities", { response });
       hideLoaderBar();
       return undefined;
     }

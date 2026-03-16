@@ -1,6 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 import Ape from "../ape";
 import {
   intervalToDuration,
@@ -9,13 +9,17 @@ import {
   formatDistanceToNow,
   format,
 } from "date-fns";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { formatXp, getXpDetails } from "../utils/levels";
 import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { SortedTable, SortSchema } from "../utils/sorted-table";
 import { getAvatarElement } from "../utils/discord-avatar";
@@ -86,28 +90,27 @@ const addFriendModal = new SimpleModal({
     },
   ],
   buttonText: "request",
-  onlineOnly: true,
   execFn: async (_thisPopup, receiverName) => {
     const result = await addFriend(receiverName);
 
     if (result === true) {
-      return { status: 1, message: `Request sent to ${receiverName}` };
+      return { status: "success", message: `Request sent to ${receiverName}` };
     }
 
-    let status: -1 | 0 | 1 = -1;
+    let status: "error" | "notice" | "success" = "error";
     let message: string = "Unknown error";
 
     if (result.includes("already exists")) {
-      status = 0;
+      status = "notice";
       message = `You are already friends with ${receiverName}`;
     } else if (result.includes("request already sent")) {
-      status = 0;
+      status = "notice";
       message = `You have already sent a friend request to ${receiverName}`;
     } else if (result.includes("blocked by initiator")) {
-      status = 0;
+      status = "notice";
       message = `You have blocked ${receiverName}`;
     } else if (result.includes("blocked by receiver")) {
-      status = 0;
+      status = "notice";
       message = `${receiverName} has blocked you`;
     }
 
@@ -129,14 +132,14 @@ const removeFriendModal = new SimpleModal({
       params: { id: connectionId },
     });
     if (result.status !== 200) {
-      return { status: -1, message: result.body.message };
+      return { status: "error", message: result.body.message };
     } else {
       friendsList = friendsList?.filter(
         (it) => it.connectionId !== connectionId,
       );
       friendsTable?.setData(friendsList ?? []);
       friendsTable?.updateBody();
-      return { status: 1, message: `Friend removed` };
+      return { status: "success", message: `Friend removed` };
     }
   },
 });
@@ -147,7 +150,7 @@ async function fetchPendingConnections(): Promise<void> {
   });
 
   if (result.status !== 200) {
-    Notifications.add("Error getting connections: " + result.body.message, -1);
+    showErrorNotification("Error getting connections: " + result.body.message);
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
@@ -168,9 +171,7 @@ function updatePendingConnections(): void {
         (item) => `<tr data-id="${
           item._id
         }" data-receiver-uid="${getReceiverUid(item)}">
-        <td><a href="${location.origin}/profile/${
-          item.initiatorUid
-        }?isUid" router-link>${item.initiatorName}</a></td>
+        <td><a href="${location.origin}/profile/${item.initiatorName}" router-link>${item.initiatorName}</a></td>
         <td>
           <span data-balloon-pos="up" aria-label="since ${format(
             item.lastModified,
@@ -201,7 +202,7 @@ function updatePendingConnections(): void {
 async function fetchFriends(): Promise<void> {
   const result = await Ape.users.getFriends();
   if (result.status !== 200) {
-    Notifications.add("Error getting friends: " + result.body.message, -1);
+    showErrorNotification("Error getting friends: " + result.body.message);
     friendsList = undefined;
   } else {
     friendsList = result.body.data;
@@ -263,9 +264,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td>
           <div class="avatarNameBadge">
             <div class="avatarPlaceholder"></div>
-              <a href="${location.origin}/profile/${
-                entry.uid
-              }?isUid" class="entryName" uid=${entry.uid} router-link>${
+              <a href="${location.origin}/profile/${entry.name}" class="entryName" uid=${entry.uid} router-link>${
                 entry.name
               }</a>            <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
@@ -431,9 +430,8 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
   hideLoaderBar();
 
   if (result.status !== 200) {
-    Notifications.add(
+    showErrorNotification(
       `Cannot update friend request: ${result.body.message}`,
-      -1,
     );
   } else {
     //remove from cache
@@ -457,13 +455,13 @@ qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
     }
 
     if (action === "blocked") {
-      Notifications.add(`User has been blocked`, 0);
+      showNoticeNotification(`User has been blocked`);
     }
     if (action === "accepted") {
-      Notifications.add(`Request accepted`, 1);
+      showSuccessNotification(`Request accepted`);
     }
     if (action === "rejected") {
-      Notifications.add(`Request rejected`, 0);
+      showNoticeNotification(`Request rejected`);
     }
 
     if (action === "accepted") {

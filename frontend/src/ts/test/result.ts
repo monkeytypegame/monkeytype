@@ -7,7 +7,12 @@ import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+  addNotificationWithLevel,
+} from "../stores/notifications";
 import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
@@ -29,7 +34,7 @@ import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import confetti from "canvas-confetti";
 import type {
   AnnotationOptions,
@@ -63,7 +68,7 @@ let quoteId = "";
 
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
-  Notifications.add(useSmoothedBurst ? "on" : "off", 1);
+  showSuccessNotification(useSmoothedBurst ? "on" : "off");
   if (TestState.resultVisible) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -73,7 +78,7 @@ export function toggleSmoothedBurst(): void {
 
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
-  Notifications.add(useFakeChartData ? "on" : "off", 1);
+  showSuccessNotification(useFakeChartData ? "on" : "off");
   if (TestState.resultVisible) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -1078,9 +1083,9 @@ export async function update(
     ];
 
     showConfetti();
-    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
+    showNoticeNotification(Arrays.randomElementFromArray(messages), {
       customTitle: "Nice",
-      duration: 15,
+      durationMs: 15000,
       important: true,
     });
   }
@@ -1344,7 +1349,7 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
 
 qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
-    Notifications.add("Could not get quote stats!", -1);
+    showErrorNotification("Could not get quote stats!");
     return;
   }
 
@@ -1363,7 +1368,10 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
     });
     hideLoaderBar();
 
-    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
+    addNotificationWithLevel(
+      response.body.message,
+      response.status === 200 ? "success" : "error",
+    );
 
     if (response.status === 200) {
       $button?.removeClass("fas")?.addClass("far");
@@ -1380,7 +1388,10 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
     });
     hideLoaderBar();
 
-    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
+    addNotificationWithLevel(
+      response.body.message,
+      response.status === 200 ? "success" : "error",
+    );
 
     if (response.status === 200) {
       $button?.removeClass("far")?.addClass("fas");

@@ -8,7 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
@@ -32,6 +32,7 @@ ConfigEvent.subscribe(({ key }) => {
     "quickRestart",
     "customPolyglot",
     "alwaysShowDecimalPlaces",
+    "resultSaving",
   ];
   if (configKeys.includes(key)) {
     void update();
@@ -49,7 +50,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (!TestState.savingEnabled) {
+  if (!Config.resultSaving) {
     testModesNotice.appendHtml(
       `<div class="textButton" commands="resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`,
     );

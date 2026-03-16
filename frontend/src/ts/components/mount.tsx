@@ -7,16 +7,28 @@ import { qsa } from "../utils/dom";
 import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
+import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { MyProfile } from "./pages/account/MyProfile";
+import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
+import { ProfilePage } from "./pages/profile/ProfilePage";
+import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
+import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
+  leaderboardpage: () => <LeaderboardPage />,
+  profilepage: () => <ProfilePage />,
+  profilesearchpage: () => <ProfileSearchPage />,
+  myprofile: () => <MyProfile />,
   modals: () => <Modals />,
+  popups: () => <Popups />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
+  header: () => <Header />,
   devtools: () => <DevTools />,
 };
 

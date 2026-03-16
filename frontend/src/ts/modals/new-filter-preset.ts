@@ -1,6 +1,6 @@
 import { ResultFiltersSchema } from "@monkeytype/schemas/users";
 import { createFilterPreset } from "../elements/account/result-filters";
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 
 export function show(): void {
   newFilterPresetModal.show(undefined, {});
@@ -20,14 +20,13 @@ const newFilterPresetModal = new SimpleModal({
     },
   ],
   buttonText: "add",
-  onlineOnly: true,
   execFn: async (_thisPopup, name) => {
     const status = await createFilterPreset(name);
 
     if (status === 1) {
-      return { status: 1, message: "Filter preset created" };
+      return { status: "success", message: "Filter preset created" };
     } else {
-      let status: -1 | 0 | 1 = -1;
+      let status: "error" | "notice" | "success" = "error";
       let message: string = "Error creating filter preset";
       return { status, message, alwaysHide: true };
     }

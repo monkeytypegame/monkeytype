@@ -2,7 +2,11 @@ import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 import * as DB from "../../db";
 import Config from "../../config";
-import * as Notifications from "../notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import Ape from "../../ape/index";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import SlimSelect from "slim-select";
@@ -166,7 +170,7 @@ export async function setFilterPreset(id: string): Promise<void> {
 
   // make current filter presest button active
   qsa(
-    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`,
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id="${id}"]`,
   ).addClass("active");
 }
 
@@ -222,11 +226,10 @@ async function deleteFilterPreset(id: string): Promise<void> {
     removeFilterPresetFromSnapshot(id);
     void updateFilterPresets();
     reset();
-    Notifications.add("Filter preset deleted", 1);
+    showSuccessNotification("Filter preset deleted");
   } else {
-    Notifications.add(
+    showErrorNotification(
       "Error deleting filter preset: " + result.body.message,
-      -1,
     );
     console.log("error deleting filter preset", result.body.message);
   }
@@ -511,9 +514,8 @@ function toggle<G extends ResultFiltersGroup>(
       newValue as ResultFilters[G][ResultFiltersGroupItem<G>];
     save();
   } catch (e) {
-    Notifications.add(
+    showNoticeNotification(
       "Something went wrong toggling filter. Reverting to defaults.",
-      0,
     );
     console.log("toggling filter error");
     console.error(e);
@@ -528,19 +530,6 @@ for (const el of qsa(`
   `)) {
   el.onChild("click", "button", (e) => {
     const childTarget = e.childTarget as HTMLElement;
-    const group = (e.target as HTMLElement).parentElement?.getAttribute(
-      "group",
-    ) as ResultFiltersGroup | null;
-    if (group === null) {
-      throw new Error("Cannot find group of target.");
-    }
-
-    const filter = childTarget.getAttribute("filter") as ResultFiltersGroupItem<
-      typeof group
-    > | null;
-    if (filter === null) {
-      throw new Error("Cannot find filter of target.");
-    }
 
     if (childTarget.classList.contains("allFilters")) {
       Misc.typedKeys(getFilters()).forEach((group) => {
@@ -564,14 +553,30 @@ for (const el of qsa(`
           setAllFilters(group, false);
         }
       });
-    } else if ((e.target as HTMLElement).tagName === "BUTTON") {
-      if (e.shiftKey) {
-        setAllFilters(group, false);
-        filters[group][filter] =
-          true as ResultFilters[typeof group][typeof filter];
-      } else {
-        toggle(group, filter);
-        // filters[group][filter] = !filters[group][filter];
+    } else {
+      const group = (e.target as HTMLElement).parentElement?.getAttribute(
+        "group",
+      ) as ResultFiltersGroup | null;
+      if (group === null) {
+        throw new Error("Cannot find group of target.");
+      }
+
+      const filter = childTarget.getAttribute(
+        "filter",
+      ) as ResultFiltersGroupItem<typeof group> | null;
+      if (filter === null) {
+        throw new Error("Cannot find filter of target.");
+      }
+
+      if ((e.target as HTMLElement).tagName === "BUTTON") {
+        if (e.shiftKey) {
+          setAllFilters(group, false);
+          filters[group][filter] =
+            true as ResultFilters[typeof group][typeof filter];
+        } else {
+          toggle(group, filter);
+          // filters[group][filter] = !filters[group][filter];
+        }
       }
     }
     updateActive();
@@ -897,14 +902,14 @@ function tagDropdownUpdate(snapshot: Snapshot): void {
   );
 
   if (snapshot.tags.length === 0) {
-    tagsSection?.addClass("hidden");
+    tagsSection?.hide();
     if (groupSelects["tags"]) {
       groupSelects["tags"].destroy();
       delete groupSelects["tags"];
     }
     setFilter("tags", "none", true);
   } else {
-    tagsSection?.removeClass("hidden");
+    tagsSection?.show();
 
     updateTagsDropdownOptions();
 

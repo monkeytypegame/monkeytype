@@ -1,8 +1,6 @@
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
-import * as ConnectionState from "./states/connection";
-import * as AccountButton from "./elements/account-button";
 //@ts-expect-error no types for this package
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -10,6 +8,7 @@ import { configLoadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs } from "./utils/dom";
+import { isDevEnvironment } from "./utils/env";
 
 onDOMReady(async () => {
   await configLoadPromise;
@@ -28,26 +27,22 @@ onDOMReady(async () => {
     opacity: [0, 1],
     duration: Misc.applyReducedMotion(250),
   });
-  if (ConnectionState.get()) {
-    void ServerConfiguration.sync().then(() => {
-      if (!ServerConfiguration.get()?.users.signUp) {
-        AccountButton.hide();
-        qs(".register")?.addClass("hidden");
-        qs(".login")?.addClass("hidden");
-        qs(".disabledNotification")?.removeClass("hidden");
-      }
-      if (!ServerConfiguration.get()?.connections.enabled) {
-        qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
-      }
-    });
-  }
+
+  void ServerConfiguration.sync().then(() => {
+    if (!ServerConfiguration.get()?.users.signUp) {
+      qs(".register")?.hide();
+      qs(".login")?.hide();
+      qs(".disabledNotification")?.show();
+    }
+  });
+
   MonkeyPower.init();
 
   // untyped, need to ignore
   // oxlint-disable-next-line no-unsafe-call
   new Konami("https://keymash.io/");
 
-  if (Misc.isDevEnvironment()) {
+  if (isDevEnvironment()) {
     void navigator.serviceWorker
       .getRegistrations()
       .then(function (registrations) {

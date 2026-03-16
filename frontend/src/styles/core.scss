@@ -1,6 +1,6 @@
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono", "Vazirmatn", monospace;
+  --font: "Roboto Mono", "Vazirharf", monospace;
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
   font-weight: 400;
@@ -266,24 +266,6 @@ kbd {
         color: var(--main-color);
       }
     }
-  }
-}
-
-#devButtons {
-  position: fixed;
-  left: 0;
-  top: 10rem;
-  display: grid;
-  grid-auto-flow: row;
-  gap: 0.5rem;
-  text-decoration: none;
-  z-index: 999999999;
-  border-radius: 0 1rem 1rem 0;
-
-  .button {
-    padding: 1rem;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
   }
 }
 

@@ -2,7 +2,11 @@ import Config, { setConfig, saveFullConfigToLocalStorage } from "../../config";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
-import * as Notifications from "../notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
 import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
@@ -10,9 +14,15 @@ import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../signals/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
-import { ColorName, ThemesListSorted } from "../../constants/themes";
+import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../signals/theme";
+
+export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
+  const b1 = Colors.hexToHSL(a.bg);
+  const b2 = Colors.hexToHSL(b.bg);
+  return b2.lgt - b1.lgt;
+});
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -60,7 +70,7 @@ export async function fillPresetButtons(): Promise<void> {
   if (favThemesEl === null || themesEl === null) {
     const msg =
       "Failed to fill preset theme buttons: favThemes or allThemes element not found";
-    Notifications.add(msg, -1);
+    showErrorNotification(msg);
     void captureException(new Error(msg));
     console.error(msg, { favThemesEl, themesEl });
     return;
@@ -81,7 +91,7 @@ export async function fillPresetButtons(): Promise<void> {
     activeThemeName = ThemeController.randomTheme;
   }
 
-  const themes = ThemesListSorted;
+  const themes = sortedThemes;
 
   //first show favourites
   if (Config.favThemes.length > 0) {
@@ -150,13 +160,13 @@ export async function fillCustomButtons(): Promise<void> {
 
   if (!isAuthenticated()) {
     saveButton?.setText("save");
-    addButton?.addClass("hidden");
+    addButton?.hide();
     customThemesEl?.setStyle({ marginBottom: "0" });
     return;
   }
 
   saveButton?.setText("save as new");
-  addButton?.removeClass("hidden");
+  addButton?.show();
 
   const customThemes = DB.getSnapshot()?.customThemes ?? [];
 
@@ -214,7 +224,7 @@ function saveCustomThemeColors(): void {
   const colors = ThemeController.convertThemeToCustomColors(getTheme());
 
   setConfig("customThemeColors", colors);
-  Notifications.add("Custom theme saved", 1);
+  showSuccessNotification("Custom theme saved");
 }
 
 export function updateActiveTab(): void {
@@ -336,7 +346,7 @@ function handleColorInput(options: {
       try {
         color = Colors.convertStringToHex(target.value);
       } catch {
-        Notifications.add("Invalid color format", 0);
+        showNoticeNotification("Invalid color format");
         color = "#000000";
       }
     } else {

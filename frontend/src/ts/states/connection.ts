@@ -1,5 +1,5 @@
 import { debounce } from "throttle-debounce";
-import * as Notifications from "../elements/notifications";
+import { showSuccessNotification } from "../stores/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
 import { onDOMReady } from "../utils/dom";
@@ -31,7 +31,7 @@ export function showOfflineBanner(): void {
 const throttledHandleState = debounce(5000, () => {
   if (state) {
     if (noInternetBannerId !== undefined) {
-      Notifications.add("You're back online", 1, {
+      showSuccessNotification("You're back online", {
         customTitle: "Connection",
       });
       removeBanner(noInternetBannerId);

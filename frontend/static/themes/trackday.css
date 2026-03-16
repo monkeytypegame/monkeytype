@@ -1,11 +1,20 @@
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: #e0513e;
+  &:hover {
+    color: color-mix(in srgb, #e0513e 75%, white 25%);
+  }
 }
 
-nav > .textButton:nth-child(3) {
-  color: #cfcfcf;
-}
-
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   color: #ccc500;
+  &:hover {
+    color: color-mix(in srgb, #ccc500 75%, white 25%);
+  }
+}
+
+[data-nav-item="about"] {
+  color: #cfcfcf;
+  &:hover {
+    color: color-mix(in srgb, #cfcfcf 75%, white 25%);
+  }
 }
