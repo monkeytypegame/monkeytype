@@ -1068,7 +1068,7 @@ export const page = new PageWithUrlParams({
   },
   beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    await configLoadPromise;
+    await configLoadPromise; //todo: is this actually needed here if we await it in ready?
     await fillSettingsPage();
     await update();
     // theme UI updates manually to avoid duplication
