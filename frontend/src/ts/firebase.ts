@@ -33,7 +33,7 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
 import { addBanner } from "./stores/banners";
-import { setUserId } from "./signals/core";
+import { setUserId, setUserVerified } from "./signals/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -71,6 +71,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
       if (!ignoreAuthCallback) {
         await callback(true, user);
         setUserId(user?.uid ?? null);
+        setUserVerified(user?.emailVerified ?? false);
       }
     });
   } catch (e) {
@@ -79,6 +80,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     console.error("Firebase failed to initialize", e);
     await callback(false, null);
     setUserId(null);
+    setUserVerified(false);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",

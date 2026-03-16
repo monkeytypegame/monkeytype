@@ -18,6 +18,7 @@ import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
 import { Table } from "./Table";
 import { TestStats } from "./TestStats";
+import { VerifyNotice } from "./VerifyNotice";
 
 export function AccountPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "account";
@@ -50,6 +51,7 @@ export function AccountPage(): JSXElement {
   //TODO ads
   return (
     <Show when={isLoggedIn() && isOpen()}>
+      <VerifyNotice />
       <MyProfile />
 
       <Filters filters={filters} onChangeFilters={setFilters} />
