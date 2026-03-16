@@ -98,7 +98,7 @@ export const buildSearchService = <T>(
         internalDocument.termFrequencies[stemmedToken] = 0;
       }
 
-      (internalDocument.termFrequencies[stemmedToken] as number)++;
+      (internalDocument.termFrequencies[stemmedToken] as number) += 1;
       maxTermFrequency = Math.max(
         maxTermFrequency,
         internalDocument.termFrequencies[stemmedToken] as number,

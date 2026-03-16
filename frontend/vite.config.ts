@@ -26,6 +26,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
+import devtools from "solid-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 function getFontsConfig(): string {
@@ -105,7 +106,11 @@ function getPlugins({
     languageHashes({ skip: isDevelopment }),
     injectHTML() as PluginOption,
     tailwindcss(),
+
     solidPlugin(),
+    devtools({
+      autoname: true,
+    }),
   ];
 
   const devPlugins: PluginOption[] = [
