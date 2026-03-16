@@ -31,7 +31,7 @@ export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
     e.preventDefault();
     if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
-      TestLogic.restart({ quickRestarted: !e.shiftKey });
+      TestLogic.restart({ isQuickRestart: !e.shiftKey });
       return;
     }
   }
@@ -84,7 +84,7 @@ export async function handleEnter(
   if (Config.quickRestart === "enter") {
     e.preventDefault();
     if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
-      TestLogic.restart({ quickRestarted: !e.shiftKey });
+      TestLogic.restart({ isQuickRestart: !e.shiftKey });
       return;
     }
   }
@@ -195,7 +195,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     event.preventDefault();
-    TestLogic.restart({ quickRestarted: !event.shiftKey });
+    TestLogic.restart({ isQuickRestart: !event.shiftKey });
     return;
   }
 }

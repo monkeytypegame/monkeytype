@@ -169,7 +169,7 @@ type RestartOptions = {
   event?: KeyboardEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
-  quickRestarted?: boolean;
+  isQuickRestart?: boolean;
 };
 
 export function restart(options = {} as RestartOptions): void {
@@ -178,7 +178,7 @@ export function restart(options = {} as RestartOptions): void {
     practiseMissed: false,
     noAnim: false,
     nosave: false,
-    quickRestarted: false,
+    isQuickRestart: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -203,7 +203,7 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
   if (TestState.isActive) {
-    if (options.quickRestarted) {
+    if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(

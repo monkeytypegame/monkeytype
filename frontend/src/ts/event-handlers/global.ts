@@ -75,7 +75,7 @@ document.addEventListener("keydown", (e) => {
     ) {
       e.preventDefault();
       if (getActivePage() === "test") {
-        TestLogic.restart({ quickRestarted: !e.shiftKey });
+        TestLogic.restart({ isQuickRestart: !e.shiftKey });
       } else {
         void navigate("");
       }
