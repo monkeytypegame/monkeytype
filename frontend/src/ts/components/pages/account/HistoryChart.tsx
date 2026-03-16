@@ -302,32 +302,34 @@ export function HistoryChart(props: {
           }}
         />
       </div>
-      <Trend results={props.results} />
-      <div class="grid grid-cols-4 gap-2">
-        <Button
-          fa={{ icon: "fa-tachometer-alt", fixedWidth: true }}
-          text="Speed"
-          onClick={toggleAccountChart(0)}
-          active={getConfig.accountChart[0] === "on"}
-        />
-        <Button
-          fa={{ icon: "fa-bullseye", fixedWidth: true }}
-          text="Accuracy"
-          onClick={toggleAccountChart(1)}
-          active={getConfig.accountChart[1] === "on"}
-        />
-        <Button
-          fa={{ icon: "fa-chart-line", fixedWidth: true }}
-          text="Avg of 10"
-          onClick={toggleAccountChart(2)}
-          active={getConfig.accountChart[2] === "on"}
-        />
-        <Button
-          fa={{ icon: "fa-chart-line", fixedWidth: true }}
-          text="Avg of 100"
-          onClick={toggleAccountChart(3)}
-          active={getConfig.accountChart[3] === "on"}
-        />
+      <div class="grid grid-cols-1 items-center lg:grid-cols-[1fr_30rem]">
+        <Trend results={props.results} />
+        <div class="grid grid-cols-4 gap-2 text-em-xs">
+          <Button
+            fa={{ icon: "fa-tachometer-alt", fixedWidth: true }}
+            text="Speed"
+            onClick={toggleAccountChart(0)}
+            active={getConfig.accountChart[0] === "on"}
+          />
+          <Button
+            fa={{ icon: "fa-bullseye", fixedWidth: true }}
+            text="Accuracy"
+            onClick={toggleAccountChart(1)}
+            active={getConfig.accountChart[1] === "on"}
+          />
+          <Button
+            fa={{ icon: "fa-chart-line", fixedWidth: true }}
+            text="Avg of 10"
+            onClick={toggleAccountChart(2)}
+            active={getConfig.accountChart[2] === "on"}
+          />
+          <Button
+            fa={{ icon: "fa-chart-line", fixedWidth: true }}
+            text="Avg of 100"
+            onClick={toggleAccountChart(3)}
+            active={getConfig.accountChart[3] === "on"}
+          />
+        </div>
       </div>
     </>
   );

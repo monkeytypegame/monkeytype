@@ -243,7 +243,7 @@ export function Filters(props: {
   );
 
   return (
-    <>
+    <div class="flex flex-col gap-8">
       <AsyncContent collection={presetsQuery}>
         {(presets) => (
           <FilterPresets
@@ -252,92 +252,93 @@ export function Filters(props: {
           />
         )}
       </AsyncContent>
-      <H3 fa={{ icon: "fa-filter" }} text="filters" />
-      <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
-        <Button
-          text="all"
-          onClick={() => props.onChangeFilters(defaultResultFilters)}
-        />
-        <Button
-          text="current settings"
-          onClick={() => props.onChangeFilters(fromCurrentSettings())}
-        />
-        <Button
-          text="advanced"
-          active={isShowAdvanced()}
-          onClick={() => setShowAdvanced((old) => !old)}
-        />
-        <Button
-          text="save as preset"
-          onClick={() =>
-            newFilterPresetModal.show(undefined, {
-              context: { ...unwrap(props.filters), _id: "tmp" },
-            })
-          }
-        />
-      </div>
-
-      <ButtonGroup
-        singleSelect
-        classOverride="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
-        group="date"
-        format={(val) =>
-          val === "last_3months"
-            ? "last 3 months"
-            : replaceUnderscoresWithSpaces(val)
-        }
-      />
-
-      <AnimeShow when={isShowAdvanced()} slide>
-        <H3 fa={{ icon: "fa-tools" }} text="advanced filters" class="mt-8" />
-
-        <Button
-          text="clear filters"
-          onClick={() => props.onChangeFilters(noFilters())}
-          class="mb-4 w-full"
-        />
-        <div class="gap-4 md:grid md:grid-cols-2 [&>div]:last:col-span-2">
-          <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
-          <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
-          <ButtonGroup text="mode" icon="fa-bars" group="mode" />
-          <ButtonGroup
-            text="quote length"
-            icon="fa-quote-right"
-            group="quoteLength"
+      <div>
+        <H3 fa={{ icon: "fa-filter" }} text="filters" />
+        <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
+          <Button
+            text="all"
+            onClick={() => props.onChangeFilters(defaultResultFilters)}
           />
-          <ButtonGroup text="words" icon="fa-font" group="words" />
-          <ButtonGroup text="time" icon="fa-clock" group="time" />
-          <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
-          <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
-
-          <Dropdown
-            icon="fa-tag"
-            text="tags"
-            group="tags"
-            format={(tag) =>
-              tag === "none"
-                ? "no tag"
-                : (getSnapshot()?.tags.find((it) => it._id === tag)?.display ??
-                  tag)
+          <Button
+            text="current settings"
+            onClick={() => props.onChangeFilters(fromCurrentSettings())}
+          />
+          <Button
+            text="advanced"
+            active={isShowAdvanced()}
+            onClick={() => setShowAdvanced((old) => !old)}
+          />
+          <Button
+            text="save as preset"
+            onClick={() =>
+              newFilterPresetModal.show(undefined, {
+                context: { ...unwrap(props.filters), _id: "tmp" },
+              })
             }
-          />
-          <Dropdown
-            icon="fa-gamepad"
-            text="funbox"
-            group="funbox"
-            format={(val) =>
-              val === "none" ? "no funbox" : replaceUnderscoresWithSpaces(val)
-            }
-          />
-          <Dropdown
-            icon="fa-globe-americas"
-            text="language"
-            group="language"
-            format={getLanguageDisplayString}
           />
         </div>
-      </AnimeShow>
-    </>
+        <ButtonGroup
+          singleSelect
+          classOverride="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
+          group="date"
+          format={(val) =>
+            val === "last_3months"
+              ? "last 3 months"
+              : replaceUnderscoresWithSpaces(val)
+          }
+        />
+
+        <AnimeShow when={isShowAdvanced()} slide>
+          <H3 fa={{ icon: "fa-tools" }} text="advanced filters" class="mt-8" />
+
+          <Button
+            text="clear filters"
+            onClick={() => props.onChangeFilters(noFilters())}
+            class="mb-4 w-full"
+          />
+          <div class="gap-4 md:grid md:grid-cols-2 [&>div]:last:col-span-2">
+            <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
+            <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
+            <ButtonGroup text="mode" icon="fa-bars" group="mode" />
+            <ButtonGroup
+              text="quote length"
+              icon="fa-quote-right"
+              group="quoteLength"
+            />
+            <ButtonGroup text="words" icon="fa-font" group="words" />
+            <ButtonGroup text="time" icon="fa-clock" group="time" />
+            <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
+            <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
+
+            <Dropdown
+              icon="fa-tag"
+              text="tags"
+              group="tags"
+              format={(tag) =>
+                tag === "none"
+                  ? "no tag"
+                  : (getSnapshot()?.tags.find((it) => it._id === tag)
+                      ?.display ?? tag)
+              }
+            />
+            <Dropdown
+              icon="fa-gamepad"
+              text="funbox"
+              group="funbox"
+              format={(val) =>
+                val === "none" ? "no funbox" : replaceUnderscoresWithSpaces(val)
+              }
+            />
+            <Dropdown
+              icon="fa-globe-americas"
+              text="language"
+              group="language"
+              format={getLanguageDisplayString}
+            />
+          </div>
+        </AnimeShow>
+      </div>
+    </div>
   );
 }
 
