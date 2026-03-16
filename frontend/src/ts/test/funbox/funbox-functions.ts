@@ -28,7 +28,6 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
-import { strView } from "./strings-view";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -728,7 +727,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }),
       );
 
-      const languages = (await Promise.all(promises)).filter(
+      const languages: LanguageObject[] = (await Promise.all(promises)).filter(
         (lang): lang is LanguageObject => lang !== null,
       );
 
@@ -778,17 +777,19 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
 
       // build languageProperties
-      const languageProperties = new Map(
-        languages.map((lang) => [
-          lang.name,
-          {
-            noLazyMode: lang.noLazyMode,
-            ligatures: lang.ligatures,
-            rightToLeft: lang.rightToLeft,
-            additionalAccents: lang.additionalAccents,
-          },
-        ]),
-      );
+      const languageProperties: Map<Language, JSONData.LanguageProperties> =
+        new Map(
+          languages.map((lang) => [
+            lang.name,
+            {
+              noLazyMode: lang.noLazyMode,
+              ligatures: lang.ligatures,
+              rightToLeft: lang.rightToLeft,
+              additionalAccents: lang.additionalAccents,
+            },
+          ]),
+        );
+      // build wordsetMap and words
       const wordsetMap = new Map<Language, Wordset>();
       let end = 0;
       const words: string[] = [];
@@ -796,7 +797,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const start = end;
         end += lang.words.length;
         words.push(...lang.words);
-        wordsetMap.set(lang.name, new Wordset(strView(words, start, end)));
+        wordsetMap.set(lang.name, new Wordset(words.slice(start, end)));
       }
       return new PolyglotWordset(words, wordsetMap, languageProperties);
     },
