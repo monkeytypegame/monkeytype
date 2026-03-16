@@ -86,16 +86,25 @@ function getColumns<M extends Mode>({
       header: "raw",
       cell: (info) =>
         format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+      meta: {
+        breakpoint: "xs",
+      },
     }),
     defineColumn("acc", {
       header: "accuracy",
       cell: (info) =>
         format.percentage(info.getValue(), { showDecimalPlaces: true }),
+      meta: {
+        breakpoint: "xs",
+      },
     }),
     defineColumn("consistency", {
       header: "consistency",
       cell: (info) =>
         format.percentage(info.getValue(), { showDecimalPlaces: true }),
+      meta: {
+        breakpoint: "xs",
+      },
     }),
     defineColumn("mode", {
       header: "mode",

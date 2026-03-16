@@ -355,7 +355,7 @@ function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
 
   return (
     <Show when={trend() !== undefined}>
-      <div class="w-full text-center">{trend()}</div>
+      <div class="w-full p-4 text-center text-sub">{trend()}</div>
     </Show>
   );
 }
