@@ -57,7 +57,9 @@ export function Table<M extends Mode>(props: {
             });
           }
         }}
-        class="table-auto [&>tbody>tr>td]:px-4 [&>tbody>tr>td]:py-2.5 [&>tbody>tr>td]:whitespace-nowrap xl:[&>tbody>tr>td]:px-6 [&>thead>tr>th]:px-4 xl:[&>thead>tr>th]:px-6"
+        class={cn("table-auto", "text-xs md:text-sm lg:text-base")}
+        // headerCellClass="p-1"
+        // bodyCellClass="p-1"
         data={props.data}
         columns={columns()}
         fallback=<span>No data found. Check your filters.</span>
@@ -85,8 +87,18 @@ function getColumns<M extends Mode>({
   const columns = [
     defineColumn("isPb", {
       header: "",
-      cell: (info) => (info.getValue() ? <Fa icon="fa-crown" /> : ""),
+      cell: (info) =>
+        info.getValue() ? (
+          <Fa icon="fa-crown" />
+        ) : (
+          <Fa icon="fa-crown" class="opacity-0" />
+        ),
       enableSorting: false,
+      meta: {
+        cellMeta: {
+          class: cn("w-0", "xl:pr-6 xl:pl-8", "pl-4"),
+        },
+      },
     }),
     defineColumn("wpm", {
       header: format.typingSpeedUnit,
@@ -204,7 +216,7 @@ function getColumns<M extends Mode>({
         );
       },
       meta: {
-        breakpoint: "md",
+        breakpoint: "sm",
       },
     }),
     defineColumn("tags", {
@@ -246,17 +258,17 @@ function getColumns<M extends Mode>({
         />
       ),
       meta: {
-        breakpoint: "md",
+        breakpoint: "sm",
       },
     }),
     defineColumn("timestamp", {
       header: "date",
       cell: (info) => (
         <>
-          <div class="text-xs">
+          <div class="text-em-sm">
             {dateFormat(info.getValue(), "dd MMM yyyy")}
           </div>
-          <div class="text-xs text-sub">
+          <div class="text-em-sm text-sub">
             {dateFormat(info.getValue(), "HH:mm")}
           </div>
         </>
