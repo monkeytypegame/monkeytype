@@ -10,8 +10,9 @@ import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
+import { hideLoaderBar, showLoaderBar } from "../../../signals/loader-bar";
 import { qs } from "../../../utils/dom";
-import { isObject, typedKeys } from "../../../utils/misc";
+import { downloadResultsCSV, isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
@@ -50,7 +51,7 @@ export function AccountPage(): JSXElement {
   });
 
   const [selectedResultId, setSelectedResultId] = createSignal<null | string>(
-    "69b805f41c528bc51c86a1e1",
+    null,
   );
 
   const data = useResultsLiveQuery({ queryState, sorting, limit });
@@ -74,7 +75,7 @@ export function AccountPage(): JSXElement {
               setLimit(newLimit);
             }
             setSelectedResultId(_id);
-            console.log("### selected", _id, newLimit);
+
             requestAnimationFrame(() => {
               qs(`#resultList tbody tr:nth-child(${index})`)?.scrollIntoView({
                 block: "center",
@@ -84,10 +85,26 @@ export function AccountPage(): JSXElement {
         />
         <TestStats queryState={queryState} />
 
+        <div class="grid grid-cols-3">
+          <Button
+            text="Export CSV"
+            fa={{ icon: "fa-file-csv" }}
+            class="col-start-3 w-full"
+            onClick={() => {
+              showLoaderBar();
+              const filteredResults = useResultsLiveQuery({
+                queryState,
+                sorting,
+                limit: () => Infinity,
+              });
+              void downloadResultsCSV(filteredResults()).finally(() => {
+                hideLoaderBar();
+              });
+            }}
+          />
+        </div>
+
         <Advertisement id="ad-account-2" visible="sellout" />
-        <pre>
-          test {resultsCollection.size} {limit()}
-        </pre>
 
         <AsyncContent collection={data}>
           {(results) => (

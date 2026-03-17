@@ -122,7 +122,7 @@ function getColumns<M extends Mode>({
       cell: (info) =>
         `${info.row.original.charStats[0]}/${info.row.original.charStats[1]}/${info.row.original.charStats[2]}/${info.row.original.charStats[3]}`,
       meta: {
-        breakpoint: "xs",
+        breakpoint: "lg",
       },
     }),
     defineColumn("mode", {
