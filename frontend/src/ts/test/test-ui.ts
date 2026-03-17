@@ -17,7 +17,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import { getActivePage } from "../signals/core";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import {

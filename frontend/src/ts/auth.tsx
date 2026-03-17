@@ -32,7 +32,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "./stores/notifications";
-import { createErrorMessage } from "./utils/misc";
+import { createErrorMessage } from "./utils/error";
 
 export type AuthResult =
   | {

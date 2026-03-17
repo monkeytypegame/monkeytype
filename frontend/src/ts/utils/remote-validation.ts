@@ -1,5 +1,5 @@
+import { IsValidResponse } from "../types/validation";
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { IsValidResponse } from "../elements/input-validation";
 import { handleResult } from "../components/ui/form/utils";
 
 type IsValidResponseOrFunction =
