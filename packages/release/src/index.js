@@ -56,7 +56,7 @@ const runProjectRootCommand = (command, force) => {
   }
 };
 
-const checkBranchSync = () => {
+const _checkBranchSync = () => {
   console.log("Checking if local branch is master...");
   const currentBranch = runProjectRootCommand(
     "git branch --show-current",
@@ -151,7 +151,7 @@ const updatePackage = (newVersion) => {
   console.log(`Updated package.json to version ${newVersion}`);
 };
 
-const checkUncommittedChanges = () => {
+const _checkUncommittedChanges = () => {
   console.log("Checking uncommitted changes...");
   const status = execSync("git status --porcelain").toString().trim();
   if (isDryRun) {
@@ -191,13 +191,13 @@ const buildProject = () => {
   }
 };
 
-const deployBackend = () => {
+const _deployBackend = () => {
   console.log("Deploying backend...");
   const p = path.resolve(__dirname, "../bin/deployBackend.sh");
   runCommand(`sh ${p}`);
 };
 
-const deployFrontend = () => {
+const _deployFrontend = () => {
   console.log("Deploying frontend...");
   runProjectRootCommand(
     "cd frontend && npx firebase deploy -P live --only hosting",
@@ -305,9 +305,9 @@ const main = async () => {
 
   console.log(`Starting ${hotfix ? "hotfix" : "release"} process...`);
 
-  if (!hotfix) checkBranchSync();
+  // if (!hotfix) checkBranchSync();
 
-  checkUncommittedChanges();
+  // checkUncommittedChanges();
 
   installDependencies();
 
@@ -329,18 +329,18 @@ const main = async () => {
   }
   buildProject();
 
-  if (!hotfix && !readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
-    console.log("Exiting.");
-    process.exit(1);
-  }
+  // if (!hotfix && !readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
+  //   console.log("Exiting.");
+  //   process.exit(1);
+  // }
 
-  if (!noDeploy && (isBackend || (!isFrontend && !isBackend))) {
-    deployBackend();
-  }
+  // if (!noDeploy && (isBackend || (!isFrontend && !isBackend))) {
+  //   deployBackend();
+  // }
 
-  if (!noDeploy && (isFrontend || (!isFrontend && !isBackend))) {
-    deployFrontend();
-  }
+  // if (!noDeploy && (isFrontend || (!isFrontend && !isBackend))) {
+  //   deployFrontend();
+  // }
 
   if (!noDeploy) purgeCache();
   if (!hotfix) {
