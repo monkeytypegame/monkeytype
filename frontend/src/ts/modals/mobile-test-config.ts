@@ -1,6 +1,5 @@
 import * as TestLogic from "../test/test-logic";
 import Config, { setConfig, setQuoteLengthAll } from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
@@ -90,7 +89,6 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     } else if (wrd !== undefined) {
       const wrdNum = parseInt(wrd);
       setConfig("words", wrdNum);
-      ManualRestart.set();
       TestLogic.restart();
     }
   });
@@ -100,7 +98,6 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     const mode = target.getAttribute("data-mode");
     if (mode === Config.mode) return;
     setConfig("mode", mode as Mode);
-    ManualRestart.set();
     TestLogic.restart();
   });
 
@@ -115,7 +112,6 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
     } else if (time !== undefined) {
       const timeNum = parseInt(time);
       setConfig("time", timeNum);
-      ManualRestart.set();
       TestLogic.restart();
     }
   });
@@ -126,7 +122,6 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
 
     if (lenAttr === "all") {
       if (setQuoteLengthAll()) {
-        ManualRestart.set();
         TestLogic.restart();
       }
     } else if (lenAttr === "-2") {
@@ -144,7 +139,6 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
       }
 
       if (setConfig("quoteLength", arr)) {
-        ManualRestart.set();
         TestLogic.restart();
       }
     }
@@ -158,13 +152,11 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
 
   modalEl.qs(".punctuation")?.on("click", () => {
     setConfig("punctuation", !Config.punctuation);
-    ManualRestart.set();
     TestLogic.restart();
   });
 
   modalEl.qs(".numbers")?.on("click", () => {
     setConfig("numbers", !Config.numbers);
-    ManualRestart.set();
     TestLogic.restart();
   });
 

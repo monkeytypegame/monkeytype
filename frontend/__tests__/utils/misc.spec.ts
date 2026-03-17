@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
 import {
-  getErrorMessage,
   isObject,
   escapeHTML,
   promiseWithResolvers,
@@ -10,6 +9,7 @@ import {
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
 import { Language } from "@monkeytype/schemas/languages";
+import { getErrorMessage } from "../../src/ts/utils/error";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {

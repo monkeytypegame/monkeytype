@@ -4,6 +4,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { qs } from "../utils/dom";
+import { Keycode } from "../constants/keys";
 
 const monkeyEl = qs("#monkey");
 const monkeyFastEl = qs("#monkey .fast");
@@ -63,7 +64,7 @@ export function type(event: KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code as KeyConverter.Keycode,
+    event.code as Keycode,
   );
   if (leftSide && rightSide) {
     // if its a middle key handle special case
@@ -101,7 +102,7 @@ export function stop(event: KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code as KeyConverter.Keycode,
+    event.code as Keycode,
   );
   if (leftSide && rightSide) {
     // if middle key handle special case

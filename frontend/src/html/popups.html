@@ -898,7 +898,7 @@
       </li>
     </ul>
     <label>quote</label>
-    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
+    <textarea class="newQuoteText" autocomplete="off" dir="auto"></textarea>
     <label>source</label>
     <input class="newQuoteSource" type="text" autocomplete="off" />
     <label>language</label>
@@ -918,7 +918,7 @@
       <span class="red">Please add comments in English only.</span>
     </div>
     <label>quote</label>
-    <div class="quote"></div>
+    <div class="quote" dir="auto"></div>
     <label>reason</label>
     <select name="report-reason" class="reason" title="reason">
       <option value="Grammatical error">Grammatical error</option>
@@ -928,7 +928,7 @@
       <option value="Incorrect source">Incorrect source</option>
     </select>
     <label>comment</label>
-    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <textarea class="comment" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -955,7 +955,7 @@
       <option value="Suspected cheating">Suspected cheating</option>
     </select>
     <label>comment</label>
-    <textarea class="comment" type="text" autocomplete="off"></textarea>
+    <textarea class="comment" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1094,21 +1094,11 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea
-        class="bio"
-        type="text"
-        autocomplete="off"
-        maxlength="250"
-      ></textarea>
+      <textarea class="bio" autocomplete="off" maxlength="250"></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea
-        class="keyboard"
-        type="text"
-        autocomplete="off"
-        maxlength="75"
-      ></textarea>
+      <textarea class="keyboard" autocomplete="off" maxlength="75"></textarea>
     </div>
     <div>
       <label>github</label>

@@ -5,7 +5,6 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../stores/notifications";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
 import Config, { setConfig } from "../config";
@@ -215,7 +214,6 @@ export async function setup(challengeName: string): Promise<boolean> {
   const { data: list, error } = await tryCatch(JSONData.getChallengeList());
   if (error) {
     showErrorNotification("Failed to setup challenge", { error });
-    ManualRestart.set();
     setTimeout(() => {
       qs("header .config")?.show();
       qs(".page.pageTest")?.show();
@@ -230,7 +228,6 @@ export async function setup(challengeName: string): Promise<boolean> {
   try {
     if (challenge === undefined) {
       showNoticeNotification("Challenge not found");
-      ManualRestart.set();
       setTimeout(() => {
         qs("header .config")?.show();
         qs(".page.pageTest")?.show();
@@ -372,7 +369,6 @@ export async function setup(challengeName: string): Promise<boolean> {
         });
       }
     }
-    ManualRestart.set();
     notitext = challenge.message;
     qs("header .config")?.show();
     qs(".page.pageTest")?.show();

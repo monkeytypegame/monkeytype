@@ -383,7 +383,15 @@
           >
             HTTP cookie
           </a>
-          on Wikipedia.
+          <!--
+	    We need this nbsp to make sure there's no missing whitespace in production.
+            This is because without it the minifier collapses the whitespace after 
+	    "HTTP cookie" and the one after the closing `a` tag into a single space  
+	    located after "HTTP cookie" (inside the `a` tag), and because the `a` tag
+	    has display: inline-block, the space will not be rendered. Use nbsp to make
+	    sure the minifier doesn't remove it.
+	  -->
+          &nbsp;on Wikipedia.
         </p>
 
         <h1 id="Usage_of_Cookies">How do we use cookies?</h1>

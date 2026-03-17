@@ -1,10 +1,11 @@
+//enable solidjs-devtools
+import "solid-devtools";
+
 import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
 import "./event-handlers/settings";
 import "./event-handlers/account";
-import "./event-handlers/login";
-
 import "./modals/google-sign-up";
 
 import { init } from "./firebase";
@@ -36,12 +37,13 @@ import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
-import "./utils/url-handler";
+import "./controllers/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
 import "./ready";
+import { setVersion } from "./signals/core";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -64,7 +66,11 @@ Object.defineProperty(window, "Math", {
 
 applyEngineSettings();
 void loadFromLocalStorage();
-void fetchLatestVersion();
+void fetchLatestVersion().then((data) => {
+  if (data === null) return;
+  setVersion(data);
+});
+
 Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {

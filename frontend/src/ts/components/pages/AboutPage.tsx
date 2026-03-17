@@ -10,6 +10,7 @@ import {
 } from "../../queries/public";
 import { getConfig } from "../../signals/config";
 import { getActivePage } from "../../signals/core";
+import { getTheme } from "../../signals/theme";
 import { showModal } from "../../stores/modals";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
@@ -113,6 +114,8 @@ export function AboutPage(): JSXElement {
                       label: "Users",
                       data: data?.data ?? [],
                       minBarLength: 2,
+                      backgroundColor: getTheme().main,
+                      borderColor: getTheme().main,
                     },
                   ],
                 }}

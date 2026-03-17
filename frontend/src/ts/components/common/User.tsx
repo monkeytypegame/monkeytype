@@ -3,6 +3,7 @@ import { AnimationParams } from "animejs";
 import { createEffect, createSignal, JSXElement, on, Show } from "solid-js";
 
 import {
+  getMatchingFlags,
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
@@ -83,23 +84,25 @@ export function User(props: Props): JSXElement {
             show={props.showNotificationBubble ?? false}
             class="z-2 m-0.5"
           />
-          <AnimeConditional
-            exitBeforeEnter
-            if={props.showSpinner ?? false}
-            then={<Fa icon={"fa-circle-notch"} spin={true} />}
-            else={
-              <DiscordAvatar
-                size={64}
-                discordId={props.user.discordId}
-                discordAvatar={props.user.discordAvatar}
-                fallbackIcon={props.avatarFallback ?? "user"}
-                class={cn(
-                  props.avatarColor === "text" && "text-text",
-                  props.avatarColor === "sub" && "text-sub",
-                )}
-              />
-            }
-          />
+          <div class="grid place-items-center">
+            <AnimeConditional
+              exitBeforeEnter
+              if={props.showSpinner ?? false}
+              then={<Fa icon={"fa-circle-notch"} spin={true} />}
+              else={
+                <DiscordAvatar
+                  size={64}
+                  discordId={props.user.discordId}
+                  discordAvatar={props.user.discordAvatar}
+                  fallbackIcon={props.avatarFallback ?? "user"}
+                  class={cn(
+                    props.avatarColor === "text" && "text-text",
+                    props.avatarColor === "sub" && "text-sub",
+                  )}
+                />
+              }
+            />
+          </div>
         </div>
       </Show>
       <div
@@ -122,22 +125,31 @@ export function User(props: Props): JSXElement {
         />
       </div>
 
-      <div
-        class={cn(
-          "flex items-center justify-center gap-[0.5em]",
-          cn(
-            props.flagsColor === "text" && "text-text",
-            props.flagsColor === "sub" && "text-sub",
-          ),
-        )}
+      <Show
+        when={
+          getMatchingFlags({ ...props.user, isFriend: props.isFriend }).length >
+          0
+        }
       >
-        <UserFlags
-          {...props.user}
-          isFriend={props.isFriend}
-          iconsOnly={props.iconsOnly}
-        />
+        <div
+          class={cn(
+            "flex items-center justify-center gap-[0.5em]",
+            cn(
+              props.flagsColor === "text" && "text-text",
+              props.flagsColor === "sub" && "text-sub",
+            ),
+          )}
+        >
+          <UserFlags
+            {...props.user}
+            isFriend={props.isFriend}
+            iconsOnly={props.iconsOnly}
+          />
+        </div>
+      </Show>
+      <Show when={props.user.badgeId !== undefined}>
         <UserBadge id={props.user.badgeId} />
-      </div>
+      </Show>
       <Show when={props.level !== undefined}>
         <Anime
           ref={(el) => (levelEl = el)}

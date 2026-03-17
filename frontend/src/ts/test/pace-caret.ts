@@ -5,7 +5,7 @@ import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
-import { Caret } from "../utils/caret";
+import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
 
 type Settings = {

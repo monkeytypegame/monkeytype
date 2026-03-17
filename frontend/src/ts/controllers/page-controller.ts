@@ -8,7 +8,6 @@ import {
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
-import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
@@ -45,7 +44,7 @@ const pages = {
   settings: Settings.page,
   about: solidPage("about"),
   account: Account.page,
-  login: PageLogin.page,
+  login: solidPage("login"),
   profile: solidPage("profile", {
     beforeShow: async (options) => {
       setSelectedProfileName(options.params?.["uidOrName"]);
