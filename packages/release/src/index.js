@@ -222,18 +222,26 @@ const generateChangelog = async () => {
 
 const generateContributors = () => {
   console.log("Generating contributors list...");
+  try {
+    const p = path.resolve(__dirname, "./buildContributors.js");
 
-  const p = path.resolve(__dirname, "./buildContributors.js");
+    let contributors = runCommand(`node ${p}`, true);
 
-  const contributors = runCommand(`node ${p}`, true);
+    contributors = JSON.parse(
+      contributors.replaceAll("\n", "").replace(/^.*?\[/, "["),
+    );
 
-  fs.writeFileSync(
-    `${PROJECT_ROOT}/frontend/static/contributors.json`,
-    contributors,
-    "utf8",
-  );
+    fs.writeFileSync(
+      `${PROJECT_ROOT}/frontend/static/contributors.json`,
+      JSON.stringify(contributors, null, 2),
+      "utf8",
+    );
 
-  console.log("Contributors list updated.");
+    console.log("Contributors list updated.");
+  } catch (e) {
+    console.error("Failed to generate contributors list.");
+    console.error(e);
+  }
 };
 
 const createCommitAndTag = (version) => {
