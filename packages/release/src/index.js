@@ -228,7 +228,7 @@ const generateContributors = () => {
   const contributors = runCommand(`node ${p}`, true);
 
   fs.writeFileSync(
-    `${PROJECT_ROOT}/frontend/static/about/contributors.json`,
+    `${PROJECT_ROOT}/frontend/static/contributors.json`,
     contributors,
     "utf8",
   );
