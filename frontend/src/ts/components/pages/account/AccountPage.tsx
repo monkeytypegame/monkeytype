@@ -3,12 +3,14 @@ import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import {
   createResultsQueryState,
+  resultsCollection,
   useResultsLiveQuery,
 } from "../../../collections/results";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
 import { getActivePage, isLoggedIn } from "../../../signals/core";
+import { qs } from "../../../utils/dom";
 import { isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";
 import { Advertisement } from "../../common/Advertisement";
@@ -47,6 +49,10 @@ export function AccountPage(): JSXElement {
     return createResultsQueryState(filters);
   });
 
+  const [selectedResultId, setSelectedResultId] = createSignal<null | string>(
+    "69b805f41c528bc51c86a1e1",
+  );
+
   const data = useResultsLiveQuery({ queryState, sorting, limit });
 
   return (
@@ -59,10 +65,29 @@ export function AccountPage(): JSXElement {
 
         <Filters filters={filters} onChangeFilters={setFilters} />
 
-        <Charts filters={filters} queryState={queryState} />
+        <Charts
+          filters={filters}
+          queryState={queryState}
+          onHistoryChartClick={({ index, _id }) => {
+            const newLimit = Math.ceil(index / 10) * 10;
+            if (limit() < newLimit) {
+              setLimit(newLimit);
+            }
+            setSelectedResultId(_id);
+            console.log("### selected", _id, newLimit);
+            requestAnimationFrame(() => {
+              qs(`#resultList tbody tr:nth-child(${index})`)?.scrollIntoView({
+                block: "center",
+              });
+            });
+          }}
+        />
         <TestStats queryState={queryState} />
 
         <Advertisement id="ad-account-2" visible="sellout" />
+        <pre>
+          test {resultsCollection.size} {limit()}
+        </pre>
 
         <AsyncContent collection={data}>
           {(results) => (
@@ -70,10 +95,13 @@ export function AccountPage(): JSXElement {
               <Table
                 data={[...results]}
                 onSortingChange={(val) => setSorting(val)}
+                selectedRowId={selectedResultId}
               />
               <Button
                 text="load more"
-                disabled={data.isLoading || data().length < limit() + 10}
+                disabled={
+                  data.isLoading || resultsCollection.size < limit() + 10
+                }
                 onClick={() => setLimit((limit) => limit + 10)}
                 class="w-full text-center"
               />

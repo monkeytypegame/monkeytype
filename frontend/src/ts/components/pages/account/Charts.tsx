@@ -19,11 +19,12 @@ import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 import { DailyActivityChart } from "./DailyActivityChart";
 import { HistogramChart } from "./HistogramChart";
-import { HistoryChart } from "./HistoryChart";
+import { HistoryChart, HistoryChartClickEvent } from "./HistoryChart";
 
 export function Charts(props: {
   filters: ResultFilters;
   queryState: Accessor<ResultsQueryState | undefined>;
+  onHistoryChartClick?: (event: HistoryChartClickEvent) => void;
 }): JSXElement {
   const beginAtZero = createMemo(() => getConfig.startGraphsAtZero);
   const typingSpeedUnit = createMemo(() =>
@@ -49,6 +50,7 @@ export function Charts(props: {
               beginAtZero={beginAtZero()}
               typingSpeedUnit={typingSpeedUnit()}
               format={format()}
+              onClick={(index) => props.onHistoryChartClick?.(index)}
             />
           </div>
 

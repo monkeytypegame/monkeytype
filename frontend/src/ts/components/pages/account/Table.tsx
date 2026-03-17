@@ -2,12 +2,13 @@ import { Difficulty } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
-import { createMemo, createSignal, JSXElement, Show } from "solid-js";
+import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
 import { getConfig } from "../../../signals/config";
 import { showModal } from "../../../stores/modals";
+import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
@@ -24,6 +25,7 @@ type Sorting = {
 export function Table<M extends Mode>(props: {
   data: SnapshotResult<M>[];
   onSortingChange: (sorting: Sorting) => void;
+  selectedRowId: Accessor<string | null>;
 }): JSXElement {
   const [selectedResult, setSelectedResult] = createSignal<string | undefined>(
     undefined,
@@ -59,6 +61,14 @@ export function Table<M extends Mode>(props: {
         data={props.data}
         columns={columns()}
         fallback=<span>No data found. Check your filters.</span>
+        rowSelection={{
+          getRowId: (row) => row._id,
+          activeRow: props.selectedRowId,
+          class: cn(
+            "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
+            "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+          ),
+        }}
       />
     </>
   );
@@ -182,7 +192,7 @@ function getColumns<M extends Mode>({
             >
               <Button
                 disabled={!hasChart}
-                class="p-0 text-text"
+                class="p-0 text-inherit"
                 variant="text"
                 fa={{ icon: "fa-chart-line", fixedWidth: true }}
                 onClick={() => {

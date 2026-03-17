@@ -1,5 +1,5 @@
 //enable solidjs-devtools
-import "solid-devtools";
+//import "solid-devtools";
 
 import "./event-handlers/global";
 import "./event-handlers/keymap";
