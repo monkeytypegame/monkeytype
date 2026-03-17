@@ -5,8 +5,6 @@ import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
 import "./event-handlers/settings";
-import "./event-handlers/login";
-
 import "./modals/google-sign-up";
 
 import { init } from "./firebase";
@@ -21,7 +19,7 @@ import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
-import { enable } from "./states/glarses-mode";
+import { enable } from "./legacy-states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
@@ -29,7 +27,7 @@ import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
-import "./states/connection";
+import "./legacy-states/connection";
 import "./test/tts";
 import { addToGlobal } from "./utils/misc";
 import * as Focus from "./test/focus";
@@ -43,7 +41,7 @@ import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
 import "./ready";
-import { setVersion } from "./signals/core";
+import { setVersion } from "./states/core";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

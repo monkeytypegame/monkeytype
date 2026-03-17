@@ -3,7 +3,7 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
-import { addBanner } from "../stores/banners";
+import { addBanner } from "../states/banners";
 
 /**
  * list of deferred callbacks to be executed once we reached ready state

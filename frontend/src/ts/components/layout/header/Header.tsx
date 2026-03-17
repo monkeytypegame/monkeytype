@@ -1,6 +1,6 @@
 import { JSXElement } from "solid-js";
 
-import { getFocus, getIsScreenshotting } from "../../../signals/core";
+import { getFocus, getIsScreenshotting } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { Logo } from "./Logo";
 import { Nav } from "./Nav";

@@ -12,7 +12,7 @@ import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
 
 import { Theme } from "../../constants/themes";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
-import { getTheme } from "../../signals/theme";
+import { getTheme } from "../../states/theme";
 
 Chart.register(chartTrendline);
 type ChartJSProps<

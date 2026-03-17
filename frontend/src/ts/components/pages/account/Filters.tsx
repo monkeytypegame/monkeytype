@@ -13,8 +13,8 @@ import { z } from "zod";
 import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SimpleModal } from "../../../elements/simple-modal";
-import { getConfig } from "../../../signals/config";
-import { getSnapshot } from "../../../stores/snapshot";
+import { getConfig } from "../../../states/config";
+import { getSnapshot } from "../../../states/snapshot";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";
 import {

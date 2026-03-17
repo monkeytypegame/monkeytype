@@ -2,7 +2,7 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { createMemo, JSXElement } from "solid-js";
 
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getTheme } from "../../../signals/theme";
+import { getTheme } from "../../../states/theme";
 import { TypingSpeedUnitSettings } from "../../../utils/typing-speed-units";
 import { ChartJs } from "../../common/ChartJs";
 

@@ -4,9 +4,9 @@ import { createEffect, createMemo, JSXElement } from "solid-js";
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
-import { hideLoaderBar, showLoaderBar } from "../../signals/loader-bar";
-import { getTheme } from "../../signals/theme";
-import { showNoticeNotification } from "../../stores/notifications";
+import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
+import { showNoticeNotification } from "../../states/notifications";
+import { getTheme } from "../../states/theme";
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {

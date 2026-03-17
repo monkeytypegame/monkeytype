@@ -11,9 +11,9 @@ import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isLoggedIn } from "../signals/core";
+import { isLoggedIn } from "../states/core";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 
 export const flushStrategy = flushDebounceStrategy({ maxWait: 1000 * 60 * 5 });
 

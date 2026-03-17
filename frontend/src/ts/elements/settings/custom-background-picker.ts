@@ -1,5 +1,5 @@
 import FileStorage from "../../utils/file-storage";
-import { showNoticeNotification } from "../../stores/notifications";
+import { showNoticeNotification } from "../../states/notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(

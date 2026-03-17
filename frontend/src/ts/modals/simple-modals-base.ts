@@ -1,4 +1,4 @@
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal } from "../elements/simple-modal";
 

@@ -9,9 +9,9 @@ import { Accessor, createMemo, JSXElement } from "solid-js";
 
 import { isFriend } from "../../../db";
 import { createEffectOn } from "../../../hooks/effects";
-import { bp, BreakpointKey } from "../../../signals/breakpoints";
-import { getConfig } from "../../../signals/config";
-import { getUserId } from "../../../signals/core";
+import { bp, BreakpointKey } from "../../../states/breakpoints";
+import { getConfig } from "../../../states/config";
+import { getUserId } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { qs } from "../../../utils/dom";

@@ -4,7 +4,7 @@ import {
   dispatchRestartTest,
   getActivePage,
   getFocus,
-} from "../../../signals/core";
+} from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 

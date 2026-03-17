@@ -9,8 +9,8 @@ import {
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
-import { getActivePage, isLoggedIn } from "../../../signals/core";
-import { hideLoaderBar, showLoaderBar } from "../../../signals/loader-bar";
+import { getActivePage, isLoggedIn } from "../../../states/core";
+import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { qs } from "../../../utils/dom";
 import { downloadResultsCSV, isObject, typedKeys } from "../../../utils/misc";
 import { sanitize } from "../../../utils/sanitize";

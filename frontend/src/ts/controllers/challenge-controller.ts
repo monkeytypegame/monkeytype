@@ -4,14 +4,14 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
 import Config, { setConfig } from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import {
   Config as ConfigType,

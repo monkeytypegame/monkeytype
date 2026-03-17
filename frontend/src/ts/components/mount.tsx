@@ -14,6 +14,7 @@ import { AboutPage } from "./pages/AboutPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
+import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { Popups } from "./popups/Popups";
@@ -22,6 +23,7 @@ const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
   accountpage: () => <AccountPage />,
+  loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,
   profilepage: () => <ProfilePage />,
   profilesearchpage: () => <ProfileSearchPage />,

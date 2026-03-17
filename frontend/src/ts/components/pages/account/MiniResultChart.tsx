@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/solid-query";
 import { createMemo, JSXElement } from "solid-js";
 
 import { getSingleResultQueryOptions } from "../../../collections/results";
-import { getConfig } from "../../../signals/config";
-import { getTheme } from "../../../signals/theme";
-import { isModalOpen } from "../../../stores/modals";
+import { getConfig } from "../../../states/config";
+import { isModalOpen } from "../../../states/modals";
+import { getTheme } from "../../../states/theme";
 import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import AsyncContent from "../../common/AsyncContent";

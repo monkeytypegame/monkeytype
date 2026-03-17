@@ -4,7 +4,7 @@ import {
   getNotificationHistory,
   NotificationHistoryEntry,
   NotificationLevel,
-} from "../../../stores/notifications";
+} from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { Conditional } from "../../common/Conditional";

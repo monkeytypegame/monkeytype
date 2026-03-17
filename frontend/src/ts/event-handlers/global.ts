@@ -1,10 +1,10 @@
 import * as Misc from "../utils/misc";
-import * as PageTransition from "../states/page-transition";
+import * as PageTransition from "../legacy-states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
-import { showErrorNotification } from "../stores/notifications";
-import { getActivePage } from "../signals/core";
+import { showErrorNotification } from "../states/notifications";
+import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";

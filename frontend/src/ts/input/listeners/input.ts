@@ -11,7 +11,7 @@ import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
-import * as CompositionState from "../../states/composition";
+import * as CompositionState from "../../legacy-states/composition";
 import { activeWordIndex } from "../../test/test-state";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
 

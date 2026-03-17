@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,

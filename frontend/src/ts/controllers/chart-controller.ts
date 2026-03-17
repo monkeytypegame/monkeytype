@@ -62,7 +62,7 @@ import * as TestInput from "../test/test-input";
 import * as Arrays from "../utils/arrays";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 

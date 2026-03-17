@@ -8,9 +8,9 @@ import {
   getSupportersQueryOptions,
   getTypingStatsQueryOptions,
 } from "../../queries/public";
-import { getActivePage } from "../../signals/core";
-import { getTheme } from "../../signals/theme";
-import { showModal } from "../../stores/modals";
+import { getActivePage } from "../../states/core";
+import { showModal } from "../../states/modals";
+import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import { Advertisement } from "../common/Advertisement";
 import AsyncContent from "../common/AsyncContent";

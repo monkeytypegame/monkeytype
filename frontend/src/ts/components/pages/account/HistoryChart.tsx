@@ -5,8 +5,8 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import Config, { setConfig } from "../../../config";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getConfig } from "../../../signals/config";
-import { getTheme } from "../../../signals/theme";
+import { getConfig } from "../../../states/config";
+import { getTheme } from "../../../states/theme";
 import { blendTwoHexColors } from "../../../utils/colors";
 import { Formatting } from "../../../utils/format";
 import { findLineByLeastSquares } from "../../../utils/numbers";

@@ -8,11 +8,11 @@ import {
 
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
-  ModalId,
-  isModalChained,
-  isModalOpen,
   hideModal as storeHideModal,
-} from "../../stores/modals";
+  ModalId,
+  isModalOpen,
+  isModalChained,
+} from "../../states/modals";
 import { cn } from "../../utils/cn";
 import { applyReducedMotion } from "../../utils/misc";
 

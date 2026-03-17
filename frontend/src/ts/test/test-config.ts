@@ -2,7 +2,7 @@ import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";

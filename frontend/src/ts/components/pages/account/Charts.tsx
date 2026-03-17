@@ -7,7 +7,7 @@ import {
   ResultsQueryState,
 } from "../../../collections/results";
 import { getSnapshot } from "../../../db";
-import { getConfig } from "../../../signals/config";
+import { getConfig } from "../../../states/config";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Formatting } from "../../../utils/format";
 import {

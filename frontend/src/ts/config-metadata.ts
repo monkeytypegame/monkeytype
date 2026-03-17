@@ -1,6 +1,6 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
-import { showNoticeNotification } from "./stores/notifications";
+import { showNoticeNotification } from "./states/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { reloadAfter } from "./utils/misc";

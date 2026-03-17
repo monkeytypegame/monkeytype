@@ -2,7 +2,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "./stores/notifications";
+} from "./states/notifications";
 import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce } from "throttle-debounce";
@@ -25,7 +25,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
-import { setAccountButtonSpinner } from "./signals/header";
+import { setAccountButtonSpinner } from "./states/header";
 import { deleteConfig, saveConfig } from "./ape/config";
 import Ape from "./ape";
 import { SnapshotInitError } from "./db";

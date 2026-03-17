@@ -1,12 +1,12 @@
 import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text-name";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import { escapeHTML } from "../utils/misc";
 import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 
 async function fill(): Promise<void> {
   const modalEl = modal.getModal();

@@ -6,8 +6,8 @@ import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
-import { getConfig } from "../../../signals/config";
-import { showModal } from "../../../stores/modals";
+import { getConfig } from "../../../states/config";
+import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";

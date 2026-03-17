@@ -4,7 +4,7 @@ import { createCollection } from "@tanstack/solid-db";
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],

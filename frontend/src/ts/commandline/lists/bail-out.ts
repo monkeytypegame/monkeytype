@@ -2,7 +2,7 @@ import Config from "../../config";
 import * as CustomText from "../../test/custom-text";
 import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
-import * as CustomTextState from "../../states/custom-text-name";
+import * as CustomTextState from "../../legacy-states/custom-text-name";
 import { Command, CommandsSubgroup } from "../types";
 
 function canBailOut(): boolean {

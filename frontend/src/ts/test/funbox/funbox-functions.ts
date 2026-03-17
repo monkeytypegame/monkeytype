@@ -10,7 +10,7 @@ import * as TTSEvent from "../../observables/tts-event";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
@@ -458,19 +458,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     getResultContent(): string {
       return Config.customLayoutfluid.join(" ");
-    },
-    restart(): void {
-      if (this.applyConfig) this.applyConfig();
-      setTimeout(() => {
-        void KeymapEvent.highlight(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1,
-            ),
-        );
-      }, 1);
     },
   },
   gibberish: {

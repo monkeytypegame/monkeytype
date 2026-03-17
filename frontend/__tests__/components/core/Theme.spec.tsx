@@ -4,9 +4,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Theme } from "../../../src/ts/components/core/Theme";
 import { ThemeWithName } from "../../../src/ts/constants/themes";
-import * as Loader from "../../../src/ts/signals/loader-bar";
-import * as ThemeSignal from "../../../src/ts/signals/theme";
-import * as Notifications from "../../../src/ts/stores/notifications";
+import * as Loader from "../../../src/ts/states/loader-bar";
+import * as Notifications from "../../../src/ts/states/notifications";
+import * as ThemeSignal from "../../../src/ts/states/theme";
 
 vi.mock("../../../src/ts/constants/themes", () => ({
   themes: {
