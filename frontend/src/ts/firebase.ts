@@ -220,19 +220,17 @@ function translateFirebaseError(
       message =
         "Email/password is incorrect or your account does not have password authentication enabled.";
     } else if (error.code === "auth/popup-closed-by-user") {
-      message = "";
-      // message = "Popup closed by user";
-      // return;
+      message = "Popup closed by user";
     } else if (error.code === "auth/popup-blocked") {
       message =
         "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
     } else if (error.code === "auth/user-cancelled") {
-      message = "";
-      // message = "User refused to sign in";
-      // return;
+      message = "Cancelled by user";
     } else if (error.code === "auth/account-exists-with-different-credential") {
       message =
         "Account already exists, but its using a different authentication method. Try signing in with a different method";
+    } else {
+      message = "Firebase error: " + error.code;
     }
   }
 
