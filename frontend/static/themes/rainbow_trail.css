@@ -72,9 +72,9 @@ footer button:hover > .relative > i {
 
 #words {
   --correct-letter-animation: rainbow-infinite-loop 5s linear infinite;
-  --incorrect-letter-animation: rainbow-error-repeat 1s alternate ease-in-out
-    infinite;
-  --extra-letter-animation: rainbow-error-repeat 1s alternate ease-in-out
+  --incorrect-letter-animation: rainbow-error-infinite-loop 1s alternate
+    ease-in-out infinite;
+  --extra-letter-animation: rainbow-error-infinite-loop 1s alternate ease-in-out
     infinite;
 }
 
@@ -84,6 +84,10 @@ footer button:hover > .relative > i {
 #words.highlight-next-two-words .word.typed letter,
 #words.highlight-next-three-words .word.typed letter {
   animation: rainbow 7.5s ease-in-out forwards;
+}
+
+#words .word.error {
+  animation: rainbow-error 7.5s ease-in-out forwards;
 }
 
 #words.highlight-word .word.active letter {
@@ -209,7 +213,40 @@ footer button:hover {
   }
 }
 
-@keyframes rainbow-error-repeat {
+@keyframes rainbow-error {
+  0% {
+    opacity: 1;
+  }
+  11.11% {
+    opacity: 1;
+  }
+  22.22% {
+    opacity: 1;
+  }
+  33.33% {
+    opacity: 1;
+  }
+  44.44% {
+    opacity: 1;
+  }
+  55.56% {
+    opacity: 1;
+  }
+  66.67% {
+    opacity: 1;
+  }
+  77.78% {
+    opacity: 1;
+  }
+  88.89% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rainbow-error-infinite-loop {
   0% {
     color: #ff0000;
   }
