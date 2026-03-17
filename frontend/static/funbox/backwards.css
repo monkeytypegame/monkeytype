@@ -3,5 +3,9 @@
 }
 
 #words.rightToLeftTest {
-  direction: rtl;
+  direction: ltr;
+}
+
+#words.withLigatures .word {
+  unicode-bidi: bidi-override;
 }

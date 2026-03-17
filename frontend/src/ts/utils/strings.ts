@@ -1,4 +1,4 @@
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 /**
  * Removes accents from a string.
@@ -97,6 +97,28 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
 }
 
 /**
+ * Highlights all occurrences of specified words within a given text.
+ * Each match is wrapped in a <span class="highlight"> element.
+ * Matches are ignored if they appear as part of a larger word
+ * not included in the matches array.
+ * @param text The full text in which to highlight words.
+ * @param matches An array of words to highlight.
+ * @return The full text with all matching words highlighted.
+ */
+export function highlightMatches(text: string, matches: string[]): string {
+  matches = matches.filter((match) => match !== "");
+  if (matches.length === 0) return text;
+
+  // matches that don't have a letter before or after them
+  const pattern = new RegExp(
+    `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
+    "gu",
+  );
+
+  return text.replace(pattern, '<span class="highlight">$&</span>');
+}
+
+/**
  * Returns a display string for the given language, optionally removing the size indicator.
  * @param language The language string.
  * @param noSizeString Whether to remove the size indicator from the language string. Default is false.
@@ -104,7 +126,7 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
  */
 export function getLanguageDisplayString(
   language: Language,
-  noSizeString = false
+  noSizeString = false,
 ): string {
   let out = "";
   if (noSizeString) {
@@ -149,7 +171,7 @@ export function cleanTypographySymbols(textToClean: string): string {
   };
   return textToClean.replace(
     /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
-    (char) => specials[char as keyof typeof specials] || ""
+    (char) => specials[char as keyof typeof specials] || "",
   );
 }
 
@@ -167,3 +189,180 @@ export function splitIntoCharacters(s: string): string[] {
 
   return result;
 }
+
+/**
+ * Replaces escaped control characters with their literal equivalents.
+ * Converts \t to tab characters, \n to newlines (with a space prefix),
+ * and handles double-escaped sequences (\\t, \\n) by converting them back to single escaped versions.
+ * @param textToClear The input string containing escaped control characters.
+ * @returns A new string with control characters properly converted.
+ */
+export function replaceControlCharacters(textToClear: string): string {
+  textToClear = textToClear.replace(/(?<!\\)\\t/g, "\t");
+  textToClear = textToClear.replace(/\\n/g, " \n");
+  textToClear = textToClear.replace(/([^\\]|^)\\n/gm, "$1\n");
+  textToClear = textToClear.replace(/\\\\t/gm, "\\t");
+  textToClear = textToClear.replace(/\\\\n/gm, "\\n");
+
+  return textToClear;
+}
+
+/**
+ * Detect if a word contains RTL (Right-to-Left) characters.
+ * This is for test scenarios where individual words may have different directions.
+ * Uses a simple regex pattern that covers all common RTL scripts.
+ * @param word the word to check for RTL characters
+ * @returns true if the word contains RTL characters, false otherwise
+ */
+function hasRTLCharacters(word: string): [boolean, number] {
+  if (!word || word.length === 0) {
+    return [false, 0];
+  }
+
+  // This covers Arabic, Farsi, Urdu, and other RTL scripts
+  const rtlPattern =
+    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/;
+
+  const result = rtlPattern.exec(word);
+  return [result !== null, result?.[0].length ?? 0];
+}
+
+/**
+ * Cache for word direction to avoid repeated calculations per word
+ * Keyed by the stripped core of the word; can be manually cleared when needed
+ */
+let wordDirectionCache: Map<string, [boolean, number]> = new Map();
+
+export function clearWordDirectionCache(): void {
+  wordDirectionCache.clear();
+}
+
+export function isWordRightToLeft(
+  word: string | undefined,
+  languageRTL: boolean,
+  reverseDirection?: boolean,
+): [boolean, boolean] {
+  if (word === undefined || word.length === 0) {
+    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
+  }
+
+  // Strip leading/trailing punctuation and whitespace so attached opposite-direction
+  // punctuation like "word؟" or "،word" doesn't flip the direction detection
+  // and if only punctuation/symbols/whitespace, use main language direction
+  const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
+  if (core.length === 0) {
+    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
+  }
+
+  // cache by core to handle variants like "word" vs "word؟"
+  const cached = wordDirectionCache.get(core);
+  if (cached !== undefined) {
+    return reverseDirection
+      ? [!cached[0], false]
+      : [cached[0], cached[1] === word.length];
+  }
+
+  const result = hasRTLCharacters(core);
+  wordDirectionCache.set(core, result);
+
+  return reverseDirection
+    ? [!result[0], false]
+    : [result[0], result[1] === word.length];
+}
+
+export const CHAR_EQUIVALENCE_SETS = [
+  new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
+  new Set([`"`, "”", "“", "„"]),
+  new Set(["–", "—", "-", "‐"]),
+  new Set([",", "‚"]),
+];
+
+export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
+  {
+    russian: new Set(["ё", "е", "e"]),
+  };
+
+/**
+ * Checks if two characters are visually/typographically equivalent for typing purposes.
+ * This allows users to type different variants of the same character and still be considered correct.
+ * @param char1 The first character to compare
+ * @param char2 The second character to compare
+ * @param language Optional language context to check for language-specific equivalences
+ * @returns true if the characters are equivalent, false otherwise
+ */
+export function areCharactersVisuallyEqual(
+  char1: string,
+  char2: string,
+  language?: Language,
+): boolean {
+  // If characters are exactly the same, they're equivalent
+  if (char1 === char2) {
+    return true;
+  }
+
+  // Check each equivalence map
+  for (const map of CHAR_EQUIVALENCE_SETS) {
+    if (map.has(char1) && map.has(char2)) {
+      return true;
+    }
+  }
+
+  if (language !== undefined) {
+    const langMap = LANGUAGE_EQUIVALENCE_SETS[removeLanguageSize(language)];
+    if (langMap !== undefined) {
+      if (langMap.has(char1) && langMap.has(char2)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+export function toHex(buffer: ArrayBuffer): string {
+  if (Uint8Array.prototype.toHex !== undefined) {
+    return new Uint8Array(buffer).toHex();
+  }
+  const hashArray = Array.from(new Uint8Array(buffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
+/**
+ * Checks if a character is a directly typable space character on a standard keyboard.
+ * These are space characters that can be typed without special input methods or copy-pasting.
+ * @param char The character to check.
+ * @returns True if the character is a directly typable space, false otherwise.
+ */
+export function isSpace(char: string): boolean {
+  if (char.length !== 1) return false;
+
+  const codePoint = char.codePointAt(0);
+  if (codePoint === undefined) return false;
+
+  const spaces = new Set([
+    0x0020, // Regular space (spacebar)
+    0x2002, // En space (Option+Space on Mac)
+    0x2003, // Em space (Option+Shift+Space on Mac)
+    0x2009, // Thin space (various input methods)
+    0x3000, // Ideographic space (CJK input methods)
+    0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
+    0x1680, // Ogham space mark (rare, but included for completeness)
+    0x202f, // Narrow no-break space (various input methods)
+    0xfeff, // Zero width no-break space (various input methods)
+    0x2007, // Figure space (various input methods)
+    0x2008, // Punctuation space (various input methods)
+    0x2004, // Three-per-em space (various input methods)
+    0x200a, // Hair space (various input methods)
+    0x200b, // Zero width space (various input methods)
+  ]);
+
+  return spaces.has(codePoint);
+}
+
+// Export testing utilities for unit tests
+export const __testing = {
+  hasRTLCharacters,
+};

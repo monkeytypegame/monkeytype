@@ -1,4 +1,4 @@
-import { Configuration } from "../schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 
 type BooleanPaths<T, P extends string = ""> = {
   [K in keyof T]: T[K] extends boolean
@@ -6,12 +6,12 @@ type BooleanPaths<T, P extends string = ""> = {
       ? K
       : `${P}.${Extract<K, string | number>}`
     : T[K] extends object
-    ? `${P}.${Extract<K, string | number>}` extends infer D
-      ? D extends string
-        ? BooleanPaths<T[K], D>
+      ? `${P}.${Extract<K, string | number>}` extends infer D
+        ? D extends string
+          ? BooleanPaths<T[K], D>
+          : never
         : never
-      : never
-    : never;
+      : never;
 }[keyof T];
 
 // Helper type to remove leading dot

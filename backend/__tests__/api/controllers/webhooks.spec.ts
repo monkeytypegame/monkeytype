@@ -1,23 +1,23 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import crypto from "crypto";
-import request from "supertest";
-import app from "../../../src/app";
 
-const mockApp = request(app);
+const { mockApp } = setup();
 
 describe("WebhooksController", () => {
   describe("githubRelease", () => {
     const georgeSendReleaseAnnouncementMock = vi.spyOn(
       GeorgeQueue,
-      "sendReleaseAnnouncement"
+      "sendReleaseAnnouncement",
     );
     const timingSafeEqualMock = vi.spyOn(crypto, "timingSafeEqual");
 
     beforeEach(() => {
       vi.stubEnv("GITHUB_WEBHOOK_SECRET", "GITHUB_WEBHOOK_SECRET");
 
-      georgeSendReleaseAnnouncementMock.mockReset();
-      timingSafeEqualMock.mockReset().mockReturnValue(true);
+      georgeSendReleaseAnnouncementMock.mockClear();
+      timingSafeEqualMock.mockClear().mockReturnValue(true);
     });
 
     it("should announce release", async () => {
@@ -37,9 +37,9 @@ describe("WebhooksController", () => {
       expect(georgeSendReleaseAnnouncementMock).toHaveBeenCalledWith("1");
       expect(timingSafeEqualMock).toHaveBeenCalledWith(
         Buffer.from(
-          "sha256=ff0f3080539e9df19153f6b5b5780f66e558d61038e6cf5ecf4efdc7266a7751"
+          "sha256=ff0f3080539e9df19153f6b5b5780f66e558d61038e6cf5ecf4efdc7266a7751",
         ),
-        Buffer.from("the-signature")
+        Buffer.from("the-signature"),
       );
     });
     it("should ignore non-published actions", async () => {

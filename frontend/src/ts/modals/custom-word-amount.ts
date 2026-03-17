@@ -1,7 +1,6 @@
-import Config, * as UpdateConfig from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
+import Config, { setConfig } from "../config";
 import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 export function show(showOptions?: ShowOptions): void {
@@ -9,9 +8,7 @@ export function show(showOptions?: ShowOptions): void {
     ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
-      (
-        modalEl.querySelector("input") as HTMLInputElement
-      ).value = `${Config.words}`;
+      modalEl.qs<HTMLInputElement>("input")?.setValue(`${Config.words}`);
     },
   });
 }
@@ -24,28 +21,26 @@ function hide(clearChain = false): void {
 
 function apply(): void {
   const val = parseInt(
-    modal.getModal().querySelector("input")?.value as string,
-    10
+    modal.getModal().qs<HTMLInputElement>("input")?.getValue() ?? "",
+    10,
   );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    if (UpdateConfig.setWordCount(val)) {
-      ManualRestart.set();
+    if (setConfig("words", val)) {
       TestLogic.restart();
       if (val > 2000) {
-        Notifications.add("Stay safe and take breaks!", 0);
+        showNoticeNotification("Stay safe and take breaks!");
       } else if (val === 0) {
-        Notifications.add(
+        showNoticeNotification(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",
-          0,
           {
-            duration: 7,
-          }
+            durationMs: 7000,
+          },
         );
       }
     }
   } else {
-    Notifications.add("Custom word amount must be at least 1", 0);
+    showNoticeNotification("Custom word amount must be at least 1");
   }
 
   hide(true);
@@ -54,7 +49,7 @@ function apply(): void {
 const modal = new AnimatedModal({
   dialogId: "customWordAmountModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
+    modalEl.on("submit", (e) => {
       e.preventDefault();
       apply();
     });

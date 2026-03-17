@@ -4,8 +4,14 @@
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "noEmit": true,
-    "types": ["vitest/globals"]
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   },
   "files": ["vitest.d.ts"],
-  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
+  "include": [
+    "./**/*.spec.ts",
+    "./**/*.spec.tsx",
+    "./**/*.jsdom-spec.ts",
+    "./setup-tests.ts"
+  ]
 }

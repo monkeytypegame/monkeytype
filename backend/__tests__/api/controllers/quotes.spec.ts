@@ -1,39 +1,36 @@
-import request from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
 import * as NewQuotesDal from "../../../src/dal/new-quotes";
 import type { DBNewQuote } from "../../../src/dal/new-quotes";
 import * as QuoteRatingsDal from "../../../src/dal/quote-ratings";
 import * as ReportDal from "../../../src/dal/report";
+import * as LogsDal from "../../../src/dal/logs";
 import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
-import _ from "lodash";
-import { ApproveQuote } from "@monkeytype/contracts/schemas/quotes";
-import { mockBearerAuthentication } from "../../__testData__/auth";
+import { ApproveQuote } from "@monkeytype/schemas/quotes";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("QuotesController", () => {
   const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
+  const logsAddLogMock = vi.spyOn(LogsDal, "addLog");
 
   beforeEach(() => {
     enableQuotes(true);
 
     const user = { quoteMod: true, name: "Bob" } as any;
-    getPartialUserMock.mockReset().mockResolvedValue(user);
-    mockAuth.beforeEach();
+    getPartialUserMock.mockClear().mockResolvedValue(user);
+    logsAddLogMock.mockClear().mockResolvedValue();
   });
 
   describe("getQuotes", () => {
     const getQuotesMock = vi.spyOn(NewQuotesDal, "get");
 
     beforeEach(() => {
-      getQuotesMock.mockReset();
+      getQuotesMock.mockClear();
       getQuotesMock.mockResolvedValue([]);
     });
     it("should return quotes", async () => {
@@ -79,7 +76,7 @@ describe("QuotesController", () => {
     it("should return quotes with quoteMod", async () => {
       //GIVEN
       getPartialUserMock
-        .mockReset()
+        .mockClear()
         .mockResolvedValue({ quoteMod: "english" } as any);
 
       //WHEN
@@ -95,7 +92,7 @@ describe("QuotesController", () => {
     it("should fail with quoteMod false", async () => {
       //GIVEN
       getPartialUserMock
-        .mockReset()
+        .mockClear()
         .mockResolvedValue({ quoteMod: false } as any);
 
       //WHEN
@@ -111,7 +108,7 @@ describe("QuotesController", () => {
     });
     it("should fail with quoteMod empty", async () => {
       //GIVEN
-      getPartialUserMock.mockReset().mockResolvedValue({ quoteMod: "" } as any);
+      getPartialUserMock.mockClear().mockResolvedValue({ quoteMod: "" } as any);
 
       //WHEN
       const { body } = await mockApp
@@ -162,10 +159,10 @@ describe("QuotesController", () => {
     const verifyCaptchaMock = vi.spyOn(Captcha, "verify");
 
     beforeEach(() => {
-      addQuoteMock.mockReset();
+      addQuoteMock.mockClear();
       addQuoteMock.mockResolvedValue({} as any);
 
-      verifyCaptchaMock.mockReset();
+      verifyCaptchaMock.mockClear();
       verifyCaptchaMock.mockResolvedValue(true);
     });
 
@@ -195,7 +192,7 @@ describe("QuotesController", () => {
         newQuote.text,
         newQuote.source,
         newQuote.language,
-        uid
+        uid,
       );
 
       expect(verifyCaptchaMock).toHaveBeenCalledWith(newQuote.captcha);
@@ -215,7 +212,7 @@ describe("QuotesController", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
+        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -279,7 +276,7 @@ describe("QuotesController", () => {
     const approveQuoteMock = vi.spyOn(NewQuotesDal, "approve");
 
     beforeEach(() => {
-      approveQuoteMock.mockReset();
+      approveQuoteMock.mockClear();
     });
 
     it("should approve", async () => {
@@ -318,7 +315,7 @@ describe("QuotesController", () => {
         quoteId,
         "editedText",
         "editedSource",
-        "Bob"
+        "Bob",
       );
     });
     it("should approve with optional parameters as null", async () => {
@@ -346,7 +343,7 @@ describe("QuotesController", () => {
         quoteId,
         undefined,
         undefined,
-        "Bob"
+        "Bob",
       );
     });
     it("should approve without optional parameters", async () => {
@@ -374,7 +371,7 @@ describe("QuotesController", () => {
         quoteId,
         undefined,
         undefined,
-        "Bob"
+        "Bob",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -406,7 +403,7 @@ describe("QuotesController", () => {
     });
     it("should fail if user is no quote mod", async () => {
       //GIVEN
-      getPartialUserMock.mockReset().mockResolvedValue({} as any);
+      getPartialUserMock.mockClear().mockResolvedValue({} as any);
 
       //WHEN
       const { body } = await mockApp
@@ -429,7 +426,8 @@ describe("QuotesController", () => {
     const refuseQuoteMock = vi.spyOn(NewQuotesDal, "refuse");
 
     beforeEach(() => {
-      refuseQuoteMock.mockReset();
+      refuseQuoteMock.mockClear();
+      refuseQuoteMock.mockResolvedValue();
     });
 
     it("should refuse quote", async () => {
@@ -483,7 +481,7 @@ describe("QuotesController", () => {
     });
     it("should fail if user is no quote mod", async () => {
       //GIVEN
-      getPartialUserMock.mockReset().mockResolvedValue({} as any);
+      getPartialUserMock.mockClear().mockResolvedValue({} as any);
       const quoteId = new ObjectId().toHexString();
 
       //WHEN
@@ -507,7 +505,7 @@ describe("QuotesController", () => {
     const getRatingMock = vi.spyOn(QuoteRatingsDal, "get");
 
     beforeEach(() => {
-      getRatingMock.mockReset();
+      getRatingMock.mockClear();
     });
 
     it("should get", async () => {
@@ -520,7 +518,7 @@ describe("QuotesController", () => {
         ratings: 100,
         totalRating: 122,
       };
-      getRatingMock.mockResolvedValue(quoteRating);
+      getRatingMock.mockResolvedValue(quoteRating as any);
 
       //WHEN
       const { body } = await mockApp
@@ -577,11 +575,11 @@ describe("QuotesController", () => {
 
     beforeEach(() => {
       getPartialUserMock
-        .mockReset()
+        .mockClear()
         .mockResolvedValue({ quoteRatings: null } as any);
 
-      updateQuotesRatingsMock.mockReset();
-      submitQuoteRating.mockReset();
+      updateQuotesRatingsMock.mockClear().mockResolvedValue({} as any);
+      submitQuoteRating.mockClear().mockResolvedValue();
     });
     it("should submit new rating", async () => {
       //GIVEN
@@ -612,7 +610,7 @@ describe("QuotesController", () => {
     it("should update existing rating", async () => {
       //GIVEN
 
-      getPartialUserMock.mockReset().mockResolvedValue({
+      getPartialUserMock.mockClear().mockResolvedValue({
         quoteRatings: { german: { "4": 1 }, english: { "5": 5, "23": 4 } },
       } as any);
 
@@ -644,7 +642,7 @@ describe("QuotesController", () => {
     it("should update existing rating with same rating", async () => {
       //GIVEN
 
-      getPartialUserMock.mockReset().mockResolvedValue({
+      getPartialUserMock.mockClear().mockResolvedValue({
         quoteRatings: { german: { "4": 1 }, english: { "5": 5, "23": 4 } },
       } as any);
 
@@ -760,10 +758,8 @@ describe("QuotesController", () => {
     beforeEach(() => {
       enableQuoteReporting(true);
 
-      verifyCaptchaMock.mockReset();
-      verifyCaptchaMock.mockResolvedValue(true);
-
-      createReportMock.mockReset();
+      verifyCaptchaMock.mockClear().mockResolvedValue(true);
+      createReportMock.mockClear().mockResolvedValue();
     });
 
     it("should report quote", async () => {
@@ -798,7 +794,7 @@ describe("QuotesController", () => {
           comment: "I don't like this.",
         }),
         10, //configuration maxReport
-        20 //configuration contentReportLimit
+        20, //configuration contentReportLimit
       );
     });
 
@@ -861,7 +857,7 @@ describe("QuotesController", () => {
     it("should fail if user cannot report", async () => {
       //GIVEN
       getPartialUserMock
-        .mockReset()
+        .mockClear()
         .mockResolvedValue({ canReport: false } as any);
 
       //WHEN
@@ -877,21 +873,24 @@ describe("QuotesController", () => {
 });
 
 async function enableQuotes(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { submissionsEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes = { ...mockConfig.quotes, submissionsEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
 async function enableQuoteReporting(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { reporting: { enabled, maxReports: 10, contentReportLimit: 20 } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes.reporting = {
+    ...mockConfig.quotes.reporting,
+    enabled,
+    maxReports: 10,
+    contentReportLimit: 20,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }

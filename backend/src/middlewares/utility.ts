@@ -1,9 +1,8 @@
-import _ from "lodash";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import MonkeyError from "../utils/error";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+import { EndpointMetadata } from "@monkeytype/contracts/util/api";
 import { TsRestRequestWithContext } from "../api/types";
 
 /**
@@ -26,14 +25,14 @@ export function onlyAvailableOnDev(): RequestHandler {
   return (
     _req: TsRestRequestWithContext,
     _res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     if (!isDevEnvironment()) {
       next(
         new MonkeyError(
           503,
-          "Development endpoints are only available in DEV mode."
-        )
+          "Development endpoints are only available in DEV mode.",
+        ),
       );
     } else {
       next();
@@ -42,7 +41,7 @@ export function onlyAvailableOnDev(): RequestHandler {
 }
 
 export function getMetadata(req: TsRestRequestWithContext): EndpointMetadata {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  // oxlint-disable-next-line no-unsafe-member-access
   return (req.tsRestRoute["metadata"] ?? {}) as EndpointMetadata;
 }
 
@@ -56,7 +55,7 @@ export function getMetadata(req: TsRestRequestWithContext): EndpointMetadata {
 export async function v4RequestBody(
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   if (req.body === undefined) {
     req.body = {};

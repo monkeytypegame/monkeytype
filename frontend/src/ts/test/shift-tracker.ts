@@ -1,10 +1,11 @@
 import Config from "../config";
+import { Keycode } from "../constants/keys";
 import * as KeyConverter from "../utils/key-converter";
 
 export let leftState = false;
 export let rightState = false;
 
-$(document).on("keydown", (e) => {
+document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.code === "ShiftLeft") {
     leftState = true;
     rightState = false;
@@ -14,7 +15,7 @@ $(document).on("keydown", (e) => {
   }
 });
 
-$(document).on("keyup", (e) => {
+document.addEventListener("keyup", (e: KeyboardEvent) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;
@@ -26,7 +27,7 @@ export function reset(): void {
   rightState = false;
 }
 
-export function isUsingOppositeShift(keycode: KeyConverter.Keycode): boolean {
+export function isUsingOppositeShift(keycode: Keycode): boolean {
   if (!leftState && !rightState) {
     return true;
   }

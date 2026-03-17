@@ -126,6 +126,12 @@
       "source": "W3Schools CSS Linear Gradient with Multiple Color Stops",
       "id": 20,
       "length": 362
+    },
+    {
+      "text": "/* General body styles */\nbody {\n\tfont-family: Arial, sans-serif;\n\tmargin: 0;\n\tpadding: 0;\n\tbackground-color: #f4f4f4;\n\tcolor: #333;\n}",
+      "source": "eChat - CSS source code line 1-8",
+      "id": 21,
+      "length": 134
     }
   ]
 }

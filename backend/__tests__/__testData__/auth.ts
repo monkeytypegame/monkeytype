@@ -1,4 +1,5 @@
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { expect, vi } from "vitest";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import { ObjectId } from "mongodb";
@@ -9,10 +10,11 @@ import * as AuthUtils from "../../src/utils/auth";
 
 export async function mockAuthenticateWithApeKey(
   uid: string,
-  config: Configuration
+  config: Configuration,
 ): Promise<string> {
-  if (!config.apeKeys.acceptKeys)
+  if (!config.apeKeys.acceptKeys) {
     throw Error("config.apeKeys.acceptedKeys needs to be set to true");
+  }
   const { apeKeyBytes, apeKeySaltRounds } = config.apeKeys;
 
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");
@@ -51,14 +53,14 @@ export function mockBearerAuthentication(uid: string) {
      * Reset the mock and return a default token. Call this method in the `beforeEach` of all tests.
      */
     beforeEach: (): void => {
-      verifyIdTokenMock.mockReset();
+      verifyIdTokenMock.mockClear();
       verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
     },
     /**
      * Reset the mock results in the authentication to fail.
      */
     noAuth: (): void => {
-      verifyIdTokenMock.mockReset();
+      verifyIdTokenMock.mockClear();
     },
     /**
      * verify the authentication has been called
@@ -71,7 +73,7 @@ export function mockBearerAuthentication(uid: string) {
      * @param customize
      */
     modifyToken: (customize: Partial<DecodedIdToken>): void => {
-      verifyIdTokenMock.mockReset();
+      verifyIdTokenMock.mockClear();
       verifyIdTokenMock.mockResolvedValue({
         ...mockDecodedToken,
         ...customize,

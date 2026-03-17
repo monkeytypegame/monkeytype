@@ -17,7 +17,10 @@
     z-index: 1;
 
     &.withAnimation {
-      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+      transition:
+        left 0.25s ease,
+        right 0.25s ease,
+        opacity 0.125s linear;
     }
 
     &.highlight-hidden {
@@ -239,13 +242,22 @@
       }
       &.tabChar,
       &.nlChar {
-        margin: 0 0.25rem;
+        // margin: 0 0.25rem;
         opacity: 0.2;
         i {
           line-height: 0;
         }
       }
 
+      &.debugCaret {
+        outline: 1px solid var(--sub-color);
+      }
+      &.debugCaretTarget {
+        outline: 2px solid red;
+      }
+      &.debugCaretTarget2 {
+        outline: 2px solid yellow;
+      }
       &.correct {
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);
@@ -307,9 +319,9 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
-    .word {
-      //flex-direction: row-reverse;
-      direction: rtl;
+
+    .wordRtl {
+      unicode-bidi: bidi-override;
     }
   }
   &.withLigatures {
@@ -339,7 +351,7 @@
   &.blind {
     .word {
       & letter.extra {
-        display: none;
+        display: none !important;
       }
       & letter.incorrect {
         color: var(--correct-letter-color);
@@ -347,6 +359,10 @@
       }
       & .hints hint {
         display: none;
+      }
+
+      &.error {
+        border-bottom: 2px solid transparent;
       }
     }
     // &.highlight-word {
@@ -380,6 +396,11 @@
     --untyped-letter-color: var(--sub-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    --c-dot: var(--main-color);
+    --c-dot--error: var(--colorful-error-color);
+    &.blind .word.error {
+      border-bottom: 2px solid transparent;
+    }
   }
 
   &.flipped.colorfulMode {
@@ -499,6 +520,86 @@
       }
     }
   }
+
+  &.typed-effect-hide {
+    .word.typed {
+      opacity: 0;
+    }
+  }
+
+  &.typed-effect-fade {
+    .word.typed {
+      animation: fadeOut 250ms ease-in 1 forwards;
+    }
+  }
+
+  &.typed-effect-dots {
+    /* transform already typed letters into appropriately colored dots */
+
+    &:not(.withLigatures) .word,
+    &.withLigatures .word.broken-ligatures {
+      letter {
+        position: relative;
+        display: inline-block;
+        &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 1em;
+          aspect-ratio: 1;
+          border-radius: 50%;
+          opacity: 0;
+        }
+      }
+    }
+    // unify dot spacing
+    &.withLigatures .word.broken-ligatures {
+      letter {
+        width: 0.4em;
+      }
+    }
+    .word.broken-ligatures:not(.needs-wrap) {
+      white-space: nowrap;
+    }
+
+    &:not(.withLigatures) .word.typed,
+    &.withLigatures .word.broken-ligatures.typed {
+      letter {
+        color: var(--bg-color);
+        animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
+        &::after {
+          animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards;
+          background: var(--c-dot);
+        }
+      }
+    }
+
+    &:not(.withLigatures):not(.blind) {
+      .word letter.incorrect::after {
+        background: var(--c-dot--error);
+      }
+    }
+    &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
+      background: var(--c-dot--error);
+    }
+
+    @media (prefers-reduced-motion) {
+      &:not(.withLigatures) .word.typed,
+      &.withLigatures .word.broken-ligatures.typed {
+        letter {
+          animation: none !important;
+          transform: scale(0.4);
+          color: transparent;
+          &::after {
+            animation: none !important;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
 }
 
 .word {
@@ -546,12 +647,14 @@
   &.error {
     /*   margin-bottom: 1px; */
     border-bottom: 2px solid var(--error-color);
-    text-shadow: 1px 0px 0px var(--bg-color),
+    text-shadow:
+      1px 0px 0px var(--bg-color),
       // 2px 0px 0px var(--bg-color),
       -1px 0px 0px var(--bg-color),
       // -2px 0px 0px var(--bg-color),
       0px 1px 0px var(--bg-color),
-      1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+      1px 1px 0px var(--bg-color),
+      -1px 1px 0px var(--bg-color);
   }
 }
 
@@ -572,7 +675,7 @@
 }
 
 #wordsInput {
-  width: 1ch;
+  width: 0;
   font-size: 1em;
   height: 1em;
   opacity: 0;
@@ -587,6 +690,13 @@
   cursor: default;
   pointer-events: none;
   border-radius: 0;
+  caret-color: transparent;
+  resize: none;
+  overflow: hidden;
+  // if the text wraps, ctrl backspace will not work on firefox >:|
+  // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
+  // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
+  text-wrap-mode: nowrap;
 }
 
 #capsWarning {
@@ -608,6 +718,22 @@
 
   i {
     margin-right: 0.5rem;
+  }
+}
+
+.pageTest > .loading {
+  text-align: center;
+  & > i {
+    font-size: 2rem;
+    color: var(--main-color);
+  }
+  opacity: 0;
+  &:not(.hidden) {
+    animation-name: fadeIn;
+    animation-duration: 0.125s;
+    animation-delay: 0.5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
   }
 }
 
@@ -749,9 +875,9 @@
         &.rightToLeftTest {
           //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
           direction: rtl;
-          .word {
-            //flex-direction: row-reverse;
-            direction: rtl;
+
+          .wordRtl {
+            unicode-bidi: bidi-override;
           }
         }
         &.withLigatures {
@@ -779,6 +905,109 @@
     .chart {
       grid-area: chart;
       width: 100%;
+      position: relative;
+
+      &:hover {
+        .chartLegend {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      .chartLegend {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        background: var(--bg-color);
+        border-radius: var(--roundness);
+        // top: -2.25em;
+        bottom: -0.75em;
+        padding: 0.25em;
+        right: 0;
+        font-size: 0.75em;
+        transition: opacity 0.125s;
+        cursor: pointer;
+        display: flex;
+
+        // button {
+        //   border-radius: 0;
+        //   background: var(--sub-alt-color);
+        // }
+
+        // button:first-child {
+        //   border-top-left-radius: var(--roundness);
+        //   border-bottom-left-radius: var(--roundness);
+        // }
+
+        // button:last-child {
+        //   border-top-right-radius: var(--roundness);
+        //   border-bottom-right-radius: var(--roundness);
+        // }
+
+        button {
+          padding: 0.5em 1em;
+          display: inline-grid;
+          grid-template-columns: auto 1fr;
+          align-items: center;
+          --color: var(--sub-color);
+
+          text-decoration: line-through;
+          .text {
+            pointer-events: none;
+          }
+
+          .line {
+            height: 0.25em;
+            width: 1.5em;
+            border-radius: calc(var(--roundness) / 2);
+            transition: background 0.125s;
+            background: var(--color);
+            pointer-events: none;
+
+            &.dashed {
+              background: linear-gradient(
+                90deg,
+                var(--color) 0%,
+                var(--color) 40%,
+                transparent 40%,
+                transparent 60%,
+                var(--color) 60%,
+                var(--color) 100%
+              );
+            }
+          }
+
+          .fas {
+            color: var(--color);
+            line-height: 0;
+          }
+
+          &.active {
+            text-decoration: none;
+            // .text {
+            // }
+            color: var(--sub-color);
+            &[data-id="raw"] {
+              --color: var(--main-color);
+            }
+            &[data-id="burst"] {
+              --color: var(--sub-color);
+            }
+            &[data-id="errors"] {
+              --color: var(--error-color);
+            }
+          }
+
+          &:hover {
+            color: var(--text-color);
+            background: var(--sub-alt-color);
+          }
+
+          &:active {
+            color: var(--sub-color);
+          }
+        }
+      }
 
       canvas {
         width: 100% !important;
@@ -960,7 +1189,10 @@
             align-items: center;
             justify-items: center;
 
-            transition: opacity 0.125s, background 0.125s, color 0.125s,
+            transition:
+              opacity 0.125s,
+              background 0.125s,
+              color 0.125s,
               outline 0.125s;
 
             i {
@@ -1096,19 +1328,16 @@
   padding: 1em 2em;
 }
 
-#koInputVisualContainer {
-  position: relative;
-  padding-top: 1rem;
-  width: -moz-min-content;
-  width: min-content;
-  height: 3rem;
-  margin: 0 auto;
-
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: var(--sub-color);
-  cursor: default;
+#compositionDisplay {
+  font-size: 0.5em;
+  display: flex;
+  margin: 1rem auto 0px;
+  padding: 1rem 2rem;
+  height: 1.25em;
+  box-sizing: content-box;
   user-select: none;
+  cursor: default;
+  color: var(--sub-color);
 
   &.blurred {
     opacity: 0.25;
@@ -1144,6 +1373,10 @@
   transition: opacity 0.125s;
   justify-content: space-around;
   margin-bottom: 1rem;
+  width: max-content;
+  justify-self: center;
+  position: relative;
+
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     // overflow: hidden;
@@ -1154,7 +1387,9 @@
     // padding: 0 0.5rem;
     background: var(--sub-alt-color);
     border-radius: var(--roundness);
+    z-index: 2;
     // width: max-content;
+    overflow: hidden;
   }
   .spacer {
     height: auto;
@@ -1162,11 +1397,6 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: 0.75em 0;
-    transition: 250ms;
-    &.scrolled {
-      opacity: 0;
-      width: 0;
-    }
   }
 
   .wordCount,
@@ -1217,6 +1447,28 @@
   .customText {
     display: grid;
   }
+  .shareButton {
+    position: absolute;
+    right: 0;
+    padding: var(--verticalPadding) var(--horizontalPadding);
+    z-index: 1;
+    transition:
+      opacity 0.25s,
+      right 0.25s;
+    opacity: 0;
+  }
+
+  .mode {
+    background: var(--sub-alt-color);
+    z-index: 2;
+  }
+
+  &:hover {
+    .shareButton {
+      opacity: 1;
+      right: calc((1.25em + (var(--horizontalPadding) * 2)) * -1);
+    }
+  }
 }
 
 .pageTest {
@@ -1246,6 +1498,9 @@
         rgba(0, 0, 0, 0) 99%
       );
     }
+
+    --c-dot: var(--text-color);
+    --c-dot--error: var(--error-color);
   }
   #memoryTimer,
   #layoutfluidTimer {
@@ -1371,14 +1626,16 @@
 }
 
 main.focus .pageTest {
-  #testModesNotice {
-    opacity: 0 !important;
-  }
-  #testConfig {
-    opacity: 0 !important;
-  }
+  #testModesNotice,
+  #testConfig,
   #mobileTestConfigButton {
     opacity: 0 !important;
+  }
+  #restartTestButton {
+    opacity: 0 !important;
+    &:focus-visible {
+      opacity: 1 !important;
+    }
   }
 }
 

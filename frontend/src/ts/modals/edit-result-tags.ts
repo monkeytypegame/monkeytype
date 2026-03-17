@@ -1,9 +1,12 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import * as AccountPage from "../pages/account";
-import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
@@ -25,26 +28,19 @@ const state: State = {
 export function show(
   resultId: string,
   tags: string[],
-  source: "accountPage" | "resultPage"
+  source: "accountPage" | "resultPage",
 ): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
   if (resultId === "") {
-    Notifications.add(
+    showErrorNotification(
       "Failed to show edit result tags modal: result id is empty",
-      -1
     );
     return;
   }
 
-  state["resultId"] = resultId;
-  state["startingTags"] = [...tags];
-  state["tags"] = [...tags];
-  state["source"] = source;
+  state.resultId = resultId;
+  state.startingTags = [...tags];
+  state.tags = [...tags];
+  state.source = source;
 
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
@@ -59,12 +55,11 @@ function hide(): void {
 }
 
 function appendButtons(): void {
-  const buttonsEl = modal.getModal().querySelector(".buttons");
+  const buttonsEl = modal.getModal().qs(".buttons");
 
   if (buttonsEl === null) {
-    Notifications.add(
+    showErrorNotification(
       "Failed to append buttons to edit result tags modal: could not find buttons element",
-      -1
     );
     return;
   }
@@ -74,7 +69,7 @@ function appendButtons(): void {
     ...state.tags,
   ]);
 
-  buttonsEl.innerHTML = "";
+  buttonsEl.empty();
   for (const tagId of tagIds) {
     const tag = DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
     const button = document.createElement("button");
@@ -85,17 +80,18 @@ function appendButtons(): void {
       toggleTag(tagId);
       updateActiveButtons();
     });
-    buttonsEl.appendChild(button);
+    buttonsEl.append(button);
   }
 }
 
 function updateActiveButtons(): void {
-  for (const button of $("#editResultTagsModal .modal .buttons button")) {
-    const tagid: string = $(button).attr("data-tag-id") ?? "";
+  const buttons = modal.getModal().qsa(".buttons button");
+  for (const button of buttons) {
+    const tagid: string = button.getAttribute("data-tag-id") ?? "";
     if (state.tags.includes(tagid)) {
-      $(button).addClass("active");
+      button.addClass("active");
     } else {
-      $(button).removeClass("active");
+      button.removeClass("active");
     }
   }
 }
@@ -109,11 +105,11 @@ function toggleTag(tagId: string): void {
 }
 
 async function save(): Promise<void> {
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.results.updateTags({
     body: { resultId: state.resultId, tagIds: state.tags },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   //if got no freaking idea why this is needed
   //but update tags somehow adds undefined to the end of the array
@@ -121,23 +117,34 @@ async function save(): Promise<void> {
   state.tags = state.tags.filter((el) => el !== undefined);
 
   if (response.status !== 200) {
-    Notifications.add(
-      "Failed to update result tags: " + response.body.message,
-      -1
-    );
+    showErrorNotification("Failed to update result tags", { response });
     return;
   }
 
   //can do this because the response will not be null if the status is 200
   const responseTagPbs = response.body.data?.tagPbs ?? [];
 
-  Notifications.add("Tags updated", 1, {
-    duration: 2,
-  });
+  showSuccessNotification("Tags updated", { durationMs: 2000 });
 
   DB.getSnapshot()?.results?.forEach((result) => {
     if (result._id === state.resultId) {
+      const tagsToUpdate = [
+        ...result.tags.filter((tag) => !state.tags.includes(tag)),
+        ...state.tags.filter((tag) => !result.tags.includes(tag)),
+      ];
       result.tags = state.tags;
+      tagsToUpdate.forEach((tag) => {
+        void DB.updateLocalTagPB(
+          tag,
+          result.mode,
+          result.mode2,
+          result.punctuation,
+          result.numbers,
+          result.language,
+          result.difficulty,
+          result.lazyMode,
+        );
+      });
     }
   });
 
@@ -151,15 +158,13 @@ async function save(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "editResultTagsModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl
-      .querySelector("button.saveButton")
-      ?.addEventListener("click", (e) => {
-        if (areUnsortedArraysEqual(state.startingTags, state.tags)) {
-          hide();
-          return;
-        }
+    modalEl.qs("button.saveButton")?.on("click", (e) => {
+      if (areUnsortedArraysEqual(state.startingTags, state.tags)) {
         hide();
-        void save();
-      });
+        return;
+      }
+      hide();
+      void save();
+    });
   },
 });

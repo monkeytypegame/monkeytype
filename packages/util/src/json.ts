@@ -1,6 +1,12 @@
 import { z, ZodIssue } from "zod";
 import { tryCatchSync } from "./trycatch";
 
+function prettyErrorMessage(issue: ZodIssue | undefined): string {
+  if (issue === undefined) return "";
+  const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
+  return `${path}${issue.message.toLowerCase()}`;
+}
+
 /**
  * Parse a JSON string into an object and validate it against a schema
  * @param json  JSON string
@@ -17,23 +23,21 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     fallback?: z.infer<T>;
     migrate?: (
       value: Record<string, unknown> | unknown[],
-      zodIssues?: ZodIssue[]
+      zodIssues?: ZodIssue[],
     ) => z.infer<T>;
-  }
+  },
 ): z.infer<T> {
   const { fallback, migrate } = fallbackAndMigrate ?? {};
 
   const { data: jsonParsed, error } = tryCatchSync(
-    () => JSON.parse(json) as Record<string, unknown>
+    () => JSON.parse(json) as Record<string, unknown>,
   );
 
   if (error) {
     if (fallback === undefined) {
       throw new Error(`Invalid JSON: ` + error.message);
     }
-    // todo fix me
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return fallback as z.infer<T>;
+    return fallback as unknown;
   }
 
   const safeParse = schema.safeParse(jsonParsed);
@@ -45,7 +49,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     throw new Error(
       `JSON does not match schema: ${safeParse.error.issues
         .map(prettyErrorMessage)
-        .join(", ")}`
+        .join(", ")}`,
     );
   }
 
@@ -57,19 +61,11 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
       throw new Error(
         `Migrated value does not match schema: ${safeParseMigrated.error.issues
           .map(prettyErrorMessage)
-          .join(", ")}`
+          .join(", ")}`,
       );
     }
-    // todo fix me
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return fallback as z.infer<T>;
+    return fallback as unknown;
   }
 
   return safeParseMigrated.data as T;
-}
-
-function prettyErrorMessage(issue: ZodIssue | undefined): string {
-  if (issue === undefined) return "";
-  const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
-  return `${path}${issue.message.toLowerCase()}`;
 }

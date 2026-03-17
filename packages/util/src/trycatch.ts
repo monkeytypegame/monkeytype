@@ -13,7 +13,7 @@ type Failure<E> = {
 type Result<T, E = Error> = Success<T> | Failure<E>;
 
 export async function tryCatch<T, E = Error>(
-  promiseOrFunction: Promise<T>
+  promiseOrFunction: Promise<T>,
 ): Promise<Result<T, E>> {
   try {
     let data = await promiseOrFunction;

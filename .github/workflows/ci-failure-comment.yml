@@ -34,6 +34,6 @@ jobs:
       - name: Apply label changes
         uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
-          issue_number:  ${{ steps.pr_num_reader.outputs.content }}
+          issue_number: ${{ steps.pr_num_reader.outputs.content }}
           add: "waiting for update"
           remove: "waiting for review"

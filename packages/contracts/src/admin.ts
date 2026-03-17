@@ -1,12 +1,12 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
+import { IdSchema } from "@monkeytype/schemas/util";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { IdSchema } from "./schemas/util";
+} from "./util/api";
 
 export const ToggleBanRequestSchema = z
   .object({
@@ -27,7 +27,7 @@ export type ClearStreakHourOffsetRequest = z.infer<
 export const ToggleBanResponseSchema = responseWithData(
   z.object({
     banned: z.boolean(),
-  })
+  }),
 ).strict();
 export type ToggleBanResponse = z.infer<typeof ToggleBanResponseSchema>;
 
@@ -44,7 +44,7 @@ export const RejectReportsRequestSchema = z
       .array(
         z
           .object({ reportId: z.string(), reason: z.string().optional() })
-          .strict()
+          .strict(),
       )
       .nonempty(),
   })
@@ -138,5 +138,5 @@ export const adminContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

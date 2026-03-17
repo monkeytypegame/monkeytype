@@ -37,7 +37,7 @@ jobs:
             style
             test
           requireScope: false
-          subjectPattern:  ^.+ \(@[^ ,]+(, @[^ ,]+)*\)$
+          subjectPattern: ^.+ \(@[^ ,]+(, @[^ ,]+)*\)$
           subjectPatternError: |
             Title "{title}"
             didn't match the configured pattern. Please ensure that the title
@@ -46,7 +46,7 @@ jobs:
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
-        if: always() && (steps.lint_pr_title.outputs.error_message != null) 
+        if: always() && (steps.lint_pr_title.outputs.error_message != null)
         with:
           header: pr-title-lint-error
           message: |

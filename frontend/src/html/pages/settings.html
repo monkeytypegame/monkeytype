@@ -1,4 +1,4 @@
-<div class="page pageSettings hidden full-width content-grid" id="pageSettings">
+<div class="page pageSettings full-width content-grid hidden" id="pageSettings">
   <div class="settingsGroup quickNav">
     <div class="links">
       <a class="textButton" href="#group_behavior">
@@ -38,13 +38,13 @@
 
   <div class="tip">
     tip: You can also change all these settings quickly using the command line (
-    <key>ctrl/cmd</key>
+    <kbd>ctrl/cmd</kbd>
     +
-    <key>shift</key>
+    <kbd>shift</kbd>
     +
-    <key>p</key>
+    <kbd>p</kbd>
     or
-    <key>esc</key>
+    <kbd>esc</kbd>
     )
   </div>
 
@@ -106,6 +106,26 @@
         <button class="addPresetButton fullWidth">add preset</button>
       </div>
     </div>
+    <div
+      class="section resultSaving needsAccount"
+      data-config-name="resultSaving"
+    >
+      <div class="groupTitle">
+        <i class="fas fa-save"></i>
+        <span>result saving</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Disable result saving, in case you want to practice without affecting
+        your account stats.
+      </div>
+      <div class="buttons">
+        <button data-config-value="false">off</button>
+        <button data-config-value="true">on</button>
+      </div>
+    </div>
     <div class="section" data-config-name="difficulty">
       <div class="groupTitle">
         <i class="fas fa-star"></i>
@@ -135,15 +155,15 @@
       </div>
       <div class="text">
         Press
-        <key>tab</key>
+        <kbd>tab</kbd>
         ,
-        <key>esc</key>
+        <kbd>esc</kbd>
         or
-        <key>enter</key>
+        <kbd>enter</kbd>
         to quickly restart the test, or to quickly jump to the test page. These
         options disable tab navigation on most parts of the website. Using the
         "esc" option will move opening the commandline to the
-        <key>tab</key>
+        <kbd>tab</kbd>
         key.
       </div>
       <div class="buttons">
@@ -167,7 +187,7 @@
         Changing it to 'typing' will repeat the quote if you restart while
         typing.
       </div>
-      <!-- , and 'always' will always repeat the quote (you will need to press <key>shift + tab</key> to move on to the next quote). -->
+      <!-- , and 'always' will always repeat the quote (you will need to press <kbd>shift + tab</kbd> to move on to the next quote). -->
       <div class="buttons">
         <button data-config-value="off">off</button>
         <button data-config-value="typing">typing</button>
@@ -192,7 +212,7 @@
       <div class="buttons">
         <button data-config-value="false">off</button>
         <button data-config-value="true">
-          ⠀
+          &ensp;
           <!-- On is missing on purpose. -->
         </button>
       </div>
@@ -226,7 +246,7 @@
         When enabled, it will show the command line with all commands in a
         single list instead of submenu arrangements. Selecting 'manual' will
         expose all commands only after typing
-        <key>></key>
+        <kbd>></kbd>
         .
       </div>
       <div class="buttons">
@@ -256,9 +276,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -288,9 +305,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -322,9 +336,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -461,14 +472,14 @@
       </div>
       <div class="text">
         This mode will force you to use opposite
-        <key>shift</key>
+        <kbd>shift</kbd>
         keys for shifting. Using an incorrect one will count as an error. This
         feature ignores keys in locations
-        <key>B</key>
+        <kbd>B</kbd>
         ,
-        <key>Y</key>
+        <kbd>Y</kbd>
         , and
-        <key>^</key>
+        <kbd>^</kbd>
         because many people use the other hand for those keys. If you're using
         external software to emulate your layout (including QMK), you should use
         the "keymap" mode - the standard "on" will not work. This will enforce
@@ -547,13 +558,16 @@
         </button>
       </div>
       <div class="text">
-        Shows typos that you've made. Below shows what you typed below the
-        letters and replace will replace the letters with the ones you typed.
+        Shows typos that you've made. "Below" shows what you typed below the
+        letters, "replace" will replace the letters with the ones you typed and
+        "both" will do the same as replace and below, but it will show the
+        correct letters below your mistakes.
       </div>
       <div class="buttons">
         <button data-config-value="off">off</button>
         <button data-config-value="below">below</button>
         <button data-config-value="replace">replace</button>
+        <button data-config-value="both">both</button>
       </div>
     </div>
     <div class="section" data-config-name="hideExtraLetters">
@@ -572,6 +586,26 @@
       <div class="buttons">
         <button data-config-value="false">off</button>
         <button data-config-value="true">on</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="compositionDisplay">
+      <div class="groupTitle">
+        <i class="fas fa-language"></i>
+        <span>composition display</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Change how composition is displayed. "off" will just underline the
+        letter if composition is active. "below" will show the composed
+        character below the test. "replace" will replace the letter in the test
+        with the composed character.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="below">below</button>
+        <button data-config-value="replace">replace</button>
       </div>
     </div>
     <div class="section" data-config-name="lazyMode">
@@ -683,6 +717,7 @@
         <button data-config-value="13">wholetone</button>
         <button data-config-value="14">fist fight</button>
         <button data-config-value="15">rubber keys</button>
+        <button data-config-value="16">fart</button>
       </div>
     </div>
     <div class="section fullWidth" data-config-name="playSoundOnError">
@@ -703,6 +738,25 @@
         <button data-config-value="2">triangle</button>
         <button data-config-value="3">square</button>
         <button data-config-value="4">missed punch</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="playTimeWarning">
+      <div class="groupTitle">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>play time warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Play a short warning sound if you are close to the end of a timed test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="1">1 second</button>
+        <button data-config-value="3">3 seconds</button>
+        <button data-config-value="5">5 seconds</button>
+        <button data-config-value="10">10 seconds</button>
       </div>
     </div>
     <div class="sectionSpacer"></div>
@@ -773,9 +827,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -846,13 +897,16 @@
         </button>
       </div>
       <div class="text">
-        Change the style of the timer/word count during a test.
+        Change the style of the timer/word count during a test. "Flash" styles
+        will briefly show the timer in timed modes every 15 seconds.
       </div>
       <div class="buttons">
         <button data-config-value="off">off</button>
         <button data-config-value="bar">bar</button>
         <button data-config-value="text">text</button>
         <button data-config-value="mini">mini</button>
+        <button data-config-value="flash_text">flash text</button>
+        <button data-config-value="flash_mini">flash mini</button>
       </div>
     </div>
     <div class="section" data-config-name="liveSpeedStyle">
@@ -960,6 +1014,22 @@
         <button data-config-value="next_three_words">next three words</button>
       </div>
     </div>
+    <div class="section" data-config-name="typedEffect">
+      <div class="groupTitle">
+        <i class="fas fa-eye"></i>
+        <span>typed effect</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">Change how typed words are shown.</div>
+      <div class="buttons">
+        <button data-config-value="keep">keep</button>
+        <button data-config-value="hide">hide</button>
+        <button data-config-value="fade">fade</button>
+        <button data-config-value="dots">dots</button>
+      </div>
+    </div>
     <div class="section" data-config-name="tapeMode">
       <div class="groupTitle">
         <i class="fas fa-tape"></i>
@@ -1001,9 +1071,6 @@
             min="10"
             max="90"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -1112,9 +1179,6 @@
             class="input"
             min="0"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -1135,9 +1199,6 @@
             class="input"
             tabindex="0"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -1149,7 +1210,44 @@
           <i class="fas fa-fw fa-link"></i>
         </button>
       </div>
-      <!-- <div class="text">Change the font family for the site</div> -->
+      <div class="text">
+        Change the font family used by the website. Using a local font will
+        override your choice.
+        <br />
+        Note: Local fonts are not sent to the server and will not persist across
+        devices.
+      </div>
+      <div class="topRight">
+        <div class="usingLocalFont">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local font
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customFontUpload"
+            class="button"
+            aria-label="Select custom font"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local font
+          </label>
+
+          <input
+            type="file"
+            id="customFontUpload"
+            accept="font/woff,font/woff2,font/ttf,font/otf"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+      </div>
       <div class="buttons"></div>
     </div>
     <div class="section" data-config-name="keymapMode">
@@ -1309,11 +1407,47 @@
         </button>
       </div>
       <div class="text">
-        Set an image url to be a custom background image. Cover fits the image
-        to cover the screen. Contain fits the image to be fully visible. Max
-        fits the image corner to corner.
+        Set an image url or local image to be a custom background image. Local
+        image always take priority over the image url. Cover fits the image to
+        cover the screen. Contain fits the image to be fully visible. Max fits
+        the image corner to corner.
+        <br />
+        <br />
+        Note: The local image is stored in your browser's local storage and will
+        not be uploaded to the server. This means that if you clear your
+        browser's local storage or use a different browser, the local image will
+        be lost.
       </div>
       <div class="inputs">
+        <div class="usingLocalImage">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local image
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customBackgroundUpload"
+            class="button"
+            aria-label="Select custom background image"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local image
+          </label>
+
+          <input
+            type="file"
+            id="customBackgroundUpload"
+            accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
         <div class="inputAndButton">
           <input
             type="text"
@@ -1322,14 +1456,6 @@
             tabindex="0"
             onClick="this.select();"
           />
-          <span>
-            <button class="hidden remove no-auto-handle">
-              <i class="fas fa-trash fa-fw"></i>
-            </button>
-            <button class="save no-auto-handle">
-              <i class="fas fa-save fa-fw"></i>
-            </button>
-          </span>
         </div>
         <div class="buttons">
           <button data-config-value="cover">cover</button>
@@ -1348,7 +1474,7 @@
       </div>
       <div class="text">Apply various effects to the custom background.</div>
       <div class="groups">
-        <div class="group blur">
+        <div class="group blur-filter">
           <div class="title">blur</div>
           <div class="value"></div>
           <input type="range" min="0" max="5" value="0" step="0.1" />
@@ -1366,7 +1492,7 @@
         <div class="group opacity">
           <div class="title">opacity</div>
           <div class="value"></div>
-          <input type="range" min="0" max="1" value="1" step="0.1" />
+          <input type="range" min="0.1" max="1" value="1" step="0.1" />
         </div>
       </div>
     </div>
@@ -1406,7 +1532,9 @@
         random themes are not saved to your config. If set to 'favorite' only
         favorite themes will be randomized. If set to 'light' or 'dark', only
         presets with light or dark background colors will be randomized,
-        respectively. If set to 'custom', custom themes will be randomized.
+        respectively. If set to 'auto' dark or light themes are used, depending
+        on your system theme. If set to 'custom', custom themes will be
+        randomized.
       </div>
       <div class="buttons">
         <button data-config-value="off">off</button>
@@ -1414,6 +1542,7 @@
         <button data-config-value="fav">favorite</button>
         <button data-config-value="light">light</button>
         <button data-config-value="dark">dark</button>
+        <button data-config-value="auto">auto</button>
         <button data-config-value="custom">custom</button>
       </div>
     </div>
@@ -1436,21 +1565,14 @@
 
       <div class="tabContainer">
         <div tabContent="custom" class="tabContent customTheme hidden">
-          <!-- Used to convert colors to hex  -->
-          <div class="colorConverter"></div>
           <div class="allCustomThemes buttons"></div>
-          <div class="customThemeEdit">
-            <div class="customThemeInputs">
+          <div class="customThemeInputs">
+            <div class="customThemeInput">
               <label class="colorText">background</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--bg-color-txt"
-                />
+              <div class="colorPicker inputAndButton" data-key="bg">
+                <input type="text" value="#000000" class="input" />
                 <label
-                  for="--bg-color"
+                  for="colorPickerBg"
                   class="button"
                   style="
                     color: var(--text-color);
@@ -1463,19 +1585,16 @@
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--bg-color"
+                  id="colorPickerBg"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">sub alt</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--sub-alt-color-txt"
-                />
+              <div class="colorPicker inputAndButton" data-key="subAlt">
+                <input type="text" value="#000000" class="input" />
                 <label
-                  for="--sub-alt-color"
+                  for="colorPickerSubAlt"
                   class="button"
                   style="
                     color: var(--text-color);
@@ -1488,163 +1607,143 @@
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--sub-alt-color"
+                  id="colorPickerSubAlt"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">main</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--main-color-txt"
-                />
-                <label for="--main-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="main">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerMain" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--main-color"
+                  id="colorPickerMain"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">sub</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--sub-color-txt"
-                />
-                <label for="--sub-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="sub">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerSub" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--sub-color"
+                  id="colorPickerSub"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">caret</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--caret-color-txt"
-                />
-                <label for="--caret-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="caret">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerCaret" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--caret-color"
+                  id="colorPickerCaret"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">text</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--text-color-txt"
-                />
-                <label for="--text-color" class="button">
+              <div class="colorPicker inputAndButton" data-key="text">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerText" class="button">
                   <i class="fas fa-fw fa-palette"></i>
                 </label>
                 <input
                   type="color"
                   class="color"
                   value="#000000"
-                  id="--text-color"
-                />
-              </div>
-
-              <span class="spacer"></span>
-
-              <label class="colorText">error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--error-color-txt"
-                />
-                <label for="--error-color" class="button">
-                  <i class="fas fa-fw fa-palette"></i>
-                </label>
-                <input
-                  type="color"
-                  class="color"
-                  value="#000000"
-                  id="--error-color"
-                />
-              </div>
-              <label class="colorText">extra error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--error-extra-color-txt"
-                />
-                <label for="--error-extra-color" class="button">
-                  <i class="fas fa-fw fa-palette"></i>
-                </label>
-                <input
-                  type="color"
-                  class="color"
-                  value="#000000"
-                  id="--error-extra-color"
-                />
-              </div>
-              <label class="colorText">error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--colorful-error-color-txt"
-                />
-                <label for="--colorful-error-color" class="button">
-                  <i class="fas fa-fw fa-palette"></i>
-                </label>
-                <input
-                  type="color"
-                  class="color"
-                  value="#000000"
-                  id="--colorful-error-color"
-                />
-              </div>
-
-              <label class="colorText">extra error</label>
-              <div class="colorPicker inputAndButton">
-                <input
-                  type="text"
-                  value="#000000"
-                  class="input"
-                  id="--colorful-error-extra-color-txt"
-                />
-                <label for="--colorful-error-extra-color" class="button">
-                  <i class="fas fa-fw fa-palette"></i>
-                </label>
-                <input
-                  type="color"
-                  class="color"
-                  value="#000000"
-                  id="--colorful-error-extra-color"
+                  id="colorPickerText"
                 />
               </div>
             </div>
-            <div class="customThemeButtons">
-              <button id="loadCustomColorsFromPreset">load from preset</button>
-              <button id="shareCustomThemeButton">share</button>
-              <button id="saveCustomThemeButton">save as new</button>
+
+            <!-- <span class="spacer"></span> -->
+
+            <div class="customThemeInput">
+              <label class="colorText">error</label>
+              <div class="colorPicker inputAndButton" data-key="error">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerError" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="colorPickerError"
+                />
+              </div>
             </div>
+            <div class="customThemeInput">
+              <label class="colorText">extra error</label>
+              <div class="colorPicker inputAndButton" data-key="errorExtra">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerExtraError" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="colorPickerExtraError"
+                />
+              </div>
+            </div>
+
+            <span class="colorfulHeader">colorful mode</span>
+            <div class="customThemeInput">
+              <label class="colorText">error</label>
+              <div class="colorPicker inputAndButton" data-key="colorfulError">
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerColorfulError" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="colorPickerColorfulError"
+                />
+              </div>
+            </div>
+            <div class="customThemeInput">
+              <label class="colorText">extra error</label>
+              <div
+                class="colorPicker inputAndButton"
+                data-key="colorfulErrorExtra"
+              >
+                <input type="text" value="#000000" class="input" />
+                <label for="colorPickerColorfulErrorExtra" class="button">
+                  <i class="fas fa-fw fa-palette"></i>
+                </label>
+                <input
+                  type="color"
+                  class="color"
+                  value="#000000"
+                  id="colorPickerColorfulErrorExtra"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="customThemeButtons">
+            <button id="loadCustomColorsFromPreset">load from preset</button>
+            <button id="shareCustomThemeButton">share</button>
+            <button id="saveCustomThemeButton">save as new</button>
           </div>
         </div>
         <div tabContent="preset" class="tabContent">
@@ -1797,6 +1896,35 @@
       </div>
       <div class="buttons">
         <button>open</button>
+      </div>
+    </div>
+    <div class="section fpsLimit">
+      <div class="groupTitle">
+        <i class="fas fa-video"></i>
+        <span>animation fps limit</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Limit the maximum fps for animations. Setting this to "native" will run
+        the animations as fast as possible (at your monitor's refresh rate).
+        Setting this above your monitor's refresh rate will have no effect.
+      </div>
+      <!-- <div class="inputs">
+        <div class="rangeGroup">
+          <div class="value">---</div>
+          <input type="range" min="30" max="1000" step="10" />
+        </div>
+      </div> -->
+      <div class="inputs">
+        <button data-fpsLimit="native">native</button>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+        <input type="number" placeholder="custom limit" min="30" max="1000" />
       </div>
     </div>
     <div class="section resetSettings" data-section-id="resetSettings">

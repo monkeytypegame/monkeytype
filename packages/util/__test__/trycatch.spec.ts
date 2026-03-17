@@ -26,7 +26,7 @@ describe("tryCatch", () => {
 
     const customError = new CustomError("custom error", "E123");
     const result = await tryCatch<string, CustomError>(
-      Promise.reject(customError)
+      Promise.reject(customError),
     );
     expect(result.data).toBeNull();
     expect(result.error).toBe(customError);

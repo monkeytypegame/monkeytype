@@ -6,7 +6,7 @@ export type Predicate<Args extends unknown[]> = (...args: Args) => boolean;
  * @returns A new function that returns the negated boolean result.
  */
 export function not<T extends unknown[]>(
-  predicate: Predicate<T>
+  predicate: Predicate<T>,
 ): Predicate<T> {
   return (...args: T) => !predicate(...args);
 }

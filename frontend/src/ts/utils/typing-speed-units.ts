@@ -1,4 +1,4 @@
-import { TypingSpeedUnit } from "@monkeytype/contracts/schemas/configs";
+import { TypingSpeedUnit } from "@monkeytype/schemas/configs";
 
 type TypingSpeedUnitSettings = {
   fromWpm: (number: number) => number;
@@ -20,7 +20,7 @@ class Unit implements TypingSpeedUnitSettings {
     convertFactor: number,
     fullUnitString: string,
     histogramDataBucketSize: number,
-    historyStepSize: number
+    historyStepSize: number,
   ) {
     this.unit = unit;
     this.convertFactor = convertFactor;

@@ -49,7 +49,7 @@ export async function init(): Promise<void> {
   if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
     if (isDevEnvironment()) {
       Logger.warning(
-        "No email client configuration provided. Running without email."
+        "No email client configuration provided. Running without email.",
       );
     } else if (process.env["BYPASS_EMAILCLIENT"] === "true") {
       Logger.warning("BYPASS_EMAILCLIENT is enabled! Running without email.");
@@ -76,7 +76,8 @@ export async function init(): Promise<void> {
 
     if (!result) {
       throw new Error(
-        `Could not verify email client configuration: ` + JSON.stringify(result)
+        `Could not verify email client configuration: ` +
+          JSON.stringify(result),
       );
     }
 
@@ -96,7 +97,7 @@ type MailResult = {
 export async function sendEmail(
   templateName: EmailType,
   to: string,
-  data: EmailTaskContexts[EmailType]
+  data: EmailTaskContexts[EmailType],
 ): Promise<MailResult> {
   if (!isInitialized()) {
     return {
@@ -117,7 +118,7 @@ export async function sendEmail(
   type Result = { response: string; accepted: string[] };
 
   const { data: result, error } = await tryCatch(
-    transporter.sendMail(mailOptions) as Promise<Result>
+    transporter.sendMail(mailOptions) as Promise<Result>,
   );
 
   if (error) {
@@ -148,7 +149,7 @@ async function getTemplate(name: string): Promise<string> {
 
   const template = await fs.promises.readFile(
     `${EMAIL_TEMPLATES_DIRECTORY}/${name}`,
-    "utf-8"
+    "utf-8",
   );
 
   const html = mjml2html(template).html;
@@ -159,7 +160,7 @@ async function getTemplate(name: string): Promise<string> {
 
 async function fillTemplate<M extends EmailType>(
   type: M,
-  data: EmailTaskContexts[M]
+  data: EmailTaskContexts[M],
 ): Promise<string> {
   const template = await getTemplate(templates[type].templateName);
   return mustache.render(template, data);

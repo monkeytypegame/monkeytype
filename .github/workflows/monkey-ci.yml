@@ -1,8 +1,8 @@
 name: Monkey CI
 
 env:
-  PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.16.0"
+  PNPM_VERSION: "10.28.1"
+  NODE_VERSION: "24.11.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
@@ -44,12 +44,12 @@ jobs:
         with:
           filters: |
             json:
-              - 'frontend/**/*.json'
+              - 'frontend/static/**/*'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
             fe-src:
-              - 'frontend/**/*.{ts,scss}'
+              - 'frontend/**/*.{ts,scss,html}'
               - 'frontend/package.json'
             pkg-src:
               - 'packages/**/*'
@@ -80,7 +80,6 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - name: Checkout pnpm-lock
         uses: actions/checkout@v4
         with:
@@ -161,7 +160,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-be
+        run: npm run lint-fast-be && npm run lint-be
 
       - name: Build
         run: npm run build-be
@@ -175,7 +174,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -214,7 +212,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-fe
+        run: npm run lint-fast-fe && npm run lint-fe
 
       - name: Build
         run: npm run build-fe
@@ -238,16 +236,15 @@ jobs:
         id: filter
         with:
           filters: |
-            language-json:
-              - 'frontend/static/languages/*.json'
-            quotes-json:
-              - 'frontend/static/quotes/*.json'
-            other-json:
-              - 'frontend/static/funbox/*.json'
-              - 'frontend/static/fonts/*.json'
-              - 'frontend/static/themes/*.json'
-              - 'frontend/static/challenges/*.json'
-              - 'frontend/static/layouts/*.json'
+            languages:
+              - 'frontend/static/languages/**'
+            quotes:
+              - 'frontend/static/quotes/**'
+            others:
+              - 'frontend/static/layouts/**'
+              - 'frontend/static/themes/**'
+              - 'frontend/static/webfonts/**'
+              - 'frontend/static/challenges/**'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -277,19 +274,19 @@ jobs:
         run: pnpm install
 
       - name: Lint JSON
-        run: npm run pr-check-lint-json
+        run: npm run lint-json-assets
 
-      - name: Validate languages JSON
-        if: steps.filter.outputs.language-json == 'true'
-        run: npm run pr-check-language-json
+      - name: Validate language assets
+        if: steps.filter.outputs.languages == 'true'
+        run: npm run check-assets-languages
 
-      - name: Validate quotes JSON
-        if: steps.filter.outputs.quotes-json == 'true'
-        run: npm run pr-check-quote-json
+      - name: Validate quote assets
+        if: steps.filter.outputs.quotes == 'true'
+        run: npm run check-assets-quotes
 
-      - name: Validate other JSON
-        if: steps.filter.outputs.other-json == 'true'
-        run: npm run pr-check-other-json
+      - name: Validate other assets
+        if: steps.filter.outputs.others == 'true'
+        run: npm run check-assets-others
 
   ci-pkg:
     name: ci-pkg
@@ -297,7 +294,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -331,7 +327,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-pkg
+        run: npm run lint-fast-pkg && npm run lint-pkg
 
       - name: Build
         run: npm run build-pkg

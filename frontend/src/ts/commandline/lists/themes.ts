@@ -1,13 +1,13 @@
-import Config, * as UpdateConfig from "../../config";
+import Config, { setConfig } from "../../config";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
-import { Theme, ThemesList } from "../../constants/themes";
+import { ThemesList, ThemeWithName } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
 import * as ConfigEvent from "../../observables/config-event";
-import * as Misc from "../../utils/misc";
+import * as getErrorMessage from "../../utils/error";
 
-const isFavorite = (theme: Theme): boolean =>
+const isFavorite = (theme: ThemeWithName): boolean =>
   Config.favThemes.includes(theme.name);
 
 /**
@@ -15,17 +15,17 @@ const isFavorite = (theme: Theme): boolean =>
  * @param theme the theme to create a command for
  * @returns a command object for the theme
  */
-const createThemeCommand = (theme: Theme): Command => {
+const createThemeCommand = (theme: ThemeWithName): Command => {
   return {
     id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
     display: theme.name.replace(/_/g, " "),
     configValue: theme.name,
-    // customStyle: `color:${theme.mainColor};background:${theme.bgColor};`,
+    // customStyle: `color:${theme.main};background:${theme.bg};`,
     customData: {
-      mainColor: theme.mainColor,
-      bgColor: theme.bgColor,
-      subColor: theme.subColor,
-      textColor: theme.textColor,
+      main: theme.main,
+      bg: theme.bg,
+      sub: theme.sub,
+      text: theme.text,
       isFavorite: isFavorite(theme),
     },
     hover: (): void => {
@@ -33,7 +33,7 @@ const createThemeCommand = (theme: Theme): Command => {
       ThemeController.preview(theme.name);
     },
     exec: (): void => {
-      UpdateConfig.setTheme(theme.name);
+      setConfig("theme", theme.name);
     },
   };
 };
@@ -43,7 +43,7 @@ const createThemeCommand = (theme: Theme): Command => {
  * @param themes the themes to sort
  * @returns sorted array of themes
  */
-const sortThemesByFavorite = (themes: Theme[]): Theme[] => [
+const sortThemesByFavorite = (themes: ThemeWithName[]): ThemeWithName[] => [
   ...themes.filter(isFavorite),
   ...themes.filter(not(isFavorite)),
 ];
@@ -52,7 +52,7 @@ const subgroup: CommandsSubgroup = {
   title: "Theme...",
   configKey: "theme",
   list: sortThemesByFavorite(ThemesList).map((theme) =>
-    createThemeCommand(theme)
+    createThemeCommand(theme),
   ),
 };
 
@@ -65,25 +65,28 @@ const commands: Command[] = [
   },
 ];
 
-export function update(themes: Theme[]): void {
+export function update(themes: ThemeWithName[]): void {
   // clear the current list
   subgroup.list = [];
 
   // rebuild with favorites first, then non-favorites
   subgroup.list = sortThemesByFavorite(themes).map((theme) =>
-    createThemeCommand(theme)
+    createThemeCommand(theme),
   );
 }
 
 // subscribe to theme-related config events to update the theme command list
-ConfigEvent.subscribe((eventKey, _eventValue) => {
-  if (eventKey === "favThemes") {
+ConfigEvent.subscribe(({ key }) => {
+  if (key === "favThemes") {
     // update themes list when favorites change
     try {
       update(ThemesList);
     } catch (e: unknown) {
       console.error(
-        Misc.createErrorMessage(e, "Failed to update themes commands")
+        getErrorMessage.createErrorMessage(
+          e,
+          "Failed to update themes commands",
+        ),
       );
     }
   }

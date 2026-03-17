@@ -1,11 +1,13 @@
 import Ape from "../ape";
 import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import AnimatedModal from "../utils/animated-modal";
-import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
 import {
   Badge,
@@ -13,17 +15,11 @@ import {
   TwitterProfileSchema,
   UserProfileDetails,
   WebsiteSchema,
-} from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/users";
 import { InputIndicator } from "../elements/input-indicator";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 export function show(): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();
@@ -33,23 +29,18 @@ export function show(): void {
 }
 
 function hide(): void {
-  void modal.hide({
-    afterAnimation: async () => {
-      const snapshot = DB.getSnapshot();
-      if (!snapshot) return;
-      void Profile.update("account", snapshot);
-    },
-  });
+  void modal.hide();
 }
 
-const bioInput: JQuery<HTMLTextAreaElement> = $("#editProfileModal .bio");
-const keyboardInput: JQuery<HTMLTextAreaElement> = $(
-  "#editProfileModal .keyboard"
+const bioInput = qsr<HTMLTextAreaElement>("#editProfileModal .bio");
+const keyboardInput = qsr<HTMLTextAreaElement>("#editProfileModal .keyboard");
+const twitterInput = qsr<HTMLInputElement>("#editProfileModal .twitter");
+const githubInput = qsr<HTMLInputElement>("#editProfileModal .github");
+const websiteInput = qsr<HTMLInputElement>("#editProfileModal .website");
+const badgeIdsSelect = qsr("#editProfileModal .badgeSelectionContainer");
+const showActivityOnPublicProfileInput = qsr<HTMLInputElement>(
+  "#editProfileModal .editProfileShowActivityOnPublicProfile",
 );
-const twitterInput = $("#editProfileModal .twitter");
-const githubInput = $("#editProfileModal .github");
-const websiteInput = $("#editProfileModal .website");
-const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 
 const indicators = [
   addValidation(twitterInput, TwitterProfileSchema),
@@ -63,15 +54,18 @@ function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   const badges = snapshot.inventory?.badges ?? [];
-  const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
+  const { bio, keyboard, socialProfiles, showActivityOnPublicProfile } =
+    snapshot.details ?? {};
   currentSelectedBadgeId = -1;
 
-  bioInput.val(bio ?? "");
-  keyboardInput.val(keyboard ?? "");
-  twitterInput.val(socialProfiles?.twitter ?? "");
-  githubInput.val(socialProfiles?.github ?? "");
-  websiteInput.val(socialProfiles?.website ?? "");
-  badgeIdsSelect.html("");
+  bioInput.setValue(bio ?? "");
+  keyboardInput.setValue(keyboard ?? "");
+  twitterInput.setValue(socialProfiles?.twitter ?? "");
+  githubInput.setValue(socialProfiles?.github ?? "");
+  websiteInput.setValue(socialProfiles?.website ?? "");
+  badgeIdsSelect.setHtml("");
+  showActivityOnPublicProfileInput.native.checked =
+    showActivityOnPublicProfile ?? false;
 
   badges?.forEach((badge: Badge) => {
     if (badge.selected) {
@@ -82,10 +76,10 @@ function hydrateInputs(): void {
     const badgeWrapper = `<button type="button" class="badgeSelectionItem ${
       badge.selected ? "selected" : ""
     }" selection-id=${badge.id}>${badgeOption}</button>`;
-    badgeIdsSelect.append(badgeWrapper);
+    badgeIdsSelect?.appendHtml(badgeWrapper);
   });
 
-  badgeIdsSelect.prepend(
+  badgeIdsSelect?.prependHtml(
     `<button type="button" class="badgeSelectionItem ${
       currentSelectedBadgeId === -1 ? "selected" : ""
     }" selection-id=${-1}>
@@ -93,16 +87,20 @@ function hydrateInputs(): void {
         <i class="fas fa-frown-open"></i>
         <div class="text">none</div>
       </div>
-    </button>`
+    </button>`,
   );
 
-  $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
-    const selectionId = $(currentTarget).attr("selection-id") as string;
-    currentSelectedBadgeId = parseInt(selectionId, 10);
+  badgeIdsSelect
+    ?.qsa(".badgeSelectionItem")
+    ?.on("click", ({ currentTarget }) => {
+      const selectionId = (currentTarget as HTMLElement).getAttribute(
+        "selection-id",
+      ) as string;
+      currentSelectedBadgeId = parseInt(selectionId, 10);
 
-    badgeIdsSelect.find(".badgeSelectionItem").removeClass("selected");
-    $(currentTarget).addClass("selected");
-  });
+      badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
+      (currentTarget as HTMLElement).classList.add("selected");
+    });
 
   indicators.forEach((it) => it.hide());
 }
@@ -113,11 +111,13 @@ function initializeCharacterCounters(): void {
 }
 
 function buildUpdatesFromInputs(): UserProfileDetails {
-  const bio = (bioInput.val() ?? "") as string;
-  const keyboard = (keyboardInput.val() ?? "") as string;
-  const twitter = (twitterInput.val() ?? "") as string;
-  const github = (githubInput.val() ?? "") as string;
-  const website = (websiteInput.val() ?? "") as string;
+  const bio = bioInput.getValue() ?? "";
+  const keyboard = keyboardInput.getValue() ?? "";
+  const twitter = twitterInput.getValue() ?? "";
+  const github = githubInput.getValue() ?? "";
+  const website = websiteInput.getValue() ?? "";
+  const showActivityOnPublicProfile =
+    showActivityOnPublicProfileInput.isChecked() ?? false;
 
   const profileUpdates: UserProfileDetails = {
     bio,
@@ -127,6 +127,7 @@ function buildUpdatesFromInputs(): UserProfileDetails {
       github,
       website,
     },
+    showActivityOnPublicProfile,
   };
 
   return profileUpdates;
@@ -143,9 +144,8 @@ async function updateProfile(): Promise<void> {
     updates.socialProfiles?.github !== undefined &&
     updates.socialProfiles?.github.length > githubLengthLimit
   ) {
-    Notifications.add(
+    showErrorNotification(
       `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
-      -1
     );
     return;
   }
@@ -155,24 +155,23 @@ async function updateProfile(): Promise<void> {
     updates.socialProfiles?.twitter !== undefined &&
     updates.socialProfiles?.twitter.length > twitterLengthLimit
   ) {
-    Notifications.add(
+    showErrorNotification(
       `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
-      -1
     );
     return;
   }
 
-  Loader.show();
+  showLoaderBar();
   const response = await Ape.users.updateProfile({
     body: {
       ...updates,
       selectedBadgeId: currentSelectedBadgeId,
     },
   });
-  Loader.hide();
+  hideLoaderBar();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update profile: " + response.body.message, -1);
+    showErrorNotification("Failed to update profile", { response });
     return;
   }
 
@@ -185,14 +184,16 @@ async function updateProfile(): Promise<void> {
     }
   });
 
-  Notifications.add("Profile updated", 1);
+  DB.setSnapshot(snapshot);
+
+  showSuccessNotification("Profile updated");
 
   hide();
 }
 
 function addValidation(
-  element: JQuery<HTMLElement>,
-  schema: Zod.Schema
+  element: ElementWithUtils<HTMLInputElement>,
+  schema: Zod.Schema,
 ): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
@@ -220,7 +221,7 @@ function addValidation(
     if (!validationResult.success) {
       indicator.show(
         "invalid",
-        validationResult.error.errors.map((err) => err.message).join(", ")
+        validationResult.error.errors.map((err) => err.message).join(", "),
       );
       return;
     }
@@ -232,7 +233,7 @@ function addValidation(
 const modal = new AnimatedModal({
   dialogId: "editProfileModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", async (e) => {
+    modalEl.on("submit", async (e) => {
       e.preventDefault();
       await updateProfile();
     });

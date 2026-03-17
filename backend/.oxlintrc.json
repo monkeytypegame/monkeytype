@@ -1,25 +1,15 @@
 {
+  "ignorePatterns": ["node_modules", "__migration__", "dist", ".turbo"],
   "extends": [
-    "../packages/oxlint-config/index.json"
+    "../packages/oxlint-config/index.jsonc",
+    "../packages/oxlint-config/plugin.jsonc"
     // "@monkeytype/oxlint-config"
   ],
   "overrides": [
     {
-      "files": ["__tests__/**"],
-      "plugins": [
-        "typescript",
-        "unicorn",
-        "oxc",
-        "import",
-        "node",
-        "promise",
-        "jest",
-        "vitest"
-      ],
+      "files": ["src/**/*.ts"],
       "rules": {
-        "no-explicit-any": "allow",
-        "explicit-function-return-type": "off",
-        "ban-ts-comment": "off"
+        "import/no-cycle": "off" //todo: fix cycles and turn this on
       }
     }
   ]

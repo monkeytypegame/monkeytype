@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError, {
   getErrorMessage,
@@ -9,6 +8,7 @@ import * as DiscordUtils from "../../utils/discord";
 import {
   buildAgentLog,
   getFrontendUrl,
+  omit,
   replaceObjectId,
   replaceObjectIds,
   sanitizeString,
@@ -39,7 +39,7 @@ import {
   CountByYearAndDay,
   TestActivity,
   UserProfileDetails,
-} from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/users";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
@@ -51,6 +51,7 @@ import {
   AddTagRequest,
   AddTagResponse,
   CheckNamePathParameters,
+  CheckNameResponse,
   CreateUserRequest,
   DeleteCustomThemeRequest,
   EditCustomThemeRequst,
@@ -60,6 +61,7 @@ import {
   GetCustomThemesResponse,
   GetDiscordOauthLinkResponse,
   GetFavoriteQuotesResponse,
+  GetFriendsResponse,
   GetPersonalBestsQuery,
   GetPersonalBestsResponse,
   GetProfilePathParams,
@@ -89,13 +91,15 @@ import {
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import * as ConnectionsDal from "../../dal/connections";
+import { PersonalBest } from "@monkeytype/schemas/shared";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
   if (error) {
     throw new MonkeyError(
       422,
-      "Request to the Captcha API failed, please try again later"
+      "Request to the Captcha API failed, please try again later",
     );
   }
   if (!verified) {
@@ -104,7 +108,7 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 }
 
 export async function createNewUser(
-  req: MonkeyRequest<undefined, CreateUserRequest>
+  req: MonkeyRequest<undefined, CreateUserRequest>,
 ): Promise<MonkeyResponse> {
   const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
@@ -138,7 +142,7 @@ export async function createNewUser(
 }
 
 export async function sendVerificationEmail(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<MonkeyResponse> {
   const { email, uid } = req.ctx.decodedToken;
   const isVerified = (
@@ -154,7 +158,7 @@ export async function sendVerificationEmail(
             email,
             stack: e instanceof Error ? e.stack : JSON.stringify(e),
           }),
-          uid
+          uid,
         );
       })
   ).emailVerified;
@@ -165,20 +169,20 @@ export async function sendVerificationEmail(
   const userInfo = await UserDAL.getPartialUser(
     uid,
     "request verification email",
-    ["uid", "name", "email"]
+    ["uid", "name", "email"],
   );
 
   if (userInfo.email !== email) {
     throw new MonkeyError(
       400,
-      "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again."
+      "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again.",
     );
   }
 
   const { data: link, error } = await tryCatch(
     FirebaseAdmin()
       .auth()
-      .generateEmailVerificationLink(email, { url: getFrontendUrl() })
+      .generateEmailVerificationLink(email, { url: getFrontendUrl() }),
   );
 
   if (error) {
@@ -191,7 +195,7 @@ export async function sendVerificationEmail(
             decodedTokenEmail: email,
             userInfoEmail: userInfo.email,
           }),
-          userInfo.uid
+          userInfo.uid,
         );
       } else if (error.errorInfo.code === "auth/too-many-requests") {
         throw new MonkeyError(429, "Too many requests. Please try again later");
@@ -201,14 +205,14 @@ export async function sendVerificationEmail(
       ) {
         throw new MonkeyError(
           429,
-          "Too many Firebase requests. Please try again later"
+          "Too many Firebase requests. Please try again later",
         );
       } else {
         throw new MonkeyError(
           500,
           "Firebase failed to generate an email verification link: " +
             error.errorInfo.message,
-          JSON.stringify(error)
+          JSON.stringify(error),
         );
       }
     } else {
@@ -216,19 +220,19 @@ export async function sendVerificationEmail(
       if (message === undefined) {
         throw new MonkeyError(
           500,
-          "Failed to generate an email verification link. Unknown error occured"
+          "Failed to generate an email verification link. Unknown error occured",
         );
       } else {
         if (message.toLowerCase().includes("too_many_attempts")) {
           throw new MonkeyError(
             429,
-            "Too many requests. Please try again later"
+            "Too many requests. Please try again later",
           );
         } else {
           throw new MonkeyError(
             500,
             "Failed to generate an email verification link: " + message,
-            error.stack
+            error.stack,
           );
         }
       }
@@ -241,14 +245,14 @@ export async function sendVerificationEmail(
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>
+  req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>,
 ): Promise<MonkeyResponse> {
   const { email, captcha } = req.body;
   await verifyCaptcha(captcha);
   await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly.",
-    null
+    null,
   );
 }
 
@@ -261,7 +265,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       "name",
       "email",
       "discordId",
-    ])
+    ]),
   );
 
   if (error) {
@@ -286,12 +290,13 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
     deleteAllResults(uid),
     purgeUserFromDailyLeaderboards(
       uid,
-      req.ctx.configuration.dailyLeaderboards
+      req.ctx.configuration.dailyLeaderboards,
     ),
     purgeUserFromXpLeaderboards(
       uid,
-      req.ctx.configuration.leaderboards.weeklyXp
+      req.ctx.configuration.leaderboards.weeklyXp,
     ),
+    ConnectionsDal.deleteByUid(uid),
   ]);
 
   try {
@@ -308,7 +313,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   void addImportantLog(
     "user_deleted",
     `${userInfo?.email} ${userInfo?.name}`,
-    uid
+    uid,
   );
 
   return new MonkeyResponse("User deleted", null);
@@ -335,11 +340,11 @@ export async function resetUser(req: MonkeyRequest): Promise<MonkeyResponse> {
     deleteConfig(uid),
     purgeUserFromDailyLeaderboards(
       uid,
-      req.ctx.configuration.dailyLeaderboards
+      req.ctx.configuration.dailyLeaderboards,
     ),
     purgeUserFromXpLeaderboards(
       uid,
-      req.ctx.configuration.leaderboards.weeklyXp
+      req.ctx.configuration.leaderboards.weeklyXp,
     ),
   ];
 
@@ -353,7 +358,7 @@ export async function resetUser(req: MonkeyRequest): Promise<MonkeyResponse> {
 }
 
 export async function updateName(
-  req: MonkeyRequest<undefined, UpdateUserNameRequest>
+  req: MonkeyRequest<undefined, UpdateUserNameRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
@@ -382,10 +387,12 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
+
+  await ConnectionsDal.updateName(uid, name);
   void addImportantLog(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
-    uid
+    uid,
   );
 
   return new MonkeyResponse("User's name updated", null);
@@ -397,7 +404,7 @@ export async function clearPb(req: MonkeyRequest): Promise<MonkeyResponse> {
   await UserDAL.clearPb(uid);
   await purgeUserFromDailyLeaderboards(
     uid,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
   );
   void addImportantLog("user_cleared_pbs", "", uid);
 
@@ -405,18 +412,18 @@ export async function clearPb(req: MonkeyRequest): Promise<MonkeyResponse> {
 }
 
 export async function optOutOfLeaderboards(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.optOutOfLeaderboards(uid);
   await purgeUserFromDailyLeaderboards(
     uid,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
   );
   await purgeUserFromXpLeaderboards(
     uid,
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
   );
   void addImportantLog("user_opted_out_of_leaderboards", "", uid);
 
@@ -424,21 +431,20 @@ export async function optOutOfLeaderboards(
 }
 
 export async function checkName(
-  req: MonkeyRequest<undefined, undefined, CheckNamePathParameters>
-): Promise<MonkeyResponse> {
+  req: MonkeyRequest<undefined, undefined, CheckNamePathParameters>,
+): Promise<CheckNameResponse> {
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
 
   const available = await UserDAL.isNameAvailable(name, uid);
-  if (!available) {
-    throw new MonkeyError(409, "Username unavailable");
-  }
 
-  return new MonkeyResponse("Username available", null);
+  return new MonkeyResponse("Check username", {
+    available,
+  });
 }
 
 export async function updateEmail(
-  req: MonkeyRequest<undefined, UpdateEmailRequest>
+  req: MonkeyRequest<undefined, UpdateEmailRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   let { newEmail, previousEmail } = req.body;
@@ -454,7 +460,7 @@ export async function updateEmail(
       if (e.code === "auth/email-already-exists") {
         throw new MonkeyError(
           409,
-          "The email address is already in use by another account"
+          "The email address is already in use by another account",
         );
       } else if (e.code === "auth/invalid-email") {
         throw new MonkeyError(400, "Invalid email address");
@@ -465,7 +471,7 @@ export async function updateEmail(
           404,
           "User not found in the auth system",
           "update email",
-          uid
+          uid,
         );
       } else if (e.code === "auth/invalid-user-token") {
         throw new MonkeyError(401, "Invalid user token", "update email", uid);
@@ -478,14 +484,14 @@ export async function updateEmail(
   void addImportantLog(
     "user_email_updated",
     `changed email from ${previousEmail} to ${newEmail}`,
-    uid
+    uid,
   );
 
   return new MonkeyResponse("Email updated", null);
 }
 
 export async function updatePassword(
-  req: MonkeyRequest<undefined, UpdatePasswordRequest>
+  req: MonkeyRequest<undefined, UpdatePasswordRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { newPassword } = req.body;
@@ -511,7 +517,7 @@ type RelevantUserInfo = Omit<
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
-  return _.omit(user, [
+  return omit(user, [
     "bananas",
     "lbPersonalBests",
     "inbox",
@@ -530,7 +536,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const { data: userInfo, error } = await tryCatch(
-    UserDAL.getUser(uid, "get user")
+    UserDAL.getUser(uid, "get user"),
   );
 
   if (error) {
@@ -544,16 +550,16 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
           "get user",
-          uid
+          uid,
         );
       } catch (e) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-unsafe-member-access
         if (e.code === "auth/user-not-found") {
           throw new MonkeyError(
             404,
             "User not found in the database or the auth system. Please sign up again.",
             "get user",
-            uid
+            uid,
           );
         } else {
           throw e;
@@ -578,7 +584,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
-    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+    inboxUnreadSize = userInfo.inbox?.filter((mail) => !mail.read).length ?? 0;
   }
 
   if (!userInfo.name) {
@@ -601,7 +607,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   delete relevantUserInfo.tags;
 
   const customThemes = (relevantUserInfo.customThemes ?? []).map((it) =>
-    replaceObjectId(it)
+    replaceObjectId(it),
   );
   delete relevantUserInfo.customThemes;
 
@@ -622,7 +628,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
 }
 
 export async function getOauthLink(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetDiscordOauthLinkResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -636,7 +642,7 @@ export async function getOauthLink(
 }
 
 export async function linkDiscord(
-  req: MonkeyRequest<undefined, LinkDiscordRequest>
+  req: MonkeyRequest<undefined, LinkDiscordRequest>,
 ): Promise<LinkDiscordResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tokenType, accessToken, state } = req.body;
@@ -669,7 +675,7 @@ export async function linkDiscord(
     throw new MonkeyError(
       500,
       "Could not get Discord account info",
-      "discord id is undefined"
+      "discord id is undefined",
     );
   }
 
@@ -677,7 +683,7 @@ export async function linkDiscord(
   if (!discordIdAvailable) {
     throw new MonkeyError(
       409,
-      "This Discord account is linked to a different account"
+      "This Discord account is linked to a different account",
     );
   }
 
@@ -697,7 +703,7 @@ export async function linkDiscord(
 }
 
 export async function unlinkDiscord(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -723,7 +729,7 @@ export async function unlinkDiscord(
 }
 
 export async function addResultFilterPreset(
-  req: MonkeyRequest<undefined, AddResultFilterPresetRequest>
+  req: MonkeyRequest<undefined, AddResultFilterPresetRequest>,
 ): Promise<AddResultFilterPresetResponse> {
   const { uid } = req.ctx.decodedToken;
   const filter = req.body;
@@ -732,16 +738,16 @@ export async function addResultFilterPreset(
   const createdId = await UserDAL.addResultFilterPreset(
     uid,
     filter,
-    maxPresetsPerUser
+    maxPresetsPerUser,
   );
   return new MonkeyResponse(
     "Result filter preset created",
-    createdId.toHexString()
+    createdId.toHexString(),
   );
 }
 
 export async function removeResultFilterPreset(
-  req: MonkeyRequest<undefined, undefined, RemoveResultFilterPresetPathParams>
+  req: MonkeyRequest<undefined, undefined, RemoveResultFilterPresetPathParams>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { presetId } = req.params;
@@ -751,7 +757,7 @@ export async function removeResultFilterPreset(
 }
 
 export async function addTag(
-  req: MonkeyRequest<undefined, AddTagRequest>
+  req: MonkeyRequest<undefined, AddTagRequest>,
 ): Promise<AddTagResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagName } = req.body;
@@ -761,7 +767,7 @@ export async function addTag(
 }
 
 export async function clearTagPb(
-  req: MonkeyRequest<undefined, undefined, TagIdPathParams>
+  req: MonkeyRequest<undefined, undefined, TagIdPathParams>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
@@ -771,7 +777,7 @@ export async function clearTagPb(
 }
 
 export async function editTag(
-  req: MonkeyRequest<undefined, EditTagRequest>
+  req: MonkeyRequest<undefined, EditTagRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagId, newName } = req.body;
@@ -781,7 +787,7 @@ export async function editTag(
 }
 
 export async function removeTag(
-  req: MonkeyRequest<undefined, undefined, TagIdPathParams>
+  req: MonkeyRequest<undefined, undefined, TagIdPathParams>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
@@ -798,7 +804,7 @@ export async function getTags(req: MonkeyRequest): Promise<GetTagsResponse> {
 }
 
 export async function updateLbMemory(
-  req: MonkeyRequest<undefined, UpdateLeaderboardMemoryRequest>
+  req: MonkeyRequest<undefined, UpdateLeaderboardMemoryRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
@@ -809,18 +815,18 @@ export async function updateLbMemory(
 }
 
 export async function getCustomThemes(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetCustomThemesResponse> {
   const { uid } = req.ctx.decodedToken;
   const customThemes = await UserDAL.getThemes(uid);
   return new MonkeyResponse(
     "Custom themes retrieved",
-    replaceObjectIds(customThemes)
+    replaceObjectIds(customThemes),
   );
 }
 
 export async function addCustomTheme(
-  req: MonkeyRequest<undefined, AddCustomThemeRequest>
+  req: MonkeyRequest<undefined, AddCustomThemeRequest>,
 ): Promise<AddCustomThemeResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name, colors } = req.body;
@@ -830,7 +836,7 @@ export async function addCustomTheme(
 }
 
 export async function removeCustomTheme(
-  req: MonkeyRequest<undefined, DeleteCustomThemeRequest>
+  req: MonkeyRequest<undefined, DeleteCustomThemeRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { themeId } = req.body;
@@ -839,7 +845,7 @@ export async function removeCustomTheme(
 }
 
 export async function editCustomTheme(
-  req: MonkeyRequest<undefined, EditCustomThemeRequst>
+  req: MonkeyRequest<undefined, EditCustomThemeRequst>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { themeId, theme } = req.body;
@@ -849,7 +855,7 @@ export async function editCustomTheme(
 }
 
 export async function getPersonalBests(
-  req: MonkeyRequest<GetPersonalBestsQuery>
+  req: MonkeyRequest<GetPersonalBestsQuery>,
 ): Promise<GetPersonalBestsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
@@ -866,7 +872,7 @@ export async function getStats(req: MonkeyRequest): Promise<GetStatsResponse> {
 }
 
 export async function getFavoriteQuotes(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetFavoriteQuotesResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -876,7 +882,7 @@ export async function getFavoriteQuotes(
 }
 
 export async function addFavoriteQuote(
-  req: MonkeyRequest<undefined, AddFavoriteQuoteRequest>
+  req: MonkeyRequest<undefined, AddFavoriteQuoteRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -886,14 +892,14 @@ export async function addFavoriteQuote(
     uid,
     language,
     quoteId,
-    req.ctx.configuration.quotes.maxFavorites
+    req.ctx.configuration.quotes.maxFavorites,
   );
 
   return new MonkeyResponse("Quote added to favorites", null);
 }
 
 export async function removeFavoriteQuote(
-  req: MonkeyRequest<undefined, RemoveFavoriteQuoteRequest>
+  req: MonkeyRequest<undefined, RemoveFavoriteQuoteRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -904,7 +910,7 @@ export async function removeFavoriteQuote(
 }
 
 export async function getProfile(
-  req: MonkeyRequest<GetProfileQuery, undefined, GetProfilePathParams>
+  req: MonkeyRequest<GetProfileQuery, undefined, GetProfilePathParams>,
 ): Promise<GetProfileResponse> {
   const { uidOrName } = req.params;
 
@@ -929,8 +935,30 @@ export async function getProfile(
     lbOptOut,
   } = user;
 
-  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
-  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+  const extractValid = (
+    src: Record<string, PersonalBest[]>,
+    validKeys: string[],
+  ): Record<string, PersonalBest[]> => {
+    return validKeys.reduce((obj, key) => {
+      if (src?.[key] !== undefined) {
+        obj[key] = src[key];
+      }
+      return obj;
+    }, {});
+  };
+
+  const validTimePbs = extractValid(personalBests.time, [
+    "15",
+    "30",
+    "60",
+    "120",
+  ]);
+  const validWordsPbs = extractValid(personalBests.words, [
+    "10",
+    "25",
+    "50",
+    "100",
+  ]);
 
   const typingStats = {
     completedTests,
@@ -972,14 +1000,25 @@ export async function getProfile(
     uid: user.uid,
   } as UserProfile;
 
+  if (user.profileDetails?.showActivityOnPublicProfile) {
+    profileData.testActivity = generateCurrentTestActivity(user.testActivity);
+  } else {
+    delete profileData.testActivity;
+  }
   return new MonkeyResponse("Profile retrieved", profileData);
 }
 
 export async function updateProfile(
-  req: MonkeyRequest<undefined, UpdateUserProfileRequest>
+  req: MonkeyRequest<undefined, UpdateUserProfileRequest>,
 ): Promise<UpdateUserProfileResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
+  const {
+    bio,
+    keyboard,
+    socialProfiles,
+    selectedBadgeId,
+    showActivityOnPublicProfile,
+  } = req.body;
 
   const user = await UserDAL.getPartialUser(uid, "update user profile", [
     "banned",
@@ -1001,10 +1040,13 @@ export async function updateProfile(
   const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: _.mapValues(
-      socialProfiles,
-      sanitizeString
-    ) as UserProfileDetails["socialProfiles"],
+    socialProfiles: Object.fromEntries(
+      Object.entries(socialProfiles ?? {}).map(([key, value]) => [
+        key,
+        sanitizeString(value),
+      ]),
+    ),
+    showActivityOnPublicProfile,
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
@@ -1013,7 +1055,7 @@ export async function updateProfile(
 }
 
 export async function getInbox(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetUserInboxResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -1026,7 +1068,7 @@ export async function getInbox(
 }
 
 export async function updateInbox(
-  req: MonkeyRequest<undefined, UpdateUserInboxRequest>
+  req: MonkeyRequest<undefined, UpdateUserInboxRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mailIdsToMarkRead, mailIdsToDelete } = req.body;
@@ -1034,14 +1076,14 @@ export async function updateInbox(
   await UserDAL.updateInbox(
     uid,
     mailIdsToMarkRead ?? [],
-    mailIdsToDelete ?? []
+    mailIdsToDelete ?? [],
   );
 
   return new MonkeyResponse("Inbox updated", null);
 }
 
 export async function reportUser(
-  req: MonkeyRequest<undefined, ReportUserRequest>
+  req: MonkeyRequest<undefined, ReportUserRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const {
@@ -1069,7 +1111,7 @@ export async function reportUser(
 }
 
 export async function setStreakHourOffset(
-  req: MonkeyRequest<undefined, SetStreakHourOffsetRequest>
+  req: MonkeyRequest<undefined, SetStreakHourOffsetRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { hourOffset } = req.body;
@@ -1093,7 +1135,7 @@ export async function setStreakHourOffset(
 }
 
 export async function revokeAllTokens(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await AuthUtil.revokeTokensByUid(uid);
@@ -1106,26 +1148,26 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     "time",
     "15",
     "english",
-    uid
+    uid,
   );
 
   const allTime15EnglishCount = await LeaderboardsDAL.getCount(
     "time",
     "15",
-    "english"
+    "english",
   );
 
   const allTime60English = await LeaderboardsDAL.getRank(
     "time",
     "60",
     "english",
-    uid
+    uid,
   );
 
   const allTime60EnglishCount = await LeaderboardsDAL.getCount(
     "time",
     "60",
-    "english"
+    "english",
   );
 
   const english15 =
@@ -1157,7 +1199,7 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
 }
 
 export function generateCurrentTestActivity(
-  testActivity: CountByYearAndDay | undefined
+  testActivity: CountByYearAndDay | undefined,
 ): TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
@@ -1165,8 +1207,9 @@ export function generateCurrentTestActivity(
   let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
   let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
 
-  if (lastYearData === undefined && thisYearData === undefined)
+  if (lastYearData === undefined && thisYearData === undefined) {
     return undefined;
+  }
 
   lastYearData = lastYearData ?? [];
   thisYearData = thisYearData ?? [];
@@ -1175,15 +1218,15 @@ export function generateCurrentTestActivity(
   if (lastYearData.length < Dates.getDaysInYear(lastYear)) {
     lastYearData.push(
       ...(new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
-        undefined
-      ) as (number | null)[])
+        undefined,
+      ) as (number | null)[]),
     );
   }
   //use enough days of the last year to have 372 days in total to always fill the first week of the graph
   lastYearData = lastYearData.slice(-372 + thisYearData.length);
 
   const lastDay = Dates.startOfDay(
-    Dates.addDays(thisYear, thisYearData.length - 1)
+    Dates.addDays(thisYear, thisYearData.length - 1),
   );
 
   return {
@@ -1193,7 +1236,7 @@ export function generateCurrentTestActivity(
 }
 
 export async function getTestActivity(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetTestActivityResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
@@ -1213,7 +1256,7 @@ export async function getTestActivity(
 
   return new MonkeyResponse(
     "Test activity data retrieved",
-    user.testActivity ?? null
+    user.testActivity ?? null,
   );
 }
 
@@ -1226,7 +1269,7 @@ async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
 }
 
 export async function getCurrentTestActivity(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetCurrentTestActivityResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -1236,16 +1279,32 @@ export async function getCurrentTestActivity(
   const data = generateCurrentTestActivity(user.testActivity);
   return new MonkeyResponse(
     "Current test activity data retrieved",
-    data ?? null
+    data ?? null,
   );
 }
 
 export async function getStreak(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetStreakResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);
 
   return new MonkeyResponse("Streak data retrieved", user.streak ?? null);
+}
+
+export async function getFriends(
+  req: MonkeyRequest,
+): Promise<GetFriendsResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const premiumEnabled = req.ctx.configuration.users.premium.enabled;
+  const data = await UserDAL.getFriends(uid);
+
+  if (!premiumEnabled) {
+    for (const friend of data) {
+      delete friend.isPremium;
+    }
+  }
+
+  return new MonkeyResponse("Friends retrieved", data);
 }

@@ -1,7 +1,4 @@
-import {
-  Language,
-  LanguageSchema,
-} from "@monkeytype/contracts/schemas/languages";
+import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 
 export const LanguageList: Language[] = LanguageSchema._def.values;
 
@@ -42,6 +39,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   ],
   arabic: ["arabic", "arabic_10k"],
   arabic_egypt: ["arabic_egypt", "arabic_egypt_1k"],
+  arabic_morocco: ["arabic_morocco"],
   italian: [
     "italian",
     "italian_1k",
@@ -58,6 +56,10 @@ export const LanguageGroups: Record<string, Language[]> = {
   marathi: ["marathi"],
   chinese: [
     "chinese_traditional",
+    "chinese_traditional_1k",
+    "chinese_traditional_5k",
+    "chinese_traditional_10k",
+    "chinese_traditional_50k",
     "chinese_simplified",
     "chinese_simplified_1k",
     "chinese_simplified_5k",
@@ -117,7 +119,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "greeklish_25k",
   ],
   turkish: ["turkish", "turkish_1k", "turkish_5k"],
-  irish: ["irish"],
+  irish: ["irish", "irish_1k"],
   galician: ["galician"],
   thai: [
     "thai",
@@ -136,7 +138,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   dutch: ["dutch", "dutch_1k", "dutch_10k"],
   filipino: ["filipino", "filipino_1k"],
   danish: ["danish", "danish_1k", "danish_10k"],
-  hungarian: ["hungarian", "hungarian_2k"],
+  hungarian: ["hungarian", "hungarian_1k", "hungarian_2k"],
   norwegian_bokmal: [
     "norwegian_bokmal",
     "norwegian_bokmal_1k",
@@ -154,7 +156,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "norwegian_nynorsk_400k",
   ],
   hebrew: ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"],
-  icelandic: ["icelandic_1k"],
+  icelandic: ["icelandic", "icelandic_1k"],
   malagasy: ["malagasy", "malagasy_1k"],
   malay: ["malay", "malay_1k"],
   romanian: [
@@ -188,9 +190,15 @@ export const LanguageGroups: Record<string, Language[]> = {
   georgian: ["georgian"],
   yoruba: ["yoruba_1k"],
   swahili: ["swahili_1k"],
+  kinyarwanda: ["kinyarwanda"],
   maori: ["maori_1k"],
   catalan: ["catalan", "catalan_1k"],
-  bulgarian: ["bulgarian", "bulgarian_latin"],
+  bulgarian: [
+    "bulgarian",
+    "bulgarian_1k",
+    "bulgarian_latin",
+    "bulgarian_latin_1k",
+  ],
   bosnian: ["bosnian", "bosnian_4k"],
   esperanto: [
     "esperanto",
@@ -294,6 +302,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   occitan: ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"],
   kabyle: ["kabyle", "kabyle_1k", "kabyle_2k", "kabyle_5k", "kabyle_10k"],
   zulu: ["zulu"],
+  hawaiian: ["hawaiian", "hawaiian_1k"],
   code: [
     "code_python",
     "code_python_1k",
@@ -343,6 +352,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_arduino",
     "code_systemverilog",
     "code_elixir",
+    "code_gleam",
     "code_zig",
     "code_gdscript",
     "code_gdscript_2",
@@ -351,16 +361,23 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_ook",
     "code_typescript",
     "code_cobol",
+    "code_clojure",
     "code_common_lisp",
+    "code_erlang",
+    "code_ocaml",
     "code_odin",
     "code_fortran",
+    "code_abap",
+    "code_abap_1k",
+    "code_yoptascript",
+    "code_cuda",
   ],
   viossa: ["viossa", "viossa_njutro"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;
 export const LanguageGroupNames: LanguageGroupName[] = Array.from(
-  Object.keys(LanguageGroups)
+  Object.keys(LanguageGroups),
 );
 
 /**
@@ -369,7 +386,7 @@ export const LanguageGroupNames: LanguageGroupName[] = Array.from(
  * @returns the language group.
  */
 export function getGroupForLanguage(
-  language: Language
+  language: Language,
 ): LanguageGroupName | undefined {
   return LanguageGroupNames.find((group) => group.includes(language));
 }

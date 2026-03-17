@@ -5,16 +5,23 @@ import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { get as getActivePage } from "./states/active-page";
-import { isDevEnvironment } from "./utils/misc";
+import { getActivePage, getGlobalOffsetTop } from "./signals/core";
+import { isDevEnvironment } from "./utils/env";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
+import { FontName } from "@monkeytype/schemas/fonts";
+import { applyFontFamily } from "./controllers/theme-controller";
+import { qs, qsr } from "./utils/dom";
+import { createEffect } from "solid-js";
+import { convertRemToPixels } from "./utils/numbers";
 
 let isPreviewingFont = false;
-export function previewFontFamily(font: string): void {
+export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' +
+      font.replaceAll(/_/g, " ") +
+      '", "Roboto Mono", "Vazirharf", "monospace"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -38,37 +45,14 @@ export function setMediaQueryDebugLevel(level: number): void {
   }
 }
 
-function updateKeytips(): void {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  $("footer .keyTips").html(`
-    ${
-      Config.quickRestart === "off"
-        ? "<key>tab</key> + <key>enter</key>"
-        : `<key>${Config.quickRestart}</key>`
-    } - restart test<br>
-    <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-}
-
 if (isDevEnvironment()) {
-  $("header #logo .top").text("localhost");
-  $("head title").text($("head title").text() + " (localhost)");
-  $("body").append(
-    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+  qs("head title")?.setText(
+    (qs("head title")?.native.textContent ?? "") + " (localhost)",
+  );
+  qs("body")?.appendHtml(
+    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
   );
 }
-
-//stop space scrolling
-window.addEventListener("keydown", function (e) {
-  if (e.code === "Space" && e.target === document.body) {
-    e.preventDefault();
-  }
-});
 
 window.addEventListener("beforeunload", (event) => {
   // Cancel the event as stated by the standard.
@@ -78,21 +62,22 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      isCustomTextLong() ?? false
+      isCustomTextLong() ?? false,
     )
   ) {
     //ignore
   } else {
     if (TestState.isActive) {
       event.preventDefault();
-      // Chrome requires returnValue to be set.
+      // Included for legacy support, e.g. Chrome/Edge < 119
+      // oxlint-disable-next-line no-deprecated
       event.returnValue = "";
     }
   }
 });
 
 const debouncedEvent = debounce(250, () => {
-  if (getActivePage() === "test" && !TestUI.resultVisible) {
+  if (getActivePage() === "test" && !TestState.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
@@ -100,10 +85,9 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
-      void TestUI.updateWordsInputPosition();
-      if ($("#wordsInput").is(":focus")) {
-        Caret.show(true);
-      }
+      TestUI.updateWordsInputPosition();
+      TestUI.focusWords();
+      Caret.show();
     }, 250);
   }
 });
@@ -112,11 +96,19 @@ const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   throttledEvent();
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "quickRestart") updateKeytips();
+createEffect(() => {
+  qsr("#app").setStyle({
+    paddingTop: getGlobalOffsetTop() + convertRemToPixels(2) + "px",
+  });
+});
+
+ConfigEvent.subscribe(async ({ key }) => {
+  if (key === "fontFamily") {
+    await applyFontFamily();
+  }
 });

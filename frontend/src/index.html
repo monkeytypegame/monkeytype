@@ -1,37 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <load src="html/head.html" />
 
-  <body>
-    <div id="mediaQueryDebug"></div>
+  <body class="loading">
+    <mount data-component="overlays"></mount>
     <load src="html/warnings.html" />
-    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
-    <div id="backgroundLoader" style="display: none"></div>
-    <div id="bannerCenter" class="focus"></div>
-    <div id="notificationCenter">
-      <div class="clearAll button invisible" style="display: none">
-        <i class="fas fa-times"></i>
-        Clear all
-      </div>
-      <div class="history"></div>
-    </div>
+
+    <!-- theme component adds to the head element, don't move to head.html -->
+    <mount data-component="theme"></mount>
     <div id="barTimerProgress" class="timerMain">
       <div class="opacityWrapper" style="opacity: 0">
         <div class="bar"></div>
       </div>
     </div>
-    <div class="content-grid scrollToTopContainer">
-      <div class="scrollToTopButton invisible breakout">
-        <i class="fas fa-angle-double-up"></i>
-      </div>
-    </div>
+    <mount data-component="modals" id="solidmodals"></mount>
+    <mount data-component="popups" id="solidpopups"></mount>
     <div id="popups">
       <load src="html/popups.html" />
     </div>
     <!-- <div id="div-gpt-ad-mkt-0" style="height: 100vh"></div> -->
     <div id="app" class="content-grid focus hidden">
-      <load src="html/header.html" />
+      <mount data-component="header"></mount>
       <main class="full-width content-grid" style="height: 100%">
         <div id="ad-vertical-left-wrapper" class="ad advertisement ad-v focus">
           <div class="icon"><i class="fas fa-ad"></i></div>
@@ -42,17 +32,33 @@
           <div id="ad-vertical-right"></div>
         </div>
         <load src="html/pages/loading.html" />
-        <load src="html/pages/about.html" />
+
+        <div class="page pageAbout hidden full-width" id="pageAbout">
+          <mount data-component="aboutpage"></mount>
+        </div>
         <load src="html/pages/settings.html" />
-        <load src="html/pages/login.html" />
+        <div class="page pageLogin hidden" id="pageLogin">
+          <mount data-component="loginpage"></mount>
+        </div>
         <load src="html/pages/account.html" />
-        <load src="html/pages/profile.html" />
+
+        <div class="page pageProfile hidden" id="pageProfile">
+          <mount data-component="profilepage"></mount>
+        </div>
+
+        <div class="page pageProfileSearch hidden" id="pageProfileSearch">
+          <mount data-component="profilesearchpage"></mount>
+        </div>
+
         <load src="html/pages/test.html" />
         <load src="html/pages/404.html" />
         <load src="html/pages/account-settings.html" />
-        <load src="html/pages/leaderboards.html" />
+        <load src="html/pages/friends.html" />
+        <div class="page pageLeaderboards hidden" id="pageLeaderboards">
+          <mount data-component="leaderboardpage"></mount>
+        </div>
       </main>
-      <load src="html/footer.html" />
+      <mount data-component="footer"></mount>
       <div
         id="ad-footer-wrapper"
         class="full-width ad advertisement ad-h focus"
@@ -70,8 +76,9 @@
       async
       defer
     ></script>
-    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
+
     <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
     <script type="module" src="ts/index.ts"></script>
+    <mount data-component="devtools"></mount>
   </body>
 </html>

@@ -1,50 +1,53 @@
-import { z } from "zod";
+import { describe, it, expect, vi } from "vitest";
 import {
-  deepClone,
-  getErrorMessage,
   isObject,
-  sanitize,
+  escapeHTML,
+  promiseWithResolvers,
 } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
-
-//todo this file is in the wrong place
+import { Language } from "@monkeytype/schemas/languages";
+import { getErrorMessage } from "../../src/ts/utils/error";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
     it("should return correctly formatted strings", () => {
-      const tests = [
+      const tests: {
+        input: Language;
+        noSizeString: boolean;
+        expected: string;
+      }[] = [
         {
-          input: "language",
+          input: "english",
           noSizeString: false,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: false,
-          expected: "language 1k",
+          expected: "english 1k",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: true,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_lang",
+          input: "english_medical",
           noSizeString: false,
-          expected: "language lang",
+          expected: "english medical",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: false,
-          expected: "language lang 1k",
+          expected: "arabic egypt 1k",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: true,
-          expected: "language lang",
+          expected: "arabic egypt",
         },
       ];
 
@@ -56,22 +59,22 @@ describe("misc.ts", () => {
   });
   describe("removeLanguageSize", () => {
     it("should remove language size", () => {
-      const tests = [
+      const tests: { input: Language; expected: Language }[] = [
         {
-          input: "language",
-          expected: "language",
+          input: "english",
+          expected: "english",
         },
         {
-          input: "language_1k",
-          expected: "language",
+          input: "english_1k",
+          expected: "english",
         },
         {
-          input: "language_lang",
-          expected: "language_lang",
+          input: "arabic_egypt",
+          expected: "arabic_egypt",
         },
         {
-          input: "language_lang_1k",
-          expected: "language_lang",
+          input: "arabic_egypt_1k",
+          expected: "arabic_egypt",
         },
       ];
 
@@ -124,40 +127,25 @@ describe("misc.ts", () => {
       });
     });
   });
-  describe("deepClone", () => {
-    it("should correctly clone objects", () => {
+
+  describe("escapeHTML", () => {
+    it("should escape HTML characters correctly", () => {
       const tests = [
         {
-          input: {},
-          expected: {},
+          input: "hello world",
+          expected: "hello world",
         },
         {
-          input: { a: 1 },
-          expected: { a: 1 },
+          input: "<script>alert('xss')</script>",
+          expected: "&lt;script&gt;alert(&#39;xss&#39;)&lt;&#x2F;script&gt;",
         },
         {
-          input: { a: { b: 2 } },
-          expected: { a: { b: 2 } },
+          input: 'Hello "world" & friends',
+          expected: "Hello &quot;world&quot; &amp; friends",
         },
         {
-          input: { a: { b: 2 }, c: [1, 2, 3] },
-          expected: { a: { b: 2 }, c: [1, 2, 3] },
-        },
-        {
-          input: [],
-          expected: [],
-        },
-        {
-          input: [1, 2, 3],
-          expected: [1, 2, 3],
-        },
-        {
-          input: "string",
-          expected: "string",
-        },
-        {
-          input: 1,
-          expected: 1,
+          input: "Click `here` to continue",
+          expected: "Click &#x60;here&#x60; to continue",
         },
         {
           input: null,
@@ -167,14 +155,19 @@ describe("misc.ts", () => {
           input: undefined,
           expected: undefined,
         },
+        {
+          input: "",
+          expected: "",
+        },
       ];
 
       tests.forEach((test) => {
-        const result = deepClone(test.input);
-        expect(result).toStrictEqual(test.expected);
+        const result = escapeHTML(test.input);
+        expect(result).toBe(test.expected);
       });
     });
   });
+
   describe("getErrorMesssage", () => {
     it("should correctly get the error message", () => {
       const tests = [
@@ -230,56 +223,231 @@ describe("misc.ts", () => {
       });
     });
   });
-  describe("sanitize function", () => {
-    const schema = z.object({
-      name: z.string(),
-      age: z.number().positive(),
-      tags: z.array(z.string()),
+
+  describe("promiseWithResolvers", () => {
+    it("should resolve the promise from outside", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+
+      //WHEN
+      resolve(42);
+
+      //THEN
+      await expect(promise).resolves.toBe(42);
     });
 
-    it("should return the same object if it is valid", () => {
-      const obj = { name: "Alice", age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual(obj);
+    it("should resolve new promise after reset using same promise reference", async () => {
+      const { promise, resolve, reset } = promiseWithResolvers<number>();
+      const firstPromise = promise;
+
+      reset();
+
+      resolve(10);
+
+      await expect(firstPromise).resolves.toBe(10);
+      expect(promise).toBe(firstPromise);
     });
 
-    it("should remove properties with invalid values", () => {
-      const obj = { name: "Alice", age: -5, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        tags: ["developer", "coder"],
-        age: undefined,
-      });
+    it("should reject the promise from outside", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const error = new Error("test error");
+
+      //WHEN
+      reject(error);
+
+      //THEN
+      await expect(promise).rejects.toThrow("test error");
     });
 
-    it("should remove invalid array elements", () => {
-      const obj = {
-        name: "Alice",
-        age: 30,
-        tags: ["developer", 123, "coder"] as any,
-      };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        age: 30,
-        tags: ["developer", "coder"],
-      });
+    it("should work with void type", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers();
+
+      //WHEN
+      resolve();
+
+      //THEN
+      await expect(promise).resolves.toBeUndefined();
     });
 
-    it("should remove entire property if all array elements are invalid", () => {
-      const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        age: 30,
-        tags: undefined,
-      });
+    it("should allow multiple resolves (only first takes effect)", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+
+      //WHEN
+      resolve(42);
+      resolve(100); // This should have no effect
+
+      //THEN
+      await expect(promise).resolves.toBe(42);
     });
 
-    it("should remove object properties if they are invalid", () => {
-      const obj = { name: 123 as any, age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
-        age: 30,
-        tags: ["developer", "coder"],
-        name: undefined,
-      });
+    it("should reset and create a new promise", async () => {
+      //GIVEN
+      const { promise, resolve, reset } = promiseWithResolvers<number>();
+      resolve(42);
+
+      //WHEN
+      reset();
+      resolve(100);
+
+      //THEN
+      await expect(promise).resolves.toBe(100);
+    });
+
+    it("should keep the same promise reference after reset", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      const firstPromise = wrapper.promise;
+      wrapper.resolve(42);
+      await expect(firstPromise).resolves.toBe(42);
+
+      //WHEN
+      wrapper.reset();
+      const secondPromise = wrapper.promise;
+      wrapper.resolve(100);
+
+      //THEN
+      expect(firstPromise).toBe(secondPromise); // Same reference
+      await expect(wrapper.promise).resolves.toBe(100);
+    });
+
+    it("should allow reject after reset", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      wrapper.resolve(42);
+      await wrapper.promise;
+
+      //WHEN
+      wrapper.reset();
+      const error = new Error("after reset");
+      wrapper.reject(error);
+
+      //THEN
+      await expect(wrapper.promise).rejects.toThrow("after reset");
+    });
+
+    it("should work with complex types", async () => {
+      //GIVEN
+      type ComplexType = { id: number; data: string[] };
+      const { promise, resolve } = promiseWithResolvers<ComplexType>();
+      const data: ComplexType = { id: 1, data: ["a", "b", "c"] };
+
+      //WHEN
+      resolve(data);
+
+      //THEN
+      await expect(promise).resolves.toEqual(data);
+    });
+
+    it("should handle rejection with non-Error values", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+
+      //WHEN
+      reject("string error");
+
+      //THEN
+      await expect(promise).rejects.toBe("string error");
+    });
+
+    it("should allow chaining with then/catch", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+      const onFulfilled = vi.fn((value) => value * 2);
+      const chained = promise.then(onFulfilled);
+
+      //WHEN
+      resolve(21);
+
+      //THEN
+      await expect(chained).resolves.toBe(42);
+      expect(onFulfilled).toHaveBeenCalledWith(21);
+    });
+
+    it("should support async/await patterns", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<string>();
+
+      //WHEN
+      setTimeout(() => resolve("delayed"), 10);
+
+      //THEN
+      const result = await promise;
+      expect(result).toBe("delayed");
+    });
+
+    it("should resolve old promise reference after reset", async () => {
+      //GIVEN
+      const wrapper = promiseWithResolvers<number>();
+      const oldPromise = wrapper.promise;
+
+      //WHEN
+      wrapper.reset();
+      wrapper.resolve(42);
+
+      //THEN
+      // Old promise reference should still resolve with the same value
+      await expect(oldPromise).resolves.toBe(42);
+      expect(oldPromise).toBe(wrapper.promise);
+    });
+
+    it("should handle catch", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const error = new Error("test error");
+
+      //WHEN
+      const caught = promise.catch(() => "recovered");
+      reject(error);
+
+      //THEN
+      await expect(caught).resolves.toBe("recovered");
+    });
+
+    it("should call finally handler on resolution", async () => {
+      //GIVEN
+      const { promise, resolve } = promiseWithResolvers<number>();
+      const onFinally = vi.fn();
+
+      //WHEN
+      const final = promise.finally(onFinally);
+      resolve(42);
+
+      //THEN
+      await expect(final).resolves.toBe(42);
+      expect(onFinally).toHaveBeenCalledOnce();
+    });
+
+    it("should call finally handler on rejection", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const onFinally = vi.fn();
+      const error = new Error("test error");
+
+      //WHEN
+      const final = promise.finally(onFinally);
+      reject(error);
+
+      //THEN
+      await expect(final).rejects.toThrow("test error");
+      expect(onFinally).toHaveBeenCalledOnce();
+    });
+
+    it("should preserve rejection through finally", async () => {
+      //GIVEN
+      const { promise, reject } = promiseWithResolvers<number>();
+      const onFinally = vi.fn();
+      const error = new Error("preserved error");
+
+      //WHEN
+      const final = promise.finally(onFinally);
+      reject(error);
+
+      //THEN
+      await expect(final).rejects.toThrow("preserved error");
+      expect(onFinally).toHaveBeenCalled();
     });
   });
 });

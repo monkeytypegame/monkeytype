@@ -1,0 +1,16 @@
+{
+  "workspaces": {
+    "backend": {
+      "entry": "src/server.ts",
+      "project": "src/**/*.ts"
+    },
+    "frontend": {
+      "entry": "src/ts/index.ts",
+      "project": "src/ts/**/*.ts"
+    },
+    "packages/*": {
+      "entry": "src/index.ts",
+      "project": "src/**/*.ts"
+    }
+  }
+}

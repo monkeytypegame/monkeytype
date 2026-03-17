@@ -1,18 +1,17 @@
-import {
-  CustomTextLimitMode,
-  CustomTextMode,
-} from "@monkeytype/contracts/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CompletedEventCustomTextSchema } from "@monkeytype/contracts/schemas/results";
-import { deepClone } from "../utils/misc";
+import {
+  CustomTextSettings,
+  CustomTextSettingsSchema,
+} from "@monkeytype/schemas/results";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
 
 const CustomTextLongObjectSchema = z.record(
   z.string(),
-  z.object({ text: z.string(), progress: z.number() })
+  z.object({ text: z.string(), progress: z.number() }),
 );
 type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
 
@@ -28,14 +27,6 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
-export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
-  textLen: true,
-}).extend({
-  text: z.array(z.string()).min(1),
-});
-
-export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
-
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 
 const defaultCustomTextSettings: CustomTextSettings = {
@@ -50,7 +41,7 @@ const customTextSettings = new LocalStorageWithSchema({
   schema: CustomTextSettingsSchema,
   fallback: defaultCustomTextSettings,
   migrate: (oldData, _zodIssues) => {
-    const fallback = deepClone(defaultCustomTextSettings);
+    const fallback = structuredClone(defaultCustomTextSettings);
 
     if (typeof oldData !== "object" || oldData === null) {
       return fallback;
@@ -144,13 +135,15 @@ export function getCustomText(name: string, long = false): string[] {
   if (long) {
     const customTextLong = getLocalStorageLong();
     const customText = customTextLong[name];
-    if (customText === undefined)
+    if (customText === undefined) {
       throw new Error(`Custom text ${name} not found`);
+    }
     return customText.text.split(/ +/);
   } else {
     const customText = getLocalStorage()[name];
-    if (customText === undefined)
+    if (customText === undefined) {
       throw new Error(`Custom text ${name} not found`);
+    }
     return customText.split(/ +/);
   }
 }
@@ -158,7 +151,7 @@ export function getCustomText(name: string, long = false): string[] {
 export function setCustomText(
   name: string,
   text: string | string[],
-  long = false
+  long = false,
 ): boolean {
   if (long) {
     const customText = getLocalStorageLong();
@@ -196,7 +189,7 @@ export function setCustomText(
 export function deleteCustomText(name: string, long: boolean): void {
   const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  // oxlint-disable-next-line no-dynamic-delete
   delete customText[name];
 
   if (long) {
@@ -215,7 +208,7 @@ export function getCustomTextLongProgress(name: string): number {
 
 export function setCustomTextLongProgress(
   name: string,
-  progress: number
+  progress: number,
 ): void {
   const customTexts = getLocalStorageLong();
   const customText = customTexts[name];

@@ -1,5 +1,9 @@
-import * as Notifications from "../elements/notifications";
-import { debounce } from "throttle-debounce";
+import { ElementWithUtils, qsr } from "../utils/dom";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../stores/notifications";
 import {
   sendEmailVerification,
   updateProfile,
@@ -7,14 +11,16 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import { createErrorMessage } from "../utils/misc";
-import * as LoginPage from "../pages/login";
-import * as AccountController from "../controllers/account-controller";
+import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
-import { InputIndicator } from "../elements/input-indicator";
 import AnimatedModal from "../utils/animated-modal";
+import { resetIgnoreAuthCallback } from "../firebase";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
+import { UserNameSchema } from "@monkeytype/schemas/users";
+import { remoteValidation } from "../utils/remote-validation";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -22,20 +28,19 @@ function show(credential: UserCredential): void {
   void modal.show({
     mode: "dialog",
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl) => {
       signedInUser = credential;
 
       if (!CaptchaController.isCaptchaAvailable()) {
-        Notifications.add(
-          "Could not show google sign up popup: Captcha is not avilable. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-          -1
+        showErrorNotification(
+          "Could not show google sign up popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
         );
         return;
       }
       CaptchaController.reset("googleSignUpModal");
       CaptchaController.render(
-        $("#googleSignUpModal .captcha")[0] as HTMLElement,
-        "googleSignUpModal"
+        modalEl.qsr(".captcha").native,
+        "googleSignUpModal",
       );
       enableInput();
       disableButton();
@@ -51,12 +56,11 @@ function show(credential: UserCredential): void {
 async function hide(): Promise<void> {
   void modal.hide({
     afterAnimation: async () => {
+      resetIgnoreAuthCallback();
       if (signedInUser !== undefined) {
-        Notifications.add("Sign up process cancelled", 0, {
-          duration: 5,
+        showNoticeNotification("Sign up process cancelled", {
+          durationMs: 5000,
         });
-        LoginPage.hidePreloader();
-        LoginPage.enableInputs();
         if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
           await Ape.users.delete();
           await signedInUser?.user.delete().catch(() => {
@@ -72,24 +76,26 @@ async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if (!signedInUser) {
-    Notifications.add(
+    showErrorNotification(
       "Missing user credential. Please close the popup and try again.",
-      -1
     );
     return;
   }
 
   const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    Notifications.add("Please complete the captcha", 0);
+    showNoticeNotification("Please complete the captcha");
     return;
   }
 
   disableInput();
   disableButton();
 
-  Loader.show();
-  const name = $("#googleSignUpModal input").val() as string;
+  showLoaderBar();
+  const name = modal
+    .getModal()
+    .qsr<HTMLInputElement>("input")
+    .getValue() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create({ body: { name, captcha } });
@@ -100,22 +106,16 @@ async function apply(): Promise<void> {
     if (response.status === 200) {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
-      Notifications.add("Account created", 1);
-      LoginPage.enableInputs();
-      LoginPage.hidePreloader();
+      showSuccessNotification("Account created");
       await AccountController.loadUser(signedInUser.user);
 
       signedInUser = undefined;
-      Loader.hide();
+      hideLoaderBar();
       void hide();
     }
   } catch (e) {
     console.log(e);
-    const message = createErrorMessage(e, "Failed to sign in with Google");
-    Notifications.add(message, -1);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.enableSignUpButton();
+    showErrorNotification("Failed to sign in with Google", { error: e });
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser?.user.delete().catch(() => {
@@ -125,85 +125,49 @@ async function apply(): Promise<void> {
     AccountController.signOut();
     signedInUser = undefined;
     void hide();
-    Loader.hide();
+    hideLoaderBar();
     return;
   }
 }
 
 function enableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", false);
+  modal.getModal().qsr("button").enable();
 }
 
 function disableButton(): void {
-  $("#googleSignUpModal button").prop("disabled", true);
+  modal.getModal().qsr("button").disable();
 }
 
+const nameInputEl = qsr<HTMLInputElement>("#googleSignUpModal input");
+
 function enableInput(): void {
-  $("#googleSignUpModal input").prop("disabled", false);
+  nameInputEl?.enable();
 }
 
 function disableInput(): void {
-  $("#googleSignUpModal input").prop("disabled", true);
+  nameInputEl?.disable();
 }
 
-const nameIndicator = new InputIndicator($("#googleSignUpModal input"), {
-  available: {
-    icon: "fa-check",
-    level: 1,
-  },
-  unavailable: {
-    icon: "fa-times",
-    level: -1,
-  },
-  taken: {
-    icon: "fa-user",
-    level: -1,
-  },
-  checking: {
-    icon: "fa-circle-notch",
-    spinIcon: true,
-    level: 0,
+new ValidatedHtmlInputElement(nameInputEl, {
+  schema: UserNameSchema,
+  isValid: remoteValidation(
+    async (name) => Ape.users.getNameAvailability({ params: { name } }),
+    { check: (data) => data.available || "Name not available" },
+  ),
+  debounceDelay: 1000,
+  callback: (result) => {
+    if (result.status === "success") {
+      enableButton();
+    } else {
+      disableButton();
+    }
   },
 });
 
-const checkNameDebounced = debounce(1000, async () => {
-  const val = $("#googleSignUpModal input").val() as string;
-  if (!val) return;
-  const response = await Ape.users.getNameAvailability({
-    params: { name: val },
-  });
-
-  if (response.status === 200) {
-    nameIndicator.show("available", response.body.message);
-    enableButton();
-  } else if (response.status === 422) {
-    nameIndicator.show("unavailable", response.body.message);
-  } else if (response.status === 409) {
-    nameIndicator.show("taken", response.body.message);
-  } else {
-    nameIndicator.show("unavailable");
-    Notifications.add(
-      "Failed to check name availability: " + response.body.message,
-      -1
-    );
-  }
-});
-
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.addEventListener("submit", (e) => {
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     void apply();
-  });
-  modalEl.querySelector("input")?.addEventListener("input", () => {
-    disableButton();
-    const val = $("#googleSignUpModal input").val() as string;
-    if (val === "") {
-      nameIndicator.hide();
-      return;
-    } else {
-      nameIndicator.show("checking");
-      checkNameDebounced();
-    }
   });
 }
 

@@ -51,7 +51,7 @@ export async function connect(): Promise<void> {
 
   mongoClient = new MongoClient(
     DB_URI ?? global.__MONGO_URI__, // Set in tests only
-    connectionOptions
+    connectionOptions,
   );
 
   try {
@@ -60,7 +60,7 @@ export async function connect(): Promise<void> {
   } catch (error) {
     Logger.error(getErrorMessage(error) ?? "Unknown error");
     Logger.error(
-      "Failed to connect to database. Exiting with exit status code 1."
+      "Failed to connect to database. Exiting with exit status code 1.",
     );
     process.exit(1);
   }

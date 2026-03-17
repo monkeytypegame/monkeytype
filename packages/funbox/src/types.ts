@@ -1,4 +1,4 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
@@ -21,6 +21,7 @@ export type FunboxProperty =
   | "noLigatures"
   | `toPush:${number}`
   | "wordOrder:reverse"
+  | "reverseDirection"
   | "ignoreReducedMotion";
 
 type FunboxCSSModification = "typingTest" | "words" | "body" | "main";

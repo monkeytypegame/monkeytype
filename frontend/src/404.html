@@ -1,6 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <load src="html/head.html" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 Not Found | Monkeytype</title>
+    <link rel="stylesheet" href="styles/standalone.scss" />
+    <link id="favicon" rel="shortcut icon" href="images/fav.png" />
+    <link rel="shortcut icon" href="images/fav.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <meta name="name" content="Monkeytype" />
+    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
+    <meta
+      name="description"
+      content="The most customizable typing test website with a minimal design and a ton of features. Test yourself in various modes, track your progress and improve your speed."
+    />
+    <meta
+      name="keywords"
+      content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
+    />
+    <meta name="author" content="Miodec" />
+    <meta property="og:title" content="404 Not Found | Monkeytype" />
+    <meta property="og:url" content="https://monkeytype.com/" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="The most customizable typing test website with a minimal design and a ton of features. Test yourself in various modes, track your progress and improve your speed."
+    />
+    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
+    <meta name="twitter:title" content="404 Not Found | Monkeytype" />
+    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
   <body>
     <script type="module" async>
       import { loadCSS } from "./ts/utils/misc";
@@ -11,6 +48,72 @@
       document.title = "404 Not Found | Monkeytype";
     </script>
     <load src="html/warnings.html" />
+    <style>
+      h1 {
+        font-weight: unset;
+        font-size: 2rem;
+        margin-top: 3rem;
+        color: var(--sub-color);
+      }
+      header #logo .icon svg path {
+        fill: var(--sub-color);
+      }
+      a.button {
+        border-radius: var(--roundness);
+        text-decoration: none;
+        background: var(--sub-alt-color);
+        color: var(--text-color);
+        &:hover {
+          background: var(--text-color);
+          color: var(--bg-color);
+        }
+      }
+      .page404 {
+        display: grid;
+        justify-content: center;
+        height: 100%;
+        align-content: center;
+      }
+      .page404 .content {
+        display: grid;
+        grid-auto-flow: column;
+        gap: 4rem;
+        grid-template-columns: 300px 300px;
+      }
+      .page404 .image {
+        width: 100%;
+        align-self: center;
+        background-image: url("/images/monkeymeme.jpg");
+        aspect-ratio: 300/199;
+        background-size: contain;
+        border-radius: var(--roundness);
+      }
+
+      .page404 .title {
+        font-size: 5rem;
+        line-height: 4rem;
+        /* margin: -3rem; */
+        color: var(--main-color);
+        align-self: center;
+      }
+
+      .page404 .side {
+        justify-items: center;
+        display: grid;
+        gap: 1rem;
+        text-align: center;
+      }
+      .page404 .big {
+        font-size: 10rem;
+        line-height: 10rem;
+        color: var(--sub-color);
+      }
+
+      .page404 .button {
+        padding: 1rem 2rem;
+        width: max-content;
+      }
+    </style>
     <div id="app" class="content-grid focus">
       <header class="focus">
         <a id="logo" href="/" router-link="">
@@ -62,6 +165,5 @@
         <load src="html/pages/404.html" />
       </main>
     </div>
-    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
   </body>
 </html>

@@ -1,233 +1,10 @@
-import * as JSONData from "../utils/json-data";
-
-export type Keycode =
-  | "Backquote"
-  | "Digit1"
-  | "Digit2"
-  | "Digit3"
-  | "Digit4"
-  | "Digit5"
-  | "Digit6"
-  | "Digit7"
-  | "Digit8"
-  | "Digit9"
-  | "Digit0"
-  | "Minus"
-  | "Equal"
-  | "KeyQ"
-  | "KeyW"
-  | "KeyE"
-  | "KeyR"
-  | "KeyT"
-  | "KeyY"
-  | "KeyU"
-  | "KeyI"
-  | "KeyO"
-  | "KeyP"
-  | "BracketLeft"
-  | "BracketRight"
-  | "Backslash"
-  | "KeyA"
-  | "KeyS"
-  | "KeyD"
-  | "KeyF"
-  | "KeyG"
-  | "KeyH"
-  | "KeyJ"
-  | "KeyK"
-  | "KeyL"
-  | "Semicolon"
-  | "Quote"
-  | "KeyZ"
-  | "KeyX"
-  | "KeyC"
-  | "KeyV"
-  | "KeyB"
-  | "KeyN"
-  | "KeyM"
-  | "Comma"
-  | "Period"
-  | "Slash"
-  | "Space"
-  | "ShiftLeft"
-  | "IntlBackslash"
-  | "ShiftRight"
-  | "ArrowUp"
-  | "ArrowLeft"
-  | "ArrowDown"
-  | "ArrowRight"
-  | "NumpadMultiply"
-  | "NumpadSubtract"
-  | "NumpadAdd"
-  | "NumpadDecimal"
-  | "NumpadEqual"
-  | "NumpadDivide"
-  | "Numpad0"
-  | "Numpad1"
-  | "Numpad2"
-  | "Numpad3"
-  | "Numpad4"
-  | "Numpad5"
-  | "Numpad6"
-  | "Numpad7"
-  | "Numpad8"
-  | "Numpad9"
-  | "NumpadEnter"
-  | "Enter"
-  | "Backspace";
-
-const qwertyKeycodeKeymap: Keycode[][] = [
-  [
-    "Backquote",
-    "Digit1",
-    "Digit2",
-    "Digit3",
-    "Digit4",
-    "Digit5",
-    "Digit6",
-    "Digit7",
-    "Digit8",
-    "Digit9",
-    "Digit0",
-    "Minus",
-    "Equal",
-  ],
-  [
-    "KeyQ",
-    "KeyW",
-    "KeyE",
-    "KeyR",
-    "KeyT",
-    "KeyY",
-    "KeyU",
-    "KeyI",
-    "KeyO",
-    "KeyP",
-    "BracketLeft",
-    "BracketRight",
-    "Backslash",
-  ],
-  [
-    "KeyA",
-    "KeyS",
-    "KeyD",
-    "KeyF",
-    "KeyG",
-    "KeyH",
-    "KeyJ",
-    "KeyK",
-    "KeyL",
-    "Semicolon",
-    "Quote",
-  ],
-  [
-    "KeyZ",
-    "KeyX",
-    "KeyC",
-    "KeyV",
-    "KeyB",
-    "KeyN",
-    "KeyM",
-    "Comma",
-    "Period",
-    "Slash",
-  ],
-  ["Space"],
-];
-
-const leftSideKeys: Set<Keycode> = new Set([
-  "Backquote",
-  "Digit1",
-  "Digit2",
-  "Digit3",
-  "Digit4",
-  "Digit5",
-  "Digit6",
-
-  "KeyQ",
-  "KeyW",
-  "KeyE",
-  "KeyR",
-  "KeyT",
-  "KeyY",
-
-  "KeyA",
-  "KeyS",
-  "KeyD",
-  "KeyF",
-  "KeyG",
-
-  "ShiftLeft",
-  "IntlBackslash",
-  "KeyZ",
-  "KeyX",
-  "KeyC",
-  "KeyV",
-  "KeyB",
-
-  "Space",
-]);
-
-const rightSideKeys: Set<Keycode> = new Set([
-  "Digit6",
-  "Digit7",
-  "Digit8",
-  "Digit9",
-  "Digit0",
-  "Minus",
-  "Equal",
-  "Backspace",
-
-  "KeyY",
-  "KeyU",
-  "KeyI",
-  "KeyO",
-  "KeyP",
-  "BracketLeft",
-  "BracketRight",
-  "Backslash",
-
-  "KeyH",
-  "KeyJ",
-  "KeyK",
-  "KeyL",
-  "Semicolon",
-  "Quote",
-  "Enter",
-
-  "KeyB",
-  "KeyN",
-  "KeyM",
-  "Comma",
-  "Period",
-  "Slash",
-  "ShiftRight",
-
-  "ArrowUp",
-  "ArrowLeft",
-  "ArrowDown",
-  "ArrowRight",
-
-  "NumpadMultiply",
-  "NumpadSubtract",
-  "NumpadAdd",
-  "NumpadDecimal",
-  "NumpadEqual",
-  "NumpadDivide",
-  "Numpad0",
-  "Numpad1",
-  "Numpad2",
-  "Numpad3",
-  "Numpad4",
-  "Numpad5",
-  "Numpad6",
-  "Numpad7",
-  "Numpad8",
-  "Numpad9",
-  "NumpadEnter",
-
-  "Space",
-]);
+import { LayoutObject } from "@monkeytype/schemas/layouts";
+import {
+  Keycode,
+  leftSideKeys,
+  qwertyKeycodeKeymap,
+  rightSideKeys,
+} from "../constants/keys";
 
 /**
  * Converts a key to a keycode based on a layout
@@ -237,7 +14,7 @@ const rightSideKeys: Set<Keycode> = new Set([
  */
 export function layoutKeyToKeycode(
   key: string,
-  layout: JSONData.Layout
+  layout: LayoutObject,
 ): Keycode | undefined {
   const rows: string[][][] = Object.values(layout.keys);
 
@@ -286,9 +63,9 @@ export function keycodeToKeyboardSide(keycode: Keycode): {
  * @param layout Layout object from our JSON data (e.g., `layouts["qwerty"]`)
  * @returns layout Layout object from our JSON data (e.g., `layouts["qwerty"]`)
  */
-export function mirrorLayoutKeys(layout: JSONData.Layout): JSONData.Layout {
+export function mirrorLayoutKeys(layout: LayoutObject): LayoutObject {
   const reverse_index = [11, 10, 10, 10, 10];
-  const mirror_keys: JSONData.Keys = {
+  const mirror_keys: LayoutObject["keys"] = {
     row1: [
       ...[...layout.keys.row1.slice(0, reverse_index[0])].reverse(),
       ...layout.keys.row1.slice(reverse_index[0]),
@@ -310,6 +87,6 @@ export function mirrorLayoutKeys(layout: JSONData.Layout): JSONData.Layout {
       ...layout.keys.row5.slice(reverse_index[4]),
     ],
   };
-  const layoutCopy: JSONData.Layout = { ...layout, keys: mirror_keys };
+  const layoutCopy = { ...layout, keys: mirror_keys };
   return layoutCopy;
 }

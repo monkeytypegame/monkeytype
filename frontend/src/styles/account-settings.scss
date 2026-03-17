@@ -116,15 +116,12 @@
             }
           }
         }
-        &[data-tab="apeKeys"] {
+        &[data-tab="apeKeys"],
+        &[data-tab="blockedUsers"] {
           table {
             width: 100%;
             border-spacing: 0;
             border-collapse: collapse;
-
-            tr td:first-child {
-              text-align: center;
-            }
 
             tr.me {
               td {
@@ -183,6 +180,21 @@
               display: flex;
               gap: 0.5rem;
             }
+          }
+        }
+
+        &[data-tab="apeKeys"] {
+          tr td:first-child {
+            text-align: center;
+          }
+        }
+        &[data-tab="blockedUsers"] {
+          tr td:first-child a {
+            text-decoration: none;
+            color: var(--text-color);
+          }
+          tr td:last-child {
+            text-align: right;
           }
         }
       }

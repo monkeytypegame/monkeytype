@@ -75,12 +75,6 @@ body.darkMode {
   }
 }
 
-#registerCaptchaModal {
-  .modal {
-    box-sizing: unset;
-  }
-}
-
 #miniResultChartModal {
   .modal {
     overflow: hidden;
@@ -105,14 +99,19 @@ body.darkMode {
     //   "textArea textArea checkboxes"
     //   "ok ok ok";
     grid-template-areas:
-      "topButtons topButtons checkboxes"
-      "textArea textArea checkboxes"
-      "ok ok checkboxes";
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: min-content 1fr min-content;
+      "topButtons checkboxes"
+      "topButtons2 checkboxes"
+      "textArea checkboxes"
+      "ok checkboxes";
+    grid-template-columns: auto 20rem;
+    grid-template-rows: min-content min-content 1fr min-content;
 
     .buttonsTop {
       grid-area: topButtons;
+    }
+
+    .buttonsTop2 {
+      grid-area: topButtons2;
     }
 
     .textAreaWrapper {
@@ -170,7 +169,13 @@ body.darkMode {
     .buttonsTop {
       display: grid;
       // grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .buttonsTop2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
     }
 
@@ -199,7 +204,7 @@ body.darkMode {
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      min-height: 589px;
+      min-height: 524px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
@@ -441,6 +446,70 @@ body.darkMode {
       background-color: var(--sub-alt-color);
       border-radius: var(--roundness);
       grid-area: divider;
+    }
+  }
+}
+
+#customGeneratorModal {
+  .modal {
+    max-width: 600px;
+
+    .main {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .bottom {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .separator {
+      height: 0.25rem;
+      width: 100%;
+      background-color: var(--sub-alt-color);
+      border-radius: var(--roundness);
+    }
+
+    .group {
+      display: grid;
+      gap: 0.5rem;
+
+      .title {
+        color: var(--sub-color);
+      }
+    }
+
+    .lengthgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      column-gap: 1rem;
+    }
+
+    .tip {
+      color: var(--sub-color);
+      font-size: 0.8rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      background: var(--sub-alt-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: var(--roundness);
+
+      &::placeholder {
+        color: var(--sub-color);
+      }
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
   }
 }
@@ -702,12 +771,6 @@ body.darkMode {
   }
 }
 
-#devOptionsModal {
-  .modal {
-    max-width: 400px;
-  }
-}
-
 #shareTestSettingsModal {
   .modal {
     max-width: 600px;
@@ -836,17 +899,35 @@ body.darkMode {
       border-collapse: collapse;
       color: var(--text-color);
 
+      tbody {
+        clip-path: inset(0);
+      }
+
       td {
         padding: 0.5rem 0.5rem;
+      }
+
+      .modesticky {
+        position: sticky;
+        top: calc(1rem - 2px);
+        z-index: 2;
       }
 
       thead {
         color: var(--sub-color);
         font-size: 0.75rem;
+        position: sticky;
+        top: -2rem;
+        background-color: var(--bg-color) !important;
+        z-index: 3;
       }
 
-      tbody tr:nth-child(odd) td {
+      tbody tr.odd {
         background: var(--sub-alt-color);
+      }
+
+      tbody tr.even {
+        background: var(--bg-color);
       }
 
       td.infoIcons span {
@@ -1309,125 +1390,6 @@ body.darkMode {
     }
   }
 }
-
-#versionHistoryModal {
-  .modal {
-    @extend .ffscroll;
-    overflow-y: scroll;
-    max-width: 1200px;
-
-    hr {
-      background: var(--sub-alt-color);
-      height: 0.25rem;
-      border: none;
-      border-radius: var(--roundness);
-      margin: 1rem 0;
-    }
-
-    h3 {
-      color: var(--sub-color);
-      font-size: 1.25rem;
-      margin: 0 0 0.5rem 0;
-    }
-
-    .preloader {
-      color: var(--main-color);
-      display: grid;
-      place-content: center center;
-      font-size: 2rem;
-    }
-
-    .tip {
-      text-align: center;
-      color: var(--sub-color);
-    }
-
-    .releases {
-      display: grid;
-      gap: 4rem;
-
-      .release {
-        display: grid;
-        grid-template-areas:
-          "title date"
-          "body body";
-
-        .title {
-          grid-area: title;
-          font-size: 2rem;
-          color: var(--sub-color);
-        }
-
-        .date {
-          grid-area: date;
-          text-align: right;
-          color: var(--sub-color);
-          align-self: center;
-        }
-
-        .body {
-          grid-area: body;
-          color: var(--text-color);
-        }
-
-        &:last-child {
-          margin-bottom: 2rem;
-        }
-      }
-    }
-  }
-}
-
-#supportModal {
-  .modal {
-    max-width: 900px;
-    width: 100%;
-    // height: 400px;
-    overflow-y: scroll;
-    max-height: 100%;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    display: grid;
-    gap: 1rem;
-    @extend .ffscroll;
-
-    .text {
-      color: var(--text-color);
-    }
-
-    .subtext {
-      color: var(--sub-color);
-      font-size: 0.75rem;
-    }
-
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-      gap: 1rem;
-
-      button,
-      .button {
-        display: block;
-        width: 100%;
-        height: 100%;
-        padding: 1rem 0;
-        display: grid;
-        gap: 1rem;
-        text-decoration: none;
-        .text {
-          transition: 0.25s;
-        }
-        &:hover .text {
-          color: var(--bg-color);
-        }
-        .icon {
-          font-size: 3rem;
-          line-height: 3rem;
-        }
-      }
-    }
-  }
-}
 #shareCustomThemeModal {
   .modal {
     max-width: 400px;
@@ -1442,54 +1404,6 @@ body.darkMode {
 #shareCustomThemeUrlModal {
   .modal {
     max-width: 900px;
-  }
-}
-#contactModal {
-  .modal {
-    overflow-y: scroll;
-    display: grid;
-    gap: 1rem;
-    @extend .ffscroll;
-    max-width: 900px;
-
-    .text {
-      color: var(--text-color);
-      span {
-        color: var(--error-color);
-      }
-    }
-
-    .buttons {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-
-      .button {
-        padding: 1rem;
-        gap: 1rem;
-        display: grid;
-        grid-template-areas: "icon textgroup";
-        grid-template-columns: auto 1fr;
-        text-align: left;
-        align-items: center;
-        .textGroup {
-          grid-area: textgroup;
-        }
-        .text {
-          font-size: 1.5rem;
-          line-height: 2rem;
-          transition: 0.125s;
-        }
-        &:hover .text {
-          color: var(--bg-color);
-        }
-        .icon {
-          grid-area: icon;
-          font-size: 2rem;
-          line-height: 2rem;
-        }
-      }
-    }
   }
 }
 
@@ -1561,6 +1475,20 @@ body.darkMode {
     .red {
       color: var(--error-color);
     }
+    .group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      justify-items: center;
+      align-items: center;
+      font-size: 2em;
+      button {
+        width: 100%;
+      }
+      input {
+        text-align: center;
+      }
+    }
     .preview {
       & > div:first-child {
         margin-bottom: 1rem;
@@ -1579,12 +1507,6 @@ body.darkMode {
   }
 }
 
-#newFilterPresetModal {
-  .modal {
-    max-width: 450px;
-  }
-}
-
 #editProfileModal {
   .modal {
     max-width: 600px;
@@ -1594,8 +1516,11 @@ body.darkMode {
       margin-bottom: 0.25em;
       display: block;
     }
-    input {
+    input:not([type="checkbox"]) {
       width: 100%;
+    }
+    input[type="checkbox"] {
+      vertical-align: text-bottom;
     }
     textarea {
       resize: vertical;
@@ -1635,186 +1560,9 @@ body.darkMode {
     .badgeSelectionItem:hover {
       opacity: 100%;
     }
-  }
-}
 
-#alertsPopup {
-  padding: 0;
-  justify-content: end;
-  z-index: 99999999;
-  overflow-x: hidden;
-  justify-items: end;
-  .modal {
-    background: var(--bg-color);
-    max-width: calc(350px + 2rem);
-    right: 0;
-    // height: calc(100vh - 4rem);
-    height: 100%;
-    top: 0;
-    padding: 2rem calc(1rem - 7px) 2rem 1rem; // -7px for the scrollbar
-    // padding: 1rem;
-    // border-radius: var(--roundness);
-    overflow: hidden;
-    margin-right: -10rem;
-    border-radius: var(--roundness) 0 0 var(--roundness);
-    display: block;
-
-    .mobileClose {
-      margin-bottom: 2rem;
-      width: 100%;
-      display: none;
-    }
-
-    .separator {
-      background-color: var(--sub-alt-color);
-      height: 0.25rem;
-      width: 100%;
-      border-radius: calc(var(--roundness) / 2);
-    }
-
-    .scrollWrapper {
-      padding: 0 1rem 0 1rem;
-      overflow-y: scroll;
-      display: grid;
-      gap: 2rem;
-      align-content: baseline;
-      height: 100%;
-      grid-auto-columns: 100%;
-    }
-    .accountAlerts > .title,
-    .notificationHistory > .title,
-    .psas > .title {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    .accountAlerts > .claimAll,
-    .accountAlerts > .deleteAll {
-      font-size: 0.75em;
-      margin-bottom: 1rem;
-      width: 100%;
-      .fas {
-        margin-right: 0.25em;
-      }
-    }
-    .list {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: 100%;
-      .nothing {
-        width: 100%;
-        color: var(--text-color);
-        font-size: 0.75rem;
-        text-align: center;
-        margin: 2rem 0;
-      }
-      .preloader {
-        width: 100%;
-        color: var(--main-color);
-        text-align: center;
-        font-size: 1rem;
-        margin: 2rem 0;
-      }
-      .item {
-        display: grid;
-        grid-template-areas: "indicator title buttons" "indicator body buttons";
-        grid-template-columns: 0.25rem auto max-content;
-        gap: 0.25rem 0.5rem;
-        .indicator {
-          grid-area: indicator;
-          background-color: var(--sub-alt-color);
-          width: 0.25rem;
-          height: 100%;
-          border-radius: calc(var(--roundness) / 2);
-          transition: 0.125s;
-          &.main {
-            background-color: var(--main-color);
-          }
-          &.error {
-            background-color: var(--error-color);
-          }
-          &.sub {
-            background-color: var(--sub-color);
-          }
-        }
-        .title {
-          grid-area: title;
-          font-size: 0.75rem;
-          color: var(--sub-color);
-        }
-        .body {
-          grid-area: body;
-          font-size: 0.75rem;
-          color: var(--text-color);
-          transition: 0.125s;
-          opacity: 1;
-          word-wrap: break-word;
-        }
-        .buttons {
-          grid-area: buttons;
-          width: 100%;
-          display: grid;
-          grid-auto-flow: row;
-          gap: 0.5rem;
-          opacity: 0;
-          transition: 0.125s;
-          align-items: center;
-          align-content: center;
-          button {
-            font-size: 0.8em;
-            height: 100%;
-            display: grid;
-          }
-        }
-        &:hover,
-        &:focus-within {
-          .buttons {
-            opacity: 1;
-          }
-          .body {
-            opacity: 1;
-          }
-        }
-      }
-    }
-    .psas .list .item {
-      grid-template-areas: "indicator body";
-      grid-template-columns: 0.25rem calc(100% - 0.25rem);
-      .body {
-        opacity: 1;
-      }
-    }
-    .notificationHistory .list .item {
-      grid-template-areas: "indicator title" "indicator body";
-      grid-template-columns: 0.25rem calc(100% - 0.25rem);
-      .title {
-        font-size: 0.75rem;
-        color: var(--sub-color);
-      }
-      .body {
-        opacity: 1;
-      }
-    }
-    .accountAlerts {
-      .title {
-        display: grid;
-        grid-template-columns: 1fr auto;
-      }
-      .list .item {
-        grid-template-areas: "indicator timestamp buttons" "indicator title buttons" "indicator body buttons";
-        .timestamp {
-          grid-area: timestamp;
-          font-size: 0.6rem;
-          color: var(--sub-color);
-          opacity: 0.5;
-        }
-        .rewards {
-          overflow: hidden;
-          margin-top: 0.35rem;
-        }
-      }
+    span {
+      color: var(--text-color);
     }
   }
 }

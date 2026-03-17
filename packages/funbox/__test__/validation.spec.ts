@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as List from "../src/list";
 import * as Validation from "../src/validation";
 import { FunboxMetadata } from "../src/types";
@@ -7,7 +8,7 @@ describe("validation", () => {
     const getFunboxMock = vi.spyOn(List, "getFunbox");
 
     beforeEach(() => {
-      getFunboxMock.mockReset();
+      getFunboxMock.mockClear();
     });
 
     it("should pass without funboxNames", () => {
@@ -26,7 +27,7 @@ describe("validation", () => {
 
       //WHEN / THEN
       expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
-        false
+        false,
       );
     });
 
@@ -38,7 +39,7 @@ describe("validation", () => {
 
       //WHEN / THEN
       expect(
-        Validation.checkCompatibility(["plus_one", "plus_two"], "plus_three")
+        Validation.checkCompatibility(["plus_one", "plus_two"], "plus_three"),
       ).toBe(false);
     });
 
@@ -64,7 +65,7 @@ describe("validation", () => {
       //WHEN
       const result = Validation.checkCompatibility(
         ["plus_one", "plus_two"],
-        "plus_three"
+        "plus_three",
       );
 
       //THEN
@@ -92,7 +93,7 @@ describe("validation", () => {
 
       //WHEN / THEN
       expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
-        false
+        false,
       );
     });
 
@@ -111,7 +112,7 @@ describe("validation", () => {
 
       //WHEN / THEN
       expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
-        true
+        true,
       );
     });
     describe("should validate two funboxes modifying the wordset", () => {
@@ -150,9 +151,9 @@ describe("validation", () => {
 
           //WHEN / THEN
           expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
-            compatible
+            compatible,
           );
-        }
+        },
       );
     });
   });

@@ -1,71 +1,87 @@
-import {
-  ConfigValue,
-  QuoteLength,
-} from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import { getActivePage } from "../signals/core";
 import { applyReducedMotion } from "../utils/misc";
+import { areUnsortedArraysEqual } from "../utils/arrays";
+import * as AuthEvent from "../observables/auth-event";
+import { qs, qsa } from "../utils/dom";
 
 export function show(): void {
-  $("#testConfig").removeClass("invisible");
-  $("#mobileTestConfigButton").removeClass("invisible");
+  qs("#testConfig")?.removeClass("invisible");
+  qs("#mobileTestConfigButton")?.removeClass("invisible");
 }
 
 export function hide(): void {
-  $("#testConfig").addClass("invisible");
-  $("#mobileTestConfigButton").addClass("invisible");
+  qs("#testConfig")?.addClass("invisible");
+  qs("#mobileTestConfigButton")?.addClass("invisible");
 }
 
 export async function instantUpdate(): Promise<void> {
-  $("#testConfig .mode .textButton").removeClass("active");
-  $("#testConfig .mode .textButton[mode='" + Config.mode + "']").addClass(
-    "active"
+  qsa("#testConfig .mode .textButton")?.removeClass("active");
+  qs("#testConfig .mode .textButton[mode='" + Config.mode + "']")?.addClass(
+    "active",
   );
 
-  $("#testConfig .puncAndNum").addClass("hidden");
-  $("#testConfig .spacer").addClass("scrolled");
-  $("#testConfig .time").addClass("hidden");
-  $("#testConfig .wordCount").addClass("hidden");
-  $("#testConfig .customText").addClass("hidden");
-  $("#testConfig .quoteLength").addClass("hidden");
-  $("#testConfig .zen").addClass("hidden");
+  qs("#testConfig .puncAndNum")?.hide();
+  qsa("#testConfig .spacer")?.hide();
+  qs("#testConfig .time")?.hide();
+  qs("#testConfig .wordCount")?.hide();
+  qs("#testConfig .customText")?.hide();
+  qs("#testConfig .quoteLength")?.hide();
+  qs("#testConfig .zen")?.hide();
 
   if (Config.mode === "time") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-    $("#testConfig .time").removeClass("hidden");
+    qs("#testConfig .puncAndNum")?.show()?.setStyle({
+      width: "",
+      opacity: "",
+    });
+    qs("#testConfig .leftSpacer")?.show();
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .time")?.show();
 
-    updateExtras("time", Config.time);
+    updateActiveExtraButtons("time", Config.time);
   } else if (Config.mode === "words") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-    $("#testConfig .wordCount").removeClass("hidden");
+    qs("#testConfig .puncAndNum")?.show()?.setStyle({
+      width: "",
+      opacity: "",
+    });
+    qs("#testConfig .leftSpacer")?.show();
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .wordCount")?.show();
 
-    updateExtras("words", Config.words);
+    updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-    $("#testConfig .quoteLength").removeClass("hidden");
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .quoteLength")?.show();
 
-    updateExtras("quoteLength", Config.quoteLength);
+    updateActiveExtraButtons("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-    $("#testConfig .customText").removeClass("hidden");
+    qs("#testConfig .puncAndNum")?.show()?.setStyle({
+      width: "",
+      opacity: "",
+    });
+    qs("#testConfig .leftSpacer")?.show();
+    qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .customText")?.show();
   }
 
-  updateExtras("numbers", Config.numbers);
-  updateExtras("punctuation", Config.punctuation);
+  updateActiveExtraButtons("numbers", Config.numbers);
+  updateActiveExtraButtons("punctuation", Config.punctuation);
 }
 
-export async function update(previous: Mode, current: Mode): Promise<void> {
+async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
-  $("#testConfig .mode .textButton").removeClass("active");
-  $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
+  updateActiveModeButtons(current);
+
+  if (current === "time") {
+    updateActiveExtraButtons("time", Config.time);
+  } else if (current === "words") {
+    updateActiveExtraButtons("words", Config.words);
+  } else if (current === "quote") {
+    updateActiveExtraButtons("quoteLength", Config.quoteLength);
+  }
 
   const submenu = {
     time: "time",
@@ -76,10 +92,12 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
   };
 
   const animTime = applyReducedMotion(250);
+
+  const scale = 2;
   const easing = {
-    both: "easeInOutSine",
-    in: "easeInSine",
-    out: "easeOutSine",
+    both: `inOut(${scale})`,
+    in: `in(${scale})`,
+    out: `out(${scale})`,
   };
 
   const puncAndNumVisible = {
@@ -90,190 +108,245 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
     zen: false,
   };
 
-  const puncAndNumEl = $("#testConfig .puncAndNum");
+  const puncAndNumEl = qs("#testConfig .puncAndNum");
 
   if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
-    if (!puncAndNumVisible[current]) {
-      $("#testConfig .leftSpacer").addClass("scrolled");
-    } else {
-      $("#testConfig .leftSpacer").removeClass("scrolled");
-    }
-
     puncAndNumEl
-      .css({
+      ?.setStyle({
         width: "unset",
-        opacity: 1,
+        opacity: "1",
       })
-      .removeClass("hidden");
+      ?.show();
 
     const width = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
+      puncAndNumEl?.native.getBoundingClientRect().width ?? 0,
     );
 
-    puncAndNumEl
-      .stop(true, false)
-      .css({
-        width: puncAndNumVisible[previous] ? width : 0,
-        opacity: puncAndNumVisible[previous] ? 1 : 0,
-      })
-      .animate(
-        {
-          width: puncAndNumVisible[current] ? width : 0,
-          opacity: puncAndNumVisible[current] ? 1 : 0,
-        },
-        animTime,
-        easing.both,
-        () => {
-          if (puncAndNumVisible[current]) {
-            puncAndNumEl.css("width", "unset");
-          } else {
-            puncAndNumEl.addClass("hidden");
-          }
+    puncAndNumEl?.animate({
+      width: [
+        (puncAndNumVisible[previous] ? width : 0) + "px",
+        (puncAndNumVisible[current] ? width : 0) + "px",
+      ],
+      opacity: {
+        duration: animTime / 2,
+        delay: puncAndNumVisible[current] ? animTime / 2 : 0,
+        from: puncAndNumVisible[previous] ? 1 : 0,
+        to: puncAndNumVisible[current] ? 1 : 0,
+      },
+      duration: animTime,
+      ease: easing.both,
+      onComplete: () => {
+        if (puncAndNumVisible[current]) {
+          puncAndNumEl?.setStyle({ width: "unset" });
+        } else {
+          puncAndNumEl?.hide();
         }
-      );
+      },
+    });
+
+    const leftSpacerEl = qs("#testConfig .leftSpacer");
+
+    leftSpacerEl?.setStyle({ width: "0.5em" });
+    leftSpacerEl?.setStyle({ opacity: "1" });
+    leftSpacerEl?.show();
+
+    leftSpacerEl?.animate({
+      width: [
+        puncAndNumVisible[previous] ? "0.5em" : 0,
+        puncAndNumVisible[current] ? "0.5em" : 0,
+      ],
+      // opacity: {
+      //   duration: animTime / 2,
+      //   // delay: puncAndNumVisible[current] ? animTime / 2 : 0,
+      //   from: puncAndNumVisible[previous] ? 1 : 0,
+      //   to: puncAndNumVisible[current] ? 1 : 0,
+      // },
+      duration: animTime,
+      ease: easing.both,
+      onComplete: () => {
+        if (puncAndNumVisible[current]) {
+          leftSpacerEl?.setStyle({ width: "" });
+        } else {
+          leftSpacerEl?.hide();
+        }
+      },
+    });
   }
 
-  if (current === "zen") {
-    $("#testConfig .rightSpacer").addClass("scrolled");
-  } else {
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-  }
+  const rightSpacerEl = qs("#testConfig .rightSpacer");
 
-  const currentEl = $(`#testConfig .${submenu[current]}`);
-  const previousEl = $(`#testConfig .${submenu[previous]}`);
+  rightSpacerEl?.setStyle({ width: "0.5em" });
+  rightSpacerEl?.setStyle({ opacity: "1" });
+  rightSpacerEl?.show();
+
+  rightSpacerEl?.animate({
+    width: [
+      previous === "zen" ? "0px" : "0.5em",
+      current === "zen" ? "0px" : "0.5em",
+    ],
+    // opacity: {
+    //   duration: animTime / 2,
+    //   from: previous === "zen" ? 0 : 1,
+    //   to: current === "zen" ? 0 : 1,
+    // },
+    duration: animTime,
+    ease: easing.both,
+    onComplete: () => {
+      if (current === "zen") {
+        rightSpacerEl?.hide();
+      } else {
+        rightSpacerEl?.setStyle({ width: "" });
+      }
+    },
+  });
+
+  const currentEl = qs(`#testConfig .${submenu[current]}`);
+  const previousEl = qs(`#testConfig .${submenu[previous]}`);
 
   const previousWidth = Math.round(
-    previousEl[0]?.getBoundingClientRect().width ?? 0
+    previousEl?.native.getBoundingClientRect().width ?? 0,
   );
 
-  previousEl.addClass("hidden");
-
-  currentEl.removeClass("hidden");
+  previousEl?.hide();
+  currentEl?.show();
 
   const currentWidth = Math.round(
-    currentEl[0]?.getBoundingClientRect().width ?? 0
+    currentEl?.native.getBoundingClientRect().width ?? 0,
   );
 
-  previousEl.removeClass("hidden");
-
-  currentEl.addClass("hidden");
+  previousEl?.show();
+  currentEl?.hide();
 
   const widthDifference = currentWidth - previousWidth;
-
   const widthStep = widthDifference / 2;
 
+  await previousEl?.promiseAnimate({
+    opacity: [1, 0],
+    width: [previousWidth + "px", previousWidth + widthStep + "px"],
+    duration: animTime / 2,
+    ease: easing.in,
+  });
+
   previousEl
-    .stop(true, false)
-    .css({
-      opacity: 1,
-      width: previousWidth,
+    ?.setStyle({
+      opacity: "1",
+      width: "unset",
     })
-    .animate(
-      {
-        width: previousWidth + widthStep,
-        opacity: 0,
-      },
-      animTime / 2,
-      easing.in,
-      () => {
-        previousEl
-          .css({
-            opacity: 1,
-            width: "unset",
-          })
-          .addClass("hidden");
-        currentEl
-          .css({
-            opacity: 0,
-            width: previousWidth + widthStep,
-          })
-          .removeClass("hidden")
-          .stop(true, false)
-          .animate(
-            {
-              opacity: 1,
-              width: currentWidth,
-            },
-            animTime / 2,
-            easing.out,
-            () => {
-              currentEl.css("width", "unset");
-            }
-          );
-      }
-    );
+    ?.hide();
+  currentEl
+    ?.setStyle({
+      opacity: "0",
+      width: previousWidth + widthStep + "px",
+    })
+    ?.show();
+
+  await currentEl?.promiseAnimate({
+    opacity: [0, 1],
+    width: [previousWidth + widthStep + "px", currentWidth + "px"],
+    duration: animTime / 2,
+    ease: easing.out,
+  });
+
+  currentEl?.setStyle({ width: "" });
 }
 
-export function updateExtras(key: string, value: ConfigValue): void {
+function updateActiveModeButtons(mode: Mode): void {
+  qsa("#testConfig .mode .textButton")?.removeClass("active");
+  qs("#testConfig .mode .textButton[mode='" + mode + "']")?.addClass("active");
+}
+
+function updateActiveExtraButtons(key: string, value: ConfigValue): void {
   if (key === "time") {
-    $("#testConfig .time .textButton").removeClass("active");
+    qsa("#testConfig .time .textButton")?.removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
-      : value;
-    $(
-      "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
-    ).addClass("active");
+      : (value as number);
+    qs(
+      "#testConfig .time .textButton[timeConfig='" + timeCustom + "']",
+    )?.addClass("active");
   } else if (key === "words") {
-    $("#testConfig .wordCount .textButton").removeClass("active");
+    qsa("#testConfig .wordCount .textButton")?.removeClass("active");
 
     const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
       ? "custom"
-      : value;
+      : (value as number);
 
-    $(
-      "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"
-    ).addClass("active");
+    qs(
+      "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']",
+    )?.addClass("active");
   } else if (key === "quoteLength") {
-    $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as QuoteLength[]).forEach((ql) => {
-      $(
-        "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
-      ).addClass("active");
-    });
+    qsa("#testConfig .quoteLength .textButton")?.removeClass("active");
+
+    if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
+      qs("#testConfig .quoteLength .textButton[quotelength='all']")?.addClass(
+        "active",
+      );
+    } else {
+      (value as QuoteLength[]).forEach((ql) => {
+        qs(
+          "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']",
+        )?.addClass("active");
+      });
+    }
   } else if (key === "numbers") {
     if (value === false) {
-      $("#testConfig .numbersMode.textButton").removeClass("active");
+      qs("#testConfig .numbersMode.textButton")?.removeClass("active");
     } else {
-      $("#testConfig .numbersMode.textButton").addClass("active");
+      qs("#testConfig .numbersMode.textButton")?.addClass("active");
     }
   } else if (key === "punctuation") {
     if (value === false) {
-      $("#testConfig .punctuationMode.textButton").removeClass("active");
+      qs("#testConfig .punctuationMode.textButton")?.removeClass("active");
     } else {
-      $("#testConfig .punctuationMode.textButton").addClass("active");
+      qs("#testConfig .punctuationMode.textButton")?.addClass("active");
     }
   }
 }
 
 export function showFavoriteQuoteLength(): void {
-  $("#testConfig .quoteLength .favorite").removeClass("hidden");
+  qs("#testConfig .quoteLength .favorite")?.show();
 }
 
 export function hideFavoriteQuoteLength(): void {
-  $("#testConfig .quoteLength .favorite").addClass("hidden");
+  qs("#testConfig .quoteLength .favorite")?.hide();
 }
 
-ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
-  if (ActivePage.get() !== "test") return;
-  if (eventKey === "mode") {
-    void update(eventPreviousValue as Mode, eventValue as Mode);
+let ignoreConfigEvent = false;
 
-    let m2;
+ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
+  if (key === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (key === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
 
-    if (Config.mode === "time") {
-      m2 = Config.time;
-    } else if (Config.mode === "words") {
-      m2 = Config.words;
-    } else if (Config.mode === "quote") {
-      m2 = Config.quoteLength;
-    }
+    void instantUpdate();
+  }
 
-    if (m2 !== undefined) updateExtras(Config.mode, m2);
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
+  if (getActivePage() !== "test") return;
+  if (key === "mode") {
+    void update(previousValue, newValue);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
-      eventKey
+      key ?? "",
     )
   ) {
-    if (eventValue !== undefined) updateExtras(eventKey, eventValue);
+    if (newValue !== undefined) {
+      updateActiveExtraButtons(key, newValue);
+    }
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    if (!event.data.isUserSignedIn) {
+      hideFavoriteQuoteLength();
+    } else {
+      showFavoriteQuoteLength();
+    }
   }
 });

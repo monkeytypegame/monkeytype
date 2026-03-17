@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { not } from "../src/predicates";
 
 describe("predicates", () => {
@@ -21,7 +22,7 @@ describe("predicates", () => {
       const containsLetter = (
         str1: string,
         str2: string,
-        letter: string
+        letter: string,
       ): boolean => str1.includes(letter) || str2.includes(letter);
       const doesNotContainLetter = not(containsLetter);
 

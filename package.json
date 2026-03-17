@@ -1,11 +1,12 @@
 {
   "name": "monkeytype",
-  "license": "GPL-3.0",
+  "version": "26.12.0",
   "private": true,
+  "license": "GPL-3.0",
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "full-check": "turbo lint ts-check build test validate-json",
+    "full-check": "turbo lint build test integration-test check-assets --force",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "ts-check": "turbo run ts-check",
@@ -13,27 +14,30 @@
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
     "lint-pkg": "turbo run lint --filter=\"./packages/*\"",
-    "oxlint": "turbo run oxlint",
-    "oxlint-be": "turbo run oxlint --filter @monkeytype/backend",
-    "oxlint-fe": "turbo run oxlint --filter @monkeytype/frontend",
-    "oxlint-pkg": "turbo run oxlint --filter=\"./packages/*\"",
+    "lint-fix": "turbo run lint -- --fix",
+    "lint-fast": "turbo run lint-fast",
+    "lint-fast-be": "turbo run lint-fast --filter @monkeytype/backend",
+    "lint-fast-fe": "turbo run lint-fast --filter @monkeytype/frontend",
+    "lint-fast-pkg": "turbo run lint-fast --filter=\"./packages/*\"",
     "build": "turbo run build",
     "build-be": "turbo run build --filter @monkeytype/backend",
     "build-fe": "turbo run build --filter @monkeytype/frontend",
     "build-pkg": "turbo run build --filter=\"./packages/*\"",
-    "test": "turbo run test",
-    "test-be": "turbo run test --filter @monkeytype/backend",
+    "test": "turbo run test integration-test",
+    "test-be": "turbo run test integration-test --filter @monkeytype/backend",
     "test-fe": "turbo run test --filter @monkeytype/frontend",
     "test-pkg": "turbo run test --filter=\"./packages/*\"",
     "dev": "turbo run dev --force",
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
+    "storybook": "turbo run storybook --force",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
-    "docker": "cd backend && docker compose up",
+    "docker": "cd backend && npm run docker",
     "audit-fe": "cd frontend && npm run audit",
+    "preview-fe": "monkeytype-release --preview-fe",
     "release": "monkeytype-release",
     "release-fe": "monkeytype-release --fe",
     "release-be": "monkeytype-release --be",
@@ -43,50 +47,49 @@
     "hotfix-fe": "monkeytype-release --hotfix --fe",
     "hotfix-be": "monkeytype-release --hotfix --be",
     "hotfix-dry": "monkeytype-release --hotfix --dry",
-    "pretty-check": "prettier --check .",
-    "pretty-check-be": "prettier --check ./backend",
-    "pretty-check-fe": "prettier --check ./frontend/src",
-    "pretty-check-assets": "prettier --check ./frontend/static",
-    "pretty-check-pkg": "prettier --check ./packages",
-    "pretty-fix": "prettier --write .",
-    "pretty-fix-be": "prettier --write ./backend",
-    "pretty-fix-fe": "prettier --write ./frontend/src",
-    "pretty-fix-assets": "prettier --write ./frontend/static",
-    "pretty-fix-pkg": "prettier --write ./packages",
-    "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
-    "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
-    "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json && turbo test -- constants/languages",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes"
-  },
-  "engines": {
-    "node": "20.16.0"
+    "format-check": "oxfmt . --check",
+    "format-fix": "oxfmt .",
+    "lint-json-assets": "turbo lint-json --filter @monkeytype/frontend",
+    "check-assets": "turbo check-assets --filter @monkeytype/frontend",
+    "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
+    "check-assets-languages": "turbo check-assets --filter @monkeytype/frontend  -- languages",
+    "check-assets-others": "turbo check-assets --filter @monkeytype/frontend  -- others",
+    "knip": "knip",
+    "update-oxc": "pnpm up -D -r oxlint@latest oxfmt@latest oxlint-tsgolint@latest"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
-    "@vitest/coverage-v8": "2.1.9",
+    "@vitest/coverage-v8": "4.0.15",
+    "caniuse-lite": "1.0.30001778",
     "conventional-changelog": "6.0.0",
-    "eslint": "8.57.1",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxlint": "1.1.0",
-    "prettier": "2.8.8",
-    "turbo": "2.3.3",
-    "vitest": "2.1.9"
+    "oxfmt": "0.35.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.14.2",
+    "prettier": "3.7.1",
+    "turbo": "2.7.5",
+    "vitest": "4.1.0"
   },
   "lint-staged": {
-    "*.{json,scss,css,html}": [
-      "prettier --write"
+    "*": [
+      "oxfmt --no-error-on-unmatched-pattern"
     ],
-    "*.{ts,js}": [
-      "prettier --write",
-      "oxlint",
-      "eslint"
+    "*.{ts,tsx,js}": [
+      "oxlint --type-aware --type-check"
     ]
   },
-  "version": "25.27.0",
-  "packageManager": "pnpm@9.6.0"
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "packageManager": "pnpm@10.28.1",
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.8"
+    }
+  }
 }

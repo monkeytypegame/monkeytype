@@ -36,7 +36,7 @@ async function errorHandlingMiddleware(
   error: Error,
   req: ExpressRequestWithContext,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ): Promise<void> {
   try {
     const monkeyError = error as MonkeyError;
@@ -77,7 +77,7 @@ async function errorHandlingMiddleware(
         await addLog(
           "system_error",
           `${status} ${errorId} ${error.message} ${error.stack}`,
-          uid
+          uid,
         );
         await db.collection<DBError>("errors").insertOne({
           _id: errorId,
@@ -114,7 +114,7 @@ async function errorHandlingMiddleware(
   handleErrorResponse(
     res,
     500,
-    "Something went really wrong, please contact support."
+    "Something went really wrong, please contact support.",
   );
 }
 
@@ -122,7 +122,7 @@ function handleErrorResponse(
   res: Response,
   status: number,
   message: string,
-  data?: ErrorData
+  data?: ErrorData,
 ): void {
   res.status(status);
   if (isCustomCode(status)) {

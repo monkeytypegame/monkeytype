@@ -1,15 +1,4 @@
-:root {
-  --bg-color: #f5f5f5;
-  --main-color: #363636;
-  --caret-color: #0d0d0d;
-  --sub-color: #4f4f4f;
-  --sub-alt-color: #e0e0e0;
-  --text-color: #1f1f1f;
-  --error-color: #ff0008;
-  --colorful-error-color: #ff0008;
-}
-
-header #logo .text {
+header [data-ui-element="logoText"] {
   background: linear-gradient(
     90deg,
     #60b6ce,
@@ -24,12 +13,17 @@ header #logo .text {
   );
   background-size: 500% auto;
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
+  padding-bottom: 0.1em;
+  line-height: 1;
 }
 
-header #logo .top,
+[data-ui-element="logoSubtext"] {
+  margin-top: 0em;
+}
+
+header [data-ui-element="logoSubtext"],
 .view-account .levelAndBar .level,
 [aria-label][data-balloon-pos]::after {
   -webkit-text-fill-color: initial;
@@ -45,7 +39,12 @@ button.text:hover,
 #nextTestButton:hover > i,
 #practiseWordsButton:hover > i,
 #watchReplayButton:hover > i,
-#watchVideoAdButton:hover > i {
+#watchVideoAdButton:hover > i,
+footer a:hover,
+footer a:hover > i,
+footer button:hover,
+footer button:hover > i,
+footer button:hover > .relative > i {
   background: linear-gradient(
     90deg,
     #60b6ce,
@@ -60,18 +59,9 @@ button.text:hover,
   );
   background-size: 500% auto;
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 5s alternate ease-in-out infinite;
   transition: all 1s ease;
-}
-
-.current-theme.textButton {
-  animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
-}
-
-.current-theme.textButton:hover {
-  -webkit-text-fill-color: initial;
 }
 
 #liveStatsTextTop.timerMain,
@@ -82,8 +72,10 @@ button.text:hover,
 
 #words {
   --correct-letter-animation: rainbow-infinite-loop 5s linear infinite;
-  --incorrect-letter-animation: error-repeat 1s alternate ease-in-out infinite;
-  --extra-letter-animation: error-repeat 1s alternate ease-in-out infinite;
+  --incorrect-letter-animation: rainbow-error-infinite-loop 1s alternate
+    ease-in-out infinite;
+  --extra-letter-animation: rainbow-error-infinite-loop 1s alternate ease-in-out
+    infinite;
 }
 
 #words .word.typed letter.correct,
@@ -92,6 +84,10 @@ button.text:hover,
 #words.highlight-next-two-words .word.typed letter,
 #words.highlight-next-three-words .word.typed letter {
   animation: rainbow 7.5s ease-in-out forwards;
+}
+
+#words .word.error {
+  animation: rainbow-error 7.5s ease-in-out forwards;
 }
 
 #words.highlight-word .word.active letter {
@@ -108,8 +104,9 @@ button.text:hover,
 }
 
 .button:hover,
-button:not(.textButton):not(.text):hover {
-  animation: glowing-button 2s alternate ease-in-out infinite;
+button:not(.textButton):not(.text):not([data-ui-variant="text"]):hover,
+[data-nav-item]:hover {
+  animation: rainbow-button 2s alternate ease-in-out infinite;
 }
 
 #words.highlight-off .word letter,
@@ -123,6 +120,10 @@ button:not(.textButton):not(.text):hover {
 
 .textButton.active {
   color: #111111;
+}
+
+footer button:hover {
+  animation: none !important;
 }
 
 @keyframes rainbow {
@@ -212,7 +213,40 @@ button:not(.textButton):not(.text):hover {
   }
 }
 
-@keyframes error-repeat {
+@keyframes rainbow-error {
+  0% {
+    opacity: 1;
+  }
+  11.11% {
+    opacity: 1;
+  }
+  22.22% {
+    opacity: 1;
+  }
+  33.33% {
+    opacity: 1;
+  }
+  44.44% {
+    opacity: 1;
+  }
+  55.56% {
+    opacity: 1;
+  }
+  66.67% {
+    opacity: 1;
+  }
+  77.78% {
+    opacity: 1;
+  }
+  88.89% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rainbow-error-infinite-loop {
   0% {
     color: #ff0000;
   }
@@ -248,29 +282,45 @@ button:not(.textButton):not(.text):hover {
   }
 }
 
-@keyframes glowing-button {
+@keyframes rainbow-button {
   0% {
-    box-shadow: 0 0 7.5px 2.5px #60b6ce, 0 0 12.5px 2.5px #60b6ce;
+    box-shadow:
+      0 0 7.5px 2.5px #60b6ce,
+      0 0 12.5px 2.5px #60b6ce;
   }
   14% {
-    box-shadow: 0 0 7.5px 2.5px #7ce3e1, 0 0 12.5px 2.5px #7ce3e1;
+    box-shadow:
+      0 0 7.5px 2.5px #7ce3e1,
+      0 0 12.5px 2.5px #7ce3e1;
   }
   28% {
-    box-shadow: 0 0 7.5px 2.5px #b2e259, 0 0 12.5px 2.5px #b2e259;
+    box-shadow:
+      0 0 7.5px 2.5px #b2e259,
+      0 0 12.5px 2.5px #b2e259;
   }
   42% {
-    box-shadow: 0 0 7.5px 2.5px #f6ee75, 0 0 12.5px 2.5px #f6ee75;
+    box-shadow:
+      0 0 7.5px 2.5px #f6ee75,
+      0 0 12.5px 2.5px #f6ee75;
   }
   57% {
-    box-shadow: 0 0 7.5px 2.5px #f5b83d, 0 0 12.5px 2.5px #f5b83d;
+    box-shadow:
+      0 0 7.5px 2.5px #f5b83d,
+      0 0 12.5px 2.5px #f5b83d;
   }
   71% {
-    box-shadow: 0 0 7.5px 2.5px #f49a98, 0 0 12.5px 2.5px #f49a98;
+    box-shadow:
+      0 0 7.5px 2.5px #f49a98,
+      0 0 12.5px 2.5px #f49a98;
   }
   85% {
-    box-shadow: 0 0 7.5px 2.5px #ed7abd, 0 0 12.5px 2.5px #ed7abd;
+    box-shadow:
+      0 0 7.5px 2.5px #ed7abd,
+      0 0 12.5px 2.5px #ed7abd;
   }
   100% {
-    box-shadow: 0 0 7.5px 2.5px #dea2fa, 0 0 12.5px 2.5px #dea2fa;
+    box-shadow:
+      0 0 7.5px 2.5px #dea2fa,
+      0 0 12.5px 2.5px #dea2fa;
   }
 }

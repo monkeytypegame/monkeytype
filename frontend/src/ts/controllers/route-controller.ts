@@ -1,23 +1,19 @@
 import * as PageController from "./page-controller";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth, isAuthenticated } from "../firebase";
+import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
-import * as Notifications from "../elements/notifications";
+import { showNoticeNotification } from "../stores/notifications";
+import * as NavigationEvent from "../observables/navigation-event";
+import * as AuthEvent from "../observables/auth-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
 
-//this will be used in tribe
-type NavigateOptions = {
-  empty?: boolean;
-  data?: unknown;
-};
-
 function pathToRegex(path: string): RegExp {
   return new RegExp(
-    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$"
+    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$",
   );
 }
 
@@ -27,7 +23,7 @@ function getParams(match: {
 }): Record<string, string> {
   const values = match.result.slice(1);
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
-    (result) => result[1]
+    (result) => result[1],
   );
 
   const a = keys.map((key, index) => [key, values[index]]);
@@ -38,100 +34,102 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigateOptions
-  ) => void;
+    navigateOptions: NavigationEvent.NavigateOptions,
+  ) => Promise<void>;
 };
 
 const route404: Route = {
   path: "404",
-  load: (): void => {
-    void PageController.change("404");
+  load: async (_params, options) => {
+    await PageController.change("404", options);
   },
 };
 
+// NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 const routes: Route[] = [
   {
     path: "/",
-    load: (): void => {
-      void PageController.change("test");
+    load: async (_params, options) => {
+      await PageController.change("test", options);
     },
   },
   {
     path: "/verify",
-    load: (): void => {
-      void PageController.change("test");
+    load: async (_params, options) => {
+      await PageController.change("test", options);
     },
   },
   {
     path: "/leaderboards",
-    load: (): void => {
-      void PageController.change("leaderboards");
+    load: async (_params, options) => {
+      await PageController.change("leaderboards", options);
     },
   },
   {
     path: "/about",
-    load: (): void => {
-      void PageController.change("about");
+    load: async (_params, options) => {
+      await PageController.change("about", options);
     },
   },
   {
     path: "/settings",
-    load: (): void => {
-      void PageController.change("settings");
+    load: async (_params, options) => {
+      await PageController.change("settings", options);
     },
   },
   {
     path: "/login",
-    load: (): void => {
-      if (!Auth) {
-        navigate("/");
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
         return;
       }
       if (isAuthenticated()) {
-        navigate("/account");
+        await navigate("/account", options);
         return;
       }
-      void PageController.change("login");
+      await PageController.change("login", options);
     },
   },
   {
     path: "/account",
-    load: (_params, options): void => {
-      if (!Auth) {
-        navigate("/");
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
         return;
       }
-      void PageController.change("account", {
-        data: options.data,
-      });
+      if (!isAuthenticated()) {
+        await navigate("/login", options);
+        return;
+      }
+      await PageController.change("account", options);
     },
   },
   {
     path: "/account-settings",
-    load: (_params, options): void => {
-      if (!Auth) {
-        navigate("/");
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
         return;
       }
       if (!isAuthenticated()) {
-        navigate("/login");
+        await navigate("/login", options);
         return;
       }
-      void PageController.change("accountSettings", {
-        data: options.data,
-      });
+      await PageController.change("accountSettings", options);
     },
   },
   {
     path: "/profile",
-    load: (_params): void => {
-      void PageController.change("profileSearch");
+    load: async (_params, options) => {
+      await PageController.change("profileSearch", options);
     },
   },
   {
     path: "/profile/:uidOrName",
-    load: (params, options): void => {
-      void PageController.change("profile", {
+    load: async (params, options) => {
+      await PageController.change("profile", {
+        ...options,
         force: true,
         params: {
           uidOrName: params["uidOrName"] as string,
@@ -140,33 +138,55 @@ const routes: Route[] = [
       });
     },
   },
+  {
+    path: "/friends",
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
+        return;
+      }
+      if (!isAuthenticated()) {
+        await navigate("/login", options);
+        return;
+      }
+
+      await PageController.change("friends", options);
+    },
+  },
 ];
 
-export function navigate(
-  url = window.location.pathname + window.location.search,
-  options = {} as NavigateOptions
-): void {
+export async function navigate(
+  url = window.location.pathname +
+    window.location.search +
+    window.location.hash,
+  options = {} as NavigationEvent.NavigateOptions,
+): Promise<void> {
   if (
-    TestUI.testRestarting ||
-    TestUI.resultCalculating ||
-    PageTransition.get()
+    !options.force &&
+    (TestState.testRestarting ||
+      TestUI.resultCalculating ||
+      PageTransition.get())
   ) {
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${
-        TestUI.testRestarting
+        TestState.testRestarting
       }, resultCalculating: ${
         TestUI.resultCalculating
-      }, pageTransition: ${PageTransition.get()})`
+      }, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }
 
   const noQuit = isFunboxActive("no_quit");
   if (TestState.isActive && noQuit) {
-    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
-      important: true,
-    });
-    event?.preventDefault();
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
+    //todo: figure out if this was ever used
+    // event?.preventDefault();
     return;
   }
 
@@ -184,10 +204,12 @@ export function navigate(
     history.pushState(null, "", url);
   }
 
-  void router(options);
+  await router(options);
 }
 
-async function router(options = {} as NavigateOptions): Promise<void> {
+async function router(
+  options = {} as NavigationEvent.NavigateOptions,
+): Promise<void> {
   const matches = routes.map((r) => {
     return {
       route: r,
@@ -201,11 +223,16 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (match === undefined) {
-    route404.load({}, {});
+    await route404.load(
+      {},
+      {
+        force: true,
+      },
+    );
     return;
   }
 
-  match.route.load(getParams(match), options);
+  await match.route.load(getParams(match), options);
 }
 
 window.addEventListener("popstate", () => {
@@ -217,7 +244,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      navigate(target.href);
+      void navigate(target.href);
     }
   });
+});
+
+NavigationEvent.subscribe((url, options) => {
+  void navigate(url, options);
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    let keyframes = [
+      {
+        percentage: 90,
+        durationMs: 1000,
+        text: "Downloading user data...",
+      },
+    ];
+
+    //undefined means navigate to whatever the current window.location.pathname is
+    void navigate(undefined, {
+      force: true,
+      loadingOptions: {
+        loadingMode: () => {
+          if (event.data.isUserSignedIn) {
+            return "sync";
+          } else {
+            return "none";
+          }
+        },
+        loadingPromise: async () => {
+          await event.data.loadPromise;
+        },
+        style: "bar",
+        keyframes: keyframes,
+      },
+    }).finally(() => {
+      document.body.classList.remove("loading");
+    });
+  }
 });

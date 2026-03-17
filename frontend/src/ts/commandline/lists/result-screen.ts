@@ -1,8 +1,12 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWordsModal from "../../modals/practise-words";
-import * as Notifications from "../../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../stores/notifications";
 import * as TestInput from "../../test/test-input";
+import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import * as PractiseWords from "../../test/practise-words";
@@ -33,6 +37,16 @@ const practiceSubgroup: CommandsSubgroup = {
       },
     },
     {
+      id: "practiseWordsBoth",
+      display: "both",
+      exec: (): void => {
+        PractiseWords.init("words", true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
+      },
+    },
+    {
       id: "practiseWordsCustom",
       display: "custom...",
       opensModal: true,
@@ -53,7 +67,7 @@ const commands: Command[] = [
     alias: "restart start begin type test typing",
     icon: "fa-chevron-right",
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
     exec: (): void => {
       TestLogic.restart();
@@ -69,7 +83,7 @@ const commands: Command[] = [
       });
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -78,7 +92,7 @@ const commands: Command[] = [
     icon: "fa-exclamation-triangle",
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -86,10 +100,10 @@ const commands: Command[] = [
     display: "Toggle word history",
     icon: "fa-align-left",
     exec: (): void => {
-      TestUI.toggleResultWords();
+      void TestUI.toggleResultWords();
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -103,7 +117,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -117,7 +131,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -133,15 +147,15 @@ const commands: Command[] = [
 
       navigator.clipboard.writeText(words).then(
         () => {
-          Notifications.add("Copied to clipboard", 1);
+          showSuccessNotification("Copied to clipboard");
         },
         () => {
-          Notifications.add("Failed to copy!", -1);
-        }
+          showErrorNotification("Failed to copy!");
+        },
       );
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
 ];

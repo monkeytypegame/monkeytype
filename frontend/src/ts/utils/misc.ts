@@ -1,19 +1,17 @@
-import * as Loader from "../elements/loader";
-import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import { Config } from "@monkeytype/contracts/schemas/configs";
-import {
-  Mode,
-  Mode2,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import { Result } from "@monkeytype/contracts/schemas/results";
-import { z } from "zod";
+import { Config } from "@monkeytype/schemas/configs";
+import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
+import { Result } from "@monkeytype/schemas/results";
+import { RankAndCount } from "@monkeytype/schemas/users";
+import { roundTo2 } from "@monkeytype/util/numbers";
+import { animate, AnimationParams } from "animejs";
+import { ElementWithUtils } from "./dom";
+import { isDevEnvironment } from "./env";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
     speed,
-    Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3)))
+    Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3))),
   );
 }
 
@@ -56,7 +54,7 @@ export function convertNumberToHindi(numString: string): string {
 
 export function findGetParameter(
   parameterName: string,
-  getOverride?: string
+  getOverride?: string,
 ): string | null {
   let result = null;
   let tmp = [];
@@ -71,15 +69,16 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName)
+      if (tmp[0] === parameterName) {
         result = decodeURIComponent(tmp[1] as string);
+      }
     });
   return result;
 }
 
 export function checkIfGetParameterExists(
   parameterName: string,
-  getOverride?: string
+  getOverride?: string,
 ): boolean {
   let result = false;
   let tmp = [];
@@ -100,68 +99,27 @@ export function checkIfGetParameterExists(
 }
 
 export function objectToQueryString<T extends string | number | boolean>(
-  obj: Record<string, T | T[]>
+  obj: Record<string, T | T[]>,
 ): string {
   const str = [];
   for (const p in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       // Arrays get encoded as a comma(%2C)-separated list
       str.push(
-        encodeURIComponent(p) + "=" + encodeURIComponent(obj[p] as unknown as T)
+        encodeURIComponent(p) +
+          "=" +
+          encodeURIComponent(obj[p] as unknown as T),
       );
     }
   }
   return str.join("&");
 }
 
-declare global {
-  // type gets a "Duplicate identifier" error
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface Document {
-    mozCancelFullScreen?: () => Promise<void>;
-    msRequestFullscreen?: () => Promise<void>;
-    msExitFullscreen?: () => Promise<void>;
-    webkitExitFullscreen?: () => Promise<void>;
-    mozFullScreenElement?: Element;
-    msFullscreenElement?: Element;
-    webkitFullscreenElement?: Element;
-  }
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface HTMLElement {
-    msRequestFullscreen?: () => Promise<void>;
-    mozRequestFullScreen?: () => Promise<void>;
-    webkitRequestFullscreen?: () => Promise<void>;
-  }
-}
-
 export function toggleFullscreen(): void {
-  const elem = document.documentElement;
-  if (
-    !document.fullscreenElement &&
-    !document.mozFullScreenElement &&
-    !document.webkitFullscreenElement &&
-    !document.msFullscreenElement
-  ) {
-    if (elem.requestFullscreen !== undefined) {
-      void elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      void elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      void elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      // @ts-expect-error some code i found online
-      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    }
+  if (!document.fullscreenElement) {
+    void document.documentElement.requestFullscreen();
   } else {
-    if (document.exitFullscreen !== undefined) {
-      void document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      void document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      void document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      void document.webkitExitFullscreen();
-    }
+    void document.exitFullscreen();
   }
 }
 
@@ -169,18 +127,22 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function escapeHTML(str: string): string {
+export function escapeHTML<T extends string | null | undefined>(str: T): T {
   if (str === null || str === undefined) {
     return str;
   }
-  str = str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 
-  return str;
+  const escapeMap: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+  };
+
+  return str.replace(/[&<>"'/`]/g, (char) => escapeMap[char] as string) as T;
 }
 
 export function isUsernameValid(name: string): boolean {
@@ -203,7 +165,7 @@ export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
 export function regexIndexOf(
   string: string,
   regex: RegExp,
-  startpos: number
+  startpos: number,
 ): number {
   const indexOf = string.substring(startpos || 0).search(regex);
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
@@ -213,10 +175,8 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
-// TODO INVESTIGATE IF THIS IS NEEDED
-// eslint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
-  regex: RegExp
+  regex: RegExp,
 ): number {
   const match = this.match(regex);
   return match ? this.lastIndexOf(lastElementFromArray(match) as string) : -1;
@@ -225,16 +185,20 @@ type LastIndex = {
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
 export async function swapElements(
-  el1: JQuery,
-  el2: JQuery,
+  el1: ElementWithUtils | null,
+  el2: ElementWithUtils | null,
   totalDuration: number,
   callback = async function (): Promise<void> {
     return Promise.resolve();
   },
   middleCallback = async function (): Promise<void> {
     return Promise.resolve();
-  }
+  },
 ): Promise<boolean | undefined> {
+  if (el1 === null || el2 === null) {
+    return;
+  }
+
   totalDuration = applyReducedMotion(totalDuration);
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
@@ -246,46 +210,31 @@ export async function swapElements(
       await callback();
       return false;
     }
-    $(el1)
-      .removeClass("hidden")
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        totalDuration / 2,
-        async () => {
-          await middleCallback();
-          $(el1).addClass("hidden");
-          $(el2)
-            .removeClass("hidden")
-            .css("opacity", 0)
-            .animate(
-              {
-                opacity: 1,
-              },
-              totalDuration / 2,
-              async () => {
-                await callback();
-              }
-            );
-        }
-      );
+
+    el1.show();
+    await el1.promiseAnimate({
+      opacity: [1, 0],
+      duration: totalDuration / 2,
+    });
+    el1.hide();
+    await middleCallback();
+    el2.show();
+    await el2.promiseAnimate({
+      opacity: [0, 1],
+      duration: totalDuration / 2,
+    });
+    await callback();
   } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
     await middleCallback();
-    $(el2)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        totalDuration,
-        async () => {
-          await callback();
-        }
-      );
+
+    el2.show();
+    await el2.promiseAnimate({
+      opacity: [0, 1],
+      duration: totalDuration / 2,
+    });
+
+    await callback();
   } else {
     await middleCallback();
     await callback();
@@ -296,7 +245,7 @@ export async function swapElements(
 
 export function getMode2<M extends keyof PersonalBests>(
   config: Config,
-  randomQuote: { id: number } | null
+  randomQuote: { id: number } | null,
 ): Mode2<M> {
   const mode = config.mode;
   let retVal: string;
@@ -319,7 +268,6 @@ export function getMode2<M extends keyof PersonalBests>(
 }
 
 export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
-  Loader.show();
   const csvString = [
     [
       "_id",
@@ -388,43 +336,6 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
 
   link.click();
   link.remove();
-  Loader.hide();
-}
-
-export function getErrorMessage(error: unknown): string | undefined {
-  let message = "";
-
-  if (error instanceof Error) {
-    message = error.message;
-  } else if (
-    error !== null &&
-    typeof error === "object" &&
-    "message" in error &&
-    (typeof error.message === "string" || typeof error.message === "number")
-  ) {
-    message = `${error.message}`;
-  } else if (typeof error === "string") {
-    message = error;
-  } else if (typeof error === "number") {
-    message = `${error}`;
-  }
-
-  if (message === "") {
-    return undefined;
-  }
-
-  return message;
-}
-
-export function createErrorMessage(error: unknown, message: string): string {
-  const errorMessage = getErrorMessage(error);
-
-  if (errorMessage === undefined) {
-    console.error("Could not get error message from error", error);
-    return `${message}: Unknown error`;
-  }
-
-  return `${message}: ${errorMessage}`;
 }
 
 export function isElementVisible(query: string): boolean {
@@ -437,12 +348,15 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return isElementVisible(`#popups #${popupId}`);
+  return (
+    isElementVisible(`#popups #${popupId}`) ||
+    isElementVisible(`#solidmodals #${popupId}`)
+  );
 }
 
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper"
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
   );
   let popupVisible = false;
   for (const popup of popups) {
@@ -454,14 +368,18 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
-export async function promiseAnimation(
-  el: JQuery,
-  animation: Record<string, string>,
-  duration: number,
-  easing: string
+export async function promiseAnimate(
+  el: HTMLElement | string,
+  options: AnimationParams,
 ): Promise<void> {
   return new Promise((resolve) => {
-    el.animate(animation, applyReducedMotion(duration), easing, resolve);
+    animate(el, {
+      ...options,
+      onComplete: (self, e) => {
+        options.onComplete?.(self, e);
+        resolve();
+      },
+    });
   });
 }
 
@@ -470,9 +388,9 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function isPasswordStrong(password: string): boolean {
-  const hasCapital = !!password.match(/[A-Z]/);
-  const hasNumber = !!password.match(/[\d]/);
-  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const hasCapital = !!/[A-Z]/.exec(password);
+  const hasNumber = !!/[\d]/.exec(password);
+  const hasSpecial = !!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.exec(password);
   const isLong = password.length >= 8;
   const isShort = password.length <= 64;
   return hasCapital && hasNumber && hasSpecial && isLong && isShort;
@@ -481,7 +399,7 @@ export function isPasswordStrong(password: string): boolean {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return (el.textContent as string) || el.innerText || "";
+  return el.textContent || el.innerText || "";
 }
 
 export function loadCSS(href: string, prepend = false): void {
@@ -501,10 +419,6 @@ export function loadCSS(href: string, prepend = false): void {
   } else {
     head.appendChild(link);
   }
-}
-
-export function isDevEnvironment(): boolean {
-  return envConfig.isDevelopment;
 }
 
 export function zipfyRandomArrayIndex(dictLength: number): number {
@@ -565,7 +479,7 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
 }
 
 export function typedKeys<T extends object>(
-  obj: T
+  obj: T,
 ): T extends T ? (keyof T)[] : never {
   return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
 }
@@ -591,32 +505,6 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
 }
 
-export function deepClone<T>(obj: T[]): T[];
-export function deepClone<T extends object>(obj: T): T;
-export function deepClone<T>(obj: T): T;
-export function deepClone<T>(obj: T | T[]): T | T[] {
-  // Check if the value is a primitive (not an object or array)
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-
-  // Handle arrays
-  if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item));
-  }
-
-  // Handle objects
-  const clonedObj = {} as { [K in keyof T]: T[K] };
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      clonedObj[key] = deepClone((obj as { [K in keyof T]: T[K] })[key]);
-    }
-  }
-
-  return clonedObj;
-}
-
 export function prefersReducedMotion(): boolean {
   return matchMedia?.("(prefers-reduced-motion)")?.matches;
 }
@@ -633,19 +521,69 @@ export function applyReducedMotion(animationTime: number): number {
 /**
  * Creates a promise with resolvers.
  * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
+ * The returned promise reference stays constant even after reset() - it will always await the current internal promise.
+ * Note: Promise chains created via .then()/.catch()/.finally() will always follow the current internal promise state, even if created before reset().
  */
 export function promiseWithResolvers<T = void>(): {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
   promise: Promise<T>;
+  reset: () => void;
 } {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
+  let innerResolve!: (value: T) => void;
+  let innerReject!: (reason?: unknown) => void;
+  let currentPromise = new Promise<T>((res, rej) => {
+    innerResolve = res;
+    innerReject = rej;
   });
-  return { resolve, reject, promise };
+
+  /**
+   * This was fully AI generated to make the reset function work. Black magic, but its unit-tested and works.
+   */
+
+  const promiseLike = {
+    // oxlint-disable-next-line no-thenable promise-function-async require-await
+    async then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
+      onrejected?:
+        | ((reason: unknown) => TResult2 | PromiseLike<TResult2>)
+        | null,
+    ): Promise<TResult1 | TResult2> {
+      return currentPromise.then(onfulfilled, onrejected);
+    },
+    async catch<TResult = never>(
+      onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
+    ): Promise<T | TResult> {
+      return currentPromise.catch(onrejected);
+    },
+    async finally(onfinally?: (() => void) | null): Promise<T> {
+      return currentPromise.finally(onfinally);
+    },
+    [Symbol.toStringTag]: "Promise" as const,
+  };
+
+  const reset = (): void => {
+    currentPromise = new Promise<T>((res, rej) => {
+      innerResolve = res;
+      innerReject = rej;
+    });
+  };
+
+  // Wrapper functions that always call the current resolver/rejecter
+  const resolve = (value: T): void => {
+    innerResolve(value);
+  };
+
+  const reject = (reason?: unknown): void => {
+    innerReject(reason);
+  };
+
+  return {
+    resolve,
+    reject,
+    promise: promiseLike as Promise<T>,
+    reset,
+  };
 }
 
 /**
@@ -661,15 +599,15 @@ export function promiseWithResolvers<T = void>(): {
  */
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  options?: { rejectSkippedCalls?: true }
+  options?: { rejectSkippedCalls?: true },
 ): (...args: TArgs) => Promise<TResult>;
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  options: { rejectSkippedCalls: false }
+  options: { rejectSkippedCalls: false },
 ): (...args: TArgs) => Promise<TResult | null>;
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {}
+  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {},
 ): (...args: TArgs) => Promise<TResult | null> {
   let isLocked = false;
   let next: {
@@ -697,7 +635,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
       if (next) {
         if (rejectSkippedCalls) {
           next.reject(
-            new Error("skipped call: call was superseded by a more recent one")
+            new Error("skipped call: call was superseded by a more recent one"),
           );
         } else {
           next.resolve(null);
@@ -714,54 +652,94 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   };
 }
 
-/**
- * Sanitize object. Remove invalid values based on the schema.
- * @param schema zod schema
- * @param obj object
- * @returns sanitized object
- */
-export function sanitize<T extends z.ZodTypeAny>(
-  schema: T,
-  obj: z.infer<T>
-): z.infer<T> {
-  const validate = schema.safeParse(obj);
+export function triggerResize(): void {
+  window.dispatchEvent(new Event("resize"));
+}
 
-  if (validate.success) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return obj;
+export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;
+
+function isPlatform(searchTerm: string | RegExp): boolean {
+  // oxlint-disable-next-line no-deprecated
+  const platform = navigator.platform;
+  if (typeof searchTerm === "string") {
+    return platform.includes(searchTerm);
+  } else {
+    return searchTerm.test(platform);
   }
+}
 
-  const errors: Map<string, number[] | undefined> = new Map();
-  for (const error of validate.error.errors) {
-    const element = error.path[0] as string;
-    let val = errors.get(element);
-    if (typeof error.path[1] === "number") {
-      val = [...(val ?? []), error.path[1]];
-    }
-    errors.set(element, val);
+//function isWindows(): boolean {
+//return isPlatform("Win");
+//}
+
+//function isLinux(): boolean {
+//return isPlatform("Linux");
+//}
+
+//function isMac(): boolean {
+//return isPlatform("Mac");
+//}
+
+export function isMacLike(): boolean {
+  return isPlatform(/Mac|iPod|iPhone|iPad/);
+}
+
+export function scrollToCenterOrTop(el: HTMLElement | null): void {
+  if (!el) return;
+
+  const elementHeight = el.offsetHeight;
+  const windowHeight = window.innerHeight;
+
+  el.scrollIntoView({
+    block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+
+export function formatTopPercentage(lbRank?: RankAndCount): string {
+  if (lbRank === undefined) return "";
+  if (lbRank.rank === undefined) return "-";
+  if (lbRank.rank === 1) return "GOAT";
+  return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+export function formatTypingStatsRatio(stats: {
+  startedTests?: number;
+  completedTests?: number;
+}): {
+  completedPercentage: string;
+  restartRatio: string;
+} {
+  if (
+    stats.completedTests === undefined ||
+    stats.startedTests === undefined ||
+    stats.startedTests === 0
+  ) {
+    return { completedPercentage: "", restartRatio: "" };
   }
+  return {
+    completedPercentage: Math.floor(
+      (stats.completedTests / stats.startedTests) * 100,
+    ).toString(),
+    restartRatio: (
+      (stats.startedTests - stats.completedTests) /
+      stats.completedTests
+    ).toFixed(1),
+  };
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => {
-      if (!errors.has(key)) {
-        return [key, value];
-      }
+export function addToGlobal(items: Record<string, unknown>): void {
+  for (const [name, item] of Object.entries(items)) {
+    //@ts-expect-error dev
+    window[name] = item;
+  }
+}
 
-      const error = errors.get(key);
-
-      if (
-        Array.isArray(value) &&
-        error !== undefined && //error is not on the array itself
-        error.length < value.length //not all items in the array are invalid
-      ) {
-        //some items of the array are invalid
-        return [key, value.filter((_element, index) => !error.includes(index))];
-      } else {
-        return [key, undefined];
-      }
-    })
-  ) as z.infer<T>;
+export function getTotalInlineMargin(element: HTMLElement): number {
+  const computedStyle = window.getComputedStyle(element);
+  return (
+    parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
+  );
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

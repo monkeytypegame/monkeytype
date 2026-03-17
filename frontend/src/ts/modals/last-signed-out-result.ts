@@ -1,13 +1,16 @@
 import AnimatedModal from "../utils/animated-modal";
 
 import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import { Auth } from "../firebase";
-import { syncNotSignedInLastResult } from "../utils/results";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
+import { CompletedEvent } from "@monkeytype/schemas/results";
+import { getAuthenticatedUser } from "../firebase";
+import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
-  (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
+  modal.getModal().qs(".result")?.setHtml(`
   <div class="group wpm">
         <div class="sub">wpm</div>
         <div class="val">-</div>
@@ -31,7 +34,7 @@ function reset(): void {
       <div class="group testType">
         <div class="sub">test type</div>
         <div class="val">-</div>
-      </div>`;
+      </div>`);
 }
 
 function fillData(): void {
@@ -82,26 +85,29 @@ function fillData(): void {
 function fillGroup(
   groupClass: string,
   text: string | number,
-  html = false
+  html = false,
 ): void {
+  const el = modal.getModal().qs(`.group.${groupClass} .val`);
+  if (!el) return;
+
   if (html) {
-    $(modal.getModal()).find(`.group.${groupClass} .val`).html(`${text}`);
+    el.setHtml(`${text}`);
   } else {
-    $(modal.getModal()).find(`.group.${groupClass} .val`).text(text);
+    el.setText(`${text}`);
   }
 }
 
 export function show(): void {
   if (!TestLogic.notSignedInLastResult) {
-    Notifications.add(
+    showErrorNotification(
       "Failed to show last signed out result modal: no last result",
-      -1
     );
     return;
   }
-  reset();
+
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
+      reset();
       fillData();
     },
   });
@@ -111,18 +117,27 @@ function hide(): void {
   void modal.hide();
 }
 
+AuthEvent.subscribe((event) => {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+    if (TestLogic.notSignedInLastResult !== null) {
+      show();
+    }
+  }
+});
+
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",
   setup: async (modalEl): Promise<void> => {
-    modalEl
-      .querySelector("button.save")
-      ?.addEventListener("click", async () => {
-        void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
-        hide();
-      });
-    modalEl.querySelector("button.discard")?.addEventListener("click", () => {
+    modalEl.qs("button.save")?.on("click", async () => {
+      const user = getAuthenticatedUser();
+      if (user !== null) {
+        void TestLogic.syncNotSignedInLastResult(user.uid);
+      }
+      hide();
+    });
+    modalEl.qs("button.discard")?.on("click", () => {
       TestLogic.clearNotSignedInResult();
-      Notifications.add("Last test result discarded", 0);
+      showNoticeNotification("Last test result discarded");
       hide();
     });
   },

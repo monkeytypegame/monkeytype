@@ -11,7 +11,7 @@ export function isCustomTextLong(): boolean | undefined {
 
 export function setCustomTextName(
   newName: string,
-  long: boolean | undefined
+  long: boolean | undefined,
 ): void {
   customTestName = newName;
   isLong = long;

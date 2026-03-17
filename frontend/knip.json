@@ -1,4 +1,0 @@
-{
-  "entry": "src/ts/index.ts",
-  "project": "src/ts/**/*.ts"
-}

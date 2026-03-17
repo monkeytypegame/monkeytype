@@ -14,7 +14,7 @@ class Words {
 
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
-  get(i?: number | undefined, raw = false): string | string[] | undefined {
+  get(i?: number, raw = false): string | string[] | undefined {
     if (i === undefined) {
       return this.list;
     } else {

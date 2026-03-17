@@ -1,13 +1,18 @@
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
-import Config from "../config";
+import Config, { setConfig } from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import * as ThemeColors from "../elements/theme-colors";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+  addNotificationWithLevel,
+} from "../stores/notifications";
 import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
@@ -29,38 +34,74 @@ import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import confetti from "canvas-confetti";
 import type {
   AnnotationOptions,
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { z } from "zod";
+import * as TestState from "./test-state";
+import { blurInputElement } from "../input/input-element";
+import * as ConnectionState from "../states/connection";
+import { currentQuote } from "./test-words";
+import { qs, qsa } from "../utils/dom";
+import { getTheme } from "../signals/theme";
 
 let result: CompletedEvent;
+let minChartVal: number;
 let maxChartVal: number;
 
-let useUnsmoothedRaw = false;
+let useSmoothedBurst = true;
+let useFakeChartData = false;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
 
-export function toggleUnsmoothedRaw(): void {
-  useUnsmoothedRaw = !useUnsmoothedRaw;
-  Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
+export function toggleSmoothedBurst(): void {
+  useSmoothedBurst = !useSmoothedBurst;
+  showSuccessNotification(useSmoothedBurst ? "on" : "off");
+  if (TestState.resultVisible) {
+    void updateChartData().then(() => {
+      ChartController.result.update("resize");
+    });
+  }
+}
+
+export function toggleUserFakeChartData(): void {
+  useFakeChartData = !useFakeChartData;
+  showSuccessNotification(useFakeChartData ? "on" : "off");
+  if (TestState.resultVisible) {
+    void updateChartData().then(() => {
+      ChartController.result.update("resize");
+    });
+  }
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
-async function updateGraph(): Promise<void> {
+async function updateChartData(): Promise<void> {
+  if (result.chartData === "toolong") {
+    ChartController.result.getDataset("wpm").data = [];
+    ChartController.result.getDataset("raw").data = [];
+    ChartController.result.getDataset("burst").data = [];
+    ChartController.result.getDataset("error").data = [];
+    return;
+  }
+
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const labels = [];
+  ChartController.result.getScale("wpm").title.text =
+    typingSpeedUnit.fullUnitString;
+
+  let labels = [];
 
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
@@ -70,20 +111,27 @@ async function updateGraph(): Promise<void> {
     }
   }
 
-  ChartController.result.getScale("wpm").title.text =
-    typingSpeedUnit.fullUnitString;
-
   const chartData1 = [
-    ...TestInput.wpmHistory.map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ...result.chartData.wpm.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
-  if (result.chartData === "toolong") return;
 
   const chartData2 = [
-    ...result.chartData.raw.map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ...TestInput.rawHistory.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
+  ];
+
+  const valueWindow = Math.max(...result.chartData.burst) * 0.25;
+  let smoothedBurst = Arrays.smoothWithValueWindow(
+    result.chartData.burst,
+    1,
+    useSmoothedBurst ? valueWindow : 0,
+  );
+
+  const chartData3 = [
+    ...smoothedBurst.map((a) => Numbers.roundTo2(typingSpeedUnit.fromWpm(a))),
   ];
 
   if (
@@ -96,36 +144,8 @@ async function updateGraph(): Promise<void> {
     chartData2.pop();
   }
 
-  let smoothedRawData = chartData2;
-  if (!useUnsmoothedRaw) {
-    smoothedRawData = Arrays.smooth(smoothedRawData, 1);
-    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
-  }
+  const subcolor = getTheme().sub;
 
-  ChartController.result.data.labels = labels;
-  ChartController.result.getDataset("wpm").data = chartData1;
-  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
-  ChartController.result.getDataset("raw").data = smoothedRawData;
-
-  maxChartVal = Math.max(
-    ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
-  );
-
-  if (!Config.startGraphsAtZero) {
-    const minChartVal = Math.min(
-      ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
-    );
-
-    ChartController.result.getScale("wpm").min = minChartVal;
-    ChartController.result.getScale("raw").min = minChartVal;
-  } else {
-    ChartController.result.getScale("wpm").min = 0;
-    ChartController.result.getScale("raw").min = 0;
-  }
-
-  ChartController.result.getDataset("error").data = result.chartData.err;
-
-  const fc = await ThemeColors.get("sub");
   if (Config.funbox.length > 0) {
     let content = "";
     for (const fb of getActiveFunboxes()) {
@@ -154,7 +174,7 @@ async function updateGraph(): Promise<void> {
           weight: Chart.defaults.font.weight as string,
           lineHeight: Chart.defaults.font.lineHeight as number,
         },
-        color: fc,
+        color: subcolor,
         padding: 3,
         borderRadius: 3,
         position: "start",
@@ -164,15 +184,111 @@ async function updateGraph(): Promise<void> {
     });
   }
 
-  ChartController.result.getScale("wpm").max = maxChartVal;
-  ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.data.labels = labels;
+
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+
+  ChartController.result.getDataset("raw").data = chartData2;
+
+  ChartController.result.getDataset("burst").data = chartData3;
+
+  ChartController.result.getDataset("error").data = result.chartData.err;
   ChartController.result.getScale("error").max = Math.max(
-    ...result.chartData.err
+    ...result.chartData.err,
   );
+
+  if (useFakeChartData) {
+    applyFakeChartData();
+  }
 }
 
-export async function updateGraphPBLine(): Promise<void> {
-  const themecolors = await ThemeColors.getAll();
+function applyFakeChartData(): void {
+  const fakeChartData = {
+    wpm: [
+      108, 120, 116, 114, 113, 120, 118, 121, 119, 120, 116, 118, 113, 110, 108,
+      110, 107, 107, 108, 109, 110, 112, 114, 112, 111, 109, 110, 108, 108, 109,
+    ],
+    raw: [
+      108, 120, 116, 114, 113, 120, 123, 127, 131, 131, 131, 132, 130, 133, 134,
+      134, 131, 129, 129, 128, 129, 130, 131, 129, 129, 127, 127, 128, 127, 127,
+    ],
+    burst: [
+      108, 132, 108, 108, 108, 156, 144, 156, 156, 132, 132, 144, 108, 168, 156,
+      132, 96, 108, 120, 120, 144, 156, 144, 84, 132, 84, 132, 156, 108, 120,
+    ],
+    err: [
+      0, 0, 0, 0, 0, 0, 3, 1, 3, 0, 5, 0, 3, 5, 4, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2,
+      1, 0, 4, 0, 0,
+    ],
+  };
+
+  const labels = fakeChartData.wpm.map((_, i) => (i + 1).toString());
+
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+
+  const chartData1 = [
+    ...fakeChartData.wpm.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
+    ),
+  ];
+
+  const chartData2 = [
+    ...fakeChartData.raw.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
+    ),
+  ];
+
+  const chartData3 = [
+    ...fakeChartData.burst.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
+    ),
+  ];
+
+  maxChartVal = Math.max(
+    ...[
+      Math.max(...chartData1),
+      Math.max(...chartData2),
+      Math.max(...chartData3),
+    ],
+  );
+
+  let minChartVal = 0;
+
+  if (!Config.startGraphsAtZero) {
+    minChartVal = Math.min(
+      ...[
+        Math.min(...chartData1),
+        Math.min(...chartData2),
+        Math.min(...chartData3),
+      ],
+    );
+
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
+  }
+
+  ChartController.result.data.labels = labels;
+
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getScale("wpm").min = minChartVal;
+  ChartController.result.getScale("wpm").max = maxChartVal;
+
+  ChartController.result.getDataset("raw").data = chartData2;
+  ChartController.result.getScale("raw").min = minChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+
+  ChartController.result.getDataset("burst").data = chartData3;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+
+  ChartController.result.getDataset("error").data = fakeChartData.err;
+  ChartController.result.getScale("error").max = Math.max(...fakeChartData.err);
+}
+
+export async function updateChartPBLine(): Promise<void> {
+  const themecolors = getTheme();
   const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
@@ -181,13 +297,13 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    getFunbox(result.funbox)
+    getFunbox(result.funbox),
   );
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const chartlpb = Numbers.roundTo2(
-    typingSpeedUnit.fromWpm(localPbWpm)
+    typingSpeedUnit.fromWpm(localPbWpm),
   ).toFixed(2);
   resultAnnotation.push({
     display: true,
@@ -195,9 +311,9 @@ export async function updateGraphPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors.sub,
+    borderColor: themecolors.sub + "55",
     borderWidth: 1,
-    borderDash: [2, 2],
+    // borderDash: [4, 16],
     label: {
       backgroundColor: themecolors.sub,
       font: {
@@ -211,20 +327,10 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      content: `PB: ${chartlpb}`,
+      content: ` PB: ${chartlpb} `,
       display: true,
     },
   });
-  const lpbRange = typingSpeedUnit.fromWpm(20);
-  if (
-    maxChartVal >= parseFloat(chartlpb) - lpbRange &&
-    maxChartVal <= parseFloat(chartlpb) + lpbRange
-  ) {
-    maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
-  }
-
-  ChartController.result.getScale("wpm").max = maxChartVal;
-  ChartController.result.getScale("raw").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -233,43 +339,43 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+  qs("#result .stats .wpm .top .text")?.setText(Config.typingSpeedUnit);
 
   if (inf) {
-    $("#result .stats .wpm .bottom").text("Infinite");
+    qs("#result .stats .wpm .bottom")?.setText("Infinite");
   } else {
-    $("#result .stats .wpm .bottom").text(Format.typingSpeed(result.wpm));
+    qs("#result .stats .wpm .bottom")?.setText(Format.typingSpeed(result.wpm));
   }
-  $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
-  $("#result .stats .acc .bottom").text(
-    result.acc === 100 ? "100%" : Format.accuracy(result.acc)
+  qs("#result .stats .raw .bottom")?.setText(Format.typingSpeed(result.rawWpm));
+  qs("#result .stats .acc .bottom")?.setText(
+    result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
-      $("#result .stats .wpm .bottom").attr(
+      qs("#result .stats .wpm .bottom")?.setAttribute(
         "aria-label",
-        result.wpm.toFixed(2) + " wpm"
+        result.wpm.toFixed(2) + " wpm",
       );
-      $("#result .stats .raw .bottom").attr(
+      qs("#result .stats .raw .bottom")?.setAttribute(
         "aria-label",
-        result.rawWpm.toFixed(2) + " wpm"
+        result.rawWpm.toFixed(2) + " wpm",
       );
     } else {
-      $("#result .stats .wpm .bottom").removeAttr("aria-label");
-      $("#result .stats .raw .bottom").removeAttr("aria-label");
+      qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
+      qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
     }
 
     let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
-    $("#result .stats .time .bottom .text").text(time);
-    // $("#result .stats .acc .bottom").removeAttr("aria-label");
+    qs("#result .stats .time .bottom .text")?.setText(time);
+    // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
 
-    $("#result .stats .acc .bottom").attr(
+    qs("#result .stats .acc .bottom")?.setAttribute(
       "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
+      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`,
     );
   } else {
     //not showing decimal places
@@ -285,11 +391,11 @@ function updateWpmAndAcc(): void {
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
-    $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-    $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
+    qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
+    qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom")
-      .attr(
+    qs("#result .stats .acc .bottom")
+      ?.setAttribute(
         "aria-label",
         `${
           result.acc === 100
@@ -297,43 +403,45 @@ function updateWpmAndAcc(): void {
             : Format.percentage(result.acc, { showDecimalPlaces: true })
         }\n${TestInput.accuracy.correct} correct\n${
           TestInput.accuracy.incorrect
-        } incorrect`
+        } incorrect`,
       )
-      .attr("data-balloon-break", "");
+      ?.setAttribute("data-balloon-break", "");
   }
 }
 
 function updateConsistency(): void {
-  $("#result .stats .consistency .bottom").text(
-    Format.percentage(result.consistency)
+  qs("#result .stats .consistency .bottom")?.setText(
+    Format.percentage(result.consistency),
   );
   if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").attr(
+    qs("#result .stats .consistency .bottom")?.setAttribute(
       "aria-label",
       Format.percentage(result.keyConsistency, {
         showDecimalPlaces: true,
         suffix: " key",
-      })
+      }),
     );
   } else {
-    $("#result .stats .consistency .bottom").attr(
+    qs("#result .stats .consistency .bottom")?.setAttribute(
       "aria-label",
-      `${result.consistency}% (${result.keyConsistency}% key)`
+      `${result.consistency}% (${result.keyConsistency}% key)`,
     );
   }
 }
 
 function updateTime(): void {
   const afkSecondsPercent = Numbers.roundTo2(
-    (result.afkDuration / result.testDuration) * 100
+    (result.afkDuration / result.testDuration) * 100,
   );
-  $("#result .stats .time .bottom .afk").text("");
+  qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
-    $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
+    qs("#result .stats .time .bottom .afk")?.setText(
+      afkSecondsPercent + "% afk",
+    );
   }
-  $("#result .stats .time .bottom").attr(
+  qs("#result .stats .time .bottom")?.setAttribute(
     "aria-label",
-    `${result.afkDuration}s afk ${afkSecondsPercent}%`
+    `${result.afkDuration}s afk ${afkSecondsPercent}%`,
   );
 
   if (Config.alwaysShowDecimalPlaces) {
@@ -341,35 +449,37 @@ function updateTime(): void {
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
-    $("#result .stats .time .bottom .text").text(time);
+    qs("#result .stats .time .bottom .text")?.setText(time);
   } else {
     let time = Math.round(result.testDuration) + "s";
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Math.round(result.testDuration));
     }
-    $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .time .bottom").attr(
+    qs("#result .stats .time .bottom .text")?.setText(time);
+    qs("#result .stats .time .bottom")?.setAttribute(
       "aria-label",
       `${Numbers.roundTo2(result.testDuration)}s (${
         result.afkDuration
-      }s afk ${afkSecondsPercent}%)`
+      }s afk ${afkSecondsPercent}%)`,
     );
   }
 }
 
 export function updateTodayTracker(): void {
-  $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
+  qs("#result .stats .time .bottom .timeToday")?.setText(
+    TodayTracker.getString(),
+  );
 }
 
 function updateKey(): void {
-  $("#result .stats .key .bottom").text(
+  qs("#result .stats .key .bottom")?.setText(
     result.charStats[0] +
       "/" +
       result.charStats[1] +
       "/" +
       result.charStats[2] +
       "/" +
-      result.charStats[3]
+      result.charStats[3],
   );
 }
 
@@ -379,10 +489,10 @@ export function showCrown(type: PbCrown.CrownType): void {
 }
 
 export function updateCrownText(text: string, wide = false): void {
-  $("#result .stats .wpm .crown").attr("aria-label", text);
-  $("#result .stats .wpm .crown").attr(
+  qs("#result .stats .wpm .crown")?.setAttribute("aria-label", text);
+  qs("#result .stats .wpm .crown")?.setAttribute(
     "data-balloon-length",
-    wide ? "medium" : ""
+    wide ? "medium" : "",
   );
 }
 
@@ -406,7 +516,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      getActiveFunboxes()
+      getActiveFunboxes(),
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -419,7 +529,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       console.debug("Showing pending crown");
       showCrown("pending");
       updateCrownText(
-        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
+        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true }),
       );
     }
   } else {
@@ -431,7 +541,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      []
+      [],
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -442,7 +552,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       showCrown("warning");
       updateCrownText(
         `This result is not eligible for a new PB (${canGetPb.reason})`,
-        true
+        true,
       );
     } else {
       console.debug("Showing ineligible crown");
@@ -451,7 +561,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
         `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
           showDecimalPlaces: true,
         })}), but your config does not allow it (${canGetPb.reason})`,
-        true
+        true,
       );
     }
   }
@@ -468,7 +578,7 @@ export function showErrorCrownIfNeeded(): void {
   PbCrown.update("error");
   updateCrownText(
     `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
-    true
+    true,
   );
 }
 
@@ -562,25 +672,30 @@ async function updateTags(dontSave: boolean): Promise<void> {
   } catch (e) {}
 
   if (userTagsCount === 0) {
-    $("#result .stats .tags").addClass("hidden");
+    qs("#result .stats .tags")?.hide();
   } else {
-    $("#result .stats .tags").removeClass("hidden");
+    qs("#result .stats .tags")?.show();
   }
   if (activeTags.length === 0) {
-    $("#result .stats .tags .bottom").html("<div class='noTags'>no tags</div>");
+    qs("#result .stats .tags .bottom")?.setHtml(
+      "<div class='noTags'>no tags</div>",
+    );
   } else {
-    $("#result .stats .tags .bottom").text("");
+    qs("#result .stats .tags .bottom")?.setText("");
   }
-  $("#result .stats .tags .editTagsButton").attr("data-result-id", "");
-  $("#result .stats .tags .editTagsButton").attr(
-    "data-active-tag-ids",
-    activeTags.map((t) => t._id).join(",")
+  qs("#result .stats .tags .editTagsButton")?.setAttribute(
+    "data-result-id",
+    "",
   );
-  $("#result .stats .tags .editTagsButton").addClass("invisible");
+  qs("#result .stats .tags .editTagsButton")?.setAttribute(
+    "data-active-tag-ids",
+    activeTags.map((t) => t._id).join(","),
+  );
+  qs("#result .stats .tags .editTagsButton")?.addClass("invisible");
 
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
-  activeTags.forEach(async (tag) => {
+  for (const tag of activeTags) {
     const tpb = await DB.getLocalTagPB(
       tag._id,
       Config.mode,
@@ -589,9 +704,9 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode
+      Config.lazyMode,
     );
-    $("#result .stats .tags .bottom").append(`
+    qs("#result .stats .tags .bottom")?.appendHtml(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
@@ -614,27 +729,24 @@ async function updateTags(dontSave: boolean): Promise<void> {
           result.wpm,
           result.acc,
           result.rawWpm,
-          result.consistency
+          result.consistency,
         );
-        $(
-          `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
-        ).removeClass("hidden");
-        $(`#result .stats .tags .bottom div[tagid="${tag._id}"]`).attr(
-          "aria-label",
-          "+" + Numbers.roundTo2(result.wpm - tpb)
-        );
+        qs(`#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`)?.show();
+        qs(
+          `#result .stats .tags .bottom div[tagid="${tag._id}"]`,
+        )?.setAttribute("aria-label", "+" + Numbers.roundTo2(result.wpm - tpb));
         // console.log("new pb for tag " + tag.display);
       } else {
-        const themecolors = await ThemeColors.getAll();
+        const themecolors = getTheme();
         resultAnnotation.push({
           display: true,
           type: "line",
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors.sub,
+          borderColor: themecolors.sub + "55",
           borderWidth: 1,
-          borderDash: [2, 2],
+          // borderDash: [4, 16],
           label: {
             backgroundColor: themecolors.sub,
             font: {
@@ -651,7 +763,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             xAdjust: labelAdjust,
             display: true,
             content: `${tag.display} PB: ${Numbers.roundTo2(
-              typingSpeedUnit.fromWpm(tpb)
+              typingSpeedUnit.fromWpm(tpb),
             ).toFixed(2)}`,
           },
         });
@@ -664,7 +776,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         }
       }
     }
-  });
+  }
 }
 
 function updateTestType(randomQuote: Quote | null): void {
@@ -710,7 +822,7 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += `<br>stop on ${Config.stopOnError}`;
   }
 
-  $("#result .stats .testType .bottom").html(testType);
+  qsa("#result .stats .testType .bottom")?.setHtml(testType);
 }
 
 function updateOther(
@@ -718,7 +830,7 @@ function updateOther(
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
-  tooShort: boolean
+  tooShort: boolean,
 ): void {
   let otherText = "";
   if (difficultyFailed) {
@@ -764,11 +876,11 @@ function updateOther(
   }
 
   if (otherText === "") {
-    $("#result .stats .info").addClass("hidden");
+    qs("#result .stats .info")?.hide();
   } else {
-    $("#result .stats .info").removeClass("hidden");
+    qs("#result .stats .info")?.show();
     otherText = otherText.substring(4);
-    $("#result .stats .info .bottom").html(otherText);
+    qs("#result .stats .info .bottom")?.setHtml(otherText);
   }
 }
 
@@ -776,7 +888,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     if (randomQuote === null) {
       console.error(
-        "Failed to update quote rating button: randomQuote is null"
+        "Failed to update quote rating button: randomQuote is null",
       );
       return;
     }
@@ -784,38 +896,38 @@ export function updateRateQuote(randomQuote: Quote | null): void {
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (Numbers.isSafeNumber(userqr)) {
-      $(".pageTest #result #rateQuoteButton .icon")
-        .removeClass("far")
-        .addClass("fas");
+      qs(".pageTest #result #rateQuoteButton .icon")
+        ?.removeClass("far")
+        ?.addClass("fas");
     }
     quoteRateModal
       .getQuoteStats(randomQuote)
       .then((quoteStats) => {
-        $(".pageTest #result #rateQuoteButton .rating").text(
-          quoteStats?.average?.toFixed(1) ?? ""
+        qs(".pageTest #result #rateQuoteButton .rating")?.setText(
+          quoteStats?.average?.toFixed(1) ?? "",
         );
       })
       .catch((_e: unknown) => {
-        $(".pageTest #result #rateQuoteButton .rating").text("?");
+        qs(".pageTest #result #rateQuoteButton .rating")?.setText("?");
       });
-    $(".pageTest #result #rateQuoteButton")
-      .css({ opacity: 0 })
-      .removeClass("hidden")
-      .css({ opacity: 1 });
+    qs(".pageTest #result #rateQuoteButton")
+      ?.setStyle({ opacity: "0" })
+      ?.show()
+      ?.setStyle({ opacity: "1" });
   }
 }
 
 function updateQuoteFavorite(randomQuote: Quote | null): void {
-  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
+  const icon = qs(".pageTest #result #favoriteQuoteButton .icon");
 
   if (Config.mode !== "quote" || !isAuthenticated()) {
-    icon.parent().addClass("hidden");
+    icon?.getParent()?.hide();
     return;
   }
 
   if (randomQuote === null) {
     console.error(
-      "Failed to update quote favorite button: randomQuote is null"
+      "Failed to update quote favorite button: randomQuote is null",
     );
     return;
   }
@@ -824,18 +936,18 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
   const userFav = QuotesController.isQuoteFavorite(randomQuote);
-  icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
-  icon.parent().removeClass("hidden");
+  icon?.removeClass(userFav ? "far" : "fas")?.addClass(userFav ? "fas" : "far");
+  icon?.getParent()?.show();
 }
 
 function updateQuoteSource(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
-    $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(
-      randomQuote?.source ?? "Error: Source unknown"
+    qs("#result .stats .source")?.show();
+    qs("#result .stats .source .bottom")?.setHtml(
+      randomQuote?.source ?? "Error: Source unknown",
     );
   } else {
-    $("#result .stats .source").addClass("hidden");
+    qs("#result .stats .source")?.hide();
   }
 }
 
@@ -847,32 +959,40 @@ export async function update(
   isRepeated: boolean,
   tooShort: boolean,
   randomQuote: Quote | null,
-  dontSave: boolean
+  dontSave: boolean,
 ): Promise<void> {
   resultAnnotation = [];
-  result = Misc.deepClone(res);
+  result = structuredClone(res);
   hideCrown();
-  $("#resultWordsHistory .words").empty();
-  $("#result #resultWordsHistory").addClass("hidden");
-  $("#retrySavingResultButton").addClass("hidden");
-  $(".pageTest #result #rateQuoteButton .icon")
-    .removeClass("fas")
-    .addClass("far");
-  $(".pageTest #result #rateQuoteButton .rating").text("");
-  $(".pageTest #result #rateQuoteButton").addClass("hidden");
-  $("#words").removeClass("blurred");
-  $("#wordsInput").trigger("blur");
-  $("#result .stats .time .bottom .afk").text("");
+  qs("#resultWordsHistory .words")?.empty();
+  qs("#result #resultWordsHistory")?.hide();
+  qs("#result #replayStats")?.setText("");
+  qs("#result #resultReplay")?.hide();
+  qs("#result #replayWords")?.empty();
+  qs("#retrySavingResultButton")?.hide();
+  qs(".pageTest #result #rateQuoteButton .icon")
+    ?.removeClass("fas")
+    ?.addClass("far");
+  qs(".pageTest #result #rateQuoteButton .rating")?.setText("");
+  qs(".pageTest #result #rateQuoteButton")?.hide();
+  qs("#words")?.removeClass("blurred");
+  blurInputElement();
+  qs("#result .stats .time .bottom .afk")?.setText("");
   if (isAuthenticated()) {
-    $("#result .loginTip").addClass("hidden");
+    qs("#result .loginTip")?.hide();
   } else {
-    $("#result .loginTip").removeClass("hidden");
+    qs("#result .loginTip")?.show();
   }
   if (Config.ads === "off" || Config.ads === "result") {
-    $("#result #watchVideoAdButton").addClass("hidden");
+    qs("#result #watchVideoAdButton")?.hide();
   } else {
-    $("#result #watchVideoAdButton").removeClass("hidden");
+    qs("#result #watchVideoAdButton")?.show();
   }
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
+
   updateWpmAndAcc();
   updateConsistency();
   updateTime();
@@ -881,29 +1001,31 @@ export async function update(
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);
   await updateCrown(dontSave);
-  await updateGraph();
-  await updateGraphPBLine();
+  await updateChartData();
+  updateResultChartDataVisibility();
+  updateMinMaxChartValues();
+  await updateChartPBLine();
+  applyMinMaxChartValues();
   await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
-    $("#result .stats .tags").hasClass("hidden") &&
-    $("#result .stats .info").hasClass("hidden")
+    qs("#result .stats .tags")?.hasClass("hidden") &&
+    qs("#result .stats .info")?.hasClass("hidden")
   ) {
-    $("#result .stats .infoAndTags").addClass("hidden");
+    qs("#result .stats .infoAndTags")?.hide();
   } else {
-    $("#result .stats .infoAndTags").removeClass("hidden");
+    qs("#result .stats .infoAndTags")?.show();
   }
 
   if (GlarsesMode.get()) {
-    $("main #result .noStressMessage").remove();
-    $("main #result").prepend(`
+    qs("main #result .noStressMessage")?.remove();
+    qs("main #result")?.prependHtml(`
 
       <div class='noStressMessage' style="
         text-align: center;
@@ -915,84 +1037,233 @@ export async function update(
       </div>
 
     `);
-    $("main #result .stats").addClass("hidden");
-    $("main #result .chart").addClass("hidden");
-    $("main #result #resultWordsHistory").addClass("hidden");
-    $("main #result #resultReplay").addClass("hidden");
-    $("main #result .loginTip").addClass("hidden");
-    $("main #result #showWordHistoryButton").addClass("hidden");
-    $("main #result #watchReplayButton").addClass("hidden");
-    $("main #result #saveScreenshotButton").addClass("hidden");
+    qsa("main #result .stats")?.hide();
+    qs("main #result .chart")?.hide();
+    qs("main #result #resultWordsHistory")?.hide();
+    qs("main #result #resultReplay")?.hide();
+    qs("main #result .loginTip")?.hide();
+    qs("main #result #showWordHistoryButton")?.hide();
+    qs("main #result #watchReplayButton")?.hide();
+    qs("main #result #saveScreenshotButton")?.hide();
 
     console.log(
-      `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`
+      `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`,
     );
   } else {
-    $("main #result .stats").removeClass("hidden");
-    $("main #result .chart").removeClass("hidden");
-    // $("main #result #resultWordsHistory").removeClass("hidden");
+    qsa("main #result .stats")?.show();
+    qs("main #result .chart")?.show();
     if (!isAuthenticated()) {
-      $("main #result .loginTip").removeClass("hidden");
+      qs("main #result .loginTip")?.show();
+      qs("main #result #rateQuoteButton")?.hide();
+      qs("main #result #reportQuoteButton")?.hide();
+    } else {
+      updateRateQuote(currentQuote);
+      qs("main #result #reportQuoteButton")?.show();
     }
-    $("main #result #showWordHistoryButton").removeClass("hidden");
-    $("main #result #watchReplayButton").removeClass("hidden");
-    $("main #result #saveScreenshotButton").removeClass("hidden");
+    qs("main #result .stats .dailyLeaderboard")?.hide();
+    qs("main #result #showWordHistoryButton")?.show();
+    qs("main #result #watchReplayButton")?.show();
+    qs("main #result #saveScreenshotButton")?.show();
   }
 
-  if (window.scrollY > 0) {
-    $([document.documentElement, document.body])
-      .stop()
-      .animate({ scrollTop: 0 }, 250);
+  if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
+    const roundedTime = Math.round(res.testDuration);
+
+    const messages = [
+      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
+      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
+      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
+      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
+      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
+      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
+      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
+      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
+      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
+      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
+    ];
+
+    showConfetti();
+    showNoticeNotification(Arrays.randomElementFromArray(messages), {
+      customTitle: "Nice",
+      durationMs: 15000,
+      important: true,
+    });
   }
 
   TestConfig.hide();
+  Focus.set(false);
 
-  void Misc.swapElements(
-    $("#typingTest"),
-    $("#result"),
-    250,
-    async () => {
-      $("#result").trigger("focus");
-      void AdController.renderResult();
-      TestUI.setResultCalculating(false);
-      $("#words").empty();
-      ChartController.result.resize();
-
-      window.scrollTo({ top: 0 });
-    },
-    async () => {
-      Focus.set(false);
-      $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
-        {
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(125)
-      );
-
-      const canQuickRestart = canQuickRestartFn(
-        Config.mode,
-        Config.words,
-        Config.time,
-        CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false
-      );
-
-      if (
-        Config.alwaysShowWordsHistory &&
-        canQuickRestart &&
-        !GlarsesMode.get()
-      ) {
-        TestUI.toggleResultWords(true);
-      }
-      AdController.updateFooterAndVerticalAds(true);
-      void Funbox.clear();
-    }
+  const canQuickRestart = canQuickRestartFn(
+    Config.mode,
+    Config.words,
+    Config.time,
+    CustomText.getData(),
+    CustomTextState.isCustomTextLong() ?? false,
   );
+
+  if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
+    void TestUI.toggleResultWords(true);
+  }
+  AdController.updateFooterAndVerticalAds(true);
+  void Funbox.clear();
+
+  qs(".pageTest .loading")?.hide();
+  qs("#result")?.show();
+
+  const resultEl = qs("#result");
+  resultEl?.focus({
+    preventScroll: true,
+  });
+
+  await Misc.promiseAnimate("#result", {
+    opacity: [0, 1],
+    duration: Misc.applyReducedMotion(125),
+  });
+
+  Misc.scrollToCenterOrTop(resultEl?.native ?? null);
+  void AdController.renderResult();
+  TestUI.setResultCalculating(false);
+  qs("#words")?.empty();
+  ChartController.result.resize();
+}
+
+const resultChartDataVisibility = new LocalStorageWithSchema({
+  key: "resultChartDataVisibility",
+  schema: z
+    .object({
+      raw: z.boolean(),
+      burst: z.boolean(),
+      errors: z.boolean(),
+      pbLine: z.boolean(),
+      tagPbLine: z.boolean(),
+    })
+    .strict(),
+  fallback: {
+    raw: true,
+    burst: true,
+    errors: true,
+    pbLine: true,
+    tagPbLine: true,
+  },
+});
+
+function updateMinMaxChartValues(): void {
+  const values = [];
+
+  const datasets = {
+    wpm: ChartController.result.getDataset("wpm"),
+    burst: ChartController.result.getDataset("burst"),
+    raw: ChartController.result.getDataset("raw"),
+  };
+
+  if (!datasets.wpm.hidden) {
+    values.push(...datasets.wpm.data);
+  }
+  if (!datasets.burst.hidden) {
+    values.push(...datasets.burst.data);
+  }
+  if (!datasets.raw.hidden) {
+    values.push(...datasets.raw.data);
+  }
+
+  maxChartVal = Math.max(...values);
+
+  let maxAnnotation: null | number = null;
+  for (const annotation of resultAnnotation) {
+    if ((annotation.display ?? false) === false) continue;
+    if (annotation.value === undefined) continue;
+    // values.push(annotation.value as number);
+    if (
+      maxAnnotation === null ||
+      parseFloat(annotation.value as string) > maxAnnotation
+    ) {
+      maxAnnotation = parseFloat(annotation.value as string);
+    }
+  }
+
+  if (maxAnnotation !== null) {
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+    const lpbRange = typingSpeedUnit.fromWpm(20);
+    if (
+      maxChartVal >= maxAnnotation - lpbRange &&
+      maxChartVal <= maxAnnotation + lpbRange
+    ) {
+      maxChartVal = Math.round(maxAnnotation + lpbRange);
+    }
+  }
+
+  maxChartVal = Math.ceil(maxChartVal / 10) * 10;
+
+  minChartVal = 0;
+
+  if (!Config.startGraphsAtZero) {
+    minChartVal = Math.min(...values);
+
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
+  }
+}
+
+function applyMinMaxChartValues(): void {
+  ChartController.result.getScale("wpm").min = minChartVal;
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").min = minChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+}
+
+function updateResultChartDataVisibility(): void {
+  const vis = resultChartDataVisibility.get();
+  ChartController.result.getDataset("raw").hidden = !vis.raw;
+  ChartController.result.getDataset("burst").hidden = !vis.burst;
+  ChartController.result.getDataset("error").hidden = !vis.errors;
+
+  for (const annotation of resultAnnotation) {
+    if (annotation.id === "lpb") {
+      annotation.display = vis.pbLine;
+    } else if (annotation.id === "tpb") {
+      annotation.display = vis.tagPbLine;
+    }
+  }
+
+  const buttons = qsa(".pageTest #result .chart .chartLegend button");
+
+  // Check if there are any tag PB annotations
+  const hasTagPbAnnotations = resultAnnotation.some(
+    (annotation) => annotation.id === "tpb",
+  );
+
+  for (const button of buttons) {
+    const id = button?.getAttribute("data-id") as string;
+
+    if (id === "scale") {
+      continue;
+    }
+
+    if (
+      id !== "raw" &&
+      id !== "burst" &&
+      id !== "errors" &&
+      id !== "pbLine" &&
+      id !== "tagPbLine"
+    ) {
+      continue;
+    }
+
+    button.toggleClass("active", vis[id]);
+
+    if (id === "pbLine") {
+      button.toggleClass("hidden", !isAuthenticated());
+    } else if (id === "tagPbLine") {
+      button.toggleClass("hidden", !isAuthenticated() || !hasTagPbAnnotations);
+    }
+  }
 }
 
 export function updateTagsAfterEdit(
   tagIds: string[],
-  tagPbIds: string[]
+  tagPbIds: string[],
 ): void {
   const tagNames: string[] = [];
 
@@ -1007,18 +1278,18 @@ export function updateTagsAfterEdit(
   }
 
   if (tagIds.length === 0) {
-    $(`.pageTest #result .tags .bottom`).html(
-      "<div class='noTags'>no tags</div>"
+    qs(`.pageTest #result .tags .bottom`)?.setHtml(
+      "<div class='noTags'>no tags</div>",
     );
   } else {
-    $(`.pageTest #result .tags .bottom div.noTags`).remove();
-    const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
+    qs(`.pageTest #result .tags .bottom div.noTags`)?.remove();
+    const currentElements = qsa(`.pageTest #result .tags .bottom div[tagid]`);
 
     const checked: string[] = [];
-    currentElements.each((_, element) => {
-      const tagId = $(element).attr("tagid") as string;
+    currentElements.forEach((element) => {
+      const tagId = element.getAttribute("tagid") ?? "";
       if (!tagIds.includes(tagId)) {
-        $(element).remove();
+        element?.remove();
       } else {
         checked.push(tagId);
       }
@@ -1035,84 +1306,121 @@ export function updateTagsAfterEdit(
       }
     });
 
-    // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
-    $(`.pageTest #result .tags .bottom`).append(html);
-    $(`.pageTest #result .tags .top .editTagsButton`).attr(
-      "active-tag-ids",
-      tagIds.join(",")
-    );
+    // qs(`.pageTest #result .tags .bottom`)?.setHtml(tagNames.join("<br>"));
+    qs(`.pageTest #result .tags .bottom`)?.appendHtml(html);
   }
+
+  qs(`.pageTest #result .tags .top .editTagsButton`)?.setAttribute(
+    "data-active-tag-ids",
+    tagIds.join(","),
+  );
 }
 
-$(".pageTest #favoriteQuoteButton").on("click", async () => {
+qsa(".pageTest #result .chart .chartLegend button")?.on(
+  "click",
+  async (event) => {
+    const $target = event.target as HTMLElement;
+    const id = $target.getAttribute("data-id");
+
+    if (id === "scale") {
+      setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
+      return;
+    }
+
+    if (
+      id !== "raw" &&
+      id !== "burst" &&
+      id !== "errors" &&
+      id !== "pbLine" &&
+      id !== "tagPbLine"
+    ) {
+      return;
+    }
+    const vis = resultChartDataVisibility.get();
+    vis[id] = !vis[id];
+    resultChartDataVisibility.set(vis);
+
+    updateResultChartDataVisibility();
+    updateMinMaxChartValues();
+    applyMinMaxChartValues();
+    ChartController.result.update();
+  },
+);
+
+qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
-    Notifications.add("Could not get quote stats!", -1);
+    showErrorNotification("Could not get quote stats!");
     return;
   }
 
-  const $button = $(".pageTest #favoriteQuoteButton .icon");
+  const $button = qs(".pageTest #favoriteQuoteButton .icon");
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 
-  if ($button.hasClass("fas")) {
-    // Remove from favorites
-    Loader.show();
+  if ($button?.hasClass("fas")) {
+    // Remove from
+    showLoaderBar();
     const response = await Ape.users.removeQuoteFromFavorites({
       body: {
         language: quoteLang,
         quoteId,
       },
     });
-    Loader.hide();
+    hideLoaderBar();
 
-    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
+    addNotificationWithLevel(
+      response.body.message,
+      response.status === 200 ? "success" : "error",
+    );
 
     if (response.status === 200) {
-      $button.removeClass("fas").addClass("far");
+      $button?.removeClass("fas")?.addClass("far");
       const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
-        quoteId
+        quoteId,
       ) as number;
       dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
     // Add to favorites
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.addQuoteToFavorites({
       body: { language: quoteLang, quoteId },
     });
-    Loader.hide();
+    hideLoaderBar();
 
-    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
+    addNotificationWithLevel(
+      response.body.message,
+      response.status === 200 ? "success" : "error",
+    );
 
     if (response.status === 200) {
-      $button.removeClass("far").addClass("fas");
-      if (dbSnapshot.favoriteQuotes === undefined) {
-        dbSnapshot.favoriteQuotes = {};
-      }
-      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-        dbSnapshot.favoriteQuotes[quoteLang] = [];
-      }
+      $button?.removeClass("far")?.addClass("fas");
+      dbSnapshot.favoriteQuotes ??= {};
+      dbSnapshot.favoriteQuotes[quoteLang] ??= [];
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
   }
 });
 
-ConfigEvent.subscribe(async (eventKey) => {
+ConfigEvent.subscribe(async ({ key }) => {
   if (
-    ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
-    TestUI.resultVisible
+    ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
+    TestState.resultVisible
   ) {
     resultAnnotation = [];
 
     updateWpmAndAcc();
-    await updateGraph();
-    await updateGraphPBLine();
+    await updateChartData();
+    await updateChartPBLine();
+    updateResultChartDataVisibility();
+    updateMinMaxChartValues();
+    applyMinMaxChartValues();
     void TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    void ChartController.result.updateColors();
+    ChartController.result.update();
     ChartController.result.resize();
   }
 });

@@ -1,7 +1,9 @@
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Numbers from "@monkeytype/util/numbers";
-import { Config as ConfigType } from "@monkeytype/contracts/schemas/configs";
-import Config from "../config";
+import {
+  Config as ConfigType,
+  TypingSpeedUnit,
+} from "@monkeytype/schemas/configs";
 
 export type FormatOptions = {
   showDecimalPlaces?: boolean;
@@ -20,14 +22,21 @@ export type FallbackOptions = {
   fallback?: string;
 };
 
+type FormatConfig = Pick<
+  ConfigType,
+  "typingSpeedUnit" | "alwaysShowDecimalPlaces"
+>;
+
 export class Formatting {
-  constructor(private config: ConfigType) {
-    //
+  private config: FormatConfig;
+
+  constructor(config: FormatConfig) {
+    this.config = config;
   }
 
   typingSpeed(
     wpm: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     if (wpm === undefined || wpm === null) return options.fallback ?? "";
@@ -39,7 +48,7 @@ export class Formatting {
 
   percentage(
     percentage: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     options.suffix = "%" + (options.suffix ?? "");
@@ -49,7 +58,7 @@ export class Formatting {
 
   accuracy(
     accuracy: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     return this.percentage(accuracy, {
       rounding: Math.floor,
@@ -59,24 +68,28 @@ export class Formatting {
 
   decimals(
     value: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     return this.number(value, options);
   }
 
+  get typingSpeedUnit(): TypingSpeedUnit {
+    return this.config.typingSpeedUnit;
+  }
+
   private number(
     value: number | null | undefined,
-    formatOptions: FormatOptions
+    formatOptions: FormatOptions,
   ): string {
-    if (value === undefined || value === null)
+    if (value === undefined || value === null) {
       return formatOptions.fallback ?? "";
+    }
     const suffix = formatOptions.suffix ?? "";
 
     if (
-      formatOptions.showDecimalPlaces !== undefined
-        ? formatOptions.showDecimalPlaces
-        : this.config.alwaysShowDecimalPlaces
+      formatOptions.showDecimalPlaces ??
+      this.config.alwaysShowDecimalPlaces
     ) {
       return Numbers.roundTo2(value).toFixed(2) + suffix;
     }
@@ -85,12 +98,13 @@ export class Formatting {
 
   rank(
     position: number | null | undefined,
-    formatOptions: FallbackOptions = {}
+    formatOptions: FallbackOptions = {},
   ): string {
     const options = { fallback: "-", ...formatOptions };
 
-    if (position === undefined || position === null)
+    if (position === undefined || position === null) {
       return options.fallback ?? "";
+    }
     let numend = "th";
     const t = position % 10;
     const h = position % 100;
@@ -106,5 +120,3 @@ export class Formatting {
     return position + numend;
   }
 }
-
-export default new Formatting(Config);

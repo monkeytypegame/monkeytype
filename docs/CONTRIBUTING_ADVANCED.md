@@ -21,25 +21,24 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 20.16.0. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 24.11.0. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 ### Git
 
-
 > [!WARNING]
-> **If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.** 
+> **If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.**
 
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy-to-understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
 ### NodeJS and PNPM
 
-Currently, the project is using version `20.16.0 LTS`.
+Currently, the project is using version `24.11.0 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 20.16.0` then `nvm use 20.16.0`) to use the version of Node.js in the `.nvmrc` file.
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 24.11.0` then `nvm use 24.11.0`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
-For package management, we use `pnpm` instead of `npm` or `yarn`. You can install it by running `npm i -g pnpm@9.6.0`. This will install `pnpm` globally on your machine.
+For package management, we use `pnpm` instead of `npm` or `yarn`. You can install it by running `npm i -g pnpm@10.28.1`. This will install `pnpm` globally on your machine.
 
 ### Docker (Recommended but Optional)
 
@@ -51,18 +50,15 @@ The account system will not let you create an account without a Firebase project
 
 1. Create a Firebase account if you already haven't done so.
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
-
    - The project name doesn't matter, but the name `monkeytype` would be preferred.
    - Google Analytics is not necessary.
 
 1. Enable Firebase Authentication
-
    - In the Firebase console, go to `Build > Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email, and save
 
 1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
-
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
@@ -70,7 +66,6 @@ The account system will not let you create an account without a Firebase project
 1. Run `pnpm add -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
 1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
-
    - Run `firebase projects:list` to find your firebase project ID.
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -109,16 +104,16 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Manual                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/install/install-redis/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
+| Manual                                                                                                                                                                                                                                                         | Docker (recommended)                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
    - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
 
-Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
+It's time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
 
 ### Dependencies (if running manually)
 
@@ -134,15 +129,15 @@ npm run dev
 
 ### Backend only
 
-| Manual                      | Docker                         |
-| --------------------------- | ------------------------------ |
-| `npm run dev-be`            | `cd backend && npm run docker` |
+| Manual           | Docker                         |
+| ---------------- | ------------------------------ |
+| `npm run dev-be` | `cd backend && npm run docker` |
 
 ### Frontend only
 
-| Manual                       | Docker                          |
-| ---------------------------- | ------------------------------- |
-| `npm run dev-fe`             | `cd frontend && npm run docker` |
+| Manual           | Docker                          |
+| ---------------- | ------------------------------- |
+| `npm run dev-fe` | `cd frontend && npm run docker` |
 
 These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
@@ -153,7 +148,7 @@ If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
 ## Standards and Guidelines
 
-Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
+Code formatting and linting is enforced by [Oxc (Oxfmt and Oxlint)](https://github.com/oxc-project/oxc), which automatically runs every time you make a commit.
 
 For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 

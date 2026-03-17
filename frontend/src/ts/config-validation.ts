@@ -1,6 +1,6 @@
-import * as Notifications from "./elements/notifications";
+import { showErrorNotification } from "./stores/notifications";
 import { ZodSchema, z } from "zod";
-import { captureException } from "./sentry";
+import * as Sentry from "./sentry";
 
 // function isConfigKeyValid(name: string): boolean {
 //   if (name === null || name === undefined || name === "") return false;
@@ -11,7 +11,7 @@ import { captureException } from "./sentry";
 export function invalid(
   key: string,
   val: unknown,
-  customMessage?: string
+  customMessage?: string,
 ): void {
   let message = `Invalid value for ${key} (${val}). Please try to change this setting again.`;
 
@@ -19,15 +19,15 @@ export function invalid(
     message = `Invalid value for ${key} (${val}). ${customMessage}`;
   }
 
-  Notifications.add(message, -1);
+  showErrorNotification(message);
   console.error(message);
-  captureException(new Error(message));
+  void Sentry.captureException(new Error(message));
 }
 
 export function isConfigValueValid<T>(
   key: string,
   val: T,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): boolean {
   const isValid = schema.safeParse(val).success;
   if (!isValid) invalid(key, val, undefined);

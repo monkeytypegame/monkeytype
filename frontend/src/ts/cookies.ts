@@ -37,6 +37,6 @@ export function activateWhatsAccepted(): void {
     activateAnalytics();
   }
   if (accepted?.sentry) {
-    activateSentry();
+    void activateSentry();
   }
 }

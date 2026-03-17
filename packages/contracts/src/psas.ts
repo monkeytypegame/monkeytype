@@ -1,8 +1,8 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { PSASchema } from "./schemas/psas";
+import { PSASchema } from "@monkeytype/schemas/psas";
+import { CommonResponses, meta, responseWithData } from "./util/api";
 
-import { CommonResponses, meta, responseWithData } from "./schemas/api";
 export const GetPsaResponseSchema = responseWithData(z.array(PSASchema));
 export type GetPsaResponse = z.infer<typeof GetPsaResponseSchema>;
 
@@ -30,5 +30,5 @@ export const psasContract = c.router(
       rateLimit: "psaGet",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

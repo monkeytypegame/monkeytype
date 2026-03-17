@@ -1,25 +1,24 @@
 import Ape from "./ape";
-import * as Notifications from "./elements/notifications";
-import * as LoadingPage from "./pages/loading";
-import { isAuthenticated } from "./firebase";
-import * as ConnectionState from "./states/connection";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "./stores/notifications";
+import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import { lastElementFromArray } from "./utils/arrays";
-import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import * as Loader from "./elements/loader";
-
-import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
-import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
+import { Badge, CustomTheme } from "@monkeytype/schemas/users";
+import { Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
   Mode2,
   PersonalBest,
   PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/shared";
 import {
   getDefaultSnapshot,
   Snapshot,
@@ -27,20 +26,30 @@ import {
   SnapshotResult,
   SnapshotUserTag,
 } from "./constants/default-snapshot";
-import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "./observables/auth-event";
+import {
+  configurationPromise,
+  get as getServerConfiguration,
+} from "./ape/server-configuration";
+import { Connection } from "@monkeytype/schemas/connections";
+import {
+  setLastResult,
+  setSnapshot as setSolidSnapshot,
+} from "./stores/snapshot";
+import { XpBreakdown } from "@monkeytype/schemas/results";
+import { setXpBarData } from "./signals/header";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 export class SnapshotInitError extends Error {
-  constructor(message: string, public responseCode: number) {
+  public responseCode: number;
+  constructor(message: string, responseCode: number) {
     super(message);
     this.name = "SnapshotInitError";
-    // TODO INVESTIGATE
-    // oxlint-disable-next-line
     this.responseCode = responseCode;
   }
 }
@@ -49,7 +58,10 @@ export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot: Snapshot | undefined): void {
+export function setSnapshot(
+  newSnapshot: Snapshot | undefined,
+  options?: { dispatchEvent?: boolean },
+): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
   const lbOptOut = dbSnapshot?.lbOptOut;
@@ -70,59 +82,60 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.verified = originalVerified;
     dbSnapshot.lbOptOut = lbOptOut;
   }
+
+  if (options?.dispatchEvent !== false) {
+    AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
+  }
+
+  setSolidSnapshot(newSnapshot);
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
+  await configurationPromise;
+
   try {
     if (!isAuthenticated()) return false;
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(22.5);
-    // } else {
-    //   LoadingPage.updateBar(16);
-    // }
-    // LoadingPage.updateText("Downloading user...");
 
-    const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.get(),
-      Ape.configs.get(),
-      Ape.presets.get(),
-    ]);
+    const connectionsRequest = getServerConfiguration()?.connections.enabled
+      ? Ape.connections.get()
+      : { status: 200, body: { message: "", data: [] } };
+
+    const [userResponse, presetsResponse, connectionsResponse] =
+      await Promise.all([
+        Ape.users.get(),
+        Ape.presets.get(),
+        connectionsRequest,
+      ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
         `${userResponse.body.message} (user)`,
-        userResponse.status
-      );
-    }
-    if (configResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${configResponse.body.message} (config)`,
-        configResponse.status
+        userResponse.status,
       );
     }
     if (presetsResponse.status !== 200) {
       throw new SnapshotInitError(
         `${presetsResponse.body.message} (presets)`,
-        presetsResponse.status
+        presetsResponse.status,
+      );
+    }
+    if (connectionsResponse.status !== 200) {
+      throw new SnapshotInitError(
+        `${connectionsResponse.body.message} (connections)`,
+        connectionsResponse.status,
       );
     }
 
     const userData = userResponse.body.data;
-    const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
+    const connectionsData = connectionsResponse.body.data;
 
     if (userData === null) {
       throw new SnapshotInitError(
         `Request was successful but user data is null`,
-        200
-      );
-    }
-
-    if (configData !== null && "config" in configData) {
-      throw new Error(
-        "Config data is not in the correct format. Please refresh the page or contact support."
+        200,
       );
     }
 
@@ -169,36 +182,17 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       snap.testActivity = new ModifiableTestActivityCalendar(
         userData.testActivity.testsByDays,
         new Date(userData.testActivity.lastDay),
-        firstDayOfTheWeek
+        firstDayOfTheWeek,
       );
     }
 
     const hourOffset = userData?.streak?.hourOffset;
-    snap.streakHourOffset =
-      hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
+    snap.streakHourOffset = hourOffset ?? undefined;
 
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(45);
-    // } else {
-    //   LoadingPage.updateBar(32);
-    // }
-    // LoadingPage.updateText("Downloading config...");
-    if (configData === undefined || configData === null) {
-      snap.config = {
-        ...getDefaultConfig(),
-      };
-    } else {
-      snap.config = migrateConfig(configData);
-    }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(67.5);
-    // } else {
-    //   LoadingPage.updateBar(48);
-    // }
-    // LoadingPage.updateText("Downloading tags...");
+
     snap.customThemes = userData.customThemes ?? [];
 
     // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
@@ -236,13 +230,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       }
     });
 
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(90);
-    // } else {
-    //   LoadingPage.updateBar(64);
-    // }
-    // LoadingPage.updateText("Downloading presets...");
-
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
         return {
@@ -261,15 +248,20 @@ export async function initSnapshot(): Promise<Snapshot | false> {
           } else {
             return 0;
           }
-        }
+        },
       );
     }
 
+    snap.connections = convertConnections(connectionsData);
+
     dbSnapshot = snap;
+
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = getDefaultSnapshot();
     throw e;
+  } finally {
+    setSolidSnapshot(dbSnapshot);
   }
 }
 
@@ -284,19 +276,10 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  if (!ConnectionState.get()) {
-    return false;
-  }
-
-  if (dbSnapshot.results === undefined) {
-    LoadingPage.updateText("Downloading results...");
-    LoadingPage.updateBar(90);
-  }
-
   const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    Notifications.add("Error getting results: " + response.body.message, -1);
+    showErrorNotification("Error getting results", { response });
     return false;
   }
 
@@ -304,24 +287,20 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   if (!isAuthenticated()) return false;
 
   const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
-    if (result.bailedOut === undefined) result.bailedOut = false;
-    if (result.blindMode === undefined) result.blindMode = false;
-    if (result.lazyMode === undefined) result.lazyMode = false;
-    if (result.difficulty === undefined) result.difficulty = "normal";
-    if (result.funbox === undefined) result.funbox = [];
-    if (result.language === undefined || result.language === null) {
-      result.language = "english";
-    }
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.punctuation === undefined) result.punctuation = false;
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.quoteLength === undefined) result.quoteLength = -1;
-    if (result.restartCount === undefined) result.restartCount = 0;
-    if (result.incompleteTestSeconds === undefined) {
-      result.incompleteTestSeconds = 0;
-    }
-    if (result.afkDuration === undefined) result.afkDuration = 0;
-    if (result.tags === undefined) result.tags = [];
+    result.bailedOut ??= false;
+    result.blindMode ??= false;
+    result.lazyMode ??= false;
+    result.difficulty ??= "normal";
+    result.funbox ??= [];
+    result.language ??= "english";
+    result.numbers ??= false;
+    result.punctuation ??= false;
+    result.numbers ??= false;
+    result.quoteLength ??= -1;
+    result.restartCount ??= 0;
+    result.incompleteTestSeconds ??= 0;
+    result.afkDuration ??= 0;
+    result.tags ??= [];
     return result as SnapshotResult<Mode>;
   });
   results?.sort((a, b) => b.timestamp - a.timestamp);
@@ -331,12 +310,14 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const oldestTimestamp = lastElementFromArray(dbSnapshot.results)
       ?.timestamp as number;
     const resultsWithoutDuplicates = results.filter(
-      (it) => it.timestamp < oldestTimestamp
+      (it) => it.timestamp < oldestTimestamp,
     );
     dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
     dbSnapshot.results = results;
   }
+
+  setLastResult(results[0]);
   return true;
 }
 
@@ -345,30 +326,25 @@ function _getCustomThemeById(themeID: string): CustomTheme | undefined {
 }
 
 export async function addCustomTheme(
-  theme: Omit<CustomTheme, "_id">
+  theme: Omit<CustomTheme, "_id">,
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
 
-  if (dbSnapshot.customThemes === undefined) {
-    dbSnapshot.customThemes = [];
-  }
+  dbSnapshot.customThemes ??= [];
 
   if (dbSnapshot.customThemes.length >= 20) {
-    Notifications.add("Too many custom themes!", 0);
+    showNoticeNotification("Too many custom themes!");
     return false;
   }
 
   const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    Notifications.add(
-      "Error adding custom theme: " + response.body.message,
-      -1
-    );
+    showErrorNotification("Error adding custom theme", { response });
     return false;
   }
 
   if (response.body.data === null) {
-    Notifications.add("Error adding custom theme: No data returned", -1);
+    showErrorNotification("Error adding custom theme: No data returned");
     return false;
   }
 
@@ -383,20 +359,17 @@ export async function addCustomTheme(
 
 export async function editCustomTheme(
   themeId: string,
-  newTheme: Omit<CustomTheme, "_id">
+  newTheme: Omit<CustomTheme, "_id">,
 ): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  if (dbSnapshot.customThemes === undefined) {
-    dbSnapshot.customThemes = [];
-  }
+  dbSnapshot.customThemes ??= [];
 
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
-    Notifications.add(
+    showErrorNotification(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
-      -1
     );
     return false;
   }
@@ -405,10 +378,7 @@ export async function editCustomTheme(
     body: { themeId, theme: newTheme },
   });
   if (response.status !== 200) {
-    Notifications.add(
-      "Error editing custom theme: " + response.body.message,
-      -1
-    );
+    showErrorNotification("Error editing custom theme", { response });
     return false;
   }
 
@@ -432,15 +402,12 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
 
   const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    Notifications.add(
-      "Error deleting custom theme: " + response.body.message,
-      -1
-    );
+    showErrorNotification("Error deleting custom theme", { response });
     return false;
   }
 
   dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
-    (t) => t._id !== themeId
+    (t) => t._id !== themeId,
   );
 
   return true;
@@ -453,7 +420,7 @@ export async function getUserAverage10<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
 
@@ -538,7 +505,7 @@ export async function getUserDailyBest<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<number> {
   const snapshot = getSnapshot();
 
@@ -603,7 +570,7 @@ export async function getActiveTagsPB<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<number> {
   const snapshot = getSnapshot();
   if (!snapshot) return 0;
@@ -619,7 +586,7 @@ export async function getActiveTagsPB<M extends Mode>(
       numbers,
       language,
       difficulty,
-      lazyMode
+      lazyMode,
     );
     if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
   }
@@ -635,7 +602,7 @@ export async function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funboxes: FunboxMetadata[]
+  funboxes: FunboxMetadata[],
 ): Promise<PersonalBest | undefined> {
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
@@ -651,11 +618,11 @@ export async function getLocalPB<M extends Mode>(
       (pb.numbers ?? false) === numbers &&
       pb.difficulty === difficulty &&
       pb.language === language &&
-      (pb.lazyMode ?? false) === lazyMode
+      (pb.lazyMode ?? false) === lazyMode,
   );
 }
 
-export async function saveLocalPB<M extends Mode>(
+function saveLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   punctuation: boolean,
@@ -666,8 +633,8 @@ export async function saveLocalPB<M extends Mode>(
   wpm: number,
   acc: number,
   raw: number,
-  consistency: number
-): Promise<void> {
+  consistency: number,
+): void {
   if (mode === "quote") return;
   if (!dbSnapshot) return;
   function cont(): void {
@@ -722,7 +689,7 @@ export async function saveLocalPB<M extends Mode>(
           raw,
           timestamp: Date.now(),
           consistency,
-        }
+        },
       );
     }
   }
@@ -740,7 +707,7 @@ export async function getLocalTagPB<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<number> {
   if (dbSnapshot === null) return 0;
 
@@ -775,7 +742,7 @@ export async function getLocalTagPB<M extends Mode>(
         (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode)),
     )?.wpm ?? 0;
 
   return ret;
@@ -793,13 +760,13 @@ export async function saveLocalTagPB<M extends Mode>(
   wpm: number,
   acc: number,
   raw: number,
-  consistency: number
+  consistency: number,
 ): Promise<number | undefined> {
   if (!dbSnapshot) return;
   if (mode === "quote") return;
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.find(
-      (t) => t._id === tagId
+      (t) => t._id === tagId,
     ) as SnapshotUserTag;
 
     filteredtag.personalBests ??= {
@@ -889,33 +856,95 @@ export async function saveLocalTagPB<M extends Mode>(
   return;
 }
 
-export async function updateLbMemory<M extends Mode>(
+export function deleteLocalTag(tagId: string): void {
+  getSnapshot()?.results?.forEach((result) => {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      result.tags.splice(tagIndex, 1);
+    }
+  });
+}
+
+export async function updateLocalTagPB<M extends Mode>(
+  tagId: string,
   mode: M,
   mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: Language,
+  difficulty: Difficulty,
+  lazyMode: boolean,
+): Promise<void> {
+  if (dbSnapshot === null) return;
+
+  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
+
+  if (filteredtag === undefined) return;
+
+  const pb = {
+    wpm: 0,
+    acc: 0,
+    rawWpm: 0,
+    consistency: 0,
+  };
+
+  getSnapshot()?.results?.forEach((result) => {
+    if (result.tags.includes(tagId) && result.wpm > pb.wpm) {
+      if (
+        result.mode === mode &&
+        result.mode2 === mode2 &&
+        result.punctuation === punctuation &&
+        result.numbers === numbers &&
+        result.language === language &&
+        result.difficulty === difficulty &&
+        result.lazyMode === lazyMode
+      ) {
+        pb.wpm = result.wpm;
+        pb.acc = result.acc;
+        pb.rawWpm = result.rawWpm;
+        pb.consistency = result.consistency;
+      }
+    }
+  });
+
+  await saveLocalTagPB(
+    tagId,
+    mode,
+    mode2,
+    punctuation,
+    numbers,
+    language,
+    difficulty,
+    lazyMode,
+    pb.wpm,
+    pb.acc,
+    pb.rawWpm,
+    pb.consistency,
+  );
+}
+
+export async function updateLbMemory<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M> | undefined,
   language: Language,
   rank: number,
-  api = false
+  api = false,
 ): Promise<void> {
+  if (mode2 === undefined) return;
   if (mode === "time") {
     const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
 
     const snapshot = getSnapshot();
     if (!snapshot) return;
-    if (snapshot.lbMemory === undefined) {
-      snapshot.lbMemory = {
-        time: { "15": { english: 0 }, "60": { english: 0 } },
-      };
-    }
-    if (snapshot.lbMemory[timeMode] === undefined) {
-      snapshot.lbMemory[timeMode] = {
-        "15": { english: 0 },
-        "60": { english: 0 },
-      };
-    }
-    if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
-      snapshot.lbMemory[timeMode][timeMode2] = {};
-    }
+    snapshot.lbMemory ??= {
+      time: { "15": { english: 0 }, "60": { english: 0 } },
+    };
+    snapshot.lbMemory[timeMode] ??= {
+      "15": { english: 0 },
+      "60": { english: 0 },
+    };
+    snapshot.lbMemory[timeMode][timeMode2] ??= {};
     const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
 
     //this is protected above so not sure why it would be undefined
@@ -930,67 +959,97 @@ export async function updateLbMemory<M extends Mode>(
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
-  if (isAuthenticated()) {
-    const response = await Ape.configs.save({ body: config });
-    if (response.status !== 200) {
-      Notifications.add("Failed to save config: " + response.body.message, -1);
-    }
-  }
-}
+export type SaveLocalResultData = {
+  xp?: number;
+  xpBreakdown?: XpBreakdown;
+  streak?: number;
+  result?: SnapshotResult<Mode>;
+  isPb?: boolean;
+};
 
-export async function resetConfig(): Promise<void> {
-  if (isAuthenticated()) {
-    const response = await Ape.configs.delete();
-    if (response.status !== 200) {
-      Notifications.add("Failed to reset config: " + response.body.message, -1);
-    }
-  }
-}
-
-export function saveLocalResult(result: SnapshotResult<Mode>): void {
+export function saveLocalResult(data: SaveLocalResultData): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot?.results !== undefined) {
-    snapshot.results.unshift(result);
-
-    setSnapshot(snapshot);
-  }
-
-  if (snapshot.testActivity !== undefined) {
-    snapshot.testActivity.increment(new Date(result.timestamp));
-    setSnapshot(snapshot);
-  }
-}
-
-export function updateLocalStats(started: number, time: number): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-  if (snapshot.typingStats === undefined) {
-    snapshot.typingStats = {
+  if (data.result !== undefined) {
+    if (snapshot?.results !== undefined) {
+      snapshot.results.unshift(data.result);
+    }
+    setLastResult(data.result);
+    if (snapshot.testActivity !== undefined) {
+      snapshot.testActivity.increment(new Date(data.result.timestamp));
+    }
+    snapshot.typingStats ??= {
       timeTyping: 0,
       startedTests: 0,
       completedTests: 0,
     };
+
+    const time =
+      data.result.testDuration +
+      data.result.incompleteTestSeconds -
+      data.result.afkDuration;
+
+    snapshot.typingStats.timeTyping += time;
+    snapshot.typingStats.startedTests += data.result.restartCount + 1;
+    snapshot.typingStats.completedTests += 1;
+
+    if (data.isPb) {
+      saveLocalPB(
+        data.result.mode,
+        data.result.mode2,
+        data.result.punctuation,
+        data.result.numbers,
+        data.result.language,
+        data.result.difficulty,
+        data.result.lazyMode,
+        data.result.wpm,
+        data.result.acc,
+        data.result.rawWpm,
+        data.result.consistency,
+      );
+    }
   }
 
-  snapshot.typingStats.timeTyping += time;
-  snapshot.typingStats.startedTests += started;
-  snapshot.typingStats.completedTests += 1;
+  if (data.xp !== undefined) {
+    snapshot.xp ??= 0;
+    snapshot.xp += data.xp;
+  }
 
-  setSnapshot(snapshot);
+  if (data.streak !== undefined) {
+    snapshot.streak = data.streak;
+
+    if (snapshot.streak > snapshot.maxStreak) {
+      snapshot.maxStreak = snapshot.streak;
+    }
+  }
+
+  setSnapshot(snapshot, {
+    dispatchEvent: false,
+  });
+  if (data.xp !== undefined) {
+    setXpBarData({
+      addedXp: data.xp,
+      resultingXp: snapshot.xp,
+      breakdown: data.xpBreakdown,
+    });
+  }
 }
 
-export function addXp(xp: number): void {
+export function addXp(xp: number, breakdown?: XpBreakdown): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot.xp === undefined) {
-    snapshot.xp = 0;
-  }
+  snapshot.xp ??= 0;
   snapshot.xp += xp;
-  setSnapshot(snapshot);
+  setSnapshot(snapshot, {
+    dispatchEvent: false,
+  });
+  setXpBarData({
+    addedXp: xp,
+    resultingXp: snapshot.xp,
+    breakdown: breakdown,
+  });
 }
 
 export function updateInboxUnreadSize(newSize: number): void {
@@ -1005,30 +1064,15 @@ export function addBadge(badge: Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot.inventory === undefined) {
-    snapshot.inventory = {
-      badges: [],
-    };
-  }
+  snapshot.inventory ??= {
+    badges: [],
+  };
   snapshot.inventory.badges.push(badge);
   setSnapshot(snapshot);
 }
 
-export function setStreak(streak: number): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
-  snapshot.streak = streak;
-
-  if (snapshot.streak > snapshot.maxStreak) {
-    snapshot.maxStreak = snapshot.streak;
-  }
-
-  setSnapshot(snapshot);
-}
-
 export async function getTestActivityCalendar(
-  yearString: string
+  yearString: string,
 ): Promise<TestActivityCalendar | undefined> {
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
@@ -1040,18 +1084,11 @@ export async function getTestActivityCalendar(
   }
 
   if (dbSnapshot.testActivityByYear === undefined) {
-    if (!ConnectionState.get()) {
-      return undefined;
-    }
-
-    Loader.show();
+    showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
-      Notifications.add(
-        "Error getting test activities: " + response.body.message,
-        -1
-      );
-      Loader.hide();
+      showErrorNotification("Error getting test activities", { response });
+      hideLoaderBar();
       return undefined;
     }
 
@@ -1061,20 +1098,62 @@ export async function getTestActivityCalendar(
       const testsByDays = response.body.data[year] ?? [];
       const lastDay = Dates.addDays(
         new Date(parseInt(year), 0, 1),
-        testsByDays.length
+        testsByDays.length,
       );
 
       dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
         lastDay,
         firstDayOfTheWeek,
-        true
+        true,
       );
     }
-    Loader.hide();
+    hideLoaderBar();
   }
 
   return dbSnapshot.testActivityByYear[yearString];
+}
+
+export function mergeConnections(connections: Connection[]): void {
+  const snapshot = getSnapshot();
+  if (!snapshot) return;
+
+  const update = convertConnections(connections);
+
+  for (const [key, value] of Object.entries(update)) {
+    snapshot.connections[key] = value;
+  }
+
+  setSnapshot(snapshot);
+}
+
+function convertConnections(
+  connectionsData: Connection[],
+): Snapshot["connections"] {
+  return Object.fromEntries(
+    connectionsData.map((connection) => {
+      const isMyRequest =
+        getAuthenticatedUser()?.uid === connection.initiatorUid;
+
+      return [
+        isMyRequest ? connection.receiverUid : connection.initiatorUid,
+        connection.status === "pending" && !isMyRequest
+          ? "incoming"
+          : connection.status,
+      ];
+    }),
+  );
+}
+
+export function isFriend(uid: string | undefined): boolean {
+  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
+
+  const snapshot = getSnapshot();
+  if (!snapshot) return false;
+
+  return Object.entries(snapshot.connections).some(
+    ([receiverUid, status]) => receiverUid === uid && status === "accepted",
+  );
 }
 
 // export async function DB.getLocalTagPB(tagId) {

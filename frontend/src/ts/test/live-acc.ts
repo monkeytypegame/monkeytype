@@ -1,24 +1,29 @@
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { applyReducedMotion } from "../utils/misc";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { qs } from "../utils/dom";
 
-const textEl = document.querySelector(
-  "#liveStatsTextBottom .liveAcc"
-) as Element;
-const miniEl = document.querySelector("#liveStatsMini .acc") as Element;
+const textEl = qs("#liveStatsTextBottom .liveAcc");
+const miniEl = qs("#liveStatsMini .acc");
 
 export function update(acc: number): void {
-  let number = Math.floor(acc);
-  if (Config.blindMode) {
-    number = 100;
-  }
-  miniEl.innerHTML = number + "%";
-  textEl.innerHTML = number + "%";
+  requestDebouncedAnimationFrame("live-acc.update", () => {
+    let number = Math.floor(acc);
+    if (Config.blindMode) {
+      number = 100;
+    }
+    miniEl?.setHtml(number + "%");
+    textEl?.setHtml(number + "%");
+  });
 }
 
 export function reset(): void {
-  miniEl.innerHTML = "100%";
-  textEl.innerHTML = "100%";
+  requestDebouncedAnimationFrame("live-acc.reset", () => {
+    miniEl?.setHtml("100%");
+    textEl?.setHtml("100%");
+  });
 }
 
 let state = false;
@@ -27,51 +32,56 @@ export function show(): void {
   if (Config.liveAccStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.liveAccStyle === "mini") {
-    $(miniEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: 1,
-      },
-      125
-    );
-  } else {
-    $(textEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: 1,
-      },
-      125
-    );
-  }
-  state = true;
+  requestDebouncedAnimationFrame("live-acc.show", () => {
+    if (Config.liveAccStyle === "mini") {
+      miniEl?.show();
+      miniEl?.animate({
+        opacity: [0, 1],
+        duration: applyReducedMotion(125),
+      });
+    } else {
+      textEl?.show();
+      textEl?.animate({
+        opacity: [0, 1],
+        duration: applyReducedMotion(125),
+      });
+    }
+    state = true;
+  });
 }
 
 export function hide(): void {
   if (!state) return;
-  $(textEl)
-    .stop(true, false)
-    .animate(
-      {
-        opacity: 0,
+  requestDebouncedAnimationFrame("live-acc.hide", () => {
+    textEl?.animate({
+      opacity: [1, 0],
+      duration: applyReducedMotion(125),
+      onComplete: () => {
+        textEl?.hide();
       },
-      125,
-      () => {
-        $(textEl).addClass("hidden");
-      }
-    );
-  $(miniEl)
-    .stop(true, false)
-    .animate(
-      {
-        opacity: 0,
+    });
+    miniEl?.animate({
+      opacity: [1, 0],
+      duration: applyReducedMotion(125),
+      onComplete: () => {
+        miniEl?.hide();
       },
-      125,
-      () => {
-        $(miniEl).addClass("hidden");
-      }
-    );
+    });
+    state = false;
+  });
+}
+
+export function instantHide(): void {
+  if (!state) return;
+
+  textEl?.hide();
+  textEl?.setStyle({ opacity: "0" });
+  miniEl?.hide();
+  miniEl?.setStyle({ opacity: "0" });
+
   state = false;
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "liveAccStyle") eventValue === "off" ? hide() : show();
+ConfigEvent.subscribe(({ key, newValue }) => {
+  if (key === "liveAccStyle") newValue === "off" ? hide() : show();
 });

@@ -1,0 +1,143 @@
+.pageFriends {
+  .bigTitle {
+    color: var(--sub-color);
+    font-size: 2rem;
+  }
+
+  .friendAdd {
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  .titleAndButton {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+
+  .nodata {
+    color: var(--sub-color);
+    padding: 5rem 0;
+    text-align: center;
+  }
+
+  .pendingRequests,
+  .friends {
+    margin-bottom: 4rem;
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      color: var(--text-color);
+      --padding: 1em 1.5rem;
+
+      .small {
+        font-size: 0.75em;
+      }
+
+      thead {
+        color: var(--sub-color);
+        font-size: 0.75rem;
+      }
+
+      tr.me {
+        color: var(--main-color);
+      }
+
+      tbody tr:nth-child(odd) td {
+        background: var(--sub-alt-color);
+      }
+
+      tbody td:first-child {
+        border-radius: var(--roundness) 0 0 var(--roundness);
+      }
+      tbody td:last-child {
+        border-radius: 0 var(--roundness) var(--roundness) 0;
+      }
+
+      td {
+        padding: var(--padding);
+        appearance: unset;
+
+        &:last-child {
+          text-align: right;
+        }
+
+        //don't wrap friendsfor rand streak into multiple lines
+        &:nth-child(2),
+        &:nth-child(6) {
+          white-space: nowrap;
+        }
+      }
+
+      .sub {
+        opacity: 0.5;
+      }
+
+      // .actions button {
+      //   opacity: 0;
+      //   transition: opacity 0.125s;
+      // }
+
+      // tr:hover button {
+      //   opacity: 1;
+      // }
+    }
+  }
+  .pendingRequests {
+    table tr {
+      td:first-child a {
+        text-decoration: none;
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .friends {
+    .avatarNameBadge {
+      display: grid;
+      grid-template-columns: 1.25em max-content auto;
+      gap: 0.5em;
+      place-items: center left;
+      .avatarPlaceholder {
+        width: 1.25em;
+        height: 1.25em;
+        font-size: 1.25em;
+        // background: var(--sub-color);
+        color: var(--sub-color);
+        // display: grid;
+        // place-content: center center;
+        border-radius: 100%;
+      }
+      .entryName {
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+      }
+      .avatarPlaceholder,
+      .avatar {
+        grid-row: 1/2;
+        grid-column: 1/2;
+        .userIcon {
+          color: var(--sub-color);
+        }
+      }
+      .badge {
+        font-size: 0.6em;
+      }
+      .flagsAndBadge {
+        display: flex;
+        gap: 0.5em;
+        color: var(--sub-color);
+        place-items: center;
+      }
+    }
+  }
+  .loading {
+    display: grid;
+    place-items: center;
+    font-size: 3em;
+    color: var(--sub-color);
+    padding: 1em;
+  }
+}

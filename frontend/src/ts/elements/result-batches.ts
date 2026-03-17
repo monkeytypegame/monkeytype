@@ -1,15 +1,16 @@
 import * as DB from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
-import * as ThemeColors from "../elements/theme-colors";
 import { mapRange } from "@monkeytype/util/numbers";
+import { getTheme } from "../signals/theme";
+import { qs } from "../utils/dom";
 
 export function hide(): void {
-  $(".pageAccount .resultBatches").addClass("hidden");
+  qs(".pageAccount .resultBatches")?.hide();
 }
 
 export function show(): void {
-  $(".pageAccount .resultBatches").removeClass("hidden");
+  qs(".pageAccount .resultBatches")?.show();
 }
 
 export async function update(): Promise<void> {
@@ -17,7 +18,7 @@ export async function update(): Promise<void> {
 
   if (results === undefined) {
     console.error(
-      "(Result batches) Results are missing but they should be available at the time of drawing the account page?"
+      "(Result batches) Results are missing but they should be available at the time of drawing the account page?",
     );
     hide();
     return;
@@ -27,7 +28,7 @@ export async function update(): Promise<void> {
 
   const completedTests = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
   const percentageDownloaded = Math.round(
-    (results.length / completedTests) * 100
+    (results.length / completedTests) * 100,
   );
   const limits = ServerConfiguration.get()?.results.limits ?? {
     regularUser: 0,
@@ -38,40 +39,42 @@ export async function update(): Promise<void> {
     : limits.regularUser;
   const percentageLimit = Math.round((results?.length / currentLimit) * 100);
 
-  const barsWrapper = $(".pageAccount .resultBatches .bars");
+  const barsWrapper = qs(".pageAccount .resultBatches .bars");
 
   const bars = {
     downloaded: {
-      fill: barsWrapper.find(".downloaded .fill"),
-      rightText: barsWrapper.find(".downloaded.rightText"),
+      fill: barsWrapper?.qs(".downloaded .fill"),
+      rightText: barsWrapper?.qs(".downloaded.rightText"),
     },
     limit: {
-      fill: barsWrapper.find(".limit .fill"),
-      rightText: barsWrapper.find(".limit.rightText"),
+      fill: barsWrapper?.qs(".limit .fill"),
+      rightText: barsWrapper?.qs(".limit.rightText"),
     },
   };
 
-  bars.downloaded.fill.css("width", Math.min(percentageDownloaded, 100) + "%");
-  bars.downloaded.rightText.text(
-    `${results?.length} / ${completedTests} (${percentageDownloaded}%)`
+  bars.downloaded.fill?.setStyle({
+    width: Math.min(percentageDownloaded, 100) + "%",
+  });
+  bars.downloaded.rightText?.setText(
+    `${results?.length} / ${completedTests} (${percentageDownloaded}%)`,
   );
 
-  const colors = await ThemeColors.getAll();
+  const colors = getTheme();
 
-  bars.limit.fill.css({
+  bars.limit.fill?.setStyle({
     width: Math.min(percentageLimit, 100) + "%",
     background: blendTwoHexColors(
       colors.sub,
       colors.error,
-      mapRange(percentageLimit, 50, 100, 0, 1)
+      mapRange(percentageLimit, 50, 100, 0, 1),
     ),
   });
-  bars.limit.rightText.text(
-    `${results?.length} / ${currentLimit} (${percentageLimit}%)`
+  bars.limit.rightText?.setText(
+    `${results?.length} / ${currentLimit} (${percentageLimit}%)`,
   );
 
-  const text = $(".pageAccount .resultBatches > .text");
-  text.text("");
+  const text = qs(".pageAccount .resultBatches > .text");
+  text?.setText("");
 
   if (results.length >= completedTests) {
     disableButton();
@@ -91,15 +94,15 @@ export async function update(): Promise<void> {
 }
 
 export function disableButton(): void {
-  $(".pageAccount .resultBatches button").prop("disabled", true);
+  qs(".pageAccount .resultBatches button")?.disable();
 }
 
 export function enableButton(): void {
-  $(".pageAccount .resultBatches button").prop("disabled", false);
+  qs(".pageAccount .resultBatches button")?.enable();
 }
 
 export function updateButtonText(text: string): void {
-  $(".pageAccount .resultBatches button").text(text);
+  qs(".pageAccount .resultBatches button")?.setText(text);
 }
 
 export function showOrHideIfNeeded(): void {

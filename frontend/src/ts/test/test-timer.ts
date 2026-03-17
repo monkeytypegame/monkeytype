@@ -1,22 +1,47 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-speed";
+import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
+import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
+import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
+import * as SoundController from "../controllers/sound-controller";
+import { clearLowFpsMode, setLowFpsMode } from "../anim";
+import { createTimer } from "animejs";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+
+let lastLoop = 0;
+const newTimer = createTimer({
+  duration: 1000,
+  loop: true,
+  autoplay: false,
+  onBegin: () => {
+    lastLoop = performance.now();
+  },
+  onLoop: () => {
+    const drift = Math.abs(1000 - (performance.now() - lastLoop));
+    lastLoop = performance.now();
+    checkIfTimerIsSlow(drift);
+    timerStep();
+  },
+});
 
 type TimerStats = {
   dateNow: number;
@@ -30,13 +55,19 @@ let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
 
+let slowTimerFailEnabled = true;
+export function disableSlowTimerFail(): void {
+  slowTimerFailEnabled = false;
+}
+
 let timerDebug = false;
 export function enableTimerDebug(): void {
   timerDebug = true;
 }
 
 export function clear(): void {
-  Time.set(0);
+  clearLowFpsMode();
+  newTimer.reset();
   if (timer !== null) clearTimeout(timer);
 }
 
@@ -50,24 +81,10 @@ function premid(): void {
   if (timerDebug) console.timeEnd("premid");
 }
 
-function updateTimer(): void {
-  if (timerDebug) console.time("timer progress update");
-  if (
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
-    TimerProgress.update();
-  }
-  if (timerDebug) console.timeEnd("timer progress update");
-}
-
 function calculateWpmRaw(): { wpm: number; raw: number } {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
-  if (timerDebug) console.time("update live wpm");
-  LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
-  if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
   TestInput.pushToWpmHistory(wpmAndRaw.wpm);
   TestInput.pushToRawHistory(wpmAndRaw.raw);
@@ -114,8 +131,20 @@ function layoutfluid(): void {
 
     if (Config.layout !== layout && layout !== undefined) {
       LayoutfluidFunboxTimer.hide();
-      UpdateConfig.setLayout(layout as Layout, true);
-      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
+      setConfig("layout", layout as Layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", layout as KeymapLayout, {
+        nosave: true,
+      });
+
+      if (Config.keymapMode === "next") {
+        setTimeout(() => {
+          void KeymapEvent.highlight(
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          );
+        }, 1);
+      }
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");
@@ -123,7 +152,7 @@ function layoutfluid(): void {
 
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
-  acc: number
+  acc: number,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
@@ -175,6 +204,26 @@ function checkIfTimeIsUp(): void {
   if (timerDebug) console.timeEnd("times up check");
 }
 
+function playTimeWarning(): void {
+  if (timerDebug) console.time("play timer warning");
+
+  let maxTime = undefined;
+
+  if (Config.mode === "time") {
+    maxTime = Config.time;
+  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+    maxTime = CustomText.getLimitValue();
+  }
+
+  if (
+    maxTime !== undefined &&
+    Time.get() === maxTime - parseInt(Config.playTimeWarning, 10)
+  ) {
+    void SoundController.playTimeWarning();
+  }
+  if (timerDebug) console.timeEnd("play timer warning");
+}
+
 // ---------------------------------------
 
 let timerStats: TimerStats[] = [];
@@ -183,23 +232,76 @@ export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
-async function timerStep(): Promise<void> {
+function timerStep(): void {
   if (timerDebug) console.time("timer step -----------------------------");
+
+  //calc
   Time.increment();
-  premid();
-  updateTimer();
   const wpmAndRaw = calculateWpmRaw();
   const acc = calculateAcc();
-  monkey(wpmAndRaw);
+
+  //ui updates
+  requestDebouncedAnimationFrame("test-timer.timerStep", () => {
+    premid();
+    monkey(wpmAndRaw);
+  });
+
+  // already using raf
+  TimerProgress.update();
+  LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+
+  //logic
+  if (Config.playTimeWarning !== "off") playTimeWarning();
   layoutfluid();
   const failed = checkIfFailed(wpmAndRaw, acc);
   if (!failed) checkIfTimeIsUp();
+
   if (timerDebug) console.timeEnd("timer step -----------------------------");
+}
+
+function checkIfTimerIsSlow(drift: number): void {
+  if (!slowTimerFailEnabled) return;
+  if (
+    (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
+    (Config.mode === "words" && Config.words < 250 && Config.words > 0)
+  ) {
+    if (drift > 125) {
+      //slow timer
+      SlowTimer.set();
+      setLowFpsMode();
+    }
+    if (drift > 250) {
+      slowTimerCount++;
+    }
+
+    if (drift > 500 || slowTimerCount > 5) {
+      //slow timer
+
+      showNoticeNotification(
+        'This could be caused by "efficiency mode" on Microsoft Edge.',
+      );
+
+      showErrorNotification(
+        "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+      );
+
+      TimerEvent.dispatch("fail", "slow timer");
+    }
+  }
 }
 
 export async function start(): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
+  void _startNew();
+  // void _startOld();
+}
+
+async function _startNew(): Promise<void> {
+  newTimer.play();
+}
+
+async function _startOld(): Promise<void> {
   timerStats = [];
   expected = TestStats.start + interval;
   (function loop(): void {
@@ -210,35 +312,9 @@ export async function start(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    if (
-      (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
-      (Config.mode === "words" && Config.words < 250 && Config.words > 0)
-    ) {
-      if (delay < interval / 2) {
-        //slow timer
-        SlowTimer.set();
-      }
-      if (delay < interval / 10) {
-        slowTimerCount++;
-        if (slowTimerCount > 5) {
-          //slow timer
-
-          Notifications.add(
-            'This could be caused by "efficiency mode" on Microsoft Edge.'
-          );
-
-          Notifications.add(
-            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-            -1
-          );
-
-          TimerEvent.dispatch("fail", "slow timer");
-        }
-      }
-    }
+    const drift = Math.abs(interval - delay);
+    checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      // time++;
-
       if (!TestState.isActive) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
@@ -246,7 +322,7 @@ export async function start(): Promise<void> {
         return;
       }
 
-      void timerStep();
+      timerStep();
 
       expected += interval;
       loop();

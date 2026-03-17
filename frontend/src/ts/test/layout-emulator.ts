@@ -1,8 +1,7 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../stores/notifications";
 import * as KeyConverter from "../utils/key-converter";
 
 import { getActiveFunboxNames } from "./funbox/list";
@@ -11,16 +10,16 @@ let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
 
 export async function getCharFromEvent(
-  event: JQuery.KeyDownEvent | JQuery.KeyUpEvent
+  event: KeyboardEvent,
 ): Promise<string | null> {
   function emulatedLayoutGetVariant(
-    event: JQuery.KeyDownEvent | JQuery.KeyUpEvent,
-    keyVariants: string[]
+    event: KeyboardEvent,
+    keyVariants: string[],
   ): string | undefined {
     let isCapitalized = event.shiftKey;
     const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
     const isNotPunctuation = !isPunctuationPattern.test(
-      keyVariants.slice(altGrIndex, altGrIndex + 2).join()
+      keyVariants.slice(altGrIndex, altGrIndex + 2).join(""),
     );
     if (capsState && isNotPunctuation) {
       isCapitalized = !event.shiftKey;
@@ -37,10 +36,7 @@ export async function getCharFromEvent(
   try {
     layout = await JSONData.getLayout(Config.layout);
   } catch (e) {
-    Notifications.add(
-      Misc.createErrorMessage(e, "Failed to emulate event"),
-      -1
-    );
+    showErrorNotification("Failed to emulate event", { error: e });
     return null;
   }
 
@@ -229,7 +225,7 @@ export async function getCharFromEvent(
   }
   const charVariant = emulatedLayoutGetVariant(
     event,
-    layoutMap[mapIndex] ?? []
+    layoutMap[mapIndex] ?? [],
   );
   if (charVariant !== undefined) {
     return charVariant;
@@ -238,7 +234,7 @@ export async function getCharFromEvent(
   }
 }
 
-export function updateAltGrState(event: JQuery.KeyboardEventBase): void {
+export function updateAltGrState(event: KeyboardEvent): void {
   const shouldHandleLeftAlt =
     event.code === "AltLeft" && navigator.userAgent.includes("Mac");
   if (event.code !== "AltRight" && !shouldHandleLeftAlt) return;
@@ -250,5 +246,5 @@ export function getIsAltGrPressed(): boolean {
   return isAltGrPressed;
 }
 
-$(document).on("keydown", updateAltGrState);
-$(document).on("keyup", updateAltGrState);
+document.addEventListener("keydown", updateAltGrState);
+document.addEventListener("keyup", updateAltGrState);

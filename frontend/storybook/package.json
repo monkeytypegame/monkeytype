@@ -1,0 +1,35 @@
+{
+  "name": "@monkeytype/frontend-storybook",
+  "version": "0.0.0",
+  "private": true,
+  "imports": {
+    "#*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx"
+    ]
+  },
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^5.0.1",
+    "@storybook/addon-a11y": "^10.2.14",
+    "@storybook/addon-docs": "^10.2.14",
+    "@storybook/addon-links": "^10.2.14",
+    "@storybook/addon-onboarding": "^10.2.14",
+    "@storybook/addon-vitest": "^10.2.14",
+    "@storybook/builder-vite": "^10.2.14",
+    "@tailwindcss/vite": "^4.2.1",
+    "@vitest/browser": "^4.0.18",
+    "@vitest/browser-playwright": "^4.0.18",
+    "@vitest/coverage-v8": "^4.0.18",
+    "playwright": "^1.58.2",
+    "solid-js": "^1.9.11",
+    "storybook": "^10.2.14",
+    "storybook-solidjs-vite": "^10.0.9",
+    "vite": "^7.3.1",
+    "vitest": "^4.1.0"
+  }
+}

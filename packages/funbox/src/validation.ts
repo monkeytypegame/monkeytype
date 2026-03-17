@@ -1,18 +1,30 @@
 import { intersect } from "@monkeytype/util/arrays";
-import { FunboxForcedConfig } from "./types";
+import { FunboxForcedConfig, FunboxMetadata } from "./types";
 import { getFunbox } from "./list";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { safeNumber } from "@monkeytype/util/numbers";
 
 export function checkCompatibility(
   funboxNames: FunboxName[],
-  withFunbox?: FunboxName
+  withFunbox?: FunboxName,
 ): boolean {
   if (funboxNames.length === 0) return true;
-  let funboxesToCheck = getFunbox(funboxNames);
 
-  if (withFunbox !== undefined) {
-    funboxesToCheck = funboxesToCheck.concat(getFunbox(withFunbox));
+  let funboxesToCheck: FunboxMetadata[];
+
+  try {
+    funboxesToCheck = getFunbox(funboxNames);
+
+    if (withFunbox !== undefined) {
+      const toAdd = getFunbox(withFunbox);
+      funboxesToCheck = funboxesToCheck.concat(toAdd);
+    }
+  } catch (error) {
+    console.error(
+      "Error when getting funboxes for a compatibility check:",
+      error,
+    );
+    return false;
   }
 
   const allFunboxesAreValid = funboxesToCheck.every((f) => f !== undefined);
@@ -21,53 +33,57 @@ export function checkCompatibility(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ||
-        f.frontendFunctions?.includes("pullSection") ||
-        f.frontendFunctions?.includes("withWords")
+        f.frontendFunctions?.includes("getWord") === true ||
+        f.frontendFunctions?.includes("pullSection") === true ||
+        f.frontendFunctions?.includes("withWords") === true,
     ).length <= 1;
   const oneWordOrderMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp.startsWith("wordOrder"))
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.find((fp) => fp.startsWith("wordOrder")) !== undefined,
     ).length <= 1;
   const layoutUsability =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesLayout")
+      f.properties?.find((fp) => fp === "changesLayout"),
     ).length === 0 ||
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "ignoresLayout" || fp === "usesLayout")
+      f.properties?.find((fp) => fp === "ignoresLayout" || fp === "usesLayout"),
     ).length === 0;
   const oneNospaceOrToPushMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "nospace" || fp.startsWith("toPush"))
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.find(
+          (fp) => fp === "nospace" || fp.startsWith("toPush"),
+        ) !== undefined,
     ).length <= 1;
   const oneChangesWordsVisibilityMax =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesWordsVisibility")
+      f.properties?.find((fp) => fp === "changesWordsVisibility"),
     ).length <= 1;
   const oneFrequencyChangesMax =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesWordsFrequency")
+      f.properties?.find((fp) => fp === "changesWordsFrequency"),
     ).length <= 1;
   const noFrequencyChangesConflicts =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesWordsFrequency")
+      f.properties?.find((fp) => fp === "changesWordsFrequency"),
     ).length === 0 ||
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "ignoresLanguage")
+      f.properties?.find((fp) => fp === "ignoresLanguage"),
     ).length === 0;
   const capitalisationChangePosibility =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "noLetters")
+      f.properties?.find((fp) => fp === "noLetters"),
     ).length === 0 ||
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesCapitalisation")
+      f.properties?.find((fp) => fp === "changesCapitalisation"),
     ).length === 0;
   const noConflictsWithSymmetricChars =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "conflictsWithSymmetricChars")
+      f.properties?.find((fp) => fp === "conflictsWithSymmetricChars"),
     ).length === 0 ||
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "symmetricChars")
+      f.properties?.find((fp) => fp === "symmetricChars"),
     ).length === 0;
   const oneCanSpeakMax =
     funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
@@ -78,31 +94,35 @@ export function checkCompatibility(
     (funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
       .length === 1 &&
       funboxesToCheck.filter((f) =>
-        f.properties?.find((fp) => fp === "unspeakable")
+        f.properties?.find((fp) => fp === "unspeakable"),
       ).length === 0) ||
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "ignoresLanguage")
+      f.properties?.find((fp) => fp === "ignoresLanguage"),
     ).length === 0;
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
-        f.frontendFunctions?.includes("pullSection")
+        f.properties?.find((fp) => fp.startsWith("toPush:")) !== undefined ||
+        f.frontendFunctions?.includes("pullSection"),
     ).length <= 1;
   const onePunctuateWordMax =
     funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.includes("punctuateWord")
+      f.frontendFunctions?.includes("punctuateWord"),
+    ).length <= 1;
+  const oneGetEmulatedCharMax =
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.includes("getEmulatedChar"),
     ).length <= 1;
   const oneCharCheckerMax =
     funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.includes("isCharCorrect")
+      f.frontendFunctions?.includes("isCharCorrect"),
     ).length <= 1;
   const oneCharReplacerMax =
     funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
       .length <= 1;
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesCapitalisation")
+      f.properties?.find((fp) => fp === "changesCapitalisation"),
     ).length <= 1;
 
   const oneCssModificationPerElement = Object.values(
@@ -114,7 +134,7 @@ export function checkCompatibility(
         counts[cssModification] =
           (safeNumber(counts[cssModification]) ?? 0) + 1;
         return counts;
-      }, {})
+      }, {}),
   ).every((c) => c <= 1);
 
   const allowedConfig = {} as FunboxForcedConfig;
@@ -127,7 +147,7 @@ export function checkCompatibility(
           intersect<string | boolean>(
             allowedConfig[key],
             f.frontendForcedConfig[key] as string[] | boolean[],
-            true
+            true,
           ).length === 0
         ) {
           noConfigConflicts = false;
@@ -154,6 +174,7 @@ export function checkCompatibility(
     hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
     onePunctuateWordMax &&
+    oneGetEmulatedCharMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
     oneChangesCapitalisationMax &&

@@ -5,34 +5,17 @@ import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Ape from "../ape";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import { QuoteData, QuoteDataQuote } from "@monkeytype/schemas/quotes";
+import { RequiredProperties } from "../utils/misc";
 
-export type Quote = {
-  text: string;
-  britishText?: string;
-  source: string;
-  length: number;
-  id: number;
+export type Quote = QuoteDataQuote & {
   group: number;
   language: Language;
   textSplit?: string[];
 };
 
-export type QuoteWithTextSplit = Quote & {
-  textSplit: string[];
-};
-
-type QuoteData = {
-  language: Language;
-  quotes: {
-    text: string;
-    britishText?: string;
-    source: string;
-    length: number;
-    id: number;
-  }[];
-  groups: [number, number][];
-};
+export type QuoteWithTextSplit = RequiredProperties<Quote, "textSplit">;
 
 type QuoteCollection = {
   quotes: Quote[];
@@ -56,13 +39,13 @@ class QuotesController {
 
   async getQuotes(
     language: Language,
-    quoteLengths?: number[]
+    quoteLengths?: number[],
   ): Promise<QuoteCollection> {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       const { data, error } = await tryCatch(
-        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
+        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`),
       );
       if (error) {
         if (
@@ -217,7 +200,7 @@ class QuotesController {
           return false;
         }
         return (favoriteQuotes[language] ?? []).includes(id.toString());
-      }
+      },
     );
 
     return matchedLanguage !== undefined;
@@ -240,7 +223,7 @@ class QuotesController {
 
       if (response.status === 200) {
         const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
-          `${quote.id}`
+          `${quote.id}`,
         ) as number;
         snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
       } else {
@@ -256,12 +239,8 @@ class QuotesController {
       });
 
       if (response.status === 200) {
-        if (snapshot.favoriteQuotes === undefined) {
-          snapshot.favoriteQuotes = {};
-        }
-        if (!snapshot.favoriteQuotes[quote.language]) {
-          snapshot.favoriteQuotes[quote.language] = [];
-        }
+        snapshot.favoriteQuotes ??= {};
+        snapshot.favoriteQuotes[quote.language] ??= [];
         snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
       } else {
         throw new Error(response.body.message);
@@ -272,7 +251,7 @@ class QuotesController {
 
 const quoteController = new QuotesController();
 
-subscribe((key, newValue) => {
+subscribe(({ key, newValue }) => {
   if (key === "quoteLength") {
     quoteController.updateQuoteQueue(newValue as number[]);
   }

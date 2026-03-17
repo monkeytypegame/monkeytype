@@ -1,4 +1,4 @@
-import * as UpdateConfig from "../../config";
+import { setConfig } from "../../config";
 import { isAuthenticated } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
@@ -50,9 +50,8 @@ export function update(): void {
         ThemeController.preview("custom", theme.colors);
       },
       exec: (): void => {
-        // UpdateConfig.setCustomThemeId(theme._id);
-        UpdateConfig.setCustomTheme(true);
-        UpdateConfig.setCustomThemeColors(theme.colors);
+        setConfig("customTheme", true);
+        setConfig("customThemeColors", theme.colors);
       },
     });
   }

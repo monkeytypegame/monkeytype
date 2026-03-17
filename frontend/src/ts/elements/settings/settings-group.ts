@@ -1,35 +1,72 @@
-import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
-import Config from "../../config";
-import * as Notifications from "../notifications";
+import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
+
+import Config, { setConfig } from "../../config";
+import { showErrorNotification } from "../../stores/notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
+import { handleConfigInput, ConfigInputOptions } from "../input-validation";
+import { ElementWithUtils, qs, qsa } from "../../utils/dom";
+import { Validation } from "../../types/validation";
 
-type Mode = "select" | "button" | "range";
+type Mode = "select" | "button" | "range" | "input";
 
-export default class SettingsGroup<T extends ConfigValue> {
-  public configName: string;
+export type SimpleValidation<T> = Omit<Validation<T>, "schema"> & {
+  schema?: true;
+};
+
+export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
+  public configName: K;
   public configFunction: (param: T, nosave?: boolean) => boolean;
   public mode: Mode;
   public setCallback?: () => void;
   public updateCallback?: () => void;
-  private elements: Element[];
+  private elements: ElementWithUtils[];
+  private validation?: T extends string
+    ? SimpleValidation<T>
+    : SimpleValidation<T> & {
+        inputValueConvert: (val: string) => T;
+      };
 
   constructor(
-    configName: string,
-    configFunction: (param: T, nosave?: boolean) => boolean,
+    configName: K,
     mode: Mode,
-    setCallback?: () => void,
-    updateCallback?: () => void
+    options?: {
+      setCallback?: () => void;
+      updateCallback?: () => void;
+      validation?: T extends string
+        ? SimpleValidation<T>
+        : SimpleValidation<T> & {
+            inputValueConvert: (val: string) => T;
+          };
+    },
   ) {
     this.configName = configName;
     this.mode = mode;
-    this.configFunction = configFunction;
-    this.setCallback = setCallback;
-    this.updateCallback = updateCallback;
+    this.configFunction = (param, nosave) =>
+      setConfig(configName, param as ConfigType[K], {
+        nosave: nosave ?? false,
+      });
+    this.setCallback = options?.setCallback;
+    this.updateCallback = options?.updateCallback;
+    this.validation = options?.validation;
+
+    const convertValue = (value: string): T => {
+      let typed = value as T;
+      if (
+        this.validation !== undefined &&
+        "inputValueConvert" in this.validation
+      ) {
+        typed = this.validation.inputValueConvert(value);
+      }
+      if (typed === "true") typed = true as T;
+      if (typed === "false") typed = false as T;
+
+      return typed;
+    };
 
     if (this.mode === "select") {
-      const el = document.querySelector(
-        `.pageSettings .section[data-config-name=${this.configName}] select`
+      const el = qs<HTMLSelectElement>(
+        `.pageSettings .section[data-config-name=${this.configName}] select`,
       );
 
       if (el === null) {
@@ -38,22 +75,25 @@ export default class SettingsGroup<T extends ConfigValue> {
 
       if (el.hasAttribute("multiple")) {
         throw new Error(
-          "multi-select dropdowns not supported. Config: " + this.configName
+          "multi-select dropdowns not supported. Config: " + this.configName,
         );
       }
 
-      el.addEventListener("change", (e) => {
-        const target = $(e.target as HTMLSelectElement);
-        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+      el.on("change", (e) => {
+        if (
+          e.target instanceof HTMLElement &&
+          (e.target?.classList?.contains("disabled") ||
+            e.target?.classList?.contains("no-auto-handle"))
+        ) {
           return;
         }
 
-        this.setValue(target.val() as T);
+        this.setValue(el.getValue() as T);
       });
 
       this.elements = [el];
     } else if (this.mode === "button") {
-      const els = document.querySelectorAll(`
+      const els = qsa<HTMLButtonElement>(`
         .pageSettings .section[data-config-name=${this.configName}] .buttons button, .pageSettings .section[data-config-name=${this.configName}] .inputs button`);
 
       if (els.length === 0) {
@@ -61,35 +101,60 @@ export default class SettingsGroup<T extends ConfigValue> {
       }
 
       for (const button of els) {
-        button.addEventListener("click", (e) => {
+        button.on("click", (e) => {
           if (
-            button.classList.contains("disabled") ||
-            button.classList.contains("no-auto-handle")
+            button.hasClass("disabled") ||
+            button.hasClass("no-auto-handle")
           ) {
             return;
           }
-          const value = button.getAttribute("data-config-value");
-          if (value === undefined || value === "") {
+
+          let value = button.getAttribute("data-config-value");
+          if (value === null || value === "") {
             console.error(
-              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
+              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`,
             );
-            Notifications.add(
+            showErrorNotification(
               "Button is missing data property. Please report this.",
-              -1
             );
             return;
           }
-          let typed = value as T;
-          if (typed === "true") typed = true as T;
-          if (typed === "false") typed = false as T;
+
+          let typed = convertValue(value);
           this.setValue(typed);
         });
       }
 
       this.elements = Array.from(els);
+    } else if (this.mode === "input") {
+      const input = qs<HTMLInputElement>(`
+        .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
+      if (input === null) {
+        throw new Error(`Failed to find input element for ${configName}`);
+      }
+
+      let validation;
+      if (this.validation !== undefined) {
+        validation = {
+          schema: this.validation.schema ?? false,
+          isValid: this.validation.isValid,
+          inputValueConvert:
+            "inputValueConvert" in this.validation
+              ? this.validation.inputValueConvert
+              : undefined,
+        };
+      }
+
+      handleConfigInput({
+        input,
+        configName: this.configName,
+        validation,
+      } as ConfigInputOptions<K>);
+
+      this.elements = [input];
     } else if (this.mode === "range") {
-      const el = document.querySelector(
-        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`
+      const el = qs<HTMLInputElement>(
+        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`,
       );
 
       if (el === null) {
@@ -100,14 +165,11 @@ export default class SettingsGroup<T extends ConfigValue> {
         this.setValue(val);
       });
 
-      el.addEventListener("input", (e) => {
-        if (
-          el.classList.contains("disabled") ||
-          el.classList.contains("no-auto-handle")
-        ) {
+      el.on("input", (e) => {
+        if (el.hasClass("disabled") || el.hasClass("no-auto-handle")) {
           return;
         }
-        const val = parseFloat((el as HTMLInputElement).value) as unknown as T;
+        const val = parseFloat(el.getValue() ?? "") as T;
         this.updateUI(val);
         debounced(val);
       });
@@ -119,41 +181,43 @@ export default class SettingsGroup<T extends ConfigValue> {
 
     if (this.elements.length === 0 || this.elements === undefined) {
       throw new Error(
-        `Failed to find elements for ${configName} with mode ${mode}`
+        `Failed to find elements for ${configName} with mode ${mode}`,
       );
     }
 
     this.updateUI();
   }
 
-  setValue(value: T): void {
-    if (Config[this.configName as keyof typeof Config] === value) {
-      return;
+  setValue(value: T): boolean {
+    if (Config[this.configName] === value) {
+      return false;
     }
-    this.configFunction(value);
+    const didSet = this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
+    return didSet;
   }
 
   updateUI(valueOverride?: T): void {
-    const newValue =
-      valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
+    const newValue = valueOverride ?? (Config[this.configName] as T);
 
     if (this.mode === "select") {
-      const select = this.elements?.[0] as HTMLSelectElement | null | undefined;
+      const select = this.elements?.[0] as
+        | ElementWithUtils<HTMLSelectElement>
+        | undefined;
       if (!select) {
         return;
       }
 
       //@ts-expect-error this is fine, slimselect adds slim to the element
-      const ss = select.slim as SlimSelect | undefined;
+      const ss = select.native.slim as SlimSelect | undefined;
       if (ss !== undefined) {
         const currentSelected = ss.getSelected()[0] ?? null;
         if (newValue !== currentSelected) {
           ss.setSelected(newValue as string);
         }
       } else {
-        if (select.value !== newValue) select.value = newValue as string;
+        if (select.getValue() !== newValue) select.setValue(newValue as string);
       }
     } else if (this.mode === "button") {
       for (const button of this.elements) {
@@ -164,24 +228,26 @@ export default class SettingsGroup<T extends ConfigValue> {
         if (typed === "false") typed = false as T;
 
         if (typed !== newValue) {
-          button.classList.remove("active");
+          button.removeClass("active");
         } else {
-          button.classList.add("active");
+          button.addClass("active");
         }
       }
     } else if (this.mode === "range") {
-      const range = this.elements?.[0] as HTMLInputElement | null | undefined;
+      const range = this.elements?.[0] as
+        | ElementWithUtils<HTMLInputElement>
+        | undefined;
 
-      const rangeValue = document.querySelector(
-        `.pageSettings .section[data-config-name='${this.configName}'] .value`
+      const rangeValue = qs(
+        `.pageSettings .section[data-config-name='${this.configName}'] .value`,
       );
 
       if (range === undefined || range === null || rangeValue === null) {
         return;
       }
 
-      range.value = newValue as unknown as string;
-      rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
+      range.setValue(newValue as unknown as string);
+      rangeValue.setText(`${(newValue as number).toFixed(1)}`);
     }
     if (this.updateCallback) this.updateCallback();
   }

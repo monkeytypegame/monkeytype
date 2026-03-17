@@ -1,15 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Privacy Policy | Monkeytype</title>
-    <!-- <link rel="stylesheet" href="css/fa.css" /> -->
-    <link rel="stylesheet" href="css/balloon.min.css" />
-    <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
+    <link rel="stylesheet" href="styles/standalone.scss" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
     <link rel="shortcut icon" href="images/fav.png" />
-    <link rel="stylesheet" href="styles/index.scss" />
     <meta name="name" content="Monkeytype" />
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
     <meta
@@ -305,7 +302,7 @@
           Sentry is a crash reporting service that helps us track errors and
           crashes on the website. It collects information about your device,
           browser, and the error that occurred. Sometimes it might also include
-          an annonymized replay of your session. This information is used to
+          an anonymized replay of your session. This information is used to
           track down bugs faster and improve our website.
         </p>
         <p>
@@ -353,7 +350,7 @@
           especially for delivering ads to iOS and MacOS browsers. Users can opt
           out of the Common ID tracking cookie by clicking
           <a
-            onclick="window.setCookie('_pubcid_optout', '1', 1825);"
+            onclick="window.setCookie('_pubcid_optout', '1', 1825)"
             href="#opt-out"
           >
             here
@@ -386,7 +383,15 @@
           >
             HTTP cookie
           </a>
-          &nbsp; on Wikipedia.
+          <!--
+	    We need this nbsp to make sure there's no missing whitespace in production.
+            This is because without it the minifier collapses the whitespace after 
+	    "HTTP cookie" and the one after the closing `a` tag into a single space  
+	    located after "HTTP cookie" (inside the `a` tag), and because the `a` tag
+	    has display: inline-block, the space will not be rendered. Use nbsp to make
+	    sure the minifier doesn't remove it.
+	  -->
+          &nbsp;on Wikipedia.
         </p>
 
         <h1 id="Usage_of_Cookies">How do we use cookies?</h1>

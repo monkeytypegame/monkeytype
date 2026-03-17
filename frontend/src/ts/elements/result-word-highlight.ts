@@ -4,8 +4,8 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
-import Config from "../config";
+import * as TestState from "../test/test-state";
+import { qsr } from "../utils/dom";
 
 const PADDING_X = 16;
 const PADDING_Y = 12;
@@ -23,8 +23,8 @@ type Line = {
 // Array of Line objects
 let lines: Line[] = [];
 
-// JQuery collection of all word elements
-let wordEls: JQuery;
+// collection of all word elements
+let wordEls: HTMLElement[];
 
 // Dictionary mapping word indices to line indices
 let wordIndexToLineIndexDict: Record<number, number> = {};
@@ -56,13 +56,12 @@ let isInitialized = false;
 let isHoveringChart = false;
 let isFirstHighlightSinceInit = true;
 let isFirstHighlightSinceClear = true;
-let isLanguageRightToLeft = false;
 let isInitInProgress = false;
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
 export async function highlightWordsInRange(
   firstWordIndex: number,
-  lastWordIndex: number
+  lastWordIndex: number,
 ): Promise<boolean> {
   // Early exit if not hovering over chart
   if (!isHoveringChart) {
@@ -104,7 +103,7 @@ export async function highlightWordsInRange(
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
     lastWordIndex,
-    isLanguageRightToLeft
+    TestState.isLanguageRightToLeft,
   );
 
   // For each line...
@@ -193,18 +192,14 @@ async function init(): Promise<boolean> {
     await new Promise((resolve) =>
       setTimeout(
         resolve,
-        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE
-      )
+        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE,
+      ),
     );
   }
 
-  // Set isLanguageRTL
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  isLanguageRightToLeft = currentLanguage.rightToLeft;
-
-  RWH_el = $("#resultWordsHistory")[0] as HTMLElement;
+  RWH_el = qsr("#resultWordsHistory").native;
   RWH_rect = RWH_el.getBoundingClientRect();
-  wordEls = $(RWH_el).find(".words .word[input]");
+  wordEls = qsr("#resultWordsHistory").qsa(".words .word[input]").native;
 
   // remove non-input words
   if (wordEls.length === 0) {
@@ -309,7 +304,7 @@ async function init(): Promise<boolean> {
 
       // For RTL languages, account for difference between highlightContainer left and RWH_el left
       let RTL_offset;
-      if (isLanguageRightToLeft) {
+      if (TestState.isLanguageRightToLeft) {
         RTL_offset = line.rect.left - RWH_rect.left + PADDING_X;
       } else {
         RTL_offset = 0;
@@ -352,7 +347,7 @@ type HighlightPosition = {
 function getHighlightElementPositions(
   firstWordIndex: number,
   lastWordIndex: number,
-  isRTL = false
+  isRTL = false,
 ): HighlightPosition[] {
   const lineIndexOfFirstWord = wordIndexToLineIndexDict[
     firstWordIndex
@@ -366,7 +361,7 @@ function getHighlightElementPositions(
 
   const highlightWidth: number = getHighlightWidth(
     firstWordIndex,
-    lastWordIndex
+    lastWordIndex,
   );
 
   const firstWordEl = wordEls[firstWordIndex];
@@ -424,8 +419,9 @@ function getHighlightElementPositions(
       line === undefined ||
       nextPosition === undefined ||
       container === undefined
-    )
+    ) {
       continue;
+    }
 
     if (!isRTL) {
       position.highlightLeft =
@@ -466,8 +462,9 @@ function getHighlightElementPositions(
       line === undefined ||
       prevHighlightPosition === undefined ||
       container === undefined
-    )
+    ) {
       continue;
+    }
 
     if (!isRTL) {
       position.highlightLeft =
@@ -506,7 +503,7 @@ function getHighlightElementPositions(
 // Function to calculate the width of the highlight for a given range of words
 function getHighlightWidth(
   wordStartIndex: number,
-  wordEndIndex: number
+  wordEndIndex: number,
 ): number {
   const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
   const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];

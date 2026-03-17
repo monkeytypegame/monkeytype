@@ -1,44 +1,41 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
-import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import Config, * as UpdateConfig from "../config";
+import Config, { setConfig } from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
-import * as PbTables from "../elements/account/pb-tables";
-import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../stores/notifications";
 import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as Profile from "../elements/profile";
 import { format } from "date-fns/format";
-import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
-import * as Loader from "../elements/loader";
+import { getActivePage } from "../signals/core";
+import { getAuthenticatedUser } from "../firebase";
+
+import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
-import Format from "../utils/format";
-import * as TestActivity from "../elements/test-activity";
-import { ChartData } from "@monkeytype/contracts/schemas/results";
-import {
-  Difficulty,
-  Mode,
-  Mode2,
-  Mode2Custom,
-} from "@monkeytype/contracts/schemas/shared";
-import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+import Format from "../singletons/format";
+import { ChartData } from "@monkeytype/schemas/results";
+import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
+import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
+import { AccountChart } from "@monkeytype/schemas/configs";
+import { SortedTableWithLimit } from "../utils/sorted-table";
+import { qs, qsa, qsr, ElementWithUtils, onDOMReady } from "../utils/dom";
+import { sendVerificationEmail } from "../auth";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -51,6 +48,7 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
+let historyTable: SortedTableWithLimit<SnapshotResult<Mode>>;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -60,104 +58,112 @@ function loadMoreLines(lineIndex?: number): void {
   } else {
     newVisibleLines = visibleTableLines + 10;
   }
-  for (let i = visibleTableLines; i < newVisibleLines; i++) {
-    const result = filteredResults[i];
-    if (!result) continue;
-    let diff = result.difficulty;
-    if (diff === undefined) {
-      diff = "normal";
-    }
 
-    let icons = `<span aria-label="${result.language?.replace(
-      "_",
-      " "
-    )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
+  visibleTableLines = newVisibleLines;
+  if (visibleTableLines >= filteredResults.length) {
+    qs(".pageAccount .loadMoreButton")?.hide();
+  } else {
+    qs(".pageAccount .loadMoreButton")?.show();
+  }
 
-    if (diff === "normal") {
-      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="far fa-fw fa-star"></i></span>`;
-    } else if (diff === "expert") {
-      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star-half-alt"></i></span>`;
-    } else if (diff === "master") {
-      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i></span>`;
-    }
+  historyTable.setLimit(newVisibleLines);
+  historyTable.updateBody();
+}
 
-    if (result.punctuation) {
-      icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i></span>`;
-    }
+function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
+  let diff = result.difficulty ?? "normal";
 
-    if (result.numbers) {
-      icons += `<span aria-label="numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i></span>`;
-    }
+  let icons = `<span aria-label="${result.language?.replace(
+    "_",
+    " ",
+  )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
 
-    if (result.blindMode) {
-      icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
-    }
+  if (diff === "normal") {
+    icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="far fa-fw fa-star"></i></span>`;
+  } else if (diff === "expert") {
+    icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star-half-alt"></i></span>`;
+  } else if (diff === "master") {
+    icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i></span>`;
+  }
 
-    if (result.lazyMode) {
-      icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
-    }
+  if (result.punctuation) {
+    icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i></span>`;
+  }
 
-    if (result.funbox !== undefined && result.funbox.length > 0) {
-      icons += `<span aria-label="${result.funbox
-        .map((it) => it.replace(/_/g, " "))
-        .join(
-          ", "
-        )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
-    }
+  if (result.numbers) {
+    icons += `<span aria-label="numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i></span>`;
+  }
 
-    if (result.chartData === "toolong" || result.testDuration > 122) {
-      icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
-    } else {
-      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}"><i class="fas fa-fw fa-chart-line"></i></span>`;
-    }
+  if (result.blindMode) {
+    icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
+  }
 
-    let tagNames = "no tags";
+  if (result.lazyMode) {
+    icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
+  }
 
-    if (result.tags !== undefined && result.tags.length > 0) {
-      tagNames = "";
-      result.tags.forEach((tag) => {
-        DB.getSnapshot()?.tags?.forEach((snaptag) => {
-          if (tag === snaptag._id) {
-            tagNames += snaptag.display + ", ";
-          }
-        });
+  if (result.funbox !== undefined && result.funbox.length > 0) {
+    icons += `<span aria-label="${result.funbox
+      .map((it) => it.replace(/_/g, " "))
+      .join(
+        ", ",
+      )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
+  }
+
+  if (result.chartData === "toolong" || result.testDuration > 122) {
+    icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
+  } else {
+    icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
+  }
+
+  let tagNames = "no tags";
+
+  if (result.tags !== undefined && result.tags.length > 0) {
+    tagNames = "";
+    result.tags.forEach((tag) => {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+        if (tag === snaptag._id) {
+          tagNames += snaptag.display + ", ";
+        }
       });
-      tagNames = tagNames.substring(0, tagNames.length - 2);
-    }
+    });
+    tagNames = tagNames.substring(0, tagNames.length - 2);
+  }
 
-    let restags;
-    if (result.tags === undefined) {
-      restags = "[]";
-    } else {
-      restags = JSON.stringify(result.tags);
-    }
+  let restags;
+  if (result.tags === undefined) {
+    restags = "[]";
+  } else {
+    restags = JSON.stringify(result.tags);
+  }
 
-    const isActive = result.tags !== undefined && result.tags.length > 0;
-    const icon =
-      result.tags !== undefined && result.tags.length > 1
-        ? "fa-tags"
-        : "fa-tag";
+  const isActive = result.tags !== undefined && result.tags.length > 0;
+  const icon =
+    result.tags !== undefined && result.tags.length > 1 ? "fa-tags" : "fa-tag";
 
-    const resultTagsButton = `<button class="textButton resultEditTagsButton ${
-      isActive ? "active" : ""
-    }" data-result-id="${
-      result._id
-    }" data-tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw ${icon}"></i></button>`;
+  const resultTagsButton = `<button class="textButton resultEditTagsButton ${
+    isActive ? "active" : ""
+  }" data-result-id="${
+    result._id
+  }" data-tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw ${icon}"></i></button>`;
 
-    let pb = "";
-    if (result.isPb) {
-      pb = '<i class="fas fa-fw fa-crown"></i>';
-    } else {
-      pb = "";
-    }
+  let pb = "";
+  if (result.isPb) {
+    pb = '<i class="fas fa-fw fa-crown"></i>';
+  } else {
+    pb = "";
+  }
 
-    const charStats = result.charStats.join("/");
+  const charStats = result.charStats.join("/");
 
-    const mode2 = result.mode === "custom" ? "" : result.mode2;
+  const mode2 = result.mode === "custom" ? "" : result.mode2;
 
-    const date = new Date(result.timestamp);
-    $(".pageAccount .history table tbody").append(`
-    <tr class="resultRow" id="result-${i}">
+  const date = new Date(result.timestamp);
+
+  const element = document.createElement("tr");
+  element.classList.add("resultRow");
+  element.dataset["id"] = result._id;
+  element.innerHTML = `
     <td>${pb}</td>
     <td>${Format.typingSpeed(result.wpm, { showDecimalPlaces: true })}</td>
     <td>${Format.typingSpeed(result.rawWpm, { showDecimalPlaces: true })}</td>
@@ -172,27 +178,14 @@ function loadMoreLines(lineIndex?: number): void {
     <td>${format(date, "dd MMM yyyy")}<br>
     ${format(date, "HH:mm")}
     </td>
-    </tr>`);
-  }
-  visibleTableLines = newVisibleLines;
-  if (visibleTableLines >= filteredResults.length) {
-    $(".pageAccount .loadMoreButton").addClass("hidden");
-  } else {
-    $(".pageAccount .loadMoreButton").removeClass("hidden");
-  }
-}
+    `;
 
-async function updateChartColors(): Promise<void> {
-  await ChartController.accountHistory.updateColors();
-  await Misc.sleep(0);
-  await ChartController.accountActivity.updateColors();
-  await Misc.sleep(0);
-  await ChartController.accountHistogram.updateColors();
-  await Misc.sleep(0);
+  return element;
 }
 
 function reset(): void {
-  $(".pageAccount .history table tbody").empty();
+  historyTable.setData([]);
+  historyTable.updateBody();
 
   ChartController.accountHistogram.getDataset("count").data = [];
   ChartController.accountActivity.getDataset("count").data = [];
@@ -211,18 +204,11 @@ let chartData: ChartController.HistoryChartData[] = [];
 let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
-  LoadingPage.updateText("Displaying stats...");
-  LoadingPage.updateBar(100);
   console.log("updating account page");
-  ThemeColors.update();
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
-  PbTables.update(snapshot.personalBests);
-  void Profile.update("account", snapshot);
-
-  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
   void ResultBatches.update();
 
   chartData = [];
@@ -279,7 +265,7 @@ async function fillContent(): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
 
   filteredResults = [];
-  $(".pageAccount .history table tbody").empty();
+  qs(".pageAccount .history table tbody")?.empty();
 
   DB.getSnapshot()?.results?.forEach((result) => {
     // totalSeconds += tt;
@@ -293,11 +279,8 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      let resdiff = result.difficulty;
-      if (resdiff === undefined) {
-        resdiff = "normal";
-      }
-      if (!ResultFilters.getFilter("difficulty", resdiff as Difficulty)) {
+      let resdiff = result.difficulty ?? "normal";
+      if (!ResultFilters.getFilter("difficulty", resdiff)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
         }
@@ -314,7 +297,7 @@ async function fillContent(): Promise<void> {
         let timefilter: Mode2<"time"> | "custom" = "custom";
         if (
           ["15", "30", "60", "120"].includes(
-            `${result.mode2}` //legacy results could have a number in mode2
+            `${result.mode2}`, //legacy results could have a number in mode2
           )
         ) {
           timefilter = `${result.mode2}` as `${number}`;
@@ -322,7 +305,7 @@ async function fillContent(): Promise<void> {
         if (
           !ResultFilters.getFilter(
             "time",
-            timefilter as "custom" | "15" | "30" | "60" | "120"
+            timefilter as "custom" | "15" | "30" | "60" | "120",
           )
         ) {
           if (filterDebug) {
@@ -334,7 +317,7 @@ async function fillContent(): Promise<void> {
         let wordfilter: Mode2Custom<"words"> = "custom";
         if (
           ["10", "25", "50", "100", "200"].includes(
-            `${result.mode2}` //legacy results could have a number in mode2
+            `${result.mode2}`, //legacy results could have a number in mode2
           )
         ) {
           wordfilter = `${result.mode2}` as `${number}`;
@@ -342,7 +325,7 @@ async function fillContent(): Promise<void> {
         if (
           !ResultFilters.getFilter(
             "words",
-            wordfilter as "custom" | "10" | "25" | "50" | "100"
+            wordfilter as "custom" | "10" | "25" | "50" | "100",
           )
         ) {
           if (filterDebug) {
@@ -498,9 +481,8 @@ async function fillContent(): Promise<void> {
 
       filteredResults.push(result);
     } catch (e) {
-      Notifications.add(
+      showNoticeNotification(
         "Something went wrong when filtering. Resetting filters.",
-        0
       );
       console.log(result);
       console.error(e);
@@ -553,7 +535,7 @@ async function fillContent(): Promise<void> {
 
     const bucketSize = typingSpeedUnit.histogramDataBucketSize;
     const bucket = Math.floor(
-      Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize
+      Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize,
     );
 
     //grow array if needed
@@ -562,7 +544,7 @@ async function fillContent(): Promise<void> {
         histogramChartData.push(0);
       }
     }
-    (histogramChartData[bucket] as number)++;
+    (histogramChartData[bucket] as number) += 1;
 
     let tt = 0;
     if (
@@ -669,8 +651,10 @@ async function fillContent(): Promise<void> {
     totalWpm += result.wpm;
   });
 
-  $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
-    Config.typingSpeedUnit
+  historyTable.setData(filteredResults);
+
+  qs(".pageAccount .group.history table thead tr td:nth-child(2)")?.setText(
+    Config.typingSpeedUnit,
   );
 
   await Misc.sleep(0);
@@ -702,7 +686,7 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Numbers.roundTo2(
-        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
+        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount,
       ),
     });
   }
@@ -850,91 +834,95 @@ async function fillContent(): Promise<void> {
   }
 
   if (chartData === undefined || chartData.length === 0) {
-    $(".pageAccount .group.noDataError").removeClass("hidden");
-    $(".pageAccount .group.chart").addClass("hidden");
-    $(".pageAccount .group.dailyActivityChart").addClass("hidden");
-    $(".pageAccount .group.histogramChart").addClass("hidden");
-    $(".pageAccount .group.aboveHistory").addClass("hidden");
-    $(".pageAccount .group.history").addClass("hidden");
-    $(".pageAccount .triplegroup.stats").addClass("hidden");
-    $(".pageAccount .group.estimatedWordsTyped").addClass("hidden");
+    qs(".pageAccount .group.noDataError")?.show();
+    qs(".pageAccount .group.chart")?.hide();
+    qs(".pageAccount .group.dailyActivityChart")?.hide();
+    qs(".pageAccount .group.histogramChart")?.hide();
+    qs(".pageAccount .group.aboveHistory")?.hide();
+    qs(".pageAccount .group.history")?.hide();
+    qs(".pageAccount .triplegroup.stats")?.hide();
+    qs(".pageAccount .group.estimatedWordsTyped")?.hide();
   } else {
-    $(".pageAccount .group.noDataError").addClass("hidden");
-    $(".pageAccount .group.chart").removeClass("hidden");
-    $(".pageAccount .group.dailyActivityChart").removeClass("hidden");
-    $(".pageAccount .group.histogramChart").removeClass("hidden");
-    $(".pageAccount .group.aboveHistory").removeClass("hidden");
-    $(".pageAccount .group.history").removeClass("hidden");
-    $(".pageAccount .triplegroup.stats").removeClass("hidden");
-    $(".pageAccount .group.estimatedWordsTyped").removeClass("hidden");
+    qs(".pageAccount .group.noDataError")?.hide();
+    qs(".pageAccount .group.chart")?.show();
+    qs(".pageAccount .group.dailyActivityChart")?.show();
+    qs(".pageAccount .group.histogramChart")?.show();
+    qs(".pageAccount .group.aboveHistory")?.show();
+    qs(".pageAccount .group.history")?.show();
+    qs(".pageAccount .triplegroup.stats")?.show();
+    qs(".pageAccount .group.estimatedWordsTyped")?.show();
   }
 
-  $(".pageAccount .timeTotalFiltered .val").text(
-    DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true)
+  qs(".pageAccount .timeTotalFiltered .val")?.setText(
+    DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true),
   );
 
   const speedUnit = Config.typingSpeedUnit;
 
-  $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
-  $(".pageAccount .highestWpm .val").text(Format.typingSpeed(topWpm));
+  qs(".pageAccount .highestWpm .title")?.setText(`highest ${speedUnit}`);
+  qs(".pageAccount .highestWpm .val")?.setText(Format.typingSpeed(topWpm));
 
-  $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
-  $(".pageAccount .averageWpm .val").text(
-    Format.typingSpeed(totalWpm / testCount)
+  qs(".pageAccount .averageWpm .title")?.setText(`average ${speedUnit}`);
+  qs(".pageAccount .averageWpm .val")?.setText(
+    Format.typingSpeed(totalWpm / testCount),
   );
 
-  $(".pageAccount .averageWpm10 .title").text(
-    `average ${speedUnit} (last 10 tests)`
+  qs(".pageAccount .averageWpm10 .title")?.setText(
+    `average ${speedUnit} (last 10 tests)`,
   );
-  $(".pageAccount .averageWpm10 .val").text(
-    Format.typingSpeed(wpmLast10total / last10)
-  );
-
-  $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
-  $(".pageAccount .highestRaw .val").text(Format.typingSpeed(rawWpm.max));
-
-  $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
-  $(".pageAccount .averageRaw .val").text(
-    Format.typingSpeed(rawWpm.total / rawWpm.count)
+  qs(".pageAccount .averageWpm10 .val")?.setText(
+    Format.typingSpeed(wpmLast10total / last10),
   );
 
-  $(".pageAccount .averageRaw10 .title").text(
-    `average raw ${speedUnit} (last 10 tests)`
-  );
-  $(".pageAccount .averageRaw10 .val").text(
-    Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count)
+  qs(".pageAccount .highestRaw .title")?.setText(`highest raw ${speedUnit}`);
+  qs(".pageAccount .highestRaw .val")?.setText(Format.typingSpeed(rawWpm.max));
+
+  qs(".pageAccount .averageRaw .title")?.setText(`average raw ${speedUnit}`);
+  qs(".pageAccount .averageRaw .val")?.setText(
+    Format.typingSpeed(rawWpm.total / rawWpm.count),
   );
 
-  $(".pageAccount .highestWpm .mode").html(topMode);
-  $(".pageAccount .testsTaken .val").text(testCount);
+  qs(".pageAccount .averageRaw10 .title")?.setText(
+    `average raw ${speedUnit} (last 10 tests)`,
+  );
+  qs(".pageAccount .averageRaw10 .val")?.setText(
+    Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count),
+  );
 
-  $(".pageAccount .highestAcc .val").text(Format.accuracy(topAcc));
-  $(".pageAccount .avgAcc .val").text(Format.accuracy(totalAcc / testCount));
-  $(".pageAccount .avgAcc10 .val").text(Format.accuracy(totalAcc10 / last10));
+  qs(".pageAccount .highestWpm .mode")?.setHtml(topMode);
+  qs(".pageAccount .testsTaken .val")?.setText(testCount.toString());
+
+  qs(".pageAccount .highestAcc .val")?.setText(Format.accuracy(topAcc));
+  qs(".pageAccount .avgAcc .val")?.setText(
+    Format.accuracy(totalAcc / testCount),
+  );
+  qs(".pageAccount .avgAcc10 .val")?.setText(
+    Format.accuracy(totalAcc10 / last10),
+  );
 
   if (totalCons === 0 || totalCons === undefined) {
-    $(".pageAccount .avgCons .val").text("-");
-    $(".pageAccount .avgCons10 .val").text("-");
+    qs(".pageAccount .avgCons .val")?.setText("-");
+    qs(".pageAccount .avgCons10 .val")?.setText("-");
   } else {
-    $(".pageAccount .highestCons .val").text(Format.percentage(topCons));
+    qs(".pageAccount .highestCons .val")?.setText(Format.percentage(topCons));
 
-    $(".pageAccount .avgCons .val").text(
-      Format.percentage(totalCons / consCount)
+    qs(".pageAccount .avgCons .val")?.setText(
+      Format.percentage(totalCons / consCount),
     );
 
-    $(".pageAccount .avgCons10 .val").text(
-      Format.percentage(totalCons10 / Math.min(last10, consCount))
+    qs(".pageAccount .avgCons10 .val")?.setText(
+      Format.percentage(totalCons10 / Math.min(last10, consCount)),
     );
   }
 
-  $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-  $(".pageAccount .testsCompleted .val").text(
+  qs(".pageAccount .testsStarted .val")?.setText(`${testCount + testRestarts}`);
+  qs(".pageAccount .testsCompleted .val")?.setText(
     `${testCount}(${Math.floor(
-      (testCount / (testCount + testRestarts)) * 100
-    )}%)`
+      (testCount / (testCount + testRestarts)) * 100,
+    )}%)`,
   );
 
-  $(".pageAccount .testsCompleted .avgres").text(`
+  qs(".pageAccount .testsCompleted .avgres")?.setText(`
     ${(testRestarts / testCount).toFixed(1)} restarts per completed test
   `);
 
@@ -945,13 +933,15 @@ async function fillContent(): Promise<void> {
     const wpmChange = trend[1][1] - trend[0][1];
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
     const plus = wpmChangePerHour > 0 ? "+" : "";
-    $(".pageAccount .group.chart .below .text").text(
+    qs(".pageAccount .group.chart .below .text")?.setText(
       `Speed change per hour spent typing: ${
         plus + Format.typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })
-      } ${Config.typingSpeedUnit}`
+      } ${Config.typingSpeedUnit}`,
     );
   }
-  $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
+  qs(".pageAccount .estimatedWordsTyped .val")?.setText(
+    totalEstimatedWords.toString(),
+  );
 
   if (chartData.length || accChartData.length) {
     ChartController.updateAccountChartButtons();
@@ -962,31 +952,12 @@ async function fillContent(): Promise<void> {
   await Misc.sleep(0);
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
-  LoadingPage.updateBar(100, true);
   Focus.set(false);
-  void Misc.swapElements(
-    $(".pageAccount .preloader"),
-    $(".pageAccount .content"),
-    250,
-    async () => {
-      $(".page.pageAccount").css("height", "unset"); //weird safari fix
-    },
-    async () => {
-      setTimeout(() => {
-        Profile.updateNameFontSize("account");
-      }, 10);
-    }
-  );
+  qs(".page.pageAccount")?.setStyle({ height: "unset" }); //weird safari fix
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
   const results = await DB.getUserResults(offset);
-  if (!results && !ConnectionState.get()) {
-    Notifications.add("Could not get results - you are offline", -1, {
-      duration: 5,
-    });
-    return;
-  }
 
   TodayTracker.addAllFromToday();
   if (results) {
@@ -995,20 +966,13 @@ export async function downloadResults(offset?: number): Promise<void> {
 }
 
 async function update(): Promise<void> {
-  LoadingPage.updateBar(0, true);
-  if (DB.getSnapshot() === null) {
-    Notifications.add(`Missing account data. Please refresh.`, -1);
-    $(".pageAccount .preloader").html("Missing account data. Please refresh.");
-  } else {
-    LoadingPage.updateBar(90);
-    await downloadResults();
-    try {
-      await Misc.sleep(0);
-      await fillContent();
-    } catch (e) {
-      console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
-    }
+  await downloadResults();
+  try {
+    await Misc.sleep(0);
+    await fillContent();
+  } catch (e) {
+    console.error(e);
+    showErrorNotification(`Something went wrong: ${e}`);
   }
 }
 
@@ -1025,348 +989,249 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
     }
   }
 
-  const el = $(
-    `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`
+  const el = qs(
+    `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`,
   );
 
-  el.attr("data-tags", JSON.stringify(tagIds));
+  el?.setAttribute("data-tags", JSON.stringify(tagIds));
 
   if (tagIds.length > 0) {
-    el.attr("aria-label", tagNames.join(", "));
-    el.addClass("active");
+    el?.setAttribute("aria-label", tagNames.join(", "));
+    el?.addClass("active");
     if (tagIds.length > 1) {
-      el.html(`<i class="fas fa-fw fa-tags"></i>`);
+      el?.setHtml(`<i class="fas fa-fw fa-tags"></i>`);
     } else {
-      el.html(`<i class="fas fa-fw fa-tag"></i>`);
+      el?.setHtml(`<i class="fas fa-fw fa-tag"></i>`);
     }
   } else {
-    el.attr("aria-label", "no tags");
-    el.removeClass("active");
-    el.html(`<i class="fas fa-fw fa-tag"></i>`);
+    el?.setAttribute("aria-label", "no tags");
+    el?.removeClass("active");
+    el?.setHtml(`<i class="fas fa-fw fa-tag"></i>`);
   }
 }
 
-function sortAndRefreshHistory(
-  keyString: string,
-  headerClass: string,
-  forceDescending: null | boolean = null
-): void {
-  // Removes styling from previous sorting requests:
-  $("td").removeClass("headerSorted");
-  $("td").children("i").remove();
-  $(headerClass).addClass("headerSorted");
+qs(".pageAccount button.toggleResultsOnChart")?.on("click", () => {
+  const newValue = [...Config.accountChart] as AccountChart;
+  newValue[0] = newValue[0] === "on" ? "off" : "on";
+  setConfig("accountChart", newValue);
+});
 
-  if (filteredResults.length < 2) return;
+qs(".pageAccount button.toggleAccuracyOnChart")?.on("click", () => {
+  const newValue = [...Config.accountChart] as AccountChart;
+  newValue[1] = newValue[1] === "on" ? "off" : "on";
+  setConfig("accountChart", newValue);
+});
 
-  const key = keyString as keyof (typeof filteredResults)[0];
+qs(".pageAccount button.toggleAverage10OnChart")?.on("click", () => {
+  const newValue = [...Config.accountChart] as AccountChart;
+  newValue[2] = newValue[2] === "on" ? "off" : "on";
+  setConfig("accountChart", newValue);
+});
 
-  // This allows to reverse the sorting order when clicking multiple times on the table header
-  let descending = true;
-  if (forceDescending !== null) {
-    if (forceDescending) {
-      $(headerClass).append(
-        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-      );
-    } else {
-      descending = false;
-      $(headerClass).append(
-        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
-      );
-    }
-  } else if (
-    parseInt(filteredResults?.[0]?.[key] as string) <=
-    parseInt(filteredResults?.[filteredResults.length - 1]?.[key] as string)
-  ) {
-    descending = true;
-    $(headerClass).append(
-      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-    );
-  } else {
-    descending = false;
-    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
+qs(".pageAccount button.toggleAverage100OnChart")?.on("click", () => {
+  const newValue = [...Config.accountChart] as AccountChart;
+  newValue[3] = newValue[3] === "on" ? "off" : "on";
+  setConfig("accountChart", newValue);
+});
+
+qs(".pageAccount .loadMoreButton")?.on("click", () => {
+  loadMoreLines();
+});
+
+qs(".pageAccount #accountHistoryChart")?.on("click", () => {
+  const chart = ChartController.accountHistory;
+  const active = chart.tooltip?.getActiveElements?.() ?? [];
+  if (!active.length) return;
+
+  const index = active[0]?.index;
+  if (index === undefined) return;
+
+  loadMoreLines(index);
+
+  const resultId = filteredResults[index]?._id;
+  if (resultId === undefined) {
+    throw new Error("Cannot find result for index " + index);
   }
 
-  const temp: SnapshotResult<Mode>[] = [];
-  const parsedIndexes: number[] = [];
+  const element = qs(`.resultRow[data-id="${resultId}"]`);
+  qsa(".resultRow").removeClass("active");
 
-  while (temp.length < filteredResults.length) {
-    let lowest = Number.MAX_VALUE;
-    let highest = -1;
-    let idx = -1;
+  element?.scrollIntoView({ block: "center" });
+  element?.addClass("active");
+});
 
-    // for (let i = 0; i < filteredResults.length; i++) {
-    for (const [i, result] of filteredResults.entries()) {
-      //find the lowest wpm with index not already parsed
-      if (!descending) {
-        if ((result[key] as number) <= lowest && !parsedIndexes.includes(i)) {
-          lowest = result[key] as number;
-          idx = i;
-        }
-      } else {
-        if ((result[key] as number) >= highest && !parsedIndexes.includes(i)) {
-          highest = result[key] as number;
-          idx = i;
-        }
+qs(".pageAccount")?.onChild(
+  "click",
+  ".miniResultChartButton",
+  async (event) => {
+    const target = new ElementWithUtils(event.childTarget as HTMLElement);
+    const resultId: string = target
+      .closestParent("tr")
+      ?.getAttribute("data-id") as string;
+    if (target.hasClass("loading")) return;
+    if (target.hasClass("disabled")) return;
+
+    const result = filteredResults.find((it) => it._id === resultId);
+    if (result === undefined) return;
+
+    let chartData = result.chartData as ChartData;
+
+    if (chartData === undefined) {
+      //need to load full result
+      target?.addClass("loading");
+      target?.removeAttribute("aria-label");
+      target?.setHtml('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+      showLoaderBar();
+
+      const response = await Ape.results.getById({
+        params: { resultId: result._id },
+      });
+      hideLoaderBar();
+
+      target?.setHtml('<i class="fas fa-fw fa-chart-line"></i>');
+      target?.removeClass("loading");
+
+      if (response.status !== 200) {
+        showErrorNotification("Error fetching result", { response });
+        return;
+      }
+
+      chartData = response.body.data.chartData as ChartData;
+
+      //update local cache
+      result.chartData = chartData;
+      const dbResult = DB.getSnapshot()?.results?.find(
+        (it) => it._id === result._id,
+      );
+      if (dbResult !== undefined) {
+        dbResult.chartData = result.chartData;
+      }
+
+      if (response.body.data.chartData === "toolong") {
+        target?.setAttribute(
+          "aria-label",
+          "Graph history is not available for long tests",
+        );
+        target?.setAttribute("data-balloon-pos", "up");
+        target.addClass("disabled");
+
+        showNoticeNotification("Graph history is not available for long tests");
+        return;
       }
     }
-
-    // @ts-expect-error temp
-    temp.push(filteredResults[idx]);
-    parsedIndexes.push(idx);
-  }
-  filteredResults = temp;
-
-  $(".pageAccount .history table tbody").empty();
-  visibleTableLines = 0;
-  loadMoreLines();
-}
-
-$(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  const newValue = Config.accountChart;
-  newValue[0] = newValue[0] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
-});
-
-$(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  const newValue = Config.accountChart;
-  newValue[1] = newValue[1] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
-});
-
-$(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  const newValue = Config.accountChart;
-  newValue[2] = newValue[2] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
-});
-
-$(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  const newValue = Config.accountChart;
-  newValue[3] = newValue[3] === "on" ? "off" : "on";
-  UpdateConfig.setAccountChart(newValue);
-});
-
-$(".pageAccount .loadMoreButton").on("click", () => {
-  loadMoreLines();
-});
-
-$(".pageAccount #accountHistoryChart").on("click", () => {
-  const index: number = ChartController.accountHistoryActiveIndex;
-  loadMoreLines(index);
-  if (window === undefined) return;
-  const windowHeight = $(window).height() ?? 0;
-  const offset = $(`#result-${index}`).offset()?.top ?? 0;
-  const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    {
-      scrollTop: scrollTo,
-    },
-    Misc.applyReducedMotion(500)
-  );
-  $(".resultRow").removeClass("active");
-  $(`#result-${index}`).addClass("active");
-});
-
-$(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
-  const target = $(event.currentTarget);
-  if (target.hasClass("loading")) return;
-  if (target.hasClass("disabled")) return;
-
-  const filteredId = target.attr("filteredResultsId");
-  if (filteredId === undefined) return;
-
-  const result = filteredResults[parseInt(filteredId)];
-  if (result === undefined) return;
-
-  let chartData = result.chartData as ChartData;
-
-  if (chartData === undefined) {
-    //need to load full result
-    target.addClass("loading");
-    target.attr("aria-label", null);
-    target.html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
-    Loader.show();
-
-    const response = await Ape.results.getById({
-      params: { resultId: result._id },
-    });
-    Loader.hide();
-
-    target.html('<i class="fas fa-fw fa-chart-line"></i>');
-    target.removeClass("loading");
-
-    if (response.status !== 200) {
-      Notifications.add("Error fetching result: " + response.body.message, -1);
-      return;
-    }
-
-    chartData = response.body.data.chartData as ChartData;
-
-    //update local cache
-    result.chartData = chartData;
-    const dbResult = DB.getSnapshot()?.results?.find(
-      (it) => it._id === result._id
-    );
-    if (dbResult !== undefined) {
-      dbResult["chartData"] = result.chartData;
-    }
-
-    if (response.body.data.chartData === "toolong") {
-      target.attr(
-        "aria-label",
-        "Graph history is not available for long tests"
-      );
-      target.attr("data-baloon-pos", "up");
-      target.addClass("disabled");
-
-      Notifications.add("Graph history is not available for long tests", 0);
-      return;
-    }
-  }
-  target.attr("aria-label", "View graph");
-  MiniResultChartModal.show(chartData);
-});
-
-$(".pageAccount .group.history").on("click", ".history-wpm-header", () => {
-  sortAndRefreshHistory("wpm", ".history-wpm-header");
-});
-
-$(".pageAccount .group.history").on("click", ".history-raw-header", () => {
-  sortAndRefreshHistory("rawWpm", ".history-raw-header");
-});
-
-$(".pageAccount .group.history").on("click", ".history-acc-header", () => {
-  sortAndRefreshHistory("acc", ".history-acc-header");
-});
-
-$(".pageAccount .group.history").on(
-  "click",
-  ".history-correct-chars-header",
-  () => {
-    sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
-  }
+    target?.setAttribute("aria-label", "View graph");
+    MiniResultChartModal.show(chartData);
+  },
 );
 
-$(".pageAccount .group.history").on(
-  "click",
-  ".history-incorrect-chars-header",
-  () => {
-    sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
-  }
+const filterButtons = qsa(
+  ".pageAccount .group.topFilters, .pageAccount .filterButtons",
 );
 
-$(".pageAccount .group.history").on(
-  "click",
-  ".history-consistency-header",
-  () => {
-    sortAndRefreshHistory("consistency", ".history-consistency-header");
-  }
-);
-
-$(".pageAccount .group.history").on("click", ".history-date-header", () => {
-  sortAndRefreshHistory("timestamp", ".history-date-header");
-});
-
-// Resets sorting to by date' when applying filers (normal or advanced)
-$(".pageAccount .group.history").on(
-  "click",
-  ".buttonsAndTitle .buttons button",
-  () => {
-    // We want to 'force' descending sort:
-    sortAndRefreshHistory("timestamp", ".history-date-header", true);
-  }
-);
-
-$(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
-  "click",
-  "button",
-  () => {
+filterButtons.forEach((filterButton) => {
+  filterButton.onChild("click", "button", () => {
     setTimeout(() => {
       void update();
     }, 0);
-  }
-);
+  });
+});
 
-$(".pageAccount .group.presetFilterButtons").on(
+qs(".pageAccount .group.presetFilterButtons")?.onChild(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
   async (e) => {
-    await ResultFilters.setFilterPreset($(e.target).data("id") as string);
+    const target = e.childTarget as HTMLElement;
+    await ResultFilters.setFilterPreset(
+      target.getAttribute("data-id") as string,
+    );
     void update();
-  }
+  },
 );
 
-$(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  //@ts-expect-error dont really wanna figure out the types here but it works
-  void Misc.downloadResultsCSV(filteredResults);
+qs(".pageAccount .content .group.aboveHistory .exportCSV")?.on("click", () => {
+  showLoaderBar();
+  void Misc.downloadResultsCSV(filteredResults).finally(() => {
+    hideLoaderBar();
+  });
 });
 
-$(".pageAccount .profile").on("click", ".details .copyLink", () => {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  const { name } = snapshot;
-  const url = `${location.origin}/profile/${name}`;
-
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 0);
-    },
-    function () {
-      alert("Failed to copy using the Clipboard API. Here's the link: " + url);
-    }
-  );
-});
-
-$(".pageAccount button.loadMoreResults").on("click", async () => {
+qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length ?? 0;
 
-  Loader.show();
+  showLoaderBar();
   ResultBatches.disableButton();
 
   await downloadResults(offset);
   await fillContent();
-  Loader.hide();
+  hideLoaderBar();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
+qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
+  qs(".sendVerificationEmail")?.disable();
+  await sendVerificationEmail();
+  qs(".sendVerificationEmail")?.enable();
+});
+
+ConfigEvent.subscribe(({ key }) => {
+  if (getActivePage() === "account" && key === "typingSpeedUnit") {
     void update();
   }
 });
 
-export const page = new Page({
+export const page = new Page<undefined>({
   id: "account",
-  element: $(".page.pageAccount"),
+  element: qsr(".page.pageAccount"),
   path: "/account",
+  loadingOptions: {
+    loadingMode: () => {
+      if (DB.getSnapshot()?.results === undefined) {
+        return "sync";
+      } else {
+        return "none";
+      }
+    },
+    loadingPromise: async () => {
+      if (DB.getSnapshot() === null) {
+        throw new Error(
+          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
+        );
+      }
+      return downloadResults();
+    },
+    style: "bar",
+    keyframes: [
+      {
+        percentage: 90,
+        durationMs: 2000,
+        text: "Downloading results...",
+      },
+    ],
+  },
   afterHide: async (): Promise<void> => {
     reset();
-    ResultFilters.removeButtons();
     Skeleton.remove("pageAccount");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
-    const snapshot = DB.getSnapshot();
-    if (snapshot?.results === undefined) {
-      $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
-      $(".pageAccount .content").addClass("hidden");
-      $(".pageAccount .preloader").removeClass("hidden");
-      await LoadingPage.showBar();
-    }
-    ResultFilters.updateTagsDropdownOptions();
-    await ResultFilters.appendButtons(update);
+    await ResultFilters.appendDropdowns(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
-    TestActivity.initYearSelector(
-      "current",
-      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
-    );
+    historyTable ??= new SortedTableWithLimit<SnapshotResult<Mode>>({
+      limit: 10,
+      table: qsr(".pageAccount .content .history table"),
+      data: filteredResults,
+      buildRow: (val) => {
+        return buildResultRow(val);
+      },
+      initialSort: { property: "timestamp", descending: true },
+    });
 
-    void update().then(() => {
-      void updateChartColors();
-      $(".pageAccount .content .accountVerificatinNotice").remove();
-      if (Auth?.currentUser?.emailVerified === false) {
-        $(".pageAccount .content").prepend(
-          `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
+    await update().then(() => {
+      qs(".pageAccount .content .accountVerificatinNotice")?.remove();
+      if (getAuthenticatedUser()?.emailVerified === false) {
+        qs(".pageAccount .content")?.prependHtml(
+          `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`,
         );
       }
       ResultBatches.showOrHideIfNeeded();
@@ -1374,6 +1239,6 @@ export const page = new Page({
   },
 });
 
-$(() => {
+onDOMReady(() => {
   Skeleton.save("pageAccount");
 });

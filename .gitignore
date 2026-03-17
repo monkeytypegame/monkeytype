@@ -67,6 +67,7 @@ node_modules_bak/
 
 # dotenv environment variables file
 .env
+.env*
 
 #vs code
 .vscode/*
@@ -90,6 +91,7 @@ dist/
 frontend/public/
 backend/globalConfig.json
 backend/server.version
+backend/src/server.version
 vite-build/
 
 #cloudflare y
@@ -111,6 +113,7 @@ dep-graph.png
 # TypeScript
 build/
 backend/workers
+*.tsbuildinfo
 
 #scripts
 updateContributors.js
@@ -128,3 +131,5 @@ frontend/static/webfonts-preview
 
 .turbo
 frontend/.env.sentry-build-plugin
+.claude/worktrees
+1024MiB

@@ -6,9 +6,12 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { EditPresetRequestSchema, PresetSchema } from "./schemas/presets";
-import { IdSchema } from "./schemas/util";
+} from "./util/api";
+import {
+  EditPresetRequestSchema,
+  PresetSchema,
+} from "@monkeytype/schemas/presets";
+import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GetPresetResponseSchema = responseWithData(z.array(PresetSchema));
 export type GetPresetResponse = z.infer<typeof GetPresetResponseSchema>;
@@ -17,7 +20,7 @@ export const AddPresetRequestSchema = PresetSchema.omit({ _id: true });
 export type AddPresetRequest = z.infer<typeof AddPresetRequestSchema>;
 
 export const AddPresetResponseSchemna = responseWithData(
-  z.object({ presetId: IdSchema })
+  z.object({ presetId: IdSchema }),
 );
 export type AddPresetResponse = z.infer<typeof AddPresetResponseSchemna>;
 
@@ -91,5 +94,5 @@ export const presetsContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );
