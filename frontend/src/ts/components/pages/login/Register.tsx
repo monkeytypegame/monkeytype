@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import Ape from "../../../ape";
 import { signUp } from "../../../auth";
+import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
@@ -18,9 +19,8 @@ import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../stores/notifications";
-import { isDevEnvironment } from "../../../utils/misc";
+import { isDevEnvironment } from "../../../utils/env";
 import { remoteValidationForm } from "../../../utils/remote-validation";
-import TypoList from "../../../utils/typo-list";
 import { H3 } from "../../common/Headers";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
