@@ -87,7 +87,8 @@
     "testcontainers": "11.11.0",
     "tsx": "4.21.0",
     "typescript": "6.0.0-beta",
-    "vitest": "4.0.15"
+    "vitest": "4.1.0",
+    "yaml": "2.8.2"
   },
   "engines": {
     "node": ">=24.0.0 <25"

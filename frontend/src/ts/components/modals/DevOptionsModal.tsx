@@ -5,6 +5,7 @@ import Ape from "../../ape";
 import { signIn } from "../../auth";
 import { inboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
+import { toggleCaretDebug } from "../../elements/caret";
 import { getInputElement } from "../../input/input-element";
 import { showPopup } from "../../modals/simple-modals";
 import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
@@ -18,7 +19,6 @@ import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
-import { toggleCaretDebug } from "../../utils/caret";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
