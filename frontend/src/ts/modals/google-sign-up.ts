@@ -11,7 +11,6 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import * as LoginPage from "../pages/login";
 import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 
@@ -62,8 +61,6 @@ async function hide(): Promise<void> {
         showNoticeNotification("Sign up process cancelled", {
           durationMs: 5000,
         });
-        LoginPage.hidePreloader();
-        LoginPage.enableInputs();
         if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
           await Ape.users.delete();
           await signedInUser?.user.delete().catch(() => {
@@ -110,8 +107,6 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       showSuccessNotification("Account created");
-      LoginPage.enableInputs();
-      LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
 
       signedInUser = undefined;
@@ -121,9 +116,6 @@ async function apply(): Promise<void> {
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.enableSignUpButton();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser?.user.delete().catch(() => {

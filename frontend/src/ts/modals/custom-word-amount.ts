@@ -1,5 +1,4 @@
 import Config, { setConfig } from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import { showNoticeNotification } from "../states/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -28,7 +27,6 @@ function apply(): void {
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     if (setConfig("words", val)) {
-      ManualRestart.set();
       TestLogic.restart();
       if (val > 2000) {
         showNoticeNotification("Stay safe and take breaks!");

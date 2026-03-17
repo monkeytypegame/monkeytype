@@ -4,7 +4,6 @@ import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
 import { isAuthenticated } from "../firebase";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -112,7 +111,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: [10, 25, 50, 100],
       afterExec: () => {
-        ManualRestart.set();
         TestLogic.restart();
       },
     },
@@ -120,7 +118,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       inputValueConvert: Number,
 
       afterExec: () => {
-        ManualRestart.set();
         TestLogic.restart();
       },
     },
@@ -129,14 +126,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: [15, 30, 60, 120],
       afterExec: () => {
-        ManualRestart.set();
         TestLogic.restart();
       },
     },
     input: {
       inputValueConvert: Number,
       afterExec: () => {
-        ManualRestart.set();
         TestLogic.restart();
       },
     },
@@ -145,7 +140,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        ManualRestart.set();
         TestLogic.restart();
       },
     },

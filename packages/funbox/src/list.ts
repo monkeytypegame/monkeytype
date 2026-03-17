@@ -156,7 +156,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "rememberSettings",
       "handleSpace",
       "getResultContent",
-      "restart",
     ],
     name: "layoutfluid",
   },

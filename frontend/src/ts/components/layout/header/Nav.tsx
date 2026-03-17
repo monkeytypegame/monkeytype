@@ -3,7 +3,11 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage, getFocus } from "../../../states/core";
+import {
+  dispatchRestartTest,
+  getActivePage,
+  getFocus,
+} from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -11,7 +15,6 @@ import {
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
 import { getSnapshot } from "../../../states/snapshot";
-import { restart } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
@@ -77,7 +80,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") restart();
+          if (getActivePage() === "test") dispatchRestartTest();
         }}
       />
       <Button

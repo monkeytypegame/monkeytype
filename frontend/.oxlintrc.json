@@ -21,7 +21,8 @@
       "rules": {
         "explicit-function-return-type": "off",
         "no-explicit-any": "off",
-        "no-unsafe-assignment": "off"
+        "no-unsafe-assignment": "off",
+        "no-empty-function": "off"
       }
     },
     {

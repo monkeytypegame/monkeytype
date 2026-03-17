@@ -91,3 +91,14 @@
     padding: 0;
   }
 }
+
+@layer utilities {
+  .autofill-fix:-webkit-autofill,
+  .autofill-fix:-webkit-autofill:hover,
+  .autofill-fix:-webkit-autofill:focus {
+    @apply border-none  font-(--font) caret-(--text-color) font-[inherit];
+    outline: 0.15em solid var(--main-color);
+    -webkit-text-fill-color: var(--text-color);
+    -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  }
+}

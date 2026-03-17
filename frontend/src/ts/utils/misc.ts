@@ -1,4 +1,3 @@
-import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
@@ -269,7 +268,6 @@ export function getMode2<M extends keyof PersonalBests>(
 }
 
 export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
-  showLoaderBar();
   const csvString = [
     [
       "_id",
@@ -338,7 +336,6 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
 
   link.click();
   link.remove();
-  hideLoaderBar();
 }
 
 export function isElementVisible(query: string): boolean {

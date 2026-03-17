@@ -1,6 +1,5 @@
 import Config, { setConfig } from "../config";
 import * as DB from "../db";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -256,7 +255,7 @@ async function updateResults(searchText: string): Promise<void> {
 
   if (exactSearchQueries[0]) {
     const searchQueriesRaw = exactSearchQueries.map(
-      (query) => new RegExp(query[1] ?? "", "i"),
+      (query) => new RegExp(RegExp.escape(query[1] ?? ""), "i"),
     );
 
     [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
@@ -469,7 +468,6 @@ function apply(val: number): void {
   if (val !== null && !isNaN(val) && val >= 0) {
     setConfig("quoteLength", [-2]);
     TestState.setSelectedQuoteId(val);
-    ManualRestart.set();
   } else {
     showNoticeNotification("Quote ID must be at least 1");
     return;
