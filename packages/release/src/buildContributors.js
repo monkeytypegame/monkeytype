@@ -54,7 +54,7 @@ async function main() {
     return true;
   });
 
-  console.log(total.map((c) => c.name));
+  console.log(JSON.stringify(total.map((c) => c.name)));
 }
 
 main();
