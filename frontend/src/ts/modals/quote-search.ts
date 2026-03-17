@@ -225,7 +225,7 @@ function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
         break;
       }
 
-      currentMatches.push(match[0]);
+      currentMatches.push(RegExp.escape(match[0]));
     }
 
     if (!noMatch) {
