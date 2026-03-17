@@ -1039,21 +1039,24 @@ qs(".pageAccount .loadMoreButton")?.on("click", () => {
 });
 
 qs(".pageAccount #accountHistoryChart")?.on("click", () => {
-  const index: number = ChartController.accountHistoryActiveIndex;
+  const chart = ChartController.accountHistory;
+  const active = chart.tooltip?.getActiveElements?.() ?? [];
+  if (!active.length) return;
+
+  const index = active[0]?.index;
+  if (index === undefined) return;
+
   loadMoreLines(index);
-  if (window === undefined) return;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
     throw new Error("Cannot find result for index " + index);
   }
-  const element = qs(`.resultRow[data-id="${resultId}"`);
+
+  const element = qs(`.resultRow[data-id="${resultId}"]`);
   qsa(".resultRow").removeClass("active");
 
-  element?.scrollIntoView({
-    block: "center",
-  });
-
+  element?.scrollIntoView({ block: "center" });
   element?.addClass("active");
 });
 
