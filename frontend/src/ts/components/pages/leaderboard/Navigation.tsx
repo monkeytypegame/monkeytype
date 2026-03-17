@@ -1,8 +1,8 @@
 import { JSXElement, Setter, Show } from "solid-js";
 
-import { setPage } from "../../../stores/leaderboard-selection";
+import { ExecReturn, SimpleModal } from "../../../elements/simple-modal";
+import { setPage } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
-import { ExecReturn, SimpleModal } from "../../../utils/simple-modal";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 

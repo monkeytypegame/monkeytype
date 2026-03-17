@@ -1,9 +1,10 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
-import { showNoticeNotification } from "./stores/notifications";
+import { showNoticeNotification } from "./states/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter } from "./utils/misc";
+import { reloadAfter } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";

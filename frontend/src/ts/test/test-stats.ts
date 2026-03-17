@@ -247,7 +247,6 @@ export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
   TestInput.keypressCountHistory.splice(testSeconds);
   TestInput.wpmHistory.splice(testSeconds);
-  TestInput.burstHistory.splice(testSeconds);
   TestInput.rawHistory.splice(testSeconds);
 }
 

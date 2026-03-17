@@ -2,13 +2,13 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { compressToURI } from "lz-ts";
 import * as UpdateConfig from "../../src/ts/config";
-import * as Notifications from "../../src/ts/stores/notifications";
+import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/test/test-state";
 import * as Misc from "../../src/ts/utils/misc";
-import { loadTestSettingsFromUrl } from "../../src/ts/utils/url-handler";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
+import { loadTestSettingsFromUrl } from "../../src/ts/controllers/url-handler";
 
 //mock modules to avoid dependencies
 vi.mock("../../src/ts/test/test-logic", () => ({

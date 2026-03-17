@@ -5,23 +5,20 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
   getCommandlineSubgroup,
   setCommandlineSubgroup,
-} from "../signals/core";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+} from "../states/core";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
 import { intersect } from "@monkeytype/util/arrays";
-import {
-  createInputEventHandler,
-  ValidationResult,
-} from "../elements/input-validation";
+import { createInputEventHandler } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { ConfigKey } from "@monkeytype/schemas/configs";
@@ -31,7 +28,8 @@ import {
   hideModal as storeHideModal,
   hideModalAndClearChain as storeClearChain,
   isModalOpen,
-} from "../stores/modals";
+} from "../states/modals";
+import { ValidationResult } from "../types/validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -125,7 +123,7 @@ export function show(
           if (exists) {
             showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              overrideStringOrGroup,
+              overrideStringOrGroup as CommandlineLists.ListsObjectKeys,
             );
             hideLoaderBar();
           } else {

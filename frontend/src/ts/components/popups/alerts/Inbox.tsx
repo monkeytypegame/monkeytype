@@ -13,8 +13,8 @@ import {
 } from "../../../collections/inbox";
 import * as BadgeController from "../../../controllers/badge-controller";
 import { addBadge, addXp, updateInboxUnreadSize } from "../../../db";
-import { getModalVisibility } from "../../../stores/modals";
-import { showSuccessNotification } from "../../../stores/notifications";
+import { getModalVisibility } from "../../../states/modals";
+import { showSuccessNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";

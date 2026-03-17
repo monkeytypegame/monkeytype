@@ -1,9 +1,9 @@
 import { debounce } from "throttle-debounce";
-import { showSuccessNotification } from "../stores/notifications";
+import { showSuccessNotification } from "../states/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
 import { onDOMReady } from "../utils/dom";
-import { addBanner, removeBanner } from "../stores/banners";
+import { addBanner, removeBanner } from "../states/banners";
 
 let state = navigator.onLine;
 

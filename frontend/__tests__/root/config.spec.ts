@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config";
 import * as Misc from "../../src/ts/utils/misc";
+import * as Env from "../../src/ts/utils/env";
 import {
   ConfigKey,
   Config as ConfigType,
@@ -10,11 +11,11 @@ import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
 import * as ApeConfig from "../../src/ts/ape/config";
-import * as Notifications from "../../src/ts/stores/notifications";
+import * as Notifications from "../../src/ts/states/notifications";
 const { replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
-  const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
+  const isDevEnvironmentMock = vi.spyOn(Env, "isDevEnvironment");
   beforeEach(() => {
     isDevEnvironmentMock.mockClear();
     replaceConfig({});
@@ -73,9 +74,7 @@ describe("Config", () => {
     it("should throw if config key in not found in metadata", () => {
       expect(() => {
         Config.setConfig("nonExistentKey" as ConfigKey, true);
-      }).toThrowError(
-        `Config metadata for key "nonExistentKey" is not defined.`,
-      );
+      }).toThrow(`Config metadata for key "nonExistentKey" is not defined.`);
     });
 
     it("fails if test is active and funbox no_quit", () => {

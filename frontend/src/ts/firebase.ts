@@ -22,11 +22,9 @@ import {
   indexedDBLocalPersistence,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import {
-  createErrorMessage,
-  isDevEnvironment,
-  promiseWithResolvers,
-} from "./utils/misc";
+import { promiseWithResolvers } from "./utils/misc";
+import { isDevEnvironment } from "./utils/env";
+import { createErrorMessage } from "./utils/error";
 
 import {
   Analytics as AnalyticsType,
@@ -34,8 +32,8 @@ import {
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
-import { addBanner } from "./stores/banners";
-import { setUserId } from "./signals/core";
+import { addBanner } from "./states/banners";
+import { setUserId } from "./states/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -55,16 +53,11 @@ export async function init(callback: ReadyCallback): Promise<void> {
   try {
     let firebaseConfig: FirebaseOptions | null;
 
-    const constants = import.meta.glob("./constants/firebase-config.ts");
-    const loader = constants["./constants/firebase-config.ts"];
-    if (loader) {
-      firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
-        .firebaseConfig;
-    } else {
-      throw new Error(
-        "No config file found. Make sure frontend/src/ts/constants/firebase-config.ts exists",
-      );
-    }
+    firebaseConfig = (
+      (await import("./constants/firebase-config")) as {
+        firebaseConfig: FirebaseOptions;
+      }
+    ).firebaseConfig;
 
     readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -227,19 +220,17 @@ function translateFirebaseError(
       message =
         "Email/password is incorrect or your account does not have password authentication enabled.";
     } else if (error.code === "auth/popup-closed-by-user") {
-      message = "";
-      // message = "Popup closed by user";
-      // return;
+      message = "Popup closed by user";
     } else if (error.code === "auth/popup-blocked") {
       message =
         "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
     } else if (error.code === "auth/user-cancelled") {
-      message = "";
-      // message = "User refused to sign in";
-      // return;
+      message = "Cancelled by user";
     } else if (error.code === "auth/account-exists-with-different-credential") {
       message =
         "Account already exists, but its using a different authentication method. Try signing in with a different method";
+    } else {
+      message = "Firebase error: " + error.code;
     }
   }
 

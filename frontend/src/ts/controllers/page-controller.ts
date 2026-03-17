@@ -4,16 +4,15 @@ import {
   getActivePage,
   setActivePage,
   setSelectedProfileName,
-} from "../signals/core";
+} from "../states/core";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
-import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
 import * as PageAccountSettings from "../pages/account-settings";
-import * as PageTransition from "../states/page-transition";
+import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, {
@@ -29,7 +28,7 @@ import * as Skeleton from "../utils/skeleton";
 import {
   LeaderboardUrlParamsSchema,
   readGetParameters,
-} from "../stores/leaderboard-selection";
+} from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
 
 type ChangeOptions = {
@@ -45,7 +44,7 @@ const pages = {
   settings: Settings.page,
   about: solidPage("about"),
   account: Account.page,
-  login: PageLogin.page,
+  login: solidPage("login"),
   profile: solidPage("profile", {
     beforeShow: async (options) => {
       setSelectedProfileName(options.params?.["uidOrName"]);

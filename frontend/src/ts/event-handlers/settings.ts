@@ -3,7 +3,7 @@ import * as CookiesModal from "../modals/cookies";
 import * as EditPresetPopup from "../modals/edit-preset";
 import * as EditTagPopup from "../modals/edit-tag";
 
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { qs } from "../utils/dom";
 
 const settingsPage = qs("#pageSettings");

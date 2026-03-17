@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 
-import { getFocus, getIsScreenshotting } from "../../../signals/core";
-import { showModal } from "../../../stores/modals";
+import { getFocus, getIsScreenshotting } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { Keytips } from "./Keytips";

@@ -5,7 +5,7 @@ import { Command, CommandsSubgroup } from "../types";
 import { ThemesList, ThemeWithName } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
 import * as ConfigEvent from "../../observables/config-event";
-import * as Misc from "../../utils/misc";
+import * as getErrorMessage from "../../utils/error";
 
 const isFavorite = (theme: ThemeWithName): boolean =>
   Config.favThemes.includes(theme.name);
@@ -83,7 +83,10 @@ ConfigEvent.subscribe(({ key }) => {
       update(ThemesList);
     } catch (e: unknown) {
       console.error(
-        Misc.createErrorMessage(e, "Failed to update themes commands"),
+        getErrorMessage.createErrorMessage(
+          e,
+          "Failed to update themes commands",
+        ),
       );
     }
   }

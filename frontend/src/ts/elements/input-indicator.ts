@@ -18,10 +18,17 @@ export class InputIndicator {
     options: Record<string, InputIndicatorOption>,
   ) {
     this.inputElement = inputElement;
-    const wrapper = this.inputElement.wrapWith(
-      `<div class="inputAndIndicator"></div>`,
-    );
-    this.parentElement = wrapper;
+    const existingWrapper = inputElement.native.closest(".inputAndIndicator");
+    if (existingWrapper) {
+      existingWrapper.querySelector(".statusIndicator")?.remove();
+      this.parentElement = new ElementWithUtils(
+        existingWrapper as HTMLInputElement,
+      );
+    } else {
+      this.parentElement = this.inputElement.wrapWith(
+        `<div class="inputAndIndicator"></div>`,
+      );
+    }
     this.options = options;
     this.currentStatus = null;
 
