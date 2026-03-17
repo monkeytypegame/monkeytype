@@ -73,7 +73,6 @@ const customBackgroundCommand: Command = {
         id: "removeCustomBackground",
         display: "Remove custom background",
         icon: "fa-trash",
-        alias: "remove background",
         available: async (): Promise<boolean> => {
           return (
             (await FileStorage.hasFile("LocalBackgroundFile")) ||
