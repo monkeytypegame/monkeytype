@@ -23,7 +23,8 @@ export async function loadFromLocalStorage(): Promise<void> {
   }
   loadDone();
 }
-export const lastConfigsToApply: Set<keyof ConfigSchema> = new Set([
+
+const lastConfigsToApply: Set<keyof ConfigSchema> = new Set([
   "keymapMode",
   "minWpm",
   "minAcc",
@@ -37,6 +38,7 @@ export const lastConfigsToApply: Set<keyof ConfigSchema> = new Set([
   "punctuation",
   "funbox",
 ]);
+
 export async function applyConfig(
   partialConfig: Partial<ConfigSchema>,
 ): Promise<void> {
@@ -75,11 +77,13 @@ export async function applyConfig(
 
   ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
 }
+
 export async function resetConfig(): Promise<void> {
   await applyConfig(getDefaultConfig());
   await deleteConfig();
   saveFullConfigToLocalStorage(true);
 }
+
 const { promise: configLoadPromise, resolve: loadDone } =
   promiseWithResolvers();
 
