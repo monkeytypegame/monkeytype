@@ -19,7 +19,7 @@ export function VerifyNotice(): JSXElement {
         <div>Your email address is still not verified</div>
         <Button
           text="resend verification email"
-          class="flex-none"
+          class="ml-auto flex-none"
           disabled={isProcessing()}
           onClick={resendVerificationEmail}
         />

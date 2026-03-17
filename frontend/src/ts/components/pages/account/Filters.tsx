@@ -279,7 +279,7 @@ export function Filters(props: {
         </div>
         <ButtonGroup
           singleSelect
-          classOverride="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
+          classOverride="grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
           group="date"
           format={(val) =>
             val === "last_3months"
