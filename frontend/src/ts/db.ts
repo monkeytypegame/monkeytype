@@ -2,7 +2,7 @@ import Ape from "./ape";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "./stores/notifications";
+} from "./states/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
@@ -10,7 +10,7 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import {
@@ -38,9 +38,9 @@ import { Connection } from "@monkeytype/schemas/connections";
 import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
-} from "./stores/snapshot";
+} from "./states/snapshot";
 import { XpBreakdown } from "@monkeytype/schemas/results";
-import { setXpBarData } from "./signals/header";
+import { setXpBarData } from "./states/header";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();

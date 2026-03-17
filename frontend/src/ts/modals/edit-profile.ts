@@ -2,11 +2,11 @@ import Ape from "../ape";
 import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
 import {

@@ -1,7 +1,7 @@
 import { getfpsLimit, fpsLimitSchema, setfpsLimit } from "../../anim";
 import { qsr } from "../../utils/dom";
 import { ValidatedHtmlInputElement } from "../input-validation";
-import { showNoticeNotification } from "../../stores/notifications";
+import { showNoticeNotification } from "../../states/notifications";
 
 const section = qsr("#pageSettings .section.fpsLimit");
 

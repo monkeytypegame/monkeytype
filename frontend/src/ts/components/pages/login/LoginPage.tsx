@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/solid-query";
 import { JSXElement, Show } from "solid-js";
 
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage } from "../../../signals/core";
-import { getLoginPageInputsEnabled } from "../../../stores/login";
+import { getActivePage } from "../../../states/core";
+import { getLoginPageInputsEnabled } from "../../../states/login";
 import { Conditional } from "../../common/Conditional";
 import { Login } from "./Login";
 import { Register } from "./Register";

@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text-name";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import Config, { setConfig } from "../config";
@@ -10,7 +10,7 @@ import * as PractiseWords from "../test/practise-words";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";

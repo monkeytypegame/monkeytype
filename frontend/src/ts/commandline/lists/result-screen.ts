@@ -4,7 +4,7 @@ import * as PractiseWordsModal from "../../modals/practise-words";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";

@@ -3,7 +3,7 @@ import * as DB from "../db";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as QuoteSubmitPopup from "./quote-submit";
 import * as QuoteApprovePopup from "./quote-approve";
 import * as QuoteFilterPopup from "./quote-filter";
@@ -18,7 +18,7 @@ import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";

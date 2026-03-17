@@ -12,11 +12,11 @@ import {
   disableLoginPageInputs,
   enableLoginPageInputs,
   getLoginPageInputsEnabled,
-} from "../../../stores/login";
+} from "../../../states/login";
 import {
   showErrorNotification,
   showNoticeNotification,
-} from "../../../stores/notifications";
+} from "../../../states/notifications";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";

@@ -4,7 +4,7 @@ import preview from "#.storybook/preview";
 import { onMount } from "solid-js";
 
 import { AccountXpBar } from "../../src/ts/components/layout/header/AccountXpBar";
-import { setXpBarData, setAnimatedLevel } from "../../src/ts/signals/header";
+import { setXpBarData, setAnimatedLevel } from "../../src/ts/states/header";
 
 const meta = preview.meta({
   title: "Layout/Header/AccountXpBar",

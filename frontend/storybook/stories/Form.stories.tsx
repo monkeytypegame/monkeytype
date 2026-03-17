@@ -10,7 +10,7 @@ import {
   fieldMandatory,
   fromSchema,
 } from "../../src/ts/components/ui/form/utils";
-import { showNoticeNotification } from "../../src/ts/stores/notifications";
+import { showNoticeNotification } from "../../src/ts/states/notifications";
 import { sleep } from "../../src/ts/utils/misc";
 
 const meta = preview.meta({

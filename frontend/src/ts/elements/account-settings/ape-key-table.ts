@@ -1,8 +1,8 @@
-import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import Ape from "../../ape";
 import {
   ApeKey,

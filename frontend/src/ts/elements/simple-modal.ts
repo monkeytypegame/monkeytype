@@ -5,12 +5,12 @@ import AnimatedModal, {
 import { Attributes, buildTag } from "../utils/tag-builder";
 import { format as dateFormat } from "date-fns/format";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   addNotificationWithLevel,
   AddNotificationOptions,
-} from "../stores/notifications";
+} from "../states/notifications";
 import {
   ValidatedHtmlInputElement,
   ValidationOptions,

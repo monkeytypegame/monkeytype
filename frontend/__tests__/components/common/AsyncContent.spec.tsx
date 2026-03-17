@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import AsyncContent, {
   Props,
 } from "../../../src/ts/components/common/AsyncContent";
-import * as Notifications from "../../../src/ts/stores/notifications";
+import * as Notifications from "../../../src/ts/states/notifications";
 
 describe("AsyncContent", () => {
   const notifyErrorMock = vi.spyOn(Notifications, "showErrorNotification");

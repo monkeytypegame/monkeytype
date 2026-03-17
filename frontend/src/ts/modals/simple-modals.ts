@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as AccountController from "../auth";
 import * as DB from "../db";
 import { resetConfig, setConfig } from "../config";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
@@ -23,7 +23,7 @@ import {
 import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";
 import { createErrorMessage } from "../utils/error";
-import * as CustomTextState from "../states/custom-text-name";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
 import * as AccountSettings from "../pages/account-settings";
 import {
@@ -43,7 +43,7 @@ import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { list, PopupKey, showPopup } from "./simple-modals-base";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 export { list, showPopup };
 export type { PopupKey };

@@ -3,12 +3,12 @@ import { debounce } from "throttle-debounce";
 
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { setGlobalOffsetTop } from "../../../signals/core";
 import {
   Banner as BannerType,
   getBanners,
   removeBanner,
-} from "../../../stores/banners";
+} from "../../../states/banners";
+import { setGlobalOffsetTop } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";

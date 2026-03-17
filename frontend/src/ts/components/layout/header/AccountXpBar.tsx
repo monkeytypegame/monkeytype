@@ -12,12 +12,12 @@ import {
 import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
-import { getFocus } from "../../../signals/core";
+import { getFocus } from "../../../states/core";
 import {
   getSkipBreakdownEvent,
   getXpBarData,
   setAnimatedLevel,
-} from "../../../signals/header";
+} from "../../../states/header";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";

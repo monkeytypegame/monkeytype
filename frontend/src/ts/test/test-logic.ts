@@ -10,9 +10,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "../states/custom-text-name";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -28,20 +28,20 @@ import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
 import { createEffect, on } from "solid-js";
-import { getActivePage, onRestartTest } from "../signals/core";
+import { getActivePage, onRestartTest } from "../states/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
-import * as PageTransition from "../states/page-transition";
+import * as PageTransition from "../legacy-states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import * as ConnectionState from "../states/connection";
+import * as ConnectionState from "../legacy-states/connection";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as LazyModeState from "../states/remember-lazy-mode";
+import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -58,20 +58,20 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import * as CompositionState from "../states/composition";
+import * as CompositionState from "../legacy-states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import * as Time from "../states/time";
+import * as Time from "../legacy-states/time";
 import { qs } from "../utils/dom";
-import { setAccountButtonSpinner } from "../signals/header";
+import { setAccountButtonSpinner } from "../states/header";
 
 let failReason = "";
 

@@ -2,7 +2,7 @@ import { JSXElement, Show } from "solid-js";
 
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
-import { getSnapshot } from "../../../stores/snapshot";
+import { getSnapshot } from "../../../states/snapshot";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
