@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const OWNER = "monkeytypegame";
 const REPO = "monkeytype";
 
@@ -50,8 +54,7 @@ async function main() {
     return true;
   });
 
-  const output = JSON.stringify(total, null, 2);
-  console.log(output);
+  console.log(total.map((c) => c.name));
 }
 
 main();
