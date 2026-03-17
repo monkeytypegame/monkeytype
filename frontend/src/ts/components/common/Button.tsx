@@ -14,13 +14,15 @@ type BaseProps = {
   balloon?: BalloonProps;
   "router-link"?: true;
   onClick?: () => void;
+  type?: HTMLButtonElement["type"];
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   dataset?: Record<string, string>;
   active?: boolean;
 };
 
-type ButtonProps = BaseProps & {
+export type ButtonProps = BaseProps & {
+  type?: "button" | "submit" | "reset";
   href?: never;
   sameTarget?: true;
   disabled?: boolean;
@@ -30,6 +32,7 @@ type AnchorProps = BaseProps & {
   href: string;
   // onClick?: never;
   disabled?: never;
+  type?: never;
 };
 
 export function Button(props: ButtonProps | AnchorProps): JSXElement {
@@ -107,7 +110,8 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       }
       else={
         <button
-          type="button"
+          // oxlint-disable-next-line button-has-type
+          type={(props as ButtonProps).type ?? "button"}
           class={getClasses()}
           onClick={() => props.onClick?.()}
           onMouseEnter={() => props.onMouseEnter?.()}

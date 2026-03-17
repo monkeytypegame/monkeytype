@@ -5,7 +5,7 @@ import tribeSocket from "../tribe-socket";
 import { RoomConfig } from "../types";
 import { configMetadata } from "../../config-metadata";
 import { qsa, qsr } from "../../utils/dom";
-import { SimpleModal } from "../../utils/simple-modal";
+import { SimpleModal } from "../../elements/simple-modal";
 import {
   showErrorNotification,
   showSuccessNotification,

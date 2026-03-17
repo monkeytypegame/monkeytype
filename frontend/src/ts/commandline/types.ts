@@ -1,6 +1,6 @@
 import { Config } from "@monkeytype/schemas/configs";
 import AnimatedModal from "../utils/animated-modal";
-import { Validation } from "../elements/input-validation";
+import { Validation } from "../types/validation";
 
 // this file is needed becauase otherwise it would produce a circular dependency
 

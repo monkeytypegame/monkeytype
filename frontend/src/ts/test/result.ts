@@ -41,7 +41,7 @@ import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import confetti from "canvas-confetti";
 import type {
   AnnotationOptions,

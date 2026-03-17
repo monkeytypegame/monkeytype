@@ -19,7 +19,7 @@ import * as TestState from "../test/test-state";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as TribeState from "./tribe-state";
-import { escapeRegExp, escapeHTML, isDevEnvironment } from "../utils/misc";
+import { escapeRegExp, escapeHTML } from "../utils/misc";
 import { getTribeMode } from "../utils/tribe";
 import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
@@ -31,7 +31,6 @@ import * as NavigationEvent from "../observables/navigation-event";
 import * as TribeAutoJoin from "./tribe-auto-join";
 import { authPromise } from "../firebase";
 import * as Result from "../test/result";
-import { SimpleModal } from "../utils/simple-modal";
 import { qs } from "../utils/dom";
 import {
   showErrorNotification,
@@ -40,6 +39,8 @@ import {
 } from "../stores/notifications";
 import { getActivePage } from "../signals/core";
 import { ColorName } from "../constants/themes";
+import { isDevEnvironment } from "../utils/env";
+import { SimpleModal } from "../elements/simple-modal";
 
 const defaultName = "Guest";
 let name = "Guest";

@@ -4,7 +4,6 @@ import {
   Config as ConfigType,
   TypingSpeedUnit,
 } from "@monkeytype/schemas/configs";
-import Config from "../config";
 
 export type FormatOptions = {
   showDecimalPlaces?: boolean;
@@ -121,5 +120,3 @@ export class Formatting {
     return position + numend;
   }
 }
-
-export default new Formatting(Config);

@@ -1,11 +1,11 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
-import { getTotalInlineMargin } from "./misc";
-import { isWordRightToLeft } from "./strings";
-import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
+import { getTotalInlineMargin } from "../utils/misc";
+import { isWordRightToLeft } from "../utils/strings";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
-import { ElementWithUtils, qsr } from "./dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 const wordsCache = qsr("#words");
 const wordsWrapperCache = qsr("#wordsWrapper");

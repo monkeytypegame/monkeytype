@@ -1814,7 +1814,7 @@ describe("user controller test", () => {
       //THEN
       expect(result.body.message).toEqual("The Discord account is blocked");
 
-      expect(blocklistContainsMock).toBeCalledWith({
+      expect(blocklistContainsMock).toHaveBeenCalledWith({
         discordId: "discordUserId",
       });
     });

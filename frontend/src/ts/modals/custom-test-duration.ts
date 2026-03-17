@@ -1,5 +1,4 @@
 import Config, { setConfig } from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import { showNoticeNotification } from "../stores/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -94,7 +93,6 @@ function apply(): void {
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     setConfig("time", val);
-    ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {
       showNoticeNotification("Stay safe and take breaks!");

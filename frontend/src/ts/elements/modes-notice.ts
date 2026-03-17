@@ -8,7 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";

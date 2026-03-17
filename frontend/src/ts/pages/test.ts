@@ -1,5 +1,4 @@
 import * as TestStats from "../test/test-stats";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox/funbox";
 import * as TestConfig from "../test/test-config";
@@ -19,7 +18,6 @@ export const page = new Page({
     blurInputElement();
   },
   afterHide: async (): Promise<void> => {
-    ManualRestart.set();
     TestLogic.restart({
       noAnim: true,
     });
@@ -35,7 +33,6 @@ export const page = new Page({
       TestConfig.show();
     }
     TestStats.resetIncomplete();
-    ManualRestart.set();
     TestLogic.restart({
       noAnim: true,
       tribeOverride: options.tribeOverride ?? false,

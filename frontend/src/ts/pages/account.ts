@@ -24,7 +24,7 @@ import { getAuthenticatedUser } from "../firebase";
 
 import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { ChartData } from "@monkeytype/schemas/results";
 import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
@@ -544,7 +544,7 @@ async function fillContent(): Promise<void> {
         histogramChartData.push(0);
       }
     }
-    (histogramChartData[bucket] as number)++;
+    (histogramChartData[bucket] as number) += 1;
 
     let tt = 0;
     if (
@@ -1039,21 +1039,24 @@ qs(".pageAccount .loadMoreButton")?.on("click", () => {
 });
 
 qs(".pageAccount #accountHistoryChart")?.on("click", () => {
-  const index: number = ChartController.accountHistoryActiveIndex;
+  const chart = ChartController.accountHistory;
+  const active = chart.tooltip?.getActiveElements?.() ?? [];
+  if (!active.length) return;
+
+  const index = active[0]?.index;
+  if (index === undefined) return;
+
   loadMoreLines(index);
-  if (window === undefined) return;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
     throw new Error("Cannot find result for index " + index);
   }
-  const element = qs(`.resultRow[data-id="${resultId}"`);
+
+  const element = qs(`.resultRow[data-id="${resultId}"]`);
   qsa(".resultRow").removeClass("active");
 
-  element?.scrollIntoView({
-    block: "center",
-  });
-
+  element?.scrollIntoView({ block: "center" });
   element?.addClass("active");
 });
 
@@ -1146,7 +1149,10 @@ qs(".pageAccount .group.presetFilterButtons")?.onChild(
 );
 
 qs(".pageAccount .content .group.aboveHistory .exportCSV")?.on("click", () => {
-  void Misc.downloadResultsCSV(filteredResults);
+  showLoaderBar();
+  void Misc.downloadResultsCSV(filteredResults).finally(() => {
+    hideLoaderBar();
+  });
 });
 
 qs(".pageAccount button.loadMoreResults")?.on("click", async () => {

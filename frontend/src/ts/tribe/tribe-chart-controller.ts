@@ -1,6 +1,6 @@
 import { Chart, ChartConfiguration, ChartDataset } from "chart.js";
 import * as TribeState from "./tribe-state";
-import { createErrorMessage } from "../utils/misc";
+import { createErrorMessage } from "../utils/error";
 import tribeSocket from "./tribe-socket";
 import { blendTwoHexColors } from "../utils/colors";
 import { smoothWithValueWindow } from "../utils/arrays";

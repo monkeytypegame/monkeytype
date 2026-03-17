@@ -3,10 +3,10 @@ import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as ConfigEvent from "../observables/config-event";
 import * as TribeTypes from "./types";
-import { Caret } from "../utils/caret";
 import { createElementWithUtils, qsr } from "../utils/dom";
 import * as TestState from "../test/test-state";
 import { EasingParam } from "animejs";
+import { Caret } from "../elements/caret";
 
 const wordsWrapper = qsr(".pageTest #wordsWrapper");
 

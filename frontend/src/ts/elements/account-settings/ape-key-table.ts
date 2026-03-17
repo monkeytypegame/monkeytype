@@ -4,9 +4,13 @@ import {
   showSuccessNotification,
 } from "../../stores/notifications";
 import Ape from "../../ape";
-import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
+import {
+  ApeKey,
+  ApeKeys,
+  ApeKeyNameSchema,
+} from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
-import { SimpleModal, TextArea } from "../../utils/simple-modal";
+import { SimpleModal, TextArea } from "../simple-modal";
 import { isAuthenticated } from "../../firebase";
 import { qs, qsr } from "../../utils/dom";
 
@@ -18,6 +22,7 @@ const editApeKey = new SimpleModal({
       type: "text",
       placeholder: "name",
       initVal: "",
+      validation: { schema: ApeKeyNameSchema },
     },
   ],
   buttonText: "edit",
@@ -129,6 +134,7 @@ const generateApeKey = new SimpleModal({
       type: "text",
       placeholder: "Name",
       initVal: "",
+      validation: { schema: ApeKeyNameSchema },
     },
   ],
   buttonText: "generate",

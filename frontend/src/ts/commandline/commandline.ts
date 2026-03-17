@@ -18,10 +18,7 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
 import { intersect } from "@monkeytype/util/arrays";
-import {
-  createInputEventHandler,
-  ValidationResult,
-} from "../elements/input-validation";
+import { createInputEventHandler } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { ConfigKey } from "@monkeytype/schemas/configs";
@@ -32,6 +29,7 @@ import {
   hideModalAndClearChain as storeClearChain,
   isModalOpen,
 } from "../stores/modals";
+import { ValidationResult } from "../types/validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -125,7 +123,7 @@ export function show(
           if (exists) {
             showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              overrideStringOrGroup,
+              overrideStringOrGroup as CommandlineLists.ListsObjectKeys,
             );
             hideLoaderBar();
           } else {

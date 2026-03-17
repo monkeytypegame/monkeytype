@@ -1,4 +1,4 @@
-import { isDevEnvironment } from "../../utils/misc";
+import { isDevEnvironment } from "../../utils/env";
 import RoomRoutes from "./routes/room";
 import SystemRoutes from "./routes/system";
 import UserRoutes from "./routes/user";

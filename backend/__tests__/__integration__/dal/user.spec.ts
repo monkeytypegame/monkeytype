@@ -1175,7 +1175,7 @@ describe("UserDal", () => {
     it("should throw for unknown user", async () => {
       await expect(async () =>
         UserDAL.getPartialUser("1234", "stack", []),
-      ).rejects.toThrowError("User not found\nStack: stack");
+      ).rejects.toThrow("User not found\nStack: stack");
     });
 
     it("should get streak", async () => {
@@ -1228,7 +1228,7 @@ describe("UserDal", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
         UserDAL.updateEmail("unknown", "test@example.com"),
-      ).rejects.toThrowError("User not found\nStack: update email");
+      ).rejects.toThrow("User not found\nStack: update email");
     });
     it("should update", async () => {
       //given
@@ -1244,7 +1244,7 @@ describe("UserDal", () => {
   });
   describe("resetPb", () => {
     it("throws for nonexisting user", async () => {
-      await expect(async () => UserDAL.resetPb("unknown")).rejects.toThrowError(
+      await expect(async () => UserDAL.resetPb("unknown")).rejects.toThrow(
         "User not found\nStack: reset pb",
       );
     });
@@ -1272,7 +1272,7 @@ describe("UserDal", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
         UserDAL.linkDiscord("unknown", "", ""),
-      ).rejects.toThrowError("User not found\nStack: link discord");
+      ).rejects.toThrow("User not found\nStack: link discord");
     });
     it("should update", async () => {
       //given
@@ -1308,7 +1308,7 @@ describe("UserDal", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
         UserDAL.unlinkDiscord("unknown"),
-      ).rejects.toThrowError("User not found\nStack: unlink discord");
+      ).rejects.toThrow("User not found\nStack: unlink discord");
     });
     it("should update", async () => {
       //given
