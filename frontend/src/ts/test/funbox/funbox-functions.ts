@@ -1,4 +1,4 @@
-import { FunboxWordsFrequency, Wordset } from "../wordset";
+import { FunboxWordsFrequency, WordsetPick, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
 import { Config } from "../../config/store";
 import { setConfig, toggleFunbox } from "../../config/setters";
@@ -126,7 +126,7 @@ class PseudolangWordGenerator extends Wordset {
     }
   }
 
-  public override randomWord(): string {
+  public override randomWord(): WordsetPick {
     let word = "";
     for (;;) {
       const prefix = word.slice(-prefixSize);
@@ -145,14 +145,13 @@ class PseudolangWordGenerator extends Wordset {
       }
       word += nextChar;
     }
-    return word;
+    return { word };
   }
 }
 
 export class PolyglotWordset extends Wordset {
   readonly wordsetMap: Map<Language, Wordset>;
   readonly languageProperties: Map<Language, JSONData.LanguageProperties>;
-  private currLang: Language;
   readonly langs: Language[];
 
   constructor(
@@ -166,11 +165,6 @@ export class PolyglotWordset extends Wordset {
     this.wordsetMap = wordsetMap;
     this.resetIndexes();
     this.length = words.length;
-    this.currLang = this.langs[0] as Language;
-  }
-
-  get currentLanguage(): Language {
-    return this.currLang;
   }
 
   override resetIndexes(): void {
@@ -179,27 +173,29 @@ export class PolyglotWordset extends Wordset {
     });
   }
 
-  private uniformLang(): Language {
+  private pickLang(): Language {
     const index = Math.floor(Math.random() * this.langs.length);
-    this.currLang = this.langs[index] as Language;
-    return this.currLang;
+    return this.langs[index] as Language;
   }
 
-  private getWordset(): Wordset {
-    const lang = this.uniformLang();
-    return this.wordsetMap.get(lang) as Wordset;
+  private getWordsetAndLang(): { wordset: Wordset; language: Language } {
+    const language = this.pickLang();
+    return { wordset: this.wordsetMap.get(language) as Wordset, language };
   }
 
-  override randomWord(mode: FunboxWordsFrequency): string {
-    return this.getWordset().randomWord(mode);
+  override randomWord(mode: FunboxWordsFrequency): WordsetPick {
+    const { wordset, language } = this.getWordsetAndLang();
+    return { word: wordset.randomWord(mode).word, language };
   }
 
-  override shuffledWord(): string {
-    return this.getWordset().shuffledWord();
+  override shuffledWord(): WordsetPick {
+    const { wordset, language } = this.getWordsetAndLang();
+    return { word: wordset.shuffledWord().word, language };
   }
 
-  override nextWord(): string {
-    return this.getWordset().nextWord();
+  override nextWord(): WordsetPick {
+    const { wordset, language } = this.getWordsetAndLang();
+    return { word: wordset.nextWord().word, language };
   }
 }
 
