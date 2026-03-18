@@ -13,7 +13,7 @@ import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
-import { checkCompatibility } from "@monkeytype/funbox";
+import { checkCompatibility, checkForcedConfig } from "@monkeytype/funbox";
 import {
   getAllFunboxes,
   getActiveFunboxes,
@@ -22,7 +22,6 @@ import {
   isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
 } from "./list";
-import { checkForcedConfig } from "./funbox-validation";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
 import * as ConfigEvent from "../../observables/config-event";
