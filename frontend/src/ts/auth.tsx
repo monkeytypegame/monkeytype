@@ -9,7 +9,6 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
-import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
 import { authEvent } from "./events/auth";
@@ -229,13 +228,10 @@ export async function signUp(
   name: string,
   email: string,
   password: string,
+  captchaToken: string,
 ): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
-  }
-  const captchaToken = await showRegisterCaptchaModal();
-  if (captchaToken === undefined || captchaToken === "") {
-    return { success: false, message: "Please complete the captcha" };
   }
 
   try {
