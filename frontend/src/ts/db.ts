@@ -26,7 +26,6 @@ import {
   SnapshotResult,
   SnapshotUserTag,
 } from "./constants/default-snapshot";
-import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
@@ -41,6 +40,7 @@ import {
 } from "./states/snapshot";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
+import { FunboxMetadata } from "@monkeytype/funbox";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
