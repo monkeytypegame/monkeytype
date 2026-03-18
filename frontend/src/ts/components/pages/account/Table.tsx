@@ -6,13 +6,13 @@ import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
+import * as EditResultTagsModal from "../../../modals/edit-result-tags";
 import { getConfig } from "../../../states/config";
 import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { Fa, FaProps } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
@@ -221,42 +221,37 @@ function getColumns<M extends Mode>({
     }),
     defineColumn("tags", {
       header: "tags",
-      cell: (info) => (
-        <Conditional
-          if={info.getValue().length === 0}
-          then={
-            <Button
-              variant="text"
-              fa={{
-                icon: "fa-tag",
-                fixedWidth: true,
-              }}
-              balloon={{
-                text: "no tags",
-              }}
-            />
-          }
-          else={
-            <Button
-              variant="text"
-              class="[--themable-button-text:var(--text-color)]"
-              fa={{
-                icon: "fa-tags",
-                fixedWidth: true,
-              }}
-              balloon={{
-                text: info
-                  .getValue()
-                  .map(
-                    (it) =>
-                      getSnapshot()?.tags.find((tag) => tag._id === it)?.name,
-                  )
-                  .join(", "),
-              }}
-            />
-          }
-        />
-      ),
+      cell: (info) => {
+        const hasTags = info.getValue().length > 0;
+        return (
+          <Button
+            variant="text"
+            class={hasTags ? "[--themable-button-text:var(--text-color)]" : ""}
+            fa={{
+              icon: hasTags ? "fa-tags" : "fa-tag",
+              fixedWidth: true,
+            }}
+            balloon={{
+              text: hasTags
+                ? info
+                    .getValue()
+                    .map(
+                      (it) =>
+                        getSnapshot()?.tags.find((tag) => tag._id === it)?.name,
+                    )
+                    .join(", ")
+                : "no tags",
+            }}
+            onClick={() => {
+              EditResultTagsModal.show(
+                info.row.original._id,
+                info.getValue(),
+                "accountPage",
+              );
+            }}
+          />
+        );
+      },
       meta: {
         breakpoint: "sm",
       },
