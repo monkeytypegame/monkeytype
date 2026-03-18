@@ -17,11 +17,11 @@ type EventBus<T> = {
  *
  * @example
  * ```ts
- * const clickEvent = createEvent2<{ x: number; y: number }>();
+ * const clickEvent = createEvent<{ x: number; y: number }>();
  * clickEvent.useListener(({ x, y }) => console.log(x, y));
  * clickEvent.dispatch({ x: 10, y: 20 });
  *
- * const resetEvent = createEvent2();
+ * const resetEvent = createEvent();
  * resetEvent.useListener(() => console.log("reset"));
  * resetEvent.dispatch();
  * ```
