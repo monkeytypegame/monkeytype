@@ -5,6 +5,7 @@
 ### Checks
 
 - [ ] Adding quotes?
+  - Make sure to follow the [quotes documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/QUOTES.md)
   - [ ] Make sure to include translations for the quotes in the description (or another comment) so we can verify their content.
 - [ ] Adding a language?
   - Make sure to follow the [languages documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/LANGUAGES.md)
@@ -40,6 +41,6 @@ Closes #
 <!-- please also reference any issues and or PRs related to your pull request -->
 <!-- Also remove it if you are not following any issues. -->
 
-<!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number e.g: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
+<!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number, e.g.: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
 
-<!-- pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor Enjoy! :) -->
+<!-- pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor. Enjoy! :) -->
