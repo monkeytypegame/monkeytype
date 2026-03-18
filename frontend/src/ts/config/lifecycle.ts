@@ -1,4 +1,9 @@
-import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "../states/notifications";
 import {
   configLS,
   saveToLocalStorage,
@@ -12,6 +17,29 @@ import { promiseWithResolvers, typedKeys } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
 
+export async function applyConfigFromJson(json: string): Promise<void> {
+  try {
+    const parsedConfig = parseJsonWithSchema(
+      json,
+      ConfigSchemas.PartialConfigSchema.strip(),
+      {
+        migrate: (value) => {
+          if (Array.isArray(value)) {
+            throw new Error("Invalid config");
+          }
+          return migrateConfig(value);
+        },
+      },
+    );
+    await applyConfig(parsedConfig);
+    saveFullConfigToLocalStorage();
+    showSuccessNotification("Done");
+  } catch (e) {
+    console.error(e);
+    showErrorNotification("Failed to import settings", { error: e });
+  }
+}
+
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfig = configLS.get();
@@ -24,7 +52,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   loadDone();
 }
 
-const lastConfigsToApply: Set<keyof ConfigSchema> = new Set([
+const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "keymapMode",
   "minWpm",
   "minAcc",
@@ -40,12 +68,12 @@ const lastConfigsToApply: Set<keyof ConfigSchema> = new Set([
 ]);
 
 export async function applyConfig(
-  partialConfig: Partial<ConfigSchema>,
+  partialConfig: Partial<ConfigSchemas.Config>,
 ): Promise<void> {
   if (partialConfig === undefined || partialConfig === null) return;
 
   //migrate old values if needed, remove additional keys and merge with default config
-  const fullConfig: ConfigSchema = migrateConfig(partialConfig);
+  const fullConfig: ConfigSchemas.Config = migrateConfig(partialConfig);
 
   ConfigEvent.dispatch({ key: "fullConfigChange" });
 
@@ -55,7 +83,7 @@ export async function applyConfig(
     Config[key] = defaultConfig[key];
   }
 
-  const configKeysToReset: (keyof ConfigSchema)[] = [];
+  const configKeysToReset: (keyof ConfigSchemas.Config)[] = [];
 
   const firstKeys = typedKeys(fullConfig).filter(
     (key) => !lastConfigsToApply.has(key),

@@ -1,9 +1,5 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import {
-  showSuccessNotification,
-  showErrorNotification,
-} from "../states/notifications";
+
 import { migrateConfig } from "./utils";
 import { applyConfig } from "./lifecycle";
 import { saveFullConfigToLocalStorage } from "./persistence";
@@ -11,29 +7,6 @@ import Ape from "../ape";
 import { SnapshotInitError } from "../db";
 import { getDefaultConfig } from "../constants/default-config";
 import { Config } from "./store";
-
-export async function applyConfigFromJson(json: string): Promise<void> {
-  try {
-    const parsedConfig = parseJsonWithSchema(
-      json,
-      ConfigSchemas.PartialConfigSchema.strip(),
-      {
-        migrate: (value) => {
-          if (Array.isArray(value)) {
-            throw new Error("Invalid config");
-          }
-          return migrateConfig(value);
-        },
-      },
-    );
-    await applyConfig(parsedConfig);
-    saveFullConfigToLocalStorage();
-    showSuccessNotification("Done");
-  } catch (e) {
-    console.error(e);
-    showErrorNotification("Failed to import settings", { error: e });
-  }
-}
 
 export async function updateFromServer(): Promise<void> {
   const remoteConfig = await getRemoteConfig();
