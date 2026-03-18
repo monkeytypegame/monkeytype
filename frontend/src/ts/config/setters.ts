@@ -129,13 +129,23 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   });
   return true;
 }
+
 export function setQuoteLengthAll(nosave?: boolean): boolean {
   return setConfig("quoteLength", [0, 1, 2, 3], {
     nosave,
   });
 }
+
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
+  if (TestState.isActive && Config.funbox.includes("no_quit")) {
+    showNoticeNotification(
+      "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
+    return false;
+  }
 
   if (!canSetFunboxWithConfig(funbox, Config)) {
     return false;
@@ -166,16 +176,4 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   });
 
   return true;
-}
-export function isConfigChangeBlocked(): boolean {
-  if (TestState.isActive && Config.funbox.includes("no_quit")) {
-    showNoticeNotification(
-      "No quit funbox is active. Please finish the test.",
-      {
-        important: true,
-      },
-    );
-    return true;
-  }
-  return false;
 }
