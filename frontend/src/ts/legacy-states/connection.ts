@@ -1,6 +1,6 @@
 import { debounce } from "throttle-debounce";
 import { showSuccessNotification } from "../states/notifications";
-import * as ConnectionEvent from "../observables/connection-event";
+import { connectionEvent } from "../events/connection";
 import * as TestState from "../test/test-state";
 import { onDOMReady } from "../utils/dom";
 import { addBanner, removeBanner } from "../states/banners";
@@ -43,7 +43,7 @@ const throttledHandleState = debounce(5000, () => {
   }
 });
 
-ConnectionEvent.subscribe((newState) => {
+connectionEvent.subscribe((newState) => {
   state = newState;
   throttledHandleState();
 });

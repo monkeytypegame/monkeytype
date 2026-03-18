@@ -20,7 +20,7 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { format } from "date-fns/format";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { getActivePage } from "../states/core";
 import { getAuthenticatedUser } from "../firebase";
 
@@ -1174,7 +1174,7 @@ qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
   qs(".sendVerificationEmail")?.enable();
 });
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (getActivePage() === "account" && key === "typingSpeedUnit") {
     void update();
   }

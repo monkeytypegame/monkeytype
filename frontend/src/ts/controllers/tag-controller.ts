@@ -3,7 +3,7 @@ import * as DB from "../db";
 import * as ModesNotice from "../elements/modes-notice";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 
 const activeTagsLS = new LocalStorageWithSchema({
   key: "activeTags",
@@ -77,7 +77,7 @@ export function loadActiveFromLocalStorage(): void {
   saveActiveToLocalStorage();
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     loadActiveFromLocalStorage();
   }

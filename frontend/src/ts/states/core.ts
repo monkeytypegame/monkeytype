@@ -38,4 +38,4 @@ export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
 
-export const [onRestartTest, dispatchRestartTest] = createEvent();
+export const restartTestEvent = createEvent();

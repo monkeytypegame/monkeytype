@@ -3,7 +3,7 @@ import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
 import { configMetadata, ConfigMetadataObject } from "./metadata";
 import { isConfigValueValid } from "./validation";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
@@ -124,7 +124,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   // @ts-expect-error i can't figure this out
-  ConfigEvent.dispatch({
+  configEvent.dispatch({
     key: key,
     newValue: value,
     nosave: options?.nosave ?? false,
@@ -195,7 +195,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   Config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
-  ConfigEvent.dispatch({
+  configEvent.dispatch({
     key: "funbox",
     newValue: Config.funbox,
     nosave,

@@ -1,6 +1,6 @@
 import { Config } from "../config/store";
 import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import Format from "../singletons/format";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
@@ -82,6 +82,6 @@ export function instantHide(): void {
   state = false;
 }
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "liveSpeedStyle") newValue === "off" ? hide() : show();
 });

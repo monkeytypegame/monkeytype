@@ -17,7 +17,7 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent, type ConfigEventKey } from "../events/config";
 import { getActivePage } from "../states/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
@@ -48,7 +48,7 @@ import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
@@ -598,7 +598,7 @@ export async function updateFilterSectionVisibility(): Promise<void> {
 
 export async function update(
   options: {
-    eventKey?: ConfigEvent.ConfigEventKey;
+    eventKey?: ConfigEventKey;
   } = {},
 ): Promise<void> {
   if (getActivePage() !== "settings") {
@@ -1027,7 +1027,7 @@ qs(".pageSettings #resetSettingsButton")?.on("click", () => {
   showPopup("resetSettings");
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "fullConfigChange") setEventDisabled(true);
   if (key === "fullConfigChangeFinished") setEventDisabled(false);
   if (key === "themeLight") {
@@ -1048,7 +1048,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     if (event.data.isUserSignedIn) {
       showAccountSection();

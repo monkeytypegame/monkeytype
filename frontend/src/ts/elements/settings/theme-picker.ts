@@ -10,7 +10,7 @@ import {
 } from "../../states/notifications";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as DB from "../../db";
-import * as ConfigEvent from "../../observables/config-event";
+import { configEvent } from "../../events/config";
 import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../states/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
@@ -415,7 +415,7 @@ qs(".pageSettings #saveCustomThemeButton")?.on("click", async () => {
   void fillCustomButtons();
 });
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "theme" && getActivePage() === "settings") {
     updateActiveButton();
   }

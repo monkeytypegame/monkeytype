@@ -12,7 +12,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import * as FunboxValidation from "../../src/ts/config/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config/validation";
-import * as ConfigEvent from "../../src/ts/observables/config-event";
+import { configEvent } from "../../src/ts/events/config";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/states/notifications";
 const { replaceConfig, getConfig } = __testing;
@@ -33,7 +33,7 @@ describe("Config", () => {
       ConfigValidation,
       "isConfigValueValid",
     );
-    const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
+    const dispatchConfigEventMock = vi.spyOn(configEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
     const notificationAddMock = vi.spyOn(
       Notifications,
