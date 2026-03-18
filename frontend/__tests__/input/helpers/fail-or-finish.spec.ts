@@ -4,7 +4,7 @@ import {
   checkIfFailedDueToDifficulty,
   checkIfFinished,
 } from "../../../src/ts/input/helpers/fail-or-finish";
-import { __testing } from "../../../src/ts/config";
+import { __testing } from "../../../src/ts/config/testing";
 import * as Misc from "../../../src/ts/utils/misc";
 import * as TestLogic from "../../../src/ts/test/test-logic";
 import * as Strings from "../../../src/ts/utils/strings";

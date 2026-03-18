@@ -1,6 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
-import { getConfig } from "../../../states/config";
+import { getConfig } from "../../../config/store";
 import { getFocus } from "../../../states/core";
 import { Conditional } from "../../common/Conditional";
 

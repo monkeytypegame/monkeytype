@@ -1,7 +1,7 @@
 import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 import * as DB from "../../db";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import {
   showNoticeNotification,
   showErrorNotification,

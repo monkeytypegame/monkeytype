@@ -1,4 +1,4 @@
-import { setConfig } from "../../config";
+import { setConfig } from "../../config/setters";
 import { isAuthenticated } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";

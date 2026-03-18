@@ -1,5 +1,6 @@
 import * as TestLogic from "../test/test-logic";
-import Config, { setConfig, setQuoteLengthAll } from "../config";
+import { Config } from "../config/store";
+import { setConfig, setQuoteLengthAll } from "../config/setters";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";

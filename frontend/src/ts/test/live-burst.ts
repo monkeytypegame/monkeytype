@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../singletons/format";

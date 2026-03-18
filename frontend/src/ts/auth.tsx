@@ -10,7 +10,7 @@ import {
 
 import Ape from "./ape";
 import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
-import { updateFromServer as updateConfigFromServer } from "./config";
+import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
 import {
   isAuthAvailable,

@@ -1,4 +1,5 @@
-import Config, { setConfig } from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";

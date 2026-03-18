@@ -7,7 +7,9 @@ import {
 } from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 

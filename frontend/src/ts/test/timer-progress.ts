@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
 import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
