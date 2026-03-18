@@ -9,6 +9,21 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { isObject } from "../utils/misc";
 import { debounce } from "throttle-debounce";
 
+let configToSend: Partial<ConfigSchemas.Config> = {};
+
+export const configLS = new LocalStorageWithSchema({
+  key: "config",
+  schema: ConfigSchemas.ConfigSchema,
+  fallback: getDefaultConfig(),
+  migrate: (value, _issues) => {
+    if (!isObject(value)) {
+      return getDefaultConfig();
+    }
+    //todo maybe send a full config to db so that it removes legacy values
+    return migrateConfig(value);
+  },
+});
+
 export function saveToLocalStorage(
   key: keyof ConfigSchema,
   nosave = false,
@@ -33,19 +48,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
     });
   }
 }
-export const configLS = new LocalStorageWithSchema({
-  key: "config",
-  schema: ConfigSchemas.ConfigSchema,
-  fallback: getDefaultConfig(),
-  migrate: (value, _issues) => {
-    if (!isObject(value)) {
-      return getDefaultConfig();
-    }
-    //todo maybe send a full config to db so that it removes legacy values
-    return migrateConfig(value);
-  },
-});
-let configToSend: Partial<ConfigSchemas.Config> = {};
+
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     setAccountButtonSpinner(true);
@@ -53,11 +56,11 @@ const saveToDatabase = debounce(1000, () => {
       setAccountButtonSpinner(false);
     });
   }
-  configToSend = {} as ConfigSchemas.Config;
+  configToSend = {};
 });
 
 export function resetPendingConfigSync(
-  newConfigToSend: ConfigSchemas.Config,
+  newConfigToSend: Partial<ConfigSchemas.Config>,
 ): void {
   configToSend = newConfigToSend;
 }

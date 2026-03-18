@@ -12,7 +12,7 @@ export const __testing = {
       Reflect.deleteProperty(Config, key);
     }
     Object.assign(Config, newConfig);
-    resetPendingConfigSync({} as ConfigSchema);
+    resetPendingConfigSync({});
   },
   getConfig: () => Config,
 };
