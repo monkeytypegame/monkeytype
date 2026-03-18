@@ -40,7 +40,7 @@ import {
   hideFpsCounter,
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
-import { applyConfigFromJson } from "../config/remote";
+import { applyConfigFromJson } from "../config/lifecycle";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
