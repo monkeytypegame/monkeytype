@@ -2,7 +2,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../states/notifications";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";

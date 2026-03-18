@@ -1,5 +1,8 @@
 import SettingsGroup from "../elements/settings/settings-group";
-import Config, { setConfig, configLoadPromise } from "../config";
+
+import { Config } from "../config/store";
+import { configLoadPromise } from "../config/lifecycle";
+import { setConfig } from "../config/setters";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -1065,7 +1068,7 @@ export const page = new PageWithUrlParams({
   },
   beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    await configLoadPromise;
+    await configLoadPromise; //todo: is this actually needed here if we await it in ready?
     await fillSettingsPage();
     await update();
     // theme UI updates manually to avoid duplication

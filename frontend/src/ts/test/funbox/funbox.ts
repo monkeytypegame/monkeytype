@@ -4,10 +4,11 @@ import {
 } from "../../states/notifications";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
-import Config, {
-  setConfig,
+import { Config } from "../../config/store";
+import {
   toggleFunbox as configToggleFunbox,
-} from "../../config";
+  setConfig,
+} from "../../config/setters";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";

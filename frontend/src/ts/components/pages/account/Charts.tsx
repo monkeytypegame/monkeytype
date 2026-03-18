@@ -6,8 +6,8 @@ import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
+import { getConfig } from "../../../config/store";
 import { getSnapshot } from "../../../db";
-import { getConfig } from "../../../states/config";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Formatting } from "../../../utils/format";
 import {

@@ -1,4 +1,5 @@
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as TestLogic from "../test/test-logic";
 import { showNoticeNotification } from "../states/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";

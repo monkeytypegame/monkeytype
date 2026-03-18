@@ -11,9 +11,9 @@ import { SetStoreFunction, unwrap } from "solid-js/store";
 import { z } from "zod";
 
 import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
+import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SimpleModal } from "../../../elements/simple-modal";
-import { getConfig } from "../../../states/config";
 import { getSnapshot } from "../../../states/snapshot";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";

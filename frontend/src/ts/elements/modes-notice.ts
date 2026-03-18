@@ -2,7 +2,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
 import * as Last10Average from "../elements/last-10-average";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";

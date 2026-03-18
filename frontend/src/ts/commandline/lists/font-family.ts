@@ -4,8 +4,8 @@ import FileStorage from "../../utils/file-storage";
 import { applyFontFamily } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-font-picker";
 import { showNoticeNotification } from "../../states/notifications";
-import Config, { setConfig } from "../../config";
-
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
 if (fromMeta.subgroup) {

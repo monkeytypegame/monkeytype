@@ -3,9 +3,9 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import Config, { setConfig } from "../../../config";
+import { setConfig } from "../../../config/setters";
+import { Config, getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getConfig } from "../../../states/config";
 import { getTheme } from "../../../states/theme";
 import { blendTwoHexColors } from "../../../utils/colors";
 import { Formatting } from "../../../utils/format";

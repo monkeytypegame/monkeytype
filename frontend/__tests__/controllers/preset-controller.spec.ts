@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
 import * as DB from "../../src/ts/db";
-import * as UpdateConfig from "../../src/ts/config";
+import { setConfig } from "../../src/ts/config/setters";
+import { Config } from "../../src/ts/config/store";
+import * as Lifecycle from "../../src/ts/config/lifecycle";
+import * as ConfigUtils from "../../src/ts/config/utils";
+import * as Persistence from "../../src/ts/config/persistence";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TagController from "../../src/ts/controllers/tag-controller";
@@ -16,13 +20,13 @@ describe("PresetController", () => {
       //
     }));
     const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
-    const configApplyMock = vi.spyOn(UpdateConfig, "applyConfig");
+    const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
-      UpdateConfig,
+      Persistence,
       "saveFullConfigToLocalStorage",
     );
     const configGetConfigChangesMock = vi.spyOn(
-      UpdateConfig,
+      ConfigUtils,
       "getConfigChanges",
     );
     const notificationAddMock = vi.spyOn(
@@ -111,8 +115,8 @@ describe("PresetController", () => {
         settingGroups: ["test"],
       });
 
-      UpdateConfig.setConfig("numbers", true);
-      const oldConfig = structuredClone(UpdateConfig.default);
+      setConfig("numbers", true);
+      const oldConfig = structuredClone(Config);
 
       //WHEN
       await PresetController.apply(preset._id);

@@ -5,7 +5,7 @@ import {
   ResultStats,
   useResultStatsLiveQuery,
 } from "../../../collections/results";
-import { getConfig } from "../../../states/config";
+import { getConfig } from "../../../config/store";
 import { secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import AsyncContent from "../../common/AsyncContent";

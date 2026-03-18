@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestInput from "./test-input";
 import * as TestState from "../test/test-state";
 import { subscribe } from "../observables/config-event";

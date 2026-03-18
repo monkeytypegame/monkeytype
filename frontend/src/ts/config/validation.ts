@@ -1,6 +1,6 @@
-import { showErrorNotification } from "./states/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { ZodSchema, z } from "zod";
-import * as Sentry from "./sentry";
+import * as Sentry from "../sentry";
 
 // function isConfigKeyValid(name: string): boolean {
 //   if (name === null || name === undefined || name === "") return false;
@@ -34,6 +34,7 @@ export function isConfigValueValid<T>(
 
   return isValid;
 }
+
 export function isConfigValueValidBoolean(key: string, val: boolean): boolean {
   return isConfigValueValid(key, val, z.boolean());
 }

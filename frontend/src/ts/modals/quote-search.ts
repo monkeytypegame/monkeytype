@@ -1,4 +1,5 @@
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as DB from "../db";
 import {
   showNoticeNotification,

@@ -1,6 +1,5 @@
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
-import Config, { setConfig, setQuoteLengthAll, toggleFunbox } from "../config";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
@@ -72,7 +71,8 @@ import { debounce } from "throttle-debounce";
 import * as Time from "../legacy-states/time";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
-
+import { Config } from "../config/store";
+import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 let failReason = "";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {

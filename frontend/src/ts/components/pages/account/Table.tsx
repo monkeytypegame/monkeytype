@@ -4,10 +4,10 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
+import { getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getSnapshot } from "../../../db";
 import * as EditResultTagsModal from "../../../modals/edit-result-tags";
-import { getConfig } from "../../../states/config";
 import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";

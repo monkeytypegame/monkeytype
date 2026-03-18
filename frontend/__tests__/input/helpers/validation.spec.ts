@@ -3,7 +3,7 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../../../src/ts/input/helpers/validation";
-import { __testing } from "../../../src/ts/config";
+import { __testing } from "../../../src/ts/config/testing";
 import * as FunboxList from "../../../src/ts/test/funbox/list";
 import * as Strings from "../../../src/ts/utils/strings";
 

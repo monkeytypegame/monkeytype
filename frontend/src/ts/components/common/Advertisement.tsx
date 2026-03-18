@@ -1,7 +1,7 @@
 import { Ads } from "@monkeytype/schemas/configs";
 import { JSXElement, Show } from "solid-js";
 
-import { getConfig } from "../../config";
+import { getConfig } from "../../config/store";
 
 export function Advertisement(props: {
   id: "ad-account-1" | "ad-account-2" | "ad-about-1" | "ad-about-2";
@@ -9,8 +9,8 @@ export function Advertisement(props: {
 }): JSXElement {
   const isVisible = () =>
     Array.isArray(props.visible)
-      ? props.visible.includes(getConfig().ads)
-      : props.visible === getConfig().ads;
+      ? props.visible.includes(getConfig.ads)
+      : props.visible === getConfig.ads;
   return (
     <Show when={isVisible()}>
       <div

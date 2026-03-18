@@ -1,7 +1,8 @@
 import Ape from "../ape";
 import * as AccountController from "../auth";
 import * as DB from "../db";
-import { resetConfig, setConfig } from "../config";
+import { resetConfig } from "../config/lifecycle";
+import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
