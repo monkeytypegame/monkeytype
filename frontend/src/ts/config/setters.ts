@@ -11,7 +11,7 @@ import {
 } from "../test/funbox/funbox-validation";
 import * as TestState from "../test/test-state";
 import { typedKeys, triggerResize } from "../utils/misc";
-import { Config } from "./store";
+import { Config, setConfigStore } from "./store";
 import { FunboxName } from "@monkeytype/schemas/configs";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
@@ -19,6 +19,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   value: ConfigSchemas.Config[T],
   options?: {
     nosave?: boolean;
+    partOfFullConfigChange?: boolean;
   },
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
@@ -118,6 +119,10 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     nosave: options?.nosave ?? false,
     previousValue: previousValue as ConfigSchemas.Config[T],
   });
+
+  if (!options?.partOfFullConfigChange) {
+    setConfigStore(key, value);
+  }
 
   if (metadata.triggerResize && !options?.nosave) {
     triggerResize();

@@ -92,7 +92,10 @@ export async function applyConfig(
   for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
     const configValue = fullConfig[configKey];
 
-    const set = setConfig(configKey, configValue, { nosave: true });
+    const set = setConfig(configKey, configValue, {
+      nosave: true,
+      partOfFullConfigChange: true,
+    });
 
     if (!set) {
       configKeysToReset.push(configKey);
