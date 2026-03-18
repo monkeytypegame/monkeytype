@@ -25,6 +25,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { getSnapshot } from "../states/snapshot";
+import { ExactlyOneTrue } from "../utils/types";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -385,16 +386,10 @@ export async function getUserAverage<M extends Mode>(
     language: string;
     difficulty: Difficulty;
     lazyMode: boolean;
-  } & (
-    | {
-        last10Only: boolean;
-        lastDayOnly?: never;
-      }
-    | {
-        lastDayOnly: boolean;
-        last10Only?: never;
-      }
-  ),
+  } & ExactlyOneTrue<{
+    last10Only: boolean;
+    lastDayOnly: boolean;
+  }>,
 ): Promise<[number, number]> {
   const activeTagIds = getSnapshot()
     ?.tags.filter((it) => it.active === true)
