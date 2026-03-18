@@ -481,6 +481,13 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     name: "no_quit",
   },
+  dlss_5_on: {
+    description: "DLSS 5 ON",
+    canGetPb: true,
+    difficultyLevel: 0,
+    frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
+    name: "dlss_5_on",
+  },
 };
 
 export function getObject(): Record<FunboxName, FunboxMetadata> {

@@ -1,0 +1,89 @@
+body > *:not(.dlss-badge) {
+  filter: contrast(1.55) brightness(1.08) saturate(1.25) hue-rotate(-2deg);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 220, 180, 0.05),
+    rgba(180, 220, 255, 0.05)
+  );
+  mix-blend-mode: color;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.06),
+    rgba(0, 0, 0, 0.25)
+  );
+  mix-blend-mode: soft-light;
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  filter: brightness(1.12) contrast(1.15) saturate(1.15) hue-rotate(-2deg) !important;
+}
+
+.dlss-badge {
+  z-index: 9001;
+  display: block;
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 100px;
+  padding: 8px;
+  background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+  color: #00ff88;
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  border: 1px solid #00ff88; /* angular cut corner */
+  clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 0 100%); /* base glow */
+  box-shadow:
+    0 0 6px #00ff88,
+    0 0 12px rgba(0, 255, 136, 0.6),
+    inset 0 0 6px rgba(0, 255, 136, 0.2);
+  animation: dlssPulse 2s infinite ease-in-out;
+}
+.dlss-title {
+  font-size: 10px;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+.dlss-main {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  margin: 2px 0;
+  text-shadow:
+    0 0 6px #00ff88,
+    0 0 12px rgba(0, 255, 136, 0.8);
+}
+.dlss-sub {
+  font-size: 8px;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+@keyframes dlssPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 6px #00ff88,
+      0 0 12px rgba(0, 255, 136, 0.6),
+      inset 0 0 6px rgba(0, 255, 136, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 10px #00ff88,
+      0 0 20px rgba(0, 255, 136, 1),
+      inset 0 0 10px rgba(0, 255, 136, 0.4);
+  }
+}
