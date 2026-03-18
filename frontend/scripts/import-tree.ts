@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import ts from "typescript";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
@@ -46,15 +47,28 @@ if (entryPoints.length === 0) {
   process.exit(1);
 }
 
-// --- Import extraction ---
+// --- Import extraction (type-aware) ---
 
-const IMPORT_RE =
-  /(?:import|export)\s+(?:type\s+)?(?:(?:\{[^}]*\}|[\w*]+(?:\s*,\s*\{[^}]*\})?)\s+from\s+)?["']([^"']+)["']/g;
+const tsConfig: ts.CompilerOptions = {
+  module: ts.ModuleKind.ESNext,
+  target: ts.ScriptTarget.ESNext,
+  jsx: ts.JsxEmit.Preserve,
+  sourceMap: false,
+  declaration: false,
+  isolatedModules: true,
+};
+
+const JS_IMPORT_RE =
+  /(?:import|export)\s+(?:(?:\{[^}]*\}|[\w*]+(?:\s*,\s*\{[^}]*\})?)\s+from\s+)?["']([^"']+)["']/g;
 
 function extractImports(filePath: string): string[] {
   const content = fs.readFileSync(filePath, "utf-8");
+  const { outputText } = ts.transpileModule(content, {
+    compilerOptions: tsConfig,
+    fileName: filePath,
+  });
   const specifiers: string[] = [];
-  for (const match of content.matchAll(IMPORT_RE)) {
+  for (const match of outputText.matchAll(JS_IMPORT_RE)) {
     const spec = match[1];
     if (spec !== undefined) specifiers.push(spec);
   }
