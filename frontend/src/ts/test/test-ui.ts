@@ -68,7 +68,7 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
-import { skipBreakdown } from "../states/header";
+import { skipBreakdownEvent } from "../states/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1918,7 +1918,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    skipBreakdown();
+    skipBreakdownEvent.dispatch();
   }
 
   currentTestLine = 0;

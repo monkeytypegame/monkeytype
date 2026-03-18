@@ -1,34 +1,56 @@
-import { Accessor, createSignal } from "solid-js";
+import { onCleanup } from "solid-js";
+
+type Listener<T> = (value: T) => void;
+
+type EventBus<T> = {
+  dispatch: (...args: T extends undefined ? [] : [value: T]) => void;
+  subscribe: (fn: Listener<T>) => () => void;
+  useListener: (fn: Listener<T>) => void;
+};
 
 /**
- * Creates a reactive event primitive.
+ * Creates a pub-sub event bus.
  *
- * Returns a tuple of:
- * - An accessor whose value increments each time the event is dispatched.
- *   Reactive consumers (effects, memos, etc.) re-run whenever the event fires.
- * - A dispatch function that triggers the event.
- *
- * @returns `[accessor, dispatch]`
+ * - `dispatch(value)` notifies all listeners. No args needed when `T` is `undefined`.
+ * - `subscribe(fn)` registers a listener, returns an unsubscribe function.
+ * - `useListener(fn)` registers a listener that auto-unsubscribes via Solid's `onCleanup`.
  *
  * @example
  * ```ts
- * const [onSave, dispatchSave] = createEvent();
+ * const clickEvent = createEvent2<{ x: number; y: number }>();
+ * clickEvent.useListener(({ x, y }) => console.log(x, y));
+ * clickEvent.dispatch({ x: 10, y: 20 });
  *
- * createEffect(() => {
- *   onSave(); // re-runs every time dispatchSave() is called
- *   console.log("saved!");
- * });
- *
- * dispatchSave(); // triggers the effect
+ * const resetEvent = createEvent2();
+ * resetEvent.useListener(() => console.log("reset"));
+ * resetEvent.dispatch();
  * ```
  */
 
-export function createEvent(): [Accessor<number>, () => void] {
-  const [get, set] = createSignal(0);
-  return [
-    get,
-    () => {
-      set((v) => v + 1);
-    },
-  ];
+export function createEvent<T = undefined>(): EventBus<T> {
+  const listeners = new Set<Listener<T>>();
+
+  function dispatch(...args: T extends undefined ? [] : [value: T]): void {
+    const value = args[0] as T;
+    for (const fn of listeners) {
+      try {
+        fn(value);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
+  function subscribe(fn: Listener<T>): () => void {
+    listeners.add(fn);
+    return () => listeners.delete(fn);
+  }
+
+  // Auto-unsubscribes when the Solid owner scope is disposed
+  function useListener(fn: Listener<T>): void {
+    listeners.add(fn);
+    onCleanup(() => listeners.delete(fn));
+  }
+
+  return { dispatch, subscribe, useListener };
 }

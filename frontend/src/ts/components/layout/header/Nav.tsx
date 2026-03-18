@@ -4,7 +4,7 @@ import { createMemo, JSXElement, Show } from "solid-js";
 import { createEffectOn } from "../../../hooks/effects";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import {
-  dispatchRestartTest,
+  restartTestEvent,
   getActivePage,
   getFocus,
 } from "../../../states/core";
@@ -80,7 +80,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") dispatchRestartTest();
+          if (getActivePage() === "test") restartTestEvent.dispatch();
         }}
       />
       <Button
