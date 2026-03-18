@@ -34,6 +34,7 @@ export function isConfigValueValid<T>(
 
   return isValid;
 }
+
 export function isConfigValueValidBoolean(key: string, val: boolean): boolean {
   return isConfigValueValid(key, val, z.boolean());
 }
