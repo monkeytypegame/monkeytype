@@ -23,9 +23,7 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "./firebase";
-import { showPopup } from "./modals/simple-modals-base";
 import * as Sentry from "./sentry";
-import { addBanner } from "./states/banners";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import {
   showNoticeNotification,
@@ -75,28 +73,6 @@ async function getDataAndInit(): Promise<boolean> {
     }
 
     void Sentry.setUser(snapshot.uid, snapshot.name);
-    if (snapshot.needsToChangeName) {
-      addBanner({
-        level: "error",
-        icon: "fas fa-exclamation-triangle",
-        customContent: (
-          <>
-            You need to update your account name.{" "}
-            <button
-              type="button"
-              class="px-2 py-1"
-              onClick={() => {
-                showPopup("updateName");
-              }}
-            >
-              Click here
-            </button>{" "}
-            to change it and learn more about why.
-          </>
-        ),
-        important: true,
-      });
-    }
 
     await updateConfigFromServer();
     return true;
