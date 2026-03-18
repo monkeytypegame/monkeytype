@@ -1,3 +1,4 @@
+import { createEvent } from "../hooks/createEvent";
 import { LoadingOptions } from "../pages/page";
 
 export type NavigateOptions = {
@@ -8,21 +9,9 @@ export type NavigateOptions = {
   loadingOptions?: LoadingOptions;
 };
 
-type SubscribeFunction = (url: string, options: NavigateOptions) => void;
+export type NavigationEventData = {
+  url: string;
+  options: NavigateOptions;
+};
 
-const subscribers: SubscribeFunction[] = [];
-
-export function subscribe(fn: SubscribeFunction): void {
-  subscribers.push(fn);
-}
-
-export function dispatch(url: string, options: NavigateOptions): void {
-  subscribers.forEach((fn) => {
-    try {
-      fn(url, options);
-    } catch (e) {
-      console.error("Navigation event subscriber threw an error");
-      console.error(e);
-    }
-  });
-}
+export const navigationEvent = createEvent<NavigationEventData>();

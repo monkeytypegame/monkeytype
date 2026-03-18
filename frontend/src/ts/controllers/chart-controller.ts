@@ -60,7 +60,7 @@ Chart.defaults.elements.line.fill = "origin";
 import "chartjs-adapter-date-fns";
 import { format } from "date-fns/format";
 import { Config } from "../config/store";
-import * as ConfigEvent from "../events/config";
+import { configEvent } from "../events/config";
 import * as TestInput from "../test/test-input";
 import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
@@ -1354,7 +1354,7 @@ createDebouncedEffectOn(125, getTheme, (theme) => {
   void miniResult.updateColors(theme);
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {
     updateAccountChartButtons();
     accountHistory.update();

@@ -5,8 +5,8 @@ import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import { showNoticeNotification } from "../states/notifications";
-import * as NavigationEvent from "../events/navigation";
-import * as AuthEvent from "../events/auth";
+import { navigationEvent, type NavigateOptions } from "../events/navigation";
+import { authEvent } from "../events/auth";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -34,7 +34,7 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigationEvent.NavigateOptions,
+    navigateOptions: NavigateOptions,
   ) => Promise<void>;
 };
 
@@ -159,7 +159,7 @@ export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
-  options = {} as NavigationEvent.NavigateOptions,
+  options = {} as NavigateOptions,
 ): Promise<void> {
   if (
     !options.force &&
@@ -207,9 +207,7 @@ export async function navigate(
   await router(options);
 }
 
-async function router(
-  options = {} as NavigationEvent.NavigateOptions,
-): Promise<void> {
+async function router(options = {} as NavigateOptions): Promise<void> {
   const matches = routes.map((r) => {
     return {
       route: r,
@@ -249,11 +247,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-NavigationEvent.subscribe((url, options) => {
+navigationEvent.subscribe(({ url, options }) => {
   void navigate(url, options);
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     let keyframes = [
       {

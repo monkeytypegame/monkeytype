@@ -1,26 +1,9 @@
 import { UserCredential } from "firebase/auth";
+import { createEvent } from "../hooks/createEvent";
 
-type SubscribeFunction = (
-  signedInUser: UserCredential,
-  isNewUser: boolean,
-) => void;
+export type GoogleSignUpEventData = {
+  signedInUser: UserCredential;
+  isNewUser: boolean;
+};
 
-const subscribers: SubscribeFunction[] = [];
-
-export function subscribe(fn: SubscribeFunction): void {
-  subscribers.push(fn);
-}
-
-export function dispatch(
-  signedInUser: UserCredential,
-  isNewUser: boolean,
-): void {
-  subscribers.forEach((fn) => {
-    try {
-      fn(signedInUser, isNewUser);
-    } catch (e) {
-      console.error("Google Sign Up event subscriber threw an error");
-      console.error(e);
-    }
-  });
-}
+export const googleSignUpEvent = createEvent<GoogleSignUpEventData>();

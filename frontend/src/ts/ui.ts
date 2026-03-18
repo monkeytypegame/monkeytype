@@ -2,7 +2,7 @@ import { Config } from "./config/store";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import * as TestState from "./test/test-state";
-import * as ConfigEvent from "./events/config";
+import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { getActivePage, getGlobalOffsetTop } from "./states/core";
@@ -107,7 +107,7 @@ createEffect(() => {
   });
 });
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (key === "fontFamily") {
     await applyFontFamily();
   }

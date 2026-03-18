@@ -3,7 +3,7 @@ import { Config } from "../config/store";
 import * as DB from "../db";
 import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
-import * as ConfigEvent from "../events/config";
+import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
@@ -265,7 +265,7 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "paceCaret") void init();
   if (key === "paceCaretStyle") {
     caret.setStyle(Config.paceCaretStyle);

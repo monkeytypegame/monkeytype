@@ -4,7 +4,7 @@ import * as DB from "../db";
 import * as Last10Average from "../elements/last-10-average";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
-import * as ConfigEvent from "../events/config";
+import { configEvent, type ConfigEventKey } from "../events/config";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../legacy-states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
@@ -13,8 +13,8 @@ import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
 
-ConfigEvent.subscribe(({ key }) => {
-  const configKeys: ConfigEvent.ConfigEventKey[] = [
+configEvent.subscribe(({ key }) => {
+  const configKeys: ConfigEventKey[] = [
     "difficulty",
     "blindMode",
     "stopOnError",

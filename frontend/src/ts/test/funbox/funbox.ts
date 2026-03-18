@@ -24,7 +24,7 @@ import {
 } from "./list";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
-import * as ConfigEvent from "../../events/config";
+import { configEvent } from "../../events/config";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -231,7 +231,7 @@ async function applyFunboxCSS(): Promise<boolean> {
   return true;
 }
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (key === "funbox") {
     const active = getActiveFunboxNames();
     getAllFunboxes()

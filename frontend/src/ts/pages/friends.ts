@@ -28,7 +28,7 @@ import { getLanguageDisplayString } from "../utils/strings";
 import * as DB from "../db";
 import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
-import * as AuthEvent from "../events/auth";
+import { authEvent } from "../events/auth";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 
@@ -567,7 +567,7 @@ onDOMReady(() => {
   Skeleton.save("pageFriends");
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
     pendingRequests = undefined;
     friendsList = undefined;

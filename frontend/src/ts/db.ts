@@ -28,7 +28,7 @@ import {
 } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
-import * as AuthEvent from "./events/auth";
+import { authEvent } from "./events/auth";
 import {
   configurationPromise,
   get as getServerConfiguration,
@@ -84,7 +84,7 @@ export function setSnapshot(
   }
 
   if (options?.dispatchEvent !== false) {
-    AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
+    authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
 
   setSolidSnapshot(newSnapshot);

@@ -7,7 +7,7 @@ import {
 } from "../states/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import * as AuthEvent from "../events/auth";
+import { authEvent } from "../events/auth";
 
 function reset(): void {
   modal.getModal().qs(".result")?.setHtml(`
@@ -117,7 +117,7 @@ function hide(): void {
   void modal.hide();
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     if (TestLogic.notSignedInLastResult !== null) {
       show();

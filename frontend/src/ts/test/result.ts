@@ -31,7 +31,7 @@ import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
-import * as ConfigEvent from "../events/config";
+import { configEvent } from "../events/config";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../legacy-states/custom-text-name";
@@ -1404,7 +1404,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   }
 });
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
     TestState.resultVisible

@@ -32,13 +32,13 @@ import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
 import * as PageTransition from "../legacy-states/page-transition";
-import * as ConfigEvent from "../events/config";
-import * as TimerEvent from "../events/timer";
+import { configEvent } from "../events/config";
+import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ConnectionState from "../legacy-states/connection";
-import * as KeymapEvent from "../events/keymap";
+import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
@@ -571,7 +571,7 @@ async function init(): Promise<boolean> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    void KeymapEvent.highlight(
+    void highlight(
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
@@ -684,7 +684,7 @@ export async function addWord(): Promise<void> {
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
     TestUI.addWord(randomWord.word);
   } catch (e) {
-    TimerEvent.dispatch("fail", "word generation error");
+    timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
       "Error while getting next word. Please try again later",
       {
@@ -1516,7 +1516,7 @@ qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
 
 // ===============================
 
-ConfigEvent.subscribe(({ key, newValue, nosave }) => {
+configEvent.subscribe(({ key, newValue, nosave }) => {
   if (getActivePage() === "test") {
     if (key === "language") {
       //automatically enable lazy mode for arabic
@@ -1537,7 +1537,7 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
-        void KeymapEvent.highlight(
+        void highlight(
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread
@@ -1561,7 +1561,7 @@ ConfigEvent.subscribe(({ key, newValue, nosave }) => {
   }
 });
 
-TimerEvent.subscribe((eventKey, eventValue) => {
+timerEvent.subscribe(({ key: eventKey, value: eventValue }) => {
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
   if (eventKey === "finish") void finish();
 });

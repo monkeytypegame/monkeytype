@@ -6,7 +6,7 @@ import { format } from "date-fns/format";
 import { z } from "zod";
 
 import Ape from "../ape";
-import * as AuthEvent from "../events/auth";
+import { authEvent } from "../events/auth";
 import { addBanner } from "../states/banners";
 import { addPsa } from "../states/psas";
 import { secondsToString } from "../utils/date-and-time";
@@ -204,7 +204,7 @@ export async function show(): Promise<void> {
   });
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     void show();
   }

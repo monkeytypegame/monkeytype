@@ -1,18 +1,9 @@
-type SubscribeFunction = (key: string, value?: string, value2?: string) => void;
+import { createEvent } from "../hooks/createEvent";
 
-const subscribers: SubscribeFunction[] = [];
+export type TimerEventData = {
+  key: string;
+  value?: string;
+  value2?: string;
+};
 
-export function subscribe(fn: SubscribeFunction): void {
-  subscribers.push(fn);
-}
-
-export function dispatch(key: string, value?: string, value2?: string): void {
-  subscribers.forEach((fn) => {
-    try {
-      fn(key, value, value2);
-    } catch (e) {
-      console.error("Timer event subscriber threw an error");
-      console.error(e);
-    }
-  });
-}
+export const timerEvent = createEvent<TimerEventData>();
