@@ -1,6 +1,6 @@
 import FileStorage from "../../utils/file-storage";
 import { showNoticeNotification } from "../../states/notifications";
-import { applyFontFamily } from "../../controllers/theme-controller";
+import { applyFontFamily } from "../../ui";
 
 const parentEl = document.querySelector(
   ".pageSettings .section[data-config-name='fontFamily']",
