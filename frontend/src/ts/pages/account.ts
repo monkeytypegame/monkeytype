@@ -20,7 +20,7 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { format } from "date-fns/format";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import { getActivePage } from "../states/core";
 import { getAuthenticatedUser } from "../firebase";
 

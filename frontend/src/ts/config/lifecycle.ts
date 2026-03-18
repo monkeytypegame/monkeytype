@@ -11,7 +11,7 @@ import {
 } from "./persistence";
 import { Config, setConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import { migrateConfig } from "./utils";
 import { promiseWithResolvers, typedKeys } from "../utils/misc";
 import { setConfig } from "./setters";

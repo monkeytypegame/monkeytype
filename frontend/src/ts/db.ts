@@ -28,7 +28,7 @@ import {
 } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
-import * as AuthEvent from "./observables/auth-event";
+import * as AuthEvent from "./events/auth";
 import {
   configurationPromise,
   get as getServerConfiguration,

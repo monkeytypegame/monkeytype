@@ -10,7 +10,7 @@ import {
 } from "../../states/notifications";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as DB from "../../db";
-import * as ConfigEvent from "../../observables/config-event";
+import * as ConfigEvent from "../../events/config";
 import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../states/core";
 import { ThemeName } from "@monkeytype/schemas/configs";

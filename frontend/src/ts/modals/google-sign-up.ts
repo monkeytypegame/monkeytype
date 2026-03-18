@@ -15,7 +15,7 @@ import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
+import { subscribe as subscribeToSignUpEvent } from "../events/google-sign-up";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";

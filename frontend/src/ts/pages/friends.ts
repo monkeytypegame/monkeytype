@@ -28,7 +28,7 @@ import { getLanguageDisplayString } from "../utils/strings";
 import * as DB from "../db";
 import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
-import * as AuthEvent from "../observables/auth-event";
+import * as AuthEvent from "../events/auth";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 

@@ -1,7 +1,7 @@
 import { Config } from "../config/store";
 import * as JSONData from "../utils/json-data";
-import * as ConfigEvent from "../observables/config-event";
-import * as TTSEvent from "../observables/tts-event";
+import * as ConfigEvent from "../events/config";
+import * as TTSEvent from "../events/tts";
 
 let voice: SpeechSynthesisUtterance | undefined;
 

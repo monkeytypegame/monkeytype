@@ -1,11 +1,11 @@
 import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Config } from "../config/store";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import { getActivePage } from "../states/core";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import * as AuthEvent from "../observables/auth-event";
+import * as AuthEvent from "../events/auth";
 import { qs, qsa } from "../utils/dom";
 
 export function show(): void {

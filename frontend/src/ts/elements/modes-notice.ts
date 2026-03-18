@@ -4,7 +4,7 @@ import * as DB from "../db";
 import * as Last10Average from "../elements/last-10-average";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../legacy-states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";

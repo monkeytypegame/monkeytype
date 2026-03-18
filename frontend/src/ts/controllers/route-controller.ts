@@ -5,8 +5,8 @@ import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import { showNoticeNotification } from "../states/notifications";
-import * as NavigationEvent from "../observables/navigation-event";
-import * as AuthEvent from "../observables/auth-event";
+import * as NavigationEvent from "../events/navigation";
+import * as AuthEvent from "../events/auth";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc

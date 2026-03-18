@@ -10,7 +10,7 @@ import * as Funbox from "../test/funbox/funbox";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import * as TestState from "../test/test-state";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";

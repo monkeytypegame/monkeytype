@@ -1,6 +1,6 @@
 import { Config } from "../config/store";
 import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import Format from "../singletons/format";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";

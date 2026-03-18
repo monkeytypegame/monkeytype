@@ -1,6 +1,6 @@
 import { CustomBackgroundFilter } from "@monkeytype/schemas/configs";
 import { setConfig } from "../config/setters";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import { debounce } from "throttle-debounce";
 import { qs, qsr } from "../utils/dom";
 

@@ -1,6 +1,6 @@
 import { debounce } from "throttle-debounce";
 import { showSuccessNotification } from "../states/notifications";
-import * as ConnectionEvent from "../observables/connection-event";
+import * as ConnectionEvent from "../events/connection";
 import * as TestState from "../test/test-state";
 import { onDOMReady } from "../utils/dom";
 import { addBanner, removeBanner } from "../states/banners";

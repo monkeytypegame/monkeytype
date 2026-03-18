@@ -1,7 +1,7 @@
 import { removeLanguageSize } from "../utils/strings";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
-import { subscribe } from "../observables/config-event";
+import { subscribe } from "../events/config";
 import * as DB from "../db";
 import Ape from "../ape";
 import { tryCatch } from "@monkeytype/util/trycatch";

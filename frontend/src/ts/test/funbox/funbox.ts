@@ -24,7 +24,7 @@ import {
 } from "./list";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
-import * as ConfigEvent from "../../observables/config-event";
+import * as ConfigEvent from "../../events/config";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;

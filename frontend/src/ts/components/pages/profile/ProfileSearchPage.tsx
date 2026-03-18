@@ -2,8 +2,8 @@ import { UserNameSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
+import * as NavigationEvent from "../../../events/navigation";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import * as NavigationEvent from "../../../observables/navigation-event";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
 import { getActivePage } from "../../../states/core";

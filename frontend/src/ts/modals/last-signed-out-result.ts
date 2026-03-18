@@ -7,7 +7,7 @@ import {
 } from "../states/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import * as AuthEvent from "../observables/auth-event";
+import * as AuthEvent from "../events/auth";
 
 function reset(): void {
   modal.getModal().qs(".result")?.setHtml(`

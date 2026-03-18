@@ -7,7 +7,7 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import * as TTSEvent from "../../observables/tts-event";
+import * as TTSEvent from "../../events/tts";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -16,7 +16,7 @@ import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
-import * as KeymapEvent from "../../observables/keymap-event";
+import * as KeymapEvent from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";

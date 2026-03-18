@@ -1,7 +1,7 @@
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
 import * as TestState from "../test/test-state";
-import { subscribe } from "../observables/config-event";
+import { subscribe } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";

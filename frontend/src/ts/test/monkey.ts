@@ -1,6 +1,6 @@
 import { mapRange } from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { qs } from "../utils/dom";

@@ -31,7 +31,7 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
+import { dispatch as dispatchSignUpEvent } from "./events/google-sign-up";
 import { addBanner } from "./states/banners";
 import { setUserId } from "./states/core";
 

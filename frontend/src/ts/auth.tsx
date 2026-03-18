@@ -12,6 +12,7 @@ import Ape from "./ape";
 import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
+import * as AuthEvent from "./events/auth";
 import {
   isAuthAvailable,
   getAuthenticatedUser,
@@ -23,7 +24,6 @@ import {
   resetIgnoreAuthCallback,
 } from "./firebase";
 import { showPopup } from "./modals/simple-modals-base";
-import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
 import { addBanner } from "./states/banners";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";

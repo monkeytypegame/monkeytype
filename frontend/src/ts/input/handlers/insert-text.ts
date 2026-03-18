@@ -21,7 +21,7 @@ import {
 } from "../../test/funbox/list";
 import * as Replay from "../../test/replay";
 import { Config } from "../../config/store";
-import * as KeymapEvent from "../../observables/keymap-event";
+import * as KeymapEvent from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
 import * as CompositionState from "../../legacy-states/composition";
 import {

@@ -4,7 +4,7 @@ import { isColorDark, isColorLight } from "../utils/colors";
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as BackgroundFilter from "../elements/custom-background-filter";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import * as DB from "../db";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";

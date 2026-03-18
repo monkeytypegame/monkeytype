@@ -17,7 +17,7 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
-import * as ConfigEvent from "../observables/config-event";
+import * as ConfigEvent from "../events/config";
 import { getActivePage } from "../states/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
@@ -48,7 +48,7 @@ import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
-import * as AuthEvent from "../observables/auth-event";
+import * as AuthEvent from "../events/auth";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";

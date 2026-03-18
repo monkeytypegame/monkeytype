@@ -1,6 +1,6 @@
 import { Config } from "../config/store";
-import * as ConfigEvent from "../observables/config-event";
-import * as KeymapEvent from "../observables/keymap-event";
+import * as ConfigEvent from "../events/config";
+import * as KeymapEvent from "../events/keymap";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
