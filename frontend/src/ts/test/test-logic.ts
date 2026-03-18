@@ -1,6 +1,5 @@
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
-import * as ManualRestart from "./manual-restart-tracker";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
@@ -10,9 +9,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "../states/custom-text-name";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -28,20 +27,20 @@ import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
 import { createEffect, on } from "solid-js";
-import { getActivePage, onRestartTest } from "../signals/core";
+import { getActivePage, onRestartTest } from "../states/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
-import * as PageTransition from "../states/page-transition";
+import * as PageTransition from "../legacy-states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import * as ConnectionState from "../states/connection";
+import * as ConnectionState from "../legacy-states/connection";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as LazyModeState from "../states/remember-lazy-mode";
+import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -58,20 +57,20 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import * as CompositionState from "../states/composition";
+import * as CompositionState from "../legacy-states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import * as Time from "../states/time";
+import * as Time from "../legacy-states/time";
 import { qs } from "../utils/dom";
-import { setAccountButtonSpinner } from "../signals/header";
+import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 let failReason = "";
@@ -170,6 +169,7 @@ type RestartOptions = {
   event?: KeyboardEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
+  isQuickRestart?: boolean;
 };
 
 export function restart(options = {} as RestartOptions): void {
@@ -178,6 +178,7 @@ export function restart(options = {} as RestartOptions): void {
     practiseMissed: false,
     noAnim: false,
     nosave: false,
+    isQuickRestart: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -201,8 +202,8 @@ export function restart(options = {} as RestartOptions): void {
     options.event?.preventDefault();
     return;
   }
-  if (getActivePage() === "test") {
-    if (!ManualRestart.get()) {
+  if (TestState.isActive) {
+    if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(
@@ -231,9 +232,7 @@ export function restart(options = {} as RestartOptions): void {
         return;
       }
     }
-  }
 
-  if (TestState.isActive) {
     if (TestState.isRepeated) {
       options.withSameWordset = true;
     }
@@ -289,7 +288,6 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
-  ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
   TestInput.restart();
@@ -372,7 +370,6 @@ export function restart(options = {} as RestartOptions): void {
         },
         duration: animationTime,
         onComplete: () => {
-          ManualRestart.reset();
           TestState.setTestRestarting(false);
         },
       });
@@ -1105,15 +1102,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
-  if (TestState.isRepeated) {
-    const testSeconds = completedEvent.testDuration;
-    const afkseconds = completedEvent.afkDuration;
-    let tt = Numbers.roundTo2(testSeconds - afkseconds);
-    if (tt < 0) tt = 0;
-    const acc = completedEvent.acc;
-    TestStats.incrementIncompleteSeconds(tt);
-    TestStats.incrementRestartCount();
-    TestStats.pushIncompleteTest(acc, tt);
+  if (TestState.isRepeated || difficultyFailed) {
+    if (Config.resultSaving) {
+      const testSeconds = completedEvent.testDuration;
+      const afkseconds = completedEvent.afkDuration;
+      let tt = Numbers.roundTo2(testSeconds - afkseconds);
+      if (tt < 0) tt = 0;
+      const acc = completedEvent.acc;
+      TestStats.incrementIncompleteSeconds(tt);
+      TestStats.incrementRestartCount();
+      TestStats.pushIncompleteTest(acc, tt);
+    }
   }
 
   const customTextName = CustomTextState.getCustomTextName();
@@ -1361,15 +1360,6 @@ export function fail(reason: string): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);
-  if (!Config.resultSaving) return;
-  const testSeconds = TestStats.calculateTestSeconds(performance.now());
-  const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = Numbers.roundTo2(testSeconds - afkseconds);
-  if (tt < 0) tt = 0;
-  TestStats.incrementIncompleteSeconds(tt);
-  TestStats.incrementRestartCount();
-  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
-  TestStats.pushIncompleteTest(acc, tt);
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
@@ -1409,7 +1399,6 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
-  ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
     TestState.isActive &&
@@ -1431,7 +1420,6 @@ qs(".pageTest")?.onChild(
 );
 
 qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
-  ManualRestart.set();
   restart();
 });
 
@@ -1440,7 +1428,6 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  ManualRestart.set();
   restart({
     withSameWordset: true,
   });
@@ -1455,7 +1442,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
     "time") as Mode;
   if (mode === undefined) return;
   if (setConfig("mode", mode)) {
-    ManualRestart.set();
     restart();
   }
 });
@@ -1465,7 +1451,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .wordCount .textButton", (e) => {
   const wrd = (e.childTarget as HTMLElement)?.getAttribute("wordCount") ?? "15";
   if (wrd !== "custom") {
     if (setConfig("words", parseInt(wrd))) {
-      ManualRestart.set();
       restart();
     }
   }
@@ -1477,7 +1462,6 @@ qs(".pageTest")?.onChild("click", "#testConfig .time .textButton", (e) => {
     (e.childTarget as HTMLElement)?.getAttribute("timeConfig") ?? "10";
   if (mode !== "custom") {
     if (setConfig("time", parseInt(mode))) {
-      ManualRestart.set();
       restart();
     }
   }
@@ -1491,7 +1475,6 @@ qs(".pageTest")?.onChild(
     const lenAttr = (e.childTarget as HTMLElement)?.getAttribute("quoteLength");
     if (lenAttr === "all") {
       if (setQuoteLengthAll()) {
-        ManualRestart.set();
         restart();
       }
     } else {
@@ -1507,7 +1490,6 @@ qs(".pageTest")?.onChild(
         }
 
         if (setConfig("quoteLength", arr)) {
-          ManualRestart.set();
           restart();
         }
       }
@@ -1521,7 +1503,6 @@ qs(".pageTest")?.onChild(
   () => {
     if (TestState.testRestarting) return;
     if (setConfig("punctuation", !Config.punctuation)) {
-      ManualRestart.set();
       restart();
     }
   },
@@ -1530,7 +1511,6 @@ qs(".pageTest")?.onChild(
 qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
   if (TestState.testRestarting) return;
   if (setConfig("numbers", !Config.numbers)) {
-    ManualRestart.set();
     restart();
   }
 });

@@ -1,6 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text-name";
-import * as ManualRestart from "../test/manual-restart-tracker";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 
@@ -13,7 +12,7 @@ import * as PractiseWords from "../test/practise-words";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -399,7 +398,6 @@ function apply(): void {
   }
 
   ChallengeController.clearActive();
-  ManualRestart.set();
   if (Config.mode !== "custom") {
     setConfig("mode", "custom");
   }

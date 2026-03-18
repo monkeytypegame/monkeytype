@@ -2,12 +2,12 @@ import { Language } from "@monkeytype/schemas/languages";
 import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
-import { hideLoaderBar, showLoaderBar } from "../signals/loader-bar";
+import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { qs, ElementWithUtils } from "../utils/dom";

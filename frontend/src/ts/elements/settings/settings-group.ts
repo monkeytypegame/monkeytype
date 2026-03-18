@@ -1,7 +1,7 @@
 import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
-import { showErrorNotification } from "../../stores/notifications";
+import { showErrorNotification } from "../../states/notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
 import { handleConfigInput, ConfigInputOptions } from "../input-validation";

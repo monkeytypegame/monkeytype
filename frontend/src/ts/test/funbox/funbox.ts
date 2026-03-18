@@ -1,10 +1,9 @@
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
-import * as ManualRestart from "../manual-restart-tracker";
 import { Config } from "../../config/store";
 import {
   toggleFunbox as configToggleFunbox,
@@ -72,7 +71,6 @@ export async function clear(): Promise<boolean> {
 
   qs("#wordsWrapper")?.show();
   MemoryTimer.reset();
-  ManualRestart.set();
   return true;
 }
 
@@ -184,7 +182,6 @@ export async function activate(
     return;
   }
 
-  ManualRestart.set();
   for (const fb of getActiveFunboxesWithFunction("applyConfig")) {
     fb.functions.applyConfig();
   }

@@ -1,9 +1,9 @@
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { ElementWithUtils, qsr } from "../utils/dom";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 const html = qsr("html");
 const body = qsr("body");

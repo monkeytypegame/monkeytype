@@ -32,7 +32,7 @@ import chartAnnotation, {
 } from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 
 Chart.register(
   BarController,
@@ -68,7 +68,7 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 

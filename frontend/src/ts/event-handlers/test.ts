@@ -9,7 +9,7 @@ import * as TestWords from "../test/test-words";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";

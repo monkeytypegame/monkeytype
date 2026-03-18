@@ -10,7 +10,7 @@ import {
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage, isLoggedIn } from "../../../signals/core";
+import { getActivePage, isLoggedIn } from "../../../states/core";
 import {
   getGoToUserPage,
   getPage,
@@ -21,7 +21,7 @@ import {
   setPage,
   setSelection,
   updateGetParameters,
-} from "../../../stores/leaderboard-selection";
+} from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { LoadingCircle } from "../../common/LoadingCircle";

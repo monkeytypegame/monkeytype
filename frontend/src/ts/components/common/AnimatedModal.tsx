@@ -12,7 +12,7 @@ import {
   ModalId,
   isModalOpen,
   isModalChained,
-} from "../../stores/modals";
+} from "../../states/modals";
 import { cn } from "../../utils/cn";
 import { applyReducedMotion } from "../../utils/misc";
 

@@ -1,12 +1,12 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Settings from "../pages/settings";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import {
   PresetNameSchema,

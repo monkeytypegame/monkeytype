@@ -11,7 +11,7 @@ import * as TTSEvent from "../../observables/tts-event";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
@@ -84,7 +84,7 @@ class CharDistribution {
   public addChar(char: string): void {
     this.count++;
     if (char in this.chars) {
-      (this.chars[char] as number)++;
+      (this.chars[char] as number) += 1;
     } else {
       this.chars[char] = 1;
     }
@@ -459,19 +459,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     getResultContent(): string {
       return Config.customLayoutfluid.join(" ");
-    },
-    restart(): void {
-      if (this.applyConfig) this.applyConfig();
-      setTimeout(() => {
-        void KeymapEvent.highlight(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1,
-            ),
-        );
-      }, 1);
     },
   },
   gibberish: {

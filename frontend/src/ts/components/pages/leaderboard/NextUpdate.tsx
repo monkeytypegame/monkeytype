@@ -8,7 +8,7 @@ import {
   onCleanup,
 } from "solid-js";
 
-import { LeaderboardType } from "../../../stores/leaderboard-selection";
+import { LeaderboardType } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 

@@ -25,7 +25,7 @@ import {
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 

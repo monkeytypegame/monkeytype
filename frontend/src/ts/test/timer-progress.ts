@@ -3,7 +3,7 @@ import * as CustomText from "./custom-text";
 import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
-import * as Time from "../states/time";
+import * as Time from "../legacy-states/time";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { applyReducedMotion } from "../utils/misc";

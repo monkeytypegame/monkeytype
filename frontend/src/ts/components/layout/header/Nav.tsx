@@ -7,14 +7,14 @@ import {
   dispatchRestartTest,
   getActivePage,
   getFocus,
-} from "../../../signals/core";
+} from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
   setAnimatedLevel,
-} from "../../../signals/header";
-import { showModal } from "../../../stores/modals";
-import { getSnapshot } from "../../../stores/snapshot";
+} from "../../../states/header";
+import { showModal } from "../../../states/modals";
+import { getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";

@@ -1,6 +1,6 @@
 import { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import { saveConfig } from "../ape/config";
-import { setAccountButtonSpinner } from "../signals/header";
+import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "./store";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";

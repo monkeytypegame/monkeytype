@@ -23,14 +23,14 @@ import * as Replay from "../../test/replay";
 import { Config } from "../../config/store";
 import * as KeymapEvent from "../../observables/keymap-event";
 import * as WeakSpot from "../../test/weak-spot";
-import * as CompositionState from "../../states/composition";
+import * as CompositionState from "../../legacy-states/composition";
 import {
   isCorrectShiftUsed,
   getIncorrectShiftsInARow,
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
 } from "../state";
-import { showNoticeNotification } from "../../stores/notifications";
+import { showNoticeNotification } from "../../states/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import {

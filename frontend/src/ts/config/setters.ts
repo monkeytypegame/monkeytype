@@ -4,7 +4,7 @@ import { saveToLocalStorage } from "../config/persistence";
 import { configMetadata, ConfigMetadataObject } from "./metadata";
 import { isConfigValueValid } from "./validation";
 import * as ConfigEvent from "../observables/config-event";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,

@@ -1,12 +1,12 @@
 import { ElementWithUtils, qsr } from "../utils/dom";
 import Ape from "../ape";
 import { Config } from "../config/store";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import { removeLanguageSize } from "../utils/strings";

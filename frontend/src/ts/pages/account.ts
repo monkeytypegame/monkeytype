@@ -10,7 +10,7 @@ import * as TodayTracker from "../test/today-tracker";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
@@ -21,10 +21,10 @@ import { format } from "date-fns/format";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 import { getAuthenticatedUser } from "../firebase";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../singletons/format";
 import { ChartData } from "@monkeytype/schemas/results";
@@ -546,7 +546,7 @@ async function fillContent(): Promise<void> {
         histogramChartData.push(0);
       }
     }
-    (histogramChartData[bucket] as number)++;
+    (histogramChartData[bucket] as number) += 1;
 
     let tt = 0;
     if (
@@ -1041,21 +1041,24 @@ qs(".pageAccount .loadMoreButton")?.on("click", () => {
 });
 
 qs(".pageAccount #accountHistoryChart")?.on("click", () => {
-  const index: number = ChartController.accountHistoryActiveIndex;
+  const chart = ChartController.accountHistory;
+  const active = chart.tooltip?.getActiveElements?.() ?? [];
+  if (!active.length) return;
+
+  const index = active[0]?.index;
+  if (index === undefined) return;
+
   loadMoreLines(index);
-  if (window === undefined) return;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
     throw new Error("Cannot find result for index " + index);
   }
-  const element = qs(`.resultRow[data-id="${resultId}"`);
+
+  const element = qs(`.resultRow[data-id="${resultId}"]`);
   qsa(".resultRow").removeClass("active");
 
-  element?.scrollIntoView({
-    block: "center",
-  });
-
+  element?.scrollIntoView({ block: "center" });
   element?.addClass("active");
 });
 

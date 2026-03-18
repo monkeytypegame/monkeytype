@@ -4,7 +4,7 @@ import { randomElementFromArray } from "../utils/arrays";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 
 import type { Howl } from "howler";
 import { PlaySoundOnClick } from "@monkeytype/schemas/configs";

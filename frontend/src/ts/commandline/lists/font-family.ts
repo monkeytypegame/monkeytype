@@ -3,7 +3,7 @@ import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { applyFontFamily } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-font-picker";
-import { showNoticeNotification } from "../../stores/notifications";
+import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
 const fromMeta = buildCommandForConfigKey("fontFamily");

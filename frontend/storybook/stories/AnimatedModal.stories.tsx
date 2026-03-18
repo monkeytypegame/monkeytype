@@ -1,7 +1,7 @@
 import preview from "#.storybook/preview";
 
 import { AnimatedModal } from "../../src/ts/components/common/AnimatedModal";
-import { ModalId, showModal } from "../../src/ts/stores/modals";
+import { ModalId, showModal } from "../../src/ts/states/modals";
 
 function ModalTrigger(props: { modalId: ModalId; label: string }) {
   return (

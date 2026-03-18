@@ -26,7 +26,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
   clearAllNotifications,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";

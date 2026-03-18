@@ -98,7 +98,7 @@ export const buildSearchService = <T>(
         internalDocument.termFrequencies[stemmedToken] = 0;
       }
 
-      (internalDocument.termFrequencies[stemmedToken] as number)++;
+      (internalDocument.termFrequencies[stemmedToken] as number) += 1;
       maxTermFrequency = Math.max(
         maxTermFrequency,
         internalDocument.termFrequencies[stemmedToken] as number,
@@ -156,10 +156,7 @@ export const buildSearchService = <T>(
             const scoreForToken = score * idf * termFrequency;
 
             const quote = documents[document.id] as InternalDocument;
-            if (
-              ids.length === 0 ||
-              (quote !== null && quote !== undefined && ids.includes(quote.id))
-            ) {
+            if (ids.length === 0 || ids.includes(quote?.id)) {
               results.set(document.id, currentScore + scoreForToken);
             }
           });

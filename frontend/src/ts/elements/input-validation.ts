@@ -8,7 +8,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import { showSuccessNotification } from "../stores/notifications";
+import { showSuccessNotification } from "../states/notifications";
 import { ElementWithUtils } from "../utils/dom";
 import { Validation, ValidationResult } from "../types/validation";
 
@@ -202,6 +202,11 @@ export class ValidatedHtmlInputElement<
 
   triggerValidation(): void {
     this.dispatch("input");
+  }
+
+  destroy(): void {
+    this.indicator.hide();
+    this.remove();
   }
 }
 

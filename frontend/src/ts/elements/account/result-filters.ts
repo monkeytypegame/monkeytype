@@ -6,9 +6,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import Ape from "../../ape/index";
-import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/schemas/configs";
 import {

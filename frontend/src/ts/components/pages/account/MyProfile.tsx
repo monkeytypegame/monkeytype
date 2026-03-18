@@ -1,8 +1,8 @@
 import { UserProfile as UserProfileType } from "@monkeytype/schemas/users";
 import { JSXElement, Show } from "solid-js";
 
-import { getActivePage } from "../../../signals/core";
-import { getSnapshot } from "../../../stores/snapshot";
+import { getActivePage } from "../../../states/core";
+import { getSnapshot } from "../../../states/snapshot";
 import { UserProfile } from "../profile/UserProfile";
 
 export function MyProfile(): JSXElement {

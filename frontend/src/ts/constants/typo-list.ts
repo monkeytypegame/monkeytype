@@ -132,6 +132,7 @@ export default [
   "icloud.ocm",
   "icloud.om",
   "icloud.cm",
+  "example.edu",
 ];
 // source(from line 1 - 48): Generated using ChatGPT
 // source(from line 48 - 127): https://github.com/gruns/typo

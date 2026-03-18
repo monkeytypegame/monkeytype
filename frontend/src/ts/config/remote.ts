@@ -3,7 +3,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import {
   showSuccessNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import { migrateConfig } from "./utils";
 import { applyConfig } from "./lifecycle";
 import { saveFullConfigToLocalStorage } from "./persistence";

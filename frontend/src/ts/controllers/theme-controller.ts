@@ -6,14 +6,14 @@ import { setConfig } from "../config/setters";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs } from "../utils/dom";
-import { setThemeIndicator } from "../signals/core";
-import { setTheme, ThemeIdentifier } from "../signals/theme";
+import { setThemeIndicator } from "../states/core";
+import { setTheme, ThemeIdentifier } from "../states/theme";
 
 export let randomTheme: ThemeIdentifier | null = null;
 let isPreviewingTheme = false;

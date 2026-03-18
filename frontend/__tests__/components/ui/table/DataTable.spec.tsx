@@ -19,7 +19,7 @@ const bpSignal = createSignal({
   md: true,
 });
 
-vi.mock("../../../../src/ts/signals/breakpoints", () => ({
+vi.mock("../../../../src/ts/states/breakpoints", () => ({
   bp: () => bpSignal[0](),
 }));
 

@@ -3,9 +3,9 @@ import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import { isAuthenticated } from "../../firebase";
-import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as TestWords from "../../test/test-words";
 import { Command } from "../types";
 

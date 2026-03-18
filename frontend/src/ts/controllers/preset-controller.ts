@@ -6,7 +6,7 @@ import * as DB from "../db";
 import {
   showNoticeNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";

@@ -26,6 +26,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
+import devtools from "solid-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 function getFontsConfig(): string {
@@ -105,7 +106,11 @@ function getPlugins({
     languageHashes({ skip: isDevelopment }),
     injectHTML() as PluginOption,
     tailwindcss(),
+
     solidPlugin(),
+    devtools({
+      autoname: true,
+    }),
   ];
 
   const devPlugins: PluginOption[] = [
@@ -241,37 +246,61 @@ function getBuildOptions({
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
-        codeSplitting: {
-          groups: [
-            {
-              name: "vendor-sentry",
-              test: /node_modules\/@sentry\//,
-            },
-            {
-              name: "vendor-firebase",
-              test: /node_modules\/@firebase\//,
-            },
-            {
-              name: "vendor-tanstack",
-              test: /node_modules\/@tanstack\//,
-            },
-            {
-              name: "monkeytype-packages",
-              test: /monkeytype\/packages\//,
-            },
-            {
-              name: "vendor-chart",
-              test: /node_modules\/chart/,
-            },
-            {
-              name: "monkeytype-constants",
-              test: /src\/ts\/constants\//,
-            },
-            {
-              name: "vendor",
-              test: /node_modules\//,
-            },
-          ],
+        // codeSplitting: {
+        //   groups: [
+        //     {
+        //       name: "vendor-sentry",
+        //       test: /node_modules\/@sentry\//,
+        //     },
+        //     {
+        //       name: "vendor-firebase",
+        //       test: /node_modules\/@firebase\//,
+        //     },
+        //     {
+        //       name: "vendor-tanstack",
+        //       test: /node_modules\/@tanstack\//,
+        //     },
+        //     {
+        //       name: "monkeytype-packages",
+        //       test: /monkeytype\/packages\//,
+        //     },
+        //     {
+        //       name: "vendor-chart",
+        //       test: /node_modules\/chart/,
+        //     },
+        //     {
+        //       name: "monkeytype-constants",
+        //       test: /src\/ts\/constants\//,
+        //     },
+        //     {
+        //       name: "vendor",
+        //       test: /node_modules\//,
+        //     },
+        //   ],
+        // },
+        manualChunks: (id) => {
+          if (id.includes("@sentry")) {
+            return "vendor-sentry";
+          }
+          if (id.includes("node_modules\/@firebase\/")) {
+            return "vendor-firebase";
+          }
+          if (id.includes("node_modules\/@tanstack\/")) {
+            return "vendor-tanstack";
+          }
+          if (id.includes("monkeytype\/packages\/")) {
+            return "monkeytype-packages";
+          }
+          if (id.includes("node_modules\/chart")) {
+            return "vendor-chart";
+          }
+          if (id.includes("src\/ts\/constants\/")) {
+            return "monkeytype-constants";
+          }
+          if (id.includes("node_modules\/")) {
+            return "vendor";
+          }
+          return;
         },
       },
     },

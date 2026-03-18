@@ -1,4 +1,4 @@
-import { type JSXElement, lazy, Suspense } from "solid-js";
+import { JSXElement, lazy, onMount, Suspense } from "solid-js";
 
 let DevComponents: (() => JSXElement) | undefined;
 
@@ -13,10 +13,27 @@ if (import.meta.env.DEV) {
       default: m.DevOptionsModal,
     })),
   );
+
+  const LazySolidDevtoolsOverlay = lazy(async () =>
+    import("@solid-devtools/overlay").then((m) => ({
+      default: () => {
+        onMount(() => {
+          m.attachDevtoolsOverlay({
+            defaultOpen: true,
+            noPadding: true,
+          });
+        });
+
+        return null;
+      },
+    })),
+  );
+
   DevComponents = () => (
     <Suspense>
       <LazyQueryDevtools />
       <LazyDevOptionsModal />
+      <LazySolidDevtoolsOverlay />
     </Suspense>
   );
 }

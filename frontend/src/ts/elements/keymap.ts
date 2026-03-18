@@ -4,8 +4,8 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
-import { showErrorNotification } from "../stores/notifications";
-import { getActivePage } from "../signals/core";
+import { showErrorNotification } from "../states/notifications";
+import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
 import * as ShiftTracker from "../test/shift-tracker";
@@ -17,7 +17,7 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 import { createEffectOn } from "../hooks/effects";
 
