@@ -6,7 +6,7 @@ import solidPlugin from "vite-plugin-solid";
 const plugins = [
   languageHashes({ skip: true }),
   envConfig({ isDevelopment: true, clientVersion: "TESTING", env: {} }),
-  solidPlugin(),
+  solidPlugin({ hot: false }),
 ];
 
 export const projects: UserWorkspaceConfig[] = [
