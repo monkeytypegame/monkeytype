@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
+import { getConfig } from "../../config/store";
 import { queryClient } from "../../queries";
 import {
   getContributorsQueryOptions,
@@ -8,7 +9,6 @@ import {
   getSupportersQueryOptions,
   getTypingStatsQueryOptions,
 } from "../../queries/public";
-import { getConfig } from "../../states/config";
 import { getActivePage } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { getTheme } from "../../states/theme";
