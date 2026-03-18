@@ -83,12 +83,13 @@ export async function init(): Promise<void> {
       Config.lazyMode,
     );
   } else if (Config.paceCaret === "average") {
-    [wpm] = await getUserAverage({ ...Config, mode2, last10Only: true });
-
-    wpm = Math.round(wpm);
+    wpm = Math.round(
+      (await getUserAverage({ ...Config, mode2, last10Only: true })).wpm,
+    );
   } else if (Config.paceCaret === "daily") {
-    [wpm] = await getUserAverage({ ...Config, mode2, lastDayOnly: true });
-    wpm = Math.round(wpm);
+    wpm = Math.round(
+      (await getUserAverage({ ...Config, mode2, lastDayOnly: true })).wpm,
+    );
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (Config.paceCaret === "last" || TestState.isPaceRepeat) {

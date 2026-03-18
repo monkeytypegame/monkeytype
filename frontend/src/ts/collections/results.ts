@@ -390,7 +390,7 @@ export async function getUserAverage<M extends Mode>(
     last10Only: boolean;
     lastDayOnly: boolean;
   }>,
-): Promise<[number, number]> {
+): Promise<{ wpm: number; acc: number }> {
   const activeTagIds = getSnapshot()
     ?.tags.filter((it) => it.active === true)
     .map((it) => it._id);
@@ -423,6 +423,7 @@ export async function getUserAverage<M extends Mode>(
     return query.select(({ r }) => ({ wpm: avg(r.wpm), acc: avg(r.acc) }));
   }).toArrayWhenReady();
 
-  if (result.length !== 1) return [0, 0];
-  return [result[0]?.wpm ?? 0, result[0]?.acc ?? 0];
+  return result.length === 1 && result[0] !== undefined
+    ? result[0]
+    : { wpm: 0, acc: 0 };
 }
