@@ -172,7 +172,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     TestInput.pushMissedWord(TestWords.words.getCurrent());
   }
   if (Config.keymapMode === "react") {
-    void flash(data, correct);
+    flash(data, correct);
   }
   if (testInput.length === 0) {
     TestInput.setBurstStart(now);

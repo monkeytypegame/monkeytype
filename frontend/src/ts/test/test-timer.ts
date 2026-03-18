@@ -141,7 +141,7 @@ function layoutfluid(): void {
 
       if (Config.keymapMode === "next") {
         setTimeout(() => {
-          void highlight(
+          highlight(
             TestWords.words.getCurrent().charAt(TestInput.input.current.length),
           );
         }, 1);

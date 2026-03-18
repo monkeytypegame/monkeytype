@@ -1750,7 +1750,7 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    void highlight(
+    highlight(
       TestWords.words.getCurrent().charAt(TestInput.input.current.length),
     );
   }

@@ -571,7 +571,7 @@ async function init(): Promise<boolean> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    void highlight(
+    highlight(
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
@@ -1537,7 +1537,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
-        void highlight(
+        highlight(
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread

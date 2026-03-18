@@ -234,7 +234,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         showErrorNotification("Failed to load text-to-speech script");
         return;
       }
-      if (params[0] !== undefined) void ttsEvent.dispatch(params[0]);
+      if (params[0] !== undefined) ttsEvent.dispatch(params[0]);
     },
   },
   arrows: {
@@ -451,7 +451,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           LayoutfluidFunboxTimer.hide();
         }
         setTimeout(() => {
-          void highlight(
+          highlight(
             TestWords.words.getCurrent().charAt(TestInput.input.current.length),
           );
         }, 1);
