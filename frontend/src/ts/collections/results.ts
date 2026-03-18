@@ -1,11 +1,12 @@
 import { ResultMinified } from "@monkeytype/schemas/results";
-import { Mode } from "@monkeytype/schemas/shared";
+import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   avg,
   count,
   createCollection,
+  createLiveQueryCollection,
   eq,
   gte,
   inArray,
@@ -23,6 +24,7 @@ import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { getSnapshot } from "../states/snapshot";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -373,3 +375,59 @@ export const getSingleResultQueryOptions = (_id: string) =>
     },
     staleTime: Infinity,
   });
+
+export async function getUserAverage<M extends Mode>(
+  options: {
+    mode: M;
+    mode2: Mode2<M>;
+    punctuation: boolean;
+    numbers: boolean;
+    language: string;
+    difficulty: Difficulty;
+    lazyMode: boolean;
+  } & (
+    | {
+        last10Only: boolean;
+        lastDayOnly?: never;
+      }
+    | {
+        lastDayOnly: boolean;
+        last10Only?: never;
+      }
+  ),
+): Promise<[number, number]> {
+  const activeTagIds = getSnapshot()
+    ?.tags.filter((it) => it.active === true)
+    .map((it) => it._id);
+
+  const result = await createLiveQueryCollection((q) => {
+    let query = q
+      .from({ r: resultsCollection })
+      .where(({ r }) => eq(r.mode, options.mode))
+      .where(({ r }) => eq(r.mode2, options.mode2))
+      .where(({ r }) => eq(r.punctuation, options.punctuation))
+      .where(({ r }) => eq(r.numbers, options.numbers))
+      .where(({ r }) => eq(r.language, options.language))
+      .where(({ r }) => eq(r.difficulty, options.difficulty))
+      .where(({ r }) => eq(r.lazyMode, options.lazyMode))
+      .where(({ r }) =>
+        or(
+          false,
+          activeTagIds === undefined || activeTagIds.length === 0,
+          ...(activeTagIds ?? []).map((it) => inArray(it, r.tags)),
+        ),
+      );
+
+    if (options.lastDayOnly) {
+      query = query.where(({ r }) => gte(r.timestamp, Date.now() - 86400000));
+    }
+    if (options.last10Only) {
+      query = query.orderBy(({ r }) => r.timestamp).limit(10);
+    }
+
+    return query.select(({ r }) => ({ wpm: avg(r.wpm), acc: avg(r.acc) }));
+  }).toArrayWhenReady();
+
+  if (result.length !== 1) return [0, 0];
+  return [result[0]?.wpm ?? 0, result[0]?.acc ?? 0];
+}
