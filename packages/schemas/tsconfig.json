@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "target": "ES6"
+    "target": "ES6",
+    "lib": ["ESNext"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

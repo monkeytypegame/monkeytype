@@ -2,6 +2,23 @@ import { z } from "zod";
 import { IdSchema } from "./util";
 import { LanguageSchema } from "./languages";
 
+// Tags for quotes
+export const QUOTE_TAGS = [
+  "fiction",
+  "poetry",
+  "philosophy",
+  "political",
+  "inspirational",
+  "wisdom",
+  "mindset",
+  "humorous",
+] as const;
+export type QuoteTag = (typeof QUOTE_TAGS)[number];
+
+// Tagged Languages
+export const TAGGED_LANGUAGES = ["english"] as const;
+export type TaggedLanguage = (typeof TAGGED_LANGUAGES)[number];
+
 export const QuoteIdSchema = z
   .number()
   .int()
@@ -26,6 +43,9 @@ export const QuoteSchema = z.object({
   submittedBy: IdSchema.describe("uid of the submitter"),
   timestamp: z.number().int().nonnegative(),
   approved: z.boolean(),
+
+  //Remove '.optional()' once all languages are tagged
+  tags: z.array(z.enum(QUOTE_TAGS)).min(1).optional(),
 });
 export type Quote = z.infer<typeof QuoteSchema>;
 
@@ -56,16 +76,31 @@ export const QuoteDataQuoteSchema = z
     source: z.string(),
     length: z.number(),
     approvedBy: z.string().optional(),
+    tags: z.array(z.enum(QUOTE_TAGS)).min(1).optional(),
   })
   .strict();
 export type QuoteDataQuote = z.infer<typeof QuoteDataQuoteSchema>;
 
-export const QuoteDataSchema = z
+const QuoteDataBaseSchema = z
   .object({
     language: LanguageSchema,
     groups: z.array(z.tuple([z.number(), z.number()])).length(4),
     quotes: z.array(QuoteDataQuoteSchema),
   })
   .strict();
+
+export const QuoteDataSchema = QuoteDataBaseSchema.superRefine((data, ctx) => {
+  if ((TAGGED_LANGUAGES as readonly string[]).includes(data.language)) {
+    data.quotes.forEach((quote, index) => {
+      if (!quote.tags || quote.tags.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Quote at index ${index} must have at least one tag.`,
+          path: ["quotes", index, "tags"],
+        });
+      }
+    });
+  }
+});
 
 export type QuoteData = z.infer<typeof QuoteDataSchema>;
