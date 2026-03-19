@@ -12,6 +12,7 @@ import { IsValidResponse } from "../types/validation";
 
 type CommonInput<TType, TValue> = {
   type: TType;
+  name?: string;
   initVal?: TValue;
   placeholder?: string;
   hidden?: boolean;

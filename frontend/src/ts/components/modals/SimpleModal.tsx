@@ -25,12 +25,31 @@ import { fromSchema, fieldMandatory, handleResult } from "../ui/form/utils";
 
 type FormValues = Record<string, string | boolean>;
 
+type SyncValidator = (opts: {
+  value: string | boolean;
+}) => string | string[] | undefined;
+
+type AsyncValidator = (opts: {
+  value: string | boolean;
+  fieldApi: AnyFieldApi;
+}) => Promise<string | string[] | undefined>;
+
+type SimpleModalValidators = {
+  onChange?: SyncValidator;
+  onChangeAsyncDebounceMs?: number;
+  onChangeAsync?: AsyncValidator;
+};
+
+function inputKey(input: SimpleModalInput, index: number): string {
+  return input.name ?? index.toString();
+}
+
 function getDefaultValues(inputs: SimpleModalInput[] | undefined): FormValues {
   if (inputs === undefined || inputs.length === 0) {
     return {};
   }
   const entries: [string, string | boolean][] = inputs.map((input, i) => {
-    const key = i.toString();
+    const key = inputKey(input, i);
     if (input.type === "checkbox") {
       return [key, input.initVal ?? false];
     }
@@ -47,8 +66,7 @@ function getDefaultValues(inputs: SimpleModalInput[] | undefined): FormValues {
 
 function getValidators(
   input: SimpleModalInput,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
+): SimpleModalValidators | undefined {
   const required =
     !input.hidden && !input.optional && input.type !== "checkbox";
 
@@ -59,25 +77,17 @@ function getValidators(
     return undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const validators: Record<string, any> = {};
+  const validators: SimpleModalValidators = {};
 
   if (schema !== undefined) {
-    validators["onChange"] = fromSchema(schema);
+    validators.onChange = fromSchema(schema) as SyncValidator;
   } else if (required) {
-    validators["onChange"] = fieldMandatory();
+    validators.onChange = fieldMandatory() as SyncValidator;
   }
 
   if (isValid !== undefined) {
-    validators["onChangeAsyncDebounceMs"] =
-      input.validation?.debounceDelay ?? 100;
-    validators["onChangeAsync"] = async ({
-      value,
-      fieldApi,
-    }: {
-      value: string | boolean;
-      fieldApi: AnyFieldApi;
-    }): Promise<string | string[] | undefined> => {
+    validators.onChangeAsyncDebounceMs = input.validation?.debounceDelay ?? 100;
+    validators.onChangeAsync = async ({ value, fieldApi }) => {
       const result = await isValid(String(value));
       if (result === true) {
         return undefined;
@@ -201,8 +211,8 @@ export function SimpleModal(): JSXElement {
     defaultValues: untrack(() => getDefaultValues(config()?.inputs)),
     onSubmit: async ({ value }) => {
       const inputs = config()?.inputs ?? [];
-      const values = inputs.map((_, i) => {
-        const val = value[i.toString()];
+      const values = inputs.map((input, i) => {
+        const val = value[inputKey(input, i)];
         if (typeof val === "boolean") {
           return val ? "true" : "false";
         }
@@ -252,8 +262,7 @@ export function SimpleModal(): JSXElement {
               {(input, i) => (
                 <Show when={!input.hidden}>
                   <form.Field
-                    name={i().toString()}
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    name={inputKey(input, i())}
                     validators={getValidators(input)}
                     children={(field) => (
                       <Show
