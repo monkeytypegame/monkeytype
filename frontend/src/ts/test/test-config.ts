@@ -7,6 +7,7 @@ import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { authEvent } from "../events/auth";
 import { qs, qsa } from "../utils/dom";
+import * as QuoteTagFilter from "../elements/quote-tag-filter";
 
 export function show(): void {
   qs("#testConfig")?.removeClass("invisible");
@@ -31,6 +32,7 @@ export async function instantUpdate(): Promise<void> {
   qs("#testConfig .customText")?.hide();
   qs("#testConfig .quoteLength")?.hide();
   qs("#testConfig .zen")?.hide();
+  QuoteTagFilter.setVisible(false);
 
   if (Config.mode === "time") {
     qs("#testConfig .puncAndNum")?.show()?.setStyle({
@@ -57,6 +59,8 @@ export async function instantUpdate(): Promise<void> {
     qs("#testConfig .quoteLength")?.show();
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
+
+    QuoteTagFilter.setVisible(true);
   } else if (Config.mode === "custom") {
     qs("#testConfig .puncAndNum")?.show()?.setStyle({
       width: "",
@@ -248,6 +252,8 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   });
 
   currentEl?.setStyle({ width: "" });
+
+  QuoteTagFilter.setVisible(current === "quote");
 }
 
 function updateActiveModeButtons(mode: Mode): void {

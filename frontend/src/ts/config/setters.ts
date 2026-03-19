@@ -14,6 +14,26 @@ import { typedKeys, triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
 import { Config, setConfigStore } from "./store";
 import { FunboxName } from "@monkeytype/schemas/configs";
+import { type QuoteTag } from "@monkeytype/schemas/quotes";
+
+export function setQuoteTags(tags: QuoteTag[], nosave?: boolean): boolean {
+  return setConfig("quoteTags", tags, {
+    nosave,
+  });
+}
+
+export function toggleQuoteTag(tag: QuoteTag, nosave?: boolean): void {
+  const current = [...Config.quoteTags];
+  const idx = current.indexOf(tag);
+
+  if (idx === -1) {
+    current.push(tag);
+  } else {
+    current.splice(idx, 1);
+  }
+
+  setQuoteTags(current, nosave);
+}
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,

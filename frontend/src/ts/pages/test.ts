@@ -5,9 +5,11 @@ import Page from "./page";
 import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
+import * as QuoteTagFilter from "../elements/quote-tag-filter";
 import * as TestConfig from "../test/test-config";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
+import { Config } from "../config/store";
 
 export const page = new Page({
   id: "test",
@@ -32,5 +34,8 @@ export const page = new Page({
     });
     void TestConfig.instantUpdate();
     void Keymap.refresh();
+
+    QuoteTagFilter.init();
+    QuoteTagFilter.setVisible(Config.mode === "quote");
   },
 });

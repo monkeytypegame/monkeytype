@@ -81,7 +81,7 @@ export const QuoteDataQuoteSchema = z
   .strict();
 export type QuoteDataQuote = z.infer<typeof QuoteDataQuoteSchema>;
 
-const QuoteDataBaseSchema = z
+export const QuoteDataBaseSchema = z
   .object({
     language: LanguageSchema,
     groups: z.array(z.tuple([z.number(), z.number()])).length(4),

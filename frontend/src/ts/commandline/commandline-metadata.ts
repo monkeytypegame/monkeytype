@@ -183,6 +183,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       },
     },
   },
+  quoteTags: {
+    subgroup: {
+      options: "fromSchema",
+      afterExec: () => {
+        TestLogic.restart();
+      },
+    },
+  },
   //behavior
   difficulty: {
     subgroup: {

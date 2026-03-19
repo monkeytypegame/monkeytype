@@ -179,6 +179,15 @@ export const configMetadata: ConfigMetadataObject = {
       return {};
     },
   },
+  quoteTags: {
+    icon: "fa-tags",
+    displayString: "quote tags",
+    changeRequiresRestart: false,
+    group: "test",
+    overrideValue: ({ value }) => {
+      return [...new Set(value)];
+    },
+  },
   language: {
     icon: "fa-language",
     displayString: "language",
