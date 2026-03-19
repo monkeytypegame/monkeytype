@@ -1,11 +1,14 @@
+import { AnyFieldApi, createForm } from "@tanstack/solid-form";
 import { format as dateFormat } from "date-fns/format";
 import {
+  Accessor,
   createEffect,
-  createSignal,
   For,
   JSXElement,
+  Match,
   on,
   Show,
+  Switch,
 } from "solid-js";
 
 import { showNoticeNotification } from "../../states/notifications";
@@ -16,244 +19,268 @@ import {
 } from "../../states/simple-modal";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Button } from "../common/Button";
-import { Conditional } from "../common/Conditional";
+import { Checkbox } from "../ui/form/Checkbox";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
+import { fromSchema, fieldMandatory, handleResult } from "../ui/form/utils";
 
-const inputClass = "w-full";
+type FormValues = Record<string, string | boolean>;
+
+function getDefaultValues(inputs: SimpleModalInput[] | undefined): FormValues {
+  if (inputs === undefined || inputs.length === 0) {
+    return {};
+  }
+  const entries: [string, string | boolean][] = inputs.map((input, i) => {
+    const key = i.toString();
+    if (input.type === "checkbox") {
+      return [key, input.initVal ?? false];
+    }
+    if (input.type === "datetime-local" && input.initVal !== undefined) {
+      return [key, dateFormat(input.initVal, "yyyy-MM-dd'T'HH:mm:ss")];
+    }
+    if (input.type === "date" && input.initVal !== undefined) {
+      return [key, dateFormat(input.initVal, "yyyy-MM-dd")];
+    }
+    return [key, input.initVal?.toString() ?? ""];
+  });
+  return Object.fromEntries(entries) as FormValues;
+}
+
+function getValidators(
+  input: SimpleModalInput,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any {
+  const required =
+    !input.hidden && !input.optional && input.type !== "checkbox";
+
+  const schema = input.validation?.schema;
+  const isValid = input.validation?.isValid;
+
+  if (schema === undefined && isValid === undefined && !required) {
+    return undefined;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const validators: Record<string, any> = {};
+
+  if (schema !== undefined) {
+    validators["onChange"] = fromSchema(schema);
+  } else if (required) {
+    validators["onChange"] = fieldMandatory();
+  }
+
+  if (isValid !== undefined) {
+    validators["onChangeAsyncDebounceMs"] =
+      input.validation?.debounceDelay ?? 100;
+    validators["onChangeAsync"] = async ({
+      value,
+      fieldApi,
+    }: {
+      value: string | boolean;
+      fieldApi: AnyFieldApi;
+    }): Promise<string | string[] | undefined> => {
+      const result = await isValid(String(value));
+      if (result === true) {
+        return undefined;
+      }
+      if (typeof result === "string") {
+        return result;
+      }
+      return handleResult(fieldApi, [
+        { type: "warning", message: result.warning },
+      ]);
+    };
+  }
+
+  return validators;
+}
+
+function FieldInput(props: {
+  field: Accessor<AnyFieldApi>;
+  input: SimpleModalInput;
+}): JSXElement {
+  return (
+    <Switch
+      fallback={
+        <InputField
+          field={props.field}
+          type={props.input.type}
+          placeholder={props.input.placeholder}
+          disabled={props.input.disabled}
+          autocomplete="off"
+        />
+      }
+    >
+      <Match when={props.input.type === "checkbox"}>
+        <Checkbox
+          field={props.field}
+          label={(props.input as { label: string }).label}
+          disabled={props.input.disabled}
+        />
+      </Match>
+      <Match when={props.input.type === "textarea"}>
+        <textarea
+          class="w-full"
+          placeholder={props.input.placeholder}
+          value={props.field().state.value as string}
+          disabled={props.input.disabled}
+          autocomplete="off"
+          onInput={(e) => {
+            props.field().handleChange(e.currentTarget.value);
+            props.input.oninput?.(e);
+          }}
+          onBlur={() => props.field().handleBlur()}
+        ></textarea>
+      </Match>
+      <Match when={props.input.type === "range"}>
+        <div class="flex items-center gap-2">
+          <input
+            type="range"
+            class={cn(props.input.hidden && "hidden", "w-full")}
+            min={(props.input as { min: number }).min}
+            max={(props.input as { max: number }).max}
+            step={(props.input as { step?: number }).step}
+            value={props.field().state.value as string}
+            disabled={props.input.disabled}
+            onInput={(e) => {
+              props.field().handleChange(e.currentTarget.value);
+              props.input.oninput?.(e);
+            }}
+            onBlur={() => props.field().handleBlur()}
+          />
+          <span class="text-sub">{props.field().state.value as string}</span>
+        </div>
+      </Match>
+      <Match
+        when={
+          props.input.type === "datetime-local" || props.input.type === "date"
+        }
+      >
+        <input
+          type={props.input.type}
+          class="w-full"
+          value={props.field().state.value as string}
+          disabled={props.input.disabled}
+          min={
+            (props.input as { min?: Date }).min !== undefined
+              ? dateFormat(
+                  (props.input as { min: Date }).min,
+                  props.input.type === "date"
+                    ? "yyyy-MM-dd"
+                    : "yyyy-MM-dd'T'HH:mm:ss",
+                )
+              : undefined
+          }
+          max={
+            (props.input as { max?: Date }).max !== undefined
+              ? dateFormat(
+                  (props.input as { max: Date }).max,
+                  props.input.type === "date"
+                    ? "yyyy-MM-dd"
+                    : "yyyy-MM-dd'T'HH:mm:ss",
+                )
+              : undefined
+          }
+          onInput={(e) => {
+            props.field().handleChange(e.currentTarget.value);
+            props.input.oninput?.(e);
+          }}
+          onBlur={() => props.field().handleBlur()}
+        />
+      </Match>
+    </Switch>
+  );
+}
 
 export function SimpleModal(): JSXElement {
-  const [inputValues, setInputValues] = createSignal<string[]>([]);
-  const [submitting, setSubmitting] = createSignal(false);
-
   const config = simpleModalConfig;
 
-  const resetInputs = (): void => {
-    const c = config();
-    if (c === null) return;
-    const vals = (c.inputs ?? []).map((input) => {
-      if (input.type === "checkbox") {
-        return input.initVal ? "true" : "false";
-      }
-      if (input.type === "datetime-local" && input.initVal !== undefined) {
-        return dateFormat(input.initVal, "yyyy-MM-dd'T'HH:mm:ss");
-      }
-      if (input.type === "date" && input.initVal !== undefined) {
-        return dateFormat(input.initVal, "yyyy-MM-dd");
-      }
-      return input.initVal?.toString() ?? "";
-    });
-    setInputValues(vals);
-    setSubmitting(false);
-  };
-
-  createEffect(on(config, resetInputs));
-
-  const updateValue = (index: number, value: string): void => {
-    setInputValues((prev) => {
-      const next = [...prev];
-      next[index] = value;
-      return next;
-    });
-  };
-
-  const hasMissingRequired = (): boolean => {
-    const c = config();
-    if (c === null) return false;
-    const inputs = c.inputs ?? [];
-    return inputs.some(
-      (input, i) =>
-        !input.hidden &&
-        !input.optional &&
-        input.type !== "checkbox" &&
-        (inputValues()[i] === undefined || inputValues()[i] === ""),
-    );
-  };
-
-  const handleSubmit = async (e: SubmitEvent): Promise<void> => {
-    e.preventDefault();
-    if (submitting()) return;
-
-    if (hasMissingRequired()) {
+  const form = createForm(() => ({
+    defaultValues: getDefaultValues(config()?.inputs),
+    onSubmit: async ({ value }) => {
+      const inputs = config()?.inputs ?? [];
+      const values = inputs.map((_, i) => {
+        const val = value[i.toString()];
+        if (typeof val === "boolean") {
+          return val ? "true" : "false";
+        }
+        return val?.toString() ?? "";
+      });
+      await executeSimpleModal(values);
+    },
+    onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
-      return;
-    }
+    },
+  }));
 
-    setSubmitting(true);
-    try {
-      await executeSimpleModal(inputValues());
-    } finally {
-      setSubmitting(false);
-    }
+  const resetForm = (): void => {
+    form.reset();
   };
 
-  const renderInput = (input: SimpleModalInput, index: number): JSXElement => {
-    const value = (): string => inputValues()[index] ?? "";
-    const disabled = (): boolean => submitting() || (input.disabled ?? false);
-    const required = !input.hidden && !input.optional;
-
-    switch (input.type) {
-      case "textarea":
-        return (
-          <textarea
-            class={cn(inputClass, input.hidden && "hidden")}
-            placeholder={input.placeholder}
-            value={value()}
-            disabled={disabled()}
-            required={required}
-            //@ts-expect-error this is fine
-            autoComplete="off"
-            onInput={(e) => {
-              updateValue(index, e.currentTarget.value);
-              input.oninput?.(e);
-            }}
-          ></textarea>
-        );
-
-      case "checkbox":
-        return (
-          <label
-            class={cn(
-              "flex cursor-pointer items-center gap-2",
-              disabled() && "opacity-50",
-            )}
-          >
-            <input
-              type="checkbox"
-              checked={value() === "true"}
-              disabled={disabled()}
-              onChange={(e) => {
-                updateValue(index, e.currentTarget.checked ? "true" : "false");
-              }}
-            />
-            <div>{input.label}</div>
-            <Show when={input.description}>
-              <span class="text-xs text-sub">{input.description}</span>
-            </Show>
-          </label>
-        );
-
-      case "range":
-        return (
-          <div class="flex items-center gap-2">
-            <input
-              type="range"
-              class={cn(input.hidden && "hidden", "w-full")}
-              min={input.min}
-              max={input.max}
-              step={input.step}
-              value={value()}
-              disabled={disabled()}
-              onInput={(e) => {
-                updateValue(index, e.currentTarget.value);
-                input.oninput?.(e);
-              }}
-            />
-            <span class="text-sub">{value()}</span>
-          </div>
-        );
-
-      case "datetime-local":
-      case "date":
-        return (
-          <input
-            type={input.type}
-            class={cn(inputClass, input.hidden && "hidden")}
-            value={value()}
-            disabled={disabled()}
-            required={required}
-            min={
-              input.min !== undefined
-                ? dateFormat(
-                    input.min,
-                    input.type === "date"
-                      ? "yyyy-MM-dd"
-                      : "yyyy-MM-dd'T'HH:mm:ss",
-                  )
-                : undefined
-            }
-            max={
-              input.max !== undefined
-                ? dateFormat(
-                    input.max,
-                    input.type === "date"
-                      ? "yyyy-MM-dd"
-                      : "yyyy-MM-dd'T'HH:mm:ss",
-                  )
-                : undefined
-            }
-            onInput={(e) => {
-              updateValue(index, e.currentTarget.value);
-              input.oninput?.(e);
-            }}
-          />
-        );
-
-      default:
-        return (
-          <input
-            type={input.type}
-            class={cn(inputClass, input.hidden && "hidden")}
-            placeholder={input.placeholder}
-            value={value()}
-            disabled={disabled()}
-            required={required}
-            autocomplete="off"
-            min={input.type === "number" ? input.min?.toString() : undefined}
-            max={input.type === "number" ? input.max?.toString() : undefined}
-            onInput={(e) => {
-              updateValue(index, e.currentTarget.value);
-              input.oninput?.(e);
-            }}
-          />
-        );
-    }
-  };
+  createEffect(on(config, resetForm));
 
   return (
     <AnimatedModal
       id="SimpleModal"
       title={config()?.title}
       focusFirstInput={true}
-      beforeShow={resetInputs}
+      beforeShow={resetForm}
     >
-      <form class="grid gap-4" onSubmit={(e) => void handleSubmit(e)}>
+      <form
+        class="grid gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
         <Show when={config()?.text}>
           {(text) => (
             <div
               class="text-sub"
-              {...(config()?.textAllowHtml
+              {...(config()?.textAllowHtml === true
                 ? { innerHTML: text() }
                 : { textContent: text() })}
             ></div>
           )}
         </Show>
         <Show when={(config()?.inputs?.length ?? 0) > 0}>
-          <div class={cn("grid gap-2")}>
+          <div class="grid gap-2">
             <For each={config()?.inputs}>
               {(input, i) => (
                 <Show when={!input.hidden}>
-                  <Conditional
-                    if={input.label !== undefined && input.label !== ""}
-                    then={
-                      <label class="grid w-full grid-cols-[1fr_2fr] items-center gap-2 text-sub">
-                        <div>{input.label}</div>
-                        {renderInput(input, i())}
-                      </label>
-                    }
-                    else={renderInput(input, i())}
+                  <form.Field
+                    name={i().toString()}
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    validators={getValidators(input)}
+                    children={(field) => (
+                      <Show
+                        when={
+                          input.type !== "checkbox" &&
+                          input.label !== undefined &&
+                          input.label !== ""
+                        }
+                        fallback={<FieldInput field={field} input={input} />}
+                      >
+                        <label class="grid w-full grid-cols-[1fr_2fr] items-center gap-2 text-sub">
+                          <div>{input.label}</div>
+                          <FieldInput field={field} input={input} />
+                        </label>
+                      </Show>
+                    )}
                   />
                 </Show>
               )}
             </For>
           </div>
         </Show>
-        <Show when={config()?.buttonText}>
-          <Button
-            type="submit"
+        <Show when={config()?.buttonText !== undefined}>
+          <SubmitButton
+            form={form}
             variant="button"
             class="w-full"
-            disabled={submitting() || hasMissingRequired()}
             text={config()?.buttonText}
+            skipDirtyCheck={(config()?.inputs?.length ?? 0) === 0}
           />
         </Show>
       </form>
