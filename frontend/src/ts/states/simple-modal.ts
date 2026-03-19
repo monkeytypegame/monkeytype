@@ -5,6 +5,7 @@ import { showModal, hideModal } from "./modals";
 import {
   addNotificationWithLevel,
   AddNotificationOptions,
+  showErrorNotification,
 } from "./notifications";
 import { showLoaderBar, hideLoaderBar } from "./loader-bar";
 import { IsValidResponse } from "../types/validation";
@@ -121,7 +122,11 @@ export async function executeSimpleModal(values: string[]): Promise<void> {
       hideSimpleModal();
       res.afterHide?.();
     }
-  } catch {
+  } catch (error) {
+    console.error("Error executing simple modal function:", error);
+    showErrorNotification("An unexpected error occurred", {
+      error,
+    });
     hideLoaderBar();
   }
 }
