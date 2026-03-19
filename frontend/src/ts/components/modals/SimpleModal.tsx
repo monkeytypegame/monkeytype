@@ -2,13 +2,12 @@ import { AnyFieldApi, createForm } from "@tanstack/solid-form";
 import { format as dateFormat } from "date-fns/format";
 import {
   Accessor,
-  createEffect,
   For,
   JSXElement,
   Match,
-  on,
   Show,
   Switch,
+  untrack,
 } from "solid-js";
 
 import { showNoticeNotification } from "../../states/notifications";
@@ -195,8 +194,11 @@ function FieldInput(props: {
 export function SimpleModal(): JSXElement {
   const config = simpleModalConfig;
 
+  // untrack prevents tanstack's internal createComputed from
+  // re-running api.update() when config changes, which would
+  // cause a re-render cascade during the modal's show animation.
   const form = createForm(() => ({
-    defaultValues: getDefaultValues(config()?.inputs),
+    defaultValues: untrack(() => getDefaultValues(config()?.inputs)),
     onSubmit: async ({ value }) => {
       const inputs = config()?.inputs ?? [];
       const values = inputs.map((_, i) => {
@@ -214,10 +216,10 @@ export function SimpleModal(): JSXElement {
   }));
 
   const resetForm = (): void => {
+    const defaults = getDefaultValues(config()?.inputs);
+    form.update({ ...form.options, defaultValues: defaults });
     form.reset();
   };
-
-  createEffect(on(config, resetForm));
 
   return (
     <AnimatedModal

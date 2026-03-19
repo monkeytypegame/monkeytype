@@ -73,6 +73,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const showModal = async (isChained: boolean): Promise<void> => {
     if (dialogEl() === undefined || modalEl() === undefined) return;
+    if (dialogEl()?.native.open) return;
 
     await props.beforeShow?.();
 
