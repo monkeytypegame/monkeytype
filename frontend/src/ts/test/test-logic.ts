@@ -16,6 +16,7 @@ import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
+import * as QuoteTagFilter from "../elements/quote-tag-filter";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
@@ -1441,6 +1442,7 @@ qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
     "time") as Mode;
   if (mode === undefined) return;
   if (setConfig("mode", mode)) {
+    QuoteTagFilter.setVisible(mode === "quote");
     restart();
   }
 });

@@ -56,6 +56,7 @@ export async function instantUpdate(): Promise<void> {
     updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
     qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .quoteTagSpacer")?.show();
     qs("#testConfig .quoteLength")?.show();
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
@@ -200,6 +201,28 @@ async function update(previous: Mode, current: Mode): Promise<void> {
         rightSpacerEl?.hide();
       } else {
         rightSpacerEl?.setStyle({ width: "" });
+      }
+    },
+  });
+
+  const quoteTagSpacerEl = qs("#testConfig .quoteTagSpacer");
+  quoteTagSpacerEl?.setStyle({
+    width: previous === "quote" ? "0.5em" : "0px",
+  });
+  quoteTagSpacerEl?.setStyle({ opacity: "1" });
+  quoteTagSpacerEl?.show();
+  quoteTagSpacerEl?.animate({
+    width: [
+      previous === "quote" ? "0.5em" : "0px",
+      current === "quote" ? "0.5em" : "0px",
+    ],
+    duration: animTime,
+    ease: easing.both,
+    onComplete: () => {
+      if (current === "quote") {
+        quoteTagSpacerEl?.setStyle({ width: "" });
+      } else {
+        quoteTagSpacerEl?.hide();
       }
     },
   });

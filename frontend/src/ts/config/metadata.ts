@@ -9,6 +9,7 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getDefaultConfig } from "../constants/default-config";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -170,13 +171,17 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "quote length",
     changeRequiresRestart: true,
     group: "test",
-    overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.mode !== "quote") {
-        return {
-          mode: "quote",
-        };
+    overrideConfig: ({ value, currentConfig }) => {
+      const overrides: Partial<ConfigSchemas.Config> = {};
+      if (
+        !areUnsortedArraysEqual(value as number[], currentConfig.quoteLength)
+      ) {
+        overrides.quoteTags = [];
       }
-      return {};
+      if (currentConfig.mode !== "quote") {
+        overrides.mode = "quote";
+      }
+      return overrides;
     },
   },
   quoteTags: {

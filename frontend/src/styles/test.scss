@@ -1804,6 +1804,13 @@ body.fb-arrows {
     color: var(--main-color);
     background-color: color-mix(in srgb, var(--main-color) 12%, transparent);
   }
+
+  &.disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(1);
+  }
 }
 
 // Responsive

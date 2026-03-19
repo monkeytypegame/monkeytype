@@ -1009,6 +1009,31 @@
     <button class="saveButton">save</button>
   </div>
 </dialog>
+
+<!-- Tag modal -->
+<dialog id="quoteTagFilterModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="quoteTagFilterDropdownHeader">
+      <span class="quoteTagFilterDropdownTitle">Filter by tag</span>
+      <button
+        type="button"
+        class="textButton quoteTagFilterClearBtn"
+        id="quoteTagFilterModalClearBtn"
+        title="Clear all tag filters"
+      >
+        clear
+      </button>
+    </div>
+
+    <div
+      class="quoteTagFilterPills"
+      id="quoteTagFilterModalPills"
+      role="group"
+      aria-label="Quote tags"
+    ></div>
+  </div>
+</dialog>
+
 <dialog id="editPresetModal" class="modalWrapper hidden">
   <form class="modal">
     <div class="title popupTitle"></div>

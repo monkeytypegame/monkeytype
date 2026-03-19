@@ -1,6 +1,10 @@
 import { Config } from "../config/store";
 import { toggleQuoteTag, setQuoteTags } from "../config/setters";
 import { QUOTE_TAGS, type QuoteTag } from "@monkeytype/schemas/quotes";
+import AnimatedModal from "../utils/animated-modal";
+import { getActivePage, restartTestEvent } from "../states/core";
+import * as TestState from "../test/test-state";
+import QuotesController from "../controllers/quotes-controller";
 
 const TAG_LABELS: Record<QuoteTag, string> = {
   fiction: "Fiction",
@@ -25,8 +29,7 @@ const TAG_ICONS: Record<QuoteTag, string> = {
 };
 
 let initialized = false;
-let pillsBuilt = false;
-let isOpen = false;
+let modalPillsBuilt = false;
 
 //  DOM references
 
@@ -40,76 +43,44 @@ function getTrigger(): HTMLButtonElement | null {
   ) as HTMLButtonElement | null;
 }
 
-function getDropdown(): HTMLElement | null {
-  return document.getElementById("quoteTagFilterDropdown");
-}
-
 function getPillsContainer(): HTMLElement | null {
-  return document.getElementById("quoteTagFilterPills");
+  return document.getElementById("quoteTagFilterModalPills");
 }
 
 function getClearBtn(): HTMLButtonElement | null {
   return document.getElementById(
-    "quoteTagFilterClearBtn",
+    "quoteTagFilterModalClearBtn",
   ) as HTMLButtonElement | null;
 }
 
-//  Open / close
-
-function open(): void {
-  if (isOpen) return;
-
-  if (!pillsBuilt) {
-    buildPills();
-    pillsBuilt = true;
-  }
-
-  isOpen = true;
-
-  const trigger = getTrigger();
-  const dropdown = getDropdown();
-  trigger?.setAttribute("aria-expanded", "true");
-  trigger?.classList.add("active");
-  dropdown?.classList.add("open");
-
-  // Close when the user clicks outside the dropdown
-  setTimeout(() => {
-    document.addEventListener("click", handleOutsideClick);
-    document.addEventListener("keydown", handleEscape);
-  }, 0);
+function maybeRestartTestForQuoteTagChange(): void {
+  // Regenerate quotes when changing tag filters pre-test.
+  if (getActivePage() !== "test") return;
+  if (Config.mode !== "quote") return;
+  if (TestState.isActive) return;
+  restartTestEvent.dispatch();
 }
 
-function close(): void {
-  if (!isOpen) return;
-  isOpen = false;
-
-  const trigger = getTrigger();
-  const dropdown = getDropdown();
-  trigger?.setAttribute("aria-expanded", "false");
-  trigger?.classList.remove("active");
-  dropdown?.classList.remove("open");
-
-  document.removeEventListener("click", handleOutsideClick);
-  document.removeEventListener("keydown", handleEscape);
-}
-
-function toggle(): void {
-  isOpen ? close() : open();
-}
-
-function handleOutsideClick(e: MouseEvent): void {
-  const wrapper = getWrapper();
-  if (wrapper && !wrapper.contains(e.target as Node)) {
-    close();
-  }
-}
-
-function handleEscape(e: KeyboardEvent): void {
-  if (e.key === "Escape") {
-    close();
-    getTrigger()?.focus();
-  }
-}
+const quoteTagFilterModal = new AnimatedModal({
+  dialogId: "quoteTagFilterModal",
+  setup: async (modalEl): Promise<void> => {
+    modalEl
+      .qs<HTMLButtonElement>("#quoteTagFilterModalClearBtn")
+      ?.on("click", (e) => {
+        e.stopPropagation();
+        setQuoteTags([]);
+        syncPills();
+        syncLabel();
+        syncClearBtn();
+        maybeRestartTestForQuoteTagChange();
+      });
+  },
+  cleanup: async (): Promise<void> => {
+    const trigger = getTrigger();
+    trigger?.setAttribute("aria-expanded", "false");
+    trigger?.classList.remove("active");
+  },
+});
 
 //  Pill builder
 
@@ -119,19 +90,32 @@ function buildPills(): void {
 
   container.innerHTML = "";
   const active = new Set(Config.quoteTags);
+  const available = QuotesController.getAvailableTags(Config.quoteLength);
 
   for (const tag of QUOTE_TAGS) {
-    container.appendChild(createPill(tag, active.has(tag)));
+    container.appendChild(createPill(tag, active.has(tag), available.has(tag)));
   }
 }
 
-function createPill(tag: QuoteTag, active: boolean): HTMLButtonElement {
+function createPill(
+  tag: QuoteTag,
+  active: boolean,
+  isEnabled: boolean,
+): HTMLButtonElement {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = `textButton quoteTagPill${active ? " active" : ""}`;
+
+  if (!isEnabled) {
+    btn.classList.add("disabled");
+    btn.disabled = true;
+  }
+
   btn.dataset["tag"] = tag;
   btn.setAttribute("aria-pressed", String(active));
-  btn.title = TAG_LABELS[tag];
+  btn.title = isEnabled
+    ? TAG_LABELS[tag]
+    : `${TAG_LABELS[tag]} (no quotes found with current length)`;
 
   btn.innerHTML = `
     <i class="fas ${TAG_ICONS[tag]}" aria-hidden="true"></i>
@@ -139,11 +123,15 @@ function createPill(tag: QuoteTag, active: boolean): HTMLButtonElement {
   `;
 
   btn.addEventListener("click", (e) => {
-    e.stopPropagation(); // don't bubble to the outside-click handler
+    e.stopPropagation();
+    if (!isEnabled) return;
     toggleQuoteTag(tag);
-    syncPills();
+
+    if (quoteTagFilterModal.isOpen()) syncPills();
+
     syncLabel();
     syncClearBtn();
+    maybeRestartTestForQuoteTagChange();
   });
 
   return btn;
@@ -156,6 +144,7 @@ function syncPills(): void {
   if (!container) return;
 
   const active = new Set(Config.quoteTags);
+  const available = QuotesController.getAvailableTags(Config.quoteLength);
 
   container
     .querySelectorAll<HTMLButtonElement>(".quoteTagPill")
@@ -163,8 +152,15 @@ function syncPills(): void {
       const tag = btn.dataset["tag"] as QuoteTag | undefined;
       if (!tag) return;
       const on = active.has(tag);
+      const isEnabled = available.has(tag);
+
       btn.classList.toggle("active", on);
+      btn.classList.toggle("disabled", !isEnabled);
+      btn.disabled = !isEnabled;
       btn.setAttribute("aria-pressed", String(on));
+      btn.title = isEnabled
+        ? TAG_LABELS[tag]
+        : `${TAG_LABELS[tag]} (no quotes found with current length)`;
     });
 }
 
@@ -172,32 +168,34 @@ function syncPills(): void {
  * Updates the trigger button label. Shows "all tags" when nothing is selected, or a comma list up to 2 tags followed by " +N" when there are more.
  */
 function syncLabel(): void {
-  const label = getTrigger()?.querySelector<HTMLSpanElement>(
-    ".quoteTagFilterLabel",
-  );
-  if (!label) return;
+  const trigger = getTrigger();
+  const label = trigger?.querySelector<HTMLSpanElement>(".quoteTagFilterLabel");
+  const icon = trigger?.querySelector<HTMLElement>("i:first-child");
+  if (!label || !icon) return;
 
   const tags = Config.quoteTags;
 
   if (tags.length === 0) {
     label.textContent = "all tags";
+    icon.className = "fas fa-fw fa-tags";
     return;
   }
 
-  const shown = tags
-    .slice(0, 2)
-    .map((t) => TAG_LABELS[t])
-    .join(", ");
-  const extra = tags.length > 2 ? ` +${tags.length - 2}` : "";
-  label.textContent = shown + extra;
+  const firstTag = tags[0] as QuoteTag;
+  const tagName = TAG_LABELS[firstTag];
+  const extra = tags.length > 1 ? ` +${tags.length - 1}` : "";
+
+  label.textContent = tagName + extra;
+  icon.className = `fas fa-fw ${TAG_ICONS[firstTag]}`;
 }
 
 function syncClearBtn(): void {
-  const btn = getClearBtn();
-  if (!btn) return;
   const hasTags = Config.quoteTags.length > 0;
-  btn.style.visibility = hasTags ? "visible" : "hidden";
-  btn.setAttribute("aria-disabled", String(!hasTags));
+  const clearBtn = getClearBtn();
+  if (clearBtn) {
+    clearBtn.style.visibility = hasTags ? "visible" : "hidden";
+    clearBtn.setAttribute("aria-disabled", String(!hasTags));
+  }
 }
 
 //  Public API
@@ -206,9 +204,11 @@ function syncClearBtn(): void {
  * Call this once after the DOM is ready to wire up the trigger and clear button event listeners.
  */
 export function init(): void {
-  // Always reset pillsBuilt because the DOM might have been replaced
-  pillsBuilt = false;
-  isOpen = false;
+  modalPillsBuilt = false;
+
+  if (quoteTagFilterModal.isOpen()) {
+    void quoteTagFilterModal.hide();
+  }
 
   const trigger = getTrigger();
   const clearBtn = getClearBtn();
@@ -221,7 +221,11 @@ export function init(): void {
 
   trigger?.addEventListener("click", (e) => {
     e.stopPropagation();
-    toggle();
+    if (quoteTagFilterModal.isOpen()) {
+      closeModal();
+      return;
+    }
+    openModal();
   });
 
   clearBtn?.addEventListener("click", (e) => {
@@ -230,6 +234,7 @@ export function init(): void {
     syncPills();
     syncLabel();
     syncClearBtn();
+    maybeRestartTestForQuoteTagChange();
   });
 
   syncLabel();
@@ -248,21 +253,51 @@ export function setVisible(visible: boolean): void {
     wrapper.classList.remove("hidden");
   } else {
     wrapper.classList.add("hidden");
-    close();
+    closeModal();
   }
 }
 
 /**
- * Call this whenever Config.quoteTags changes externally so the dropdown stays in sync without needing to be open.
+ * Call this whenever Config.quoteTags changes externally.
  */
 export function update(): void {
-  pillsBuilt = false;
+  modalPillsBuilt = false;
 
-  if (isOpen) {
+  if (quoteTagFilterModal.isOpen()) {
     buildPills();
-    pillsBuilt = true;
+    modalPillsBuilt = true;
   }
 
   syncLabel();
   syncClearBtn();
+}
+
+function openModal(): void {
+  if (quoteTagFilterModal.isOpen()) return;
+
+  modalPillsBuilt = false;
+
+  const trigger = getTrigger();
+  trigger?.setAttribute("aria-expanded", "true");
+  trigger?.classList.add("active");
+
+  void quoteTagFilterModal.show({
+    beforeAnimation: async () => {
+      if (!modalPillsBuilt) {
+        buildPills();
+        modalPillsBuilt = true;
+      }
+    },
+  });
+}
+
+function closeModal(): void {
+  if (!quoteTagFilterModal.isOpen()) return;
+
+  const trigger = getTrigger();
+  trigger?.setAttribute("aria-expanded", "false");
+  trigger?.classList.remove("active");
+
+  modalPillsBuilt = false;
+  void quoteTagFilterModal.hide();
 }

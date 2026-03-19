@@ -73,45 +73,20 @@
         </button>
       </div>
 
+      <div class="spacer quoteTagSpacer"></div>
+
       <div class="quoteTagFilter hidden">
         <button
           class="textButton quoteTagFilterTrigger"
           id="quoteTagFilterTrigger"
           aria-haspopup="true"
           aria-expanded="false"
-          aria-controls="quoteTagFilterDropdown"
+          aria-controls="quoteTagFilterModal"
           title="Filter by tag"
         >
           <i class="fas fa-fw fa-tags"></i>
-          <span class="quoteTagFilterLabel">all tags</span>
-          <i class="fas fa-fw fa-chevron-down quoteTagFilterChevron"></i>
+          <span class="quoteTagFilterLabel">Select tags</span>
         </button>
-
-        <div
-          class="quoteTagFilterDropdown"
-          id="quoteTagFilterDropdown"
-          role="dialog"
-          aria-label="Filter quotes by tag"
-        >
-          <div class="quoteTagFilterDropdownHeader">
-            <span class="quoteTagFilterDropdownTitle">Filter by tag</span>
-            <button
-              type="button"
-              class="textButton quoteTagFilterClearBtn"
-              id="quoteTagFilterClearBtn"
-              title="Clear all tag filters"
-            >
-              clear
-            </button>
-          </div>
-
-          <div
-            class="quoteTagFilterPills"
-            id="quoteTagFilterPills"
-            role="group"
-            aria-label="Quote tags"
-          ></div>
-        </div>
       </div>
 
       <div class="zen">
