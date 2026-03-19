@@ -1662,3 +1662,153 @@ body.fb-arrows {
     }
   }
 }
+
+//  Quote Tag Filter
+#testConfig {
+  // Register .quoteTagFilter alongside the other config sections so it gets
+  // the same grid-auto-flow and textButton padding treatment.
+  .quoteTagFilter {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: end;
+    position: relative; // anchor for the absolute dropdown
+
+    .textButton {
+      padding: var(--verticalPadding) var(--horizontalPadding);
+
+      &:first-child {
+        margin-left: var(--horizontalPadding);
+      }
+      &:last-child {
+        margin-right: var(--horizontalPadding);
+      }
+    }
+  }
+}
+
+// Trigger button extras
+.quoteTagFilterTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+}
+
+.quoteTagFilterChevron {
+  font-size: 0.7em;
+  opacity: 0.5;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.quoteTagFilterTrigger[aria-expanded="true"] .quoteTagFilterChevron {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+// Dropdown panel
+.quoteTagFilterDropdown {
+  position: absolute;
+  // Sit just below the config row; z-index keeps it above #words
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  z-index: 200;
+
+  min-width: 240px;
+  padding: 0.6rem;
+  border-radius: var(--roundness);
+
+  background-color: var(--sub-alt-color);
+  border: 1px solid color-mix(in srgb, var(--sub-color) 40%, transparent);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+
+  // Hidden by default — .open class toggled by JS
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  &.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Dropdown header
+.quoteTagFilterDropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--sub-color) 30%, transparent);
+}
+
+.quoteTagFilterDropdownTitle {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sub-color);
+}
+
+// Clear button — compact variant of .textButton
+.quoteTagFilterClearBtn {
+  font-size: 0.7rem;
+  padding: 0.15em 0.5em;
+  color: var(--sub-color);
+  visibility: hidden; // shown by JS only when tags are selected
+  transition: color 0.125s;
+
+  &:hover {
+    color: var(--text-color);
+  }
+}
+
+// Tag pills
+.quoteTagFilterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+// Each pill reuses .textButton as a base class (applied in JS).
+// Additional pill-specific overrides live here.
+.quoteTagPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.25em 0.65em;
+  border-radius: 999px; // pill shape
+  font-size: 0.75rem;
+  opacity: 0.5;
+  transition:
+    background-color 0.125s,
+    color 0.125s,
+    opacity 0.125s;
+
+  i {
+    font-size: 0.7em;
+  }
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  // Active state mirrors MonkeyType's selected config button pattern
+  &.active {
+    opacity: 1;
+    color: var(--main-color);
+    background-color: color-mix(in srgb, var(--main-color) 12%, transparent);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .quoteTagFilterDropdown {
+    min-width: 190px;
+  }
+}
