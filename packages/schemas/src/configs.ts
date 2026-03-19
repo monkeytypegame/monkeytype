@@ -4,7 +4,7 @@ import * as Themes from "./themes";
 import * as Layouts from "./layouts";
 import { LanguageSchema } from "./languages";
 import { FontNameSchema } from "./fonts";
-import { QUOTE_TAGS } from "./quotes";
+import { QuoteTagSchema } from "./quotes";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -388,7 +388,7 @@ export const ConfigSchema = z
     time: TimeConfigSchema,
     mode: Shared.ModeSchema,
     quoteLength: QuoteLengthConfigSchema,
-    quoteTags: z.array(z.enum(QUOTE_TAGS)).default([]),
+    quoteTags: z.array(QuoteTagSchema).default([]),
     language: LanguageSchema,
     burstHeatmap: z.boolean(),
 
