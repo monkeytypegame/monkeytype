@@ -265,7 +265,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     if (modalEl() === undefined || dialogEl() === undefined) return;
     if (props.focusFirstInput === undefined) return;
 
-    const input = modalEl()?.qs<HTMLInputElement>("input:not(.hidden)");
+    const input = modalEl()?.qsa<HTMLInputElement>("input:not(.hidden)")[0];
     if (input) {
       if (props.focusFirstInput === true) {
         input.focus();
