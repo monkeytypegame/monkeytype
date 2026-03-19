@@ -21,7 +21,7 @@ import { themes, ThemeSchema, ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
 import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
-import { QuoteDataBaseSchema, QuoteData } from "@monkeytype/schemas/quotes";
+import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -185,7 +185,7 @@ async function validateQuotes(): Promise<void> {
     }
 
     //check schema
-    const schema = QuoteDataBaseSchema.extend({
+    const schema = QuoteDataSchema.extend({
       language: LanguageSchema
         //icelandic only exists as icelandic_1k, language in quote file is stripped of its size
         .or(z.literal("icelandic")),
