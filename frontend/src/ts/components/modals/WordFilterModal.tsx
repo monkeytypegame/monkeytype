@@ -18,6 +18,7 @@ import * as JSONData from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Separator } from "../common/Separator";
 import SlimSelect from "../ui/SlimSelect";
 
 type FilterPreset = {
@@ -195,27 +196,26 @@ export function WordFilterModal(props: {
   };
 
   return (
-    <AnimatedModal id="WordFilter" modalClass="max-w-[800px] gap-8">
-      <div class="grid gap-4">
-        <div class="grid gap-2">
-          <div class="text-sub">language</div>
-          <SlimSelect
-            options={languageOptions}
-            selected={language()}
-            onChange={setLanguage}
-          />
-        </div>
-        <div class="text-xs text-sub">
-          You can manually filter words by length, words or characters
-          (separated by spaces) on the left side. On the right side you can
-          generate filters based on a preset and selected layout.
-        </div>
+    <AnimatedModal id="WordFilter" modalClass="max-w-[800px] grid gap-4">
+      <div class="grid gap-1">
+        <div class="text-sub">language</div>
+        <SlimSelect
+          options={languageOptions}
+          selected={language()}
+          onChange={setLanguage}
+        />
+      </div>
+      <div class="text-xs text-sub">
+        You can manually filter words by length, words or characters (separated
+        by spaces) on the left side. On the right side you can generate filters
+        based on a preset and selected layout.
+      </div>
 
-        <div class="grid grid-cols-[1fr_auto_1fr] gap-4">
-          <div class="grid gap-4 self-start">
-            <div class="grid grid-cols-2 gap-x-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
+        <div class="grid gap-4 self-start">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="grid gap-1">
               <div class="text-sub">min length</div>
-              <div class="text-sub">max length</div>
               <input
                 type="number"
                 class="w-full"
@@ -223,6 +223,9 @@ export function WordFilterModal(props: {
                 value={minLength()}
                 onInput={(e) => setMinLength(e.currentTarget.value)}
               />
+            </div>
+            <div class="grid gap-1">
+              <div class="text-sub">max length</div>
               <input
                 type="number"
                 class="w-full"
@@ -231,89 +234,88 @@ export function WordFilterModal(props: {
                 onInput={(e) => setMaxLength(e.currentTarget.value)}
               />
             </div>
-            <div class="grid gap-2">
-              <div class="text-sub">include</div>
-              <input
-                class="w-full"
-                autocomplete="off"
-                value={includeInput()}
-                onInput={(e) => setIncludeInput(e.currentTarget.value)}
-              />
-              <label class="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  class="w-[1.25em]"
-                  checked={exactMatch()}
-                  onChange={(e) => {
-                    setExactMatch(e.currentTarget.checked);
-                    if (e.currentTarget.checked) setExcludeInput("");
-                  }}
-                />
-                Exact match only
-              </label>
-            </div>
-            <div class="grid gap-2">
-              <div class="text-sub">exclude</div>
-              <input
-                class="w-full"
-                autocomplete="off"
-                value={excludeInput()}
-                disabled={exactMatch()}
-                onInput={(e) => setExcludeInput(e.currentTarget.value)}
-              />
-            </div>
           </div>
-
-          <div class="w-1 rounded bg-sub-alt"></div>
-
-          <div class="grid gap-4 self-start">
-            <div class="grid gap-2">
-              <div class="text-sub">presets</div>
-              <SlimSelect
-                options={presetOptions}
-                selected={preset()}
-                onChange={setPreset}
+          <div class="grid gap-1">
+            <div class="text-sub">include</div>
+            <input
+              class="w-full"
+              autocomplete="off"
+              value={includeInput()}
+              onInput={(e) => setIncludeInput(e.currentTarget.value)}
+            />
+            <label class="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                class="w-[1.25em]"
+                checked={exactMatch()}
+                onChange={(e) => {
+                  setExactMatch(e.currentTarget.checked);
+                  if (e.currentTarget.checked) setExcludeInput("");
+                }}
               />
-            </div>
-            <div class="grid gap-2">
-              <div class="text-sub">layout</div>
-              <SlimSelect
-                options={layoutOptions}
-                selected={layout()}
-                onChange={setLayout}
-              />
-            </div>
-            <Button
-              variant="button"
-              text="apply"
-              onClick={() => void applyPreset()}
+              Exact match only
+            </label>
+          </div>
+          <div class="grid gap-1">
+            <div class="text-sub">exclude</div>
+            <input
+              class="w-full"
+              autocomplete="off"
+              value={excludeInput()}
+              disabled={exactMatch()}
+              onInput={(e) => setExcludeInput(e.currentTarget.value)}
             />
           </div>
         </div>
 
-        <div class="grid gap-2">
-          <div class="text-xs text-sub">
-            {
-              '"Set" replaces the current custom word list with the filter result, "Add" appends the filter result to the current custom word list.'
-            }
-          </div>
-          <div class="flex gap-2">
-            <Button
-              variant="button"
-              text="set"
-              class="flex-1"
-              disabled={loading()}
-              onClick={() => void apply(true)}
-            />
-            <Button
-              variant="button"
-              text="add"
-              class="flex-1"
-              disabled={loading()}
-              onClick={() => void apply(false)}
+        <Separator vertical class="hidden md:block" />
+        <Separator class="block md:hidden" />
+
+        <div class="grid gap-4 self-start">
+          <div class="grid gap-1">
+            <div class="text-sub">presets</div>
+            <SlimSelect
+              options={presetOptions}
+              selected={preset()}
+              onChange={setPreset}
             />
           </div>
+          <div class="grid gap-1">
+            <div class="text-sub">layout</div>
+            <SlimSelect
+              options={layoutOptions}
+              selected={layout()}
+              onChange={setLayout}
+            />
+          </div>
+          <Button
+            variant="button"
+            text="apply"
+            onClick={() => void applyPreset()}
+          />
         </div>
+      </div>
+
+      <div class="text-xs text-sub">
+        {
+          '"Set" replaces the current custom word list with the filter result, "Add" appends the filter result to the current custom word list.'
+        }
+      </div>
+      <div class="grid gap-2">
+        <Button
+          variant="button"
+          text="set"
+          class="flex-1"
+          disabled={loading()}
+          onClick={() => void apply(true)}
+        />
+        <Button
+          variant="button"
+          text="add"
+          class="flex-1"
+          disabled={loading()}
+          onClick={() => void apply(false)}
+        />
       </div>
     </AnimatedModal>
   );
