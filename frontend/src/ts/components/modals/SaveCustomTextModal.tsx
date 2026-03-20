@@ -90,6 +90,11 @@ export function SaveCustomTextModal(props: {
         />
         <form.Field
           name="isLong"
+          listeners={{
+            onChange: () => {
+              void form.validateField("name", "change");
+            },
+          }}
           children={(field) => (
             <Checkbox field={field} label="Long text (book mode)" />
           )}
