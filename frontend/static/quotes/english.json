@@ -6,6 +6,16 @@
     [301, 600],
     [601, 9999]
   ],
+  "tagNames": {
+    "fiction": "Fiction",
+    "poetry": "Poetry",
+    "philosophy": "Philosophy",
+    "political": "Political",
+    "inspirational": "Inspirational",
+    "wisdom": "Wisdom",
+    "mindset": "Mindset",
+    "humorous": "Humorous"
+  },
   "quotes": [
     {
       "text": "You have the power to heal your life, and you need to know that.",
