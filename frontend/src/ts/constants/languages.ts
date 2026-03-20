@@ -373,6 +373,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_cuda",
   ],
   viossa: ["viossa", "viossa_njutro"],
+  pokemon: ["pokemon_1k"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;
