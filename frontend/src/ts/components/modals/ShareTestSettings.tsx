@@ -8,6 +8,7 @@ import { createSignal, JSXElement, Show } from "solid-js";
 import { getConfig } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
 import { currentQuote } from "../../test/test-words";
+import { cn } from "../../utils/cn";
 import { getMode2 } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
@@ -71,25 +72,28 @@ export function ShareTestSettings(): JSXElement {
         <div>Mode</div>
         <div class="sub">Time, Words, Quote, Zen, Custom</div>
       </label>
-      <Show when={mode()}>
-        <label class="checkboxWithSub">
-          <input
-            type="checkbox"
-            checked={mode2()}
-            onChange={(e) => setMode2(e.currentTarget.checked)}
-          />
-          <div>Mode2</div>
-          <div class="sub">Test seconds, Test words, Quote Id</div>
-        </label>
-        <label class="checkbox">
-          <input
-            type="checkbox"
-            checked={customText()}
-            onChange={(e) => setCustomText(e.currentTarget.checked)}
-          />
-          Custom text
-        </label>
-      </Show>
+      <label
+        class={cn(
+          "checkboxWithSub",
+          mode() ? "" : "pointer-events-none opacity-50",
+        )}
+      >
+        <input
+          type="checkbox"
+          checked={mode2()}
+          onChange={(e) => setMode2(e.currentTarget.checked)}
+        />
+        <div>Mode2</div>
+        <div class="sub">Test seconds, Test words, Quote Id</div>
+      </label>
+      <label class="checkbox">
+        <input
+          type="checkbox"
+          checked={customText()}
+          onChange={(e) => setCustomText(e.currentTarget.checked)}
+        />
+        Custom text
+      </label>
       <label class="checkbox">
         <input
           type="checkbox"
