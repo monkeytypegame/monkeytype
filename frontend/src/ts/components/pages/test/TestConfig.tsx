@@ -34,24 +34,7 @@ export function TestConfig(): JSXElement {
     >
       <PuncAndNum />
       <Mode />
-      <Mode2 />
-      <AnimeShow
-        when={shareVisible()}
-        // when={true}
-        class="absolute right-0 self-center"
-        animeProps={{
-          initial: { opacity: 0, marginRight: "2rem" },
-          animate: { opacity: 1, marginRight: 0, duration: durationMs },
-          exit: { opacity: 0, marginRight: "2rem", duration: durationMs },
-        }}
-      >
-        <Button
-          variant="text"
-          class={buttonClass}
-          fa={{ icon: "fa-share", fixedWidth: true }}
-          onClick={() => showModal("ShareTestSettings")}
-        />
-      </AnimeShow>
+      <Mode2 shareVisible={shareVisible()} />
     </div>
   );
 }
@@ -174,47 +157,65 @@ function Mode(): JSXElement {
   );
 }
 
-function Mode2(): JSXElement {
+function Mode2(props: { shareVisible: boolean }): JSXElement {
   const sClass = "z-2 col-start-1 row-start-1 grid w-max place-self-start";
 
   return (
-    <Anime
-      // class="grid rounded bg-sub-alt w-max place-self-start px-3"
-      class="grid"
-      animation={{
-        opacity: getConfig.mode === "zen" ? 0 : 1,
-        duration: durationMs,
-      }}
-    >
-      <AnimeShow
-        when={getConfig.mode === "time"}
-        duration={durationMs}
-        class={cn(cardClass, sClass)}
+    <div class="relative grid w-max">
+      <Anime
+        // class="grid rounded bg-sub-alt w-max place-self-start px-3"
+        class="grid"
+        animation={{
+          opacity: getConfig.mode === "zen" ? 0 : 1,
+          duration: durationMs,
+        }}
       >
-        <Mode2Time />
-      </AnimeShow>
+        <AnimeShow
+          when={getConfig.mode === "time"}
+          duration={durationMs}
+          class={cn(cardClass, sClass)}
+        >
+          <Mode2Time />
+        </AnimeShow>
+        <AnimeShow
+          when={getConfig.mode === "words"}
+          duration={durationMs}
+          class={cn(cardClass, sClass)}
+        >
+          <Mode2Words />
+        </AnimeShow>
+        <AnimeShow
+          when={getConfig.mode === "quote"}
+          duration={durationMs}
+          class={cn(cardClass, sClass)}
+        >
+          <Mode2Quote />
+        </AnimeShow>
+        <AnimeShow
+          when={getConfig.mode === "custom"}
+          duration={durationMs}
+          class={cn(cardClass, sClass)}
+        >
+          <Mode2Custom />
+        </AnimeShow>
+      </Anime>
       <AnimeShow
-        when={getConfig.mode === "words"}
-        duration={durationMs}
-        class={cn(cardClass, sClass)}
+        when={props.shareVisible}
+        class="absolute right-0 self-center"
+        animeProps={{
+          initial: { opacity: 0, marginRight: "0" },
+          animate: { opacity: 1, marginRight: "-3.5em", duration: durationMs },
+          exit: { opacity: 0, marginRight: "0", duration: durationMs },
+        }}
       >
-        <Mode2Words />
+        <Button
+          variant="text"
+          class={buttonClass}
+          fa={{ icon: "fa-share", fixedWidth: true }}
+          onClick={() => showModal("ShareTestSettings")}
+        />
       </AnimeShow>
-      <AnimeShow
-        when={getConfig.mode === "quote"}
-        duration={durationMs}
-        class={cn(cardClass, sClass)}
-      >
-        <Mode2Quote />
-      </AnimeShow>
-      <AnimeShow
-        when={getConfig.mode === "custom"}
-        duration={durationMs}
-        class={cn(cardClass, sClass)}
-      >
-        <Mode2Custom />
-      </AnimeShow>
-    </Anime>
+    </div>
   );
 }
 
