@@ -9,7 +9,12 @@ export type ModalId =
   | "DevInboxPicker"
   | "RegisterCaptcha"
   | "Alerts"
-  | "SimpleModal";
+  | "SimpleModal"
+  | "CustomText"
+  | "SaveCustomText"
+  | "SavedTexts"
+  | "WordFilter"
+  | "CustomGenerator";
 
 export type ModalVisibility = {
   visible: boolean;

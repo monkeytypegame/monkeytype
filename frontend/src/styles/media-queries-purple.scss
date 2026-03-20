@@ -118,44 +118,6 @@
   .modalWrapper .modal {
     padding: 1rem;
   }
-  #customTextModal {
-    .modal {
-      .buttonsTop {
-        grid-template-columns: 1fr;
-      }
-      .inputs {
-        grid-template-columns: 1fr;
-      }
-    }
-  }
-  #wordFilterModal {
-    .modal {
-      gap: 1rem;
-      .divider {
-        height: 0.25rem;
-        width: 100%;
-        position: relative;
-        display: grid;
-        &::before {
-          content: "or";
-          font-size: 0.75rem;
-          position: absolute;
-          top: -0.5em;
-          justify-self: center;
-          background: var(--bg-color);
-          color: var(--sub-color);
-          padding: 0 1rem;
-        }
-      }
-      grid-template-areas:
-        "top top"
-        "left left"
-        "divider divider"
-        "right right"
-        "bottom bottom";
-      grid-template-columns: 1fr 1fr;
-    }
-  }
   .testActivity {
     .wrapper {
       width: 100%;
