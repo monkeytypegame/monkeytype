@@ -205,7 +205,7 @@ export function WordFilterModal(props: {
             onChange={setLanguage}
           />
         </div>
-        <div class="text-[0.8rem] text-sub">
+        <div class="text-xs text-sub">
           You can manually filter words by length, words or characters
           (separated by spaces) on the left side. On the right side you can
           generate filters based on a preset and selected layout.
@@ -292,7 +292,7 @@ export function WordFilterModal(props: {
         </div>
 
         <div class="grid gap-2">
-          <div class="text-[0.8rem] text-sub">
+          <div class="text-xs text-sub">
             {
               '"Set" replaces the current custom word list with the filter result, "Add" appends the filter result to the current custom word list.'
             }

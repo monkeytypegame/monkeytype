@@ -156,7 +156,7 @@ export function CustomGeneratorModal(props: {
           </div>
         </div>
         <div class="h-1 w-full rounded bg-sub-alt"></div>
-        <div class="text-[0.8rem] text-sub">
+        <div class="text-xs text-sub">
           Enter characters or strings separated by spaces. Random combinations
           will be generated using these inputs.
         </div>
@@ -202,7 +202,7 @@ export function CustomGeneratorModal(props: {
         </div>
       </div>
       <div class="mt-4 grid gap-4">
-        <div class="text-[0.8rem] text-sub">
+        <div class="text-xs text-sub">
           {
             '"Set" replaces the current custom text with generated words, "Add" appends generated words to the current custom text.'
           }
