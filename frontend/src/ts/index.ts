@@ -46,7 +46,7 @@ import "./ready";
 import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
 
-import "./components/hotkeys";
+import "./input/hotkeys";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
