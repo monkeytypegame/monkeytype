@@ -9,7 +9,9 @@ export type ModalId =
   | "DevInboxPicker"
   | "RegisterCaptcha"
   | "Alerts"
-  | "SimpleModal";
+  | "SimpleModal"
+  | "TestDuration"
+  | "ShareTestSettings";
 
 export type ModalVisibility = {
   visible: boolean;
