@@ -8,6 +8,7 @@ import { showSimpleModal } from "../../states/simple-modal";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Separator } from "../common/Separator";
 
 function getSavedText(name: string, long: boolean): string {
   let text = CustomText.getCustomText(name, long);
@@ -77,7 +78,7 @@ export function SavedTextsModal(props: {
       modalClass="max-w-[500px]"
       beforeShow={refresh}
     >
-      <div class="grid gap-4">
+      <div class="grid gap-2">
         <Show
           when={names().length > 0}
           fallback={<div class="text-sub">No saved custom texts found</div>}
@@ -104,7 +105,7 @@ export function SavedTextsModal(props: {
 
       <div class="text-2xl text-sub">Saved long texts</div>
 
-      <div class="grid gap-4">
+      <div class="grid gap-2">
         <Show
           when={longNames().length > 0}
           fallback={
@@ -141,7 +142,8 @@ export function SavedTextsModal(props: {
         </Show>
       </div>
 
-      <div class="my-4 h-1 rounded bg-sub-alt"></div>
+      <Separator />
+
       <div class="text-em-xs text-sub">
         Heads up! These texts are only stored locally. If you switch devices or
         clear your local browser data they will be lost.
