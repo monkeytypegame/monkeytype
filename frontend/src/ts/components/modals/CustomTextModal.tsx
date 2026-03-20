@@ -6,8 +6,8 @@ import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import * as ChallengeController from "../../controllers/challenge-controller";
 import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { restartTestEvent } from "../../states/core";
 import {
   hideModalAndClearChain,
   isModalOpen,
@@ -17,9 +17,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
+import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
-import * as TestLogic from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -198,12 +198,15 @@ export function CustomTextModal(): JSXElement {
       CustomText.setLimitValue(parseInt(limitSection()));
     }
 
-    ChallengeController.clearActive();
+    if (getLoadedChallenge() !== null) {
+      showNoticeNotification("Challenge cleared");
+      setLoadedChallenge(null);
+    }
     if (Config.mode !== "custom") {
       setConfig("mode", "custom");
     }
     PractiseWords.resetBefore();
-    TestLogic.restart();
+    restartTestEvent.dispatch();
     hideModalAndClearChain("CustomText");
   };
 
@@ -231,7 +234,7 @@ export function CustomTextModal(): JSXElement {
 
     setPipeDelimiter(CustomText.getPipeDelimiter());
     setLongTextWarning(CustomTextState.isCustomTextLong() ?? false);
-    setChallengeWarning(false);
+    setChallengeWarning(getLoadedChallenge() !== null);
 
     setTextarea(
       CustomText.getText()
