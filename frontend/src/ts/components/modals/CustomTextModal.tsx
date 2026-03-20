@@ -338,10 +338,6 @@ export function CustomTextModal(): JSXElement {
 
   const beforeShow = () => {
     initState();
-    // Check for incoming data (from returning sub-modal)
-    if (customTextIncomingData() !== null) {
-      handleIncomingData();
-    }
   };
 
   const afterShow = () => {
