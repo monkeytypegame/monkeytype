@@ -1,5 +1,6 @@
 import { createForm } from "@tanstack/solid-form";
 import { Accessor, JSXElement } from "solid-js";
+import { z } from "zod";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
 import { hideModal } from "../../states/modals";
@@ -13,7 +14,15 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
-import { fieldMandatory } from "../ui/form/utils";
+
+const nameSchema = z
+  .string()
+  .min(1, "Name is required")
+  .max(32, "Name must be 32 characters or less")
+  .regex(
+    /^[\w\s-]+$/,
+    "Name can only contain letters, numbers, spaces, underscores and hyphens",
+  );
 
 export function SaveCustomTextModal(props: {
   textToSave: Accessor<string[]>;
@@ -63,19 +72,16 @@ export function SaveCustomTextModal(props: {
           name="name"
           validators={{
             onChange: ({ value }) => {
-              const mandatory = fieldMandatory("Name is required")({
-                value,
-              });
-              if (mandatory !== undefined) return mandatory;
-              if (value.length > 32) {
-                return "Name must be 32 characters or less";
+              const parsed = nameSchema.safeParse(value);
+              if (!parsed.success) {
+                return parsed.error.issues[0]?.message;
               }
-              if (!/^[\w\s-]+$/.test(value)) {
-                return "Name can only contain letters, numbers, spaces, underscores and hyphens";
-              }
+
               const isLong = form.getFieldValue("isLong");
-              const names = CustomText.getCustomTextNames(isLong);
-              if (names.includes(value)) return "Duplicate name";
+              if (CustomText.getCustomTextNames(isLong).includes(value)) {
+                return "Duplicate name";
+              }
+
               return undefined;
             },
           }}
