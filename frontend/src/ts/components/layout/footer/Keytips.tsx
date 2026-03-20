@@ -2,8 +2,8 @@ import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getFocus } from "../../../states/core";
-import { Commandline } from "../../hotkeys/Commandline";
-import { QuickRestart } from "../../hotkeys/QuickRestart";
+import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../../hotkeys/QuickRestartHotkey";
 
 export function Keytips(): JSXElement {
   return (
@@ -14,9 +14,9 @@ export function Keytips(): JSXElement {
           "opacity-0": getFocus(),
         }}
       >
-        <QuickRestart /> - restart test
+        <QuickRestartHotkey /> - restart test
         <br />
-        <Commandline /> - command line
+        <CommandlineHotkey /> - command line
       </div>
     </Show>
   );
