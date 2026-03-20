@@ -12,7 +12,11 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
+import {
+  areCharactersVisuallyEqual,
+  checkAccentOrderMismatch,
+  isSpace,
+} from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import {
@@ -101,16 +105,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // input and target word
   const testInput = TestInput.input.current;
-  const currentWord = TestWords.words.getCurrent();
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
   const normalizedData = normalizeDataAndUpdateInputIfNeeded(
     options.data,
     testInput,
-    currentWord,
+    TestWords.words.getCurrent(),
   );
   const data = normalizedData ?? options.data;
+  const currentWord = TestWords.words.getCurrent();
 
   // start if needed
   if (!TestState.isActive) {
@@ -301,6 +305,18 @@ function normalizeDataAndUpdateInputIfNeeded(
   ) {
     replaceInputElementLastValueChar(targetChar);
     normalizedData = targetChar;
+  }
+
+  const accent = checkAccentOrderMismatch(
+    testInput + normalizedData,
+    currentWord,
+    Config.language,
+  );
+  if (accent !== null) {
+    TestWords.words.list[TestState.activeWordIndex] =
+      currentWord.slice(0, accent.patternStart) +
+      accent.inputPattern +
+      currentWord.slice(accent.patternStart + accent.inputPattern.length);
   }
   return normalizedData;
 }
