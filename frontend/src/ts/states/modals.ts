@@ -11,7 +11,8 @@ export type ModalId =
   | "Alerts"
   | "SimpleModal"
   | "TestDuration"
-  | "ShareTestSettings";
+  | "ShareTestSettings"
+  | "CustomWordAmount";
 
 export type ModalVisibility = {
   visible: boolean;

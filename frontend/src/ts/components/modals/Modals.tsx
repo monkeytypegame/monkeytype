@@ -1,6 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { ContactModal } from "./ContactModal";
+import { CustomWordAmount } from "./CustomWordAmount";
 import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
@@ -17,6 +18,7 @@ export function Modals(): JSXElement {
       <SupportModal />
       <SimpleModal />
       <TestDuration />
+      <CustomWordAmount />
       <ShareTestSettings />
     </>
   );

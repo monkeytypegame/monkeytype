@@ -31,52 +31,56 @@ export function TestDuration(): JSXElement {
     setInput(getConfig.time.toString());
   });
 
+  const apply = () => {
+    const val = parseInput(input());
+
+    if (val === null || isNaN(val) || val < 0 || !isFinite(val)) {
+      showNoticeNotification("Custom time must be a positive number or zero");
+      return;
+    }
+
+    setConfig("time", val);
+    restartTestEvent.dispatch();
+
+    if (val >= 1800) {
+      showNoticeNotification("Stay safe and take breaks!");
+    } else if (val === 0) {
+      showNoticeNotification(
+        "Infinite time! Make sure to use Bail Out from the command line to save your result.",
+        { durationMs: 7000 },
+      );
+    }
+
+    hideModalAndClearChain("TestDuration");
+  };
+
   return (
     <AnimatedModal id="TestDuration" title="Test Duration">
-      <div class="text-xs">{humanTime()}</div>
-      <input
-        type="text"
-        value={input()}
-        onInput={(e) => setInput(e.currentTarget.value)}
-      />
-      <div class="text-xs">
-        You can use &ldquo;h&rdquo; for hours and &ldquo;m&rdquo; for minutes,
-        for example &ldquo;1h30m&rdquo;.
-        <br />
-        <br />
-        You can start an infinite test by inputting 0. Then, to stop the test,
-        use the Bail Out feature:
-        <br />(<kbd>esc</kbd> or <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> +{" "}
-        <kbd>p</kbd> &gt; Bail Out)
-      </div>
-      <Button
-        variant="button"
-        text="apply"
-        onClick={() => {
-          const val = parseInput(input());
-
-          if (val === null || isNaN(val) || val < 0 || !isFinite(val)) {
-            showNoticeNotification(
-              "Custom time must be a positive number or zero",
-            );
-            return;
-          }
-
-          setConfig("time", val);
-          restartTestEvent.dispatch();
-
-          if (val >= 1800) {
-            showNoticeNotification("Stay safe and take breaks!");
-          } else if (val === 0) {
-            showNoticeNotification(
-              "Infinite time! Make sure to use Bail Out from the command line to save your result.",
-              { durationMs: 7000 },
-            );
-          }
-
-          hideModalAndClearChain("TestDuration");
+      <form
+        class="grid gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          apply();
         }}
-      />
+      >
+        <div class="text-xs">{humanTime()}</div>
+        <input
+          type="text"
+          value={input()}
+          onInput={(e) => setInput(e.currentTarget.value)}
+        />
+        <div class="text-xs">
+          You can use &ldquo;h&rdquo; for hours and &ldquo;m&rdquo; for minutes,
+          for example &ldquo;1h30m&rdquo;.
+          <br />
+          <br />
+          You can start an infinite test by inputting 0. Then, to stop the test,
+          use the Bail Out feature:
+          <br />(<kbd>esc</kbd> or <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> +{" "}
+          <kbd>p</kbd> &gt; Bail Out)
+        </div>
+        <Button variant="button" text="apply" onClick={apply} />
+      </form>
     </AnimatedModal>
   );
 }

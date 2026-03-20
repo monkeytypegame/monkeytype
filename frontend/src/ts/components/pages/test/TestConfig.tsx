@@ -264,6 +264,7 @@ function Mode2Time(): JSXElement {
       <Button
         class={buttonClass}
         variant="text"
+        active={![15, 30, 60, 120].includes(getConfig.time)}
         fa={{
           icon: "fa-tools",
           fixedWidth: true,
@@ -322,12 +323,13 @@ function Mode2Words(): JSXElement {
       <Button
         class={buttonClass}
         variant="text"
+        active={![10, 25, 50, 100].includes(getConfig.words)}
         fa={{
           icon: "fa-tools",
           fixedWidth: true,
         }}
         onClick={() => {
-          showErrorNotification("//todo");
+          showModal("CustomWordAmount");
         }}
       />
     </div>
