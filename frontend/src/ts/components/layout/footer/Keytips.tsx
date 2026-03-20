@@ -2,18 +2,10 @@ import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getFocus } from "../../../states/core";
-import { Conditional } from "../../common/Conditional";
+import { Commandline } from "../../hotkeys/Commandline";
+import { QuickRestart } from "../../hotkeys/QuickRestart";
 
 export function Keytips(): JSXElement {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = (): string =>
-    getConfig.quickRestart === "esc" ? "tab" : "esc";
-
   return (
     <Show when={getConfig.showKeyTips}>
       <div
@@ -22,22 +14,9 @@ export function Keytips(): JSXElement {
           "opacity-0": getFocus(),
         }}
       >
-        <Conditional
-          if={getConfig.quickRestart === "off"}
-          then={
-            <>
-              <kbd>tab</kbd> + <kbd>enter</kbd> - restart test
-            </>
-          }
-          else={
-            <>
-              <kbd>{getConfig.quickRestart}</kbd> - restart test
-            </>
-          }
-        />
+        <QuickRestart /> - restart test
         <br />
-        <kbd>{commandKey()}</kbd> or <kbd>{modifierKey}</kbd> + <kbd>shift</kbd>{" "}
-        + <kbd>p</kbd> - command line
+        <Commandline /> - command line
       </div>
     </Show>
   );

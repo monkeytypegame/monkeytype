@@ -1,3 +1,4 @@
+import { hotkeysDevtoolsPlugin } from "@tanstack/solid-hotkeys-devtools";
 import { JSXElement, lazy, onMount, Suspense } from "solid-js";
 
 let DevComponents: (() => JSXElement) | undefined;
@@ -13,13 +14,18 @@ if (import.meta.env.DEV) {
       default: m.DevOptionsModal,
     })),
   );
+  const LazyTanstackDevtools = lazy(async () =>
+    import("@tanstack/solid-devtools").then((m) => ({
+      default: m.TanStackDevtools,
+    })),
+  );
 
   const LazySolidDevtoolsOverlay = lazy(async () =>
     import("@solid-devtools/overlay").then((m) => ({
       default: () => {
         onMount(() => {
           m.attachDevtoolsOverlay({
-            defaultOpen: true,
+            defaultOpen: false,
             noPadding: true,
           });
         });
@@ -31,7 +37,11 @@ if (import.meta.env.DEV) {
 
   DevComponents = () => (
     <Suspense>
-      <LazyQueryDevtools />
+      <LazyTanstackDevtools
+        plugins={[hotkeysDevtoolsPlugin()]}
+        config={{ defaultOpen: false }}
+      />
+      <LazyQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
       <LazyDevOptionsModal />
       <LazySolidDevtoolsOverlay />
     </Suspense>

@@ -28,13 +28,6 @@ import {
 import { Keycode } from "../../constants/keys";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
-  if (Config.quickRestart === "tab") {
-    e.preventDefault();
-    if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
-      TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      return;
-    }
-  }
   if (TestWords.hasTab) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
@@ -78,14 +71,6 @@ export async function handleEnter(
         void TestLogic.finish();
         return;
       }
-    }
-  }
-
-  if (Config.quickRestart === "enter") {
-    e.preventDefault();
-    if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
-      TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      return;
     }
   }
 }
@@ -190,12 +175,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   if (event.key === "Enter") {
     await handleEnter(event, now);
-    return;
-  }
-
-  if (event.key === "Escape" && Config.quickRestart === "esc") {
-    event.preventDefault();
-    TestLogic.restart({ isQuickRestart: !event.shiftKey });
     return;
   }
 }

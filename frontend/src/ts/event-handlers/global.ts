@@ -1,8 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as PageTransition from "../legacy-states/page-transition";
 import { Config } from "../config/store";
-import * as TestWords from "../test/test-words";
-import * as Commandline from "../commandline/commandline";
 import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -33,25 +31,6 @@ document.addEventListener("keydown", (e) => {
       if (Config.showOutOfFocusWarning) {
         e.preventDefault();
       }
-    }
-  }
-
-  if (
-    (e.key === "Escape" && Config.quickRestart !== "esc") ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      !TestWords.hasTab &&
-      !e.shiftKey) ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      TestWords.hasTab &&
-      e.shiftKey) ||
-    (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
-  ) {
-    const popupVisible = Misc.isAnyPopupVisible();
-    if (!popupVisible) {
-      e.preventDefault();
-      Commandline.show();
     }
   }
 
