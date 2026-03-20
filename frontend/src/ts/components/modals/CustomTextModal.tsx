@@ -1,6 +1,6 @@
 import type { CustomTextMode } from "@monkeytype/schemas/util";
 
-import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, For, JSXElement, Show } from "solid-js";
 
 import type { FaSolidIcon } from "../../types/font-awesome";
 
@@ -8,11 +8,7 @@ import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import * as CustomTextState from "../../legacy-states/custom-text-name";
 import { restartTestEvent } from "../../states/core";
-import {
-  hideModalAndClearChain,
-  isModalOpen,
-  showModal,
-} from "../../states/modals";
+import { hideModalAndClearChain, showModal } from "../../states/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -329,15 +325,9 @@ export function CustomTextModal(): JSXElement {
     }
   };
 
-  // Watch for incoming data from sub-modals
-  createEffect(() => {
-    if (isModalOpen("CustomText") && customTextIncomingData() !== null) {
-      handleIncomingData();
-    }
-  });
-
   const beforeShow = () => {
     initState();
+    handleIncomingData();
   };
 
   const afterShow = () => {
