@@ -11,7 +11,7 @@ import {
 } from "./persistence";
 import { Config, setConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { migrateConfig } from "./utils";
 import { promiseWithResolvers, typedKeys } from "../utils/misc";
 import { setConfig } from "./setters";
@@ -76,7 +76,7 @@ export async function applyConfig(
   //migrate old values if needed, remove additional keys and merge with default config
   const fullConfig: ConfigSchemas.Config = migrateConfig(partialConfig);
 
-  ConfigEvent.dispatch({ key: "fullConfigChange" });
+  configEvent.dispatch({ key: "fullConfigChange" });
 
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullConfig)) {
@@ -107,7 +107,7 @@ export async function applyConfig(
     saveToLocalStorage(key);
   }
 
-  ConfigEvent.dispatch({ key: "fullConfigChangeFinished" });
+  configEvent.dispatch({ key: "fullConfigChangeFinished" });
   setConfigStore(reconcile(Config));
 }
 

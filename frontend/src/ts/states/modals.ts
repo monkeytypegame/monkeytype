@@ -9,6 +9,7 @@ export type ModalId =
   | "DevInboxPicker"
   | "RegisterCaptcha"
   | "Alerts"
+  | "SimpleModal"
   | "MiniResultChartModal";
 
 export type ModalVisibility = {

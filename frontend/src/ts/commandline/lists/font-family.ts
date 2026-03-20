@@ -1,11 +1,12 @@
 import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
-import { applyFontFamily } from "../../controllers/theme-controller";
+
 import { updateUI } from "../../elements/settings/custom-font-picker";
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
+import { applyFontFamily } from "../../ui";
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
 if (fromMeta.subgroup) {

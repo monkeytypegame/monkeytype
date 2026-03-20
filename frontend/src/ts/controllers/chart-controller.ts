@@ -57,7 +57,7 @@ Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
 import { Config } from "../config/store";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as TestInput from "../test/test-input";
 import * as Arrays from "../utils/arrays";
 import { blendTwoHexColors } from "../utils/colors";
@@ -556,6 +556,6 @@ createDebouncedEffectOn(125, getTheme, (theme) => {
   void result.updateColors(theme);
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "fontFamily") setDefaultFontFamily(newValue);
 });

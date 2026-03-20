@@ -3,14 +3,15 @@ import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
 import { configMetadata, ConfigMetadataObject } from "./metadata";
 import { isConfigValueValid } from "./validation";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
-} from "../test/funbox/funbox-validation";
+} from "./funbox-validation";
 import * as TestState from "../test/test-state";
-import { typedKeys, triggerResize } from "../utils/misc";
+import { typedKeys, triggerResize, escapeHTML } from "../utils/misc";
+import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
 import { Config, setConfigStore } from "./store";
 import { FunboxName } from "@monkeytype/schemas/configs";
 
@@ -77,6 +78,16 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   }
 
   if (!canSetConfigWithCurrentFunboxes(key, value, Config.funbox)) {
+    if (key === "words" || key === "time") {
+      showNoticeNotification("Active funboxes do not support infinite tests");
+    } else {
+      showNoticeNotification(
+        `You can't set ${camelCaseToWords(
+          key,
+        )} to ${String(value)} with currently active funboxes.`,
+        { durationMs: 5000 },
+      );
+    }
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
         value,
@@ -113,7 +124,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   // @ts-expect-error i can't figure this out
-  ConfigEvent.dispatch({
+  configEvent.dispatch({
     key: key,
     newValue: value,
     nosave: options?.nosave ?? false,
@@ -152,7 +163,18 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     return false;
   }
 
-  if (!canSetFunboxWithConfig(funbox, Config)) {
+  const funboxCheck = canSetFunboxWithConfig(funbox, Config);
+  if (!funboxCheck.ok) {
+    const errorStrings = funboxCheck.errors.map(
+      (e) =>
+        `${capitalizeFirstLetter(
+          camelCaseToWords(e.key),
+        )} cannot be set to ${String(e.value)}.`,
+    );
+    showNoticeNotification(
+      `You can't enable ${escapeHTML(funbox.replace(/_/g, " "))}:<br />${errorStrings.map((s) => escapeHTML(s)).join("<br />")}`,
+      { durationMs: 5000, useInnerHtml: true },
+    );
     return false;
   }
 
@@ -173,7 +195,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 
   Config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
-  ConfigEvent.dispatch({
+  configEvent.dispatch({
     key: "funbox",
     newValue: Config.funbox,
     nosave,

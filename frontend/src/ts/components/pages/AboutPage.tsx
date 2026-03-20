@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement } from "solid-js";
 
-import { queryClient } from "../../queries";
 import {
   getContributorsQueryOptions,
   getSpeedHistogramQueryOptions,
@@ -17,13 +16,6 @@ import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { H2, H3 } from "../common/Headers";
-
-export function prefetchAboutPage(): void {
-  void queryClient.prefetchQuery(getContributorsQueryOptions());
-  void queryClient.prefetchQuery(getSupportersQueryOptions());
-  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
-}
 
 export function AboutPage(): JSXElement {
   const isOpen = () => getActivePage() === "about";
