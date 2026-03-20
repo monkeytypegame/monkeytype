@@ -27,7 +27,7 @@ export function TestConfig(): JSXElement {
     <div
       class={cn(
         variables,
-        "relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center gap-(--card-gap) place-self-center [font-size:var(--font-size)] sm:grid",
+        "relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
       )}
       onMouseEnter={() => setShareVisible(true)}
       onMouseLeave={() => setShareVisible(false)}
@@ -41,7 +41,7 @@ export function TestConfig(): JSXElement {
 
 function PuncAndNum(): JSXElement {
   return (
-    <div class="w-max place-self-end">
+    <div class="mr-(--card-gap) w-max place-self-end">
       <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
         <div class={cardClass}>
           <Button
@@ -163,10 +163,10 @@ function Mode2(props: { shareVisible: boolean }): JSXElement {
   return (
     <div class="relative grid w-max">
       <Anime
-        // class="grid rounded bg-sub-alt w-max place-self-start px-3"
-        class="grid"
+        class="ml-(--card-gap) grid"
         animation={{
           opacity: getConfig.mode === "zen" ? 0 : 1,
+          marginLeft: getConfig.mode === "zen" ? "0" : "var(--card-gap)",
           duration: durationMs,
         }}
       >
