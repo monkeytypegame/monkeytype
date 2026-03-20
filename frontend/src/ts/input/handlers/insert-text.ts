@@ -308,7 +308,7 @@ function normalizeDataAndUpdateInputIfNeeded(
   }
 
   const accent = checkAccentOrderMismatch(
-    testInput + normalizedData,
+    testInput + (normalizedData ?? data),
     currentWord,
     Config.language,
   );
