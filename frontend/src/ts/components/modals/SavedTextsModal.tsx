@@ -1,7 +1,8 @@
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, For, JSXElement, Setter, Show } from "solid-js";
+
+import type { CustomTextIncomingData } from "./CustomTextModal";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
-import { setCustomTextIncomingData } from "../../states/custom-text-modal";
 import { hideModal } from "../../states/modals";
 import { showSimpleModal } from "../../states/simple-modal";
 import * as CustomText from "../../test/custom-text";
@@ -16,7 +17,9 @@ function getSavedText(name: string, long: boolean): string {
   return text.join(" ");
 }
 
-export function SavedTextsModal(): JSXElement {
+export function SavedTextsModal(props: {
+  setIncomingData: Setter<CustomTextIncomingData>;
+}): JSXElement {
   const [names, setNames] = createSignal<string[]>([]);
   const [longNames, setLongNames] = createSignal<string[]>([]);
 
@@ -28,7 +31,7 @@ export function SavedTextsModal(): JSXElement {
   const handleNameClick = (name: string, long: boolean) => {
     CustomTextState.setCustomTextName(name, long);
     const text = getSavedText(name, long);
-    setCustomTextIncomingData({ text, long });
+    props.setIncomingData({ text, long });
     hideModal("SavedTexts");
   };
 

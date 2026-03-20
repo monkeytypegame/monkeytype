@@ -1,7 +1,6 @@
-import { createSignal, JSXElement, Show } from "solid-js";
+import { Accessor, createSignal, JSXElement, Show } from "solid-js";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
-import { textToSave } from "../../states/custom-text-modal";
 import { hideModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -12,7 +11,9 @@ import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
-export function SaveCustomTextModal(): JSXElement {
+export function SaveCustomTextModal(props: {
+  textToSave: Accessor<string[]>;
+}): JSXElement {
   const [name, setName] = createSignal("");
   const [isLong, setIsLong] = createSignal(false);
   const [error, setError] = createSignal("");
@@ -40,7 +41,7 @@ export function SaveCustomTextModal(): JSXElement {
       return;
     }
 
-    const text = textToSave();
+    const text = props.textToSave();
     if (text.length === 0) {
       showNoticeNotification("Custom text can't be empty");
       return;

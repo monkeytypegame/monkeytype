@@ -2,11 +2,12 @@ import type { Language } from "@monkeytype/schemas/languages";
 import type { LayoutObject } from "@monkeytype/schemas/layouts";
 
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { createSignal, JSXElement } from "solid-js";
+import { createSignal, JSXElement, Setter } from "solid-js";
+
+import type { CustomTextIncomingData } from "./CustomTextModal";
 
 import { LanguageList } from "../../constants/languages";
 import { LayoutsList } from "../../constants/layouts";
-import { setCustomTextIncomingData } from "../../states/custom-text-modal";
 import { hideModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -92,7 +93,9 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
   text: preset.display,
 }));
 
-export function WordFilterModal(): JSXElement {
+export function WordFilterModal(props: {
+  setIncomingData: Setter<CustomTextIncomingData>;
+}): JSXElement {
   const [language, setLanguage] = createSignal(languageOptions[0]?.value ?? "");
   const [layout, setLayout] = createSignal(layoutOptions[0]?.value ?? "");
   const [preset, setPreset] = createSignal(presetOptions[0]?.value ?? "");
@@ -184,7 +187,7 @@ export function WordFilterModal(): JSXElement {
       const customText = filteredWords.join(
         CustomText.getPipeDelimiter() ? "|" : " ",
       );
-      setCustomTextIncomingData({ text: customText, set });
+      props.setIncomingData({ text: customText, set });
       hideModal("WordFilter");
     } finally {
       setLoading(false);

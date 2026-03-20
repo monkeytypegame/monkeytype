@@ -1,6 +1,7 @@
-import { createSignal, JSXElement } from "solid-js";
+import { createSignal, JSXElement, Setter } from "solid-js";
 
-import { setCustomTextIncomingData } from "../../states/custom-text-modal";
+import type { CustomTextIncomingData } from "./CustomTextModal";
+
 import { hideModal } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
@@ -81,7 +82,9 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
   text: preset.display,
 }));
 
-export function CustomGeneratorModal(): JSXElement {
+export function CustomGeneratorModal(props: {
+  setIncomingData: Setter<CustomTextIncomingData>;
+}): JSXElement {
   const [selectedPreset, setSelectedPreset] = createSignal(
     presetOptions[0]?.value ?? "",
   );
@@ -132,7 +135,7 @@ export function CustomGeneratorModal(): JSXElement {
     const customText = generatedWords.join(
       CustomText.getPipeDelimiter() ? "|" : " ",
     );
-    setCustomTextIncomingData({ text: customText, set });
+    props.setIncomingData({ text: customText, set });
     hideModal("CustomGenerator");
   };
 
