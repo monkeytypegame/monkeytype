@@ -413,7 +413,7 @@ function Mode2Custom(): JSXElement {
         variant="text"
         text="change"
         onClick={() => {
-          showErrorNotification("//todo");
+          showModal("CustomText");
         }}
       />
     </div>

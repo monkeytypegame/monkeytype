@@ -12,7 +12,12 @@ export type ModalId =
   | "SimpleModal"
   | "TestDuration"
   | "ShareTestSettings"
-  | "CustomWordAmount";
+  | "CustomWordAmount"
+  | "CustomText"
+  | "SaveCustomText"
+  | "SavedTexts"
+  | "WordFilter"
+  | "CustomGenerator";
 
 export type ModalVisibility = {
   visible: boolean;

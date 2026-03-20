@@ -1,0 +1,148 @@
+import { createSignal, For, JSXElement, Show } from "solid-js";
+
+import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { setCustomTextIncomingData } from "../../states/custom-text-modal";
+import { hideModal } from "../../states/modals";
+import { showSimpleModal } from "../../states/simple-modal";
+import * as CustomText from "../../test/custom-text";
+import { AnimatedModal } from "../common/AnimatedModal";
+import { Button } from "../common/Button";
+
+function getSavedText(name: string, long: boolean): string {
+  let text = CustomText.getCustomText(name, long);
+  if (long) {
+    text = text.slice(CustomText.getCustomTextLongProgress(name));
+  }
+  return text.join(" ");
+}
+
+export function SavedTextsModal(): JSXElement {
+  const [names, setNames] = createSignal<string[]>([]);
+  const [longNames, setLongNames] = createSignal<string[]>([]);
+
+  const refresh = () => {
+    setNames(CustomText.getCustomTextNames(false));
+    setLongNames(CustomText.getCustomTextNames(true));
+  };
+
+  const handleNameClick = (name: string, long: boolean) => {
+    CustomTextState.setCustomTextName(name, long);
+    const text = getSavedText(name, long);
+    setCustomTextIncomingData({ text, long });
+    hideModal("SavedTexts");
+  };
+
+  const handleDelete = (name: string, long: boolean) => {
+    showSimpleModal({
+      title: "Delete custom text",
+      text: `Are you sure you want to delete custom text ${name}?`,
+      buttonText: "delete",
+      execFn: async () => {
+        CustomText.deleteCustomText(name, long);
+        CustomTextState.setCustomTextName("", undefined);
+        refresh();
+        return {
+          status: "success",
+          message: "Custom text deleted",
+        };
+      },
+    });
+  };
+
+  const handleResetProgress = (name: string) => {
+    showSimpleModal({
+      title: "Reset progress for custom text",
+      text: `Are you sure you want to reset your progress for custom text ${name}?`,
+      buttonText: "reset",
+      execFn: async () => {
+        CustomText.setCustomTextLongProgress(name, 0);
+        const text = CustomText.getCustomText(name, true);
+        CustomText.setText(text);
+        refresh();
+        return {
+          status: "success",
+          message: "Custom text progress reset",
+        };
+      },
+    });
+  };
+
+  return (
+    <AnimatedModal
+      id="SavedTexts"
+      title="Saved texts"
+      modalClass="max-w-[500px]"
+      beforeShow={refresh}
+    >
+      <div class="grid gap-4">
+        <Show
+          when={names().length > 0}
+          fallback={<div class="text-sub">No saved custom texts found</div>}
+        >
+          <For each={names()}>
+            {(name) => (
+              <div class="flex items-center gap-2">
+                <Button
+                  variant="button"
+                  text={name}
+                  class="flex-1"
+                  onClick={() => handleNameClick(name, false)}
+                />
+                <Button
+                  variant="button"
+                  fa={{ icon: "fa-trash", fixedWidth: true }}
+                  onClick={() => handleDelete(name, false)}
+                />
+              </div>
+            )}
+          </For>
+        </Show>
+      </div>
+
+      <div class="text-2xl text-sub">Saved long texts</div>
+
+      <div class="grid gap-4">
+        <Show
+          when={longNames().length > 0}
+          fallback={
+            <div class="text-sub">No saved long custom texts found</div>
+          }
+        >
+          <For each={longNames()}>
+            {(name) => {
+              const hasProgress = () =>
+                CustomText.getCustomTextLongProgress(name) > 0;
+              return (
+                <div class="flex items-center gap-2">
+                  <Button
+                    variant="button"
+                    text={name}
+                    class="flex-1"
+                    onClick={() => handleNameClick(name, true)}
+                  />
+                  <Button
+                    variant="button"
+                    text="reset"
+                    disabled={!hasProgress()}
+                    onClick={() => handleResetProgress(name)}
+                  />
+                  <Button
+                    variant="button"
+                    fa={{ icon: "fa-trash", fixedWidth: true }}
+                    onClick={() => handleDelete(name, true)}
+                  />
+                </div>
+              );
+            }}
+          </For>
+        </Show>
+      </div>
+
+      <div class="my-4 h-1 rounded bg-sub-alt"></div>
+      <div class="text-em-xs text-sub">
+        Heads up! These texts are only stored locally. If you switch devices or
+        clear your local browser data they will be lost.
+      </div>
+    </AnimatedModal>
+  );
+}
