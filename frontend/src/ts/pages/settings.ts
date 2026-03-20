@@ -52,6 +52,7 @@ import { authEvent } from "../events/auth";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
+import { getCommandLineKeybindHtml } from "../utils/shortcuts";
 
 let settingsInitialized = false;
 
@@ -723,16 +724,10 @@ export async function update(
 
   CustomBackgroundFilter.updateUI();
 
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
+  const commandLineKeybind = getCommandLineKeybindHtml(Config.quickRestart);
   qs(".pageSettings .tip")?.setHtml(`
     tip: You can also change all these settings quickly using the
-    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
+    command line (${commandLineKeybind})`);
 
   if (
     customLayoutFluidSelect !== undefined &&

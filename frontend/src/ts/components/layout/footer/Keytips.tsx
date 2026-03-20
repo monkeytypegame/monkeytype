@@ -2,17 +2,18 @@ import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getFocus } from "../../../states/core";
+import {
+  getCommandLineKeyLabel,
+  getModifierKeyLabel,
+  isFirefoxBrowser,
+} from "../../../utils/shortcuts";
 import { Conditional } from "../../common/Conditional";
 
 export function Keytips(): JSXElement {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
+  const isFirefox = isFirefoxBrowser();
+  const modifierKey = getModifierKeyLabel();
   const commandKey = (): string =>
-    getConfig.quickRestart === "esc" ? "tab" : "esc";
+    getCommandLineKeyLabel(getConfig.quickRestart);
 
   return (
     <Show when={getConfig.showKeyTips}>
@@ -36,8 +37,20 @@ export function Keytips(): JSXElement {
           }
         />
         <br />
-        <kbd>{commandKey()}</kbd> or <kbd>{modifierKey}</kbd> + <kbd>shift</kbd>{" "}
-        + <kbd>p</kbd> - command line
+        <Conditional
+          if={isFirefox}
+          then={
+            <>
+              <kbd>{commandKey()}</kbd> - command line
+            </>
+          }
+          else={
+            <>
+              <kbd>{commandKey()}</kbd> or <kbd>{modifierKey}</kbd> +{" "}
+              <kbd>shift</kbd> + <kbd>p</kbd> - command line
+            </>
+          }
+        />
       </div>
     </Show>
   );

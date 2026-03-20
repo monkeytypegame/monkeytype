@@ -12,14 +12,22 @@ import { getActivePage } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
+import {
+  getCommandLineKeyLabel,
+  isFirefoxBrowser,
+} from "../../utils/shortcuts";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
+import { Conditional } from "../common/Conditional";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
 
 export function AboutPage(): JSXElement {
   const isOpen = () => getActivePage() === "about";
+  const isFirefox = isFirefoxBrowser();
+  const commandKey = (): string =>
+    getCommandLineKeyLabel(getConfig.quickRestart);
 
   const contributors = useQuery(() => ({
     ...getContributorsQueryOptions(),
@@ -203,9 +211,19 @@ export function AboutPage(): JSXElement {
         <p>
           You can use <kbd>tab</kbd> and <kbd>enter</kbd> (or just{" "}
           <kbd>tab</kbd> if you have quick tab mode enabled) to restart the
-          typing test. Open the command line by pressing <kbd>ctrl/cmd</kbd> +{" "}
-          <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd> - there you can
-          access all the functionality you need without touching your mouse.
+          typing test. Open the command line by pressing{" "}
+          <Conditional
+            if={isFirefox}
+            then={<kbd>{commandKey()}</kbd>}
+            else={
+              <>
+                <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or{" "}
+                <kbd>{commandKey()}</kbd>
+              </>
+            }
+          />{" "}
+          - there you can access all the functionality you need without touching
+          your mouse.
         </p>
       </section>
       <section>
