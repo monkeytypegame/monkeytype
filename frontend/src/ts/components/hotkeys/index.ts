@@ -55,7 +55,7 @@ function handleEscape(e: KeyboardEvent): void {
 }
 
 createHotkey("Escape", openCommandline, ifNotQuickRestart("esc"));
-createHotkey("Tab", openCommandline, ifNotQuickRestart("tab"));
+createHotkey("Tab", openCommandline, ifQuickRestart("esc"));
 createHotkey("Mod+Shift+P", openCommandline, {
   ignoreInputs: false,
   requireReset: true,
