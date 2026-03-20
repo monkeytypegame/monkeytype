@@ -6,6 +6,7 @@ import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { SnapshotUserTag } from "../constants/default-snapshot";
 import { IsValidResponse } from "../types/validation";
+import { deleteLocalTag } from "../collections/results";
 
 function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
   return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
@@ -45,7 +46,8 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.getSnapshot()?.tags?.push({
+      const snap = DB.getSnapshot();
+      snap?.tags?.push({
         display: propTagName,
         name: response.body.data.name,
         _id: response.body.data._id,
@@ -57,6 +59,8 @@ const actionModals: Record<Action, SimpleModal> = {
           custom: {},
         },
       });
+      DB.setSnapshot(snap);
+
       void Settings.update();
 
       return { status: "success", message: `Tag added` };
@@ -113,6 +117,7 @@ const actionModals: Record<Action, SimpleModal> = {
     },
     execFn: async (_thisPopup) => {
       const tagId = _thisPopup.parameters[1] as string;
+      /*
       const response = await Ape.users.deleteTag({ params: { tagId } });
 
       if (response.status !== 200) {
@@ -127,8 +132,8 @@ const actionModals: Record<Action, SimpleModal> = {
       if (snapshot?.tags) {
         snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
       }
-
-      DB.deleteLocalTag(tagId);
+*/
+      deleteLocalTag(tagId);
 
       void Settings.update();
 

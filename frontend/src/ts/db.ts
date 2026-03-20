@@ -4,7 +4,6 @@ import {
   showErrorNotification,
 } from "./states/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
-import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
@@ -34,7 +33,10 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
-import { insertLocalResult } from "./collections/results";
+import {
+  findFastestResultByTagId,
+  insertLocalResult,
+} from "./collections/results";
 import { resultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
@@ -274,66 +276,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   } finally {
     setSolidSnapshot(dbSnapshot);
   }
-}
-
-export async function getUserResults(offset?: number): Promise<boolean> {
-  if (!isAuthenticated()) return false;
-
-  if (!dbSnapshot) return false;
-  if (
-    dbSnapshot.results !== undefined &&
-    (offset === undefined || dbSnapshot.results.length > offset)
-  ) {
-    return false;
-  }
-
-  const response = await Ape.results.get({ query: { offset } });
-
-  if (response.status !== 200) {
-    showErrorNotification("Error getting results", { response });
-    return false;
-  }
-
-  //another check in case user logs out while waiting for response
-  if (!isAuthenticated()) return false;
-
-  const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
-    result.bailedOut ??= false;
-    result.blindMode ??= false;
-    result.lazyMode ??= false;
-    result.difficulty ??= "normal";
-    result.funbox ??= [];
-    result.language ??= "english";
-    result.numbers ??= false;
-    result.punctuation ??= false;
-    result.numbers ??= false;
-    result.quoteLength ??= -1;
-    result.restartCount ??= 0;
-    result.incompleteTestSeconds ??= 0;
-    result.afkDuration ??= 0;
-    result.tags ??= [];
-    return result as SnapshotResult<Mode>;
-  });
-  results?.sort((a, b) => b.timestamp - a.timestamp);
-
-  if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
-    //merge
-    const oldestTimestamp = lastElementFromArray(dbSnapshot.results)
-      ?.timestamp as number;
-    const resultsWithoutDuplicates = results.filter(
-      (it) => it.timestamp < oldestTimestamp,
-    );
-    dbSnapshot.results.push(...resultsWithoutDuplicates);
-  } else {
-    dbSnapshot.results = results;
-  }
-
-  setLastResult(results[0]);
-  return true;
-}
-
-function _getCustomThemeById(themeID: string): CustomTheme | undefined {
-  return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
@@ -716,20 +658,10 @@ export async function saveLocalTagPB<M extends Mode>(
 
   return;
 }
-
-export function deleteLocalTag(tagId: string): void {
-  getSnapshot()?.results?.forEach((result) => {
-    const tagIndex = result.tags.indexOf(tagId);
-    if (tagIndex > -1) {
-      result.tags.splice(tagIndex, 1);
-    }
-  });
-}
-
-export async function updateLocalTagPB<M extends Mode>(
+export async function updateLocalTagPB(
   tagId: string,
-  mode: M,
-  mode2: Mode2<M>,
+  mode: Mode,
+  mode2: Mode2<Mode>,
   punctuation: boolean,
   numbers: boolean,
   language: Language,
@@ -742,31 +674,23 @@ export async function updateLocalTagPB<M extends Mode>(
 
   if (filteredtag === undefined) return;
 
-  const pb = {
-    wpm: 0,
-    acc: 0,
-    rawWpm: 0,
-    consistency: 0,
-  };
-
-  getSnapshot()?.results?.forEach((result) => {
-    if (result.tags.includes(tagId) && result.wpm > pb.wpm) {
-      if (
-        result.mode === mode &&
-        result.mode2 === mode2 &&
-        result.punctuation === punctuation &&
-        result.numbers === numbers &&
-        result.language === language &&
-        result.difficulty === difficulty &&
-        result.lazyMode === lazyMode
-      ) {
-        pb.wpm = result.wpm;
-        pb.acc = result.acc;
-        pb.rawWpm = result.rawWpm;
-        pb.consistency = result.consistency;
-      }
-    }
+  const fastest = await findFastestResultByTagId({
+    tagId,
+    mode,
+    mode2,
+    punctuation,
+    numbers,
+    language,
+    difficulty,
+    lazyMode,
   });
+
+  const pb = {
+    wpm: fastest?.wpm ?? 0,
+    acc: fastest?.acc ?? 0,
+    rawWpm: fastest?.rawWpm ?? 0,
+    consistency: fastest?.consistency ?? 0,
+  };
 
   await saveLocalTagPB(
     tagId,
@@ -833,10 +757,6 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   if (!snapshot) return;
 
   if (data.result !== undefined) {
-    if (snapshot?.results !== undefined) {
-      snapshot.results.unshift(data.result);
-    }
-
     void insertLocalResult(data.result);
     setLastResult(data.result);
     if (snapshot.testActivity !== undefined) {

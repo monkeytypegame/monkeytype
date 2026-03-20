@@ -31,6 +31,7 @@ import {
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
 import { getSnapshot } from "../db";
 import { resultsCollection } from "../collections/results";
+import * as TodayTracker from "../test/today-tracker";
 
 type ChangeOptions = {
   force?: boolean;
@@ -47,10 +48,10 @@ const pages = {
   account: solidPage("account", {
     loadingOptions: {
       loadingMode: () => {
-        if (getSnapshot()?.results === undefined) {
-          return "sync";
-        } else {
+        if (resultsCollection.isReady()) {
           return "none";
+        } else {
+          return "sync";
         }
       },
       loadingPromise: async () => {
@@ -60,6 +61,7 @@ const pages = {
           );
         }
         await resultsCollection.stateWhenReady();
+        TodayTracker.addAllFromToday();
       },
       style: "bar",
       keyframes: [

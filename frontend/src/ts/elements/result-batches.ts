@@ -15,7 +15,8 @@ export function show(): void {
 }
 
 export async function update(): Promise<void> {
-  const results = DB.getSnapshot()?.results;
+  //TODO fix or delete?
+  const results: string[] | undefined = [];
 
   if (results === undefined) {
     console.error(

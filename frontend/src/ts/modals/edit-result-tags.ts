@@ -9,6 +9,7 @@ import {
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
+import { resultsCollection } from "../collections/results";
 
 type State = {
   resultId: string;
@@ -125,26 +126,24 @@ async function save(): Promise<void> {
 
   showSuccessNotification("Tags updated", { durationMs: 2000 });
 
-  DB.getSnapshot()?.results?.forEach((result) => {
-    if (result._id === state.resultId) {
-      const tagsToUpdate = [
-        ...result.tags.filter((tag) => !state.tags.includes(tag)),
-        ...state.tags.filter((tag) => !result.tags.includes(tag)),
-      ];
-      result.tags = state.tags;
-      tagsToUpdate.forEach((tag) => {
-        void DB.updateLocalTagPB(
-          tag,
-          result.mode,
-          result.mode2,
-          result.punctuation,
-          result.numbers,
-          result.language,
-          result.difficulty,
-          result.lazyMode,
-        );
-      });
-    }
+  resultsCollection.update(state.resultId, (result) => {
+    const tagsToUpdate = [
+      ...result.tags.filter((tag) => !state.tags.includes(tag)),
+      ...state.tags.filter((tag) => !result.tags.includes(tag)),
+    ];
+    result.tags = state.tags;
+    tagsToUpdate.forEach((tag) => {
+      void DB.updateLocalTagPB(
+        tag,
+        result.mode,
+        result.mode2,
+        result.punctuation,
+        result.numbers,
+        result.language,
+        result.difficulty,
+        result.lazyMode,
+      );
+    });
   });
 
   if (state.source === "accountPage") {

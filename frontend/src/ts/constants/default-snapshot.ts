@@ -76,7 +76,6 @@ export type Snapshot = Omit<
   streakHourOffset?: number;
   tags: SnapshotUserTag[];
   presets: SnapshotPreset[];
-  results?: SnapshotResult<Mode>[];
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
@@ -88,7 +87,6 @@ export type SnapshotPreset = Preset & {
 };
 
 const defaultSnap = {
-  results: undefined,
   personalBests: {
     time: {},
     words: {},

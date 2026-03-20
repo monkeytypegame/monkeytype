@@ -144,6 +144,7 @@ export function useResultsLiveQuery(options: {
 
 function normalizeResult(
   result: ResultMinified | SnapshotResult<Mode>,
+  knownTagIds?: Set<string>,
 ): SnapshotResult<Mode> {
   const resultDate = new Date(result.timestamp);
   resultDate.setSeconds(0);
@@ -168,6 +169,9 @@ function normalizeResult(
   result.incompleteTestSeconds ??= 0;
   result.afkDuration ??= 0;
   result.tags ??= [];
+  if (knownTagIds !== undefined) {
+    result.tags = result.tags.filter((tagId) => knownTagIds.has(tagId));
+  }
   result.isPb ??= false;
   return {
     ...result,
@@ -190,6 +194,7 @@ export const resultsCollection = createCollection(
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryFn: async () => {
+      const knownTagIds = new Set(getSnapshot()?.tags.map((it) => it._id));
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
@@ -200,7 +205,9 @@ export const resultsCollection = createCollection(
         throw new Error("Error fetching results:" + response.body.message);
       }
 
-      return response.body.data.map((result) => normalizeResult(result));
+      return response.body.data.map((result) =>
+        normalizeResult(result, knownTagIds),
+      );
     },
     onInsert: async ({ transaction }) => {
       //call to the backend to post a result is done outside, we just  insert the result as we get it
@@ -213,6 +220,17 @@ export const resultsCollection = createCollection(
       });
 
       //do not refetch after insert
+      return { refetch: false };
+    },
+    onUpdate: async ({ transaction }) => {
+      const updates = transaction.mutations.map((m) => m.modified);
+
+      resultsCollection.utils.writeBatch(() => {
+        updates.forEach((item) => {
+          resultsCollection.utils.writeUpdate(normalizeResult(item));
+        });
+      });
+      //we don't sync local changes back
       return { refetch: false };
     },
     queryClient,
@@ -377,19 +395,22 @@ export const getSingleResultQueryOptions = (_id: string) =>
     staleTime: Infinity,
   });
 
-export async function getUserAverage<M extends Mode>(
-  options: {
-    mode: M;
-    mode2: Mode2<M>;
-    punctuation: boolean;
-    numbers: boolean;
-    language: string;
-    difficulty: Difficulty;
-    lazyMode: boolean;
-  } & ExactlyOneTrue<{
-    last10Only: boolean;
-    lastDayOnly: boolean;
-  }>,
+export type CurrentSettingsFilter = {
+  mode: Mode;
+  mode2: Mode2<Mode>;
+  punctuation: boolean;
+  numbers: boolean;
+  language: string;
+  difficulty: Difficulty;
+  lazyMode: boolean;
+};
+
+export async function getUserAverage(
+  options: CurrentSettingsFilter &
+    ExactlyOneTrue<{
+      last10Only: boolean;
+      lastDayOnly: boolean;
+    }>,
 ): Promise<{ wpm: number; acc: number }> {
   const activeTagIds = getSnapshot()
     ?.tags.filter((it) => it.active === true)
@@ -397,14 +418,7 @@ export async function getUserAverage<M extends Mode>(
 
   const result = await createLiveQueryCollection((q) => {
     let query = q
-      .from({ r: resultsCollection })
-      .where(({ r }) => eq(r.mode, options.mode))
-      .where(({ r }) => eq(r.mode2, options.mode2))
-      .where(({ r }) => eq(r.punctuation, options.punctuation))
-      .where(({ r }) => eq(r.numbers, options.numbers))
-      .where(({ r }) => eq(r.language, options.language))
-      .where(({ r }) => eq(r.difficulty, options.difficulty))
-      .where(({ r }) => eq(r.lazyMode, options.lazyMode))
+      .from({ r: buildSettingsResultsQuery(options) })
       .where(({ r }) =>
         or(
           false,
@@ -426,4 +440,45 @@ export async function getUserAverage<M extends Mode>(
   return result.length === 1 && result[0] !== undefined
     ? result[0]
     : { wpm: 0, acc: 0 };
+}
+
+export async function findFastestResultByTagId(
+  options: CurrentSettingsFilter & { tagId: string },
+): Promise<SnapshotResult<Mode> | undefined> {
+  const result = await createLiveQueryCollection((q) =>
+    q
+      .from({ r: buildSettingsResultsQuery(options) })
+      .orderBy(({ r }) => r.wpm, "desc")
+      .limit(1)
+      .findOne(),
+  ).toArrayWhenReady();
+  return result.length === 1 || result[0] !== undefined
+    ? (result[0] as SnapshotResult<Mode>)
+    : undefined;
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+function buildSettingsResultsQuery(filter: CurrentSettingsFilter) {
+  return new Query()
+    .from({ r: resultsCollection })
+    .where(({ r }) => eq(r.mode, filter.mode))
+    .where(({ r }) => eq(r.mode2, filter.mode2))
+    .where(({ r }) => eq(r.punctuation, filter.punctuation))
+    .where(({ r }) => eq(r.numbers, filter.numbers))
+    .where(({ r }) => eq(r.language, filter.language))
+    .where(({ r }) => eq(r.difficulty, filter.difficulty))
+    .where(({ r }) => eq(r.lazyMode, filter.lazyMode));
+}
+
+export function deleteLocalTag(tagId: string): void {
+  for (const result of resultsCollection.values()) {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      resultsCollection.update(result._id, (old) => {
+        const tags = result.tags;
+        tags.splice(tagIndex, 1);
+        old.tags = tags;
+      });
+    }
+  }
 }
