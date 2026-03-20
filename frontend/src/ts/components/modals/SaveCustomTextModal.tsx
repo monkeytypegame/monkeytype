@@ -14,6 +14,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { fromSchema } from "../ui/form/utils";
 
 const nameSchema = z
   .string()
@@ -72,9 +73,9 @@ export function SaveCustomTextModal(props: {
           name="name"
           validators={{
             onChange: ({ value }) => {
-              const parsed = nameSchema.safeParse(value);
-              if (!parsed.success) {
-                return parsed.error.issues[0]?.message;
+              const schemaErrors = fromSchema(nameSchema)({ value });
+              if (schemaErrors !== undefined) {
+                return schemaErrors;
               }
 
               const isLong = form.getFieldValue("isLong");
