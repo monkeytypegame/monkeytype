@@ -1,7 +1,8 @@
-import { createSignal, JSXElement, Show } from "solid-js";
+import { createForm } from "@tanstack/solid-form";
+import { Accessor, JSXElement } from "solid-js";
+import { z } from "zod";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
-import { textToSave } from "../../states/custom-text-modal";
 import { hideModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -10,51 +11,45 @@ import {
 } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Button } from "../common/Button";
+import { Checkbox } from "../ui/form/Checkbox";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
+import { fromSchema } from "../ui/form/utils";
 
-export function SaveCustomTextModal(): JSXElement {
-  const [name, setName] = createSignal("");
-  const [isLong, setIsLong] = createSignal(false);
-  const [error, setError] = createSignal("");
+const nameSchema = z
+  .string()
+  .min(1, "Name is required")
+  .max(32, "Name must be 32 characters or less")
+  .regex(
+    /^[\w\s-]+$/,
+    "Name can only contain letters, numbers, spaces, underscores and hyphens",
+  );
 
-  const validate = (value: string): string => {
-    if (value.length === 0) return "Name is required";
-    if (value.length > 32) return "Name must be 32 characters or less";
-    if (!/^[\w\s-]+$/.test(value)) {
-      return "Name can only contain letters, numbers, spaces, underscores and hyphens";
-    }
-    const names = CustomText.getCustomTextNames(isLong());
-    if (names.includes(value)) return "Duplicate name";
-    return "";
-  };
+export function SaveCustomTextModal(props: {
+  textToSave: Accessor<string[]>;
+}): JSXElement {
+  const form = createForm(() => ({
+    defaultValues: {
+      name: "",
+      isLong: false,
+    },
+    onSubmit: ({ value }) => {
+      const text = props.textToSave();
+      if (text.length === 0) {
+        showNoticeNotification("Custom text can't be empty");
+        return;
+      }
 
-  const handleInput = (value: string) => {
-    setName(value);
-    setError(validate(value));
-  };
-
-  const save = () => {
-    const err = validate(name());
-    if (err) {
-      setError(err);
-      return;
-    }
-
-    const text = textToSave();
-    if (text.length === 0) {
-      showNoticeNotification("Custom text can't be empty");
-      return;
-    }
-
-    const saved = CustomText.setCustomText(name(), text, isLong());
-    if (saved) {
-      CustomTextState.setCustomTextName(name(), isLong());
-      showSuccessNotification("Custom text saved");
-      hideModal("SaveCustomText");
-    } else {
-      showErrorNotification("Error saving custom text");
-    }
-  };
+      const saved = CustomText.setCustomText(value.name, text, value.isLong);
+      if (saved) {
+        CustomTextState.setCustomTextName(value.name, value.isLong);
+        showSuccessNotification("Custom text saved");
+        hideModal("SaveCustomText");
+      } else {
+        showErrorNotification("Error saving custom text");
+      }
+    },
+  }));
 
   return (
     <AnimatedModal
@@ -63,52 +58,53 @@ export function SaveCustomTextModal(): JSXElement {
       modalClass="max-w-sm"
       focusFirstInput={true}
       beforeShow={() => {
-        setName("");
-        setIsLong(false);
-        setError("");
+        form.reset();
       }}
     >
       <form
         class="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          save();
+          e.stopPropagation();
+          void form.handleSubmit();
         }}
       >
-        <input
-          type="text"
-          placeholder="name"
-          value={name()}
-          onInput={(e) => handleInput(e.currentTarget.value)}
+        <form.Field
+          name="name"
+          validators={{
+            onChange: ({ value }) => {
+              const schemaErrors = fromSchema(nameSchema)({ value });
+              if (schemaErrors !== undefined) {
+                return schemaErrors;
+              }
+
+              const isLong = form.getFieldValue("isLong");
+              if (CustomText.getCustomTextNames(isLong).includes(value)) {
+                return "Duplicate name";
+              }
+
+              return undefined;
+            },
+          }}
+          children={(field) => <InputField field={field} placeholder="name" />}
         />
-        <Show when={error()}>
-          <div class="text-xs text-error">{error()}</div>
-        </Show>
-        <label class="flex items-start gap-2">
-          <input
-            type="checkbox"
-            checked={isLong()}
-            onChange={(e) => {
-              setIsLong(e.currentTarget.checked);
-              setError(validate(name()));
-            }}
-            class="mt-1"
-          />
-          <div>
-            <div>Long text (book mode)</div>
-            <div class="text-xs text-sub">
-              Disables editing this text but allows you to save progress by
-              pressing shift + enter or bailing out. You can then load this text
-              again to continue where you left off.
-            </div>
-          </div>
-        </label>
-        <Button
-          variant="button"
-          text="save"
-          type="submit"
-          disabled={error() !== "" || name() === ""}
+        <form.Field
+          name="isLong"
+          listeners={{
+            onChange: () => {
+              void form.validateField("name", "change");
+            },
+          }}
+          children={(field) => (
+            <Checkbox field={field} label="Long text (book mode)" />
+          )}
         />
+        <div class="text-xs text-sub">
+          Disables editing this text but allows you to save progress by pressing
+          shift + enter or bailing out. You can then load this text again to
+          continue where you left off.
+        </div>
+        <SubmitButton form={form} variant="button" text="save" />
       </form>
     </AnimatedModal>
   );

@@ -1,12 +1,12 @@
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
-import { setCustomTextIncomingData } from "../../states/custom-text-modal";
 import { hideModal } from "../../states/modals";
 import { showSimpleModal } from "../../states/simple-modal";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Separator } from "../common/Separator";
 
 function getSavedText(name: string, long: boolean): string {
   let text = CustomText.getCustomText(name, long);
@@ -16,19 +16,30 @@ function getSavedText(name: string, long: boolean): string {
   return text.join(" ");
 }
 
-export function SavedTextsModal(): JSXElement {
+export function SavedTextsModal(props: {
+  setChainedData: Setter<{
+    text: string;
+    set?: boolean;
+    long?: boolean;
+  } | null>;
+}): JSXElement {
   const [names, setNames] = createSignal<string[]>([]);
   const [longNames, setLongNames] = createSignal<string[]>([]);
+
+  // because the progress is stored in local storage,
+  // we need to trigger a refresh when it changes to update the reset button state
+  const [version, setVersion] = createSignal(0);
 
   const refresh = () => {
     setNames(CustomText.getCustomTextNames(false));
     setLongNames(CustomText.getCustomTextNames(true));
+    setVersion((v) => v + 1);
   };
 
   const handleNameClick = (name: string, long: boolean) => {
     CustomTextState.setCustomTextName(name, long);
     const text = getSavedText(name, long);
-    setCustomTextIncomingData({ text, long });
+    props.setChainedData({ text, long });
     hideModal("SavedTexts");
   };
 
@@ -74,7 +85,7 @@ export function SavedTextsModal(): JSXElement {
       modalClass="max-w-[500px]"
       beforeShow={refresh}
     >
-      <div class="grid gap-4">
+      <div class="grid gap-2">
         <Show
           when={names().length > 0}
           fallback={<div class="text-sub">No saved custom texts found</div>}
@@ -101,44 +112,47 @@ export function SavedTextsModal(): JSXElement {
 
       <div class="text-2xl text-sub">Saved long texts</div>
 
-      <div class="grid gap-4">
+      <div class="grid gap-2">
         <Show
           when={longNames().length > 0}
           fallback={
             <div class="text-sub">No saved long custom texts found</div>
           }
         >
-          <For each={longNames()}>
+          <Index each={longNames()}>
             {(name) => {
-              const hasProgress = () =>
-                CustomText.getCustomTextLongProgress(name) > 0;
+              const hasProgress = () => {
+                version();
+                return CustomText.getCustomTextLongProgress(name()) > 0;
+              };
               return (
                 <div class="flex items-center gap-2">
                   <Button
                     variant="button"
-                    text={name}
+                    text={name()}
                     class="flex-1"
-                    onClick={() => handleNameClick(name, true)}
+                    onClick={() => handleNameClick(name(), true)}
                   />
                   <Button
                     variant="button"
                     text="reset"
                     disabled={!hasProgress()}
-                    onClick={() => handleResetProgress(name)}
+                    onClick={() => handleResetProgress(name())}
                   />
                   <Button
                     variant="button"
                     fa={{ icon: "fa-trash", fixedWidth: true }}
-                    onClick={() => handleDelete(name, true)}
+                    onClick={() => handleDelete(name(), true)}
                   />
                 </div>
               );
             }}
-          </For>
+          </Index>
         </Show>
       </div>
 
-      <div class="my-4 h-1 rounded bg-sub-alt"></div>
+      <Separator />
+
       <div class="text-em-xs text-sub">
         Heads up! These texts are only stored locally. If you switch devices or
         clear your local browser data they will be lost.

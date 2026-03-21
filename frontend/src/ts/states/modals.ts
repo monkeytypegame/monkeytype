@@ -10,14 +10,14 @@ export type ModalId =
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"
-  | "TestDuration"
-  | "ShareTestSettings"
-  | "CustomWordAmount"
   | "CustomText"
   | "SaveCustomText"
   | "SavedTexts"
   | "WordFilter"
-  | "CustomGenerator";
+  | "CustomGenerator"
+  | "TestDuration"
+  | "ShareTestSettings"
+  | "CustomWordAmount";
 
 export type ModalVisibility = {
   visible: boolean;

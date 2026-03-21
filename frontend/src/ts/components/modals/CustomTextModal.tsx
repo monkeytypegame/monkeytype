@@ -1,36 +1,37 @@
 import type { CustomTextMode } from "@monkeytype/schemas/util";
 
-import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
+import { createSignal, For, JSXElement, Show } from "solid-js";
 
 import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import * as ChallengeController from "../../controllers/challenge-controller";
 import * as CustomTextState from "../../legacy-states/custom-text-name";
-import {
-  customTextIncomingData,
-  setCustomTextIncomingData,
-  setTextToSave,
-} from "../../states/custom-text-modal";
-import {
-  hideModalAndClearChain,
-  isModalOpen,
-  showModal,
-} from "../../states/modals";
+import { restartTestEvent } from "../../states/core";
+import { hideModalAndClearChain, showModal } from "../../states/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
+import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
-import * as TestLogic from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 import { Separator } from "../common/Separator";
+import { CustomGeneratorModal } from "./CustomGeneratorModal";
+import { SaveCustomTextModal } from "./SaveCustomTextModal";
+import { SavedTextsModal } from "./SavedTextsModal";
+import { WordFilterModal } from "./WordFilterModal";
+
+export type CustomTextIncomingData = {
+  text: string;
+  set?: boolean;
+  long?: boolean;
+} | null;
 
 type Mode = "simple" | CustomTextMode;
 
@@ -55,6 +56,11 @@ export function CustomTextModal(): JSXElement {
   const [pipeDelimiter, setPipeDelimiter] = createSignal(false);
   const [longTextWarning, setLongTextWarning] = createSignal(false);
   const [challengeWarning, setChallengeWarning] = createSignal(false);
+
+  const [incomingChainedData, setIncomingChainedData] =
+    createSignal<CustomTextIncomingData>(null);
+
+  const [textToSave, setTextToSave] = createSignal<string[]>([]);
 
   // oxlint-disable-next-line no-unassigned-vars -- assigned via SolidJS ref
   let fileInputRef!: HTMLInputElement;
@@ -189,12 +195,15 @@ export function CustomTextModal(): JSXElement {
       CustomText.setLimitValue(parseInt(limitSection()));
     }
 
-    ChallengeController.clearActive();
+    if (getLoadedChallenge() !== null) {
+      showNoticeNotification("Challenge cleared");
+      setLoadedChallenge(null);
+    }
     if (Config.mode !== "custom") {
       setConfig("mode", "custom");
     }
     PractiseWords.resetBefore();
-    TestLogic.restart();
+    restartTestEvent.dispatch();
     hideModalAndClearChain("CustomText");
   };
 
@@ -212,17 +221,19 @@ export function CustomTextModal(): JSXElement {
     setLimitWord("");
     setLimitTime("");
     setLimitSection("");
-    if (CustomText.getLimitMode() === "word") {
-      setLimitWord(`${CustomText.getLimitValue()}`);
-    } else if (CustomText.getLimitMode() === "time") {
-      setLimitTime(`${CustomText.getLimitValue()}`);
-    } else if (CustomText.getLimitMode() === "section") {
-      setLimitSection(`${CustomText.getLimitValue()}`);
+    if (mode !== "simple") {
+      if (CustomText.getLimitMode() === "word") {
+        setLimitWord(`${CustomText.getLimitValue()}`);
+      } else if (CustomText.getLimitMode() === "time") {
+        setLimitTime(`${CustomText.getLimitValue()}`);
+      } else if (CustomText.getLimitMode() === "section") {
+        setLimitSection(`${CustomText.getLimitValue()}`);
+      }
     }
 
     setPipeDelimiter(CustomText.getPipeDelimiter());
     setLongTextWarning(CustomTextState.isCustomTextLong() ?? false);
-    setChallengeWarning(false);
+    setChallengeWarning(getLoadedChallenge() !== null);
 
     setTextarea(
       CustomText.getText()
@@ -232,9 +243,9 @@ export function CustomTextModal(): JSXElement {
   };
 
   const handleIncomingData = () => {
-    const data = customTextIncomingData();
+    const data = incomingChainedData();
     if (data === null) return;
-    setCustomTextIncomingData(null);
+    setIncomingChainedData(null);
 
     if (data.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
@@ -242,6 +253,10 @@ export function CustomTextModal(): JSXElement {
         durationMs: 5000,
       });
       setLongTextWarning(false);
+    }
+
+    if (data.long) {
+      setLongTextWarning(true);
     }
 
     const newText =
@@ -317,17 +332,10 @@ export function CustomTextModal(): JSXElement {
     }
   };
 
-  // Watch for incoming data from sub-modals
-  createEffect(() => {
-    if (isModalOpen("CustomText") && customTextIncomingData() !== null) {
-      handleIncomingData();
-    }
-  });
-
-  const beforeShow = () => {
-    initState();
-    // Check for incoming data (from returning sub-modal)
-    if (customTextIncomingData() !== null) {
+  const beforeShow = (isChained: boolean) => {
+    if (!isChained) {
+      initState();
+    } else {
       handleIncomingData();
     }
   };
@@ -339,276 +347,284 @@ export function CustomTextModal(): JSXElement {
   };
 
   return (
-    <AnimatedModal
-      id="CustomText"
-      modalClass="max-w-[1200px] lg:grid-cols-[auto_20rem] grid-cols-1 h-min"
-      beforeShow={beforeShow}
-      afterShow={afterShow}
-    >
-      <Separator class="row-start-2 block lg:hidden" />
-      <div class="row-start-3 grid gap-4 lg:row-start-1">
-        {/* Top buttons row 1 */}
-        <div class="grid grid-cols-2 gap-4">
-          <Button
-            variant="button"
-            fa={{ icon: "fa-save" }}
-            text="save"
-            onClick={() => {
-              setTextToSave(cleanUpText());
-              showModal("SaveCustomText");
-            }}
-          />
-          <Button
-            variant="button"
-            fa={{ icon: "fa-folder" }}
-            text="saved texts"
-            onClick={() => showModal("SavedTexts")}
-          />
-        </div>
-
-        {/* Textarea */}
-        <div class="relative lg:col-start-1">
-          <Show when={longTextWarning()}>
-            <div
-              class="absolute inset-0 z-10 grid cursor-pointer place-items-center rounded bg-sub-alt text-center"
-              onClick={() => setLongTextWarning(false)}
-            >
-              <div>
-                <p class="text-em-xl">
-                  A long custom text is currently loaded.
-                  <br />
-                  Editing the text will disable progress tracking.
-                </p>
-                <p class="mt-4 text-em-xs text-sub">
-                  Click anywhere to start editing the text.
-                </p>
-              </div>
-            </div>
-          </Show>
-          <Show when={challengeWarning()}>
-            <div
-              class="absolute inset-0 z-10 grid cursor-pointer place-items-center rounded bg-sub-alt text-center"
-              onClick={() => setChallengeWarning(false)}
-            >
-              <div>
-                <p class="text-em-xl">
-                  A challenge is currently loaded.
-                  <br />
-                  Editing the settings will clear the challenge.
-                </p>
-                <p class="mt-4 text-em-xs text-sub">Click anywhere to edit.</p>
-              </div>
-            </div>
-          </Show>
-          <textarea
-            ref={textareaRef}
-            class="min-h-[730px] w-full resize-y self-start overflow-x-hidden overflow-y-scroll rounded bg-sub-alt p-4 text-base font-(--font) text-text outline-none"
-            value={textarea()}
-            onInput={(e) => setTextarea(e.currentTarget.value)}
-            onKeyDown={handleTextareaKeydown}
-            onKeyPress={handleTextareaKeypress}
-          ></textarea>
-        </div>
-        <Button
-          variant="button"
-          text="ok"
-          class="lg:col-start-1"
-          onClick={apply}
-        />
-      </div>
-
-      {/* Settings sidebar — on large screens spans all rows in column 2 */}
-      <div
-        class={cn(
-          "grid h-min gap-4 text-xs",
-          isDisabled() && "pointer-events-none opacity-50 select-none",
-        )}
+    <>
+      <AnimatedModal
+        id="CustomText"
+        modalClass="max-w-[1200px] lg:grid-cols-[auto_20rem] grid-cols-1 h-min"
+        beforeShow={beforeShow}
+        afterShow={afterShow}
       >
-        <SettingsGroup
-          title="Mode"
-          icon="fa-cog"
-          sub="Change the way words are generated."
-        >
-          <div class="flex w-full gap-2">
-            <For each={modeOptions}>
-              {(opt) => (
-                <Button
-                  variant="button"
-                  text={opt.label}
-                  class="flex-1"
-                  active={customTextMode() === opt.value}
-                  onClick={() => handleModeChange(opt.value)}
-                />
-              )}
-            </For>
+        <Separator class="row-start-2 block lg:hidden" />
+        <div class="row-start-3 grid gap-4 lg:row-start-1">
+          {/* Top buttons row 1 */}
+          <div class="grid grid-cols-2 gap-4">
+            <Button
+              variant="button"
+              fa={{ icon: "fa-save" }}
+              text="save"
+              onClick={() => {
+                setTextToSave(cleanUpText());
+                showModal("SaveCustomText");
+              }}
+            />
+            <Button
+              variant="button"
+              fa={{ icon: "fa-folder" }}
+              text="saved texts"
+              onClick={() => showModal("SavedTexts")}
+            />
           </div>
-        </SettingsGroup>
 
-        <SettingsGroup
-          title="Limit"
-          icon="fa-step-forward"
-          sub="Control how many words to generate or for how long you want to type."
+          {/* Textarea */}
+          <div class="relative lg:col-start-1">
+            <Show when={longTextWarning()}>
+              <div
+                class="absolute inset-0 z-10 grid cursor-pointer place-items-center rounded bg-sub-alt text-center"
+                onClick={() => setLongTextWarning(false)}
+              >
+                <div>
+                  <p class="text-em-xl">
+                    A long custom text is currently loaded.
+                    <br />
+                    Editing the text will disable progress tracking.
+                  </p>
+                  <p class="mt-4 text-em-xs text-sub">
+                    Click anywhere to start editing the text.
+                  </p>
+                </div>
+              </div>
+            </Show>
+            <Show when={challengeWarning()}>
+              <div
+                class="absolute inset-0 z-10 grid cursor-pointer place-items-center rounded bg-sub-alt text-center"
+                onClick={() => setChallengeWarning(false)}
+              >
+                <div>
+                  <p class="text-em-xl">
+                    A challenge is currently loaded.
+                    <br />
+                    Editing the settings will clear the challenge.
+                  </p>
+                  <p class="mt-4 text-em-xs text-sub">
+                    Click anywhere to edit.
+                  </p>
+                </div>
+              </div>
+            </Show>
+            <textarea
+              ref={textareaRef}
+              class="min-h-[730px] w-full resize-y self-start overflow-x-hidden overflow-y-scroll rounded bg-sub-alt p-4 text-base font-(--font) text-text outline-none"
+              value={textarea()}
+              onInput={(e) => setTextarea(e.currentTarget.value)}
+              onKeyDown={handleTextareaKeydown}
+              onKeyPress={handleTextareaKeypress}
+            ></textarea>
+          </div>
+          <Button
+            variant="button"
+            text="ok"
+            class="lg:col-start-1"
+            onClick={apply}
+          />
+        </div>
+
+        {/* Settings sidebar — on large screens spans all rows in column 2 */}
+        <div
+          class={cn(
+            "grid h-min gap-4 text-xs",
+            isDisabled() && "pointer-events-none opacity-50 select-none",
+          )}
         >
-          <div class={cn("flex w-full items-center gap-4")}>
-            <Show when={showWordLimit()}>
+          <SettingsGroup
+            title="Mode"
+            icon="fa-cog"
+            sub="Change the way words are generated."
+          >
+            <div class="flex w-full gap-2">
+              <For each={modeOptions}>
+                {(opt) => (
+                  <Button
+                    variant="button"
+                    text={opt.label}
+                    class="flex-1"
+                    active={customTextMode() === opt.value}
+                    onClick={() => handleModeChange(opt.value)}
+                  />
+                )}
+              </For>
+            </div>
+          </SettingsGroup>
+
+          <SettingsGroup
+            title="Limit"
+            icon="fa-step-forward"
+            sub="Control how many words to generate or for how long you want to type."
+          >
+            <div class={cn("flex w-full items-center gap-4")}>
+              <Show when={showWordLimit()}>
+                <input
+                  type="number"
+                  class="w-full"
+                  min="0"
+                  placeholder="words"
+                  value={limitWord()}
+                  disabled={isLimitDisabled()}
+                  onInput={(e) => {
+                    setLimitWord(e.currentTarget.value);
+                    setLimitTime("");
+                    setLimitSection("");
+                  }}
+                />
+              </Show>
+              <Show when={showSectionLimit()}>
+                <input
+                  type="number"
+                  class="w-full"
+                  min="0"
+                  placeholder="sections"
+                  value={limitSection()}
+                  disabled={isLimitDisabled()}
+                  onInput={(e) => {
+                    setLimitSection(e.currentTarget.value);
+                    setLimitWord("");
+                    setLimitTime("");
+                  }}
+                />
+              </Show>
+              <span class="text-sub">or</span>
               <input
                 type="number"
                 class="w-full"
                 min="0"
-                placeholder="words"
-                value={limitWord()}
+                placeholder="time"
+                value={limitTime()}
                 disabled={isLimitDisabled()}
                 onInput={(e) => {
-                  setLimitWord(e.currentTarget.value);
-                  setLimitTime("");
+                  setLimitTime(e.currentTarget.value);
+                  setLimitWord("");
                   setLimitSection("");
                 }}
               />
-            </Show>
-            <Show when={showSectionLimit()}>
-              <input
-                type="number"
-                class="w-full"
-                min="0"
-                placeholder="sections"
-                value={limitSection()}
-                disabled={isLimitDisabled()}
-                onInput={(e) => {
-                  setLimitSection(e.currentTarget.value);
-                  setLimitWord("");
-                  setLimitTime("");
-                }}
-              />
-            </Show>
-            <span class="text-sub">or</span>
+            </div>
+          </SettingsGroup>
+
+          <SettingsGroup
+            title="Word delimiter"
+            icon="fa-grip-lines-vertical"
+            sub="Change how words are separated. Using the pipe delimiter allows you to randomize groups of words."
+          >
+            <div class="flex w-full gap-2">
+              <For each={delimiterOptions}>
+                {(opt) => (
+                  <Button
+                    variant="button"
+                    text={opt.label}
+                    class="flex-1"
+                    active={pipeDelimiter() === (opt.value === "true")}
+                    onClick={() => handleDelimiterChange(opt.value === "true")}
+                  />
+                )}
+              </For>
+            </div>
+          </SettingsGroup>
+          <Separator />
+          <div class="grid gap-2">
             <input
-              type="number"
+              ref={fileInputRef}
+              type="file"
+              class="hidden"
+              accept=".txt"
+              onChange={handleFileOpen}
+            />
+            <Button
+              variant="button"
+              fa={{ icon: "fa-file-import" }}
+              text="open file"
+              onClick={() => fileInputRef.click()}
+            />
+            <Button
+              variant="button"
+              fa={{ icon: "fa-filter" }}
+              text="words filter"
+              onClick={() => showModal("WordFilter")}
+            />
+            <Button
+              variant="button"
+              fa={{ icon: "fa-cogs" }}
+              text="custom generator"
+              onClick={() => showModal("CustomGenerator")}
+            />
+          </div>
+          {/* <Separator /> */}
+          <SettingsGroup
+            title="Remove zero-width characters"
+            icon="fa-text-width"
+            sub="Fully remove zero-width characters."
+          >
+            <Button
+              variant="button"
+              text="apply"
               class="w-full"
-              min="0"
-              placeholder="time"
-              value={limitTime()}
-              disabled={isLimitDisabled()}
-              onInput={(e) => {
-                setLimitTime(e.currentTarget.value);
-                setLimitWord("");
-                setLimitSection("");
-              }}
+              onClick={applyRemoveZeroWidth}
             />
-          </div>
-        </SettingsGroup>
+          </SettingsGroup>
 
-        <SettingsGroup
-          title="Word delimiter"
-          icon="fa-grip-lines-vertical"
-          sub="Change how words are separated. Using the pipe delimiter allows you to randomize groups of words."
-        >
-          <div class="flex w-full gap-2">
-            <For each={delimiterOptions}>
-              {(opt) => (
-                <Button
-                  variant="button"
-                  text={opt.label}
-                  class="flex-1"
-                  active={pipeDelimiter() === (opt.value === "true")}
-                  onClick={() => handleDelimiterChange(opt.value === "true")}
-                />
-              )}
-            </For>
-          </div>
-        </SettingsGroup>
-        <Separator />
-        <div class="grid gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            class="hidden"
-            accept=".txt"
-            onChange={handleFileOpen}
-          />
-          <Button
-            variant="button"
-            fa={{ icon: "fa-file-import" }}
-            text="open file"
-            onClick={() => fileInputRef.click()}
-          />
-          <Button
-            variant="button"
-            fa={{ icon: "fa-filter" }}
-            text="words filter"
-            onClick={() => showModal("WordFilter")}
-          />
-          <Button
-            variant="button"
-            fa={{ icon: "fa-cogs" }}
-            text="custom generator"
-            onClick={() => showModal("CustomGenerator")}
-          />
+          <SettingsGroup
+            title="Remove fancy typography"
+            icon="fa-pen-fancy"
+            sub={
+              'Standardises typography symbols (for example \u201c and \u201d become ")'
+            }
+          >
+            <Button
+              variant="button"
+              text="apply"
+              class="w-full"
+              onClick={applyRemoveFancyTypography}
+            />
+          </SettingsGroup>
+
+          <SettingsGroup
+            title="Replace control characters"
+            icon="fa-code"
+            sub="Replace control characters (\n becomes a new line and \t becomes a tab)"
+          >
+            <Button
+              variant="button"
+              text="apply"
+              class="w-full"
+              onClick={applyReplaceControlChars}
+            />
+          </SettingsGroup>
+
+          <SettingsGroup
+            title="Replace new lines with spaces"
+            icon="fa-level-down-alt"
+            iconClass="fa-rotate-90"
+            sub="Replace all new line characters with spaces. Can automatically add periods to the end of lines if you wish."
+          >
+            <div class="flex w-full gap-2">
+              <Button
+                variant="button"
+                text="space"
+                class="flex-1"
+                onClick={() => applyReplaceNewlines("space")}
+              />
+              <Button
+                variant="button"
+                text="period + space"
+                class="flex-1"
+                onClick={() => applyReplaceNewlines("periodSpace")}
+              />
+            </div>
+          </SettingsGroup>
         </div>
-        {/* <Separator /> */}
-        <SettingsGroup
-          title="Remove zero-width characters"
-          icon="fa-text-width"
-          sub="Fully remove zero-width characters."
-        >
-          <Button
-            variant="button"
-            text="apply"
-            class="w-full"
-            onClick={applyRemoveZeroWidth}
-          />
-        </SettingsGroup>
-
-        <SettingsGroup
-          title="Remove fancy typography"
-          icon="fa-pen-fancy"
-          sub={
-            'Standardises typography symbols (for example \u201c and \u201d become ")'
-          }
-        >
-          <Button
-            variant="button"
-            text="apply"
-            class="w-full"
-            onClick={applyRemoveFancyTypography}
-          />
-        </SettingsGroup>
-
-        <SettingsGroup
-          title="Replace control characters"
-          icon="fa-code"
-          sub="Replace control characters (\n becomes a new line and \t becomes a tab)"
-        >
-          <Button
-            variant="button"
-            text="apply"
-            class="w-full"
-            onClick={applyReplaceControlChars}
-          />
-        </SettingsGroup>
-
-        <SettingsGroup
-          title="Replace new lines with spaces"
-          icon="fa-level-down-alt"
-          iconClass="fa-rotate-90"
-          sub="Replace all new line characters with spaces. Can automatically add periods to the end of lines if you wish."
-        >
-          <div class="flex w-full gap-2">
-            <Button
-              variant="button"
-              text="space"
-              class="flex-1"
-              onClick={() => applyReplaceNewlines("space")}
-            />
-            <Button
-              variant="button"
-              text="period + space"
-              class="flex-1"
-              onClick={() => applyReplaceNewlines("periodSpace")}
-            />
-          </div>
-        </SettingsGroup>
-      </div>
-    </AnimatedModal>
+      </AnimatedModal>
+      <SaveCustomTextModal textToSave={textToSave} />
+      <SavedTextsModal setChainedData={setIncomingChainedData} />
+      <WordFilterModal setChainedData={setIncomingChainedData} />
+      <CustomGeneratorModal setChainedData={setIncomingChainedData} />
+    </>
   );
 }
 
