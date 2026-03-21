@@ -7,6 +7,7 @@ import { showNoticeNotification } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Separator } from "../common/Separator";
 import SlimSelect from "../ui/SlimSelect";
 
 type Preset = {
@@ -141,26 +142,24 @@ export function CustomGeneratorModal(props: {
 
   return (
     <AnimatedModal id="CustomGenerator" modalClass="max-w-[600px]">
-      <div class="grid gap-6">
-        <div class="grid gap-2">
+      <div class="grid gap-4">
+        <div class="grid gap-1">
           <div class="text-sub">presets</div>
-          <div class="flex gap-2">
-            <div class="flex-1">
-              <SlimSelect
-                options={presetOptions}
-                selected={selectedPreset()}
-                onChange={setSelectedPreset}
-              />
-            </div>
+          <div class="grid gap-2">
+            <SlimSelect
+              options={presetOptions}
+              selected={selectedPreset()}
+              onChange={setSelectedPreset}
+            />
             <Button variant="button" text="apply" onClick={applyPreset} />
           </div>
         </div>
-        <div class="h-1 w-full rounded bg-sub-alt"></div>
+        <Separator />
         <div class="text-xs text-sub">
           Enter characters or strings separated by spaces. Random combinations
           will be generated using these inputs.
         </div>
-        <div class="grid gap-2">
+        <div class="grid gap-1">
           <div class="text-sub">character set</div>
           <textarea
             class="min-h-25 w-full resize-y rounded border-none bg-sub-alt p-2 text-text"
@@ -169,27 +168,31 @@ export function CustomGeneratorModal(props: {
             onInput={(e) => setCharacterInput(e.currentTarget.value)}
           ></textarea>
         </div>
-        <div class="grid grid-cols-2 gap-x-4">
-          <div class="text-sub">min length</div>
-          <div class="text-sub">max length</div>
-          <input
-            type="number"
-            class="w-full"
-            autocomplete="off"
-            min="1"
-            value={minLengthInput()}
-            onInput={(e) => setMinLengthInput(e.currentTarget.value)}
-          />
-          <input
-            type="number"
-            class="w-full"
-            autocomplete="off"
-            min="1"
-            value={maxLengthInput()}
-            onInput={(e) => setMaxLengthInput(e.currentTarget.value)}
-          />
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="grid gap-1">
+            <div class="text-sub">min length</div>
+            <input
+              type="number"
+              class="w-full"
+              autocomplete="off"
+              min="1"
+              value={minLengthInput()}
+              onInput={(e) => setMinLengthInput(e.currentTarget.value)}
+            />
+          </div>
+          <div class="grid gap-1">
+            <div class="text-sub">max length</div>
+            <input
+              type="number"
+              class="w-full"
+              autocomplete="off"
+              min="1"
+              value={maxLengthInput()}
+              onInput={(e) => setMaxLengthInput(e.currentTarget.value)}
+            />
+          </div>
         </div>
-        <div class="grid gap-2">
+        <div class="grid gap-1">
           <div class="text-sub">word count</div>
           <input
             type="number"
@@ -201,26 +204,24 @@ export function CustomGeneratorModal(props: {
           />
         </div>
       </div>
-      <div class="mt-4 grid gap-4">
-        <div class="text-xs text-sub">
-          {
-            '"Set" replaces the current custom text with generated words, "Add" appends generated words to the current custom text.'
-          }
-        </div>
-        <div class="flex gap-2">
-          <Button
-            variant="button"
-            text="set"
-            class="flex-1"
-            onClick={() => apply(true)}
-          />
-          <Button
-            variant="button"
-            text="add"
-            class="flex-1"
-            onClick={() => apply(false)}
-          />
-        </div>
+      <div class="text-xs text-sub">
+        {
+          '"Set" replaces the current custom text with generated words, "Add" appends generated words to the current custom text.'
+        }
+      </div>
+      <div class="grid gap-2">
+        <Button
+          variant="button"
+          text="set"
+          class="flex-1"
+          onClick={() => apply(true)}
+        />
+        <Button
+          variant="button"
+          text="add"
+          class="flex-1"
+          onClick={() => apply(false)}
+        />
       </div>
     </AnimatedModal>
   );
