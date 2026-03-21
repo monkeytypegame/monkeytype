@@ -654,7 +654,7 @@ describe("string utils", () => {
 
   describe("_checkAccentOrderMismatchWithRules", () => {
     const rules = [
-      ["abc", "acb", "bac", "bca", "cab", "cba"],
+      ["abc", "acb", "bac", "bca", "cab", "cba", "dba", "dbc"],
       ["ab", "ba"],
     ];
     const langRules = { testLang: [["bc", "cb"]] };
@@ -803,7 +803,8 @@ describe("string utils", () => {
       expect(result).toBeNull();
     });
 
-    it("returns the pattern that mismatches at the same position", () => {
+    it("returns 1st input pattern match when word matches a pattern after 2 input matches", () => {
+      // input matches "abc" and "acb" before word matches "bac" but 1st match is returned
       const result = Strings.__testing._checkAccentOrderMismatchWithRules(
         "xa",
         "ybac",
@@ -820,6 +821,28 @@ describe("string utils", () => {
       );
       expect(result).toStrictEqual({ inputPattern: "cab", patternStart: 3 });
     });
+
+    it("returns null if input and word has the same language specific pattern, even if a longer common-rule mismatch exists", () => {
+      // there is a longer pattern mismatch ["abc", "dbc"]. However, in a higher priority
+      // rule (language-specific) input and word have the same pattern ["bc", "bc"]
+      const result = Strings.__testing._checkAccentOrderMismatchWithRules(
+        "xabc",
+        "ydbc",
+        allRules,
+      );
+      expect(result).toBeNull();
+    });
+
+    it("respects priority when there are 2 rules: 1 mismatch and 1 with the same pattern", () => {
+      // the longer pattern rule has a mismatch ["cba", "dba"], so it's returned
+      // even though input and word have the same pattern in a lower priority rule ["ba", "ba"]
+      const result = Strings.__testing._checkAccentOrderMismatchWithRules(
+        "xcba",
+        "ydba",
+        allRules,
+      );
+      expect(result).toStrictEqual({ inputPattern: "cba", patternStart: 1 });
+    });
   });
 
   describe("checkAccentOrderMismatch", () => {
@@ -833,13 +856,18 @@ describe("string utils", () => {
       expect(result).toStrictEqual({ inputPattern: "ُّ", patternStart: 2 });
     });
 
-    it("returns input pattern if there is a mismatch even if input does not have full pattern", () => {
+    it("returns input pattern if there is a mismatch in arabic specific 2 char rule", () => {
       const result = Strings.checkAccentOrderMismatch(
         "خصوصاً",
         "خصوصًا",
         "arabic",
       );
       expect(result).toStrictEqual({ inputPattern: "اً", patternStart: 4 });
+    });
+
+    it("returns input pattern if there is a mismatch in arabic specific 3 char rule", () => {
+      const result = Strings.checkAccentOrderMismatch("حقّاً", "حقًّا", "arabic");
+      expect(result).toStrictEqual({ inputPattern: "ّاً", patternStart: 2 });
     });
   });
 });
