@@ -1,4 +1,4 @@
-import { ComponentProps, JSXElement, onMount } from "solid-js";
+import { ComponentProps, JSXElement } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
@@ -162,6 +162,8 @@ function Mode(): JSXElement {
   );
 }
 
+type Mode2Key = "time" | "words" | "quote" | "custom";
+
 function Mode2(): JSXElement {
   const [wrapperRef, wrapperElement] = useRefWithUtils();
   const [timeRef, timeElement] = useRefWithUtils();
@@ -172,64 +174,51 @@ function Mode2(): JSXElement {
   const sClass =
     "z-2 col-start-1 row-start-1 grid w-max place-self-start grid-flow-col ml-(--card-gap)";
 
-  onMount(() => {
-    const el = {
-      time: timeElement(),
-      words: wordsElement(),
-      quote: quoteElement(),
-      custom: customElement(),
-    };
-    if (!el.time || !el.words || !el.quote || !el.custom) {
-      return;
-    }
-
-    for (const e of Object.values(el)) {
-      e?.hide();
-    }
-
-    el[getConfig.mode as keyof typeof el]?.show();
-  });
+  const getElements = () => {
+    const time = timeElement();
+    const words = wordsElement();
+    const quote = quoteElement();
+    const custom = customElement();
+    if (!time || !words || !quote || !custom) return undefined;
+    return { time, words, quote, custom };
+  };
 
   createEffectOn(
     () => getConfig.mode,
     (mode, previousMode) => {
       const wrapperEl = wrapperElement();
-      if (!wrapperEl) {
-        return;
-      }
-      const el = {
-        time: timeElement(),
-        words: wordsElement(),
-        quote: quoteElement(),
-        custom: customElement(),
-      };
-      if (!el.time || !el.words || !el.quote || !el.custom) {
+      const el = getElements();
+      if (!wrapperEl || !el) return;
+
+      const prev = el[previousMode as Mode2Key];
+      const next = el[mode as Mode2Key];
+
+      if (previousMode === undefined) {
+        for (const e of Object.values(el)) {
+          e.hide();
+        }
+        next?.show();
         return;
       }
 
-      el[previousMode as keyof typeof el]?.show();
-      const previousWidth =
-        el[previousMode as keyof typeof el]?.getOuterWidth() ?? 0;
-      el[previousMode as keyof typeof el]?.hide();
+      prev?.show();
+      const previousWidth = prev?.getOuterWidth() ?? 0;
 
-      el[mode as keyof typeof el]?.show();
-      const newWidth = el[mode as keyof typeof el]?.getOuterWidth() ?? 0;
-      el[mode as keyof typeof el]?.hide();
+      next?.show();
+      const newWidth = next?.getOuterWidth() ?? 0;
 
       void wrapperEl.promiseAnimate({
         width: [previousWidth + "px", newWidth + "px"],
         duration: durationMs,
       });
 
-      el[previousMode as keyof typeof el]?.show()?.animate({
+      prev?.show()?.animate({
         opacity: [1, 0],
         duration: durationMs,
-        onComplete: () => {
-          el[previousMode as keyof typeof el]?.hide();
-        },
+        onComplete: () => prev?.hide(),
       });
 
-      el[mode as keyof typeof el]?.show()?.animate({
+      next?.show()?.animate({
         opacity: [0, 1],
         duration: durationMs,
       });
