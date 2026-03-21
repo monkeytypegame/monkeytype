@@ -82,7 +82,7 @@ function PuncAndNum(): JSXElement {
 
 function Mode(): JSXElement {
   return (
-    <div class={cardClass}>
+    <div class={cn("z-2", cardClass)}>
       <Button
         class={buttonClass}
         variant="text"
