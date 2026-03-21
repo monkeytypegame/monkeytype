@@ -443,7 +443,7 @@ function updateTime(): void {
   }
   qs("#result .stats .time .bottom")?.setAttribute(
     "aria-label",
-    `${result.afkDuration}s afk ${afkSecondsPercent}%`,
+    `${result.afkDuration}s afk ${isNaN(afkSecondsPercent) ? 0 : afkSecondsPercent}%`,
   );
 
   if (Config.alwaysShowDecimalPlaces) {
