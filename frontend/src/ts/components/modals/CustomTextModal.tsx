@@ -59,6 +59,7 @@ export function CustomTextModal(): JSXElement {
 
   const [customTextIncomingData, setCustomTextIncomingData] =
     createSignal<CustomTextIncomingData>(null);
+
   const [textToSave, setTextToSave] = createSignal<string[]>([]);
 
   // oxlint-disable-next-line no-unassigned-vars -- assigned via SolidJS ref
@@ -325,9 +326,12 @@ export function CustomTextModal(): JSXElement {
     }
   };
 
-  const beforeShow = () => {
-    initState();
-    handleIncomingData();
+  const beforeShow = (isChained: boolean) => {
+    if (!isChained) {
+      initState();
+    } else {
+      handleIncomingData();
+    }
   };
 
   const afterShow = () => {
@@ -613,7 +617,7 @@ export function CustomTextModal(): JSXElement {
       <SaveCustomTextModal textToSave={textToSave} />
       <SavedTextsModal setIncomingData={setCustomTextIncomingData} />
       <WordFilterModal setIncomingData={setCustomTextIncomingData} />
-      <CustomGeneratorModal setIncomingData={setCustomTextIncomingData} />
+      <CustomGeneratorModal onApply={setCustomTextIncomingData} />
     </>
   );
 }
