@@ -68,6 +68,7 @@
     "[javascriptreact]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
+    "js/ts.tsdk.path": "backend\\node_modules\\typescript\\lib",
   },
 
   "launch": {

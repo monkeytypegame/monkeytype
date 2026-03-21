@@ -660,7 +660,7 @@ describe("string utils", () => {
     const langRules = { testLang: [["bc", "cb"]] };
     const allRules = [...langRules.testLang, ...rules];
 
-    it("returns null when neither input nor word matche a pattern", () => {
+    it("returns null when neither input nor word matches a pattern", () => {
       const result = Strings.__testing._checkAccentOrderMismatchWithRules(
         "xyy",
         "yzz",
@@ -751,23 +751,13 @@ describe("string utils", () => {
       expect(result).toStrictEqual({ inputPattern: "abc", patternStart: 1 }); // the input does not have to have the full pattern
     });
 
-    it("prefers language-specific rules", () => {
+    it("prefers language-specific rules even if longer common rules exist", () => {
       const result = Strings.__testing._checkAccentOrderMismatchWithRules(
         "xbc",
         "ycba",
         allRules,
       );
       expect(result).toStrictEqual({ inputPattern: "bc", patternStart: 1 }); // not the longer pattern "bca"
-    });
-
-    it("prefers matching with shortest overlap in the same rule", () => {
-      // There are 2 [input, word] matches: ["ab", "ba"] at position 1 and ["ba", "ab"] at position 2
-      const result = Strings.__testing._checkAccentOrderMismatchWithRules(
-        "xab",
-        "ybab",
-        allRules,
-      );
-      expect(result).toStrictEqual({ inputPattern: "ba", patternStart: 2 });
     });
 
     it("prefers earlier patterns if there are 2 input pattern matches in the same rule", () => {
@@ -778,6 +768,17 @@ describe("string utils", () => {
         allRules,
       );
       expect(result).toStrictEqual({ inputPattern: "cab", patternStart: 1 });
+    });
+
+    it("prefers matching with longest overlap in the same rule even if earlier-shorter-overlap-patterns match", () => {
+      // There are 2 [input, word] matches: ["ba", "ab"] at position 1 and ["ab", "ba"] at position 2
+      const result = Strings.__testing._checkAccentOrderMismatchWithRules(
+        "xba",
+        "yaba",
+        allRules,
+      );
+      // even though an earlier match "ab" exist but "ba" has longer overlap
+      expect(result).toStrictEqual({ inputPattern: "ba", patternStart: 1 });
     });
 
     // always check patterns in the same position
@@ -804,11 +805,20 @@ describe("string utils", () => {
 
     it("returns the pattern that mismatches at the same position", () => {
       const result = Strings.__testing._checkAccentOrderMismatchWithRules(
-        "xba",
-        "ybcab",
+        "xa",
+        "ybac",
         allRules,
       );
-      expect(result).toStrictEqual({ inputPattern: "acb", patternStart: 2 });
+      expect(result).toStrictEqual({ inputPattern: "abc", patternStart: 1 });
+    });
+
+    it("returns the pattern that mismatches at the same position", () => {
+      const result = Strings.__testing._checkAccentOrderMismatchWithRules(
+        "xabc",
+        "yyyabc",
+        allRules,
+      );
+      expect(result).toStrictEqual({ inputPattern: "cab", patternStart: 3 });
     });
   });
 

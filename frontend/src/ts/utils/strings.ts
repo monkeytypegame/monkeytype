@@ -358,37 +358,37 @@ function _checkAccentOrderMismatchWithRules(
   const minWordsLength = Math.min(input.length, currentWord.length);
 
   for (const rule of accentPatterns) {
-    let inputPattern: string | null = null;
-    let wordPattern: string | null = null;
-    let patternStart: number | null = null;
-
-    let mismatch;
-    const checkMismatch = (): {
-      inputPattern: string;
-      patternStart: number;
-    } | null => {
-      if (
-        inputPattern !== null &&
-        patternStart !== null &&
-        wordPattern !== null &&
-        inputPattern !== wordPattern
-      ) {
-        return { inputPattern, patternStart };
-      }
-      return null;
-    };
-
     const patternLength = rule[0]?.length ?? 0;
     const minLength = Math.min(patternLength, minWordsLength);
 
-    for (let overlapLen = 1; overlapLen <= minLength; overlapLen++) {
+    for (let overlapLen = minLength; overlapLen >= 1; overlapLen--) {
+      let inputPattern: string | null = null;
+      let wordPattern: string | null = null;
+      let patternStart: number | null = null;
+
+      let mismatch;
+      const checkMismatch = (): {
+        inputPattern: string;
+        patternStart: number;
+      } | null => {
+        if (
+          inputPattern !== null &&
+          patternStart !== null &&
+          wordPattern !== null &&
+          inputPattern !== wordPattern
+        ) {
+          return { inputPattern, patternStart };
+        }
+        return null;
+      };
+
       const overlap = input.slice(-overlapLen);
       const matchStart = input.length - overlapLen;
       const matchEnd = matchStart + patternLength;
       const wordSlice = currentWord.slice(matchStart, matchEnd);
 
       for (const pattern of rule) {
-        if (pattern.startsWith(overlap)) {
+        if (inputPattern === null && pattern.startsWith(overlap)) {
           inputPattern = pattern;
           patternStart = matchStart;
           // same pattern in both, no mismatch
