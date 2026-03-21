@@ -1,3 +1,4 @@
+import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, Setter } from "solid-js";
 
 import type { CustomTextIncomingData } from "./CustomTextModal";
@@ -8,6 +9,8 @@ import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
 import SlimSelect from "../ui/SlimSelect";
 
 type Preset = {
@@ -84,65 +87,73 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function CustomGeneratorModal(props: {
-  setIncomingData: Setter<CustomTextIncomingData>;
+  onApply: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [selectedPreset, setSelectedPreset] = createSignal(
     presetOptions[0]?.value ?? "",
   );
-  const [characterInput, setCharacterInput] = createSignal("");
-  const [minLengthInput, setMinLengthInput] = createSignal("2");
-  const [maxLengthInput, setMaxLengthInput] = createSignal("5");
-  const [wordCountInput, setWordCountInput] = createSignal("100");
+
+  let submitAction: "set" | "add" = "set";
+
+  const form = createForm(() => ({
+    defaultValues: {
+      characterSet: "",
+      minLength: "2",
+      maxLength: "5",
+      wordCount: "100",
+    },
+    onSubmit: ({ value }) => {
+      const input = value.characterSet.trim();
+      if (input === "") {
+        showNoticeNotification("Character set cannot be empty");
+        return;
+      }
+
+      const characters = input.split(/\s+/);
+      const minLength = parseInt(value.minLength) || 2;
+      const maxLength = parseInt(value.maxLength) || 5;
+      const wordCount = parseInt(value.wordCount) || 100;
+      const generatedWords: string[] = [];
+
+      for (let i = 0; i < wordCount; i++) {
+        const wordLength =
+          Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+        let word = "";
+        for (let j = 0; j < wordLength; j++) {
+          const randomChar =
+            characters[Math.floor(Math.random() * characters.length)];
+          word += randomChar;
+        }
+        generatedWords.push(word);
+      }
+
+      if (generatedWords.length === 0) return;
+
+      const customText = generatedWords.join(
+        CustomText.getPipeDelimiter() ? "|" : " ",
+      );
+      props.onApply({ text: customText, set: submitAction === "set" });
+      hideModal("CustomGenerator");
+    },
+  }));
 
   const applyPreset = () => {
     const preset = presets[selectedPreset()];
     if (preset) {
-      setCharacterInput(preset.characters.join(" "));
+      form.setFieldValue("characterSet", preset.characters.join(" "));
     }
-  };
-
-  const generateWords = (): string[] => {
-    const input = characterInput().trim();
-    if (input === "") {
-      showNoticeNotification("Character set cannot be empty");
-      return [];
-    }
-
-    const characters = input.split(/\s+/);
-    const minLength = parseInt(minLengthInput()) || 2;
-    const maxLength = parseInt(maxLengthInput()) || 5;
-    const wordCount = parseInt(wordCountInput()) || 100;
-    const generatedWords: string[] = [];
-
-    for (let i = 0; i < wordCount; i++) {
-      const wordLength =
-        Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
-      let word = "";
-      for (let j = 0; j < wordLength; j++) {
-        const randomChar =
-          characters[Math.floor(Math.random() * characters.length)];
-        word += randomChar;
-      }
-      generatedWords.push(word);
-    }
-
-    return generatedWords;
-  };
-
-  const apply = (set: boolean) => {
-    const generatedWords = generateWords();
-    if (generatedWords.length === 0) return;
-
-    const customText = generatedWords.join(
-      CustomText.getPipeDelimiter() ? "|" : " ",
-    );
-    props.setIncomingData({ text: customText, set });
-    hideModal("CustomGenerator");
   };
 
   return (
     <AnimatedModal id="CustomGenerator" modalClass="max-w-[600px]">
-      <div class="grid gap-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+        class="grid gap-4"
+      >
         <div class="grid gap-1">
           <div class="text-sub">presets</div>
           <div class="grid gap-2">
@@ -161,68 +172,65 @@ export function CustomGeneratorModal(props: {
         </div>
         <div class="grid gap-1">
           <div class="text-sub">character set</div>
-          <textarea
-            class="min-h-25 w-full resize-y rounded border-none bg-sub-alt p-2 text-text"
-            autocomplete="off"
-            value={characterInput()}
-            onInput={(e) => setCharacterInput(e.currentTarget.value)}
-          ></textarea>
+          <form.Field
+            name="characterSet"
+            validators={{
+              onChange: ({ value }) =>
+                value.trim() === "" ? "required" : undefined,
+            }}
+          >
+            {(field) => (
+              <textarea
+                class="min-h-25 w-full resize-y rounded border-none bg-sub-alt p-2 text-text"
+                autocomplete="off"
+                value={field().state.value}
+                onInput={(e) => field().handleChange(e.currentTarget.value)}
+              ></textarea>
+            )}
+          </form.Field>
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="grid gap-1">
             <div class="text-sub">min length</div>
-            <input
-              type="number"
-              class="w-full"
-              autocomplete="off"
-              min="1"
-              value={minLengthInput()}
-              onInput={(e) => setMinLengthInput(e.currentTarget.value)}
-            />
+            <form.Field name="minLength">
+              {(field) => <InputField field={field} type="number" />}
+            </form.Field>
           </div>
           <div class="grid gap-1">
             <div class="text-sub">max length</div>
-            <input
-              type="number"
-              class="w-full"
-              autocomplete="off"
-              min="1"
-              value={maxLengthInput()}
-              onInput={(e) => setMaxLengthInput(e.currentTarget.value)}
-            />
+            <form.Field name="maxLength">
+              {(field) => <InputField field={field} type="number" />}
+            </form.Field>
           </div>
         </div>
         <div class="grid gap-1">
           <div class="text-sub">word count</div>
-          <input
-            type="number"
-            class="w-full"
-            autocomplete="off"
-            min="1"
-            value={wordCountInput()}
-            onInput={(e) => setWordCountInput(e.currentTarget.value)}
+          <form.Field name="wordCount">
+            {(field) => <InputField field={field} type="number" />}
+          </form.Field>
+        </div>
+        <div class="text-xs text-sub">
+          {
+            '"Set" replaces the current custom text with generated words, "Add" appends generated words to the current custom text.'
+          }
+        </div>
+        <div class="grid gap-2">
+          <SubmitButton
+            form={form}
+            variant="button"
+            text="set"
+            class="flex-1"
+            onClick={() => (submitAction = "set")}
+          />
+          <SubmitButton
+            form={form}
+            variant="button"
+            text="add"
+            class="flex-1"
+            onClick={() => (submitAction = "add")}
           />
         </div>
-      </div>
-      <div class="text-xs text-sub">
-        {
-          '"Set" replaces the current custom text with generated words, "Add" appends generated words to the current custom text.'
-        }
-      </div>
-      <div class="grid gap-2">
-        <Button
-          variant="button"
-          text="set"
-          class="flex-1"
-          onClick={() => apply(true)}
-        />
-        <Button
-          variant="button"
-          text="add"
-          class="flex-1"
-          onClick={() => apply(false)}
-        />
-      </div>
+      </form>
     </AnimatedModal>
   );
 }
