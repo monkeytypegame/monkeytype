@@ -6,6 +6,9 @@ import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
 import * as CustomTestDurationModal from "../modals/custom-test-duration";
 import * as TestWords from "../test/test-words";
+import * as TestLogic from "../test/test-logic";
+import * as TestState from "../test/test-state";
+import * as TestUI from "../test/test-ui";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -119,4 +122,11 @@ qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {
       null,
     )}&goToUserPage=true`,
   );
+});
+
+testPage?.onChild("click", "#previousTestButton", () => {
+  if (TestUI.resultCalculating) return;
+  if (Config.mode === "quote" && TestState.quoteHistoryIndex > 0) {
+    TestLogic.restart({ isPrevious: true });
+  }
 });

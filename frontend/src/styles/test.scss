@@ -1321,11 +1321,21 @@
   margin-left: 0.5em;
 }
 
-#restartTestButton {
-  font-size: 1rem;
-  margin: 1rem auto 0 auto;
+#testActionButtons {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem auto 0;
+}
+
+.testActionButton {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 1em 2em;
+  margin: 0;
 }
 
 #compositionDisplay {

@@ -136,6 +136,7 @@
   }
 }
 @media (pointer: coarse) and (max-width: 778px) {
+  #previousTestButton,
   #restartTestButton {
     display: block !important;
   }

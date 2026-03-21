@@ -121,6 +121,15 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   }
 
   Config[key] = value;
+
+  if (key === "mode" && previousValue === "quote" && value !== "quote") {
+    TestState.resetQuoteHistory();
+  }
+
+  if (key === "language" && previousValue !== value) {
+    TestState.resetQuoteHistory();
+  }
+
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   // @ts-expect-error i can't figure this out

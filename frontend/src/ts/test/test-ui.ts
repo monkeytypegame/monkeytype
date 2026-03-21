@@ -1935,6 +1935,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
+  updatePreviousButtonVisibility();
 }
 
 export function onTestFinish(): void {
@@ -2090,4 +2091,18 @@ configEvent.subscribe(({ key, newValue }) => {
   if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();
   }
+  if (key === "mode" || key === "language") {
+    updatePreviousButtonVisibility();
+  }
 });
+
+export function updatePreviousButtonVisibility(): void {
+  const prevBtn = document.getElementById("previousTestButton");
+  if (!prevBtn) return;
+
+  if (Config.mode === "quote" && TestState.quoteHistoryIndex > 0) {
+    prevBtn.classList.remove("hidden");
+  } else {
+    prevBtn.classList.add("hidden");
+  }
+}
