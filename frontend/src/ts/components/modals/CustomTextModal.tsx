@@ -57,7 +57,7 @@ export function CustomTextModal(): JSXElement {
   const [longTextWarning, setLongTextWarning] = createSignal(false);
   const [challengeWarning, setChallengeWarning] = createSignal(false);
 
-  const [customTextIncomingData, setCustomTextIncomingData] =
+  const [incomingChainedData, setIncomingChainedData] =
     createSignal<CustomTextIncomingData>(null);
 
   const [textToSave, setTextToSave] = createSignal<string[]>([]);
@@ -241,9 +241,9 @@ export function CustomTextModal(): JSXElement {
   };
 
   const handleIncomingData = () => {
-    const data = customTextIncomingData();
+    const data = incomingChainedData();
     if (data === null) return;
-    setCustomTextIncomingData(null);
+    setIncomingChainedData(null);
 
     if (data.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
@@ -615,9 +615,9 @@ export function CustomTextModal(): JSXElement {
         </div>
       </AnimatedModal>
       <SaveCustomTextModal textToSave={textToSave} />
-      <SavedTextsModal setIncomingData={setCustomTextIncomingData} />
-      <WordFilterModal setIncomingData={setCustomTextIncomingData} />
-      <CustomGeneratorModal onApply={setCustomTextIncomingData} />
+      <SavedTextsModal setChainedData={setIncomingChainedData} />
+      <WordFilterModal setChainedData={setIncomingChainedData} />
+      <CustomGeneratorModal setChainedData={setIncomingChainedData} />
     </>
   );
 }

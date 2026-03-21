@@ -95,7 +95,7 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function WordFilterModal(props: {
-  setIncomingData: Setter<CustomTextIncomingData>;
+  setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [language, setLanguage] = createSignal(languageOptions[0]?.value ?? "");
   const [layout, setLayout] = createSignal(layoutOptions[0]?.value ?? "");
@@ -188,7 +188,7 @@ export function WordFilterModal(props: {
       const customText = filteredWords.join(
         CustomText.getPipeDelimiter() ? "|" : " ",
       );
-      props.setIncomingData({ text: customText, set });
+      props.setChainedData({ text: customText, set });
       hideModal("WordFilter");
     } finally {
       setLoading(false);

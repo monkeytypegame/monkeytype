@@ -19,7 +19,7 @@ function getSavedText(name: string, long: boolean): string {
 }
 
 export function SavedTextsModal(props: {
-  setIncomingData: Setter<CustomTextIncomingData>;
+  setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [names, setNames] = createSignal<string[]>([]);
   const [longNames, setLongNames] = createSignal<string[]>([]);
@@ -32,7 +32,7 @@ export function SavedTextsModal(props: {
   const handleNameClick = (name: string, long: boolean) => {
     CustomTextState.setCustomTextName(name, long);
     const text = getSavedText(name, long);
-    props.setIncomingData({ text, long });
+    props.setChainedData({ text, long });
     hideModal("SavedTexts");
   };
 

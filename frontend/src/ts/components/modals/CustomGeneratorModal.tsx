@@ -87,7 +87,7 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function CustomGeneratorModal(props: {
-  onApply: Setter<CustomTextIncomingData>;
+  setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [selectedPreset, setSelectedPreset] = createSignal(
     presetOptions[0]?.value ?? "",
@@ -132,7 +132,7 @@ export function CustomGeneratorModal(props: {
       const customText = generatedWords.join(
         CustomText.getPipeDelimiter() ? "|" : " ",
       );
-      props.onApply({ text: customText, set: submitAction === "set" });
+      props.setChainedData({ text: customText, set: submitAction === "set" });
       hideModal("CustomGenerator");
     },
   }));
