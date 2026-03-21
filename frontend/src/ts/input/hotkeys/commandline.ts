@@ -1,15 +1,12 @@
 import { createHotkey } from "@tanstack/solid-hotkeys";
-
-import * as CommandlinePopup from "../../commandline/commandline";
-
 import { isAnyPopupVisible } from "../../utils/misc";
-
 import { getConfig } from "../../config/store";
+import { showModal } from "../../states/modals";
 
 function openCommandline(e: KeyboardEvent): void {
   const popupVisible = isAnyPopupVisible();
   if (!popupVisible) {
-    CommandlinePopup.show();
+    showModal("Commandline");
   }
 }
 
