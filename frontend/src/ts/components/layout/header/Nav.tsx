@@ -1,17 +1,14 @@
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, JSXElement, Show } from "solid-js";
 
+import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import {
   prefetchAboutPage,
   prefetchLeaderboardPage,
 } from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import {
-  restartTestEvent,
-  getActivePage,
-  getFocus,
-} from "../../../states/core";
+import { getActivePage, getFocus } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,

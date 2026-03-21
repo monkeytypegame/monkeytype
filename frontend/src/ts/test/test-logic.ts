@@ -26,7 +26,8 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
-import { getActivePage, restartTestEvent } from "../states/core";
+import { getActivePage } from "../states/core";
+import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -1432,7 +1433,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
-restartTestEvent.subscribe(() => restart());
+restartTestEvent.subscribe((event) => restart(event));
 
 qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
   if (TestState.testRestarting) return;

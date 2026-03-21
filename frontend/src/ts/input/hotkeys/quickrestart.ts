@@ -4,11 +4,11 @@ import { isAnyPopupVisible } from "../../utils/misc";
 
 import { QuickRestart } from "@monkeytype/schemas/configs";
 import { getConfig } from "../../config/store";
-import * as TestLogic from "../../test/test-logic";
 import * as TestWords from "../../test/test-words";
 import { getActivePage } from "../../states/core";
 import { navigate } from "../../controllers/route-controller";
 import { isInputElementFocused } from "../../input/input-element";
+import { restartTestEvent } from "../../events/test";
 
 function quickRestart(e: KeyboardEvent): void {
   if (!isInputElementFocused()) {
@@ -28,7 +28,7 @@ function quickRestart(e: KeyboardEvent): void {
   }
 
   if (getActivePage() === "test") {
-    TestLogic.restart({ isQuickRestart: !e.shiftKey });
+    restartTestEvent.dispatch({ isQuickRestart: !e.shiftKey });
   } else {
     void navigate("");
   }
