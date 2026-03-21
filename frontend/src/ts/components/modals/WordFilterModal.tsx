@@ -2,12 +2,14 @@ import type { Language } from "@monkeytype/schemas/languages";
 import type { LayoutObject } from "@monkeytype/schemas/layouts";
 
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, Setter } from "solid-js";
 
 import type { CustomTextIncomingData } from "./CustomTextModal";
 
 import { LanguageList } from "../../constants/languages";
 import { LayoutsList } from "../../constants/layouts";
+import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -19,6 +21,9 @@ import * as Misc from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
+import { Checkbox } from "../ui/form/Checkbox";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
 import SlimSelect from "../ui/SlimSelect";
 
 type FilterPreset = {
@@ -100,12 +105,75 @@ export function WordFilterModal(props: {
   const [language, setLanguage] = createSignal(languageOptions[0]?.value ?? "");
   const [layout, setLayout] = createSignal(layoutOptions[0]?.value ?? "");
   const [preset, setPreset] = createSignal(presetOptions[0]?.value ?? "");
-  const [includeInput, setIncludeInput] = createSignal("");
-  const [excludeInput, setExcludeInput] = createSignal("");
-  const [minLength, setMinLength] = createSignal("");
-  const [maxLength, setMaxLength] = createSignal("");
-  const [exactMatch, setExactMatch] = createSignal(false);
   const [loading, setLoading] = createSignal(false);
+
+  let submitAction: "set" | "add" = "set";
+
+  const form = createForm(() => ({
+    defaultValues: {
+      include: "",
+      exclude: "",
+      minLength: "",
+      maxLength: "",
+      exactMatch: false,
+    },
+    onSubmit: async ({ value }) => {
+      setLoading(true);
+      showLoaderBar();
+      try {
+        const exactMatchOnly = value.exactMatch;
+        let filterin = Misc.escapeRegExp(value.include.trim());
+        filterin = filterin.replace(/\s+/gi, "|");
+        const regincl = exactMatchOnly
+          ? new RegExp("^[" + filterin + "]+$", "i")
+          : new RegExp(filterin, "i");
+
+        let filterout = Misc.escapeRegExp(value.exclude.trim());
+        filterout = filterout.replace(/\s+/gi, "|");
+        const regexcl = new RegExp(filterout, "i");
+
+        const { data: languageWordList, error } = await tryCatch(
+          JSONData.getLanguage(language() as Language),
+        );
+
+        if (error) {
+          showErrorNotification("Failed to filter language words", { error });
+          return;
+        }
+
+        const max = value.maxLength === "" ? 999 : parseInt(value.maxLength);
+        const min = value.minLength === "" ? 1 : parseInt(value.minLength);
+
+        const filteredWords: string[] = [];
+        for (const word of languageWordList.words) {
+          const test1 = regincl.test(word);
+          const test2 = exactMatchOnly ? false : regexcl.test(word);
+          if (
+            ((test1 && !test2) || (test1 && filterout === "")) &&
+            word.length <= max &&
+            word.length >= min
+          ) {
+            filteredWords.push(word);
+          }
+        }
+
+        if (filteredWords.length === 0) {
+          showNoticeNotification("No words found");
+          return;
+        }
+        const customText = filteredWords.join(
+          CustomText.getPipeDelimiter() ? "|" : " ",
+        );
+        props.setChainedData({ text: customText, set: submitAction === "set" });
+        hideModal("WordFilter");
+      } finally {
+        hideLoaderBar();
+        setLoading(false);
+      }
+    },
+  }));
+
+  const isExactMatch = form.useStore((s) => s.values.exactMatch);
 
   const applyPreset = async () => {
     const presetToApply = presets[preset()];
@@ -115,7 +183,8 @@ export function WordFilterModal(props: {
     }
 
     const layoutData = await JSONData.getLayout(layout());
-    setIncludeInput(
+    form.setFieldValue(
+      "include",
       presetToApply
         .getIncludeString(layoutData)
         .map((x) => x[0])
@@ -123,12 +192,13 @@ export function WordFilterModal(props: {
     );
 
     if (presetToApply.exactMatch === true) {
-      setExactMatch(true);
-      setExcludeInput("");
+      form.setFieldValue("exactMatch", true);
+      form.setFieldValue("exclude", "");
     } else {
-      setExactMatch(false);
+      form.setFieldValue("exactMatch", false);
       if (presetToApply.getExcludeString !== undefined) {
-        setExcludeInput(
+        form.setFieldValue(
+          "exclude",
           presetToApply
             .getExcludeString(layoutData)
             .map((x) => x[0])
@@ -138,185 +208,148 @@ export function WordFilterModal(props: {
     }
   };
 
-  const filter = async (): Promise<string[]> => {
-    const exactMatchOnly = exactMatch();
-    let filterin = Misc.escapeRegExp(includeInput().trim());
-    filterin = filterin.replace(/\s+/gi, "|");
-    const regincl = exactMatchOnly
-      ? new RegExp("^[" + filterin + "]+$", "i")
-      : new RegExp(filterin, "i");
-
-    let filterout = Misc.escapeRegExp(excludeInput().trim());
-    filterout = filterout.replace(/\s+/gi, "|");
-    const regexcl = new RegExp(filterout, "i");
-
-    const { data: languageWordList, error } = await tryCatch(
-      JSONData.getLanguage(language() as Language),
-    );
-
-    if (error) {
-      showErrorNotification("Failed to filter language words", { error });
-      return [];
-    }
-
-    const max = maxLength() === "" ? 999 : parseInt(maxLength());
-    const min = minLength() === "" ? 1 : parseInt(minLength());
-
-    const filteredWords: string[] = [];
-    for (const word of languageWordList.words) {
-      const test1 = regincl.test(word);
-      const test2 = exactMatchOnly ? false : regexcl.test(word);
-      if (
-        ((test1 && !test2) || (test1 && filterout === "")) &&
-        word.length <= max &&
-        word.length >= min
-      ) {
-        filteredWords.push(word);
-      }
-    }
-    return filteredWords;
-  };
-
-  const apply = async (set: boolean) => {
-    setLoading(true);
-    try {
-      const filteredWords = await filter();
-      if (filteredWords.length === 0) {
-        showNoticeNotification("No words found");
-        return;
-      }
-      const customText = filteredWords.join(
-        CustomText.getPipeDelimiter() ? "|" : " ",
-      );
-      props.setChainedData({ text: customText, set });
-      hideModal("WordFilter");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <AnimatedModal id="WordFilter" modalClass="max-w-[800px] grid gap-4">
-      <div class="grid gap-1">
-        <div class="text-sub">language</div>
-        <SlimSelect
-          options={languageOptions}
-          selected={language()}
-          onChange={setLanguage}
-        />
-      </div>
-      <div class="text-xs text-sub">
-        You can manually filter words by length, words or characters (separated
-        by spaces) on the left side. On the right side you can generate filters
-        based on a preset and selected layout.
-      </div>
+    <AnimatedModal id="WordFilter" modalClass="max-w-[800px]">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <fieldset disabled={loading()} class="grid gap-4">
+          <div class="grid gap-1">
+            <div class="text-sub">language</div>
+            <SlimSelect
+              options={languageOptions}
+              selected={language()}
+              onChange={setLanguage}
+              disabled={loading()}
+            />
+          </div>
+          <div class="text-xs text-sub">
+            You can manually filter words by length, words or characters
+            (separated by spaces) on the left side. On the right side you can
+            generate filters based on a preset and selected layout.
+          </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
-        <div class="grid gap-4 self-start">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="grid gap-1">
-              <div class="text-sub">min length</div>
-              <input
-                type="number"
-                class="w-full"
-                autocomplete="off"
-                value={minLength()}
-                onInput={(e) => setMinLength(e.currentTarget.value)}
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
+            <div class="grid gap-4 self-start">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="grid gap-1">
+                  <div class="text-sub">min length</div>
+                  <form.Field name="minLength">
+                    {(field) => (
+                      <InputField field={field} type="number" placeholder="" />
+                    )}
+                  </form.Field>
+                </div>
+                <div class="grid gap-1">
+                  <div class="text-sub">max length</div>
+                  <form.Field name="maxLength">
+                    {(field) => (
+                      <InputField field={field} type="number" placeholder="" />
+                    )}
+                  </form.Field>
+                </div>
+              </div>
+              <div class="grid gap-1">
+                <div class="text-sub">include</div>
+                <form.Field name="include">
+                  {(field) => <InputField field={field} placeholder="" />}
+                </form.Field>
+                <form.Field
+                  name="exactMatch"
+                  validators={{
+                    onChange: ({ value }) => {
+                      if (value) {
+                        form.setFieldValue("exclude", "");
+                      }
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <Checkbox
+                      field={field}
+                      label="Exact match only"
+                      disabled={loading()}
+                    />
+                  )}
+                </form.Field>
+              </div>
+              <div class="grid gap-1">
+                <div class="text-sub">exclude</div>
+                <form.Field name="exclude">
+                  {(field) => (
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      placeholder=""
+                    />
+                  )}
+                </form.Field>
+              </div>
+            </div>
+
+            <Separator vertical class="hidden md:block" />
+            <Separator class="block md:hidden" />
+
+            <div class="grid gap-4 self-start">
+              <div class="grid gap-1">
+                <div class="text-sub">presets</div>
+                <SlimSelect
+                  options={presetOptions}
+                  selected={preset()}
+                  onChange={setPreset}
+                  disabled={loading()}
+                />
+              </div>
+              <div class="grid gap-1">
+                <div class="text-sub">layout</div>
+                <SlimSelect
+                  options={layoutOptions}
+                  selected={layout()}
+                  onChange={setLayout}
+                  disabled={loading()}
+                />
+              </div>
+              <Button
+                variant="button"
+                text="apply"
+                disabled={loading()}
+                onClick={() => void applyPreset()}
               />
             </div>
-            <div class="grid gap-1">
-              <div class="text-sub">max length</div>
-              <input
-                type="number"
-                class="w-full"
-                autocomplete="off"
-                value={maxLength()}
-                onInput={(e) => setMaxLength(e.currentTarget.value)}
-              />
-            </div>
           </div>
-          <div class="grid gap-1">
-            <div class="text-sub">include</div>
-            <input
-              class="w-full"
-              autocomplete="off"
-              value={includeInput()}
-              onInput={(e) => setIncludeInput(e.currentTarget.value)}
-            />
-            <label class="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                class="w-[1.25em]"
-                checked={exactMatch()}
-                onChange={(e) => {
-                  setExactMatch(e.currentTarget.checked);
-                  if (e.currentTarget.checked) setExcludeInput("");
-                }}
-              />
-              Exact match only
-            </label>
-          </div>
-          <div class="grid gap-1">
-            <div class="text-sub">exclude</div>
-            <input
-              class="w-full"
-              autocomplete="off"
-              value={excludeInput()}
-              disabled={exactMatch()}
-              onInput={(e) => setExcludeInput(e.currentTarget.value)}
-            />
-          </div>
-        </div>
 
-        <Separator vertical class="hidden md:block" />
-        <Separator class="block md:hidden" />
-
-        <div class="grid gap-4 self-start">
-          <div class="grid gap-1">
-            <div class="text-sub">presets</div>
-            <SlimSelect
-              options={presetOptions}
-              selected={preset()}
-              onChange={setPreset}
+          <div class="text-xs text-sub">
+            {
+              '"Set" replaces the current custom word list with the filter result, "Add" appends the filter result to the current custom word list.'
+            }
+          </div>
+          <div class="grid gap-2">
+            <SubmitButton
+              form={form}
+              variant="button"
+              text="set"
+              class="flex-1"
+              skipDirtyCheck
+              disabled={loading()}
+              onClick={() => (submitAction = "set")}
+            />
+            <SubmitButton
+              form={form}
+              variant="button"
+              text="add"
+              class="flex-1"
+              skipDirtyCheck
+              disabled={loading()}
+              onClick={() => (submitAction = "add")}
             />
           </div>
-          <div class="grid gap-1">
-            <div class="text-sub">layout</div>
-            <SlimSelect
-              options={layoutOptions}
-              selected={layout()}
-              onChange={setLayout}
-            />
-          </div>
-          <Button
-            variant="button"
-            text="apply"
-            onClick={() => void applyPreset()}
-          />
-        </div>
-      </div>
-
-      <div class="text-xs text-sub">
-        {
-          '"Set" replaces the current custom word list with the filter result, "Add" appends the filter result to the current custom word list.'
-        }
-      </div>
-      <div class="grid gap-2">
-        <Button
-          variant="button"
-          text="set"
-          class="flex-1"
-          disabled={loading()}
-          onClick={() => void apply(true)}
-        />
-        <Button
-          variant="button"
-          text="add"
-          class="flex-1"
-          disabled={loading()}
-          onClick={() => void apply(false)}
-        />
-      </div>
+        </fieldset>
+      </form>
     </AnimatedModal>
   );
 }
