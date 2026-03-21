@@ -1,7 +1,12 @@
-import { createHotkey } from "@tanstack/solid-hotkeys";
-import { isAnyPopupVisible } from "../../utils/misc";
-import { getConfig } from "../../config/store";
+import { createHotkey, HotkeyOptions } from "@tanstack/solid-hotkeys";
+import { hotkeys } from "../../states/hotkeys";
 import { showModal } from "../../states/modals";
+import { isAnyPopupVisible } from "../../utils/misc";
+
+const hotkeyOptions: HotkeyOptions = {
+  ignoreInputs: false,
+  requireReset: true,
+};
 
 function openCommandline(e: KeyboardEvent): void {
   const popupVisible = isAnyPopupVisible();
@@ -10,19 +15,5 @@ function openCommandline(e: KeyboardEvent): void {
   }
 }
 
-createHotkey("Escape", openCommandline, () => ({
-  enabled: getConfig.quickRestart !== "esc",
-  ignoreInputs: false,
-  requireReset: true,
-}));
-
-createHotkey("Tab", openCommandline, () => ({
-  enabled: getConfig.quickRestart === "esc",
-  ignoreInputs: false,
-  requireReset: true,
-}));
-
-createHotkey("Mod+Shift+P", openCommandline, {
-  ignoreInputs: false,
-  requireReset: true,
-});
+createHotkey(() => hotkeys.commandline, openCommandline, hotkeyOptions);
+createHotkey("Mod+Shift+P", openCommandline, hotkeyOptions);
