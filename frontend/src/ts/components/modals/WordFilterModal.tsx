@@ -5,8 +5,6 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, Setter } from "solid-js";
 
-import type { CustomTextIncomingData } from "./CustomTextModal";
-
 import { LanguageList } from "../../constants/languages";
 import { LayoutsList } from "../../constants/layouts";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
@@ -100,7 +98,11 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function WordFilterModal(props: {
-  setChainedData: Setter<CustomTextIncomingData>;
+  setChainedData: Setter<{
+    text: string;
+    set?: boolean;
+    long?: boolean;
+  } | null>;
 }): JSXElement {
   const [language, setLanguage] = createSignal(languageOptions[0]?.value ?? "");
   const [layout, setLayout] = createSignal(layoutOptions[0]?.value ?? "");

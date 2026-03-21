@@ -1,8 +1,6 @@
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, Setter } from "solid-js";
 
-import type { CustomTextIncomingData } from "./CustomTextModal";
-
 import { hideModal } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
@@ -87,7 +85,11 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function CustomGeneratorModal(props: {
-  setChainedData: Setter<CustomTextIncomingData>;
+  setChainedData: Setter<{
+    text: string;
+    set?: boolean;
+    long?: boolean;
+  } | null>;
 }): JSXElement {
   const [selectedPreset, setSelectedPreset] = createSignal(
     presetOptions[0]?.value ?? "",
