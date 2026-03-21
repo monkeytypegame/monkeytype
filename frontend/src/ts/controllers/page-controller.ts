@@ -30,6 +30,7 @@ import {
   readGetParameters,
 } from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
+import { showBlockingLoadingScreen } from "./loading-screen";
 
 type ChangeOptions = {
   force?: boolean;
@@ -95,111 +96,6 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
   }
 }
 
-async function showSyncLoading({
-  loadingOptions,
-  totalDuration,
-}: {
-  loadingOptions: LoadingOptions[];
-  totalDuration: number;
-}): Promise<void> {
-  PageLoading.page.element.show().setStyle({ opacity: "0" });
-  await PageLoading.page.beforeShow({});
-
-  const fillDivider = loadingOptions.length;
-  const fillOffset = 100 / fillDivider;
-
-  //void here to run the loading promise as soon as possible
-  void PageLoading.page.element.promiseAnimate({
-    opacity: "1",
-    duration: totalDuration / 2,
-  });
-
-  for (let i = 0; i < loadingOptions.length; i++) {
-    const currentOffset = fillOffset * i;
-    const options = loadingOptions[i] as LoadingOptions;
-    if (options.style === "bar") {
-      await PageLoading.showBar();
-      if (i === 0) {
-        await PageLoading.updateBar(0, 0);
-        PageLoading.updateText("");
-      }
-    } else {
-      PageLoading.showSpinner();
-    }
-
-    if (options.style === "bar") {
-      await getLoadingPromiseWithBarKeyframes(
-        options,
-        fillDivider,
-        currentOffset,
-      );
-      void PageLoading.updateBar(100, 125);
-      PageLoading.updateText("Done");
-    } else {
-      await options.loadingPromise();
-    }
-  }
-
-  await PageLoading.page.element.promiseAnimate({
-    opacity: "0",
-    duration: totalDuration / 2,
-  });
-
-  await PageLoading.page.afterHide();
-  PageLoading.page.element.hide();
-}
-
-// Global abort controller for keyframe promises
-let keyframeAbortController: AbortController | null = null;
-
-async function getLoadingPromiseWithBarKeyframes(
-  loadingOptions: Extract<
-    NonNullable<Page<unknown>["loadingOptions"]>,
-    { style: "bar" }
-  >,
-  fillDivider: number,
-  fillOffset: number,
-): Promise<void> {
-  let loadingPromise = loadingOptions.loadingPromise();
-
-  // Create abort controller for this keyframe sequence
-  const localAbortController = new AbortController();
-  keyframeAbortController = localAbortController;
-
-  // Animate bar keyframes, but allow aborting if loading.promise finishes first or if globally aborted
-  const keyframePromise = (async () => {
-    for (const keyframe of loadingOptions.keyframes) {
-      if (localAbortController.signal.aborted) break;
-      if (keyframe.text !== undefined) {
-        PageLoading.updateText(keyframe.text);
-      }
-      await PageLoading.updateBar(
-        fillOffset + keyframe.percentage / fillDivider,
-        keyframe.durationMs,
-      );
-    }
-  })();
-
-  // Wait for either the keyframes or the loading.promise to finish
-  await Promise.race([
-    keyframePromise,
-    (async () => {
-      await loadingPromise;
-      localAbortController.abort();
-    })(),
-  ]);
-
-  // Always wait for loading.promise to finish before continuing
-  await loadingPromise;
-
-  // Clean up the abort controller
-  if (keyframeAbortController === localAbortController) {
-    keyframeAbortController = null;
-  }
-
-  return;
-}
-
 export async function change(
   pageName: PageName,
   options = {} as ChangeOptions,
@@ -256,23 +152,12 @@ export async function change(
     }
 
     if (syncLoadingOptions.length > 0) {
-      await showSyncLoading({
+      await showBlockingLoadingScreen({
         loadingOptions: syncLoadingOptions,
         totalDuration,
       });
     }
-
-    // Clean up abort controller after successful loading
-    if (keyframeAbortController) {
-      keyframeAbortController = null;
-    }
   } catch (error) {
-    // Abort any running keyframe promises
-    if (keyframeAbortController) {
-      keyframeAbortController.abort();
-      keyframeAbortController = null;
-    }
-
     pages.loading.element.addClass("active");
     setActivePage(pages.loading.id);
     Focus.set(false);
