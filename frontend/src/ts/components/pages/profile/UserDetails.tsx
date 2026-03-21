@@ -501,12 +501,7 @@ function Socials(props: {
           props.variant === "full" && "md:hidden lg:order-5 lg:block",
         )}
       ></div>
-      <div
-        class={cn(
-          "grid h-full md:place-content-center",
-          props.variant === "full" && "lg:order-6",
-        )}
-      >
+      <div class={cn("grid h-full", props.variant === "full" && "lg:order-6")}>
         <Show
           when={Object.values(props.socials ?? {}).some(
             (it) => it !== undefined && it.length > 0,
