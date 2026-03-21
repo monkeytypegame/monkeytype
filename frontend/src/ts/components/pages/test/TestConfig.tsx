@@ -224,6 +224,9 @@ function Mode2(): JSXElement {
       el[previousMode as keyof typeof el]?.show()?.animate({
         opacity: [1, 0],
         duration: durationMs,
+        onComplete: () => {
+          el[previousMode as keyof typeof el]?.hide();
+        },
       });
 
       el[mode as keyof typeof el]?.show()?.animate({
