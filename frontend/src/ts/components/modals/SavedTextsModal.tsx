@@ -1,4 +1,4 @@
-import { createSignal, For, JSXElement, Setter, Show } from "solid-js";
+import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
 import { hideModal } from "../../states/modals";
@@ -26,9 +26,14 @@ export function SavedTextsModal(props: {
   const [names, setNames] = createSignal<string[]>([]);
   const [longNames, setLongNames] = createSignal<string[]>([]);
 
+  // because the progress is stored in local storage,
+  // we need to trigger a refresh when it changes to update the reset button state
+  const [version, setVersion] = createSignal(0);
+
   const refresh = () => {
     setNames(CustomText.getCustomTextNames(false));
     setLongNames(CustomText.getCustomTextNames(true));
+    setVersion((v) => v + 1);
   };
 
   const handleNameClick = (name: string, long: boolean) => {
@@ -114,33 +119,35 @@ export function SavedTextsModal(props: {
             <div class="text-sub">No saved long custom texts found</div>
           }
         >
-          <For each={longNames()}>
+          <Index each={longNames()}>
             {(name) => {
-              const hasProgress = () =>
-                CustomText.getCustomTextLongProgress(name) > 0;
+              const hasProgress = () => {
+                version();
+                return CustomText.getCustomTextLongProgress(name()) > 0;
+              };
               return (
                 <div class="flex items-center gap-2">
                   <Button
                     variant="button"
-                    text={name}
+                    text={name()}
                     class="flex-1"
-                    onClick={() => handleNameClick(name, true)}
+                    onClick={() => handleNameClick(name(), true)}
                   />
                   <Button
                     variant="button"
                     text="reset"
                     disabled={!hasProgress()}
-                    onClick={() => handleResetProgress(name)}
+                    onClick={() => handleResetProgress(name())}
                   />
                   <Button
                     variant="button"
                     fa={{ icon: "fa-trash", fixedWidth: true }}
-                    onClick={() => handleDelete(name, true)}
+                    onClick={() => handleDelete(name(), true)}
                   />
                 </div>
               );
             }}
-          </For>
+          </Index>
         </Show>
       </div>
 
