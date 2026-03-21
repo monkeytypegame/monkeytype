@@ -163,7 +163,7 @@ export function CustomGeneratorModal(props: {
         <div class="grid gap-2">
           <div class="text-sub">character set</div>
           <textarea
-            class="min-h-[100px] w-full resize-y rounded border-none bg-sub-alt p-2 text-text"
+            class="min-h-25 w-full resize-y rounded border-none bg-sub-alt p-2 text-text"
             autocomplete="off"
             value={characterInput()}
             onInput={(e) => setCharacterInput(e.currentTarget.value)}

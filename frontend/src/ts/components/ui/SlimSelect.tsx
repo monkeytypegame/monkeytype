@@ -47,6 +47,7 @@ export type SlimSelectProps = {
 
 export default function SlimSelect(props: SlimSelectProps): JSXElement {
   let selectRef!: HTMLSelectElement;
+  let containerRef!: HTMLDivElement;
   let slimSelect: SlimSelectCore | null = null;
 
   // State tracking
@@ -243,7 +244,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     const config: Config = {
       select: selectRef,
       data: getDataWithAll(buildData(getOptions(), getSelected())) as Option[],
-      ...(props.settings && { settings: props.settings }),
+      settings: {
+        ...props.settings,
+        contentLocation: containerRef,
+      },
       ...(props.cssClasses && { cssClasses: props.cssClasses }),
       events: {
         ...props.events,
@@ -459,8 +463,17 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   });
 
   return (
-    <select ref={(el) => (selectRef = el)} multiple={props.multiple}>
-      {props.children}
-    </select>
+    <div
+      ref={(el) => (containerRef = el)}
+      class="relative [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!"
+    >
+      <select
+        ref={(el) => (selectRef = el)}
+        multiple={props.multiple}
+        class="z-10000"
+      >
+        {props.children}
+      </select>
+    </div>
   );
 }
