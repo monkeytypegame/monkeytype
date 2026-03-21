@@ -162,8 +162,6 @@ function Mode(): JSXElement {
   );
 }
 
-type Mode2Key = "time" | "words" | "quote" | "custom";
-
 function Mode2(): JSXElement {
   const [wrapperRef, wrapperElement] = useRefWithUtils();
   const [timeRef, timeElement] = useRefWithUtils();
@@ -190,6 +188,7 @@ function Mode2(): JSXElement {
       const el = getElements();
       if (!wrapperEl || !el) return;
 
+      type Mode2Key = "time" | "words" | "quote" | "custom";
       const prev = el[previousMode as Mode2Key];
       const next = el[mode as Mode2Key];
 
