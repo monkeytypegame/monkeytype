@@ -16,9 +16,7 @@ export function QuickRestartHotkey(): JSXElement {
   return (
     <Show
       when={quickRestartHotkeys[getConfig.quickRestart] !== undefined}
-      fallback=<>
-        <kbd>tab</kbd> &gt; <kbd>enter</kbd>
-      </>
+      fallback=<kbd>tab {">"} enter</kbd>
     >
       <Kbd hotkey={quickRestartHotkeys[getConfig.quickRestart] as Hotkey} />
     </Show>
