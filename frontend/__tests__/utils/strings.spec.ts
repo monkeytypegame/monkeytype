@@ -777,7 +777,7 @@ describe("string utils", () => {
         "yaba",
         allRules,
       );
-      // even though an earlier match "ab" exist but "ba" has longer overlap
+      // even though an earlier pattern "ab" exist but "ba" has longer overlap
       expect(result).toStrictEqual({ inputPattern: "ba", patternStart: 1 });
     });
 
