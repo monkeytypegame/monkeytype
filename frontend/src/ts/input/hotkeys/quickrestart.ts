@@ -1,4 +1,4 @@
-import { createHotkey } from "@tanstack/solid-hotkeys";
+import { createHotkey, HotkeyCallbackContext } from "@tanstack/solid-hotkeys";
 
 import { isAnyPopupVisible } from "../../utils/misc";
 
@@ -6,10 +6,10 @@ import { navigate } from "../../controllers/route-controller";
 import { restartTestEvent } from "../../events/test";
 import { getActivePage } from "../../states/core";
 import { hotkeys } from "../../states/hotkeys";
-import { isInteractiveElementFocused } from "./utils";
+import { handleHotkeyOnInteractiveElement } from "./utils";
 
-function quickRestart(e: KeyboardEvent): void {
-  if (isInteractiveElementFocused()) return;
+function quickRestart(e: KeyboardEvent, context: HotkeyCallbackContext): void {
+  if (handleHotkeyOnInteractiveElement(e, context)) return;
 
   if (isAnyPopupVisible()) {
     return;
@@ -23,6 +23,9 @@ function quickRestart(e: KeyboardEvent): void {
 }
 
 createHotkey(() => hotkeys.quickRestart, quickRestart, {
+  stopPropagation: false,
+  preventDefault: false,
   ignoreInputs: false,
   requireReset: true,
+  conflictBehavior: "replace",
 });

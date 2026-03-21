@@ -1,9 +1,8 @@
+import { Config, QuickRestart } from "@monkeytype/schemas/configs";
 import { Hotkey } from "@tanstack/solid-hotkeys";
+import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
-import { Config, QuickRestart } from "@monkeytype/schemas/configs";
-import { createEffect } from "solid-js";
-import { shiftedHotkey } from "../input/hotkeys/utils";
 import { wordsHasNewline, wordsHasTab } from "./test";
 
 const hotkeyMapping: Record<QuickRestart, Hotkey> = {
@@ -35,10 +34,20 @@ function calcHotkeys(
   config: Config,
   options: { shiftTab: boolean; shiftEnter: boolean },
 ): Hotkeys {
-  const quickRestart = hotkeyMapping[config.quickRestart];
-  const commandline = getConfig.quickRestart === "esc" ? "Tab" : "Escape";
   return {
-    quickRestart: shiftedHotkey(quickRestart, options),
-    commandline: shiftedHotkey(commandline, options),
+    quickRestart: shiftedHotkey(hotkeyMapping[config.quickRestart], options),
+    commandline: shiftedHotkey(
+      getConfig.quickRestart === "esc" ? "Tab" : "Escape",
+      options,
+    ),
   };
+}
+
+function shiftedHotkey(
+  hotkey: Hotkey,
+  options: { shiftTab: boolean; shiftEnter: boolean },
+): Hotkey {
+  if (hotkey === "Tab" && options.shiftTab) return "Shift+Tab";
+  if (hotkey === "Enter" && options.shiftEnter) return "Shift+Enter";
+  return hotkey;
 }

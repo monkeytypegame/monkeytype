@@ -1,7 +1,8 @@
-import { Hotkey } from "@tanstack/solid-hotkeys";
+import { HotkeyCallbackContext } from "@tanstack/solid-hotkeys";
 import { isInputElementFocused } from "../input-element";
+import { isAnyPopupVisible } from "../../utils/misc";
 
-export function isInteractiveElementFocused(): boolean {
+function isInteractiveElementFocused(): boolean {
   if (isInputElementFocused()) return false;
 
   return (
@@ -14,11 +15,20 @@ export function isInteractiveElementFocused(): boolean {
   );
 }
 
-export function shiftedHotkey(
-  hotkey: Hotkey,
-  options: { shiftTab: boolean; shiftEnter: boolean },
-): Hotkey {
-  if (hotkey === "Tab" && options.shiftTab) return "Shift+Tab";
-  if (hotkey === "Enter" && options.shiftEnter) return "Shift+Enter";
-  return hotkey;
+export function handleHotkeyOnInteractiveElement(
+  e: KeyboardEvent,
+  { hotkey }: HotkeyCallbackContext,
+): boolean {
+  if (
+    (hotkey === "Tab" || hotkey === "Enter") &&
+    isInteractiveElementFocused()
+  ) {
+    return true;
+  } else if (hotkey === "Escape" && isAnyPopupVisible()) {
+    return true;
+  }
+
+  e.stopPropagation();
+  e.preventDefault();
+  return false;
 }
