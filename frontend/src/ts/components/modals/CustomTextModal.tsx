@@ -221,12 +221,14 @@ export function CustomTextModal(): JSXElement {
     setLimitWord("");
     setLimitTime("");
     setLimitSection("");
-    if (CustomText.getLimitMode() === "word") {
-      setLimitWord(`${CustomText.getLimitValue()}`);
-    } else if (CustomText.getLimitMode() === "time") {
-      setLimitTime(`${CustomText.getLimitValue()}`);
-    } else if (CustomText.getLimitMode() === "section") {
-      setLimitSection(`${CustomText.getLimitValue()}`);
+    if (mode !== "simple") {
+      if (CustomText.getLimitMode() === "word") {
+        setLimitWord(`${CustomText.getLimitValue()}`);
+      } else if (CustomText.getLimitMode() === "time") {
+        setLimitTime(`${CustomText.getLimitValue()}`);
+      } else if (CustomText.getLimitMode() === "section") {
+        setLimitSection(`${CustomText.getLimitValue()}`);
+      }
     }
 
     setPipeDelimiter(CustomText.getPipeDelimiter());
