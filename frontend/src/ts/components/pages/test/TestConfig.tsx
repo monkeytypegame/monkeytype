@@ -41,7 +41,14 @@ export function TestConfig(): JSXElement {
 
 function PuncAndNum(): JSXElement {
   return (
-    <div class="mr-(--card-gap) w-max place-self-end">
+    <Anime
+      class="mr-(--card-gap) w-max place-self-end"
+      animation={{
+        opacity: getConfig.mode === "zen" ? 0 : 1,
+        marginRight: getConfig.mode === "zen" ? "0" : "var(--card-gap)",
+        duration: durationMs,
+      }}
+    >
       <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
         <div class={cardClass}>
           <Button
@@ -76,7 +83,7 @@ function PuncAndNum(): JSXElement {
           />
         </div>
       </AnimeShow>
-    </div>
+    </Anime>
   );
 }
 
@@ -200,17 +207,23 @@ function Mode2(props: { shareVisible: boolean }): JSXElement {
         </AnimeShow>
       </Anime>
       <AnimeShow
+        // when={true}
         when={props.shareVisible}
         class="absolute right-0 self-center"
         animeProps={{
           initial: { opacity: 0, marginRight: "0" },
-          animate: { opacity: 1, marginRight: "-3.5em", duration: durationMs },
+          animate: {
+            opacity: 1,
+            marginRight:
+              "calc((1.25em + (var(--horizontal-padding) * 2)) * -1)",
+            duration: durationMs,
+          },
           exit: { opacity: 0, marginRight: "0", duration: durationMs },
         }}
       >
         <Button
           variant="text"
-          class={buttonClass}
+          class={cn(buttonClass, "px-(--horizontal-padding)")}
           fa={{ icon: "fa-share", fixedWidth: true }}
           onClick={() => showModal("ShareTestSettings")}
         />
