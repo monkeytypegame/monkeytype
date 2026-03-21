@@ -344,6 +344,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     lastOptionsReference = props.options;
     props.ref?.(slimSelect);
 
+    if (props.disabled) {
+      slimSelect.disable();
+    }
+
     if (props.selected !== undefined) {
       syncSelectedToSlimSelect(getSelected(), false);
     }

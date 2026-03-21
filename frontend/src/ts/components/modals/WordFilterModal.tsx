@@ -126,6 +126,12 @@ export function WordFilterModal(props: {
         const exactMatchOnly = value.exactMatch;
         let filterin = Misc.escapeRegExp(value.include.trim());
         filterin = filterin.replace(/\s+/gi, "|");
+
+        if (exactMatchOnly && filterin === "") {
+          showNoticeNotification("Include field is required for exact match");
+          return;
+        }
+
         const regincl = exactMatchOnly
           ? new RegExp("^[" + filterin + "]+$", "i")
           : new RegExp(filterin, "i");
