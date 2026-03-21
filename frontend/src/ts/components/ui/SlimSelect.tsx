@@ -32,6 +32,7 @@ export type SlimSelectProps = {
   cssClasses?: Config["cssClasses"];
   children?: JSX.Element;
   ref?: (instance: SlimSelectCore | null) => void;
+  disabled?: boolean;
 } & (
   | {
       multiple?: never;
@@ -459,6 +460,16 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       if (props.selected !== undefined) {
         syncSelectedToSlimSelect(getSelected(), false);
       }
+    }
+  });
+
+  // Effect: Handle disabled prop changes
+  createEffect(() => {
+    if (!slimSelect) return;
+    if (props.disabled) {
+      slimSelect.disable();
+    } else {
+      slimSelect.enable();
     }
   });
 
