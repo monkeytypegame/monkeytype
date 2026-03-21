@@ -73,6 +73,7 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
+import { setWordsHasNewline, setWordsHasTab } from "../states/test";
 let failReason = "";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
@@ -550,8 +551,8 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.setHasNumbers(hasNumbers);
-  TestWords.setHasTab(wordsHaveTab);
-  TestWords.setHasNewline(wordsHaveNewline);
+  setWordsHasTab(wordsHaveTab);
+  setWordsHasNewline(wordsHaveNewline);
 
   if (
     generatedWords

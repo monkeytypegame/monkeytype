@@ -5,7 +5,6 @@ import { getCharFromEvent } from "../../test/layout-emulator";
 import * as Monkey from "../../test/monkey";
 import { emulateInsertText } from "./insert-text";
 import * as TestState from "../../test/test-state";
-import * as TestWords from "../../test/test-words";
 import * as JSONData from "../../utils/json-data";
 import {
   showNoticeNotification,
@@ -26,9 +25,10 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
+import { wordsHasTab } from "../../states/test";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
-  if (TestWords.hasTab) {
+  if (wordsHasTab()) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
     return;

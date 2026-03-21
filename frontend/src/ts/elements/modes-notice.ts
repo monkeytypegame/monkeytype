@@ -12,6 +12,7 @@ import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
+import { wordsHasNewline, wordsHasTab } from "../states/test";
 
 configEvent.subscribe(({ key }) => {
   const configKeys: ConfigEventKey[] = [
@@ -56,7 +57,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (TestWords.hasTab) {
+  if (wordsHasTab()) {
     if (Config.quickRestart === "esc") {
       testModesNotice.appendHtml(
         `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`,
@@ -73,7 +74,7 @@ export async function update(): Promise<void> {
   }
 
   if (
-    (TestWords.hasNewline || Config.funbox.includes("58008")) &&
+    (wordsHasNewline() || Config.funbox.includes("58008")) &&
     Config.quickRestart === "enter"
   ) {
     testModesNotice.appendHtml(

@@ -4,11 +4,11 @@ import { isAnyPopupVisible } from "../../utils/misc";
 
 import { QuickRestart } from "@monkeytype/schemas/configs";
 import { getConfig } from "../../config/store";
-import * as TestWords from "../../test/test-words";
 import { getActivePage } from "../../states/core";
 import { navigate } from "../../controllers/route-controller";
 import { isInputElementFocused } from "../../input/input-element";
 import { restartTestEvent } from "../../events/test";
+import { wordsHasNewline, wordsHasTab } from "../../states/test";
 
 function quickRestart(e: KeyboardEvent): void {
   if (!isInputElementFocused()) {
@@ -43,13 +43,13 @@ function ifQuickRestart(key: QuickRestart): () => CreateHotkeyOptions {
 }
 
 function handleEnter(e: KeyboardEvent): void {
-  if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
+  if ((wordsHasNewline() && e.shiftKey) || !wordsHasNewline()) {
     quickRestart(e);
   }
 }
 
 async function handleTab(e: KeyboardEvent): Promise<void> {
-  if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
+  if ((wordsHasTab() && e.shiftKey) || !wordsHasTab()) {
     quickRestart(e);
   }
 }
