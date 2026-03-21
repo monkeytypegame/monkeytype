@@ -1,7 +1,9 @@
-import { createSignal, JSXElement } from "solid-js";
+import { ComponentProps, JSXElement, onMount } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
+import { createEffectOn } from "../../../hooks/effects";
+import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { restartTestEvent } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showErrorNotification } from "../../../states/notifications";
@@ -21,20 +23,16 @@ const cardClass = "rounded bg-sub-alt px-(--horizontal-padding)";
 const durationMs = 250;
 
 export function TestConfig(): JSXElement {
-  const [shareVisible, setShareVisible] = createSignal(false);
-
   return (
     <div
       class={cn(
         variables,
-        "relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
+        "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
       )}
-      onMouseEnter={() => setShareVisible(true)}
-      onMouseLeave={() => setShareVisible(false)}
     >
       <PuncAndNum />
       <Mode />
-      <Mode2 shareVisible={shareVisible()} />
+      <Mode2 />
     </div>
   );
 }
@@ -164,77 +162,109 @@ function Mode(): JSXElement {
   );
 }
 
-function Mode2(props: { shareVisible: boolean }): JSXElement {
-  const sClass = "z-2 col-start-1 row-start-1 grid w-max place-self-start";
+function Mode2(): JSXElement {
+  const [wrapperRef, wrapperElement] = useRefWithUtils();
+  const [timeRef, timeElement] = useRefWithUtils();
+  const [wordsRef, wordsElement] = useRefWithUtils();
+  const [quoteRef, quoteElement] = useRefWithUtils();
+  const [customRef, customElement] = useRefWithUtils();
+
+  const sClass =
+    "z-2 col-start-1 row-start-1 grid w-max place-self-start grid-flow-col ml-(--card-gap)";
+
+  onMount(() => {
+    const el = {
+      time: timeElement(),
+      words: wordsElement(),
+      quote: quoteElement(),
+      custom: customElement(),
+    };
+    if (!el.time || !el.words || !el.quote || !el.custom) {
+      return;
+    }
+
+    for (const e of Object.values(el)) {
+      e?.hide();
+    }
+
+    el[getConfig.mode as keyof typeof el]?.show();
+  });
+
+  createEffectOn(
+    () => getConfig.mode,
+    (mode, previousMode) => {
+      const wrapperEl = wrapperElement();
+      if (!wrapperEl) {
+        return;
+      }
+      const el = {
+        time: timeElement(),
+        words: wordsElement(),
+        quote: quoteElement(),
+        custom: customElement(),
+      };
+      if (!el.time || !el.words || !el.quote || !el.custom) {
+        return;
+      }
+
+      el[previousMode as keyof typeof el]?.show();
+      const previousWidth =
+        el[previousMode as keyof typeof el]?.getOuterWidth() ?? 0;
+      el[previousMode as keyof typeof el]?.hide();
+
+      el[mode as keyof typeof el]?.show();
+      const newWidth = el[mode as keyof typeof el]?.getOuterWidth() ?? 0;
+      el[mode as keyof typeof el]?.hide();
+
+      void wrapperEl.promiseAnimate({
+        width: [previousWidth + "px", newWidth + "px"],
+        duration: durationMs,
+      });
+
+      el[previousMode as keyof typeof el]?.show()?.animate({
+        opacity: [1, 0],
+        duration: durationMs,
+      });
+
+      el[mode as keyof typeof el]?.show()?.animate({
+        opacity: [0, 1],
+        duration: durationMs,
+      });
+    },
+  );
 
   return (
-    <div class="relative grid w-max">
+    <div class="relative grid w-max" ref={wrapperRef}>
       <Anime
-        class="ml-(--card-gap) grid"
+        class="grid"
         animation={{
           opacity: getConfig.mode === "zen" ? 0 : 1,
-          marginLeft: getConfig.mode === "zen" ? "0" : "var(--card-gap)",
+          marginLeft:
+            getConfig.mode === "zen" ? "calc(-1*var(--card-gap))" : "0",
           duration: durationMs,
         }}
       >
-        <AnimeShow
-          when={getConfig.mode === "time"}
-          duration={durationMs}
-          class={cn(cardClass, sClass)}
-        >
-          <Mode2Time />
-        </AnimeShow>
-        <AnimeShow
-          when={getConfig.mode === "words"}
-          duration={durationMs}
-          class={cn(cardClass, sClass)}
-        >
-          <Mode2Words />
-        </AnimeShow>
-        <AnimeShow
-          when={getConfig.mode === "quote"}
-          duration={durationMs}
-          class={cn(cardClass, sClass)}
-        >
-          <Mode2Quote />
-        </AnimeShow>
-        <AnimeShow
-          when={getConfig.mode === "custom"}
-          duration={durationMs}
-          class={cn(cardClass, sClass)}
-        >
-          <Mode2Custom />
-        </AnimeShow>
+        <Mode2Time class={cn(cardClass, sClass)} ref={timeRef} />
+        <Mode2Words class={cn(cardClass, sClass)} ref={wordsRef} />
+        <Mode2Quote class={cn(cardClass, sClass)} ref={quoteRef} />
+        <Mode2Custom class={cn(cardClass, sClass)} ref={customRef} />
       </Anime>
-      <AnimeShow
-        // when={true}
-        when={props.shareVisible}
-        class="absolute right-0 self-center"
-        animeProps={{
-          initial: { opacity: 0, marginRight: "0" },
-          animate: {
-            opacity: 1,
-            marginRight:
-              "calc((1.25em + (var(--horizontal-padding) * 2)) * -1)",
-            duration: durationMs,
-          },
-          exit: { opacity: 0, marginRight: "0", duration: durationMs },
-        }}
-      >
-        <Button
-          variant="text"
-          class={cn(buttonClass, "px-(--horizontal-padding)")}
-          fa={{ icon: "fa-share", fixedWidth: true }}
-          onClick={() => showModal("ShareTestSettings")}
-        />
-      </AnimeShow>
+      <Button
+        variant="text"
+        class={cn(
+          buttonClass,
+          "absolute right-0 self-center px-(--horizontal-padding) transition-[margin-right,background-color] duration-125 group-hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)]",
+        )}
+        fa={{ icon: "fa-share", fixedWidth: true }}
+        onClick={() => showModal("ShareTestSettings")}
+      />
     </div>
   );
 }
 
-function Mode2Time(): JSXElement {
+function Mode2Time(props: ComponentProps<"div">): JSXElement {
   return (
-    <div>
+    <div {...props}>
       <Button
         class={buttonClass}
         variant="text"
@@ -291,9 +321,9 @@ function Mode2Time(): JSXElement {
   );
 }
 
-function Mode2Words(): JSXElement {
+function Mode2Words(props: ComponentProps<"div">): JSXElement {
   return (
-    <div>
+    <div {...props}>
       <Button
         class={buttonClass}
         variant="text"
@@ -350,9 +380,9 @@ function Mode2Words(): JSXElement {
   );
 }
 
-function Mode2Quote(): JSXElement {
+function Mode2Quote(props: ComponentProps<"div">): JSXElement {
   return (
-    <div>
+    <div {...props}>
       <Button
         class={buttonClass}
         variant="text"
@@ -418,9 +448,9 @@ function Mode2Quote(): JSXElement {
   );
 }
 
-function Mode2Custom(): JSXElement {
+function Mode2Custom(props: ComponentProps<"div">): JSXElement {
   return (
-    <div>
+    <div {...props}>
       <Button
         class={buttonClass}
         variant="text"
