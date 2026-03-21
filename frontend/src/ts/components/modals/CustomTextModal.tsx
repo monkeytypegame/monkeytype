@@ -253,6 +253,10 @@ export function CustomTextModal(): JSXElement {
       setLongTextWarning(false);
     }
 
+    if (data.long) {
+      setLongTextWarning(true);
+    }
+
     const newText =
       (data.set ?? true) ? data.text : textarea() + " " + data.text;
     setTextarea(newText);
