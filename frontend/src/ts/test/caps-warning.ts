@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import { qsr } from "../utils/dom";
 import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
 

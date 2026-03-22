@@ -1,6 +1,6 @@
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import * as KeymapEvent from "../observables/keymap-event";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
+import { keymapEvent } from "../events/keymap";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
@@ -601,7 +601,7 @@ async function updateLegends(): Promise<void> {
 }
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   const handleMode = (): void => {
     keymap.qsa(".activeKey").removeClass("activeKey");
     keymap.qsa(".keymapKey").setAttribute("style", "");
@@ -672,7 +672,7 @@ ConfigEvent.subscribe(({ key }) => {
   }
 });
 
-KeymapEvent.subscribe((mode, key, correct) => {
+keymapEvent.subscribe(({ mode, key, correct }) => {
   if (mode === "highlight") {
     highlightKey(key);
   }

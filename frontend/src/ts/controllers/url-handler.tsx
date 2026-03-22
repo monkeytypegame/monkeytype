@@ -21,9 +21,10 @@ import { decompressFromURI } from "lz-ts";
 import { z } from "zod";
 
 import Ape from "../ape";
-import Config, { setConfig } from "../config";
+import { setConfig } from "../config/setters";
+import { Config } from "../config/store";
 import * as DB from "../db";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
@@ -330,7 +331,7 @@ export function loadChallengeFromUrl(getOverride?: string): void {
     });
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     const search = window.location.search;
     const hash = window.location.hash;

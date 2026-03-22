@@ -1,6 +1,6 @@
 import * as Commandline from "../commandline/commandline";
 import * as CustomWordAmount from "../modals/custom-word-amount";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";

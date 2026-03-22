@@ -1,6 +1,6 @@
 import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
 
-import { setConfig } from "../../config";
+import { setConfig } from "../../config/setters";
 
 type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
 

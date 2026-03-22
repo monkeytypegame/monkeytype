@@ -1,17 +1,17 @@
-//import type { ConfigMetadata } from "../../src/ts/config-metadata";
+//import type { ConfigMetadata } from "../../src/ts/config/metadata";
 
 import { describe, it, expect, afterAll, vi } from "vitest";
 import * as Util from "../../src/ts/commandline/util";
 
 import type { CommandlineConfigMetadata } from "../../src/ts/commandline/commandline-metadata";
 import type { ConfigKey } from "@monkeytype/schemas/configs";
-import type { ConfigMetadata } from "../../src/ts/config-metadata";
+import type { ConfigMetadata } from "../../src/ts/config/metadata";
 import { z, ZodSchema } from "zod";
 
 const buildCommandForConfigKey = Util.__testing._buildCommandForConfigKey;
 
 describe("CommandlineUtils", () => {
-  vi.mock("../../src/ts/config-metadata", () => ({ configMetadata: [] }));
+  vi.mock("../../src/ts/config/metadata", () => ({ configMetadata: [] }));
   vi.mock("../../src/ts/commandline/commandline-metadata", () => ({
     commandlineConfigMetadata: [],
   }));

@@ -1,5 +1,5 @@
 import * as Misc from "../utils/misc";
-import Config from "../config";
+import { Config } from "../config/store";
 import { qs, qsa } from "../utils/dom";
 
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];

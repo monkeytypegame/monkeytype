@@ -1,14 +1,14 @@
 import { checkCompatibility } from "@monkeytype/funbox";
-import * as DB from "./db";
-import { showNoticeNotification } from "./states/notifications";
-import { isAuthenticated } from "./firebase";
-import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
-import { reloadAfter } from "./utils/misc";
-import { isDevEnvironment } from "./utils/env";
+import * as DB from "../db";
+import { showNoticeNotification } from "../states/notifications";
+import { isAuthenticated } from "../firebase";
+import { canSetFunboxWithConfig } from "./funbox-validation";
+import { reloadAfter } from "../utils/misc";
+import { isDevEnvironment } from "../utils/env";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
-import { capitalizeFirstLetter } from "./utils/strings";
-import { getDefaultConfig } from "./constants/default-config";
+import { capitalizeFirstLetter } from "../utils/strings";
+import { getDefaultConfig } from "../constants/default-config";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -307,9 +307,10 @@ export const configMetadata: ConfigMetadataObject = {
       }
 
       for (const funbox of value) {
-        if (!canSetFunboxWithConfig(funbox, currentConfig)) {
+        const check = canSetFunboxWithConfig(funbox, currentConfig);
+        if (!check.ok) {
           showNoticeNotification(
-            `${value}" cannot be enabled with the current config`,
+            `"${funbox}" cannot be enabled with the current config`,
           );
           return true;
         }

@@ -7,8 +7,10 @@ import {
 } from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
-import Config, { setConfig } from "../config";
-import * as ConfigEvent from "../observables/config-event";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
@@ -387,7 +389,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   }
 }
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (
     [
       "difficulty",

@@ -5,7 +5,7 @@ import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
 import { isAuthenticated } from "../firebase";
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import Config from "../config";
+import { Config } from "../config/store";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getActivePage } from "../states/core";
 import { Fonts } from "../constants/fonts";

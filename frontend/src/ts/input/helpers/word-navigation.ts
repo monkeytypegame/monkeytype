@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestUI from "../../test/test-ui";
 import * as PaceCaret from "../../test/pace-caret";

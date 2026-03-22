@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import ts from "typescript";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
@@ -34,8 +35,11 @@ function collectTsFiles(dir: string): string[] {
   return results;
 }
 
+const isDir = fs.statSync(resolved).isDirectory();
+const boundary = isDir ? resolved : null;
+
 let entryPoints: string[];
-if (fs.statSync(resolved).isDirectory()) {
+if (isDir) {
   entryPoints = collectTsFiles(resolved);
 } else {
   entryPoints = [resolved];
@@ -46,15 +50,35 @@ if (entryPoints.length === 0) {
   process.exit(1);
 }
 
-// --- Import extraction ---
+// --- Import extraction (type-aware) ---
 
-const IMPORT_RE =
-  /(?:import|export)\s+(?:type\s+)?(?:(?:\{[^}]*\}|[\w*]+(?:\s*,\s*\{[^}]*\})?)\s+from\s+)?["']([^"']+)["']/g;
+const tsConfig: ts.CompilerOptions = {
+  module: ts.ModuleKind.ESNext,
+  target: ts.ScriptTarget.ESNext,
+  jsx: ts.JsxEmit.Preserve,
+  sourceMap: false,
+  declaration: false,
+  isolatedModules: true,
+};
+
+const JS_IMPORT_RE =
+  /(?:import|export)\s+(?:(?:\{[^}]*\}|[\w*]+(?:\s*,\s*\{[^}]*\})?)\s+from\s+)?["']([^"']+)["']/g;
 
 function extractImports(filePath: string): string[] {
   const content = fs.readFileSync(filePath, "utf-8");
+  let outputText: string;
+  try {
+    ({ outputText } = ts.transpileModule(content, {
+      compilerOptions: tsConfig,
+      fileName: filePath,
+    }));
+  } catch {
+    // Some files (e.g. declaration files) can't be transpiled — fall back to
+    // regex on the original source, which still strips type-only imports.
+    outputText = content;
+  }
   const specifiers: string[] = [];
-  for (const match of content.matchAll(IMPORT_RE)) {
+  for (const match of outputText.matchAll(JS_IMPORT_RE)) {
     const spec = match[1];
     if (spec !== undefined) specifiers.push(spec);
   }
@@ -190,6 +214,12 @@ function depthColor(depth: number): string {
 
 // --- Display ---
 
+function leavesFolder(filePath: string): boolean {
+  if (boundary === null) return false;
+  if (filePath.startsWith("@monkeytype/")) return true;
+  return !filePath.startsWith(boundary + "/");
+}
+
 function displayPath(filePath: string): string {
   if (filePath.startsWith(ROOT + "/")) {
     return path.relative(ROOT, filePath);
@@ -210,9 +240,12 @@ function printTree(
   const connector = isRoot ? "" : isLast ? "└── " : "├── ";
   const dc = depthColor(depth);
 
+  const leaves = !isRoot && leavesFolder(filePath);
+  const leavesTag = leaves ? ` ${c.red}[↑]${c.reset}` : "";
+
   if (!info) {
     // leaf node (e.g. @monkeytype package)
-    console.log(`${c.dim}${prefix}${connector}${dp}${c.reset}`);
+    console.log(`${c.dim}${prefix}${connector}${dp}${c.reset}${leavesTag}`);
     return;
   }
 
@@ -225,7 +258,7 @@ function printTree(
   const seen = !isRoot && printed.has(filePath);
   const seenTag = seen ? ` ${c.dim}[seen above]${c.reset}` : "";
   console.log(
-    `${c.dim}${prefix}${connector}${c.reset}${nameStyle}${dp}${c.reset}${stats}${seenTag}`,
+    `${c.dim}${prefix}${connector}${c.reset}${nameStyle}${dp}${c.reset}${stats}${leavesTag}${seenTag}`,
   );
 
   if (seen || depth >= maxDepthLimit) return;
@@ -336,3 +369,21 @@ console.log(
 console.log(
   `Max depth:          ${c.bold}${maxDepthSeen}${c.reset} ${c.dim}(${displayPath(maxDepthFile)})${c.reset}`,
 );
+
+if (boundary !== null) {
+  const externalDirect = new Set<string>();
+  const externalTransitive = new Set<string>();
+  for (const entry of entryPoints) {
+    const info = cache.get(entry);
+    if (!info) continue;
+    for (const dep of info.directImports) {
+      if (leavesFolder(dep)) externalDirect.add(dep);
+    }
+    for (const dep of getAllReachable(entry, new Set())) {
+      if (leavesFolder(dep)) externalTransitive.add(dep);
+    }
+  }
+  console.log(
+    `Leaves folder ${c.red}[↑]${c.reset}: ${c.bold}${externalDirect.size}${c.reset} direct, ${c.bold}${externalTransitive.size}${c.reset} transitive`,
+  );
+}

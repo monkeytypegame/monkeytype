@@ -1,6 +1,6 @@
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./lists";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";

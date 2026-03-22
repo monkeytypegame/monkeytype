@@ -8,7 +8,8 @@ export type ModalId =
   | "DevOptions"
   | "DevInboxPicker"
   | "RegisterCaptcha"
-  | "Alerts";
+  | "Alerts"
+  | "SimpleModal";
 
 export type ModalVisibility = {
   visible: boolean;

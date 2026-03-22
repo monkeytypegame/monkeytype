@@ -1,4 +1,5 @@
-import Config, { setConfig, saveFullConfigToLocalStorage } from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
 import * as Colors from "../../utils/colors";
@@ -9,7 +10,7 @@ import {
 } from "../../states/notifications";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as DB from "../../db";
-import * as ConfigEvent from "../../observables/config-event";
+import { configEvent } from "../../events/config";
 import { isAuthenticated } from "../../firebase";
 import { getActivePage } from "../../states/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
@@ -17,6 +18,7 @@ import { captureException } from "../../sentry";
 import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";
 import { qs, qsa, qsr } from "../../utils/dom";
 import { getTheme, updateThemeColor } from "../../states/theme";
+import { saveFullConfigToLocalStorage } from "../../config/persistence";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
   const b1 = Colors.hexToHSL(a.bg);
@@ -413,7 +415,7 @@ qs(".pageSettings #saveCustomThemeButton")?.on("click", async () => {
   void fillCustomButtons();
 });
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "theme" && getActivePage() === "settings") {
     updateActiveButton();
   }

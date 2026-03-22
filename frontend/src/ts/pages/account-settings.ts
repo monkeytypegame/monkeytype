@@ -11,7 +11,7 @@ import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import { showErrorNotification } from "../states/notifications";
 import { z } from "zod";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
 import { addGithubAuth, addGoogleAuth } from "../auth";
@@ -254,7 +254,7 @@ qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
   void addGithubAuth();
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authConfigUpdated") {
     updateUI();
   }

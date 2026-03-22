@@ -1,6 +1,8 @@
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
@@ -29,7 +31,7 @@ import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../legacy-states/custom-text-name";
@@ -1402,7 +1404,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   }
 });
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
     TestState.resultVisible

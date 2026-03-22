@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import {
-  dispatchRestartTest,
+  restartTestEvent,
   getActivePage,
   getFocus,
 } from "../../../states/core";
@@ -21,7 +21,7 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getActivePage() === "test") dispatchRestartTest();
+        if (getActivePage() === "test") restartTestEvent.dispatch();
       }}
     >
       <svg

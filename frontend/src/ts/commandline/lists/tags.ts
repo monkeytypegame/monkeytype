@@ -2,7 +2,7 @@ import * as DB from "../../db";
 import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../firebase";
 import { Command, CommandsSubgroup } from "../types";

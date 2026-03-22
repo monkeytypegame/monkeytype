@@ -1,10 +1,11 @@
-import Config, { setConfig } from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 import { ThemesList, ThemeWithName } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
-import * as ConfigEvent from "../../observables/config-event";
+import { configEvent } from "../../events/config";
 import * as getErrorMessage from "../../utils/error";
 
 const isFavorite = (theme: ThemeWithName): boolean =>
@@ -76,7 +77,7 @@ export function update(themes: ThemeWithName[]): void {
 }
 
 // subscribe to theme-related config events to update the theme command list
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "favThemes") {
     // update themes list when favorites change
     try {

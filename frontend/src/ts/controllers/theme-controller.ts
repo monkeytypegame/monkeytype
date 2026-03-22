@@ -1,8 +1,10 @@
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as BackgroundFilter from "../elements/custom-background-filter";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as DB from "../db";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
@@ -292,32 +294,6 @@ export async function applyCustomBackground(): Promise<void> {
   }
 }
 
-export async function applyFontFamily(): Promise<void> {
-  let font = Config.fontFamily.replace(/_/g, " ");
-
-  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
-  if (localFont === undefined) {
-    //use config font
-    qs(".customFont")?.empty();
-  } else {
-    font = "LOCALCUSTOM";
-
-    qs(".customFont")?.setHtml(`
-      @font-face{ 
-        font-family: LOCALCUSTOM;
-        src: url(${localFont});
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }`);
-  }
-
-  document.documentElement.style.setProperty(
-    "--font",
-    `"${font}", "Roboto Mono", "Vazirharf", monospace`,
-  );
-}
-
 window
   .matchMedia?.("(prefers-color-scheme: dark)")
   ?.addEventListener?.("change", (event) => {
@@ -331,7 +307,7 @@ window
 
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(async ({ key, newValue, nosave }) => {
+configEvent.subscribe(async ({ key, newValue, nosave }) => {
   if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }

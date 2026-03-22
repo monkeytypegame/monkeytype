@@ -2,7 +2,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../states/notifications";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";
@@ -13,7 +15,7 @@ import * as Strings from "../utils/strings";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as CompositionState from "../legacy-states/composition";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import { getActivePage } from "../states/core";
@@ -33,7 +35,7 @@ import {
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
-import * as KeymapEvent from "../observables/keymap-event";
+import { highlight } from "../events/keymap";
 import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
@@ -66,7 +68,7 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
-import { skipBreakdown } from "../states/header";
+import { skipBreakdownEvent } from "../states/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1748,7 +1750,7 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    void KeymapEvent.highlight(
+    highlight(
       TestWords.words.getCurrent().charAt(TestInput.input.current.length),
     );
   }
@@ -1916,7 +1918,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    skipBreakdown();
+    skipBreakdownEvent.dispatch();
   }
 
   currentTestLine = 0;
@@ -2023,7 +2025,7 @@ qs("#wordsWrapper")?.on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
   }

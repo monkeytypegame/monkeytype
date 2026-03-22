@@ -1,27 +1,18 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
-import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/test/funbox/funbox-validation";
+import { describe, it, expect } from "vitest";
+import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/config/funbox-validation";
 
-import * as Notifications from "../../../src/ts/states/notifications";
 import { FunboxName } from "@monkeytype/schemas/configs";
 describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
-    const addNotificationMock = vi.spyOn(
-      Notifications,
-      "showNoticeNotification",
-    );
-    afterEach(() => {
-      addNotificationMock.mockClear();
-    });
-
     const testCases = [
       //checks for frontendForcedConfig
       {
         key: "mode",
         value: "zen",
         funbox: ["memory"],
-        error: "You can't set mode to zen with currently active funboxes.",
+        expected: false,
       },
-      { key: "mode", value: "words", funbox: ["memory"] }, //ok
+      { key: "mode", value: "words", funbox: ["memory"], expected: true },
 
       //checks for zen mode
       ...[
@@ -40,10 +31,15 @@ describe("funbox-validation", () => {
         key: "mode",
         value: "zen",
         funbox: [funbox],
-        error: "You can't set mode to zen with currently active funboxes.",
+        expected: false,
       })),
-      { key: "mode", value: "zen", funbox: ["mirror"] }, //ok
-      { key: "mode", value: "zen", funbox: ["space_balls"] }, //no frontendFunctions
+      { key: "mode", value: "zen", funbox: ["mirror"], expected: true },
+      {
+        key: "mode",
+        value: "zen",
+        funbox: ["space_balls"],
+        expected: true,
+      },
 
       //checks for words and custom
       ...["quote", "custom"].flatMap((value) =>
@@ -56,23 +52,22 @@ describe("funbox-validation", () => {
           key: "mode",
           value,
           funbox: [funbox],
-          error: `You can't set mode to ${value} with currently active funboxes.`,
+          expected: false,
         })),
       ),
-      { key: "mode", value: "quote", funbox: ["space_balls"] }, //no frontendFunctions
+      {
+        key: "mode",
+        value: "quote",
+        funbox: ["space_balls"],
+        expected: true,
+      },
     ];
     it.for(testCases)(
       `check $funbox with $key=$value`,
-      ({ key, value, funbox, error }) => {
+      ({ key, value, funbox, expected }) => {
         expect(
           canSetConfigWithCurrentFunboxes(key, value, funbox as FunboxName[]),
-        ).toBe(error === undefined);
-
-        if (error !== undefined) {
-          expect(addNotificationMock).toHaveBeenCalledWith(error, {
-            durationMs: 5000,
-          });
-        }
+        ).toBe(expected);
       },
     );
   });

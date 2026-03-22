@@ -15,4 +15,4 @@ export const [getXpBarData, setXpBarData] = createSignal<XpBarData | null>(
   null,
 );
 
-export const [getSkipBreakdownEvent, skipBreakdown] = createEvent();
+export const skipBreakdownEvent = createEvent();

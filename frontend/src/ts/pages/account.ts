@@ -1,7 +1,9 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
 import * as ChartController from "../controllers/chart-controller";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
@@ -18,7 +20,7 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { format } from "date-fns/format";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { getActivePage } from "../states/core";
 import { getAuthenticatedUser } from "../firebase";
 
@@ -1172,7 +1174,7 @@ qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
   qs(".sendVerificationEmail")?.enable();
 });
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (getActivePage() === "account" && key === "typingSpeedUnit") {
     void update();
   }

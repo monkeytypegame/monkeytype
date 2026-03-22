@@ -3,7 +3,7 @@
 // oxlint-disable ban-ts-comment
 //@ts-nocheck too many errors from 3rd party ad code
 
-import Config from "../config";
+import { Config } from "../config/store";
 import { getActivePage } from "../states/core";
 import * as TestState from "../test/test-state";
 

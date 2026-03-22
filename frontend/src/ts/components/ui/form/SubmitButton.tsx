@@ -24,9 +24,10 @@ type SubscribableForm = {
 export function SubmitButton(
   props: {
     form: SubscribableForm;
+    skipDirtyCheck?: boolean;
   } & Omit<ButtonProps, "type">,
 ): JSXElement {
-  const [local, others] = splitProps(props, ["disabled"]);
+  const [local, others] = splitProps(props, ["disabled", "skipDirtyCheck"]);
   return (
     <props.form.Subscribe
       selector={(state) => ({
@@ -41,7 +42,7 @@ export function SubmitButton(
           {...others}
           disabled={
             (local.disabled ?? false) ||
-            !state().isDirty ||
+            (!local.skipDirtyCheck && !state().isDirty) ||
             !state().canSubmit ||
             state().isSubmitting ||
             !state().isValid

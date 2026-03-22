@@ -6,8 +6,8 @@ import {
 import { formatDate } from "date-fns/format";
 import { createMemo, For, JSXElement, Show } from "solid-js";
 
+import { getConfig } from "../../../config/store";
 import * as PbTablesModal from "../../../modals/pb-tables";
-import { getConfig } from "../../../states/config";
 import { Formatting } from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
