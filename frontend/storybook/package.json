@@ -29,6 +29,7 @@
     "solid-js": "^1.9.11",
     "storybook": "^10.2.14",
     "storybook-solidjs-vite": "^10.0.9",
-    "vitest": "^4.0.18"
+    "vite": "^7.3.1",
+    "vitest": "^4.1.0"
   }
 }

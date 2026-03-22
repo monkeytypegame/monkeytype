@@ -30,7 +30,7 @@
     "oxlint-tsgolint": "0.14.2",
     "tsup": "8.4.0",
     "typescript": "6.0.0-beta",
-    "vitest": "4.0.15"
+    "vitest": "4.1.0"
   },
   "peerDependencies": {
     "zod": "3.23.8"

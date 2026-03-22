@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { flushStrategy } from "../../../collections/inbox";
-import { hideModalAndClearChain } from "../../../stores/modals";
+import { hideModalAndClearChain } from "../../../states/modals";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import { Button } from "../../common/Button";
 import { Inbox } from "./Inbox";

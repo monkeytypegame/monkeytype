@@ -1,23 +1,26 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as Caret from "./caret";
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import * as TestState from "./test-state";
-import * as Time from "../states/time";
-import * as TimerEvent from "../observables/timer-event";
+import * as Time from "../legacy-states/time";
+import { timerEvent } from "../events/timer";
+import { highlight } from "../events/keymap";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
@@ -135,6 +138,14 @@ function layoutfluid(): void {
       setConfig("keymapLayout", layout as KeymapLayout, {
         nosave: true,
       });
+
+      if (Config.keymapMode === "next") {
+        setTimeout(() => {
+          highlight(
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          );
+        }, 1);
+      }
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");
@@ -156,14 +167,14 @@ function checkIfFailed(
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("fail", "min speed");
+    timerEvent.dispatch({ key: "fail", value: "min speed" });
     return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("fail", "min accuracy");
+    timerEvent.dispatch({ key: "fail", value: "min accuracy" });
     return true;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -187,7 +198,7 @@ function checkIfTimeIsUp(): void {
     TestInput.corrected.pushHistory();
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("finish");
+    timerEvent.dispatch({ key: "finish" });
     return;
   }
 
@@ -275,7 +286,7 @@ function checkIfTimerIsSlow(drift: number): void {
         "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
       );
 
-      TimerEvent.dispatch("fail", "slow timer");
+      timerEvent.dispatch({ key: "fail", value: "slow timer" });
     }
   }
 }

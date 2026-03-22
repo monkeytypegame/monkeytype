@@ -1,6 +1,5 @@
 import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
-import * as ManualRestart from "../../test/manual-restart-tracker";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { Command, CommandsSubgroup } from "../types";
 import { getActiveFunboxNames } from "../../test/funbox/list";
@@ -13,7 +12,6 @@ const list: Command[] = [
     alias: "off",
     sticky: true,
     exec: (): void => {
-      ManualRestart.set();
       if (Funbox.setFunbox([])) {
         TestLogic.restart();
       }
@@ -36,7 +34,6 @@ for (const funbox of getAllFunboxes()) {
     configValueMode: "include",
     exec: (): void => {
       Funbox.toggleFunbox(funbox.name);
-      ManualRestart.set();
       TestLogic.restart();
     },
   });

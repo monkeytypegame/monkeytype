@@ -1,6 +1,6 @@
 import { Config } from "@monkeytype/schemas/configs";
 import { isAuthenticated } from "../firebase";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import Ape from ".";
 
 export async function saveConfig(config: Partial<Config>): Promise<void> {

@@ -1,7 +1,7 @@
 import { JSXElement, Match, Show, Switch } from "solid-js";
 
-import { bp } from "../../../signals/breakpoints";
-import { isDevEnvironment } from "../../../utils/misc";
+import { bp } from "../../../states/breakpoints";
+import { isDevEnvironment } from "../../../utils/env";
 
 export function MediaQueryDebugger(): JSXElement {
   return (

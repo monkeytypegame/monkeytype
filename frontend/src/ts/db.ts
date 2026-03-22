@@ -2,7 +2,7 @@ import Ape from "./ape";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "./stores/notifications";
+} from "./states/notifications";
 import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
@@ -10,7 +10,7 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import { Badge, CustomTheme } from "@monkeytype/schemas/users";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import {
@@ -26,10 +26,9 @@ import {
   SnapshotResult,
   SnapshotUserTag,
 } from "./constants/default-snapshot";
-import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
-import * as AuthEvent from "./observables/auth-event";
+import { authEvent } from "./events/auth";
 import {
   configurationPromise,
   get as getServerConfiguration,
@@ -38,9 +37,10 @@ import { Connection } from "@monkeytype/schemas/connections";
 import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
-} from "./stores/snapshot";
+} from "./states/snapshot";
 import { XpBreakdown } from "@monkeytype/schemas/results";
-import { setXpBarData } from "./signals/header";
+import { setXpBarData } from "./states/header";
+import { FunboxMetadata } from "@monkeytype/funbox";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -84,7 +84,7 @@ export function setSnapshot(
   }
 
   if (options?.dispatchEvent !== false) {
-    AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
+    authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
 
   setSolidSnapshot(newSnapshot);
@@ -1143,6 +1143,34 @@ function convertConnections(
       ];
     }),
   );
+}
+
+export function getReceiverUid(
+  connection: Pick<Connection, "initiatorUid" | "receiverUid">,
+): string {
+  const me = getAuthenticatedUser();
+  if (me === null) {
+    throw new Error("expected to be authenticated in getReceiverUid");
+  }
+
+  if (me.uid === connection.initiatorUid) return connection.receiverUid;
+  return connection.initiatorUid;
+}
+
+export async function addFriend(receiverName: string): Promise<true | string> {
+  const result = await Ape.connections.create({ body: { receiverName } });
+
+  if (result.status !== 200) {
+    return `Friend request failed: ${result.body.message}`;
+  } else {
+    const snapshot = getSnapshot();
+    if (snapshot !== undefined) {
+      const receiverUid = getReceiverUid(result.body.data);
+      // oxlint-disable-next-line no-unsafe-member-access
+      snapshot.connections[receiverUid] = result.body.data.status;
+    }
+    return true;
+  }
 }
 
 export function isFriend(uid: string | undefined): boolean {

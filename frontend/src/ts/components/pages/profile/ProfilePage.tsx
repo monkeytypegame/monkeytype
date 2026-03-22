@@ -3,7 +3,7 @@ import { JSXElement, Show } from "solid-js";
 
 import { PageName } from "../../../pages/page";
 import { getUserProfile } from "../../../queries/profile";
-import { getActivePage, getSelectedProfileName } from "../../../signals/core";
+import { getActivePage, getSelectedProfileName } from "../../../states/core";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 import { UserProfile } from "./UserProfile";

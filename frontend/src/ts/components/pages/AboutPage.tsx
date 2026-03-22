@@ -1,29 +1,22 @@
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
-import { queryClient } from "../../queries";
+import { getConfig } from "../../config/store";
 import {
   getContributorsQueryOptions,
   getSpeedHistogramQueryOptions,
   getSupportersQueryOptions,
   getTypingStatsQueryOptions,
 } from "../../queries/public";
-import { getConfig } from "../../signals/config";
-import { getActivePage } from "../../signals/core";
-import { showModal } from "../../stores/modals";
+import { getActivePage } from "../../states/core";
+import { showModal } from "../../states/modals";
+import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
-
-export function prefetchAboutPage(): void {
-  void queryClient.prefetchQuery(getContributorsQueryOptions());
-  void queryClient.prefetchQuery(getSupportersQueryOptions());
-  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
-}
 
 export function AboutPage(): JSXElement {
   const isOpen = () => getActivePage() === "about";
@@ -113,6 +106,8 @@ export function AboutPage(): JSXElement {
                       label: "Users",
                       data: data?.data ?? [],
                       minBarLength: 2,
+                      backgroundColor: getTheme().main,
+                      borderColor: getTheme().main,
                     },
                   ],
                 }}

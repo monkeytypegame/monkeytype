@@ -1,13 +1,16 @@
 import { Preset } from "@monkeytype/schemas/presets";
-import Config, { applyConfig, saveFullConfigToLocalStorage } from "../config";
+
+import { Config } from "../config/store";
+import { applyConfig } from "../config/lifecycle";
 import * as DB from "../db";
 import {
   showNoticeNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
+import { saveFullConfigToLocalStorage } from "../config/persistence";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();

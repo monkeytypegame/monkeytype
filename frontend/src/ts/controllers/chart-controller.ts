@@ -32,7 +32,7 @@ import chartAnnotation, {
 } from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { getActivePage } from "../signals/core";
+import { getActivePage } from "../states/core";
 
 Chart.register(
   BarController,
@@ -59,8 +59,8 @@ Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
 import { format } from "date-fns/format";
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
 import * as TestInput from "../test/test-input";
 import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
@@ -68,7 +68,7 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 
@@ -1354,7 +1354,7 @@ createDebouncedEffectOn(125, getTheme, (theme) => {
   void miniResult.updateColors(theme);
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "accountChart" && getActivePage() === "account") {
     updateAccountChartButtons();
     accountHistory.update();

@@ -1,7 +1,7 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestState from "../test/test-state";
-import * as ConfigEvent from "../observables/config-event";
-import Format from "../utils/format";
+import { configEvent } from "../events/config";
+import Format from "../singletons/format";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs } from "../utils/dom";
@@ -80,6 +80,6 @@ export function instantHide(): void {
   state = false;
 }
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "liveBurstStyle") newValue === "off" ? hide() : show();
 });

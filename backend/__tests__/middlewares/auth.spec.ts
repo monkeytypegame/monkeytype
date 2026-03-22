@@ -154,7 +154,7 @@ describe("middlewares/auth", () => {
           { headers: { authorization: "ApeKey aWQua2V5" } },
           { acceptApeKeys: false },
         ),
-      ).rejects.toThrowError("This endpoint does not accept ApeKeys");
+      ).rejects.toThrow("This endpoint does not accept ApeKeys");
 
       //THEN
     });
@@ -170,7 +170,7 @@ describe("middlewares/auth", () => {
           { headers: { authorization: "ApeKey aWQua2V5" } },
           { acceptApeKeys: false },
         ),
-      ).rejects.toThrowError("ApeKeys are not being accepted at this time");
+      ).rejects.toThrow("ApeKeys are not being accepted at this time");
 
       //THEN
     });
@@ -253,7 +253,7 @@ describe("middlewares/auth", () => {
       );
     });
     it("should fail without authentication", async () => {
-      await expect(() => authenticate({ headers: {} })).rejects.toThrowError(
+      await expect(() => authenticate({ headers: {} })).rejects.toThrow(
         "Unauthorized\nStack: endpoint: /api/v1 no authorization header found",
       );
 
@@ -269,7 +269,7 @@ describe("middlewares/auth", () => {
     it("should fail with empty authentication", async () => {
       await expect(() =>
         authenticate({ headers: { authorization: "" } }),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         "Unauthorized\nStack: endpoint: /api/v1 no authorization header found",
       );
 
@@ -285,7 +285,7 @@ describe("middlewares/auth", () => {
     it("should fail with missing authentication token", async () => {
       await expect(() =>
         authenticate({ headers: { authorization: "Bearer" } }),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         "Missing authentication token\nStack: authenticateWithAuthHeader",
       );
 
@@ -301,7 +301,7 @@ describe("middlewares/auth", () => {
     it("should fail with unknown authentication scheme", async () => {
       await expect(() =>
         authenticate({ headers: { authorization: "unknown format" } }),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Unknown authentication scheme\nStack: The authentication scheme "unknown" is not implemented',
       );
 
@@ -417,7 +417,7 @@ describe("middlewares/auth", () => {
       //THEN
       await expect(() =>
         authenticate({ headers: {} }, { isPublicOnDev: true }),
-      ).rejects.toThrowError("Unauthorized");
+      ).rejects.toThrow("Unauthorized");
     });
     it("should allow with apeKey on dev public endpoint in production", async () => {
       //WHEN
@@ -476,7 +476,7 @@ describe("middlewares/auth", () => {
           },
           { isGithubWebhook: true },
         ),
-      ).rejects.toThrowError("Github webhook signature invalid");
+      ).rejects.toThrow("Github webhook signature invalid");
 
       //THEH
       expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
@@ -497,7 +497,7 @@ describe("middlewares/auth", () => {
           },
           { isGithubWebhook: true },
         ),
-      ).rejects.toThrowError("Missing Github signature header");
+      ).rejects.toThrow("Missing Github signature header");
 
       //THEH
       expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
@@ -518,7 +518,7 @@ describe("middlewares/auth", () => {
           },
           { isGithubWebhook: true },
         ),
-      ).rejects.toThrowError("Missing Github Webhook Secret");
+      ).rejects.toThrow("Missing Github Webhook Secret");
 
       //THEH
       expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
@@ -542,7 +542,7 @@ describe("middlewares/auth", () => {
           },
           { isGithubWebhook: true },
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         "Failed to authenticate Github webhook: could not validate",
       );
 

@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { IdSchema } from "./util";
 
+export const ApeKeyNameSchema = z
+  .string()
+  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .max(20);
+
 export const ApeKeyUserDefinedSchema = z.object({
-  name: z
-    .string()
-    .regex(/^[0-9a-zA-Z_.-]+$/)
-    .max(20),
+  name: ApeKeyNameSchema,
   enabled: z.boolean(),
 });
 

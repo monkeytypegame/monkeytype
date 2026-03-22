@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
 import { getVersionHistoryQueryOptions } from "../../queries/public";
-import { isModalOpen } from "../../stores/modals";
+import { isModalOpen } from "../../states/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import AsyncContent from "../common/AsyncContent";
 import { LoadingCircle } from "../common/LoadingCircle";

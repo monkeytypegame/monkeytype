@@ -1,14 +1,16 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
 import * as ChartController from "../controllers/chart-controller";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
@@ -18,13 +20,13 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { format } from "date-fns/format";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
-import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { configEvent } from "../events/config";
+import { getActivePage } from "../states/core";
 import { getAuthenticatedUser } from "../firebase";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as ResultBatches from "../elements/result-batches";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { ChartData } from "@monkeytype/schemas/results";
 import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
@@ -544,7 +546,7 @@ async function fillContent(): Promise<void> {
         histogramChartData.push(0);
       }
     }
-    (histogramChartData[bucket] as number)++;
+    (histogramChartData[bucket] as number) += 1;
 
     let tt = 0;
     if (
@@ -1039,21 +1041,24 @@ qs(".pageAccount .loadMoreButton")?.on("click", () => {
 });
 
 qs(".pageAccount #accountHistoryChart")?.on("click", () => {
-  const index: number = ChartController.accountHistoryActiveIndex;
+  const chart = ChartController.accountHistory;
+  const active = chart.tooltip?.getActiveElements?.() ?? [];
+  if (!active.length) return;
+
+  const index = active[0]?.index;
+  if (index === undefined) return;
+
   loadMoreLines(index);
-  if (window === undefined) return;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
     throw new Error("Cannot find result for index " + index);
   }
-  const element = qs(`.resultRow[data-id="${resultId}"`);
+
+  const element = qs(`.resultRow[data-id="${resultId}"]`);
   qsa(".resultRow").removeClass("active");
 
-  element?.scrollIntoView({
-    block: "center",
-  });
-
+  element?.scrollIntoView({ block: "center" });
   element?.addClass("active");
 });
 
@@ -1146,7 +1151,10 @@ qs(".pageAccount .group.presetFilterButtons")?.onChild(
 );
 
 qs(".pageAccount .content .group.aboveHistory .exportCSV")?.on("click", () => {
-  void Misc.downloadResultsCSV(filteredResults);
+  showLoaderBar();
+  void Misc.downloadResultsCSV(filteredResults).finally(() => {
+    hideLoaderBar();
+  });
 });
 
 qs(".pageAccount button.loadMoreResults")?.on("click", async () => {
@@ -1166,7 +1174,7 @@ qs(".pageAccount")?.onChild("click", ".sendVerificationEmail", async () => {
   qs(".sendVerificationEmail")?.enable();
 });
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (getActivePage() === "account" && key === "typingSpeedUnit") {
     void update();
   }

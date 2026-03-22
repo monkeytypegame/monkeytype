@@ -4,11 +4,10 @@ import * as TestLogic from "../test/test-logic";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import { syncNotSignedInLastResult } from "../utils/results";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 
 function reset(): void {
   modal.getModal().qs(".result")?.setHtml(`
@@ -118,7 +117,7 @@ function hide(): void {
   void modal.hide();
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     if (TestLogic.notSignedInLastResult !== null) {
       show();
@@ -132,7 +131,7 @@ const modal = new AnimatedModal({
     modalEl.qs("button.save")?.on("click", async () => {
       const user = getAuthenticatedUser();
       if (user !== null) {
-        void syncNotSignedInLastResult(user.uid);
+        void TestLogic.syncNotSignedInLastResult(user.uid);
       }
       hide();
     });

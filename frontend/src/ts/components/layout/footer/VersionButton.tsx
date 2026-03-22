@@ -3,9 +3,9 @@ import { JSXElement, Show, createSignal } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
 import { lastSeenServerCompatibility } from "../../../ape/adapters/ts-rest-adapter";
-import { getVersion } from "../../../signals/core";
-import { showModal } from "../../../stores/modals";
-import { isDevEnvironment } from "../../../utils/misc";
+import { getVersion } from "../../../states/core";
+import { showModal } from "../../../states/modals";
+import { isDevEnvironment } from "../../../utils/env";
 import { Fa } from "../../common/Fa";
 
 export function VersionButton(): JSXElement {

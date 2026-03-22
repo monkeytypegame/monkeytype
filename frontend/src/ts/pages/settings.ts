@@ -1,5 +1,8 @@
 import SettingsGroup from "../elements/settings/settings-group";
-import Config, { setConfig, configLoadPromise } from "../config";
+
+import { Config } from "../config/store";
+import { configLoadPromise } from "../config/lifecycle";
+import { setConfig } from "../config/setters";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -12,10 +15,10 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
-import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { configEvent, type ConfigEventKey } from "../events/config";
+import { getActivePage } from "../states/core";
 import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -45,7 +48,7 @@ import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
@@ -595,7 +598,7 @@ export async function updateFilterSectionVisibility(): Promise<void> {
 
 export async function update(
   options: {
-    eventKey?: ConfigEvent.ConfigEventKey;
+    eventKey?: ConfigEventKey;
   } = {},
 ): Promise<void> {
   if (getActivePage() !== "settings") {
@@ -1024,7 +1027,7 @@ qs(".pageSettings #resetSettingsButton")?.on("click", () => {
   showPopup("resetSettings");
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "fullConfigChange") setEventDisabled(true);
   if (key === "fullConfigChangeFinished") setEventDisabled(false);
   if (key === "themeLight") {
@@ -1045,7 +1048,7 @@ ConfigEvent.subscribe(({ key, newValue }) => {
   }
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     if (event.data.isUserSignedIn) {
       showAccountSection();
@@ -1065,7 +1068,7 @@ export const page = new PageWithUrlParams({
   },
   beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    await configLoadPromise;
+    await configLoadPromise; //todo: is this actually needed here if we await it in ready?
     await fillSettingsPage();
     await update();
     // theme UI updates manually to avoid duplication

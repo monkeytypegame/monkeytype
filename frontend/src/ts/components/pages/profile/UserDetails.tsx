@@ -15,20 +15,20 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
-import { isFriend } from "../../../db";
+import { addFriend, isFriend } from "../../../db";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
-import { addFriend } from "../../../pages/friends";
-import { bp } from "../../../signals/breakpoints";
-import { getUserId, isLoggedIn } from "../../../signals/core";
+import { bp } from "../../../states/breakpoints";
+import { getUserId, isLoggedIn } from "../../../states/core";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../../stores/notifications";
-import { getLastResult, getSnapshot } from "../../../stores/snapshot";
+} from "../../../states/notifications";
+import { getLastResult, getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
+import { formatTypingStatsRatio } from "../../../utils/misc";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
@@ -427,6 +427,8 @@ function TypingStats(props: {
   typingStats: TypingStatsType;
   variant: Variant;
 }): JSXElement {
+  const stats = () => formatTypingStatsRatio(props.typingStats);
+
   return (
     <>
       <div
@@ -458,12 +460,19 @@ function TypingStats(props: {
             {props.typingStats.startedTests}
           </div>
         </div>
-        <div class="flex flex-col">
+        <Balloon
+          class="flex w-max flex-col"
+          text={
+            stats().completedPercentage !== ""
+              ? `${stats().completedPercentage}% (${stats().restartRatio} restarts per completed test)`
+              : undefined
+          }
+        >
           <div class="text-em-sm text-sub">tests completed</div>
           <div class="text-em-2xl leading-8">
             {props.typingStats.completedTests}
           </div>
-        </div>
+        </Balloon>
         <div class="flex flex-col">
           <div class="text-em-sm text-sub">time typing</div>
           <div class="text-em-2xl leading-8">

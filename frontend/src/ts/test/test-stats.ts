@@ -1,5 +1,5 @@
 import Hangul from "hangul-js";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
@@ -247,7 +247,6 @@ export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
   TestInput.keypressCountHistory.splice(testSeconds);
   TestInput.wpmHistory.splice(testSeconds);
-  TestInput.burstHistory.splice(testSeconds);
   TestInput.rawHistory.splice(testSeconds);
 }
 
