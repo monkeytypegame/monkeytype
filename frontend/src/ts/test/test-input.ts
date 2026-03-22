@@ -452,8 +452,42 @@ function updateOverlap(now: number): void {
   }
 }
 
+function carryoverFirstKeypress(): void {
+  // Because keydown triggers before input, we need to grab the first keypress data here and carry it over
+
+  // Take the key with the largest index
+  const lastKey = Object.keys(keyDownData).reduce((a, b) => {
+    const aIndex = keyDownData[a]?.index;
+    const bIndex = keyDownData[b]?.index;
+    if (aIndex === undefined) return b;
+    if (bIndex === undefined) return a;
+    return aIndex > bIndex ? a : b;
+  }, "");
+
+  // Get the data
+  const lastKeyData = keyDownData[lastKey];
+
+  // Carry over
+  if (lastKeyData !== undefined) {
+    keypressTimings = {
+      spacing: {
+        first: lastKeyData.timestamp,
+        last: lastKeyData.timestamp,
+        array: [],
+      },
+      duration: {
+        array: [0],
+      },
+    };
+    keyDownData[lastKey] = {
+      timestamp: lastKeyData.timestamp,
+      // Make sure to set it to the first index
+      index: 0,
+    };
+  }
+}
+
 export function resetKeypressTimings(carryover: boolean): void {
-  // Reset
   keypressTimings = {
     spacing: {
       first: -1,
@@ -471,40 +505,7 @@ export function resetKeypressTimings(carryover: boolean): void {
   keyDownData = {};
   noCodeIndex = 0;
 
-  if (carryover) {
-    // Because keydown triggers before input, we need to grab the first keypress data here and carry it over
-
-    // Take the key with the largest index
-    const lastKey = Object.keys(keyDownData).reduce((a, b) => {
-      const aIndex = keyDownData[a]?.index;
-      const bIndex = keyDownData[b]?.index;
-      if (aIndex === undefined) return b;
-      if (bIndex === undefined) return a;
-      return aIndex > bIndex ? a : b;
-    }, "");
-
-    // Get the data
-    const lastKeyData = keyDownData[lastKey];
-
-    // Carry over
-    if (lastKeyData !== undefined) {
-      keypressTimings = {
-        spacing: {
-          first: lastKeyData.timestamp,
-          last: lastKeyData.timestamp,
-          array: [],
-        },
-        duration: {
-          array: [0],
-        },
-      };
-      keyDownData[lastKey] = {
-        timestamp: lastKeyData.timestamp,
-        // Make sure to set it to the first index
-        index: 0,
-      };
-    }
-  }
+  if (carryover) carryoverFirstKeypress();
 
   console.debug("Keypress timings reset");
 }
