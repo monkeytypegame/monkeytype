@@ -139,7 +139,7 @@ function Item(props: {
           <div class="opacity-50">length</div>
           {getLengthDesc(props.quote)}
         </div>
-        <div class="col-span- flex sm:col-span-1">
+        <div class="col-span-2 flex sm:col-span-1">
           <div class="grow text-xs text-sub">
             <div class="opacity-50">source</div>
             <span
