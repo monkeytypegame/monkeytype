@@ -1,7 +1,7 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
-import Config from "../config";
+import { Config } from "../config/store";
 import { getInputElementValue } from "../input/input-element";
 
 const keysToTrack = new Set([
@@ -511,7 +511,7 @@ export function pushMissedWord(word: string): void {
   if (!Object.keys(missedWords).includes(word)) {
     missedWords[word] = 1;
   } else {
-    (missedWords[word] as number)++;
+    (missedWords[word] as number) += 1;
   }
 }
 

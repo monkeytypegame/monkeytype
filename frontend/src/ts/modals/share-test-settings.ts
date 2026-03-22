@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import { currentQuote } from "../test/test-words";
 import { getMode2 } from "../utils/misc";
 import * as CustomText from "../test/custom-text";

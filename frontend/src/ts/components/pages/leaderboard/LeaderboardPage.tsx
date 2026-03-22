@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { getSnapshot, updateLbMemory } from "../../../db";
+import { createEffectOn } from "../../../hooks/effects";
 import { PageName } from "../../../pages/page";
 import { queryClient } from "../../../queries";
 import {
@@ -9,7 +10,7 @@ import {
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage, isLoggedIn } from "../../../signals/core";
+import { getActivePage, isLoggedIn } from "../../../states/core";
 import {
   getGoToUserPage,
   getPage,
@@ -20,7 +21,7 @@ import {
   setPage,
   setSelection,
   updateGetParameters,
-} from "../../../stores/leaderboard-selection";
+} from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -38,6 +39,18 @@ export function LeaderboardPage(): JSXElement {
   const isOpen = () => getActivePage() === pageName;
 
   const [scrollToUser, setScrollToUser] = createSignal(false);
+
+  //invalidate cache for daily and weekly lb on close
+  createEffectOn(isOpen, (open) => {
+    if (!open) {
+      void queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey.length >= 3 &&
+          query.queryKey[1] === "leaderboard" &&
+          ["weekly", "daily"].includes(query.queryKey[2] as string),
+      });
+    }
+  });
 
   //prefetch next page
   createEffect(() => {
@@ -270,19 +283,5 @@ export function LeaderboardPage(): JSXElement {
         </div>
       </div>
     </Show>
-  );
-}
-
-export function prefetchLeaderboardPage(): void {
-  void queryClient.prefetchQuery(
-    getLeaderboardQueryOptions({
-      type: "allTime",
-      mode: "time",
-      mode2: "15",
-      language: "english",
-      friendsOnly: false,
-      page: 0,
-      previous: false,
-    }),
   );
 }

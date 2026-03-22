@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
@@ -8,7 +8,7 @@ import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
-import * as SlowTimer from "../../states/slow-timer";
+import * as SlowTimer from "../../legacy-states/slow-timer";
 
 /**
  * Handles logic before inserting text into the input element.

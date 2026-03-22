@@ -1,8 +1,7 @@
 import { ChartData } from "@monkeytype/schemas/results";
 import AnimatedModal from "../utils/animated-modal";
 import * as ChartController from "../controllers/chart-controller";
-import Config from "../config";
-
+import { Config } from "../config/store";
 function updateData(data: ChartData): void {
   // let data = filteredResults[filteredId].chartData;
   let labels = [];

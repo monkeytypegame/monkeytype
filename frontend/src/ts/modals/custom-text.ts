@@ -1,9 +1,10 @@
 import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text-name";
-import * as ManualRestart from "../test/manual-restart-tracker";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
 import * as CustomGeneratorPopup from "./custom-generator";
@@ -11,7 +12,7 @@ import * as PractiseWords from "../test/practise-words";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -188,7 +189,7 @@ async function beforeAnimation(
 
   if (
     state.customTextMode === "repeat" &&
-    CustomText.getLimitMode() === "word" &&
+    CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() === CustomText.getText().length
   ) {
     state.customTextMode = "simple";
@@ -397,7 +398,6 @@ function apply(): void {
   }
 
   ChallengeController.clearActive();
-  ManualRestart.set();
   if (Config.mode !== "custom") {
     setConfig("mode", "custom");
   }

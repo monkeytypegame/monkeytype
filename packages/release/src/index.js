@@ -220,6 +220,30 @@ const generateChangelog = async () => {
   return changelog;
 };
 
+const generateContributors = () => {
+  console.log("Generating contributors list...");
+  try {
+    const p = path.resolve(__dirname, "./buildContributors.js");
+
+    let contributors = runCommand(`node ${p}`, true);
+
+    contributors = JSON.parse(
+      contributors.replaceAll("\n", "").replace(/^.*?\[/, "["),
+    );
+
+    fs.writeFileSync(
+      `${PROJECT_ROOT}/frontend/static/contributors.json`,
+      JSON.stringify(contributors, null, 2),
+      "utf8",
+    );
+
+    console.log("Contributors list updated.");
+  } catch (e) {
+    console.error("Failed to generate contributors list.");
+    console.error(e);
+  }
+};
+
 const createCommitAndTag = (version) => {
   console.log("Creating commit and tag... Pushing to Github...");
   runCommand(`git add .`);
@@ -328,6 +352,7 @@ const main = async () => {
 
   if (!noDeploy) purgeCache();
   if (!hotfix) {
+    generateContributors();
     updatePackage(newVersion);
     createCommitAndTag(newVersion);
     try {

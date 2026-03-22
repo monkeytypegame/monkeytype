@@ -23,6 +23,7 @@
           "error",
           {
             "ignore": [
+              "autocomplete",
               "class",
               "classList",
               "innerHTML",

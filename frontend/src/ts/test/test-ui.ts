@@ -1,8 +1,10 @@
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
-import Config, { setConfig } from "../config";
+} from "../states/notifications";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";
@@ -12,12 +14,12 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as CompositionState from "../states/composition";
-import * as ConfigEvent from "../observables/config-event";
+import * as CompositionState from "../legacy-states/composition";
+import { configEvent } from "../events/config";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
-import { getActivePage } from "../signals/core";
-import Format from "../utils/format";
+import { getActivePage } from "../states/core";
+import Format from "../singletons/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import {
@@ -33,7 +35,7 @@ import {
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
-import * as KeymapEvent from "../observables/keymap-event";
+import { highlight } from "../events/keymap";
 import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
@@ -47,7 +49,7 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
@@ -65,8 +67,8 @@ import {
   qsa,
   qsr,
 } from "../utils/dom";
-import { getTheme } from "../signals/theme";
-import { skipBreakdown } from "../signals/header";
+import { getTheme } from "../states/theme";
+import { skipBreakdownEvent } from "../states/header";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1324,14 +1326,11 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
-    const word = TestWords.words.get(i);
+    const word = TestWords.words.get(i) ?? "";
+    const koreanRegex =
+      /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
     const containsKorean =
-      input?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      ) !== null ||
-      word?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      ) !== null;
+      koreanRegex.test(input ?? "") || koreanRegex.test(word);
 
     const wordEl = document.createElement("div");
     wordEl.className = "word";
@@ -1376,7 +1375,7 @@ async function loadWordsHistory(): Promise<boolean> {
       }
 
       const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word ?? "");
+      const wordCharacters = Strings.splitIntoCharacters(word);
       const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
 
       let loop;
@@ -1751,7 +1750,7 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    void KeymapEvent.highlight(
+    highlight(
       TestWords.words.getCurrent().charAt(TestInput.input.current.length),
     );
   }
@@ -1919,7 +1918,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    skipBreakdown();
+    skipBreakdownEvent.dispatch();
   }
 
   currentTestLine = 0;
@@ -2026,7 +2025,7 @@ qs("#wordsWrapper")?.on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
   }

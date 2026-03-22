@@ -3,7 +3,7 @@ import { Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { toHex } from "./strings";
 import { languageHashes } from "virtual:language-hashes";
-import { isDevEnvironment } from "./misc";
+import { isDevEnvironment } from "./env";
 
 //pin implementation
 const fetch = window.fetch;

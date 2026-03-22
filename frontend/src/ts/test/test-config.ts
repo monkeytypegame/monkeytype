@@ -1,11 +1,11 @@
 import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import { getActivePage } from "../signals/core";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
+import { getActivePage } from "../states/core";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 import { qs, qsa } from "../utils/dom";
 
 export function show(): void {
@@ -313,7 +313,7 @@ export function hideFavoriteQuoteLength(): void {
 
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
+configEvent.subscribe(({ key, newValue, previousValue }) => {
   if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
@@ -341,7 +341,7 @@ ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
   }
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     if (!event.data.isUserSignedIn) {
       hideFavoriteQuoteLength();

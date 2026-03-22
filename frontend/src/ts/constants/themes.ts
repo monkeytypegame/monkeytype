@@ -1,5 +1,4 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
-import { hexToHSL } from "../utils/colors";
 import { z } from "zod";
 
 const hexColorSchema = z
@@ -2335,11 +2334,3 @@ export const ThemesList: ThemeWithName[] = Object.keys(themes)
         name: it as ThemeName,
       }) as Theme & { name: ThemeName },
   );
-
-export const ThemesListSorted: ThemeWithName[] = [
-  ...ThemesList.sort((a, b) => {
-    const b1 = hexToHSL(a.bg);
-    const b2 = hexToHSL(b.bg);
-    return b2.lgt - b1.lgt;
-  }),
-];

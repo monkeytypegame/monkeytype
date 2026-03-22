@@ -5,7 +5,7 @@ import { isAuthenticated } from "../firebase";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as AddFilterPresetModal from "../modals/new-filter-preset";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";

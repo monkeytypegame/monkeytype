@@ -1,11 +1,11 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import { IsValidResponse } from "../elements/input-validation";
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { SimpleModal, TextInput } from "../utils/simple-modal";
+import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { SnapshotUserTag } from "../constants/default-snapshot";
+import { IsValidResponse } from "../types/validation";
 
 function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
   return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);

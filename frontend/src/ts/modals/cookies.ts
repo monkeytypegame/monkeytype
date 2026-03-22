@@ -1,4 +1,4 @@
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { isPopupVisible } from "../utils/misc";
 import * as AdController from "../controllers/ad-controller";
 import AnimatedModal from "../utils/animated-modal";

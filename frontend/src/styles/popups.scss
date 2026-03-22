@@ -899,17 +899,35 @@ body.darkMode {
       border-collapse: collapse;
       color: var(--text-color);
 
+      tbody {
+        clip-path: inset(0);
+      }
+
       td {
         padding: 0.5rem 0.5rem;
+      }
+
+      .modesticky {
+        position: sticky;
+        top: calc(1rem - 2px);
+        z-index: 2;
       }
 
       thead {
         color: var(--sub-color);
         font-size: 0.75rem;
+        position: sticky;
+        top: -2rem;
+        background-color: var(--bg-color) !important;
+        z-index: 3;
       }
 
-      tbody tr:nth-child(odd) td {
+      tbody tr.odd {
         background: var(--sub-alt-color);
+      }
+
+      tbody tr.even {
+        background: var(--bg-color);
       }
 
       td.infoIcons span {

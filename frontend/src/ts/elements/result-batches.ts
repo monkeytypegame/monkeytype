@@ -2,7 +2,7 @@ import * as DB from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
 import { mapRange } from "@monkeytype/util/numbers";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 import { qs } from "../utils/dom";
 
 export function hide(): void {

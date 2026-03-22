@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import * as Misc from "../utils/misc";
 import * as Numbers from "@monkeytype/util/numbers";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 
 let averageWPM = 0;

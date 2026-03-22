@@ -1,6 +1,6 @@
 import * as Commandline from "../commandline/commandline";
 import * as CustomWordAmount from "../modals/custom-word-amount";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
@@ -9,7 +9,7 @@ import * as TestWords from "../test/test-words";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";
