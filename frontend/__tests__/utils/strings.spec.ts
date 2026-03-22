@@ -843,6 +843,23 @@ describe("string utils", () => {
       );
       expect(result).toStrictEqual({ inputPattern: "cba", patternStart: 1 });
     });
+
+    it.each([
+      { input: "xab", word: "ycba", expected: ["abc", 1] },
+      { input: "xab", word: "yyba", expected: null },
+    ])(
+      "returns $expected for input $input and word $word",
+      ({ input, word, expected }) => {
+        const result = Strings.__testing._checkAccentOrderMismatchWithRules(
+          input,
+          word,
+          allRules,
+        );
+        expect(result).toStrictEqual(
+          expected && { inputPattern: expected[0], patternStart: expected[1] },
+        );
+      },
+    );
   });
 
   describe("checkAccentOrderMismatch", () => {
