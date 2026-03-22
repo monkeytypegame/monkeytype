@@ -42,12 +42,10 @@ export async function getQuoteStats(
 ): Promise<QuoteStats | undefined> {
   if (!quote) return;
 
-  // showLoaderBar();
   setCurrentQuote(quote);
   const response = await Ape.quotes.getRating({
     query: { quoteId: quote.id, language: quote.language },
   });
-  // hideLoaderBar();
 
   if (response.status !== 200) {
     showErrorNotification("Failed to get quote ratings", { response });
