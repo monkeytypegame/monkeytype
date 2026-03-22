@@ -112,7 +112,7 @@ export function QuoteReportModal(): JSXElement {
 
   return (
     <AnimatedModal
-      modalClass="min-w-[750px]"
+      modalClass="w-full max-w-[750px]"
       id="QuoteReport"
       mode="dialog"
       title="Report a quote"
