@@ -452,7 +452,7 @@ function updateOverlap(now: number): void {
   }
 }
 
-export function resetKeypressTimings(): void {
+function carryoverFirstKeypress(): void {
   //because keydown triggers before input, we need to grab the first keypress data here and carry it over
 
   //take the key with the largest index
@@ -466,24 +466,6 @@ export function resetKeypressTimings(): void {
 
   //get the data
   const lastKeyData = keyDownData[lastKey];
-
-  //reset
-  keypressTimings = {
-    spacing: {
-      first: -1,
-      last: -1,
-      array: [],
-    },
-    duration: {
-      array: [],
-    },
-  };
-  keyOverlap = {
-    total: 0,
-    lastStartTime: -1,
-  };
-  keyDownData = {};
-  noCodeIndex = 0;
 
   //carry over
   if (lastKeyData !== undefined) {
@@ -503,6 +485,27 @@ export function resetKeypressTimings(): void {
       index: 0,
     };
   }
+}
+
+export function resetKeypressTimings(carryover: boolean): void {
+  keypressTimings = {
+    spacing: {
+      first: -1,
+      last: -1,
+      array: [],
+    },
+    duration: {
+      array: [],
+    },
+  };
+  keyOverlap = {
+    total: 0,
+    lastStartTime: -1,
+  };
+  keyDownData = {};
+  noCodeIndex = 0;
+
+  if (carryover) carryoverFirstKeypress();
 
   console.debug("Keypress timings reset");
 }
@@ -551,4 +554,6 @@ export function restart(): void {
     correct: 0,
     incorrect: 0,
   };
+
+  resetKeypressTimings(false);
 }
