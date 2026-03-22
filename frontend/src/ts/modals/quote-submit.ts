@@ -1,15 +1,15 @@
 import { ElementWithUtils } from "../utils/dom";
 import Ape from "../ape";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
-import Config from "../config";
+import { Config } from "../config/store";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";

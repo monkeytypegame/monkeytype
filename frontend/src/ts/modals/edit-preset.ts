@@ -1,14 +1,12 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import * as Config from "../config";
-
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Settings from "../pages/settings";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import {
   PresetNameSchema,
@@ -26,7 +24,8 @@ import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { ElementWithUtils } from "../utils/dom";
-import { configMetadata } from "../config-metadata";
+import { configMetadata } from "../config/metadata";
+import { getConfigChanges as getConfigChangesFromConfig } from "../config/utils";
 
 const state = {
   presetType: "full" as PresetType,
@@ -390,8 +389,8 @@ function getActiveSettingGroupsFromState(): ConfigGroupName[] {
 function getConfigChanges(): Partial<ConfigType> {
   const activeConfigChanges =
     state.presetType === "partial"
-      ? getPartialConfigChanges(Config.getConfigChanges())
-      : Config.getConfigChanges();
+      ? getPartialConfigChanges(getConfigChangesFromConfig())
+      : getConfigChangesFromConfig();
   const tags = DB.getSnapshot()?.tags ?? [];
 
   const activeTagIds: string[] = tags

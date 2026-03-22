@@ -1,8 +1,8 @@
 /**
  * Example usage in root or frontend:
  * pnpm check-assets (npm run check-assets)
- * pnpm vaildate-json quotes others(npm run vaildate-json quotes others)
- * pnpm check-assets challenges fonts -p (npm run check-assets challenges fonts -- -p)
+ * pnpm check-assets -- -- quotes others (npm run check-assets -- -- quotes others)
+ * pnpm check-assets -- -- challenges sound -p (npm run check-assets -- -- challenges sound -p)
  */
 
 import * as fs from "fs";
@@ -11,7 +11,6 @@ import {
   Language,
   LanguageObject,
   LanguageObjectSchema,
-  LanguageSchema,
 } from "@monkeytype/schemas/languages";
 import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
@@ -149,27 +148,12 @@ async function validateLayouts(): Promise<void> {
   }
 }
 
-async function fetchQuotes(language: string): Promise<QuoteData | null> {
-  const url = `https://raw.githubusercontent.com/monkeytypegame/monkeytype/refs/heads/master/frontend/static/quotes/${language}.json`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-
-    const quoteJsonData = (await response.json()) as QuoteData;
-    return quoteJsonData;
-  } catch (error) {
-    console.error(
-      `Failed to get quotes: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    return null;
-  }
-}
-
 async function validateQuotes(): Promise<void> {
   const problems = new Problems<string, never>("Quotes", {});
+
+  const shortQuotes = JSON.parse(
+    fs.readFileSync("./scripts/short-quotes.json", "utf8"),
+  ) as Record<QuoteData["language"], number[]>;
 
   const quotesFiles = fs.readdirSync("./static/quotes/");
   for (let quotefilename of quotesFiles) {
@@ -200,12 +184,7 @@ async function validateQuotes(): Promise<void> {
     }
 
     //check schema
-    const schema = QuoteDataSchema.extend({
-      language: LanguageSchema
-        //icelandic only exists as icelandic_1k, language in quote file is stripped of its size
-        .or(z.literal("icelandic")),
-    });
-    problems.addValidation(quotefilename, schema.safeParse(quoteData));
+    problems.addValidation(quotefilename, QuoteDataSchema.safeParse(quoteData));
 
     //check for duplicate ids
     const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));
@@ -214,19 +193,6 @@ async function validateQuotes(): Promise<void> {
         quotefilename,
         `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`,
       );
-    }
-
-    // check if pr added quotes in this language
-    let addedQuotesToThisLanguage = false;
-    const currentLanguageData = await fetchQuotes(quotefilename);
-
-    if (
-      currentLanguageData !== null &&
-      (currentLanguageData.quotes.length < quoteData.quotes.length ||
-        JSON.stringify(currentLanguageData.quotes) !==
-          JSON.stringify(quoteData.quotes))
-    ) {
-      addedQuotesToThisLanguage = true;
     }
 
     //check quote length
@@ -238,13 +204,7 @@ async function validateQuotes(): Promise<void> {
         );
       }
 
-      if (
-        addedQuotesToThisLanguage &&
-        currentLanguageData !== null &&
-        !currentLanguageData.quotes.some(
-          (langQuote) => langQuote.text === quote.text,
-        )
-      ) {
+      if (!shortQuotes[quoteData.language]?.includes(quote.id)) {
         if (quote.text.length < 60) {
           problems.add(
             quotefilename,

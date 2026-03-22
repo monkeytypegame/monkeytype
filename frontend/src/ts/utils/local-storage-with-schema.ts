@@ -1,6 +1,6 @@
 import { ZodIssue } from "zod";
 import { isZodError } from "@monkeytype/util/zod";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 

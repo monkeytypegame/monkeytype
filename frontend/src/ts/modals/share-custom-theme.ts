@@ -1,11 +1,11 @@
 import * as ThemeController from "../controllers/theme-controller";
-import Config from "../config";
+import { Config } from "../config/store";
 import {
   showNoticeNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import AnimatedModal from "../utils/animated-modal";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 type State = {
   includeBackground: boolean;

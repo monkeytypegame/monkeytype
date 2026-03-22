@@ -1,7 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
-import { getConfig } from "../../../signals/config";
-import { getFocus } from "../../../signals/core";
+import { getConfig } from "../../../config/store";
+import { getFocus } from "../../../states/core";
 import { Conditional } from "../../common/Conditional";
 
 export function Keytips(): JSXElement {

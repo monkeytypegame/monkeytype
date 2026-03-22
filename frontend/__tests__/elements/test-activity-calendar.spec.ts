@@ -1150,7 +1150,7 @@ describe("test-activity-calendar.ts", () => {
         );
 
         //WHEN
-        expect(() => calendar.increment(getDate("2024-04-09"))).toThrowError(
+        expect(() => calendar.increment(getDate("2024-04-09"))).toThrow(
           new Error("cannot alter data in the past."),
         );
       });

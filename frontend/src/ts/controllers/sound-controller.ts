@@ -1,10 +1,10 @@
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
 import { randomElementFromArray } from "../utils/arrays";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 
 import type { Howl } from "howler";
 import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
@@ -833,7 +833,7 @@ function setVolume(val: number): void {
   }
 }
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "playSoundOnClick" && newValue !== "off") void init();
   if (key === "soundVolume") {
     setVolume(newValue);

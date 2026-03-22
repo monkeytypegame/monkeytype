@@ -1,8 +1,8 @@
 import * as DB from "../db";
 import { format } from "date-fns/format";
 import { getLanguageDisplayString } from "../utils/strings";
-import Config from "../config";
-import Format from "../utils/format";
+import { Config } from "../config/store";
+import Format from "../singletons/format";
 import AnimatedModal from "../utils/animated-modal";
 import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 
@@ -13,7 +13,8 @@ type PBWithMode2 = {
 function update(mode: Mode): void {
   const modalEl = modal.getModal();
 
-  modalEl.qs("table tbody")?.empty();
+  const tableEl = modalEl.qs("table");
+  tableEl?.qsa("tbody").remove();
   modalEl.qs("thead td:first-child")?.setText(mode);
   modalEl.qs("thead span.unit")?.setText(Config.typingSpeedUnit);
 
@@ -38,9 +39,16 @@ function update(mode: Mode): void {
     });
   });
 
-  let mode2memory: Mode2<Mode>;
+  let mode2memory: Mode2<Mode> | null = null;
+  let currentTbody: HTMLTableSectionElement | null = null;
+  let rowIndex: number = 1;
 
   list.forEach((pb) => {
+    const isNewGroup = mode2memory !== pb.mode2 || currentTbody === null;
+    if (isNewGroup) {
+      currentTbody = document.createElement("tbody");
+      tableEl?.append(currentTbody);
+    }
     let dateText = `-<br><span class="sub">-</span>`;
     const date = new Date(pb.timestamp);
     if (pb.timestamp) {
@@ -50,10 +58,19 @@ function update(mode: Mode): void {
         format(date, "HH:mm") +
         "</div>";
     }
-    modalEl.qs("table tbody")?.appendHtml(
+    currentTbody?.insertAdjacentHTML(
+      "beforeend",
       `
-      <tr>
-        <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
+      <tr class="${rowIndex % 2 ? "odd" : "even"}">
+        ${
+          isNewGroup
+            ? `
+            <td class="modesticky">
+              ${pb.mode2}
+            </td>
+          `
+            : "<td></td>"
+        }
         <td>
           ${Format.typingSpeed(pb.wpm)}
           <br />
@@ -74,6 +91,7 @@ function update(mode: Mode): void {
     `,
     );
     mode2memory = pb.mode2;
+    rowIndex++;
   });
 }
 

@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/solid-query";
 import { createEffectOn } from "../hooks/effects";
-import { isLoggedIn } from "../signals/core";
+import { isLoggedIn } from "../states/core";
 
 export const queryClient = new QueryClient();
 

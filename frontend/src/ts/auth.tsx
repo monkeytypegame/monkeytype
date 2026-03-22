@@ -9,9 +9,9 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
-import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
-import { updateFromServer as updateConfigFromServer } from "./config";
+import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
+import { authEvent } from "./events/auth";
 import {
   isAuthAvailable,
   getAuthenticatedUser,
@@ -22,17 +22,23 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "./firebase";
-import { showPopup } from "./modals/simple-modals-base";
-import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
-import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import { addBanner } from "./stores/banners";
+import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "./stores/notifications";
-import { createErrorMessage } from "./utils/misc";
+} from "./states/notifications";
+import { createErrorMessage } from "./utils/error";
+
+export type AuthResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+    };
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -66,28 +72,6 @@ async function getDataAndInit(): Promise<boolean> {
     }
 
     void Sentry.setUser(snapshot.uid, snapshot.name);
-    if (snapshot.needsToChangeName) {
-      addBanner({
-        level: "error",
-        icon: "fas fa-exclamation-triangle",
-        customContent: (
-          <>
-            You need to update your account name.{" "}
-            <button
-              type="button"
-              class="px-2 py-1"
-              onClick={() => {
-                showPopup("updateName");
-              }}
-            >
-              Click here
-            </button>{" "}
-            to change it and learn more about why.
-          </>
-        ),
-        important: true,
-      });
-    }
 
     await updateConfigFromServer();
     return true;
@@ -122,7 +106,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
+  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(
@@ -146,7 +130,7 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
-  AuthEvent.dispatch({
+  authEvent.dispatch({
     type: "authStateChanged",
     data: { isUserSignedIn: user !== null, loadPromise: userPromise },
   });
@@ -156,15 +140,7 @@ export async function signIn(
   email: string,
   password: string,
   rememberMe: boolean,
-): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
@@ -182,15 +158,7 @@ export async function signIn(
 async function signInWithProvider(
   provider: AuthProvider,
   rememberMe: boolean,
-): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
@@ -198,35 +166,20 @@ async function signInWithProvider(
   const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
   if (error !== null) {
-    if (error.message !== "") {
-      showErrorNotification(error.message);
-    }
     return { success: false, message: error.message };
   }
   return { success: true };
 }
 
-export async function signInWithGoogle(rememberMe: boolean): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+export async function signInWithGoogle(
+  rememberMe: boolean,
+): Promise<AuthResult> {
   return signInWithProvider(gmailProvider, rememberMe);
 }
 
-export async function signInWithGitHub(rememberMe: boolean): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+export async function signInWithGitHub(
+  rememberMe: boolean,
+): Promise<AuthResult> {
   return signInWithProvider(githubProvider, rememberMe);
 }
 
@@ -253,7 +206,7 @@ async function addAuthProvider(
     await linkWithPopup(user, provider);
     hideLoaderBar();
     showSuccessNotification(`${providerName} authentication added`);
-    AuthEvent.dispatch({ type: "authConfigUpdated" });
+    authEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
     showErrorNotification(`Failed to add ${providerName} authentication`, {
@@ -275,21 +228,10 @@ export async function signUp(
   name: string,
   email: string,
   password: string,
-): Promise<
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    }
-> {
+  captchaToken: string,
+): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
-  }
-  const captchaToken = await showRegisterCaptchaModal();
-  if (captchaToken === undefined || captchaToken === "") {
-    return { success: false, message: "Please complete the captcha" };
   }
 
   try {

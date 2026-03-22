@@ -1,6 +1,6 @@
 import { ResultFiltersSchema } from "@monkeytype/schemas/users";
 import { createFilterPreset } from "../elements/account/result-filters";
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 
 export function show(): void {
   newFilterPresetModal.show(undefined, {});

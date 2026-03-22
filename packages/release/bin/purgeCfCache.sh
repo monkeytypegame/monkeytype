@@ -12,7 +12,7 @@ response=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_
      -H "Content-Type: application/json" \
      --data '{"purge_everything":true}')
 
-success=$(echo "$response" | grep -o '"success": true')
+success=$(echo "$response" | grep -o '"success"\s*:\s*true')
 
 if [ "$success" ]; then
     echo "Cache purged successfully."

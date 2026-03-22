@@ -323,7 +323,7 @@ describe("AdminController", () => {
         data: null,
       });
 
-      expect(addToInboxMock).toBeCalledTimes(2);
+      expect(addToInboxMock).toHaveBeenCalledTimes(2);
       expect(deleteReportsMock).toHaveBeenCalledWith(["1", "2"]);
     });
     it("should fail wihtout mandatory properties", async () => {

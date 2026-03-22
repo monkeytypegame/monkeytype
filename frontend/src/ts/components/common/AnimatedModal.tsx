@@ -12,7 +12,7 @@ import {
   ModalId,
   isModalOpen,
   isModalChained,
-} from "../../stores/modals";
+} from "../../states/modals";
 import { cn } from "../../utils/cn";
 import { applyReducedMotion } from "../../utils/misc";
 
@@ -73,6 +73,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const showModal = async (isChained: boolean): Promise<void> => {
     if (dialogEl() === undefined || modalEl() === undefined) return;
+    if (dialogEl()?.native.open) return;
 
     await props.beforeShow?.();
 
@@ -265,7 +266,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     if (modalEl() === undefined || dialogEl() === undefined) return;
     if (props.focusFirstInput === undefined) return;
 
-    const input = modalEl()?.qs<HTMLInputElement>("input:not(.hidden)");
+    const input = modalEl()?.qsa<HTMLInputElement>("input:not(.hidden)")[0];
     if (input) {
       if (props.focusFirstInput === true) {
         input.focus();

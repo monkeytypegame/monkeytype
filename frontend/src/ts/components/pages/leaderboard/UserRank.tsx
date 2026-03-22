@@ -5,7 +5,7 @@ import {
 import { formatDuration, intervalToDuration } from "date-fns";
 import { createMemo, JSXElement, Match, Show, Switch } from "solid-js";
 
-import { getConfig } from "../../../signals/config";
+import { getConfig } from "../../../config/store";
 import { Formatting } from "../../../utils/format";
 import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
