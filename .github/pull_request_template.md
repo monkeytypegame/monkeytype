@@ -33,14 +33,13 @@
 
 <!-- label(optional scope): pull request title (@your_github_username) -->
 
-<!-- I know I know they seem boring but please do them, they help us and you will find out it also helps you.-->
+<!-- I know I know they seem boring but please do them, they help us and you will find out it also helps you. -->
 
 Closes #
 
-<!-- the issue(s) your PR resolves if any (delete if that is not the case) -->
-<!-- please also reference any issues and or PRs related to your pull request -->
-<!-- Also remove it if you are not following any issues. -->
+<!-- The issue(s) your PR resolves if any (delete if that is not the case) -->
+<!-- Please reference any issues and or PRs related to your pull request -->
 
-<!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number, e.g.: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
+<!-- Pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number, e.g.: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
 
-<!-- pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor. Enjoy! :) -->
+<!-- Pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor. Enjoy! :) -->
