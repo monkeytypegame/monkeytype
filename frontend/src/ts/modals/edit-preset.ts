@@ -221,7 +221,7 @@ function hide(): void {
 async function apply(): Promise<void> {
   const modalEl = modal.getModal();
   const action = modalEl.getAttribute("data-action");
-  const presetName = modalEl
+  const propPresetName = modalEl
     .qsr<HTMLInputElement>(".group input[title='presets']")
     .getValue() as string;
   const presetId = modalEl.getAttribute("data-preset-id") as string;
@@ -252,7 +252,7 @@ async function apply(): Promise<void> {
     //validate the preset name only in add or edit mode
 
     const noPresetName: boolean =
-      presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
+      propPresetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
     if (noPresetName) {
       showNoticeNotification("Preset name cannot be empty");
       return;
@@ -271,10 +271,10 @@ async function apply(): Promise<void> {
   if (action === "add") {
     const configChanges = getConfigChanges();
     const activeSettingGroups = getActiveSettingGroupsFromState();
-    const cleanedName = PresetNameSchema.parse(presetName);
+    const presetName = PresetNameSchema.parse(propPresetName);
     const response = await Ape.presets.add({
       body: {
-        name: cleanedName,
+        name: presetName,
         config: configChanges,
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
@@ -287,12 +287,12 @@ async function apply(): Promise<void> {
     } else {
       showSuccessNotification("Preset added", { durationMs: 2000 });
       snapshotPresets.push({
-        name: cleanedName,
+        name: presetName,
         config: configChanges,
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
         }),
-        display: cleanedName.replace(/_/g, " "),
+        display: presetName.replace(/_/g, " "),
         _id: response.body.data.presetId,
       } as SnapshotPreset);
     }
@@ -307,11 +307,11 @@ async function apply(): Promise<void> {
     const configChanges = getConfigChanges();
     const activeSettingGroups: ConfigGroupName[] | null =
       state.presetType === "partial" ? getActiveSettingGroupsFromState() : null;
-    const cleanedName = PresetNameSchema.parse(presetName);
+    const presetName = PresetNameSchema.parse(propPresetName);
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
-        name: cleanedName,
+        name: presetName,
         ...(updateConfig && {
           config: configChanges,
           settingGroups: activeSettingGroups,
@@ -324,8 +324,8 @@ async function apply(): Promise<void> {
     } else {
       showSuccessNotification("Preset updated");
 
-      preset.name = cleanedName;
-      preset.display = cleanedName.replace(/_/g, " ");
+      preset.name = presetName;
+      preset.display = presetName.replace(/_/g, " ");
       if (updateConfig) {
         preset.config = configChanges;
         if (state.presetType === "partial") {

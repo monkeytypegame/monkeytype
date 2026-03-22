@@ -46,7 +46,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       DB.getSnapshot()?.tags?.push({
         display: tagName.replace(/_/g, " "),
-        name: response.body.data.name,
+        name: tagName,
         _id: response.body.data._id,
         personalBests: {
           time: {},
