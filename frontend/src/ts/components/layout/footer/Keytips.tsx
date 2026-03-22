@@ -4,14 +4,14 @@ import { getConfig } from "../../../config/store";
 import { getFocus } from "../../../states/core";
 import {
   getCommandLineKeyLabel,
-  getModifierKeyLabel,
+  getCommandLineModifierKeyLabel,
   isFirefoxBrowser,
 } from "../../../utils/shortcuts";
 import { Conditional } from "../../common/Conditional";
 
 export function Keytips(): JSXElement {
   const isFirefox = isFirefoxBrowser();
-  const modifierKey = getModifierKeyLabel();
+  const modifierKey = getCommandLineModifierKeyLabel();
   const commandKey = (): string =>
     getCommandLineKeyLabel(getConfig.quickRestart);
 
