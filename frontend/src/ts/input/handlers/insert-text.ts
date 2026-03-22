@@ -105,16 +105,33 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // input and target word
   const testInput = TestInput.input.current;
+  let currentWord = TestWords.words.getCurrent();
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
   const normalizedData = normalizeDataAndUpdateInputIfNeeded(
     options.data,
     testInput,
-    TestWords.words.getCurrent(),
+    currentWord,
   );
   const data = normalizedData ?? options.data;
-  const currentWord = TestWords.words.getCurrent();
+
+  // if the input is committing to a pattern that is different from target word's pattern
+  // and those patterns are equivalent, replace target word's pattern with input's.
+  // changing target word here ensures the input is considered correct,
+  // and actually typed characters are highlighted in `updateWordLetters()`.
+  const pattern = checkAccentOrderMismatch(
+    testInput + data,
+    currentWord,
+    Config.language,
+  );
+  if (pattern !== null) {
+    currentWord =
+      currentWord.slice(0, pattern.patternStart) +
+      pattern.inputPattern +
+      currentWord.slice(pattern.patternStart + pattern.inputPattern.length);
+    TestWords.words.list[TestState.activeWordIndex] = currentWord;
+  }
 
   // start if needed
   if (!TestState.isActive) {
@@ -305,18 +322,6 @@ function normalizeDataAndUpdateInputIfNeeded(
   ) {
     replaceInputElementLastValueChar(targetChar);
     normalizedData = targetChar;
-  }
-
-  const accent = checkAccentOrderMismatch(
-    testInput + (normalizedData ?? data),
-    currentWord,
-    Config.language,
-  );
-  if (accent !== null) {
-    TestWords.words.list[TestState.activeWordIndex] =
-      currentWord.slice(0, accent.patternStart) +
-      accent.inputPattern +
-      currentWord.slice(accent.patternStart + accent.inputPattern.length);
   }
   return normalizedData;
 }

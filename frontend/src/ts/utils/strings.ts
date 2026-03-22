@@ -320,7 +320,7 @@ export function areCharactersVisuallyEqual(
 }
 
 // put rules with longer patterns first
-const ACCENT_PATTERNS = [
+const ACCENT_RULES = [
   ["َّ", "َّ"],
   ["ًّ", "ًّ"],
   ["ُّ", "ُّ"],
@@ -328,36 +328,52 @@ const ACCENT_PATTERNS = [
   ["ِّ", "ِّ"],
   ["ٍّ", "ٍّ"],
 ];
-const LANGUAGE_ACCENT_PATTERNS: Partial<Record<Language, string[][]>> = {
+const LANGUAGE_ACCENT_RULES: Partial<Record<Language, string[][]>> = {
+  // rules with longer patterns first
   arabic: [
     ["ّاً", "ًّا", "ًّا"],
     ["اً", "ًا"],
   ],
 };
 
+/**
+ * Checks if there is a mismatch in patterns between 2 words: input and target word.
+ * A mismatch is when those words contain different patterns that are considered
+ * equivalent according to pre-determined set of rules, at the same position.
+ * The target word needs to have the full pattern, but the input only
+ * needs to end with the first part of the pattern.
+ * The rules have the following priority (from highest to lowest): language-specific
+ * rules - rules with longest pattern - rules having the longest overlap with input.
+ * If the input matches 2 patterns within a rule, earliest pattern is returned.
+ * @param input input word to check if it ends with pattern
+ * @param targetWord target word to check if it contains pattern
+ * @param language optional language to check for language-specific rules
+ * @returns an object containing the input pattern with its start position if there
+ * is a mismatch, null otherwise (having no equivalent patterns, or the same pattern)
+ */
 export function checkAccentOrderMismatch(
   input: string,
-  currentWord: string,
+  targetWord: string,
   language?: Language,
 ): { inputPattern: string; patternStart: number } | null {
   const langRules =
-    language && LANGUAGE_ACCENT_PATTERNS[language]
-      ? LANGUAGE_ACCENT_PATTERNS[language]
+    language && LANGUAGE_ACCENT_RULES[language]
+      ? LANGUAGE_ACCENT_RULES[language]
       : [];
-  return _checkAccentOrderMismatchWithRules(input, currentWord, [
+  return _checkAccentOrderMismatchWithRules(input, targetWord, [
     ...langRules,
-    ...ACCENT_PATTERNS,
+    ...ACCENT_RULES,
   ]);
 }
 
 function _checkAccentOrderMismatchWithRules(
   input: string,
-  currentWord: string,
-  accentPatterns: string[][],
+  targetWord: string,
+  accentRules: string[][],
 ): { inputPattern: string; patternStart: number } | null {
-  const minWordsLength = Math.min(input.length, currentWord.length);
+  const minWordsLength = Math.min(input.length, targetWord.length);
 
-  for (const rule of accentPatterns) {
+  for (const rule of accentRules) {
     const patternLength = rule[0]?.length ?? 0;
     const minLength = Math.min(patternLength, minWordsLength);
 
@@ -385,7 +401,7 @@ function _checkAccentOrderMismatchWithRules(
       const overlap = input.slice(-overlapLen);
       const matchStart = input.length - overlapLen;
       const matchEnd = matchStart + patternLength;
-      const wordSlice = currentWord.slice(matchStart, matchEnd);
+      const wordSlice = targetWord.slice(matchStart, matchEnd);
 
       for (const pattern of rule) {
         if (inputPattern === null && pattern.startsWith(overlap)) {
@@ -450,7 +466,7 @@ export function isSpace(char: string): boolean {
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,
-  ACCENT_PATTERNS,
-  LANGUAGE_ACCENT_PATTERNS,
+  ACCENT_RULES,
+  LANGUAGE_ACCENT_RULES,
   _checkAccentOrderMismatchWithRules,
 };

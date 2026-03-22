@@ -589,9 +589,9 @@ describe("string utils", () => {
   });
 
   describe("Accent pattern rules", () => {
-    const commonRules = Strings.__testing.ACCENT_PATTERNS;
+    const commonRules = Strings.__testing.ACCENT_RULES;
     const languageRules = Object.values(
-      Strings.__testing.LANGUAGE_ACCENT_PATTERNS,
+      Strings.__testing.LANGUAGE_ACCENT_RULES,
     );
     const allRules: string[][] = [...languageRules.flat(), ...commonRules];
     const allPatterns = allRules.flat();
