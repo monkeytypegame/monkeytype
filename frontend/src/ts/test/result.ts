@@ -433,7 +433,7 @@ function updateConsistency(): void {
 
 function updateTime(): void {
   const afkSecondsPercent = Numbers.roundTo2(
-    (result.afkDuration / result.testDuration) * 100,
+    (result.afkDuration / result.testDuration) * 100 || 0,
   );
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
