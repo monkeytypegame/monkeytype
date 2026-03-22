@@ -38,7 +38,7 @@
 Closes #
 
 <!-- The issue(s) your PR resolves if any (delete if that is not the case) -->
-<!-- Please reference any issues and or PRs related to your pull request -->
+<!-- Please reference any issues and/or PRs related to your pull request -->
 
 <!-- Pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number, e.g.: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
 
