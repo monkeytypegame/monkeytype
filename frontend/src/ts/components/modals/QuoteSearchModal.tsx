@@ -107,7 +107,7 @@ function Item(props: {
 
   return (
     <div
-      class="grid cursor-pointer select-none gap-2 rounded p-4 transition-[background-color] duration-125 hover:bg-sub-alt"
+      class="grid cursor-pointer gap-2 rounded p-4 transition-[background-color] duration-125 select-none hover:bg-sub-alt"
       onClick={() => props.onSelect()}
     >
       <div
@@ -117,7 +117,7 @@ function Item(props: {
         innerHTML={highlightMatches(props.quote.text, props.matchedTerms)}
       ></div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_3fr]">
-        <div class="text-sub text-xs">
+        <div class="text-xs text-sub">
           <div class="opacity-50">id</div>
           <span
             class="[&_.highlight]:text-main"
@@ -128,12 +128,12 @@ function Item(props: {
             )}
           ></span>
         </div>
-        <div class="text-sub text-xs">
+        <div class="text-xs text-sub">
           <div class="opacity-50">length</div>
           {getLengthDesc(props.quote)}
         </div>
-        <div class="flex col-span- sm:col-span-1">
-          <div class="text-sub text-xs grow">
+        <div class="col-span- flex sm:col-span-1">
+          <div class="grow text-xs text-sub">
             <div class="opacity-50">source</div>
             <span
               class="[&_.highlight]:text-main"
@@ -428,19 +428,17 @@ export function QuoteSearchModal(): JSXElement {
         afterShow={handleAfterShow}
         modalClass="max-w-[1000px] h-[80vh] grid-rows-[auto_auto_1fr_auto]"
       >
-        <div class="flex justify-between flex-col sm:flex-row gap-2">
+        <div class="flex flex-col justify-between gap-2 sm:flex-row">
           <div class="text-2xl text-sub">Quote search</div>
           <div class="grid gap-2">
-            <Show when={true}>
-              {/* TODO: <Show when={isAuthenticated()}> */}
+            <Show when={isAuthenticated()}>
               <Button
                 fa={{ icon: "fa-plus" }}
                 text="Submit a quote"
                 onClick={() => void handleSubmitClick()}
               />
             </Show>
-            <Show when={true}>
-              {/* TODO: <Show when={isQuoteMod()}> */}
+            <Show when={isQuoteMod()}>
               <Button
                 fa={{ icon: "fa-check" }}
                 text="Approve quotes"
@@ -449,7 +447,7 @@ export function QuoteSearchModal(): JSXElement {
             </Show>
           </div>
         </div>
-        <div class="flex gap-4 flex-col sm:flex-row">
+        <div class="flex flex-col gap-4 sm:flex-row">
           <input
             class="grow-3"
             type="text"
@@ -503,19 +501,19 @@ export function QuoteSearchModal(): JSXElement {
         </div>
         <div
           class={cn(
-            "grid grid-cols-2 gap-2 items-center justify-center",
+            "grid grid-cols-2 items-center justify-center gap-2",
             "sm:grid-cols-3",
           )}
         >
           <Button
-            class="px-10 sm:w-max justify-self-end"
+            class="justify-self-end px-10 sm:w-max"
             fa={{ icon: "fa-chevron-left", fixedWidth: true }}
             disabled={currentPage() <= 1}
             onClick={() => setCurrentPage((p) => p - 1)}
           />
           <div
             class={cn(
-              "px-4 text-center text-sub row-start-1 col-span-2",
+              "col-span-2 row-start-1 px-4 text-center text-sub",
               "sm:col-span-1 sm:row-auto",
             )}
           >
