@@ -2,7 +2,6 @@ import { createSignal } from "solid-js";
 import { Language } from "@monkeytype/schemas/languages";
 import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
-import { hideLoaderBar, showLoaderBar } from "./loader-bar";
 import { showErrorNotification } from "./notifications";
 import { showModal } from "./modals";
 import { isSafeNumber } from "@monkeytype/util/numbers";
@@ -43,12 +42,12 @@ export async function getQuoteStats(
 ): Promise<QuoteStats | undefined> {
   if (!quote) return;
 
-  showLoaderBar();
+  // showLoaderBar();
   setCurrentQuote(quote);
   const response = await Ape.quotes.getRating({
     query: { quoteId: quote.id, language: quote.language },
   });
-  hideLoaderBar();
+  // hideLoaderBar();
 
   if (response.status !== 200) {
     showErrorNotification("Failed to get quote ratings", { response });
