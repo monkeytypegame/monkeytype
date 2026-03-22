@@ -53,6 +53,7 @@ export async function getQuoteStats(
   }
 
   if (response.body.data === null) {
+    setQuoteStats({});
     return {} as QuoteStats;
   }
 

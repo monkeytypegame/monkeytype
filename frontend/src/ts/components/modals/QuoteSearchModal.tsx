@@ -10,6 +10,7 @@ import {
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
+import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
 import { isAuthenticated } from "../../firebase";
@@ -99,7 +100,7 @@ function Item(props: {
   dataBalloonDirection: string;
   onSelect: () => void;
   onReport: () => void;
-  onToggleFavorite: () => void;
+  onToggleFavorite: () => Promise<boolean>;
 }): JSXElement {
   const loggedOut = (): boolean => !isAuthenticated();
   const [isFav, setIsFav] = createSignal(
@@ -107,9 +108,12 @@ function Item(props: {
     !loggedOut() && QuotesController.isQuoteFavorite(props.quote),
   );
 
-  const handleToggleFavorite = (): void => {
+  const handleToggleFavorite = async (): Promise<void> => {
     setIsFav((v) => !v);
-    props.onToggleFavorite();
+    const success = await props.onToggleFavorite();
+    if (!success) {
+      setIsFav((v) => !v);
+    }
   };
 
   return (
@@ -173,7 +177,7 @@ function Item(props: {
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleToggleFavorite();
+                  void handleToggleFavorite();
                 }}
                 balloon={{
                   text: "Favorite quote",
@@ -389,7 +393,7 @@ export function QuoteSearchModal(): JSXElement {
     hideModalAndClearChain("QuoteSearch");
   };
 
-  const toggleFavorite = async (quote: Quote): Promise<void> => {
+  const toggleFavorite = async (quote: Quote): Promise<boolean> => {
     const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
     try {
@@ -397,6 +401,7 @@ export function QuoteSearchModal(): JSXElement {
       await QuotesController.setQuoteFavorite(quote, !alreadyFavorited);
       hideLoaderBar();
       setFavVersion((v) => v + 1);
+      return true;
     } catch (e) {
       hideLoaderBar();
       showErrorNotification(
@@ -405,10 +410,17 @@ export function QuoteSearchModal(): JSXElement {
           : "Failed to add quote to favorites",
         { error: e },
       );
+      return false;
     }
   };
 
   const handleSubmitClick = async (): Promise<void> => {
+    if (!isCaptchaAvailable()) {
+      showErrorNotification(
+        "Captcha is not available. Please refresh the page or contact support if this issue persists.",
+      );
+      return;
+    }
     showLoaderBar();
     const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
     const isEnabled =
@@ -501,7 +513,8 @@ export function QuoteSearchModal(): JSXElement {
                 dataBalloonDirection={dataBalloonDirection()}
                 onSelect={() => applyQuote(quote.id)}
                 onReport={() => showQuoteReportModal(quote.id)}
-                onToggleFavorite={() => void toggleFavorite(quote)}
+                // oxlint-disable-next-line solid/reactivity, typescript-eslint/promise-function-async -- fire-and-forget, no reactive tracking needed
+                onToggleFavorite={() => toggleFavorite(quote)}
               />
             )}
           </For>
