@@ -495,7 +495,7 @@ export function QuoteSearchModal(): JSXElement {
               }}
             />
           </div>
-          <Show when={() => isAuthenticated()}>
+          <Show when={isAuthenticated()}>
             <Button
               variant="button"
               fa={{ icon: "fa-heart", fixedWidth: true }}

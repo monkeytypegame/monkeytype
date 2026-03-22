@@ -40,6 +40,7 @@ export function QuoteSubmitModal(): JSXElement {
     if (el === undefined) return;
     CaptchaController.render(el, "submitQuote");
     setLanguage(removeLanguageSize(Config.language));
+    setText("");
     setSource("");
   };
 
