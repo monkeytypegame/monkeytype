@@ -1,4 +1,5 @@
 import { Quote } from "@monkeytype/schemas/quotes";
+import { createForm } from "@tanstack/solid-form";
 import { format } from "date-fns/format";
 import { JSXElement, createSignal, For, Show } from "solid-js";
 
@@ -17,18 +18,19 @@ function QuoteApproveItem(props: {
   quote: Quote;
   onRemove: () => void;
 }): JSXElement {
-  const originalText = (): string => props.quote.text;
-  const originalSource = (): string => props.quote.source;
-  const [text, setText] = createSignal(originalText());
-  const [source, setSource] = createSignal(originalSource());
   const [disabled, setDisabled] = createSignal(false);
 
-  const isEdited = (): boolean =>
-    text() !== originalText() || source() !== originalSource();
+  const form = createForm(() => ({
+    defaultValues: {
+      text: props.quote.text,
+      source: props.quote.source,
+    },
+  }));
+
+  const isEdited = (): boolean => form.state.isDirty;
 
   const undo = (): void => {
-    setText(originalText());
-    setSource(originalSource());
+    form.reset();
   };
 
   const approve = async (): Promise<void> => {
@@ -79,8 +81,8 @@ function QuoteApproveItem(props: {
     const response = await Ape.quotes.approveSubmission({
       body: {
         quoteId: props.quote._id,
-        editText: text(),
-        editSource: source(),
+        editText: form.state.values.text,
+        editSource: form.state.values.source,
       },
     });
     hideLoaderBar();
@@ -99,19 +101,31 @@ function QuoteApproveItem(props: {
 
   return (
     <div class="bg-bg-secondary grid gap-2 rounded p-3">
-      <textarea
-        class="w-full rounded bg-bg p-2 text-text"
-        value={text()}
-        onInput={(e) => setText(e.currentTarget.value)}
-        disabled={disabled()}
-      ></textarea>
-      <input
-        class="w-full rounded bg-bg p-2 text-text"
-        type="text"
-        placeholder="Source"
-        value={source()}
-        onInput={(e) => setSource(e.currentTarget.value)}
-        disabled={disabled()}
+      <form.Field
+        name="text"
+        children={(field) => (
+          <textarea
+            class="w-full rounded bg-bg p-2 text-text"
+            value={field().state.value}
+            onInput={(e) => field().handleChange(e.currentTarget.value)}
+            onBlur={() => field().handleBlur()}
+            disabled={disabled()}
+          ></textarea>
+        )}
+      />
+      <form.Field
+        name="source"
+        children={(field) => (
+          <input
+            class="w-full rounded bg-bg p-2 text-text"
+            type="text"
+            placeholder="Source"
+            value={field().state.value}
+            onInput={(e) => field().handleChange(e.currentTarget.value)}
+            onBlur={() => field().handleBlur()}
+            disabled={disabled()}
+          />
+        )}
       />
       <div class="flex gap-2">
         <Button
@@ -148,9 +162,14 @@ function QuoteApproveItem(props: {
         </Show>
       </div>
       <div class="flex gap-4 text-xs text-sub">
-        <div class={cn(text().length < 60 && "text-error")}>
-          <Fa icon="fa-ruler" fixedWidth /> {text().length}
-        </div>
+        <form.Field
+          name="text"
+          children={(field) => (
+            <div class={cn(field().state.value.length < 60 && "text-error")}>
+              <Fa icon="fa-ruler" fixedWidth /> {field().state.value.length}
+            </div>
+          )}
+        />
         <div>
           <Fa icon="fa-globe-americas" fixedWidth /> {props.quote.language}
         </div>
