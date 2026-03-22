@@ -14,6 +14,7 @@ import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import {
   getCommandLineKeyLabel,
+  getCommandLineModifierKeyLabel,
   isFirefoxBrowser,
 } from "../../utils/shortcuts";
 import AsyncContent from "../common/AsyncContent";
@@ -217,8 +218,8 @@ export function AboutPage(): JSXElement {
             then={<kbd>{commandKey()}</kbd>}
             else={
               <>
-                <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> or{" "}
-                <kbd>{commandKey()}</kbd>
+                <kbd>{getCommandLineModifierKeyLabel()}</kbd> + <kbd>shift</kbd>{" "}
+                + <kbd>p</kbd> or <kbd>{commandKey()}</kbd>
               </>
             }
           />{" "}
