@@ -189,8 +189,7 @@ async function beforeAnimation(
 
   if (
     state.customTextMode === "repeat" &&
-    (CustomText.getLimitMode() === "word" ||
-      CustomText.getLimitMode() === "section") &&
+    CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() === CustomText.getText().length
   ) {
     state.customTextMode = "simple";
