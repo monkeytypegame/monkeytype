@@ -1,0 +1,536 @@
+import {
+  JSXElement,
+  createSignal,
+  createEffect,
+  For,
+  Show,
+  on,
+} from "solid-js";
+
+import Ape from "../../ape";
+import { setConfig } from "../../config/setters";
+import { Config } from "../../config/store";
+import QuotesController, { Quote } from "../../controllers/quotes-controller";
+import * as DB from "../../db";
+import { isAuthenticated } from "../../firebase";
+import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
+import {
+  hideModalAndClearChain,
+  isModalOpen,
+  showModal,
+} from "../../states/modals";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../states/notifications";
+import { showQuoteReportModal } from "../../states/quote-report";
+import { showSimpleModal } from "../../states/simple-modal";
+import * as TestLogic from "../../test/test-logic";
+import * as TestState from "../../test/test-state";
+import { cn } from "../../utils/cn";
+import { getLanguage } from "../../utils/json-data";
+import {
+  buildSearchService,
+  SearchService,
+  TextExtractor,
+} from "../../utils/search-service";
+import { highlightMatches } from "../../utils/strings";
+import { AnimatedModal } from "../common/AnimatedModal";
+import { Button } from "../common/Button";
+import SlimSelect from "../ui/SlimSelect";
+import { QuoteApproveModal } from "./QuoteApproveModal";
+import { QuoteSubmitModal } from "./QuoteSubmitModal";
+
+const PAGE_SIZE = 100;
+
+const searchServiceCache: Record<string, SearchService<Quote>> = {};
+
+function getSearchService<T>(
+  language: string,
+  data: T[],
+  textExtractor: TextExtractor<T>,
+): SearchService<T> {
+  if (language in searchServiceCache) {
+    return searchServiceCache[language] as unknown as SearchService<T>;
+  }
+  const newSearchService = buildSearchService<T>(data, textExtractor);
+  searchServiceCache[language] =
+    newSearchService as unknown as (typeof searchServiceCache)[typeof language];
+  return newSearchService;
+}
+
+function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
+  const matches: Quote[] = [];
+  const exactSearchQueryTerms: Set<string> = new Set<string>();
+
+  for (const quote of quotes) {
+    const textAndSource = quote.text + quote.source;
+    const currentMatches: string[] = [];
+    let noMatch = false;
+
+    for (const regex of captured) {
+      const match = textAndSource.match(regex);
+      if (!match) {
+        noMatch = true;
+        break;
+      }
+      currentMatches.push(RegExp.escape(match[0]));
+    }
+
+    if (!noMatch) {
+      currentMatches.forEach((m) => exactSearchQueryTerms.add(m));
+      matches.push(quote);
+    }
+  }
+
+  return [matches, Array.from(exactSearchQueryTerms)];
+}
+
+function getLengthDesc(quote: Quote): string {
+  if (quote.length < 101) return "short";
+  if (quote.length < 301) return "medium";
+  if (quote.length < 601) return "long";
+  return "thicc";
+}
+
+function Item(props: {
+  quote: Quote;
+  matchedTerms: string[];
+  dataBalloonDirection: string;
+  onSelect: () => void;
+  onReport: () => void;
+  onToggleFavorite: () => void;
+}): JSXElement {
+  const loggedOut = (): boolean => !isAuthenticated();
+  const isFav = (): boolean =>
+    !loggedOut() && QuotesController.isQuoteFavorite(props.quote);
+
+  return (
+    <div
+      class="grid cursor-pointer select-none gap-2 rounded p-4 transition-[background-color] duration-125 hover:bg-sub-alt"
+      onClick={() => props.onSelect()}
+    >
+      <div
+        class="text-text [&_.highlight]:text-main"
+        dir="auto"
+        // oxlint-disable-next-line solid/no-innerhtml
+        innerHTML={highlightMatches(props.quote.text, props.matchedTerms)}
+      ></div>
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_3fr]">
+        <div class="text-sub text-xs">
+          <div class="opacity-50">id</div>
+          <span
+            class="[&_.highlight]:text-main"
+            // oxlint-disable-next-line solid/no-innerhtml
+            innerHTML={highlightMatches(
+              props.quote.id.toString(),
+              props.matchedTerms,
+            )}
+          ></span>
+        </div>
+        <div class="text-sub text-xs">
+          <div class="opacity-50">length</div>
+          {getLengthDesc(props.quote)}
+        </div>
+        <div class="flex col-span- sm:col-span-1">
+          <div class="text-sub text-xs grow">
+            <div class="opacity-50">source</div>
+            <span
+              class="[&_.highlight]:text-main"
+              // oxlint-disable-next-line solid/no-innerhtml
+              innerHTML={highlightMatches(
+                props.quote.source,
+                props.matchedTerms,
+              )}
+            ></span>
+          </div>
+          <Show when={!loggedOut()}>
+            <div class="flex shrink">
+              <Button
+                variant="text"
+                fa={{ icon: "fa-flag" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.onReport();
+                }}
+                balloon={{
+                  text: "Report quote",
+                  position: props.dataBalloonDirection as "left" | "right",
+                }}
+              />
+              <Button
+                variant="text"
+                fa={{
+                  icon: "fa-heart",
+                  variant: isFav() ? "solid" : "regular",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.onToggleFavorite();
+                }}
+                balloon={{
+                  text: "Favorite quote",
+                  position: props.dataBalloonDirection as "left" | "right",
+                }}
+              />
+            </div>
+          </Show>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function QuoteSearchModal(): JSXElement {
+  const [searchText, setSearchText] = createSignal("");
+  const [currentPage, setCurrentPage] = createSignal(1);
+  const [lengthFilter, setLengthFilter] = createSignal<string[]>([]);
+  const [showFavoritesOnly, setShowFavoritesOnly] = createSignal(false);
+  const [customFilterMin, setCustomFilterMin] = createSignal(0);
+  const [customFilterMax, setCustomFilterMax] = createSignal(0);
+  const [hasCustomFilter, setHasCustomFilter] = createSignal(false);
+  const [quotes, setQuotes] = createSignal<Quote[]>([]);
+  const [searchResults, setSearchResults] = createSignal<{
+    quotes: Quote[];
+    matchedTerms: string[];
+  }>({ quotes: [], matchedTerms: [] });
+  const [dataBalloonDirection, setDataBalloonDirection] = createSignal("left");
+  const [favVersion, setFavVersion] = createSignal(0);
+
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const isOpen = (): boolean => isModalOpen("QuoteSearch");
+
+  const isQuoteMod = (): boolean => {
+    const quoteMod = DB.getSnapshot()?.quoteMod;
+    return (
+      quoteMod !== undefined &&
+      (quoteMod === true || (quoteMod as string) !== "")
+    );
+  };
+
+  const performSearch = (text: string): void => {
+    const allQuotes = quotes();
+    if (allQuotes.length === 0) {
+      setSearchResults({ quotes: [], matchedTerms: [] });
+      return;
+    }
+
+    let matches: Quote[] = [];
+    let matchedQueryTerms: string[] = [];
+
+    if (text === "") {
+      setSearchResults({ quotes: allQuotes, matchedTerms: [] });
+      return;
+    }
+
+    let exactSearchMatches: Quote[] = [];
+    let exactSearchMatchedQueryTerms: string[] = [];
+
+    const quotationsRegex = /"(.*?)"/g;
+    const exactSearchQueries = Array.from(text.matchAll(quotationsRegex));
+    const removedSearchText = text.replaceAll(quotationsRegex, "");
+
+    if (exactSearchQueries[0]) {
+      const searchQueriesRaw = exactSearchQueries.map(
+        (query) => new RegExp(RegExp.escape(query[1] ?? ""), "i"),
+      );
+      [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
+        allQuotes,
+        searchQueriesRaw,
+      );
+    }
+
+    const quoteSearchService = getSearchService<Quote>(
+      Config.language,
+      allQuotes,
+      (quote: Quote) => `${quote.text} ${quote.id} ${quote.source}`,
+    );
+
+    if (exactSearchMatches.length > 0 || removedSearchText === text) {
+      const ids = exactSearchMatches.map((m) => m.id);
+      ({ results: matches, matchedQueryTerms } = quoteSearchService.query(
+        removedSearchText,
+        ids,
+      ));
+      exactSearchMatches.forEach((m) => {
+        if (!matches.includes(m)) matches.push(m);
+      });
+      matchedQueryTerms = [
+        ...exactSearchMatchedQueryTerms,
+        ...matchedQueryTerms,
+      ];
+    }
+
+    setSearchResults({ quotes: matches, matchedTerms: matchedQueryTerms });
+  };
+
+  const filteredQuotes = (): Quote[] => {
+    favVersion();
+
+    let result = searchResults().quotes;
+
+    const lengths = lengthFilter();
+    if (lengths.length > 0) {
+      const groupFilter = new Set(
+        lengths.filter((v) => v !== "4").map((v) => parseInt(v, 10)),
+      );
+      const hasCustom = lengths.includes("4");
+
+      result = result.filter((quote) => {
+        if (groupFilter.has(quote.group)) return true;
+        if (
+          hasCustom &&
+          hasCustomFilter() &&
+          quote.length >= customFilterMin() &&
+          quote.length <= customFilterMax()
+        ) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    if (showFavoritesOnly()) {
+      result = result.filter((quote) =>
+        QuotesController.isQuoteFavorite(quote),
+      );
+    }
+
+    return result;
+  };
+
+  const totalPages = (): number =>
+    Math.max(1, Math.ceil(filteredQuotes().length / PAGE_SIZE));
+
+  const pageQuotes = (): Quote[] => {
+    const start = (currentPage() - 1) * PAGE_SIZE;
+    return filteredQuotes().slice(start, start + PAGE_SIZE);
+  };
+
+  const pageInfo = (): string => {
+    const filtered = filteredQuotes();
+    if (filtered.length === 0) return "No search results";
+    const start = (currentPage() - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage() * PAGE_SIZE, filtered.length);
+    return `${start} - ${end} of ${filtered.length}`;
+  };
+
+  createEffect(
+    on(searchText, (text) => {
+      if (!isOpen()) return;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        setCurrentPage(1);
+        performSearch(text);
+      }, 250);
+    }),
+  );
+
+  createEffect(
+    on(lengthFilter, (lengths) => {
+      if (lengths.includes("4") && !hasCustomFilter()) {
+        showSimpleModal({
+          title: "Enter minimum and maximum number of words",
+          inputs: [
+            { type: "number", placeholder: "1" },
+            { type: "number", placeholder: "100" },
+          ],
+          buttonText: "save",
+          execFn: async (min: string, max: string) => {
+            const minNum = parseInt(min, 10);
+            const maxNum = parseInt(max, 10);
+            if (isNaN(minNum) || isNaN(maxNum)) {
+              return { status: "notice", message: "Invalid min/max values" };
+            }
+            setCustomFilterMin(minNum);
+            setCustomFilterMax(maxNum);
+            setHasCustomFilter(true);
+            return { status: "success", message: "Saved custom filter" };
+          },
+        });
+      }
+    }),
+  );
+
+  const handleBeforeShow = (): void => {
+    setSearchText("");
+    setCurrentPage(1);
+    setLengthFilter([]);
+    setShowFavoritesOnly(false);
+    setHasCustomFilter(false);
+  };
+
+  const handleAfterShow = async (): Promise<void> => {
+    const quotesLanguage = await getLanguage(Config.language);
+    setDataBalloonDirection(quotesLanguage?.rightToLeft ? "right" : "left");
+    const { quotes: fetchedQuotes } = await QuotesController.getQuotes(
+      Config.language,
+    );
+    setQuotes(fetchedQuotes);
+    performSearch(searchText());
+  };
+
+  const applyQuote = (quoteId: number): void => {
+    if (isNaN(quoteId) || quoteId < 0) {
+      showNoticeNotification("Quote ID must be at least 1");
+      return;
+    }
+    TestState.setSelectedQuoteId(quoteId);
+    setConfig("quoteLength", [-2]);
+    TestLogic.restart();
+    hideModalAndClearChain("QuoteSearch");
+  };
+
+  const toggleFavorite = async (quote: Quote): Promise<void> => {
+    const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
+
+    try {
+      showLoaderBar();
+      await QuotesController.setQuoteFavorite(quote, !alreadyFavorited);
+      hideLoaderBar();
+      setFavVersion((v) => v + 1);
+    } catch (e) {
+      hideLoaderBar();
+      showErrorNotification(
+        alreadyFavorited
+          ? "Failed to remove quote from favorites"
+          : "Failed to add quote to favorites",
+        { error: e },
+      );
+    }
+  };
+
+  const handleSubmitClick = async (): Promise<void> => {
+    showLoaderBar();
+    const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
+    const isEnabled =
+      (getSubmissionEnabled.status === 200 &&
+        getSubmissionEnabled.body.data?.isEnabled) ??
+      false;
+    hideLoaderBar();
+    if (!isEnabled) {
+      showNoticeNotification(
+        "Quote submission is disabled temporarily due to a large submission queue.",
+        { durationMs: 5000 },
+      );
+      return;
+    }
+    showModal("QuoteSubmit");
+  };
+
+  return (
+    <>
+      <AnimatedModal
+        id="QuoteSearch"
+        focusFirstInput={true}
+        beforeShow={handleBeforeShow}
+        afterShow={handleAfterShow}
+        modalClass="max-w-[1000px] h-[80vh] grid-rows-[auto_auto_1fr_auto]"
+      >
+        <div class="flex justify-between flex-col sm:flex-row gap-2">
+          <div class="text-2xl text-sub">Quote search</div>
+          <div class="grid gap-2">
+            <Show when={true}>
+              {/* TODO: <Show when={isAuthenticated()}> */}
+              <Button
+                fa={{ icon: "fa-plus" }}
+                text="Submit a quote"
+                onClick={() => void handleSubmitClick()}
+              />
+            </Show>
+            <Show when={true}>
+              {/* TODO: <Show when={isQuoteMod()}> */}
+              <Button
+                fa={{ icon: "fa-check" }}
+                text="Approve quotes"
+                onClick={() => showModal("QuoteApprove")}
+              />
+            </Show>
+          </div>
+        </div>
+        <div class="flex gap-4 flex-col sm:flex-row">
+          <input
+            class="grow-3"
+            type="text"
+            maxLength={200}
+            autocomplete="off"
+            placeholder="filter by text, source or id"
+            dir="auto"
+            value={searchText()}
+            onInput={(e) => setSearchText(e.currentTarget.value)}
+          />
+          <div class="grow">
+            <SlimSelect
+              multiple
+              options={[
+                { value: "0", text: "short" },
+                { value: "1", text: "medium" },
+                { value: "2", text: "long" },
+                { value: "3", text: "thicc" },
+                { value: "4", text: "custom" },
+              ]}
+              selected={lengthFilter()}
+              onChange={(val) => setLengthFilter(val)}
+              settings={{
+                showSearch: false,
+                placeholderText: "filter by length",
+              }}
+            />
+          </div>
+          <Show when={() => isAuthenticated()}>
+            <Button
+              variant="button"
+              fa={{ icon: "fa-heart", fixedWidth: true }}
+              active={showFavoritesOnly()}
+              onClick={() => setShowFavoritesOnly((v) => !v)}
+            />
+          </Show>
+        </div>
+        <div class="grid content-baseline gap-2 overflow-y-auto" dir="auto">
+          <For each={pageQuotes()}>
+            {(quote) => (
+              <Item
+                quote={quote}
+                matchedTerms={searchResults().matchedTerms}
+                dataBalloonDirection={dataBalloonDirection()}
+                onSelect={() => applyQuote(quote.id)}
+                onReport={() => showQuoteReportModal(quote.id)}
+                onToggleFavorite={() => void toggleFavorite(quote)}
+              />
+            )}
+          </For>
+        </div>
+        <div
+          class={cn(
+            "grid grid-cols-2 gap-2 items-center justify-center",
+            "sm:grid-cols-3",
+          )}
+        >
+          <Button
+            class="px-10 sm:w-max justify-self-end"
+            fa={{ icon: "fa-chevron-left", fixedWidth: true }}
+            disabled={currentPage() <= 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+          />
+          <div
+            class={cn(
+              "px-4 text-center text-sub row-start-1 col-span-2",
+              "sm:col-span-1 sm:row-auto",
+            )}
+          >
+            {pageInfo()}
+          </div>
+          <Button
+            class="px-10 sm:w-max"
+            fa={{ icon: "fa-chevron-right", fixedWidth: true }}
+            disabled={currentPage() >= totalPages()}
+            onClick={() => setCurrentPage((p) => p + 1)}
+          />
+        </div>
+      </AnimatedModal>
+      <QuoteSubmitModal />
+      <QuoteApproveModal />
+    </>
+  );
+}
