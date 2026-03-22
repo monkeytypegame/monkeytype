@@ -21,6 +21,8 @@ import { cn } from "../../utils/cn";
 import { qs } from "../../utils/dom";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Fa } from "../common/Fa";
+import { Separator } from "../common/Separator";
 
 export function QuoteRateModal(): JSXElement {
   const [rating, setRating] = createSignal(0);
@@ -96,8 +98,8 @@ export function QuoteRateModal(): JSXElement {
       languageRatings[quote.id] = rating();
       if (isSafeNumber(stats?.ratings) && isSafeNumber(stats.totalRating)) {
         const newStats = {
-          ratings: (stats.ratings as number) + 1,
-          totalRating: (stats.totalRating as number) + rating(),
+          ratings: stats.ratings + 1,
+          totalRating: stats.totalRating + rating(),
           quoteId: quote.id,
           language: quote.language,
         };
@@ -127,72 +129,82 @@ export function QuoteRateModal(): JSXElement {
   };
 
   return (
-    <AnimatedModal id="QuoteRate" beforeShow={handleBeforeShow}>
-      <div class="text-sm text-sub">
-        If you find a grammatical error, think the quote has inappropriate
-        language or feel like it's low quality -{" "}
-        <span class="font-bold text-text">don't give it a low rating!</span>{" "}
-        Please report it instead. You can do so by closing this popup and
-        clicking the "Flag" icon.
+    <AnimatedModal
+      id="QuoteRate"
+      beforeShow={handleBeforeShow}
+      modalClass="max-w-[800px] overflow-visible"
+    >
+      <div class="text-text">
+        If you find a grammatical error or the quote has inappropriate language
+        - <span class="text-error">don{"'"}t give it a low rating!</span> Please
+        report it instead. You can do so by closing this popup and clicking the{" "}
+        <Fa class="text-sub" icon="fa-flag" /> flag icon.
       </div>
-      <div class="grid gap-1">
-        <div class="text-text" dir="auto">
+      <Separator />
+      <div class="grid gap-2">
+        <div class="text-xl text-text" dir="auto">
           {currentQuote()?.text ?? "-"}
         </div>
-        <div class="flex gap-4 text-sm text-sub">
-          <div>
-            <span class="text-xs">id</span> {currentQuote()?.id ?? "-"}
+        <div class="grid grid-cols-[1fr_1fr_3fr] gap-2">
+          <div class="text-xs text-sub">
+            <div class="text-sub opacity-50">id</div>
+            {currentQuote()?.id ?? "-"}
           </div>
-          <div>
-            <span class="text-xs">length</span> {getLengthDesc()}
+          <div class="text-xs text-sub">
+            <div class="text-sub opacity-50">length</div>
+            {getLengthDesc()}
           </div>
-          <div>
-            <span class="text-xs">source</span> {currentQuote()?.source ?? "-"}
-          </div>
-        </div>
-      </div>
-      <div class="flex items-center justify-center gap-4">
-        <div class="text-center">
-          <div class="text-xs text-sub">ratings</div>
-          <div class="text-text">
-            {quoteStats()?.ratings?.toString() ?? "0"}
-          </div>
-        </div>
-        <div class="text-center">
-          <div class="text-xs text-sub">average</div>
-          <div class="text-text">
-            {quoteStats()?.average?.toFixed(1) ?? "-"}
-          </div>
-        </div>
-        <div class="text-center">
-          <div class="text-xs text-sub">your rating</div>
-          <div class="flex gap-1">
-            <For each={[1, 2, 3, 4, 5]}>
-              {(star) => (
-                <Button
-                  variant="text"
-                  class={cn(
-                    "text-lg",
-                    displayRating() >= star
-                      ? "[--themable-button-text:var(--main-color)]"
-                      : "",
-                  )}
-                  fa={{ icon: "fa-star", fixedWidth: true }}
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoverRating(star)}
-                  onMouseLeave={() => setHoverRating(0)}
-                />
-              )}
-            </For>
+          <div class="text-xs text-sub">
+            <div class="text-sub opacity-50">source</div>
+            {currentQuote()?.source ?? "-"}
           </div>
         </div>
       </div>
-      <Button
-        variant="text"
-        class="mx-auto text-lg"
-        fa={{ icon: "fa-chevron-right" }}
-        onClick={() => void submit()}
-      />
+      <Separator />
+      <div class="flex items-center gap-4">
+        <div class="grid flex-1 grid-cols-4 gap-4">
+          <div>
+            <div class="text-sub">ratings</div>
+            <div class="text-4xl text-text">
+              {quoteStats()?.ratings?.toString() ?? "0"}
+            </div>
+          </div>
+          <div>
+            <div class="text-sub">average</div>
+            <div class="text-4xl text-text">
+              {quoteStats()?.average?.toFixed(1) ?? "-"}
+            </div>
+          </div>
+          <div>
+            <div class="text-sub">your rating</div>
+            <div class="flex gap-1 text-2xl">
+              <For each={[1, 2, 3, 4, 5]}>
+                {(star) => (
+                  <Button
+                    variant="text"
+                    class={cn(
+                      "p-0 text-2xl",
+                      displayRating() >= star
+                        ? "[--themable-button-text:var(--main-color)]"
+                        : "",
+                    )}
+                    fa={{ icon: "fa-star", fixedWidth: true }}
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                  />
+                )}
+              </For>
+            </div>
+          </div>
+        </div>
+        <Button
+          variant="text"
+          class="text-3xl"
+          fa={{ icon: "fa-chevron-right" }}
+          onClick={() => void submit()}
+        />
+      </div>
     </AnimatedModal>
   );
 }
