@@ -432,8 +432,9 @@ function updateConsistency(): void {
 }
 
 function updateTime(): void {
+  const afkSecondsRaw = result.afkDuration / result.testDuration;
   const afkSecondsPercent = Numbers.roundTo2(
-    (result.afkDuration / (result.testDuration || 1)) * 100,
+    isNaN(afkSecondsRaw) ? 0 : afkSecondsRaw * 100,
   );
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
