@@ -26,12 +26,16 @@ export function QuoteReportModal(): JSXElement {
   const [reason, setReason] =
     createSignal<QuoteReportReason>("Grammatical error");
   const [comment, setComment] = createSignal("");
+  const [captchaComplete, setCaptchaComplete] = createSignal(false);
 
   const charsRemaining = (): number => 250 - comment().length;
+  const canSubmit = (): boolean =>
+    comment().length > 0 && comment().length <= 250 && captchaComplete();
 
   const handleBeforeShow = async (): Promise<void> => {
     setComment("");
     setReason("Grammatical error");
+    setCaptchaComplete(false);
 
     const language =
       Config.language === "swiss_german" ? "german" : Config.language;
@@ -43,7 +47,9 @@ export function QuoteReportModal(): JSXElement {
   const handleAfterShow = (): void => {
     const el = captchaEl();
     if (el === undefined) return;
-    CaptchaController.render(el, "quoteReportModal");
+    CaptchaController.render(el, "quoteReportModal", () => {
+      setCaptchaComplete(true);
+    });
   };
 
   const handleAfterHide = (): void => {
@@ -121,7 +127,7 @@ export function QuoteReportModal(): JSXElement {
       <Separator />
       <div class="grid gap-1">
         <label class="text-sub">quote</label>
-        <div class="text-text text-xl" dir="auto">
+        <div class="text-xl text-text" dir="auto">
           {quoteText()}
         </div>
       </div>
@@ -146,7 +152,7 @@ export function QuoteReportModal(): JSXElement {
         <label class="text-sub">comment</label>
         <div class="relative">
           <textarea
-            class="bg-bg-secondary w-full rounded p-2 text-text min-h-50"
+            class="bg-bg-secondary min-h-50 w-full rounded p-2 text-text"
             value={comment()}
             onInput={(e) => setComment(e.currentTarget.value)}
             autocomplete="off"
@@ -159,7 +165,11 @@ export function QuoteReportModal(): JSXElement {
         </div>
       </div>
       <div ref={captchaRef}></div>
-      <Button text="report" onClick={() => void submit()} />
+      <Button
+        text="report"
+        disabled={!canSubmit()}
+        onClick={() => void submit()}
+      />
     </AnimatedModal>
   );
 }
