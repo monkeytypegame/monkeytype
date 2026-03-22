@@ -45,7 +45,7 @@ const actionModals: Record<Action, SimpleModal> = {
       }
 
       DB.getSnapshot()?.tags?.push({
-        display: propTagName,
+        display: tagName.replace(/_/g, " "),
         name: response.body.data.name,
         _id: response.body.data._id,
         personalBests: {
@@ -95,7 +95,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       if (matchingTag !== undefined) {
         matchingTag.name = tagName;
-        matchingTag.display = propTagName;
+        matchingTag.display = tagName.replace(/_/g, " ");
       }
 
       void Settings.update();

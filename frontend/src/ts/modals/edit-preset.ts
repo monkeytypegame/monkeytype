@@ -292,7 +292,7 @@ async function apply(): Promise<void> {
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
         }),
-        display: presetName,
+        display: cleanedName.replace(/_/g, " "),
         _id: response.body.data.presetId,
       } as SnapshotPreset);
     }
@@ -325,7 +325,7 @@ async function apply(): Promise<void> {
       showSuccessNotification("Preset updated");
 
       preset.name = cleanedName;
-      preset.display = presetName;
+      preset.display = cleanedName.replace(/_/g, " ");
       if (updateConfig) {
         preset.config = configChanges;
         if (state.presetType === "partial") {
