@@ -19,7 +19,10 @@ type Hotkeys = {
 };
 
 export const [hotkeys, setHotkeys] = createStore<Hotkeys>(
-  calcHotkeys(getConfig, { shiftTab: false, shiftEnter: false }),
+  calcHotkeys(getConfig, {
+    shiftTab: false,
+    shiftEnter: false,
+  }),
 );
 
 createEffect(() => {
@@ -51,5 +54,6 @@ function shiftedHotkey(
 ): Hotkey {
   if (hotkey === "Tab" && options.shiftTab) return "Shift+Tab";
   if (hotkey === "Enter" && options.shiftEnter) return "Shift+Enter";
+
   return hotkey;
 }

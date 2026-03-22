@@ -60,15 +60,15 @@ export async function update(): Promise<void> {
   if (wordsHasTab()) {
     if (Config.quickRestart === "esc") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd> to open commandline</div>`,
       );
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`,
+        `<div class="textButton noInteraction"><kbd>esc</kbd> to restart</div>`,
       );
     }
     if (Config.quickRestart === "tab") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd> to restart</div>`,
       );
     }
   }
@@ -78,7 +78,7 @@ export async function update(): Promise<void> {
     Config.quickRestart === "enter"
   ) {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`,
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd> to restart</div>`,
     );
   }
 
@@ -88,7 +88,7 @@ export async function update(): Promise<void> {
     testModesNotice.appendHtml(
       `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
         customTextName,
-      )} (shift + enter to save progress)</div>`,
+      )} (<kbd>shift + enter</kbd> to save progress)</div>`,
     );
   }
 
@@ -100,7 +100,7 @@ export async function update(): Promise<void> {
 
   if (Config.mode === "zen") {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`,
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd> to finish zen </div>`,
     );
   }
 
