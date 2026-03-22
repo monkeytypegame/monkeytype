@@ -11,9 +11,8 @@ function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
   return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
 }
 
-const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
-  const validationResult = TagNameSchema.safeParse(cleanTagName(tagName));
+  const validationResult = TagNameSchema.safeParse(tagName);
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
 };
@@ -32,7 +31,7 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = cleanTagName(propTagName);
+      const tagName = TagNameSchema.parse(propTagName);
       const response = await Ape.users.createTag({ body: { tagName } });
 
       if (response.status !== 200) {
@@ -77,7 +76,7 @@ const actionModals: Record<Action, SimpleModal> = {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
     },
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = cleanTagName(propTagName);
+      const tagName = TagNameSchema.parse(propTagName);
       const tagId = _thisPopup.parameters[1] as string;
 
       const response = await Ape.users.editTag({

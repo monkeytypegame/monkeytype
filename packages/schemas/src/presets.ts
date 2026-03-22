@@ -8,8 +8,9 @@ import {
 
 export const PresetNameSchema = z
   .string()
-  .regex(/^[0-9a-zA-Z_-]+$/)
-  .max(16);
+  .max(16)
+  .transform((val) => val.replace(/ /g, "_"))
+  .pipe(z.string().regex(/^[0-9a-zA-Z_-]+$/));
 export type PresetName = z.infer<typeof PresetNameSchema>;
 
 export const PresetTypeSchema = z.enum(["full", "partial"]);

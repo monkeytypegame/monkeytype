@@ -67,7 +67,7 @@ export function show(action: string, id?: string, name?: string): void {
         modalEl.setAttribute("data-preset-id", id);
         modalEl.qsr(".popupTitle").setHtml("Edit preset");
         modalEl.qsr(".submit").setHtml(`save`);
-        presetNameEl?.setValue(name.replaceAll(" ", "_"));
+        presetNameEl?.setValue(name);
         presetNameEl?.getParent()?.show();
 
         modalEl.qsa("input").show();
@@ -272,9 +272,10 @@ async function apply(): Promise<void> {
   if (action === "add") {
     const configChanges = getConfigChanges();
     const activeSettingGroups = getActiveSettingGroupsFromState();
+    const cleanedName = PresetNameSchema.parse(presetName);
     const response = await Ape.presets.add({
       body: {
-        name: presetName,
+        name: cleanedName,
         config: configChanges,
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
@@ -287,12 +288,12 @@ async function apply(): Promise<void> {
     } else {
       showSuccessNotification("Preset added", { durationMs: 2000 });
       snapshotPresets.push({
-        name: presetName,
+        name: cleanedName,
         config: configChanges,
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
         }),
-        display: presetName.replaceAll("_", " "),
+        display: presetName,
         _id: response.body.data.presetId,
       } as SnapshotPreset);
     }
@@ -307,10 +308,11 @@ async function apply(): Promise<void> {
     const configChanges = getConfigChanges();
     const activeSettingGroups: ConfigGroupName[] | null =
       state.presetType === "partial" ? getActiveSettingGroupsFromState() : null;
+    const cleanedName = PresetNameSchema.parse(presetName);
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
-        name: presetName,
+        name: cleanedName,
         ...(updateConfig && {
           config: configChanges,
           settingGroups: activeSettingGroups,
@@ -323,8 +325,8 @@ async function apply(): Promise<void> {
     } else {
       showSuccessNotification("Preset updated");
 
-      preset.name = presetName;
-      preset.display = presetName.replaceAll("_", " ");
+      preset.name = cleanedName;
+      preset.display = presetName;
       if (updateConfig) {
         preset.config = configChanges;
         if (state.presetType === "partial") {

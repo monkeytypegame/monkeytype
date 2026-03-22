@@ -21,7 +21,8 @@ const newFilterPresetModal = new SimpleModal({
   ],
   buttonText: "add",
   execFn: async (_thisPopup, name) => {
-    const status = await createFilterPreset(name);
+    const cleanedName = ResultFiltersSchema.shape.name.parse(name);
+    const status = await createFilterPreset(cleanedName);
 
     if (status === 1) {
       return { status: "success", message: "Filter preset created" };
