@@ -102,8 +102,15 @@ function Item(props: {
   onToggleFavorite: () => void;
 }): JSXElement {
   const loggedOut = (): boolean => !isAuthenticated();
-  const isFav = (): boolean =>
-    !loggedOut() && QuotesController.isQuoteFavorite(props.quote);
+  const [isFav, setIsFav] = createSignal(
+    // oxlint-disable-next-line solid/reactivity -- intentionally reading once as initial value
+    !loggedOut() && QuotesController.isQuoteFavorite(props.quote),
+  );
+
+  const handleToggleFavorite = (): void => {
+    setIsFav((v) => !v);
+    props.onToggleFavorite();
+  };
 
   return (
     <div
@@ -166,7 +173,7 @@ function Item(props: {
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  props.onToggleFavorite();
+                  handleToggleFavorite();
                 }}
                 balloon={{
                   text: "Favorite quote",
