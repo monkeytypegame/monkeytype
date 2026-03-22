@@ -4,6 +4,7 @@ import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
 import { wordsHasNewline, wordsHasTab } from "./test";
+import { getActivePage } from "./core";
 
 const hotkeyMapping: Record<QuickRestart, Hotkey> = {
   off: "Meta+Mod+Alt+Shift+F22" as Hotkey, //Dummy
@@ -22,10 +23,11 @@ export const [hotkeys, setHotkeys] = createStore<Hotkeys>(
 );
 
 createEffect(() => {
+  const isOnTestPage = getActivePage() === "test";
   setHotkeys(
     calcHotkeys(getConfig, {
-      shiftTab: wordsHasTab(),
-      shiftEnter: wordsHasNewline(),
+      shiftTab: isOnTestPage && wordsHasTab(),
+      shiftEnter: isOnTestPage && wordsHasNewline(),
     }),
   );
 });

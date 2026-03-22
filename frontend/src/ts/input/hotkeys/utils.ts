@@ -1,7 +1,33 @@
-import { HotkeyCallbackContext } from "@tanstack/solid-hotkeys";
-import { isInputElementFocused } from "../input-element";
+import {
+  Hotkey,
+  HotkeyCallback,
+  HotkeyCallbackContext,
+  createHotkey as registerHotkey,
+} from "@tanstack/solid-hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
+import { isInputElementFocused } from "../input-element";
 
+export function createHotkey(
+  hotkey: Hotkey | (() => Hotkey),
+  callback: HotkeyCallback,
+): void {
+  registerHotkey(
+    hotkey,
+    (e, context) => {
+      if (handleHotkeyOnInteractiveElement(e, context)) return;
+      e.stopPropagation();
+      e.preventDefault();
+      callback(e, context);
+    },
+    {
+      ignoreInputs: false, //hotkeys are active on the words input, but not on other interactive elements
+      stopPropagation: false, //we set stopPropagation in the callback if the hotkey executes
+      preventDefault: false, //we set preventDefault in the callback if the hotkey executes
+      requireReset: true,
+      conflictBehavior: "replace",
+    },
+  );
+}
 function isInteractiveElementFocused(): boolean {
   if (isInputElementFocused()) return false;
 
@@ -15,7 +41,7 @@ function isInteractiveElementFocused(): boolean {
   );
 }
 
-export function handleHotkeyOnInteractiveElement(
+function handleHotkeyOnInteractiveElement(
   e: KeyboardEvent,
   { hotkey }: HotkeyCallbackContext,
 ): boolean {
@@ -27,8 +53,5 @@ export function handleHotkeyOnInteractiveElement(
   } else if (hotkey === "Escape" && isAnyPopupVisible()) {
     return true;
   }
-
-  e.stopPropagation();
-  e.preventDefault();
   return false;
 }
