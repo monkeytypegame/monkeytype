@@ -1,10 +1,5 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import {
-  IdSchema,
-  nameWithUnderscores,
-  slug,
-  StringNumberSchema,
-} from "./util";
+import { IdSchema, nameWithSeparators, slug, StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
@@ -23,7 +18,7 @@ import { ConnectionSchema } from "./connections";
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: nameWithUnderscores().max(16),
+  name: nameWithSeparators().max(16),
   pb: z
     .object({
       no: z.boolean(),
@@ -74,7 +69,7 @@ export const UserStreakSchema = z
   })
   .strict();
 export type UserStreak = z.infer<typeof UserStreakSchema>;
-export const TagNameSchema = nameWithUnderscores().max(16);
+export const TagNameSchema = nameWithSeparators().max(16);
 export type TagName = z.infer<typeof TagNameSchema>;
 
 export const UserTagSchema = z
@@ -123,7 +118,7 @@ export const UserProfileDetailsSchema = z
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
 
-export const CustomThemeNameSchema = nameWithUnderscores().max(16);
+export const CustomThemeNameSchema = nameWithSeparators().max(16);
 export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
 
 export const CustomThemeSchema = z
@@ -239,7 +234,7 @@ export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 export const UserEmailSchema = z.string().email();
 export const UserNameSchema = doesNotContainProfanity(
   "substring",
-  nameWithUnderscores().min(1).max(16),
+  nameWithSeparators().min(1).max(16),
 );
 
 export const UserSchema = z.object({

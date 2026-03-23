@@ -19,19 +19,22 @@ export const slug = (): ZodString =>
       "Only letters, numbers, underscores, dots and hyphens allowed",
     );
 
-export const nameWithUnderscores = (): ZodString =>
+export const nameWithSeparators = (): ZodString =>
   z
     .string()
-    .regex(/^[0-9a-zA-Z_]+$/, "Only letters, numbers, and underscores allowed")
     .regex(
-      /^[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$/,
-      "Underscores cannot be at the start or end, or appear multiple times in a row",
+      /^[0-9a-zA-Z_-]+$/,
+      "Only letters, numbers, underscores and hyphens allowed",
+    )
+    .regex(
+      /^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$/,
+      "Separators cannot be at the start or end, or appear multiple times in a row",
     );
 
 export const IdSchema = token();
 export type Id = z.infer<typeof IdSchema>;
 
-export const TagSchema = nameWithUnderscores().max(50);
+export const TagSchema = token().max(50);
 export type Tag = z.infer<typeof TagSchema>;
 
 export const NullableStringSchema = z
