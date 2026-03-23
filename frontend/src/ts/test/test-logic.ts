@@ -140,7 +140,7 @@ export function startTest(now: number): boolean {
   TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
-  TestInput.resetKeypressTimings();
+  TestInput.resetKeypressTimings(true);
   Time.set(0);
   TestTimer.clear();
 
@@ -1011,7 +1011,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   //afk check
   const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.every((afk) => afk);
+  let afkDetected = kps.length > 0 && kps.every((afk) => afk);
+
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
