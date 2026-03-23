@@ -60,15 +60,15 @@ export async function update(): Promise<void> {
   if (wordsHasTab()) {
     if (Config.quickRestart === "esc") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><kbd>shift + tab</kbd> to open commandline</div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to open commandline</span></div>`,
       );
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><kbd>esc</kbd> to restart</div>`,
+        `<div class="textButton noInteraction"><kbd>esc</kbd><span> to restart</span></div>`,
       );
     }
     if (Config.quickRestart === "tab") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><kbd>shift + tab</kbd> to restart</div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to restart<span></div>`,
       );
     }
   }
@@ -78,7 +78,7 @@ export async function update(): Promise<void> {
     Config.quickRestart === "enter"
   ) {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><kbd>shift + enter</kbd> to restart</div>`,
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd><span> to restart</span></div>`,
     );
   }
 
@@ -88,7 +88,7 @@ export async function update(): Promise<void> {
     testModesNotice.appendHtml(
       `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
         customTextName,
-      )} (<kbd>shift + enter</kbd> to save progress)</div>`,
+      )} (<kbd>shift + enter</kbd><span> to save progress</span>)</div>`,
     );
   }
 
@@ -100,7 +100,7 @@ export async function update(): Promise<void> {
 
   if (Config.mode === "zen") {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><kbd>shift + enter</kbd> to finish zen </div>`,
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd><span> to finish zen</span></div>`,
     );
   }
 
