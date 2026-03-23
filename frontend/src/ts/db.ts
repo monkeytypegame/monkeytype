@@ -999,3 +999,16 @@ export function isFriend(uid: string | undefined): boolean {
 //     cont();
 //   }
 // }
+
+export function updateTagById(
+  tagId: string,
+  update: (old: SnapshotUserTag) => SnapshotUserTag,
+): void {
+  if (dbSnapshot === undefined) return;
+
+  dbSnapshot.tags = dbSnapshot?.tags.map((it) => {
+    if (it._id !== tagId) return it;
+    return update(it);
+  });
+  setSnapshot(dbSnapshot);
+}

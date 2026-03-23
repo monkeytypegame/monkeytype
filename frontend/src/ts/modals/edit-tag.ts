@@ -4,13 +4,8 @@ import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
-import { SnapshotUserTag } from "../constants/default-snapshot";
 import { IsValidResponse } from "../types/validation";
 import { deleteLocalTag } from "../collections/results";
-
-function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
-  return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
-}
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
@@ -96,12 +91,11 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const matchingTag = getTagFromSnapshot(tagId);
-
-      if (matchingTag !== undefined) {
-        matchingTag.name = tagName;
-        matchingTag.display = propTagName;
-      }
+      DB.updateTagById(tagId, (it) => ({
+        ...it,
+        name: tagName,
+        display: propTagName,
+      }));
 
       void Settings.update();
 
@@ -161,17 +155,16 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const matchingTag = getTagFromSnapshot(tagId);
-
-      if (matchingTag !== undefined) {
-        matchingTag.personalBests = {
+      DB.updateTagById(tagId, (it) => ({
+        ...it,
+        personalBests: {
           time: {},
           words: {},
           quote: {},
           zen: {},
           custom: {},
-        };
-      }
+        },
+      }));
 
       void Settings.update();
       return { status: "success", message: `Tag PB cleared` };

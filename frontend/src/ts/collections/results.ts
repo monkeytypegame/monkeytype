@@ -271,7 +271,7 @@ export function buildResultsQuery(state: ResultsQueryState) {
     .where(({ r }) => inArray(r.numbers, state.numbers))
     .where(({ r }) => inArray(r.quoteLength, state.quoteLength))
     .where(({ r }) => inArray(r.language, state.language))
-    /* .where(({ r }) =>
+    .where(({ r }) =>
       or(
         false,
         false,
@@ -279,7 +279,7 @@ export function buildResultsQuery(state: ResultsQueryState) {
           tag === "none" ? eq(length(r.tags), 0) : inArray(tag, r.tags),
         ),
       ),
-    )*/
+    )
     .where(({ r }) =>
       or(
         false,

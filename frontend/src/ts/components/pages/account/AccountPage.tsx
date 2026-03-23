@@ -1,22 +1,14 @@
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import {
   createResultsQueryState,
   resultsCollection,
   useResultsLiveQuery,
 } from "../../../collections/results";
-import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getActivePage, isLoggedIn } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
-import { getSnapshot } from "../../../states/snapshot";
 import { qs } from "../../../utils/dom";
 import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
@@ -53,15 +45,6 @@ export function AccountPage(): JSXElement {
   );
 
   const data = useResultsLiveQuery({ queryState, sorting, limit });
-
-  //sync tags with default filters TODO: move tags to a collection
-  createEffect(() => {
-    const currentTags = getSnapshot()?.tags;
-
-    currentTags?.forEach((tag) => {
-      defaultResultFilters.tags[tag._id] = true;
-    });
-  });
 
   return (
     <Show when={isLoggedIn() && isOpen()}>

@@ -27,6 +27,7 @@ import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import SlimSelect from "../../ui/SlimSelect";
+import { verifyResultFiltersStructure } from "./utils";
 
 const presetNameValidation = async (
   tagName: string,
@@ -92,7 +93,11 @@ export function Filters(props: {
                   <Button
                     class="w-full"
                     text={replaceUnderscoresWithSpaces(preset.name)}
-                    onClick={() => props.onChangeFilters(preset)}
+                    onClick={() =>
+                      props.onChangeFilters(
+                        verifyResultFiltersStructure(preset),
+                      )
+                    }
                   />
                   <Button
                     fa={{ icon: "fa-trash", fixedWidth: true }}

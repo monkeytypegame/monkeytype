@@ -228,7 +228,7 @@ function getColumns<M extends Mode>({
             variant="text"
             class={hasTags ? "[--themable-button-text:var(--text-color)]" : ""}
             fa={{
-              icon: hasTags ? "fa-tags" : "fa-tag",
+              icon: info.getValue().length > 1 ? "fa-tags" : "fa-tag",
               fixedWidth: true,
             }}
             balloon={{
