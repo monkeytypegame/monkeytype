@@ -6,13 +6,14 @@ import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { SnapshotUserTag } from "../constants/default-snapshot";
 import { IsValidResponse } from "../types/validation";
+import { normalizeName } from "../utils/strings";
 
 function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
   return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
 }
 
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
-  const validationResult = TagNameSchema.safeParse(tagName);
+  const validationResult = TagNameSchema.safeParse(normalizeName(tagName));
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
 };
@@ -31,7 +32,7 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = TagNameSchema.parse(propTagName);
+      const tagName = TagNameSchema.parse(normalizeName(propTagName));
       const response = await Ape.users.createTag({ body: { tagName } });
 
       if (response.status !== 200) {
@@ -76,7 +77,7 @@ const actionModals: Record<Action, SimpleModal> = {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
     },
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = TagNameSchema.parse(propTagName);
+      const tagName = TagNameSchema.parse(normalizeName(propTagName));
       const tagId = _thisPopup.parameters[1] as string;
 
       const response = await Ape.users.editTag({

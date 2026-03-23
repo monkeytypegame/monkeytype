@@ -20,13 +20,8 @@ export const ResultFiltersSchema = z.object({
   _id: IdSchema,
   name: z
     .string()
-    .transform((val) => val.trim().replace(/\s+/g, "_"))
-    .pipe(
-      z
-        .string()
-        .max(16)
-        .regex(/^[0-9a-zA-Z_.-]+$/),
-    ),
+    .regex(/^[0-9a-zA-Z_.-]+$/)
+    .max(16),
   pb: z
     .object({
       no: z.boolean(),
@@ -304,13 +299,8 @@ export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
 
 export const TagNameSchema = z
   .string()
-  .transform((val) => val.trim().replace(/\s+/g, "_"))
-  .pipe(
-    z
-      .string()
-      .max(16)
-      .regex(/^[0-9a-zA-Z_.-]+$/),
-  );
+  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .max(16);
 export type TagName = z.infer<typeof TagNameSchema>;
 
 export const TypingStatsSchema = z.object({

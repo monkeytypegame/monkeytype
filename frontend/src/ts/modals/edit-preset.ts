@@ -26,6 +26,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { ElementWithUtils } from "../utils/dom";
 import { configMetadata } from "../config/metadata";
 import { getConfigChanges as getConfigChangesFromConfig } from "../config/utils";
+import { normalizeName } from "../utils/strings";
 
 const state = {
   presetType: "full" as PresetType,
@@ -46,7 +47,12 @@ export function show(action: string, id?: string, name?: string): void {
       presetNameEl ??= new ValidatedHtmlInputElement(
         modalEl.qsr("input[type=text]"),
         {
-          schema: PresetNameSchema,
+          isValid: async (name) => {
+            const parsed = PresetNameSchema.safeParse(normalizeName(name));
+            if (parsed.success) return true;
+            return parsed.error.errors.map((err) => err.message).join(", ");
+          },
+          debounceDelay: 0,
         },
       );
       if (action === "add") {
@@ -254,8 +260,9 @@ async function apply(): Promise<void> {
     return;
   }
 
+  const cleanedPresetName = normalizeName(propPresetName);
   const parsedPresetName = addOrEditAction
-    ? PresetNameSchema.safeParse(propPresetName)
+    ? PresetNameSchema.safeParse(cleanedPresetName)
     : null;
 
   if (parsedPresetName && !parsedPresetName.success) {
