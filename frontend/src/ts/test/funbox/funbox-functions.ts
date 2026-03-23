@@ -166,6 +166,8 @@ export class PolyglotWordset extends Wordset {
   }
 }
 
+let tunnelVisionAnimationFrame: number | null = null;
+
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
     getWord(): string {
@@ -677,6 +679,49 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  tunnel_vision: {
+    applyGlobalCSS(): void {
+      const words = qs("#words");
+      if (!words) return;
+
+      const updateCaretPos = (): void => {
+        const caretElem = qs("#caret");
+        if (caretElem !== null) {
+          const caretStyle = caretElem.getStyle();
+          const left = caretStyle.left || "0px";
+          const top = caretStyle.top || "0px";
+          const marginLeft = caretStyle.marginLeft || "0px";
+          const marginTop = caretStyle.marginTop || "0px";
+
+          words.native.style.setProperty(
+            "--caret-left",
+            `calc(${left} + ${marginLeft})`,
+          );
+          words.native.style.setProperty(
+            "--caret-top",
+            `calc(${top} + ${marginTop})`,
+          );
+        }
+        tunnelVisionAnimationFrame = requestAnimationFrame(updateCaretPos);
+      };
+
+      if (tunnelVisionAnimationFrame !== null) {
+        cancelAnimationFrame(tunnelVisionAnimationFrame);
+      }
+      updateCaretPos();
+    },
+    clearGlobal(): void {
+      if (tunnelVisionAnimationFrame !== null) {
+        cancelAnimationFrame(tunnelVisionAnimationFrame);
+        tunnelVisionAnimationFrame = null;
+      }
+      const words = qs("#words");
+      if (words) {
+        words.native.style.removeProperty("--caret-left");
+        words.native.style.removeProperty("--caret-top");
+      }
     },
   },
   polyglot: {

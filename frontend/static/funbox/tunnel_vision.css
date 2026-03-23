@@ -1,0 +1,16 @@
+#words {
+  mask-image: radial-gradient(
+    circle 150px at var(--caret-left) var(--caret-top),
+    black 0%,
+    black 50%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle 150px at var(--caret-left) var(--caret-top),
+    black 0%,
+    black 50%,
+    transparent 100%
+  );
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
