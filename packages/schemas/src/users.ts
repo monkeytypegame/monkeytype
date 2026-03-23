@@ -1,5 +1,10 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { IdSchema, NAME_REGEX, SLUG_REGEX, StringNumberSchema } from "./util";
+import {
+  IdSchema,
+  nameWithUnderscores,
+  slug,
+  StringNumberSchema,
+} from "./util";
 import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
@@ -18,10 +23,7 @@ import { ConnectionSchema } from "./connections";
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: z
-    .string()
-    .regex(NAME_REGEX)
-    .max(16),
+  name: nameWithUnderscores().max(16),
   pb: z
     .object({
       no: z.boolean(),
@@ -72,11 +74,13 @@ export const UserStreakSchema = z
   })
   .strict();
 export type UserStreak = z.infer<typeof UserStreakSchema>;
+export const TagNameSchema = nameWithUnderscores().max(16);
+export type TagName = z.infer<typeof TagNameSchema>;
 
 export const UserTagSchema = z
   .object({
     _id: IdSchema,
-    name: z.string(),
+    name: TagNameSchema,
     personalBests: PersonalBestsSchema,
   })
   .strict();
@@ -90,19 +94,13 @@ function profileDetailsBase(
     .transform((value) => (value === null ? undefined : value));
 }
 
-export const TwitterProfileSchema = profileDetailsBase(
-  z
-    .string()
-    .max(20)
-    .regex(SLUG_REGEX),
-).or(z.literal(""));
+export const TwitterProfileSchema = profileDetailsBase(slug().max(20)).or(
+  z.literal(""),
+);
 
-export const GithubProfileSchema = profileDetailsBase(
-  z
-    .string()
-    .max(39)
-    .regex(SLUG_REGEX),
-).or(z.literal(""));
+export const GithubProfileSchema = profileDetailsBase(slug().max(39)).or(
+  z.literal(""),
+);
 
 export const WebsiteSchema = profileDetailsBase(
   z.string().url().max(200).startsWith("https://"),
@@ -125,10 +123,7 @@ export const UserProfileDetailsSchema = z
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
 
-export const CustomThemeNameSchema = z
-  .string()
-  .regex(NAME_REGEX)
-  .max(16);
+export const CustomThemeNameSchema = nameWithUnderscores().max(16);
 export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
 
 export const CustomThemeSchema = z
@@ -244,14 +239,7 @@ export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 export const UserEmailSchema = z.string().email();
 export const UserNameSchema = doesNotContainProfanity(
   "substring",
-  z
-    .string()
-    .min(1)
-    .max(16)
-    .regex(
-      NAME_REGEX,
-      "Can only contain lower/uppercase letters, underscore and minus.",
-    ),
+  nameWithUnderscores().min(1).max(16),
 );
 
 export const UserSchema = z.object({
@@ -296,12 +284,6 @@ export type ResultFiltersGroup = keyof ResultFilters;
 
 export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
   keyof ResultFilters[T];
-
-export const TagNameSchema = z
-  .string()
-  .regex(NAME_REGEX)
-  .max(16);
-export type TagName = z.infer<typeof TagNameSchema>;
 
 export const TypingStatsSchema = z.object({
   completedTests: z.number().int().nonnegative().optional(),

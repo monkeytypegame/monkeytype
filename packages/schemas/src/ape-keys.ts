@@ -1,10 +1,7 @@
 import { z } from "zod";
-import { IdSchema, SLUG_REGEX } from "./util";
+import { IdSchema, slug } from "./util";
 
-export const ApeKeyNameSchema = z
-  .string()
-  .regex(SLUG_REGEX)
-  .max(20);
+export const ApeKeyNameSchema = slug().max(20);
 
 export const ApeKeyUserDefinedSchema = z.object({
   name: ApeKeyNameSchema,

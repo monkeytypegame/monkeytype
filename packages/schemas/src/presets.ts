@@ -1,15 +1,12 @@
 import { z } from "zod";
-import { IdSchema, NAME_REGEX, TagSchema } from "./util";
+import { IdSchema, nameWithUnderscores, TagSchema } from "./util";
 import {
   ConfigGroupName,
   ConfigGroupNameSchema,
   PartialConfigSchema,
 } from "./configs";
 
-export const PresetNameSchema = z
-  .string()
-  .regex(NAME_REGEX)
-  .max(16);
+export const PresetNameSchema = nameWithUnderscores().max(16);
 export type PresetName = z.infer<typeof PresetNameSchema>;
 
 export const PresetTypeSchema = z.enum(["full", "partial"]);

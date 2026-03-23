@@ -9,15 +9,29 @@ export const StringNumberSchema = z
   .or(z.number().transform(String));
 export type StringNumber = z.infer<typeof StringNumberSchema>;
 
-export const NAME_REGEX = /^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$/;
-export const SLUG_REGEX = /^[0-9a-zA-Z_.-]+$/;
-
 export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
+
+export const slug = (): ZodString =>
+  z
+    .string()
+    .regex(
+      /^[0-9a-zA-Z_.-]+$/,
+      "Only letters, numbers, underscores, dots and hyphens allowed",
+    );
+
+export const nameWithUnderscores = (): ZodString =>
+  z
+    .string()
+    .regex(/^[0-9a-zA-Z_]+$/, "Only letters, numbers, and underscores allowed")
+    .regex(
+      /^[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$/,
+      "Underscores cannot be at the start or end, or appear multiple times in a row",
+    );
 
 export const IdSchema = token();
 export type Id = z.infer<typeof IdSchema>;
 
-export const TagSchema = token().max(50);
+export const TagSchema = nameWithUnderscores().max(50);
 export type Tag = z.infer<typeof TagSchema>;
 
 export const NullableStringSchema = z
