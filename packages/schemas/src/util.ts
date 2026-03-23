@@ -9,6 +9,9 @@ export const StringNumberSchema = z
   .or(z.number().transform(String));
 export type StringNumber = z.infer<typeof StringNumberSchema>;
 
+export const NAME_REGEX = /^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$/;
+export const SLUG_REGEX = /^[0-9a-zA-Z_.-]+$/;
+
 export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
 
 export const IdSchema = token();

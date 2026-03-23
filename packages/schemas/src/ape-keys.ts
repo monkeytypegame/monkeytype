@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { IdSchema } from "./util";
+import { IdSchema, SLUG_REGEX } from "./util";
 
 export const ApeKeyNameSchema = z
   .string()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(SLUG_REGEX)
   .max(20);
 
 export const ApeKeyUserDefinedSchema = z.object({

@@ -1,5 +1,5 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { IdSchema, StringNumberSchema } from "./util";
+import { IdSchema, NAME_REGEX, SLUG_REGEX, StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
@@ -20,7 +20,7 @@ export const ResultFiltersSchema = z.object({
   _id: IdSchema,
   name: z
     .string()
-    .regex(/^[0-9a-zA-Z_.-]+$/)
+    .regex(NAME_REGEX)
     .max(16),
   pb: z
     .object({
@@ -94,14 +94,14 @@ export const TwitterProfileSchema = profileDetailsBase(
   z
     .string()
     .max(20)
-    .regex(/^[0-9a-zA-Z_.-]+$/),
+    .regex(SLUG_REGEX),
 ).or(z.literal(""));
 
 export const GithubProfileSchema = profileDetailsBase(
   z
     .string()
     .max(39)
-    .regex(/^[0-9a-zA-Z_.-]+$/),
+    .regex(SLUG_REGEX),
 ).or(z.literal(""));
 
 export const WebsiteSchema = profileDetailsBase(
@@ -127,7 +127,7 @@ export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
 
 export const CustomThemeNameSchema = z
   .string()
-  .regex(/^[0-9a-zA-Z_-]+$/)
+  .regex(NAME_REGEX)
   .max(16);
 export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
 
@@ -249,7 +249,7 @@ export const UserNameSchema = doesNotContainProfanity(
     .min(1)
     .max(16)
     .regex(
-      /^[\da-zA-Z_-]+$/,
+      NAME_REGEX,
       "Can only contain lower/uppercase letters, underscore and minus.",
     ),
 );
@@ -299,7 +299,7 @@ export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
 
 export const TagNameSchema = z
   .string()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(NAME_REGEX)
   .max(16);
 export type TagName = z.infer<typeof TagNameSchema>;
 

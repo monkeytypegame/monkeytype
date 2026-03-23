@@ -3,6 +3,7 @@ import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { RankAndCount } from "@monkeytype/schemas/users";
+import { SLUG_REGEX } from "@monkeytype/schemas/util";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
 import { ElementWithUtils } from "./dom";
@@ -151,7 +152,7 @@ export function isUsernameValid(name: string): boolean {
   if (name.toLowerCase().includes("bitly")) return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
+  return SLUG_REGEX.test(name);
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {

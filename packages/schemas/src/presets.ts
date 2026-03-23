@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { IdSchema, TagSchema } from "./util";
+import { IdSchema, NAME_REGEX, TagSchema } from "./util";
 import {
   ConfigGroupName,
   ConfigGroupNameSchema,
@@ -8,7 +8,7 @@ import {
 
 export const PresetNameSchema = z
   .string()
-  .regex(/^[0-9a-zA-Z_-]+$/)
+  .regex(NAME_REGEX)
   .max(16);
 export type PresetName = z.infer<typeof PresetNameSchema>;
 
