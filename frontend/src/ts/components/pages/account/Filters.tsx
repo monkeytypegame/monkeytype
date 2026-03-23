@@ -95,7 +95,7 @@ export function Filters(props: {
                     text={replaceUnderscoresWithSpaces(preset.name)}
                     onClick={() =>
                       props.onChangeFilters(
-                        verifyResultFiltersStructure(preset),
+                        verifyResultFiltersStructure(unwrap(preset)),
                       )
                     }
                   />
