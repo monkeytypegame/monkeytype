@@ -8,14 +8,14 @@ export const StringNumberSchema = z
   )
   .or(z.number().transform(String));
 export type StringNumber = z.infer<typeof StringNumberSchema>;
-
 export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
 
+export const SLUG_REGEX = /^[0-9a-zA-Z_.-]+$/;
 export const slug = (): ZodString =>
   z
     .string()
     .regex(
-      /^[0-9a-zA-Z_.-]+$/,
+      SLUG_REGEX,
       "Only letters, numbers, underscores, dots and hyphens allowed",
     );
 
