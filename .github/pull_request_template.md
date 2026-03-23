@@ -3,13 +3,13 @@
 <!-- 
   Please describe the change(s) made in your PR:
   - explain the problem being solved
-  - for bug fixes, include steps to reproduce the issue
+  - for bug fixes without an open issue, include steps to reproduce the issue
   - summarize the approach taken
   
   Use your own words. Do not rely on AI-generated descriptions. 
   They do not demonstrate your understanding of the problem or the solution.
   Writing the description yourself helps you verify the scope of your work and 
-  allow maintainers to better understand your intent, reasoning and level of insight.
+  helps us better understand your intent, reasoning and level of insight.
 -->
 
 ### Checks
