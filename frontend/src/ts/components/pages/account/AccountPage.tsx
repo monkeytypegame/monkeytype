@@ -1,5 +1,10 @@
-import { ResultFilters, ResultFiltersSchema } from "@monkeytype/schemas/users";
-import { createMemo, createSignal, JSXElement, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  JSXElement,
+  Show,
+} from "solid-js";
 
 import {
   createResultsQueryState,
@@ -8,12 +13,12 @@ import {
 } from "../../../collections/results";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { useLocalStorageStore } from "../../../hooks/useLocalStorageStore";
 import { getActivePage, isLoggedIn } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
+import { filters, setFilters } from "../../../states/result-filters";
+import { getSnapshot } from "../../../states/snapshot";
 import { qs } from "../../../utils/dom";
-import { downloadResultsCSV, isObject, typedKeys } from "../../../utils/misc";
-import { sanitize } from "../../../utils/sanitize";
+import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
@@ -27,13 +32,6 @@ import { VerifyNotice } from "./VerifyNotice";
 export function AccountPage(): JSXElement {
   const isOpen = (): boolean => getActivePage() === "account";
   const [limit, setLimit] = createSignal(10);
-
-  const [filters, setFilters] = useLocalStorageStore({
-    key: "resultFilters",
-    schema: ResultFiltersSchema,
-    fallback: defaultResultFilters,
-    migrate: migrateFilterStorage,
-  });
 
   const [sorting, setSorting] = createSignal<{
     // oxlint-disable-next-line typescript/no-explicit-any
@@ -55,6 +53,15 @@ export function AccountPage(): JSXElement {
   );
 
   const data = useResultsLiveQuery({ queryState, sorting, limit });
+
+  //sync tags with default filters TODO: move tags to a collection
+  createEffect(() => {
+    const currentTags = getSnapshot()?.tags;
+
+    currentTags?.forEach((tag) => {
+      defaultResultFilters.tags[tag._id] = true;
+    });
+  });
 
   return (
     <Show when={isLoggedIn() && isOpen()}>
@@ -128,38 +135,4 @@ export function AccountPage(): JSXElement {
       </div>
     </Show>
   );
-}
-
-function migrateFilterStorage(unknown: unknown): ResultFilters {
-  if (!isObject(unknown)) {
-    return defaultResultFilters;
-  }
-  const filters = sanitize(
-    ResultFiltersSchema.partial().strip(),
-    unknown as ResultFilters,
-  );
-
-  try {
-    const merged = {} as ResultFilters;
-    for (const groupKey of typedKeys(defaultResultFilters)) {
-      if (groupKey === "_id") {
-        let id = filters[groupKey] ?? defaultResultFilters[groupKey];
-        if (id === "default-result-filters-id" || id === "") {
-          id = "default";
-        }
-        merged[groupKey] = id;
-      } else if (groupKey === "name") {
-        merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
-      } else {
-        // @ts-expect-error i cant figure this out
-        merged[groupKey] = {
-          ...defaultResultFilters[groupKey],
-          ...filters[groupKey],
-        };
-      }
-    }
-    return merged;
-  } catch (e) {
-    return defaultResultFilters;
-  }
 }

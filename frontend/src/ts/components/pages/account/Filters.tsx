@@ -108,6 +108,7 @@ export function Filters(props: {
       </Show>
     );
   };
+
   const Dropdown = <
     T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],
