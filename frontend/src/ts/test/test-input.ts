@@ -487,7 +487,7 @@ export function carryoverFirstKeypress(): void {
   }
 }
 
-export function resetKeypressTimings(): void {
+function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
       first: -1,
