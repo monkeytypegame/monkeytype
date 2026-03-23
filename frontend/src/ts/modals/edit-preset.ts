@@ -249,16 +249,8 @@ async function apply(): Promise<void> {
 
   const addOrEditAction = action === "add" || action === "edit";
   if (addOrEditAction) {
-    //validate the preset name only in add or edit mode
-
-    const noPresetName: boolean =
-      propPresetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
-    if (noPresetName) {
-      showNoticeNotification("Preset name cannot be empty");
-      return;
-    }
-
-    if (presetNameEl?.getValidationResult().status === "failed") {
+    const parsedPresetName = PresetNameSchema.safeParse(propPresetName);
+    if (!parsedPresetName.success) {
       showNoticeNotification("Preset name is not valid");
       return;
     }
@@ -271,7 +263,7 @@ async function apply(): Promise<void> {
   if (action === "add") {
     const configChanges = getConfigChanges();
     const activeSettingGroups = getActiveSettingGroupsFromState();
-    const presetName = PresetNameSchema.parse(propPresetName);
+    const presetName = PresetNameSchema.safeParse(propPresetName).data ?? "";
     const response = await Ape.presets.add({
       body: {
         name: presetName,
@@ -307,7 +299,7 @@ async function apply(): Promise<void> {
     const configChanges = getConfigChanges();
     const activeSettingGroups: ConfigGroupName[] | null =
       state.presetType === "partial" ? getActiveSettingGroupsFromState() : null;
-    const presetName = PresetNameSchema.parse(propPresetName);
+    const presetName = PresetNameSchema.safeParse(propPresetName).data ?? "";
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
