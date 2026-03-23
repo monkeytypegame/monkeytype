@@ -323,7 +323,10 @@ export function toHex(buffer: ArrayBuffer): string {
   const u8 = new Uint8Array(buffer);
 
   // Use native toHex if available (modern browsers / future runtimes)
-  if ("toHex" in u8 && typeof (u8 as any).toHex === "string") {
+  if (
+    "toHex" in u8 &&
+    typeof (u8 as { toHex?: unknown }).toHex === "function"
+  ) {
     return (u8 as unknown as { toHex(): string }).toHex();
   }
 
