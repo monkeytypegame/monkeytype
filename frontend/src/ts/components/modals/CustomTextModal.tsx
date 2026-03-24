@@ -211,7 +211,7 @@ export function CustomTextModal(): JSXElement {
     let mode: Mode = CustomText.getMode();
     if (
       mode === "repeat" &&
-      CustomText.getLimitMode() === "word" &&
+      CustomText.getLimitMode() !== "time" &&
       CustomText.getLimitValue() === CustomText.getText().length
     ) {
       mode = "simple";
