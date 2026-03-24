@@ -4,7 +4,6 @@ import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { bp } from "../../../states/breakpoints";
 import {
   getFocus,
   getResultVisible,
@@ -207,24 +206,6 @@ function Mode2(): JSXElement {
       next?.show()?.animate({
         opacity: [0, 1],
         duration: durationMs,
-      });
-    },
-  );
-
-  createEffectOn(
-    () => bp(),
-    () => {
-      const wrapperEl = wrapperElement();
-      const el = getElements();
-      if (!wrapperEl || !el) return;
-
-      const newWidth =
-        el[
-          getConfig.mode as "time" | "words" | "quote" | "custom"
-        ].getOuterWidth();
-
-      void wrapperEl.setStyle({
-        width: newWidth + "px",
       });
     },
   );
