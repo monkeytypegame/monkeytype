@@ -45,7 +45,6 @@ import * as ConnectionState from "../legacy-states/connection";
 import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
-import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
@@ -1440,86 +1439,6 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
 });
 
 restartTestEvent.subscribe(() => restart());
-
-qs(".pageTest")?.onChild("click", "#testConfig .mode .textButton", (e) => {
-  if (TestState.testRestarting) return;
-  if ((e.childTarget as HTMLElement).classList.contains("active")) return;
-  const mode = ((e.childTarget as HTMLElement)?.getAttribute("mode") ??
-    "time") as Mode;
-  if (mode === undefined) return;
-  if (setConfig("mode", mode)) {
-    restart();
-  }
-});
-
-qs(".pageTest")?.onChild("click", "#testConfig .wordCount .textButton", (e) => {
-  if (TestState.testRestarting) return;
-  const wrd = (e.childTarget as HTMLElement)?.getAttribute("wordCount") ?? "15";
-  if (wrd !== "custom") {
-    if (setConfig("words", parseInt(wrd))) {
-      restart();
-    }
-  }
-});
-
-qs(".pageTest")?.onChild("click", "#testConfig .time .textButton", (e) => {
-  if (TestState.testRestarting) return;
-  const mode =
-    (e.childTarget as HTMLElement)?.getAttribute("timeConfig") ?? "10";
-  if (mode !== "custom") {
-    if (setConfig("time", parseInt(mode))) {
-      restart();
-    }
-  }
-});
-
-qs(".pageTest")?.onChild(
-  "click",
-  "#testConfig .quoteLength .textButton",
-  (e) => {
-    if (TestState.testRestarting) return;
-    const lenAttr = (e.childTarget as HTMLElement)?.getAttribute("quoteLength");
-    if (lenAttr === "all") {
-      if (setQuoteLengthAll()) {
-        restart();
-      }
-    } else {
-      const len = parseInt(lenAttr ?? "1") as QuoteLength;
-
-      if (len !== -2) {
-        let arr: QuoteLengthConfig = [];
-
-        if (e.shiftKey) {
-          arr = [...Config.quoteLength, len];
-        } else {
-          arr = [len];
-        }
-
-        if (setConfig("quoteLength", arr)) {
-          restart();
-        }
-      }
-    }
-  },
-);
-
-qs(".pageTest")?.onChild(
-  "click",
-  "#testConfig .punctuationMode.textButton",
-  () => {
-    if (TestState.testRestarting) return;
-    if (setConfig("punctuation", !Config.punctuation)) {
-      restart();
-    }
-  },
-);
-
-qs(".pageTest")?.onChild("click", "#testConfig .numbersMode.textButton", () => {
-  if (TestState.testRestarting) return;
-  if (setConfig("numbers", !Config.numbers)) {
-    restart();
-  }
-});
 
 // ===============================
 

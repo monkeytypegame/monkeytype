@@ -12,7 +12,7 @@
 
 button:not(.accountButtonAndMenu *),
 .button:not(.accountButtonAndMenu *),
-#testConfig .row {
+[data-ui-element="testConfig"] {
   --roundness: 5em; /* overwriting default roundness to make it softer */
 }
 

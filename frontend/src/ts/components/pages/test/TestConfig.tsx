@@ -24,7 +24,8 @@ const variables = cn(
   "xl:[--card-gap:2em] xl:[--font-size:0.75em] xl:[--horizontal-padding:1em]",
 );
 const buttonClass = "px-(--horizontal-padding) py-(--vertical-padding)";
-const cardClass = "rounded bg-sub-alt px-(--horizontal-padding)";
+const cardClass =
+  "card rounded-(--roundness) bg-sub-alt px-(--horizontal-padding)";
 const durationMs = 250;
 
 export function TestConfig(): JSXElement {
@@ -39,6 +40,7 @@ export function TestConfig(): JSXElement {
             ? "pointer-events-none opacity-0"
             : "",
         )}
+        data-ui-element="testConfig"
       >
         <PuncAndNum />
         <Mode />
