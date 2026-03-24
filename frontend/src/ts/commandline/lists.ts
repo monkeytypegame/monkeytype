@@ -21,7 +21,7 @@ import { setConfig } from "../config/setters";
 import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../modals/custom-text";
+import { showModal } from "../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -40,7 +40,6 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
-import { showModal } from "../states/modals";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -79,7 +78,7 @@ export const commands: CommandsSubgroup = {
       display: "Change custom text",
       icon: "fa-align-left",
       exec: (): void => {
-        CustomTextPopup.show();
+        showModal("CustomText");
       },
     },
     {

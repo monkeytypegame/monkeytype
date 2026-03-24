@@ -12,7 +12,6 @@ import {
 } from "../states/notifications";
 import { showQuoteRateModal } from "../states/quote-rate";
 import { showQuoteReportModal } from "../states/quote-report";
-import * as CustomTextModal from "../modals/custom-text";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
@@ -101,7 +100,7 @@ testPage?.onChild("click", "#testConfig .quoteLength .textButton", (event) => {
 });
 
 testPage?.onChild("click", "#testConfig .customText .textButton", () => {
-  CustomTextModal.show();
+  showModal("CustomText");
 });
 
 testPage?.onChild("click", "#practiseWordsButton", () => {

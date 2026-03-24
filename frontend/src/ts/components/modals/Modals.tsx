@@ -1,6 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { ContactModal } from "./ContactModal";
+import { CustomTextModal } from "./CustomTextModal";
 import { QuoteRateModal } from "./QuoteRateModal";
 import { QuoteReportModal } from "./QuoteReportModal";
 import { QuoteSearchModal } from "./QuoteSearchModal";
@@ -17,6 +18,7 @@ export function Modals(): JSXElement {
       <RegisterCaptchaModal />
       <SupportModal />
       <SimpleModal />
+      <CustomTextModal />
       <QuoteRateModal />
       <QuoteReportModal />
       <QuoteSearchModal />

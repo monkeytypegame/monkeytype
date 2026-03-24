@@ -3,7 +3,6 @@ import { Config } from "../config/store";
 import { setConfig, setQuoteLengthAll } from "../config/setters";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
-import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -144,9 +143,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
 
   modalEl.qs(".customChange")?.on("click", () => {
-    CustomTextPopup.show({
-      modalChain: modal,
-    });
+    showModal("CustomText");
   });
 
   modalEl.qs(".punctuation")?.on("click", () => {
