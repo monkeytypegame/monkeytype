@@ -2,6 +2,24 @@ import { z } from "zod";
 import { IdSchema } from "./util";
 import { LanguageSchema } from "./languages";
 
+// Tags for quotes
+export const QUOTE_TAGS = [
+  "fiction",
+  "poetry",
+  "philosophy",
+  "political",
+  "inspirational",
+  "wisdom",
+  "mindset",
+  "humorous",
+] as const;
+export const QuoteTagSchema = z.enum(QUOTE_TAGS);
+export type QuoteTag = z.infer<typeof QuoteTagSchema>;
+
+// Tagged Languages
+export const TAGGED_LANGUAGES = ["english"] as const;
+export type TaggedLanguage = (typeof TAGGED_LANGUAGES)[number];
+
 export const QuoteIdSchema = z
   .number()
   .int()
@@ -26,6 +44,9 @@ export const QuoteSchema = z.object({
   submittedBy: IdSchema.describe("uid of the submitter"),
   timestamp: z.number().int().nonnegative(),
   approved: z.boolean(),
+
+  //Remove '.optional()' once all languages are tagged
+  tags: z.array(QuoteTagSchema).min(1).optional(),
 });
 export type Quote = z.infer<typeof QuoteSchema>;
 
@@ -56,6 +77,7 @@ export const QuoteDataQuoteSchema = z
     source: z.string(),
     length: z.number(),
     approvedBy: z.string().optional(),
+    tags: z.array(QuoteTagSchema).min(1).optional(),
   })
   .strict();
 export type QuoteDataQuote = z.infer<typeof QuoteDataQuoteSchema>;

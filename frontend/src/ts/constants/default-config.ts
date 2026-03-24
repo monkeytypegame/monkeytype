@@ -29,6 +29,7 @@ const obj: Config = {
   time: 30,
   mode: "time",
   quoteLength: [1],
+  quoteTags: [],
   language: "english",
   fontSize: 2,
   freedomMode: false,

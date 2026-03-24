@@ -533,6 +533,13 @@ async function getQuoteWordList(
     );
   }
 
+  const selectedTags = Config.quoteTags ?? [];
+  const hasTagFilter = selectedTags.length > 0;
+  const quoteMatchesTags = (quote: Quote): boolean => {
+    if (!hasTagFilter) return true;
+    return (quote.tags ?? []).some((t) => selectedTags.includes(t));
+  };
+
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
@@ -544,10 +551,21 @@ async function getQuoteWordList(
         `Quote ${TestState.selectedQuoteId} does not exist`,
       );
     }
-    rq = targetQuote;
+    if (quoteMatchesTags(targetQuote)) {
+      rq = targetQuote;
+    } else {
+      // Selected quote doesn't match active tag filters; fall back to a random match.
+      const matching = quotesCollection.quotes.filter(quoteMatchesTags);
+      if (matching.length === 0) {
+        setConfig("mode", "words");
+        throw new WordGenError("No quotes found for selected tags");
+      }
+      rq = Arrays.randomElementFromArray(matching);
+    }
   } else if (Config.quoteLength.includes(-3)) {
     const randomQuote = QuotesController.getRandomFavoriteQuote(
       Config.language,
+      selectedTags,
     );
     if (randomQuote === null) {
       setQuoteLengthAll();
@@ -555,12 +573,20 @@ async function getQuoteWordList(
     }
     rq = randomQuote;
   } else {
-    const randomQuote = QuotesController.getRandomQuote();
-    if (randomQuote === null) {
-      setQuoteLengthAll();
-      throw new WordGenError("No quotes found for selected quote length");
+    const activeGroups = Config.quoteLength.filter((g) => g >= 0);
+    const candidates = activeGroups.flatMap(
+      (g) => quotesCollection.groups[g]?.slice() ?? [],
+    );
+    const filteredCandidates = hasTagFilter
+      ? candidates.filter(quoteMatchesTags)
+      : candidates;
+
+    if (filteredCandidates.length === 0) {
+      setConfig("mode", "words");
+      throw new WordGenError("No quotes found for selected tags");
     }
-    rq = randomQuote;
+
+    rq = Arrays.randomElementFromArray(filteredCandidates);
   }
 
   rq.language = Strings.removeLanguageSize(Config.language);

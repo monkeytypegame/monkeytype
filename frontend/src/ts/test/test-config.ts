@@ -7,6 +7,7 @@ import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { authEvent } from "../events/auth";
 import { qs, qsa } from "../utils/dom";
+import * as QuoteTagFilter from "../elements/quote-tag-filter";
 
 export function show(): void {
   qs("#testConfig")?.removeClass("invisible");
@@ -31,6 +32,7 @@ export async function instantUpdate(): Promise<void> {
   qs("#testConfig .customText")?.hide();
   qs("#testConfig .quoteLength")?.hide();
   qs("#testConfig .zen")?.hide();
+  QuoteTagFilter.setVisible(false);
 
   if (Config.mode === "time") {
     qs("#testConfig .puncAndNum")?.show()?.setStyle({
@@ -54,9 +56,12 @@ export async function instantUpdate(): Promise<void> {
     updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
     qs("#testConfig .rightSpacer")?.show();
+    qs("#testConfig .quoteTagSpacer")?.show();
     qs("#testConfig .quoteLength")?.show();
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
+
+    QuoteTagFilter.setVisible(true);
   } else if (Config.mode === "custom") {
     qs("#testConfig .puncAndNum")?.show()?.setStyle({
       width: "",
@@ -200,6 +205,28 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     },
   });
 
+  const quoteTagSpacerEl = qs("#testConfig .quoteTagSpacer");
+  quoteTagSpacerEl?.setStyle({
+    width: previous === "quote" ? "0.5em" : "0px",
+  });
+  quoteTagSpacerEl?.setStyle({ opacity: "1" });
+  quoteTagSpacerEl?.show();
+  quoteTagSpacerEl?.animate({
+    width: [
+      previous === "quote" ? "0.5em" : "0px",
+      current === "quote" ? "0.5em" : "0px",
+    ],
+    duration: animTime,
+    ease: easing.both,
+    onComplete: () => {
+      if (current === "quote") {
+        quoteTagSpacerEl?.setStyle({ width: "" });
+      } else {
+        quoteTagSpacerEl?.hide();
+      }
+    },
+  });
+
   const currentEl = qs(`#testConfig .${submenu[current]}`);
   const previousEl = qs(`#testConfig .${submenu[previous]}`);
 
@@ -248,6 +275,8 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   });
 
   currentEl?.setStyle({ width: "" });
+
+  QuoteTagFilter.setVisible(current === "quote");
 }
 
 function updateActiveModeButtons(mode: Mode): void {

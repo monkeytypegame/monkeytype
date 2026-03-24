@@ -6,7 +6,11 @@ import * as DB from "../db";
 import Ape from "../ape";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
-import { QuoteData, QuoteDataQuote } from "@monkeytype/schemas/quotes";
+import {
+  QuoteData,
+  QuoteDataQuote,
+  QuoteTag,
+} from "@monkeytype/schemas/quotes";
 import { RequiredProperties } from "../utils/misc";
 
 export type Quote = QuoteDataQuote & {
@@ -79,6 +83,7 @@ class QuotesController {
           length: quote.length,
           id: quote.id,
           language: data.language,
+          tags: quote.tags,
           group: 0,
         };
 
@@ -105,6 +110,16 @@ class QuotesController {
     }
 
     return this.quoteCollection;
+  }
+
+  getAvailableTags(quoteGroups: number[]): Set<QuoteTag> {
+    const tags = new Set<QuoteTag>();
+    quoteGroups.forEach((group) => {
+      this.quoteCollection.groups[group]?.forEach((quote) => {
+        quote.tags?.forEach((tag) => tags.add(tag));
+      });
+    });
+    return tags;
   }
 
   getQuoteById(id: number): Quote | undefined {
@@ -148,7 +163,10 @@ class QuotesController {
     return randomQuote;
   }
 
-  getRandomFavoriteQuote(language: Language): Quote | null {
+  getRandomFavoriteQuote(
+    language: Language,
+    tagFilter?: string[],
+  ): Quote | null {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return null;
@@ -174,10 +192,22 @@ class QuotesController {
       return null;
     }
 
-    const randomQuoteId = randomElementFromArray(quoteIds);
-    const randomQuote = this.getQuoteById(parseInt(randomQuoteId, 10));
+    const selectedTags =
+      (tagFilter?.length ?? 0) > 0 ? new Set(tagFilter) : null;
 
-    return randomQuote ?? null;
+    const matchingQuotes =
+      selectedTags === null
+        ? quoteIds
+            .map((quoteId) => this.getQuoteById(parseInt(quoteId, 10)))
+            .filter((q): q is Quote => q !== undefined)
+        : quoteIds
+            .map((quoteId) => this.getQuoteById(parseInt(quoteId, 10)))
+            .filter((q): q is Quote => q !== undefined)
+            .filter((q) => (q.tags ?? []).some((t) => selectedTags.has(t)));
+
+    if (matchingQuotes.length === 0) return null;
+
+    return randomElementFromArray(matchingQuotes) ?? null;
   }
 
   isQuoteFavorite({ language: quoteLanguage, id }: Quote): boolean {
