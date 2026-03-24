@@ -6,7 +6,6 @@ import QuotesController, {
   Quote,
   QuoteWithTextSplit,
 } from "../controllers/quotes-controller";
-import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
@@ -28,6 +27,7 @@ import { WordGenError } from "../utils/word-gen-error";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
+import { getCurrentQuote, setCurrentQuote } from "../states/test";
 
 //pin implementation
 const random = Math.random;
@@ -377,8 +377,8 @@ async function applyBritishEnglishToWord(
   if (!Config.language.includes("english")) return word;
   if (
     Config.mode === "quote" &&
-    TestWords.currentQuote?.britishText !== undefined &&
-    TestWords.currentQuote?.britishText !== ""
+    getCurrentQuote()?.britishText !== undefined &&
+    getCurrentQuote()?.britishText !== ""
   ) {
     return word;
   }
@@ -424,7 +424,7 @@ export function getLimit(): number {
 
   let limit = 100;
 
-  const currentQuote = TestWords.currentQuote;
+  const currentQuote = getCurrentQuote();
 
   if (Config.mode === "quote" && currentQuote === null) {
     throw new WordGenError("Random quote is null");
@@ -503,7 +503,7 @@ async function getQuoteWordList(
       throw new WordGenError("Current wordset is null");
     }
 
-    TestWords.setCurrentQuote(previousRandomQuote);
+    setCurrentQuote(previousRandomQuote);
 
     // need to re-reverse the words if the test is repeated
     // because it will be reversed again in the generateWords function
@@ -579,17 +579,17 @@ async function getQuoteWordList(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setCurrentQuote(rq as QuoteWithTextSplit);
+  setCurrentQuote(rq as QuoteWithTextSplit);
 
-  if (TestWords.currentQuote === null) {
+  if (rq === null) {
     throw new WordGenError("Random quote is null");
   }
 
-  if (TestWords.currentQuote.textSplit === undefined) {
+  if (rq.textSplit === undefined) {
     throw new WordGenError("Random quote textSplit is undefined");
   }
 
-  return TestWords.currentQuote.textSplit;
+  return rq.textSplit;
 }
 
 let currentWordset: Wordset | null = null;
@@ -613,8 +613,8 @@ export async function generateWords(
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
   }
-  previousRandomQuote = TestWords.currentQuote;
-  TestWords.setCurrentQuote(null);
+  previousRandomQuote = getCurrentQuote();
+  setCurrentQuote(null);
   currentSection = [];
   sectionIndex = 0;
   sectionHistory = [];
@@ -705,7 +705,7 @@ export async function generateWords(
     i++;
   }
 
-  const quote = TestWords.currentQuote;
+  const quote = getCurrentQuote();
 
   if (Config.mode === "quote" && quote === null) {
     throw new WordGenError("Random quote is null");

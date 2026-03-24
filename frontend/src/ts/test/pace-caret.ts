@@ -7,6 +7,7 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
+import { getCurrentQuote } from "../states/test";
 
 type Settings = {
   wpm: number;
@@ -55,7 +56,7 @@ export function resetCaretPosition(): void {
 
 export async function init(): Promise<void> {
   caret.hide();
-  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let wpm = 0;
   if (Config.paceCaret === "pb") {
     wpm =

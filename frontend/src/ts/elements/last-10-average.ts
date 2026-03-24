@@ -2,13 +2,13 @@ import * as DB from "../db";
 import * as Misc from "../utils/misc";
 import * as Numbers from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
-import * as TestWords from "../test/test-words";
+import { getCurrentQuote } from "../states/test";
 
 let averageWPM = 0;
 let averageAcc = 0;
 
 export async function update(): Promise<void> {
-  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  const mode2 = Misc.getMode2(Config, getCurrentQuote());
 
   const [wpm, acc] = (
     await DB.getUserAverage10(

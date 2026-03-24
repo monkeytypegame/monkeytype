@@ -19,7 +19,7 @@ if (import.meta.env.DEV) {
       default: () => {
         onMount(() => {
           m.attachDevtoolsOverlay({
-            defaultOpen: true,
+            defaultOpen: false,
             noPadding: true,
           });
         });

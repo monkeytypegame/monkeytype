@@ -1,5 +1,4 @@
 import { Config } from "../config/store";
-import { currentQuote } from "../test/test-words";
 import { getMode2 } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
@@ -8,6 +7,7 @@ import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { ElementWithUtils } from "../utils/dom";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
+import { getCurrentQuote } from "../states/test";
 
 function getCheckboxValue(checkbox: string): boolean {
   return modal
@@ -35,7 +35,7 @@ function updateURL(): void {
 
   const settingsMap = [
     { key: "mode", getValue: () => Config.mode },
-    { key: "mode2", getValue: () => getMode2(Config, currentQuote) },
+    { key: "mode2", getValue: () => getMode2(Config, getCurrentQuote()) },
     { key: "customText", getValue: () => CustomText.getData() },
     { key: "punctuation", getValue: () => Config.punctuation },
     { key: "numbers", getValue: () => Config.numbers },

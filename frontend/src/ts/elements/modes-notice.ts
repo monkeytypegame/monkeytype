@@ -12,7 +12,7 @@ import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
-import { getLoadedChallenge } from "../states/test";
+import { getCurrentQuote, getLoadedChallenge } from "../states/test";
 
 configEvent.subscribe(({ key }) => {
   const configKeys: ConfigEventKey[] = [
@@ -202,7 +202,7 @@ export async function update(): Promise<void> {
     if (!isAuthenticated()) {
       return;
     }
-    const mode2 = getMode2(Config, TestWords.currentQuote);
+    const mode2 = getMode2(Config, getCurrentQuote());
     const pb = await DB.getLocalPB(
       Config.mode,
       mode2,
