@@ -13,7 +13,7 @@ import {
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";
-import * as CustomTextModal from "../modals/custom-text";
+import { showModal } from "../states/modals";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
@@ -101,7 +101,7 @@ testPage?.onChild("click", "#testConfig .quoteLength .textButton", (event) => {
 });
 
 testPage?.onChild("click", "#testConfig .customText .textButton", () => {
-  CustomTextModal.show();
+  showModal("CustomText");
 });
 
 testPage?.onChild("click", "#practiseWordsButton", () => {
