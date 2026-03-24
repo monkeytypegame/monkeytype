@@ -10,7 +10,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 
-export function CustomWordAmount(): JSXElement {
+export function CustomWordAmountModal(): JSXElement {
   const form = createForm(() => ({
     defaultValues: {
       words: getConfig.words.toString(),

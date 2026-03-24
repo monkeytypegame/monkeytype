@@ -10,7 +10,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 
-export function TestDuration(): JSXElement {
+export function CustomTestDurationModal(): JSXElement {
   const form = createForm(() => ({
     defaultValues: {
       duration: getConfig.time.toString(),
