@@ -7,12 +7,14 @@ import { compressToURI } from "lz-ts";
 import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
+import { showSuccessNotification } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
 import { currentQuote } from "../../test/test-words";
 import { cn } from "../../utils/cn";
 import { getMode2 } from "../../utils/misc";
 import { capitalizeFirstLetter } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
+import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 import { Checkbox } from "../ui/form/Checkbox";
 
@@ -241,6 +243,23 @@ export function ShareTestSettings(): JSXElement {
         readOnly
         onClick={(e) => e.currentTarget.select()}
       ></textarea>
+      <Button
+        variant="button"
+        text="copy to clipboard"
+        fa={{
+          icon: "fa-copy",
+        }}
+        onClick={() => {
+          void navigator.clipboard
+            .writeText(url())
+            .then(() => {
+              showSuccessNotification("URL copied to clipboard");
+            })
+            .catch((error: unknown) => {
+              showSuccessNotification("Failed to copy URL", { error });
+            });
+        }}
+      />
       <Show when={url().length > 2000}>
         <div class="flex place-items-center gap-2 text-xs text-error">
           <Fa icon="fa-exclamation-triangle" />
