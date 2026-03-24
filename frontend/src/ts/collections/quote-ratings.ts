@@ -9,15 +9,14 @@ import { Accessor } from "solid-js";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import Ape from "../ape";
+import { getSnapshot } from "../states/snapshot";
 
-export type QuoteUserRating = {
-  id: number;
-  language: Language;
-  rating: number; //0..5
+type QuoteUserRating = QuoteRating & {
+  userRating?: number;
 };
+
 const queryKeys = {
-  root: () => [...baseKey("quoteRatings")],
-  user: () => [...baseKey("userQuoteRatings", { isUserSpecific: true })],
+  root: () => [...baseKey("quoteRatings", { isUserSpecific: true })],
 };
 
 export const quoteRatingsCollection = createCollection(
@@ -32,12 +31,10 @@ export const quoteRatingsCollection = createCollection(
       const { where } = meta.loadSubsetOptions;
       const parsed = parseLoadSubsetOptions({ where });
 
-      const language = parsed.filters.find(
-        (it) => it.field?.[0] === "language",
-      )?.value;
-      const quoteId = parsed.filters.find(
-        (it) => it.field?.[0] === "quoteId",
-      )?.value;
+      const language = parsed.filters.find((it) => it.field?.[0] === "language")
+        ?.value as Language;
+      const quoteId = parsed.filters.find((it) => it.field?.[0] === "quoteId")
+        ?.value as number;
 
       const response = await Ape.quotes.getRating({
         query: { language, quoteId },
@@ -48,14 +45,69 @@ export const quoteRatingsCollection = createCollection(
         );
       }
 
-      const existingData: QuoteRating[] =
+      const userRating = getSnapshot()?.quoteRatings?.[language]?.[quoteId];
+
+      const existingData: QuoteUserRating[] =
         queryClient.getQueryData(queryKeys.root()) ?? [];
 
       if (response.body.data !== null) {
-        existingData.push(response.body.data);
+        existingData.push({ ...response.body.data, userRating });
       }
 
       return existingData;
+    },
+    onInsert: async ({ transaction }) => {
+      const newItems = transaction.mutations.map((it) => it.modified);
+
+      quoteRatingsCollection.utils.writeBatch(() => {
+        newItems.forEach((item) => {
+          quoteRatingsCollection.utils.writeInsert(item);
+        });
+      });
+
+      newItems.forEach(async (it) => {
+        if (it.userRating !== undefined) {
+          const response = await Ape.quotes.addRating({
+            body: {
+              language: it.language,
+              quoteId: it.quoteId,
+              rating: it.userRating,
+            },
+          });
+          if (response.status !== 200) {
+            throw new Error(
+              "Cannot submit quote rating: " + response.body.message,
+            );
+          }
+        }
+      });
+    },
+    onUpdate: async ({ transaction }) => {
+      const newItems = transaction.mutations.map((it) => it.modified);
+
+      //TODO update rating average and total
+      quoteRatingsCollection.utils.writeBatch(() => {
+        newItems.forEach((item) => {
+          quoteRatingsCollection.utils.writeUpdate(item);
+        });
+      });
+
+      newItems.forEach(async (it) => {
+        if (it.userRating !== undefined) {
+          const response = await Ape.quotes.addRating({
+            body: {
+              language: it.language,
+              quoteId: it.quoteId,
+              rating: it.userRating,
+            },
+          });
+          if (response.status !== 200) {
+            throw new Error(
+              "Cannot submit quote rating: " + response.body.message,
+            );
+          }
+        }
+      });
     },
 
     queryClient,
@@ -76,19 +128,7 @@ export function useQuoteRatingsLiveQuery(
     return q
       .from({ r: quoteRatingsCollection })
       .where(({ r }) => eq(r.language, filter.language))
-      .where(({ r }) => eq(r.quoteId, filter.id));
+      .where(({ r }) => eq(r.quoteId, filter.id))
+      .findOne();
   });
 }
-
-export const userQuoteRatingsCollection = createCollection(
-  queryCollectionOptions({
-    staleTime: Infinity,
-    queryKey: queryKeys.root(),
-    queryClient,
-    getKey: (it) => it.language + it.id,
-    queryFn: async () => {
-      //filled from the user query
-      return [] as QuoteUserRating[];
-    },
-  }),
-);
