@@ -8,10 +8,10 @@ import { bp } from "../../../states/breakpoints";
 import {
   getFocus,
   getResultVisible,
+  isLoggedIn,
   restartTestEvent,
 } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { getSnapshot } from "../../../states/snapshot";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime, AnimeShow } from "../../common/anime";
@@ -466,7 +466,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           restartTestEvent.dispatch();
         }}
       />
-      <Show when={getSnapshot()}>
+      <Show when={isLoggedIn()}>
         <Button
           class={buttonClass}
           fa={{
