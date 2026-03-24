@@ -3,6 +3,7 @@ import { JSXElement } from "solid-js";
 import { ContactModal } from "./ContactModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmount } from "./CustomWordAmount";
+import { MobileTestConfig } from "./MobileTestConfig";
 import { QuoteRateModal } from "./QuoteRateModal";
 import { QuoteReportModal } from "./QuoteReportModal";
 import { QuoteSearchModal } from "./QuoteSearchModal";
@@ -28,6 +29,7 @@ export function Modals(): JSXElement {
       <TestDuration />
       <CustomWordAmount />
       <ShareTestSettings />
+      <MobileTestConfig />
     </>
   );
 }

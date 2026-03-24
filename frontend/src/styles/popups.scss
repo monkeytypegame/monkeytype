@@ -153,17 +153,6 @@ body.darkMode {
   }
 }
 
-#mobileTestConfigModal {
-  .modal {
-    gap: 2rem;
-
-    .group {
-      display: grid;
-      gap: 0.5rem;
-    }
-  }
-}
-
 #customWordAmountModal {
   .modal {
     max-width: 500px;

@@ -26,7 +26,11 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import { getActivePage, restartTestEvent } from "../states/core";
+import {
+  getActivePage,
+  restartTestEvent,
+  setResultVisible,
+} from "../states/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -330,6 +334,7 @@ export function restart(options = {} as RestartOptions): void {
     opacity: 0,
     duration: animationTime,
     onComplete: async () => {
+      setResultVisible(false);
       setInputElementValue("");
 
       await Funbox.rememberSettings();
@@ -915,6 +920,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
+  setResultVisible(true);
   TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();

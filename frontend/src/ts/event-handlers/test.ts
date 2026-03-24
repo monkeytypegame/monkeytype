@@ -3,7 +3,6 @@ import * as CustomWordAmount from "../modals/custom-word-amount";
 import { Config } from "../config/store";
 import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
-import * as MobileTestConfigModal from "../modals/mobile-test-config";
 import * as CustomTestDurationModal from "../modals/custom-test-duration";
 import * as TestWords from "../test/test-words";
 import {
@@ -69,10 +68,6 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
     const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     EditResultTagsModal.show(resultid, tags, "resultPage");
   }
-});
-
-testPage?.onChild("click", "#mobileTestConfigButton", () => {
-  MobileTestConfigModal.show();
 });
 
 qs(".pageTest #rateQuoteButton")?.on("click", async () => {

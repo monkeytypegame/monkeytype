@@ -22,7 +22,8 @@ export type ModalId =
   | "QuoteApprove"
   | "TestDuration"
   | "ShareTestSettings"
-  | "CustomWordAmount";
+  | "CustomWordAmount"
+  | "MobileTestConfig";
 
 export type ModalVisibility = {
   visible: boolean;

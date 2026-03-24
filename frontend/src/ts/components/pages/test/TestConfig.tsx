@@ -1,12 +1,17 @@
-import { ComponentProps, JSXElement } from "solid-js";
+import { ComponentProps, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { restartTestEvent } from "../../../states/core";
+import { bp } from "../../../states/breakpoints";
+import {
+  getFocus,
+  getResultVisible,
+  restartTestEvent,
+} from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { showErrorNotification } from "../../../states/notifications";
+import { getSnapshot } from "../../../states/snapshot";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime, AnimeShow } from "../../common/anime";
@@ -24,16 +29,33 @@ const durationMs = 250;
 
 export function TestConfig(): JSXElement {
   return (
-    <div
-      class={cn(
-        variables,
-        "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
-      )}
-    >
-      <PuncAndNum />
-      <Mode />
-      <Mode2 />
-    </div>
+    <>
+      <div
+        class={cn(
+          variables,
+          "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
+          "transition-opacity duration-125",
+          getFocus() || getResultVisible()
+            ? "pointer-events-none opacity-0"
+            : "",
+        )}
+      >
+        <PuncAndNum />
+        <Mode />
+        <Mode2 />
+      </div>
+      <Button
+        class={cn("flex place-self-center px-4 py-2 text-sub sm:hidden")}
+        variant="button"
+        onClick={() => {
+          showModal("MobileTestConfig");
+        }}
+        text="test settings"
+        fa={{
+          icon: "fa-cog",
+        }}
+      />
+    </>
   );
 }
 
@@ -43,7 +65,7 @@ function PuncAndNum(): JSXElement {
       class="mr-(--card-gap) w-max place-self-end"
       animation={{
         opacity: getConfig.mode === "zen" ? 0 : 1,
-        marginRight: getConfig.mode === "zen" ? "0" : "var(--card-gap)",
+        // marginRight: getConfig.mode === "zen" ? "0" : "var(--card-gap)",
         duration: durationMs,
       }}
     >
@@ -224,14 +246,32 @@ function Mode2(): JSXElement {
     },
   );
 
+  createEffectOn(
+    () => bp(),
+    () => {
+      const wrapperEl = wrapperElement();
+      const el = getElements();
+      if (!wrapperEl || !el) return;
+
+      const newWidth =
+        el[
+          getConfig.mode as "time" | "words" | "quote" | "custom"
+        ].getOuterWidth();
+
+      void wrapperEl.setStyle({
+        width: newWidth + "px",
+      });
+    },
+  );
+
   return (
     <div class="relative grid w-max" ref={wrapperRef}>
       <Anime
         class="grid"
         animation={{
           opacity: getConfig.mode === "zen" ? 0 : 1,
-          marginLeft:
-            getConfig.mode === "zen" ? "calc(-1*var(--card-gap))" : "0",
+          // marginLeft:
+          // getConfig.mode === "zen" ? "calc(-1*var(--card-gap))" : "0",
           duration: durationMs,
         }}
       >
@@ -244,7 +284,7 @@ function Mode2(): JSXElement {
         variant="text"
         class={cn(
           buttonClass,
-          "absolute right-0 self-center px-(--horizontal-padding) transition-[margin-right,background-color] duration-125 group-hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)]",
+          "absolute right-0 self-center px-(--horizontal-padding) opacity-0 transition-[margin-right,background-color,opacity] duration-125 group-hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)] group-hover:opacity-100 hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)] hover:opacity-100",
         )}
         fa={{ icon: "fa-share", fixedWidth: true }}
         onClick={() => showModal("ShareTestSettings")}
@@ -424,6 +464,20 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           restartTestEvent.dispatch();
         }}
       />
+      <Show when={getSnapshot()}>
+        <Button
+          class={buttonClass}
+          fa={{
+            icon: "fa-heart",
+          }}
+          variant="text"
+          active={areUnsortedArraysEqual(getConfig.quoteLength, [-3])}
+          onClick={() => {
+            setConfig("quoteLength", [-3]);
+            restartTestEvent.dispatch();
+          }}
+        />
+      </Show>
       <Button
         class={buttonClass}
         variant="text"
@@ -432,7 +486,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           fixedWidth: true,
         }}
         onClick={() => {
-          showErrorNotification("//todo");
+          showModal("QuoteSearch");
         }}
       />
     </div>
