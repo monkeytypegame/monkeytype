@@ -33,6 +33,23 @@ const quoteLengths: {
   { value: "-2", label: "search" },
 ] as const;
 
+function MCButton(props: {
+  text: string;
+  active?: boolean;
+  disabled?: boolean;
+  onClick: (e: MouseEvent) => void;
+}): JSXElement {
+  return (
+    <Button
+      variant="button"
+      text={props.text}
+      active={props.active}
+      disabled={props.disabled}
+      onClick={props.onClick}
+    />
+  );
+}
+
 const isPunctuationDisabled = () =>
   getConfig.mode === "quote" || getConfig.mode === "zen";
 
@@ -98,8 +115,7 @@ export function MobileTestConfigModal(): JSXElement {
   return (
     <AnimatedModal id="MobileTestConfig" modalClass="grid gap-4">
       <div class="grid gap-2">
-        <Button
-          variant="button"
+        <MCButton
           text="punctuation"
           active={getConfig.punctuation && !isPunctuationDisabled()}
           disabled={isPunctuationDisabled()}
@@ -108,8 +124,7 @@ export function MobileTestConfigModal(): JSXElement {
             restartTestEvent.dispatch();
           }}
         />
-        <Button
-          variant="button"
+        <MCButton
           text="numbers"
           active={getConfig.numbers && !isPunctuationDisabled()}
           disabled={isPunctuationDisabled()}
@@ -125,8 +140,7 @@ export function MobileTestConfigModal(): JSXElement {
       <div class="grid gap-2">
         <For each={modes}>
           {(mode) => (
-            <Button
-              variant="button"
+            <MCButton
               text={mode}
               active={getConfig.mode === mode}
               onClick={() => handleModeClick(mode)}
@@ -142,34 +156,27 @@ export function MobileTestConfigModal(): JSXElement {
           <Show when={getConfig.mode === "time"}>
             <For each={times}>
               {(time) => (
-                <Button
-                  variant="button"
+                <MCButton
                   text={String(time)}
                   active={getConfig.time === time}
                   onClick={() => handleTimeClick(time)}
                 />
               )}
             </For>
-            <Button
-              variant="button"
-              text="custom"
-              onClick={() => handleTimeClick("custom")}
-            />
+            <MCButton text="custom" onClick={() => handleTimeClick("custom")} />
           </Show>
 
           <Show when={getConfig.mode === "words"}>
             <For each={wordCounts}>
               {(words) => (
-                <Button
-                  variant="button"
+                <MCButton
                   text={String(words)}
                   active={getConfig.words === words}
                   onClick={() => handleWordsClick(words)}
                 />
               )}
             </For>
-            <Button
-              variant="button"
+            <MCButton
               text="custom"
               onClick={() => handleWordsClick("custom")}
             />
@@ -179,8 +186,7 @@ export function MobileTestConfigModal(): JSXElement {
             <For each={quoteLengths}>
               {(ql) => (
                 <Show when={!("loginRequired" in ql) || isLoggedIn()}>
-                  <Button
-                    variant="button"
+                  <MCButton
                     text={ql.label}
                     active={isQuoteLengthActive(ql.value)}
                     onClick={(e) => handleQuoteLengthClick(ql.value, e)}
@@ -191,22 +197,14 @@ export function MobileTestConfigModal(): JSXElement {
           </Show>
 
           <Show when={getConfig.mode === "custom"}>
-            <Button
-              variant="button"
-              text="change"
-              onClick={() => showModal("CustomText")}
-            />
+            <MCButton text="change" onClick={() => showModal("CustomText")} />
           </Show>
         </div>
         <Separator />
       </Show>
 
       <div class="grid gap-2">
-        <Button
-          variant="button"
-          text="share"
-          onClick={() => showModal("ShareTestSettings")}
-        />
+        <MCButton text="share" onClick={() => showModal("ShareTestSettings")} />
       </div>
     </AnimatedModal>
   );
