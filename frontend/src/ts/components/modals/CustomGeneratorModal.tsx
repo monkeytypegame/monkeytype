@@ -3,13 +3,19 @@ import { createSignal, JSXElement, Setter } from "solid-js";
 
 import { hideModal } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
-import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import SlimSelect from "../ui/SlimSelect";
+
+type CustomTextIncomingData =
+  | ({ set?: boolean; long?: boolean } & (
+      | { text: string; splitText?: never }
+      | { text?: never; splitText: string[] }
+    ))
+  | null;
 
 type Preset = {
   display: string;
@@ -85,11 +91,7 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function CustomGeneratorModal(props: {
-  setChainedData: Setter<{
-    text: string;
-    set?: boolean;
-    long?: boolean;
-  } | null>;
+  setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [selectedPreset, setSelectedPreset] = createSignal(
     presetOptions[0]?.value ?? "",
@@ -131,10 +133,10 @@ export function CustomGeneratorModal(props: {
 
       if (generatedWords.length === 0) return;
 
-      const customText = generatedWords.join(
-        CustomText.getPipeDelimiter() ? "|" : " ",
-      );
-      props.setChainedData({ text: customText, set: submitAction === "set" });
+      props.setChainedData({
+        splitText: generatedWords,
+        set: submitAction === "set",
+      });
       hideModal("CustomGenerator");
     },
   }));

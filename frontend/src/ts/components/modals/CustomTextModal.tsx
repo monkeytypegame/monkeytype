@@ -30,11 +30,12 @@ import { SaveCustomTextModal } from "./SaveCustomTextModal";
 import { SavedTextsModal } from "./SavedTextsModal";
 import { WordFilterModal } from "./WordFilterModal";
 
-export type CustomTextIncomingData = {
-  text: string;
-  set?: boolean;
-  long?: boolean;
-} | null;
+export type CustomTextIncomingData =
+  | ({ set?: boolean; long?: boolean } & (
+      | { text: string; splitText?: never }
+      | { text?: never; splitText: string[] }
+    ))
+  | null;
 
 type Mode = "simple" | CustomTextMode;
 
@@ -296,10 +297,15 @@ export function CustomTextModal(): JSXElement {
       setLongTextWarning(true);
     }
 
+    const incomingText =
+      data.splitText !== undefined
+        ? data.splitText.join(form.getFieldValue("pipeDelimiter") ? "|" : " ")
+        : data.text;
+
     const newText =
       (data.set ?? true)
-        ? data.text
-        : form.getFieldValue("text") + " " + data.text;
+        ? incomingText
+        : form.getFieldValue("text") + " " + incomingText;
     untrack(() => {
       batch(() => {
         form.setFieldValue("text", newText);
