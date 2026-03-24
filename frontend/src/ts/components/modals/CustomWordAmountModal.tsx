@@ -18,13 +18,6 @@ export function CustomWordAmountModal(): JSXElement {
     onSubmit: ({ value }) => {
       const val = parseInt(value.words, 10);
 
-      if (isNaN(val) || val < 0 || !isFinite(val)) {
-        showNoticeNotification(
-          "Custom word amount must be a non-negative number",
-        );
-        return;
-      }
-
       setConfig("words", val);
       restartTestEvent.dispatch();
 
