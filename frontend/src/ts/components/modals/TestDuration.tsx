@@ -39,8 +39,10 @@ export function TestDuration(): JSXElement {
     },
   }));
 
+  const durationValue = form.useStore((s) => s.values.duration);
+
   const humanTime = () => {
-    const duration = parseInput(form.getFieldValue("duration"));
+    const duration = parseInput(durationValue());
 
     if (duration < 0) {
       return "Negative time? Really?";
