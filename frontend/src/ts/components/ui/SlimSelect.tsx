@@ -482,7 +482,11 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       ref={(el) => (containerRef = el)}
       class="relative [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!"
     >
-      <select ref={(el) => (selectRef = el)} multiple={props.multiple}>
+      <select
+        ref={(el) => (selectRef = el)}
+        multiple={props.multiple}
+        class="z-10000"
+      >
         {props.children}
       </select>
     </div>

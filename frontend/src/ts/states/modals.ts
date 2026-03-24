@@ -14,7 +14,12 @@ export type ModalId =
   | "SaveCustomText"
   | "SavedTexts"
   | "WordFilter"
-  | "CustomGenerator";
+  | "CustomGenerator"
+  | "QuoteSearch"
+  | "QuoteRate"
+  | "QuoteReport"
+  | "QuoteSubmit"
+  | "QuoteApprove";
 
 export type ModalVisibility = {
   visible: boolean;

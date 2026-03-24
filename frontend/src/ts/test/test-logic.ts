@@ -24,7 +24,7 @@ import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRateModal from "../modals/quote-rate";
+import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
 import { getActivePage, restartTestEvent } from "../states/core";
 import * as TestInput from "./test-input";
@@ -301,7 +301,7 @@ export function restart(options = {} as RestartOptions): void {
   Caret.resetPosition();
   PaceCaret.reset();
   TestInput.input.setKoreanStatus(false);
-  QuoteRateModal.clearQuoteStats();
+  clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
 
