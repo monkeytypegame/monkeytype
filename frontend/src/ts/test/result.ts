@@ -26,7 +26,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
-import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
@@ -1091,7 +1090,6 @@ export async function update(
     });
   }
 
-  TestConfig.hide();
   Focus.set(false);
 
   const canQuickRestart = canQuickRestartFn(

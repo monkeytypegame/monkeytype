@@ -1346,131 +1346,6 @@
   }
 }
 
-#mobileTestConfigButton {
-  display: none;
-  justify-self: center;
-  margin-bottom: 1rem;
-  height: max-content;
-  button {
-    font-size: 0.75rem;
-    padding: 1em 2em;
-    color: var(--sub-color);
-    &:hover {
-      color: var(--bg-color);
-    }
-  }
-}
-
-#testConfig {
-  --horizontalPadding: 1em;
-  --verticalPadding: 1em;
-  display: grid;
-  font-size: 0.75rem;
-  gap: 0.5em;
-  grid-auto-flow: column;
-  height: max-content;
-  width: 100%;
-  transition: opacity 0.125s;
-  justify-content: space-around;
-  margin-bottom: 1rem;
-  width: max-content;
-  justify-self: center;
-  position: relative;
-
-  .puncAndNum {
-    // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
-    // overflow: hidden;
-    opacity: 1;
-  }
-  .row {
-    display: flex;
-    // padding: 0 0.5rem;
-    background: var(--sub-alt-color);
-    border-radius: var(--roundness);
-    z-index: 2;
-    // width: max-content;
-    overflow: hidden;
-  }
-  .spacer {
-    height: auto;
-    width: 0.5em;
-    border-radius: calc(var(--roundness) / 2);
-    background: var(--bg-color);
-    margin: 0.75em 0;
-  }
-
-  .wordCount,
-  .time,
-  .customText {
-    .textButton {
-      align-self: end;
-      span {
-        line-height: 1.15;
-      }
-    }
-  }
-
-  .mode,
-  .time,
-  .wordCount,
-  .puncAndNum,
-  .quoteLength,
-  .customText,
-  .zen {
-    display: grid;
-    grid-auto-flow: column;
-
-    .textButton {
-      padding: var(--verticalPadding) var(--horizontalPadding);
-
-      &:first-child {
-        margin-left: var(--horizontalPadding);
-      }
-      &:last-child {
-        margin-right: var(--horizontalPadding);
-      }
-      &:only-child {
-        margin-inline: var(--horizontalPadding);
-      }
-    }
-  }
-  .time,
-  .wordCount,
-  .customText,
-  .zen,
-  .quoteLength {
-    justify-content: end;
-  }
-  .puncAndNum {
-    justify-content: start;
-  }
-  .customText {
-    display: grid;
-  }
-  .shareButton {
-    position: absolute;
-    right: 0;
-    padding: var(--verticalPadding) var(--horizontalPadding);
-    z-index: 1;
-    transition:
-      opacity 0.25s,
-      right 0.25s;
-    opacity: 0;
-  }
-
-  .mode {
-    background: var(--sub-alt-color);
-    z-index: 2;
-  }
-
-  &:hover {
-    .shareButton {
-      opacity: 1;
-      right: calc((1.25em + (var(--horizontalPadding) * 2)) * -1);
-    }
-  }
-}
-
 .pageTest {
   height: 100%;
   display: grid;
@@ -1626,9 +1501,7 @@
 }
 
 main.focus .pageTest {
-  #testModesNotice,
-  #testConfig,
-  #mobileTestConfigButton {
+  #testModesNotice {
     opacity: 0 !important;
   }
   #restartTestButton {

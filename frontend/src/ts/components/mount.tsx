@@ -16,6 +16,7 @@ import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
+import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
@@ -32,6 +33,7 @@ const components: Record<string, () => JSXElement> = {
   theme: () => <Theme />,
   header: () => <Header />,
   devtools: () => <DevTools />,
+  testconfig: () => <TestConfig />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
