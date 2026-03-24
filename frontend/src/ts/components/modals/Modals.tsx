@@ -4,7 +4,7 @@ import { ContactModal } from "./ContactModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
-import { MobileTestConfig } from "./MobileTestConfig";
+import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { QuoteRateModal } from "./QuoteRateModal";
 import { QuoteReportModal } from "./QuoteReportModal";
 import { QuoteSearchModal } from "./QuoteSearchModal";
@@ -29,7 +29,7 @@ export function Modals(): JSXElement {
       <CustomTestDurationModal />
       <CustomWordAmountModal />
       <ShareTestSettings />
-      <MobileTestConfig />
+      <MobileTestConfigModal />
     </>
   );
 }

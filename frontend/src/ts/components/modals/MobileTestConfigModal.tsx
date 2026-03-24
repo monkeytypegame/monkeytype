@@ -36,7 +36,7 @@ const quoteLengths: {
 const isPunctuationDisabled = () =>
   getConfig.mode === "quote" || getConfig.mode === "zen";
 
-export function MobileTestConfig(): JSXElement {
+export function MobileTestConfigModal(): JSXElement {
   const handleModeClick = (mode: Mode) => {
     if (mode === getConfig.mode) return;
     setConfig("mode", mode);
