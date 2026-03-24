@@ -182,7 +182,6 @@ export function MobileTestConfig(): JSXElement {
                   <Button
                     variant="button"
                     text={ql.label}
-                    fa={ql.value === "-3" ? { icon: "fa-heart" } : undefined}
                     active={isQuoteLengthActive(ql.value)}
                     onClick={(e) => handleQuoteLengthClick(ql.value, e)}
                   />
