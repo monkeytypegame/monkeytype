@@ -27,7 +27,6 @@ export function InputField(props: {
           props.showIndicator === true ? "pr-[1.85em]" : "",
           props.class,
         )}
-        id={props.field().name as string}
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? (props.field().name as string)}
         // oxlint-disable-next-line react/no-unknown-property

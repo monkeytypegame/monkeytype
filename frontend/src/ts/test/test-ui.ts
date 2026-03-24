@@ -50,7 +50,6 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as Ligatures from "./break-ligatures";
@@ -1888,7 +1887,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   qs("#result")?.hide();
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
-  TestConfig.show();
   Focus.set(false);
   LiveSpeed.instantHide();
   LiveSpeed.reset();

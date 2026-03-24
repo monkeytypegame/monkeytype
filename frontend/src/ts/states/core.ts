@@ -36,3 +36,6 @@ export const isLoggedIn = (): boolean => getUserId() !== null;
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
+
+export const [getResultVisible, setResultVisible] =
+  createSignal<boolean>(false);
