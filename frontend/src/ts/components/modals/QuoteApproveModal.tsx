@@ -13,6 +13,7 @@ import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
+import { InputField } from "../ui/form/InputField";
 
 function QuoteApproveItem(props: {
   quote: Quote;
@@ -116,13 +117,11 @@ function QuoteApproveItem(props: {
       <form.Field
         name="source"
         children={(field) => (
-          <input
+          <InputField
             class="w-full rounded bg-bg p-2 text-text"
             type="text"
             placeholder="Source"
-            value={field().state.value}
-            onInput={(e) => field().handleChange(e.currentTarget.value)}
-            onBlur={() => field().handleBlur()}
+            field={field}
             disabled={disabled()}
           />
         )}
