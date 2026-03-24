@@ -1,4 +1,4 @@
-import { ComponentProps, JSXElement, Show } from "solid-js";
+import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
@@ -12,6 +12,7 @@ import {
   restartTestEvent,
 } from "../../../states/core";
 import { showModal } from "../../../states/modals";
+import { FaSolidIcon } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime, AnimeShow } from "../../common/anime";
@@ -61,7 +62,32 @@ export function TestConfig(): JSXElement {
   );
 }
 
+function TCButton(props: {
+  icon: FaSolidIcon;
+  text: string;
+  active?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}): JSXElement {
+  return (
+    <Button
+      variant="text"
+      class={cn(buttonClass)}
+      fa={{ icon: props.icon, fixedWidth: true }}
+      text={props.text}
+      active={props.active}
+      onClick={props.onClick}
+      disabled={props.disabled}
+    />
+  );
+}
+
 function PuncAndNum(): JSXElement {
+  const buttons = [
+    { icon: "fa-at", configKey: "punctuation" },
+    { icon: "fa-hashtag", configKey: "numbers" },
+  ] as const;
+
   return (
     <Anime
       class="mr-(--card-gap) w-max place-self-end"
@@ -73,36 +99,22 @@ function PuncAndNum(): JSXElement {
     >
       <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
         <div class={cardClass}>
-          <Button
-            class={buttonClass}
-            variant="text"
-            fa={{
-              icon: "fa-at",
-              fixedWidth: true,
-            }}
-            text="punctuation"
-            active={getConfig.punctuation}
-            disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
-            onClick={() => {
-              setConfig("punctuation", !getConfig.punctuation);
-              restartTestEvent.dispatch();
-            }}
-          />
-          <Button
-            class={buttonClass}
-            variant="text"
-            fa={{
-              icon: "fa-hashtag",
-              fixedWidth: true,
-            }}
-            text="numbers"
-            active={getConfig.numbers}
-            disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
-            onClick={() => {
-              setConfig("numbers", !getConfig.numbers);
-              restartTestEvent.dispatch();
-            }}
-          />
+          <For each={buttons}>
+            {({ icon, configKey }) => (
+              <TCButton
+                icon={icon}
+                text={configKey}
+                active={getConfig[configKey]}
+                disabled={
+                  getConfig.mode === "zen" || getConfig.mode === "quote"
+                }
+                onClick={() => {
+                  setConfig(configKey, !getConfig[configKey]);
+                  restartTestEvent.dispatch();
+                }}
+              />
+            )}
+          </For>
         </div>
       </AnimeShow>
     </Anime>
@@ -110,78 +122,29 @@ function PuncAndNum(): JSXElement {
 }
 
 function Mode(): JSXElement {
+  const modes = [
+    { icon: "fa-clock", mode: "time" },
+    { icon: "fa-font", mode: "words" },
+    { icon: "fa-quote-left", mode: "quote" },
+    { icon: "fa-mountain", mode: "zen" },
+    { icon: "fa-wrench", mode: "custom" },
+  ] as const;
+
   return (
     <div class={cn("z-2", cardClass)}>
-      <Button
-        class={buttonClass}
-        variant="text"
-        fa={{
-          icon: "fa-clock",
-          fixedWidth: true,
-        }}
-        text="time"
-        active={getConfig.mode === "time"}
-        onClick={() => {
-          setConfig("mode", "time");
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        fa={{
-          icon: "fa-font",
-          fixedWidth: true,
-        }}
-        text="words"
-        active={getConfig.mode === "words"}
-        onClick={() => {
-          setConfig("mode", "words");
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        fa={{
-          icon: "fa-quote-left",
-          fixedWidth: true,
-        }}
-        text="quote"
-        active={getConfig.mode === "quote"}
-        onClick={() => {
-          setConfig("mode", "quote");
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        fa={{
-          icon: "fa-mountain",
-          fixedWidth: true,
-        }}
-        text="zen"
-        active={getConfig.mode === "zen"}
-        onClick={() => {
-          setConfig("mode", "zen");
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        fa={{
-          icon: "fa-wrench",
-          fixedWidth: true,
-        }}
-        text="custom"
-        active={getConfig.mode === "custom"}
-        onClick={() => {
-          setConfig("mode", "custom");
-          restartTestEvent.dispatch();
-        }}
-      />
+      <For each={modes}>
+        {({ icon, mode }) => (
+          <TCButton
+            icon={icon}
+            text={mode}
+            active={getConfig.mode === mode}
+            onClick={() => {
+              setConfig("mode", mode);
+              restartTestEvent.dispatch();
+            }}
+          />
+        )}
+      </For>
     </div>
   );
 }
@@ -296,52 +259,28 @@ function Mode2(): JSXElement {
 }
 
 function Mode2Time(props: ComponentProps<"div">): JSXElement {
+  const times = [15, 30, 60, 120] as const;
+
   return (
     <div {...props}>
+      <For each={times}>
+        {(time) => (
+          <Button
+            class={buttonClass}
+            variant="text"
+            text={`${time}`}
+            active={getConfig.time === time}
+            onClick={() => {
+              setConfig("time", time);
+              restartTestEvent.dispatch();
+            }}
+          />
+        )}
+      </For>
       <Button
         class={buttonClass}
         variant="text"
-        text="15"
-        active={getConfig.time === 15}
-        onClick={() => {
-          setConfig("time", 15);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="30"
-        active={getConfig.time === 30}
-        onClick={() => {
-          setConfig("time", 30);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="60"
-        active={getConfig.time === 60}
-        onClick={() => {
-          setConfig("time", 60);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="120"
-        active={getConfig.time === 120}
-        onClick={() => {
-          setConfig("time", 120);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        active={![15, 30, 60, 120].includes(getConfig.time)}
+        active={!times.includes(getConfig.time as (typeof times)[number])}
         fa={{
           icon: "fa-tools",
           fixedWidth: true,
@@ -355,52 +294,30 @@ function Mode2Time(props: ComponentProps<"div">): JSXElement {
 }
 
 function Mode2Words(props: ComponentProps<"div">): JSXElement {
+  const wordCounts = [10, 25, 50, 100] as const;
+
   return (
     <div {...props}>
+      <For each={wordCounts}>
+        {(count) => (
+          <Button
+            class={buttonClass}
+            variant="text"
+            text={`${count}`}
+            active={getConfig.words === count}
+            onClick={() => {
+              setConfig("words", count);
+              restartTestEvent.dispatch();
+            }}
+          />
+        )}
+      </For>
       <Button
         class={buttonClass}
         variant="text"
-        text="10"
-        active={getConfig.words === 10}
-        onClick={() => {
-          setConfig("words", 10);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="25"
-        active={getConfig.words === 25}
-        onClick={() => {
-          setConfig("words", 25);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="50"
-        active={getConfig.words === 50}
-        onClick={() => {
-          setConfig("words", 50);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="100"
-        active={getConfig.words === 100}
-        onClick={() => {
-          setConfig("words", 100);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        active={![10, 25, 50, 100].includes(getConfig.words)}
+        active={
+          !wordCounts.includes(getConfig.words as (typeof wordCounts)[number])
+        }
         fa={{
           icon: "fa-tools",
           fixedWidth: true,
@@ -414,6 +331,13 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
 }
 
 function Mode2Quote(props: ComponentProps<"div">): JSXElement {
+  const quoteLengths = [
+    { text: "short", length: 0 },
+    { text: "medium", length: 1 },
+    { text: "long", length: 2 },
+    { text: "thicc", length: 3 },
+  ] as const;
+
   return (
     <div {...props}>
       <Button
@@ -426,46 +350,20 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           restartTestEvent.dispatch();
         }}
       />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="short"
-        active={areUnsortedArraysEqual(getConfig.quoteLength, [0])}
-        onClick={() => {
-          setConfig("quoteLength", [0]);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="medium"
-        active={areUnsortedArraysEqual(getConfig.quoteLength, [1])}
-        onClick={() => {
-          setConfig("quoteLength", [1]);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="long"
-        active={areUnsortedArraysEqual(getConfig.quoteLength, [2])}
-        onClick={() => {
-          setConfig("quoteLength", [2]);
-          restartTestEvent.dispatch();
-        }}
-      />
-      <Button
-        class={buttonClass}
-        variant="text"
-        text="thicc"
-        active={areUnsortedArraysEqual(getConfig.quoteLength, [3])}
-        onClick={() => {
-          setConfig("quoteLength", [3]);
-          restartTestEvent.dispatch();
-        }}
-      />
+      <For each={quoteLengths}>
+        {({ text, length }) => (
+          <Button
+            class={buttonClass}
+            variant="text"
+            text={text}
+            active={areUnsortedArraysEqual(getConfig.quoteLength, [length])}
+            onClick={() => {
+              setConfig("quoteLength", [length]);
+              restartTestEvent.dispatch();
+            }}
+          />
+        )}
+      </For>
       <Show when={isLoggedIn()}>
         <Button
           class={buttonClass}
