@@ -8,6 +8,7 @@ import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
 import SlimSelect from "../ui/SlimSelect";
 
 type CustomTextIncomingData =
@@ -184,12 +185,7 @@ export function CustomGeneratorModal(props: {
             }}
           >
             {(field) => (
-              <textarea
-                class="min-h-25 w-full resize-y rounded border-none bg-sub-alt p-2 text-text"
-                autocomplete="off"
-                value={field().state.value}
-                onInput={(e) => field().handleChange(e.currentTarget.value)}
-              ></textarea>
+              <TextareaField field={field} class="min-h-25 p-2 text-text" />
             )}
           </form.Field>
         </div>
