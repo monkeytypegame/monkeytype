@@ -1,20 +1,32 @@
 import { JSXElement } from "solid-js";
 
+import { useQuoteRatingsLiveQuery } from "../../../collections/quote-ratings";
 import { getFocus, getIsScreenshotting } from "../../../states/core";
 import { showModal } from "../../../states/modals";
+import { getCurrentQuote } from "../../../states/test";
 import { cn } from "../../../utils/cn";
+import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
+  const ratingQuery = useQuoteRatingsLiveQuery(() => getCurrentQuote());
+
   return (
     <footer
       class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
+      <AsyncContent collection={ratingQuery}>
+        {(rating) => (
+          <pre>
+            {getCurrentQuote()?.id} {JSON.stringify(rating)}
+          </pre>
+        )}
+      </AsyncContent>
       <Keytips />
 
       <div

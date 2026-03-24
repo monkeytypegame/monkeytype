@@ -54,9 +54,9 @@ import { z } from "zod";
 import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
-import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { getCurrentQuote } from "../states/test";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -1058,7 +1058,7 @@ export async function update(
       qs("main #result #rateQuoteButton")?.hide();
       qs("main #result #reportQuoteButton")?.hide();
     } else {
-      updateRateQuote(currentQuote);
+      updateRateQuote(getCurrentQuote());
       qs("main #result #reportQuoteButton")?.show();
     }
     qs("main #result .stats .dailyLeaderboard")?.hide();

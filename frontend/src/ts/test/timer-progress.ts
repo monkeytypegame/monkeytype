@@ -9,6 +9,7 @@ import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { animate } from "animejs";
+import { getCurrentQuote } from "../states/test";
 
 const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
 const barOpacityEl = document.querySelector(
@@ -206,7 +207,7 @@ export function update(): void {
         outof = CustomText.getLimitValue();
       }
       if (Config.mode === "quote") {
-        outof = TestWords.currentQuote?.textSplit.length ?? 1;
+        outof = getCurrentQuote()?.textSplit.length ?? 1;
       }
       if (Config.timerStyle === "bar") {
         const percent = Math.floor(

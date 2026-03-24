@@ -6,8 +6,8 @@ import {
 } from "../../states/notifications";
 import { isAuthenticated } from "../../firebase";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
-import * as TestWords from "../../test/test-words";
 import { Command } from "../types";
+import { getCurrentQuote } from "../../states/test";
 
 const commands: Command[] = [
   {
@@ -15,7 +15,7 @@ const commands: Command[] = [
     display: "Add current quote to favorite",
     icon: "fa-heart",
     available: (): boolean => {
-      const quote = TestWords.currentQuote;
+      const quote = getCurrentQuote();
       return (
         isAuthenticated() &&
         quote !== null &&
@@ -27,7 +27,7 @@ const commands: Command[] = [
       try {
         showLoaderBar();
         await QuotesController.setQuoteFavorite(
-          TestWords.currentQuote as Quote,
+          getCurrentQuote() as Quote,
           true,
         );
         hideLoaderBar();
@@ -43,7 +43,7 @@ const commands: Command[] = [
     display: "Remove current quote from favorite",
     icon: "fa-heart-broken",
     available: (): boolean => {
-      const quote = TestWords.currentQuote;
+      const quote = getCurrentQuote();
       return (
         isAuthenticated() &&
         quote !== null &&
@@ -55,7 +55,7 @@ const commands: Command[] = [
       try {
         showLoaderBar();
         await QuotesController.setQuoteFavorite(
-          TestWords.currentQuote as Quote,
+          getCurrentQuote() as Quote,
           false,
         );
         hideLoaderBar();

@@ -69,6 +69,7 @@ import {
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
+import { getCurrentQuote } from "../states/test";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1136,7 +1137,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 }
 
 export function updatePremid(): void {
-  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let fbtext = "";
   if (Config.funbox.length > 0) {
     fbtext = " " + Config.funbox.join(" ");

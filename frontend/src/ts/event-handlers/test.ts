@@ -5,7 +5,6 @@ import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
 import * as CustomTestDurationModal from "../modals/custom-test-duration";
-import * as TestWords from "../test/test-words";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -20,6 +19,7 @@ import { ConfigKey } from "@monkeytype/schemas/configs";
 import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
 import { showModal } from "../states/modals";
+import { getCurrentQuote } from "../states/test";
 
 const testPage = qs(".pageTest");
 
@@ -76,19 +76,21 @@ testPage?.onChild("click", "#mobileTestConfigButton", () => {
 });
 
 qs(".pageTest #rateQuoteButton")?.on("click", async () => {
-  if (TestWords.currentQuote === null) {
+  const currentQuote = getCurrentQuote();
+  if (currentQuote === null) {
     showErrorNotification("Failed to show quote rating popup: no quote");
     return;
   }
-  showQuoteRateModal(TestWords.currentQuote);
+  showQuoteRateModal(currentQuote);
 });
 
 qs(".pageTest #reportQuoteButton")?.on("click", async () => {
-  if (TestWords.currentQuote === null) {
+  const currentQuote = getCurrentQuote();
+  if (currentQuote === null) {
     showErrorNotification("Failed to show quote report popup: no quote");
     return;
   }
-  showQuoteReportModal(TestWords.currentQuote?.id);
+  showQuoteReportModal(currentQuote?.id);
 });
 
 testPage?.onChild("click", "#testConfig .quoteLength .textButton", (event) => {
