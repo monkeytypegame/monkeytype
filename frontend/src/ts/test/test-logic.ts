@@ -24,7 +24,7 @@ import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRateModal from "../modals/quote-rate";
+import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import { restartTestEvent } from "../events/test";
@@ -141,7 +141,7 @@ export function startTest(now: number): boolean {
   TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
-  TestInput.resetKeypressTimings();
+  TestInput.resetKeypressTimings(true);
   Time.set(0);
   TestTimer.clear();
 
@@ -303,7 +303,7 @@ export function restart(options = {} as RestartOptions): void {
   Caret.resetPosition();
   PaceCaret.reset();
   TestInput.input.setKoreanStatus(false);
-  QuoteRateModal.clearQuoteStats();
+  clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
 
@@ -1012,7 +1012,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   //afk check
   const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.every((afk) => afk);
+  let afkDetected = kps.length > 0 && kps.every((afk) => afk);
+
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);

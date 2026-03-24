@@ -12,6 +12,8 @@ export function InputField(props: {
   type?: string;
   disabled?: boolean;
   class?: string;
+  dir?: "ltr" | "rtl" | "auto";
+  maxLength?: number;
   onFocus?: () => void;
 }): JSXElement {
   return (
@@ -36,6 +38,8 @@ export function InputField(props: {
         onInput={(e) => props.field().handleChange(e.target.value)}
         disabled={props.disabled}
         onFocus={() => props.onFocus?.()}
+        dir={props.dir}
+        maxLength={props.maxLength}
       />
       <Show when={props.showIndicator}>
         <FieldIndicator field={props.field()} />

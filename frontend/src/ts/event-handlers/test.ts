@@ -10,10 +10,8 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../states/notifications";
-import * as QuoteRateModal from "../modals/quote-rate";
-import * as QuoteReportModal from "../modals/quote-report";
-import * as QuoteSearchModal from "../modals/quote-search";
-import * as CustomTextModal from "../modals/custom-text";
+import { showQuoteRateModal } from "../states/quote-rate";
+import { showQuoteReportModal } from "../states/quote-report";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
@@ -21,6 +19,7 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
+import { showModal } from "../states/modals";
 
 const testPage = qs(".pageTest");
 
@@ -81,7 +80,7 @@ qs(".pageTest #rateQuoteButton")?.on("click", async () => {
     showErrorNotification("Failed to show quote rating popup: no quote");
     return;
   }
-  QuoteRateModal.show(TestWords.currentQuote);
+  showQuoteRateModal(TestWords.currentQuote);
 });
 
 qs(".pageTest #reportQuoteButton")?.on("click", async () => {
@@ -89,19 +88,19 @@ qs(".pageTest #reportQuoteButton")?.on("click", async () => {
     showErrorNotification("Failed to show quote report popup: no quote");
     return;
   }
-  void QuoteReportModal.show(TestWords.currentQuote?.id);
+  showQuoteReportModal(TestWords.currentQuote?.id);
 });
 
 testPage?.onChild("click", "#testConfig .quoteLength .textButton", (event) => {
   const target = event.childTarget as HTMLElement;
   const len = parseInt(target?.getAttribute("quoteLength") ?? "0");
   if (len === -2) {
-    void QuoteSearchModal.show();
+    showModal("QuoteSearch");
   }
 });
 
 testPage?.onChild("click", "#testConfig .customText .textButton", () => {
-  CustomTextModal.show();
+  showModal("CustomText");
 });
 
 testPage?.onChild("click", "#practiseWordsButton", () => {

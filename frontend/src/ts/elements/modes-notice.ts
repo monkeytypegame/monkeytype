@@ -12,7 +12,11 @@ import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
-import { wordsHasNewline, wordsHasTab } from "../states/test";
+import {
+  wordsHasNewline,
+  wordsHasTab,
+  getLoadedChallenge,
+} from "../states/test";
 
 configEvent.subscribe(({ key }) => {
   const configKeys: ConfigEventKey[] = [
@@ -92,9 +96,10 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (TestState.activeChallenge) {
+  const loadedChallenge = getLoadedChallenge();
+  if (loadedChallenge !== null) {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`,
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${loadedChallenge.display}</div>`,
     );
   }
 

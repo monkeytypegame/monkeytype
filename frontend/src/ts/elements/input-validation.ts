@@ -190,6 +190,7 @@ export class ValidatedHtmlInputElement<
 
   override setValue(val: string | null): this {
     if (val === null) {
+      super.setValue("");
       this.indicator.hide();
       this.currentStatus = { status: "checking", success: false };
     } else {

@@ -3,14 +3,13 @@ import { Config } from "../config/store";
 import { setConfig, setQuoteLengthAll } from "../config/setters";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
-import * as QuoteSearchModal from "./quote-search";
-import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as ShareTestSettingsPopup from "./share-test-settings";
 import { ElementWithUtils } from "../utils/dom";
+import { showModal } from "../states/modals";
 
 function update(): void {
   const el = modal.getModal();
@@ -126,9 +125,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
         TestLogic.restart();
       }
     } else if (lenAttr === "-2") {
-      void QuoteSearchModal.show({
-        modalChain: modal,
-      });
+      showModal("QuoteSearch");
     } else {
       const len = parseInt(lenAttr, 10) as QuoteLength;
       let arr: QuoteLengthConfig = [];
@@ -146,9 +143,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
 
   modalEl.qs(".customChange")?.on("click", () => {
-    CustomTextPopup.show({
-      modalChain: modal,
-    });
+    showModal("CustomText");
   });
 
   modalEl.qs(".punctuation")?.on("click", () => {

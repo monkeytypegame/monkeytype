@@ -21,7 +21,7 @@ import { setConfig } from "../config/setters";
 import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../modals/custom-text";
+import { showModal } from "../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -30,7 +30,6 @@ import {
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchModal from "../modals/quote-search";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
@@ -79,7 +78,7 @@ export const commands: CommandsSubgroup = {
       display: "Change custom text",
       icon: "fa-align-left",
       exec: (): void => {
-        CustomTextPopup.show();
+        showModal("CustomText");
       },
     },
     {
@@ -88,7 +87,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         setConfig("mode", "quote");
-        void QuoteSearchModal.show();
+        showModal("QuoteSearch");
       },
       shouldFocusTestUI: false,
     },
