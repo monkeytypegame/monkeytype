@@ -219,6 +219,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   ],
   bangla: ["bangla", "bangla_letters", "bangla_10k"],
   urdu: ["urdu", "urdu_1k", "urdu_5k", "urdish"],
+  urdu_roman: ["urdu_roman"],
   albanian: ["albanian", "albanian_1k"],
   shona: ["shona", "shona_1k"],
   armenian: [
