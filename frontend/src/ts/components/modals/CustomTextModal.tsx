@@ -24,6 +24,7 @@ import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 import { Separator } from "../common/Separator";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
 import { CustomGeneratorModal } from "./CustomGeneratorModal";
 import { SaveCustomTextModal } from "./SaveCustomTextModal";
 import { SavedTextsModal } from "./SavedTextsModal";
@@ -471,14 +472,13 @@ export function CustomTextModal(): JSXElement {
               </Show>
               <form.Field name="text">
                 {(field) => (
-                  <textarea
+                  <TextareaField
+                    field={field}
                     ref={textareaRef}
-                    class="min-h-[730px] w-full resize-y self-start overflow-x-hidden overflow-y-scroll rounded bg-sub-alt p-4 text-base font-(--font) text-text outline-none"
-                    value={field().state.value}
-                    onInput={(e) => field().handleChange(e.currentTarget.value)}
+                    class="min-h-182.5 self-start overflow-x-hidden overflow-y-scroll p-4 text-base font-(--font) text-text"
                     onKeyDown={handleTextareaKeydown}
                     onKeyPress={handleTextareaKeypress}
-                  ></textarea>
+                  />
                 )}
               </form.Field>
             </div>
