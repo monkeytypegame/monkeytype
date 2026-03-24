@@ -17,6 +17,7 @@ import {
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { InputField } from "../ui/form/InputField";
 import { fieldMandatory } from "../ui/form/utils";
 import SlimSelect from "../ui/SlimSelect";
 
@@ -148,12 +149,10 @@ export function QuoteSubmitModal(): JSXElement {
           children={(field) => (
             <div class="grid gap-1">
               <label class="text-xs text-sub">source</label>
-              <input
+              <InputField
                 class="bg-bg-secondary w-full rounded p-2 text-text"
                 type="text"
-                value={field().state.value}
-                onInput={(e) => field().handleChange(e.currentTarget.value)}
-                onBlur={() => field().handleBlur()}
+                field={field}
                 autocomplete="off"
               />
             </div>
