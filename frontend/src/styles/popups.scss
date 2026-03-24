@@ -153,27 +153,6 @@ body.darkMode {
   }
 }
 
-#customWordAmountModal {
-  .modal {
-    max-width: 500px;
-    .tip {
-      font-size: 0.75rem;
-      color: var(--text-color);
-    }
-  }
-}
-
-#customTestDurationModal {
-  .modal {
-    max-width: 500px;
-    .tip,
-    .preview {
-      font-size: 0.75rem;
-      color: var(--text-color);
-    }
-  }
-}
-
 #googleSignUpModal {
   .modal {
     max-width: 425px;
@@ -261,18 +240,6 @@ body.darkMode {
   }
 }
 
-#shareTestSettingsModal {
-  .modal {
-    max-width: 600px;
-    .subgroup {
-      padding-left: 2rem;
-    }
-    .tooLongWarning {
-      font-size: 0.75rem;
-      color: var(--error-color);
-    }
-  }
-}
 #cookiesModal {
   align-items: end;
   justify-items: end;
