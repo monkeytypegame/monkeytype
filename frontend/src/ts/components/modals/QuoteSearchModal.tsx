@@ -1,3 +1,4 @@
+import { createForm } from "@tanstack/solid-form";
 import {
   JSXElement,
   createSignal,
@@ -6,6 +7,7 @@ import {
   Show,
   on,
 } from "solid-js";
+import { debounce } from "throttle-debounce";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
@@ -38,6 +40,7 @@ import {
 import { highlightMatches } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { InputField } from "../ui/form/InputField";
 import SlimSelect from "../ui/SlimSelect";
 import { QuoteApproveModal } from "./QuoteApproveModal";
 import { QuoteSubmitModal } from "./QuoteSubmitModal";
@@ -193,7 +196,12 @@ function Item(props: {
 }
 
 export function QuoteSearchModal(): JSXElement {
-  const [searchText, setSearchText] = createSignal("");
+  const form = createForm(() => ({
+    defaultValues: {
+      searchText: "",
+    },
+  }));
+
   const [currentPage, setCurrentPage] = createSignal(1);
   const [lengthFilter, setLengthFilter] = createSignal<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = createSignal(false);
@@ -208,7 +216,10 @@ export function QuoteSearchModal(): JSXElement {
   const [dataBalloonDirection, setDataBalloonDirection] = createSignal("left");
   const [favVersion, setFavVersion] = createSignal(0);
 
-  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  const debouncedSearch = debounce(250, (text: string) => {
+    setCurrentPage(1);
+    performSearch(text);
+  });
 
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
@@ -328,17 +339,6 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   createEffect(
-    on(searchText, (text) => {
-      if (!isOpen()) return;
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        setCurrentPage(1);
-        performSearch(text);
-      }, 250);
-    }),
-  );
-
-  createEffect(
     on(lengthFilter, (lengths) => {
       if (lengths.includes("4") && !hasCustomFilter()) {
         showSimpleModal({
@@ -365,7 +365,7 @@ export function QuoteSearchModal(): JSXElement {
   );
 
   const handleBeforeShow = (): void => {
-    setSearchText("");
+    form.reset();
     setCurrentPage(1);
     setLengthFilter([]);
     setShowFavoritesOnly(false);
@@ -379,7 +379,7 @@ export function QuoteSearchModal(): JSXElement {
       Config.language,
     );
     setQuotes(fetchedQuotes);
-    performSearch(searchText());
+    performSearch("");
   };
 
   const applyQuote = (quoteId: number): void => {
@@ -438,12 +438,17 @@ export function QuoteSearchModal(): JSXElement {
     showModal("QuoteSubmit");
   };
 
+  const handleBeforeHide = (): void => {
+    debouncedSearch.cancel();
+  };
+
   return (
     <>
       <AnimatedModal
         id="QuoteSearch"
         focusFirstInput={true}
         beforeShow={handleBeforeShow}
+        beforeHide={handleBeforeHide}
         afterShow={handleAfterShow}
         modalClass="max-w-[1000px] h-[80vh] grid-rows-[auto_auto_1fr_auto]"
       >
@@ -467,15 +472,24 @@ export function QuoteSearchModal(): JSXElement {
           </div>
         </div>
         <div class="flex flex-col gap-4 sm:flex-row">
-          <input
-            class="grow-3"
-            type="text"
-            maxLength={200}
-            autocomplete="off"
-            placeholder="filter by text, source or id"
-            dir="auto"
-            value={searchText()}
-            onInput={(e) => setSearchText(e.currentTarget.value)}
+          <form.Field
+            name="searchText"
+            listeners={{
+              onChange: ({ value }) => {
+                if (!isOpen()) return;
+                debouncedSearch(value);
+              },
+            }}
+            children={(field) => (
+              <InputField
+                class="grow-3"
+                field={field}
+                placeholder="filter by text, source or id"
+                autocomplete="off"
+                dir="auto"
+                maxLength={200}
+              />
+            )}
           />
           <div class="grow">
             <SlimSelect
