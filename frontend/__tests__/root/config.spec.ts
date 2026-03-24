@@ -109,6 +109,28 @@ describe("Config", () => {
       expect(Config.setConfig("showAllLines", true)).toBe(false);
     });
 
+    it("shows a notice when monkey conflicts with live text stats", () => {
+      //GIVEN
+      replaceConfig({ liveSpeedStyle: "text", monkey: false });
+
+      //WHEN / THEN
+      expect(Config.setConfig("monkey", true)).toBe(false);
+      expect(notificationAddMock).toHaveBeenCalledWith(
+        "Monkey can't be enabled while live speed or live accuracy is set to text.",
+      );
+    });
+
+    it("shows a notice when live speed text conflicts with monkey", () => {
+      //GIVEN
+      replaceConfig({ monkey: true, liveSpeedStyle: "off" });
+
+      //WHEN / THEN
+      expect(Config.setConfig("liveSpeedStyle", "text")).toBe(false);
+      expect(notificationAddMock).toHaveBeenCalledWith(
+        "Live speed can't be set to text while monkey is enabled.",
+      );
+    });
+
     it("should use overrideValue", () => {
       //WHEN
       Config.setConfig("customLayoutfluid", ["3l", "ABNT2", "3l"]);

@@ -163,6 +163,19 @@ describe("ConfigMeta", () => {
         { value: false, given: { tapeMode: "word" } },
         { value: true, given: { tapeMode: "word" }, fail: true },
       ],
+      monkey: [
+        { value: false, given: { liveSpeedStyle: "text" } },
+        { value: true, given: { liveSpeedStyle: "text" }, fail: true },
+        { value: true, given: { liveAccStyle: "text" }, fail: true },
+      ],
+      liveSpeedStyle: [
+        { value: "mini", given: { monkey: true } },
+        { value: "text", given: { monkey: true }, fail: true },
+      ],
+      liveAccStyle: [
+        { value: "mini", given: { monkey: true } },
+        { value: "text", given: { monkey: true }, fail: true },
+      ],
     };
 
     it.for(

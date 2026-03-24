@@ -532,12 +532,30 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live speed style",
     changeRequiresRestart: false,
     group: "appearance",
+    isBlocked: ({ value, currentConfig }) => {
+      if (value === "text" && currentConfig.monkey) {
+        showNoticeNotification(
+          "Live speed can't be set to text while monkey is enabled.",
+        );
+        return true;
+      }
+      return false;
+    },
   },
   liveAccStyle: {
     icon: "fa-tachometer-alt",
     displayString: "live accuracy style",
     changeRequiresRestart: false,
     group: "appearance",
+    isBlocked: ({ value, currentConfig }) => {
+      if (value === "text" && currentConfig.monkey) {
+        showNoticeNotification(
+          "Live accuracy can't be set to text while monkey is enabled.",
+        );
+        return true;
+      }
+      return false;
+    },
   },
   liveBurstStyle: {
     icon: "fa-tachometer-alt",
@@ -873,6 +891,19 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "monkey",
     changeRequiresRestart: false,
     group: "hidden",
+    isBlocked: ({ value, currentConfig }) => {
+      if (
+        value &&
+        (currentConfig.liveSpeedStyle === "text" ||
+          currentConfig.liveAccStyle === "text")
+      ) {
+        showNoticeNotification(
+          "Monkey can't be enabled while live speed or live accuracy is set to text.",
+        );
+        return true;
+      }
+      return false;
+    },
   },
   monkeyPowerLevel: {
     icon: "fa-egg",
