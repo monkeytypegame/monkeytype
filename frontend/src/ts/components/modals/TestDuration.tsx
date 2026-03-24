@@ -1,21 +1,46 @@
-import { createEffect, createSignal, JSXElement } from "solid-js";
+import { createForm } from "@tanstack/solid-form";
+import { JSXElement } from "solid-js";
 
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../states/core";
-import {
-  getModalVisibility,
-  hideModalAndClearChain,
-} from "../../states/modals";
+import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Button } from "../common/Button";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
 
 export function TestDuration(): JSXElement {
-  const [input, setInput] = createSignal(getConfig.time.toString());
+  const form = createForm(() => ({
+    defaultValues: {
+      duration: getConfig.time.toString(),
+    },
+    onSubmit: ({ value }) => {
+      const val = parseInput(value.duration);
+
+      if (isNaN(val) || val < 0 || !isFinite(val)) {
+        showNoticeNotification("Custom time must be a positive number or zero");
+        return;
+      }
+
+      setConfig("time", val);
+      restartTestEvent.dispatch();
+
+      if (val >= 1800) {
+        showNoticeNotification("Stay safe and take breaks!");
+      } else if (val === 0) {
+        showNoticeNotification(
+          "Infinite time! Make sure to use Bail Out from the command line to save your result.",
+          { durationMs: 7000 },
+        );
+      }
+
+      hideModalAndClearChain("TestDuration");
+    },
+  }));
 
   const humanTime = () => {
-    const duration = parseInput(input());
+    const duration = parseInput(form.getFieldValue("duration"));
 
     if (duration < 0) {
       return "Negative time? Really?";
@@ -26,48 +51,36 @@ export function TestDuration(): JSXElement {
     }
   };
 
-  createEffect(() => {
-    getModalVisibility("TestDuration"); // re-run when visibility changes
-    setInput(getConfig.time.toString());
-  });
-
-  const apply = () => {
-    const val = parseInput(input());
-
-    if (isNaN(val) || val < 0 || !isFinite(val)) {
-      showNoticeNotification("Custom time must be a positive number or zero");
-      return;
-    }
-
-    setConfig("time", val);
-    restartTestEvent.dispatch();
-
-    if (val >= 1800) {
-      showNoticeNotification("Stay safe and take breaks!");
-    } else if (val === 0) {
-      showNoticeNotification(
-        "Infinite time! Make sure to use Bail Out from the command line to save your result.",
-        { durationMs: 7000 },
-      );
-    }
-
-    hideModalAndClearChain("TestDuration");
-  };
-
   return (
-    <AnimatedModal id="TestDuration" title="Test Duration">
+    <AnimatedModal
+      id="TestDuration"
+      title="Test Duration"
+      beforeShow={() => {
+        form.reset({ duration: getConfig.time.toString() });
+      }}
+    >
       <form
         class="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          apply();
+          e.stopPropagation();
+          void form.handleSubmit();
         }}
       >
         <div class="text-xs">{humanTime()}</div>
-        <input
-          type="text"
-          value={input()}
-          onInput={(e) => setInput(e.currentTarget.value)}
+        <form.Field
+          name="duration"
+          validators={{
+            onChange: ({ value }) => {
+              const val = parseInput(value);
+              if (isNaN(val) || !isFinite(val)) return "Must be a number";
+              if (val < 0) return "Must be non-negative";
+              return undefined;
+            },
+          }}
+          children={(field) => (
+            <InputField field={field} type="text" placeholder="duration" />
+          )}
         />
         <div class="text-xs">
           You can use &ldquo;h&rdquo; for hours and &ldquo;m&rdquo; for minutes,
@@ -79,7 +92,12 @@ export function TestDuration(): JSXElement {
           <br />(<kbd>esc</kbd> or <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> +{" "}
           <kbd>p</kbd> &gt; Bail Out)
         </div>
-        <Button variant="button" text="apply" onClick={apply} />
+        <SubmitButton
+          form={form}
+          variant="button"
+          text="apply"
+          skipDirtyCheck
+        />
       </form>
     </AnimatedModal>
   );

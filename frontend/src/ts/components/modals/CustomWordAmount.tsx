@@ -1,68 +1,76 @@
-import { createEffect, createSignal, JSXElement } from "solid-js";
+import { createForm } from "@tanstack/solid-form";
+import { JSXElement } from "solid-js";
 
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../states/core";
-import {
-  getModalVisibility,
-  hideModalAndClearChain,
-} from "../../states/modals";
+import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Button } from "../common/Button";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
 
 export function CustomWordAmount(): JSXElement {
-  const [input, setInput] = createSignal(getConfig.words.toString());
+  const form = createForm(() => ({
+    defaultValues: {
+      words: getConfig.words.toString(),
+    },
+    onSubmit: ({ value }) => {
+      const val = parseInt(value.words, 10);
 
-  createEffect(() => {
-    getModalVisibility("CustomWordAmount");
-    setInput(getConfig.words.toString());
-  });
+      if (isNaN(val) || val < 0 || !isFinite(val)) {
+        showNoticeNotification(
+          "Custom word amount must be a non-negative number",
+        );
+        return;
+      }
 
-  const apply = () => {
-    const val = parseInt(input(), 10);
+      setConfig("words", val);
+      restartTestEvent.dispatch();
 
-    if (isNaN(val) || val < 0 || !isFinite(val)) {
-      showNoticeNotification(
-        "Custom word amount must be a non-negative number",
-      );
-      return;
-    }
+      if (val > 2000) {
+        showNoticeNotification("Stay safe and take breaks!");
+      } else if (val === 0) {
+        showNoticeNotification(
+          "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+          { durationMs: 7000 },
+        );
+      }
 
-    setConfig("words", val);
-    restartTestEvent.dispatch();
-
-    if (val > 2000) {
-      showNoticeNotification("Stay safe and take breaks!");
-    } else if (val === 0) {
-      showNoticeNotification(
-        "Infinite words! Make sure to use Bail Out from the command line to save your result.",
-        { durationMs: 7000 },
-      );
-    }
-
-    hideModalAndClearChain("CustomWordAmount");
-  };
+      hideModalAndClearChain("CustomWordAmount");
+    },
+  }));
 
   return (
     <AnimatedModal
       id="CustomWordAmount"
       title="Custom word amount"
       focusFirstInput="focusAndSelect"
+      beforeShow={() => {
+        form.reset({ words: getConfig.words.toString() });
+      }}
     >
       <form
         class="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          apply();
+          e.stopPropagation();
+          void form.handleSubmit();
         }}
       >
-        <input
-          type="number"
-          min="0"
-          max="10000"
-          value={input()}
-          onInput={(e) => setInput(e.currentTarget.value)}
+        <form.Field
+          name="words"
+          validators={{
+            onChange: ({ value }) => {
+              const val = parseInt(value, 10);
+              if (isNaN(val) || !isFinite(val)) return "Must be a number";
+              if (val < 0) return "Must be non-negative";
+              return undefined;
+            },
+          }}
+          children={(field) => (
+            <InputField field={field} type="number" placeholder="word amount" />
+          )}
         />
         <div class="text-xs">
           You can start an infinite test by inputting 0. Then, to stop the test,
@@ -70,7 +78,12 @@ export function CustomWordAmount(): JSXElement {
           <br />(<kbd>esc</kbd> or <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> +{" "}
           <kbd>p</kbd> &gt; Bail Out)
         </div>
-        <Button variant="button" text="apply" onClick={apply} />
+        <SubmitButton
+          form={form}
+          variant="button"
+          text="apply"
+          skipDirtyCheck
+        />
       </form>
     </AnimatedModal>
   );
