@@ -1,8 +1,7 @@
 {
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
-    "target": "ES6",
-    "types": ["node"]
+    "target": "ES6"
   },
   "include": ["./**/*"]
 }

@@ -256,8 +256,8 @@ importers:
         specifier: 4.21.0
         version: 4.21.0
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
       vitest:
         specifier: 4.1.0
         version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -308,10 +308,10 @@ importers:
         version: 0.2.1
       '@tanstack/query-db-collection':
         specifier: 1.0.27
-        version: 1.0.27(@tanstack/query-core@5.90.20)(typescript@6.0.0-beta)
+        version: 1.0.27(@tanstack/query-core@5.90.20)(typescript@6.0.2)
       '@tanstack/solid-db':
         specifier: 0.2.10
-        version: 0.2.10(solid-js@1.9.10)(typescript@6.0.0-beta)
+        version: 0.2.10(solid-js@1.9.10)(typescript@6.0.2)
       '@tanstack/solid-form':
         specifier: 1.28.4
         version: 1.28.4(solid-js@1.9.10)
@@ -426,7 +426,7 @@ importers:
         version: 4.2.1(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
       '@tanstack/eslint-plugin-query':
         specifier: 5.91.4
-        version: 5.91.4(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta)
+        version: 5.91.4(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)
       '@testing-library/dom':
         specifier: 10.4.1
         version: 10.4.1
@@ -480,7 +480,7 @@ importers:
         version: 7.0.0(eslint@9.39.1(jiti@2.6.1))
       eslint-plugin-solid:
         specifier: 0.14.5
-        version: 0.14.5(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta)
+        version: 0.14.5(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)
       firebase-tools:
         specifier: 13.15.1
         version: 13.15.1(encoding@0.1.13)
@@ -495,7 +495,7 @@ importers:
         version: 27.4.0
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@6.0.0-beta)
+        version: 8.0.0(typescript@6.0.2)
       magic-string:
         specifier: 0.30.17
         version: 0.30.17
@@ -530,8 +530,8 @@ importers:
         specifier: 4.21.0
         version: 4.21.0
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
       unplugin-inject-preload:
         specifier: 3.0.0
         version: 3.0.0
@@ -610,7 +610,7 @@ importers:
         version: 10.2.16(@testing-library/dom@10.4.1)(prettier@3.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       storybook-solidjs-vite:
         specifier: ^10.0.9
-        version: 10.0.9(@testing-library/jest-dom@6.9.1)(esbuild@0.27.3)(rollup@4.52.5)(solid-js@1.9.11)(storybook@10.2.16(@testing-library/dom@10.4.1)(prettier@3.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@6.0.0-beta)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 10.0.9(@testing-library/jest-dom@6.9.1)(esbuild@0.27.3)(rollup@4.52.5)(solid-js@1.9.11)(storybook@10.2.16(@testing-library/dom@10.4.1)(prettier@3.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@6.0.2)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -638,7 +638,7 @@ importers:
         version: link:../typescript-config
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@6.0.0-beta)
+        version: 8.0.0(typescript@6.0.2)
       oxlint:
         specifier: 1.57.0
         version: 1.57.0(oxlint-tsgolint@0.17.3)
@@ -647,13 +647,13 @@ importers:
         version: 0.17.3
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.0-beta)(yaml@2.8.2)
+        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2)
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.1.0(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/funbox:
     dependencies:
@@ -672,7 +672,7 @@ importers:
         version: link:../typescript-config
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@6.0.0-beta)
+        version: 8.0.0(typescript@6.0.2)
       oxlint:
         specifier: 1.57.0
         version: 1.57.0(oxlint-tsgolint@0.17.3)
@@ -681,10 +681,10 @@ importers:
         version: 0.17.3
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.0-beta)(yaml@2.8.2)
+        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2)
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
       vitest:
         specifier: 4.1.0
         version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -731,7 +731,7 @@ importers:
         version: link:../typescript-config
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@6.0.0-beta)
+        version: 8.0.0(typescript@6.0.2)
       oxlint:
         specifier: 1.57.0
         version: 1.57.0(oxlint-tsgolint@0.17.3)
@@ -740,10 +740,10 @@ importers:
         version: 0.17.3
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.0-beta)(yaml@2.8.2)
+        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2)
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
       vitest:
         specifier: 4.1.0
         version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -764,8 +764,8 @@ importers:
         specifier: 0.17.3
         version: 0.17.3
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
 
   packages/typescript-config: {}
 
@@ -779,7 +779,7 @@ importers:
         version: link:../typescript-config
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@6.0.0-beta)
+        version: 8.0.0(typescript@6.0.2)
       oxlint:
         specifier: 1.57.0
         version: 1.57.0(oxlint-tsgolint@0.17.3)
@@ -788,10 +788,10 @@ importers:
         version: 0.17.3
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.0-beta)(yaml@2.8.2)
+        version: 8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2)
       typescript:
-        specifier: 6.0.0-beta
-        version: 6.0.0-beta
+        specifier: 6.0.2
+        version: 6.0.2
       vitest:
         specifier: 4.1.0
         version: 4.1.0(@opentelemetry/api@1.8.0)(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -10055,6 +10055,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@6.0.2:
+    resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   ua-parser-js@0.7.33:
     resolution: {integrity: sha512-s8ax/CeZdK9R/56Sui0WM6y9OFREJarMRHqLB2EwkovemBxNQ+Bqu8GAsUnVcXKgphb++ghr/B2BZx4mahujPw==}
 
@@ -11923,7 +11928,7 @@ snapshots:
 
   '@eslint/eslintrc@3.3.3':
     dependencies:
-      ajv: 6.14.0
+      ajv: 6.12.6
       debug: 4.4.3(supports-color@5.5.0)
       espree: 10.4.0
       globals: 14.0.0
@@ -12632,13 +12637,13 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@joshwooding/vite-plugin-react-docgen-typescript@0.6.4(typescript@6.0.0-beta)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))':
+  '@joshwooding/vite-plugin-react-docgen-typescript@0.6.4(typescript@6.0.2)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       glob: 13.0.6
-      react-docgen-typescript: 2.4.0(typescript@6.0.0-beta)
+      react-docgen-typescript: 2.4.0(typescript@6.0.2)
       vite: 7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
     optionalDependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -13911,27 +13916,27 @@ snapshots:
       tailwindcss: 4.2.1
       vite: 8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
 
-  '@tanstack/db-ivm@0.1.17(typescript@6.0.0-beta)':
+  '@tanstack/db-ivm@0.1.17(typescript@6.0.2)':
     dependencies:
       fractional-indexing: 3.2.0
       sorted-btree: 1.8.1
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
-  '@tanstack/db@0.5.30(typescript@6.0.0-beta)':
+  '@tanstack/db@0.5.30(typescript@6.0.2)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.17(typescript@6.0.0-beta)
+      '@tanstack/db-ivm': 0.1.17(typescript@6.0.2)
       '@tanstack/pacer-lite': 0.2.1
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
   '@tanstack/devtools-event-client@0.4.1': {}
 
-  '@tanstack/eslint-plugin-query@5.91.4(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta)':
+  '@tanstack/eslint-plugin-query@5.91.4(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)':
     dependencies:
-      '@typescript-eslint/utils': 8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta)
+      '@typescript-eslint/utils': 8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)
       eslint: 9.39.1(jiti@2.6.1)
     optionalDependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -13947,19 +13952,19 @@ snapshots:
 
   '@tanstack/query-core@5.90.20': {}
 
-  '@tanstack/query-db-collection@1.0.27(@tanstack/query-core@5.90.20)(typescript@6.0.0-beta)':
+  '@tanstack/query-db-collection@1.0.27(@tanstack/query-core@5.90.20)(typescript@6.0.2)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.5.30(typescript@6.0.0-beta)
+      '@tanstack/db': 0.5.30(typescript@6.0.2)
       '@tanstack/query-core': 5.90.20
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
   '@tanstack/query-devtools@5.93.0': {}
 
-  '@tanstack/solid-db@0.2.10(solid-js@1.9.10)(typescript@6.0.0-beta)':
+  '@tanstack/solid-db@0.2.10(solid-js@1.9.10)(typescript@6.0.2)':
     dependencies:
       '@solid-primitives/map': 0.7.3(solid-js@1.9.10)
-      '@tanstack/db': 0.5.30(typescript@6.0.0-beta)
+      '@tanstack/db': 0.5.30(typescript@6.0.2)
       solid-js: 1.9.10
     transitivePeerDependencies:
       - typescript
@@ -14330,12 +14335,12 @@ snapshots:
     dependencies:
       '@types/webidl-conversions': 7.0.3
 
-  '@typescript-eslint/project-service@8.52.0(typescript@6.0.0-beta)':
+  '@typescript-eslint/project-service@8.52.0(typescript@6.0.2)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.52.0(typescript@6.0.0-beta)
+      '@typescript-eslint/tsconfig-utils': 8.52.0(typescript@6.0.2)
       '@typescript-eslint/types': 8.52.0
       debug: 4.4.3(supports-color@5.5.0)
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -14344,9 +14349,9 @@ snapshots:
       '@typescript-eslint/types': 8.52.0
       '@typescript-eslint/visitor-keys': 8.52.0
 
-  '@typescript-eslint/tsconfig-utils@8.52.0(typescript@6.0.0-beta)':
+  '@typescript-eslint/tsconfig-utils@8.52.0(typescript@6.0.2)':
     dependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
   '@typescript-eslint/types@7.18.0': {}
 
@@ -14367,29 +14372,29 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/typescript-estree@8.52.0(typescript@6.0.0-beta)':
+  '@typescript-eslint/typescript-estree@8.52.0(typescript@6.0.2)':
     dependencies:
-      '@typescript-eslint/project-service': 8.52.0(typescript@6.0.0-beta)
-      '@typescript-eslint/tsconfig-utils': 8.52.0(typescript@6.0.0-beta)
+      '@typescript-eslint/project-service': 8.52.0(typescript@6.0.2)
+      '@typescript-eslint/tsconfig-utils': 8.52.0(typescript@6.0.2)
       '@typescript-eslint/types': 8.52.0
       '@typescript-eslint/visitor-keys': 8.52.0
       debug: 4.4.3(supports-color@5.5.0)
       minimatch: 9.0.9
       semver: 7.7.4
       tinyglobby: 0.2.15
-      ts-api-utils: 2.4.0(typescript@6.0.0-beta)
-      typescript: 6.0.0-beta
+      ts-api-utils: 2.4.0(typescript@6.0.2)
+      typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta)':
+  '@typescript-eslint/utils@8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@9.39.1(jiti@2.6.1))
       '@typescript-eslint/scope-manager': 8.52.0
       '@typescript-eslint/types': 8.52.0
-      '@typescript-eslint/typescript-estree': 8.52.0(typescript@6.0.0-beta)
+      '@typescript-eslint/typescript-estree': 8.52.0(typescript@6.0.2)
       eslint: 9.39.1(jiti@2.6.1)
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -14540,6 +14545,14 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 8.0.1(@types/node@20.5.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
+
+  '@vitest/mocker@4.1.0(vite@8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))':
+    dependencies:
+      '@vitest/spy': 4.1.0
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/mocker@4.1.0(vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
@@ -16304,16 +16317,16 @@ snapshots:
       lodash.memoize: 4.1.2
       semver: 7.7.3
 
-  eslint-plugin-solid@0.14.5(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta):
+  eslint-plugin-solid@0.14.5(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2):
     dependencies:
-      '@typescript-eslint/utils': 8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.0-beta)
+      '@typescript-eslint/utils': 8.52.0(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)
       eslint: 9.39.1(jiti@2.6.1)
       estraverse: 5.3.0
       is-html: 2.0.0
       kebab-case: 1.0.2
       known-css-properties: 0.30.0
       style-to-object: 1.0.14
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -18322,7 +18335,7 @@ snapshots:
 
   lz-ts@1.1.2: {}
 
-  madge@8.0.0(typescript@6.0.0-beta):
+  madge@8.0.0(typescript@6.0.2):
     dependencies:
       chalk: 4.1.2
       commander: 7.2.0
@@ -18337,7 +18350,7 @@ snapshots:
       ts-graphviz: 2.1.2
       walkdir: 0.4.1
     optionalDependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -19823,9 +19836,9 @@ snapshots:
       - supports-color
     optional: true
 
-  react-docgen-typescript@2.4.0(typescript@6.0.0-beta):
+  react-docgen-typescript@2.4.0(typescript@6.0.2):
     dependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:
@@ -20685,9 +20698,9 @@ snapshots:
       es-errors: 1.3.0
       internal-slot: 1.1.0
 
-  storybook-solidjs-vite@10.0.9(@testing-library/jest-dom@6.9.1)(esbuild@0.27.3)(rollup@4.52.5)(solid-js@1.9.11)(storybook@10.2.16(@testing-library/dom@10.4.1)(prettier@3.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@6.0.0-beta)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)):
+  storybook-solidjs-vite@10.0.9(@testing-library/jest-dom@6.9.1)(esbuild@0.27.3)(rollup@4.52.5)(solid-js@1.9.11)(storybook@10.2.16(@testing-library/dom@10.4.1)(prettier@3.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@6.0.2)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
-      '@joshwooding/vite-plugin-react-docgen-typescript': 0.6.4(typescript@6.0.0-beta)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@joshwooding/vite-plugin-react-docgen-typescript': 0.6.4(typescript@6.0.2)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
       '@storybook/builder-vite': 10.2.16(esbuild@0.27.3)(rollup@4.52.5)(storybook@10.2.16(@testing-library/dom@10.4.1)(prettier@3.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
       '@storybook/global': 5.0.0
       solid-js: 1.9.11
@@ -20695,7 +20708,7 @@ snapshots:
       vite: 7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
       vite-plugin-solid: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.11)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
     optionalDependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
     transitivePeerDependencies:
       - '@testing-library/jest-dom'
       - esbuild
@@ -21224,9 +21237,9 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  ts-api-utils@2.4.0(typescript@6.0.0-beta):
+  ts-api-utils@2.4.0(typescript@6.0.2):
     dependencies:
-      typescript: 6.0.0-beta
+      typescript: 6.0.2
 
   ts-dedent@2.2.0: {}
 
@@ -21290,6 +21303,33 @@ snapshots:
     optionalDependencies:
       postcss: 8.5.8
       typescript: 6.0.0-beta
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+
+  tsup@8.4.0(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2):
+    dependencies:
+      bundle-require: 5.1.0(esbuild@0.25.11)
+      cac: 6.7.14
+      chokidar: 4.0.3
+      consola: 3.4.0
+      debug: 4.4.3(supports-color@5.5.0)
+      esbuild: 0.25.11
+      joycon: 3.1.1
+      picocolors: 1.1.1
+      postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(yaml@2.8.2)
+      resolve-from: 5.0.0
+      rollup: 4.52.5
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.15
+      tree-kill: 1.2.2
+    optionalDependencies:
+      postcss: 8.5.8
+      typescript: 6.0.2
     transitivePeerDependencies:
       - jiti
       - supports-color
@@ -21400,7 +21440,10 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  typescript@6.0.0-beta: {}
+  typescript@6.0.0-beta:
+    optional: true
+
+  typescript@6.0.2: {}
 
   ua-parser-js@0.7.33: {}
 
@@ -21687,6 +21730,23 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.2
 
+  vite@8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2):
+    dependencies:
+      lightningcss: 1.32.0
+      picomatch: 4.0.3
+      postcss: 8.5.8
+      rolldown: 1.0.0-rc.10
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 24.9.1
+      esbuild: 0.25.11
+      fsevents: 2.3.3
+      jiti: 2.6.1
+      sass: 1.98.0
+      terser: 5.46.1
+      tsx: 4.21.0
+      yaml: 2.8.2
+
   vite@8.0.1(@types/node@24.9.1)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.70.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       lightningcss: 1.32.0
@@ -21813,6 +21873,35 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.9.1
       '@vitest/browser-playwright': 4.0.18(playwright@1.58.2)(vite@7.3.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.1.0)
+      happy-dom: 20.0.10
+      jsdom: 27.4.0
+    transitivePeerDependencies:
+      - msw
+
+  vitest@4.1.0(@types/node@24.9.1)(happy-dom@20.0.10)(jsdom@27.4.0)(vite@8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)):
+    dependencies:
+      '@vitest/expect': 4.1.0
+      '@vitest/mocker': 4.1.0(vite@8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/pretty-format': 4.1.0
+      '@vitest/runner': 4.1.0
+      '@vitest/snapshot': 4.1.0
+      '@vitest/spy': 4.1.0
+      '@vitest/utils': 4.1.0
+      es-module-lexer: 2.0.0
+      expect-type: 1.3.0
+      magic-string: 0.30.21
+      obug: 2.1.1
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 4.0.0
+      tinybench: 2.9.0
+      tinyexec: 1.0.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.0.3
+      vite: 8.0.1(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 24.9.1
       happy-dom: 20.0.10
       jsdom: 27.4.0
     transitivePeerDependencies:

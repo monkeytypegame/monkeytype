@@ -86,7 +86,7 @@
     "supertest": "7.1.4",
     "testcontainers": "11.11.0",
     "tsx": "4.21.0",
-    "typescript": "6.0.0-beta",
+    "typescript": "6.0.2",
     "vitest": "4.1.0",
     "yaml": "2.8.2"
   },

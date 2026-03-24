@@ -3,7 +3,6 @@
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "module": "ESNext",
-    "types": ["node"],
     "noEmit": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js"

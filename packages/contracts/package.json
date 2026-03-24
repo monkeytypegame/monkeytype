@@ -32,7 +32,7 @@
     "oxlint": "1.57.0",
     "oxlint-tsgolint": "0.17.3",
     "tsup": "8.4.0",
-    "typescript": "6.0.0-beta",
+    "typescript": "6.0.2",
     "vitest": "4.1.0"
   },
   "peerDependencies": {

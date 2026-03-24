@@ -19,7 +19,7 @@
     "@monkeytype/typescript-config": "workspace:*",
     "oxlint": "1.57.0",
     "oxlint-tsgolint": "0.17.3",
-    "typescript": "6.0.0-beta"
+    "typescript": "6.0.2"
   },
   "peerDependencies": {
     "tsup": "8.4.0"
