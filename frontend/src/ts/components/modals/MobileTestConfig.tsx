@@ -8,7 +8,7 @@ import { For, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { restartTestEvent } from "../../states/core";
+import { isLoggedIn, restartTestEvent } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -19,14 +19,19 @@ const modes: Mode[] = ["time", "words", "quote", "zen", "custom"];
 const times = [15, 30, 60, 120];
 const wordCounts = [10, 25, 50, 100];
 
-const quoteLengths: { value: string; label: string }[] = [
+const quoteLengths: {
+  value: string;
+  label: string;
+  loginRequired?: boolean;
+}[] = [
   { value: "all", label: "all" },
   { value: "0", label: "short" },
   { value: "1", label: "medium" },
   { value: "2", label: "long" },
   { value: "3", label: "thicc" },
+  { value: "-3", label: "favorite", loginRequired: true },
   { value: "-2", label: "search" },
-];
+] as const;
 
 const isPunctuationDisabled = () =>
   getConfig.mode === "quote" || getConfig.mode === "zen";
@@ -84,6 +89,9 @@ export function MobileTestConfig(): JSXElement {
       return areUnsortedArraysEqual(getConfig.quoteLength, [0, 1, 2, 3]);
     }
     if (value === "-2") return false;
+    if (value === "-3") {
+      return areUnsortedArraysEqual(getConfig.quoteLength, [-3]);
+    }
     return getConfig.quoteLength.includes(parseInt(value, 10) as QuoteLength);
   };
 
@@ -170,12 +178,15 @@ export function MobileTestConfig(): JSXElement {
           <Show when={getConfig.mode === "quote"}>
             <For each={quoteLengths}>
               {(ql) => (
-                <Button
-                  variant="button"
-                  text={ql.label}
-                  active={isQuoteLengthActive(ql.value)}
-                  onClick={(e) => handleQuoteLengthClick(ql.value, e)}
-                />
+                <Show when={!("loginRequired" in ql) || isLoggedIn()}>
+                  <Button
+                    variant="button"
+                    text={ql.label}
+                    fa={ql.value === "-3" ? { icon: "fa-heart" } : undefined}
+                    active={isQuoteLengthActive(ql.value)}
+                    onClick={(e) => handleQuoteLengthClick(ql.value, e)}
+                  />
+                </Show>
               )}
             </For>
           </Show>
