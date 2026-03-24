@@ -195,6 +195,11 @@ function Mode2(): JSXElement {
       void wrapperEl.promiseAnimate({
         width: [previousWidth + "px", newWidth + "px"],
         duration: durationMs,
+        onComplete: () => {
+          wrapperEl.setStyle({
+            width: "",
+          });
+        },
       });
 
       prev?.show()?.animate({
