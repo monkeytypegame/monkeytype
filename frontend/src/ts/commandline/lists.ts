@@ -30,7 +30,6 @@ import {
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchModal from "../modals/quote-search";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
@@ -88,7 +87,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         setConfig("mode", "quote");
-        void QuoteSearchModal.show();
+        showModal("QuoteSearch");
       },
       shouldFocusTestUI: false,
     },

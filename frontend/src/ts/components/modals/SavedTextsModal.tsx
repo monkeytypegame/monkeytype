@@ -8,6 +8,13 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 
+type CustomTextIncomingData =
+  | ({ set?: boolean; long?: boolean } & (
+      | { text: string; splitText?: never }
+      | { text?: never; splitText: string[] }
+    ))
+  | null;
+
 function getSavedText(name: string, long: boolean): string {
   let text = CustomText.getCustomText(name, long);
   if (long) {
@@ -17,11 +24,7 @@ function getSavedText(name: string, long: boolean): string {
 }
 
 export function SavedTextsModal(props: {
-  setChainedData: Setter<{
-    text: string;
-    set?: boolean;
-    long?: boolean;
-  } | null>;
+  setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [names, setNames] = createSignal<string[]>([]);
   const [longNames, setLongNames] = createSignal<string[]>([]);

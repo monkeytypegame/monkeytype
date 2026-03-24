@@ -3,6 +3,9 @@ import { JSXElement } from "solid-js";
 import { ContactModal } from "./ContactModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmount } from "./CustomWordAmount";
+import { QuoteRateModal } from "./QuoteRateModal";
+import { QuoteReportModal } from "./QuoteReportModal";
+import { QuoteSearchModal } from "./QuoteSearchModal";
 import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
@@ -19,6 +22,9 @@ export function Modals(): JSXElement {
       <SupportModal />
       <SimpleModal />
       <CustomTextModal />
+      <QuoteRateModal />
+      <QuoteReportModal />
+      <QuoteSearchModal />
       <TestDuration />
       <CustomWordAmount />
       <ShareTestSettings />

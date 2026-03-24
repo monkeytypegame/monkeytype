@@ -13,10 +13,10 @@ type BaseProps = {
   children?: JSXElement;
   balloon?: BalloonProps;
   "router-link"?: true;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent) => void;
   type?: HTMLButtonElement["type"];
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
+  onMouseEnter?: (e: MouseEvent) => void;
+  onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
   active?: boolean;
 };
@@ -98,9 +98,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           }
           {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
-          onClick={() => props.onClick?.()}
-          onMouseEnter={() => props.onMouseEnter?.()}
-          onMouseLeave={() => props.onMouseLeave?.()}
+          onClick={(e) => props.onClick?.(e)}
+          onMouseEnter={(e) => props.onMouseEnter?.(e)}
+          onMouseLeave={(e) => props.onMouseLeave?.(e)}
           data-ui-variant={variant()}
           data-ui-element="button"
           {...props.dataset}
@@ -113,9 +113,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           // oxlint-disable-next-line button-has-type
           type={(props as ButtonProps).type ?? "button"}
           class={getClasses()}
-          onClick={() => props.onClick?.()}
-          onMouseEnter={() => props.onMouseEnter?.()}
-          onMouseLeave={() => props.onMouseLeave?.()}
+          onClick={(e) => props.onClick?.(e)}
+          onMouseEnter={(e) => props.onMouseEnter?.(e)}
+          onMouseLeave={(e) => props.onMouseLeave?.(e)}
           {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}

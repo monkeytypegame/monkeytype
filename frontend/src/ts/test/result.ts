@@ -16,7 +16,7 @@ import {
   addNotificationWithLevel,
 } from "../states/notifications";
 import { isAuthenticated } from "../firebase";
-import * as quoteRateModal from "../modals/quote-rate";
+import { getQuoteStats } from "../states/quote-rate";
 import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
@@ -433,7 +433,7 @@ function updateConsistency(): void {
 
 function updateTime(): void {
   const afkSecondsPercent = Numbers.roundTo2(
-    (result.afkDuration / result.testDuration) * 100,
+    (result.afkDuration / result.testDuration) * 100 || 0,
   );
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
@@ -902,8 +902,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
         ?.removeClass("far")
         ?.addClass("fas");
     }
-    quoteRateModal
-      .getQuoteStats(randomQuote)
+    getQuoteStats(randomQuote)
       .then((quoteStats) => {
         qs(".pageTest #result #rateQuoteButton .rating")?.setText(
           quoteStats?.average?.toFixed(1) ?? "",

@@ -13,7 +13,6 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
-import * as CustomText from "../../test/custom-text";
 import * as JSONData from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -23,6 +22,13 @@ import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import SlimSelect from "../ui/SlimSelect";
+
+type CustomTextIncomingData =
+  | ({ set?: boolean; long?: boolean } & (
+      | { text: string; splitText?: never }
+      | { text?: never; splitText: string[] }
+    ))
+  | null;
 
 type FilterPreset = {
   display: string;
@@ -98,11 +104,7 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
 }));
 
 export function WordFilterModal(props: {
-  setChainedData: Setter<{
-    text: string;
-    set?: boolean;
-    long?: boolean;
-  } | null>;
+  setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
   const [language, setLanguage] = createSignal(languageOptions[0]?.value ?? "");
   const [layout, setLayout] = createSignal(layoutOptions[0]?.value ?? "");
@@ -169,10 +171,10 @@ export function WordFilterModal(props: {
           showNoticeNotification("No words found");
           return;
         }
-        const customText = filteredWords.join(
-          CustomText.getPipeDelimiter() ? "|" : " ",
-        );
-        props.setChainedData({ text: customText, set: submitAction === "set" });
+        props.setChainedData({
+          splitText: filteredWords,
+          set: submitAction === "set",
+        });
         hideModal("WordFilter");
       } finally {
         hideLoaderBar();

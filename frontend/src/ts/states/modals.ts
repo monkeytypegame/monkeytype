@@ -15,6 +15,11 @@ export type ModalId =
   | "SavedTexts"
   | "WordFilter"
   | "CustomGenerator"
+  | "QuoteSearch"
+  | "QuoteRate"
+  | "QuoteReport"
+  | "QuoteSubmit"
+  | "QuoteApprove"
   | "TestDuration"
   | "ShareTestSettings"
   | "CustomWordAmount";
