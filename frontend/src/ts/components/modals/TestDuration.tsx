@@ -34,7 +34,7 @@ export function TestDuration(): JSXElement {
   const apply = () => {
     const val = parseInput(input());
 
-    if (val === null || isNaN(val) || val < 0 || !isFinite(val)) {
+    if (isNaN(val) || val < 0 || !isFinite(val)) {
       showNoticeNotification("Custom time must be a positive number or zero");
       return;
     }

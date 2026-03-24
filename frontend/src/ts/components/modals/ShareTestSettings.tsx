@@ -173,7 +173,7 @@ export function ShareTestSettings(): JSXElement {
           />
           <div>Difficulty</div>
           <div class="col-start-2 text-em-xs text-sub">
-            {getConfig.difficulty ? "enabled" : "disabled"}
+            {getConfig.difficulty}
           </div>
         </label>
       </Show>

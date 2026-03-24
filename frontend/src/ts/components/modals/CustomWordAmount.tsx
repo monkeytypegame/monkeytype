@@ -22,8 +22,10 @@ export function CustomWordAmount(): JSXElement {
   const apply = () => {
     const val = parseInt(input(), 10);
 
-    if (val === null || isNaN(val) || val < 0 || !isFinite(val)) {
-      showNoticeNotification("Custom word amount must be at least 1");
+    if (isNaN(val) || val < 0 || !isFinite(val)) {
+      showNoticeNotification(
+        "Custom word amount must be a non-negative number",
+      );
       return;
     }
 
