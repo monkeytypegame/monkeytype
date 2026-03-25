@@ -19,7 +19,7 @@ type Hotkeys = {
 };
 
 export const [hotkeys, setHotkeys] = createStore<Hotkeys>(
-  calcHotkeys(getConfig, {
+  mapHotkeys(getConfig, {
     shiftTab: false,
     shiftEnter: false,
   }),
@@ -28,14 +28,14 @@ export const [hotkeys, setHotkeys] = createStore<Hotkeys>(
 createEffect(() => {
   const isOnTestPage = getActivePage() === "test";
   setHotkeys(
-    calcHotkeys(getConfig, {
+    mapHotkeys(getConfig, {
       shiftTab: isOnTestPage && wordsHaveTab(),
       shiftEnter: isOnTestPage && wordsHaveNewline(),
     }),
   );
 });
 
-function calcHotkeys(
+function mapHotkeys(
   config: Config,
   options: { shiftTab: boolean; shiftEnter: boolean },
 ): Hotkeys {
