@@ -1,14 +1,10 @@
 import * as Misc from "../utils/misc";
 import * as PageTransition from "../legacy-states/page-transition";
 import { Config } from "../config/store";
-import * as TestWords from "../test/test-words";
-import * as Commandline from "../commandline/commandline";
 import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
-import * as TestLogic from "../test/test-logic";
-import { navigate } from "../controllers/route-controller";
 import { isInputElementFocused } from "../input/input-element";
 import * as TestState from "../test/test-state";
 import { isDevEnvironment } from "../utils/env";
@@ -32,52 +28,6 @@ document.addEventListener("keydown", (e) => {
       focusWords();
       if (Config.showOutOfFocusWarning) {
         e.preventDefault();
-      }
-    }
-  }
-
-  if (
-    (e.key === "Escape" && Config.quickRestart !== "esc") ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      !TestWords.hasTab &&
-      !e.shiftKey) ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      TestWords.hasTab &&
-      e.shiftKey) ||
-    (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
-  ) {
-    const popupVisible = Misc.isAnyPopupVisible();
-    if (!popupVisible) {
-      e.preventDefault();
-      Commandline.show();
-    }
-  }
-
-  if (!isInputElementFocused()) {
-    const isInteractiveElement =
-      document.activeElement?.tagName === "INPUT" ||
-      document.activeElement?.tagName === "TEXTAREA" ||
-      document.activeElement?.tagName === "SELECT" ||
-      document.activeElement?.tagName === "BUTTON" ||
-      document.activeElement?.classList.contains("button") === true ||
-      document.activeElement?.classList.contains("textButton") === true;
-
-    if (
-      (e.key === "Tab" &&
-        Config.quickRestart === "tab" &&
-        !isInteractiveElement) ||
-      (e.key === "Escape" && Config.quickRestart === "esc") ||
-      (e.key === "Enter" &&
-        Config.quickRestart === "enter" &&
-        !isInteractiveElement)
-    ) {
-      e.preventDefault();
-      if (getActivePage() === "test") {
-        TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      } else {
-        void navigate("");
       }
     }
   }

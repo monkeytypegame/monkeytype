@@ -28,7 +28,6 @@ import {
   clearAllNotifications,
 } from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
@@ -97,8 +96,8 @@ export const commands: CommandsSubgroup = {
       id: "shareTestSettings",
       display: "Share test settings",
       icon: "fa-share",
-      exec: async (): Promise<void> => {
-        ShareTestSettingsPopup.show();
+      exec: (): void => {
+        showModal("ShareTestSettings");
       },
     },
 

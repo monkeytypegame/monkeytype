@@ -19,7 +19,11 @@ export type ModalId =
   | "QuoteRate"
   | "QuoteReport"
   | "QuoteSubmit"
-  | "QuoteApprove";
+  | "QuoteApprove"
+  | "TestDuration"
+  | "ShareTestSettings"
+  | "CustomWordAmount"
+  | "MobileTestConfig";
 
 export type ModalVisibility = {
   visible: boolean;
