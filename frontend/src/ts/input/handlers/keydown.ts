@@ -168,7 +168,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     }
   }
 
-  if (event.key === "Tab" && !event.shiftKey) {
+  if (event.key === "Tab") {
     await handleTab(event, now);
     return;
   }
