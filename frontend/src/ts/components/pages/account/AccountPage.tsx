@@ -14,6 +14,7 @@ import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
+import { Conditional } from "../../common/Conditional";
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
@@ -56,65 +57,79 @@ export function AccountPage(): JSXElement {
 
         <Filters filters={filters} onChangeFilters={setFilters} />
 
-        <Charts
-          filters={filters}
-          queryState={queryState}
-          onHistoryChartClick={({ index, _id }) => {
-            const newLimit = Math.ceil(index / 10) * 10;
-            if (limit() < newLimit) {
-              setLimit(newLimit);
-            }
-            setSelectedResultId(_id);
-
-            requestAnimationFrame(() => {
-              qs(`#resultList tbody tr:nth-child(${index})`)?.scrollIntoView({
-                block: "center",
-              });
-            });
-          }}
-        />
-        <TestStats queryState={queryState} />
-
-        <div class="grid grid-cols-3">
-          <Button
-            text="Export CSV"
-            fa={{ icon: "fa-file-csv" }}
-            class="col-start-3 w-full"
-            onClick={() => {
-              showLoaderBar();
-              const filteredResults = useResultsLiveQuery({
-                queryState,
-                sorting,
-                limit: () => Infinity,
-              });
-              void downloadResultsCSV(filteredResults()).finally(() => {
-                hideLoaderBar();
-              });
-            }}
-          />
-        </div>
-
-        <Advertisement id="ad-account-2" visible="sellout" />
-
-        <AsyncContent collection={data}>
-          {(results) => (
+        <Conditional
+          if={data()?.length > 0}
+          then={
             <>
-              <Table
-                data={[...results]}
-                onSortingChange={(val) => setSorting(val)}
-                selectedRowId={selectedResultId}
+              <Charts
+                filters={filters}
+                queryState={queryState}
+                onHistoryChartClick={({ index, _id }) => {
+                  const newLimit = Math.ceil(index / 10) * 10;
+                  if (limit() < newLimit) {
+                    setLimit(newLimit);
+                  }
+                  setSelectedResultId(_id);
+
+                  requestAnimationFrame(() => {
+                    qs(
+                      `#resultList tbody tr:nth-child(${index})`,
+                    )?.scrollIntoView({
+                      block: "center",
+                    });
+                  });
+                }}
               />
-              <Button
-                text="load more"
-                disabled={
-                  data.isLoading || resultsCollection.size < limit() + 10
-                }
-                onClick={() => setLimit((limit) => limit + 10)}
-                class="w-full text-center"
-              />
+              <TestStats queryState={queryState} />
+
+              <div class="grid grid-cols-3">
+                <Button
+                  text="Export CSV"
+                  fa={{ icon: "fa-file-csv" }}
+                  class="col-start-3 w-full"
+                  onClick={() => {
+                    showLoaderBar();
+                    const filteredResults = useResultsLiveQuery({
+                      queryState,
+                      sorting,
+                      limit: () => Infinity,
+                    });
+                    void downloadResultsCSV(filteredResults()).finally(() => {
+                      hideLoaderBar();
+                    });
+                  }}
+                />
+              </div>
+
+              <Advertisement id="ad-account-2" visible="sellout" />
+
+              <AsyncContent collection={data}>
+                {(results) => (
+                  <>
+                    <Table
+                      data={[...results]}
+                      onSortingChange={(val) => setSorting(val)}
+                      selectedRowId={selectedResultId}
+                    />
+                    <Button
+                      text="load more"
+                      disabled={
+                        data.isLoading || resultsCollection.size < limit() + 10
+                      }
+                      onClick={() => setLimit((limit) => limit + 10)}
+                      class="w-full text-center"
+                    />
+                  </>
+                )}
+              </AsyncContent>
             </>
-          )}
-        </AsyncContent>
+          }
+          else={
+            <div class="grid h-150 place-items-center">
+              <div>No data found. Check your filters.</div>
+            </div>
+          }
+        />
       </div>
     </Show>
   );
