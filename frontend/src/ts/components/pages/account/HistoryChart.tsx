@@ -4,7 +4,7 @@ import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
 import { setConfig } from "../../../config/setters";
-import { Config, getConfig } from "../../../config/store";
+import { getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getTheme } from "../../../states/theme";
 import { blendTwoHexColors } from "../../../utils/colors";
@@ -36,7 +36,7 @@ export function HistoryChart(props: {
 
   const toggleAccountChart = (pos: number): (() => void) => {
     return () => {
-      const newValue = [...Config.accountChart] as AccountChart;
+      const newValue = [...getConfig.accountChart] as AccountChart;
       newValue[pos] = newValue[pos] === "on" ? "off" : "on";
       setConfig("accountChart", newValue);
     };
@@ -59,8 +59,8 @@ export function HistoryChart(props: {
 
     const isSpeed = getConfig.accountChart[0] === "on";
     const isAcc = getConfig.accountChart[1] === "on";
-    const isAvg10 = Config.accountChart[2] === "on";
-    const isAvg100 = Config.accountChart[3] === "on";
+    const isAvg10 = getConfig.accountChart[2] === "on";
+    const isAvg100 = getConfig.accountChart[3] === "on";
 
     return {
       wpm: {
@@ -213,7 +213,7 @@ export function HistoryChart(props: {
                 axis: "y",
                 beginAtZero: props.beginAtZero,
                 min:
-                  Config.accountChart[0] === "on" || acc().length === 0
+                  getConfig.accountChart[0] === "on" || acc().length === 0
                     ? 0
                     : Math.floor(Math.min(...acc()) / 5) * 5,
                 max: 100,
