@@ -9,7 +9,10 @@ export default {
       { ignoreFontFamilies: ["Font Awesome", "Font Awesome Brands"] },
     ], //default: true
 
-    "selector-type-no-unknown": null, // add // default: [true, {ignore: ['custom-elements'],},]
+    "selector-type-no-unknown": [
+      true,
+      { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint"] },
+    ], // default: [true, {ignore: ['custom-elements'],},]
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]
 
