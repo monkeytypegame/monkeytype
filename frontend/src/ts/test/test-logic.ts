@@ -26,8 +26,13 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
+import { getActivePage } from "../states/core";
+import {
+  setResultVisible,
+  setWordsHasNewline,
+  setWordsHasTab,
+} from "../states/test";
 import { restartTestEvent } from "../events/test";
-import { getActivePage, setResultVisible } from "../states/core";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -72,7 +77,7 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-import { setWordsHasNewline, setWordsHasTab } from "../states/test";
+
 let failReason = "";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
