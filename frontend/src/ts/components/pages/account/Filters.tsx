@@ -87,7 +87,7 @@ export function Filters(props: {
       <Show when={props.presets.length > 0}>
         <div>
           <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
-          <div class="grid grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <For each={props.presets}>
               {(preset) => (
                 <div class="flex w-full flex-row gap-2">
