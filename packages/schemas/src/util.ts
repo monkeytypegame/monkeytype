@@ -10,14 +10,14 @@ export const StringNumberSchema = z
 export type StringNumber = z.infer<typeof StringNumberSchema>;
 export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
 
-export const SLUG_REGEX = /^[0-9a-zA-Z_.-]+$/;
 export const slug = (): ZodString =>
   z
     .string()
     .regex(
-      SLUG_REGEX,
+      /^[0-9a-zA-Z_.-]+$/,
       "Only letters, numbers, underscores, dots and hyphens allowed",
-    );
+    )
+    .regex(/^[^.].*$/, "Cannot start with a dot");
 
 export const nameWithSeparators = (): ZodString =>
   z

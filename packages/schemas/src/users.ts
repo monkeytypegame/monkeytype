@@ -234,7 +234,7 @@ export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 export const UserEmailSchema = z.string().email();
 export const UserNameSchema = doesNotContainProfanity(
   "substring",
-  nameWithSeparators().min(1).max(16),
+  slug().min(1).max(16),
 );
 
 export const UserSchema = z.object({
