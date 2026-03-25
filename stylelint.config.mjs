@@ -21,8 +21,6 @@ export default {
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]
 
-    "property-no-vendor-prefix": null, // add
-
     "value-keyword-case": null, // default: lower
 
     "at-rule-empty-line-before": null, // default: ['always', {except: ['blockless-after-same-name-blockless', 'first-nested'], ignore: ['after-comment'],},]
