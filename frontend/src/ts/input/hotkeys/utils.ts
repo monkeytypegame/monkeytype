@@ -32,6 +32,7 @@ function isInteractiveElementFocused(): boolean {
   if (isInputElementFocused()) return false;
 
   return (
+    document.activeElement?.tagName === "A" ||
     document.activeElement?.tagName === "INPUT" ||
     document.activeElement?.tagName === "TEXTAREA" ||
     document.activeElement?.tagName === "SELECT" ||
