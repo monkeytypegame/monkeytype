@@ -12,21 +12,12 @@ import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
 
 export function Footer(): JSXElement {
-  const ratingQuery = useQuoteRatingsLiveQuery(() => getCurrentQuote());
-
   return (
     <footer
       class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
-      <AsyncContent collection={ratingQuery}>
-        {(rating) => (
-          <pre>
-            {getCurrentQuote()?.id} {JSON.stringify(rating)}
-          </pre>
-        )}
-      </AsyncContent>
       <Keytips />
 
       <div

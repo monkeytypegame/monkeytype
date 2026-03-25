@@ -2,6 +2,7 @@ import { JSX } from "solid-js";
 
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { useVisibilityAnimation } from "../../../hooks/useVisibilityAnimation";
+import { queryClient } from "../../../queries";
 import { getLoaderBarSignal } from "../../../states/loader-bar";
 import { applyReducedMotion } from "../../../utils/misc";
 
@@ -10,7 +11,8 @@ export function LoaderBar(): JSX.Element {
 
   useVisibilityAnimation({
     element: loaderEl,
-    isVisible: () => getLoaderBarSignal()?.visible === true,
+    isVisible: () =>
+      getLoaderBarSignal()?.visible === true || queryClient.isFetching() > 0,
     showAnimationOptions: {
       delay: applyReducedMotion(getLoaderBarSignal()?.instant ? 0 : 125),
     },
