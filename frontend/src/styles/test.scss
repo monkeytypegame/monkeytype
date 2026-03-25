@@ -197,7 +197,6 @@
   flex-wrap: wrap;
   width: 100%;
   align-content: flex-start;
-  -webkit-user-select: none;
   user-select: none;
 
   .newline {
@@ -343,7 +342,6 @@
   &.blurred {
     opacity: 0.25;
     filter: blur(4px);
-    -webkit-filter: blur(4px);
   }
 
   &.blind {
@@ -896,7 +894,6 @@
 
     #resultReplay .words {
       user-select: none;
-      -webkit-user-select: none;
     }
 
     .chart {
@@ -1337,7 +1334,6 @@
 
   &.blurred {
     opacity: 0.25;
-    -webkit-filter: blur(4px);
     filter: blur(4px);
   }
 }
@@ -1354,13 +1350,6 @@
     overflow: visible clip;
     &.tape {
       overflow: hidden;
-      -webkit-mask-image: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0) 1%,
-        rgb(0, 0, 0) 10%,
-        rgb(0, 0, 0) 90%,
-        rgba(0, 0, 0, 0) 99%
-      );
       mask-image: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0) 1%,
@@ -1388,7 +1377,6 @@
     position: absolute;
     transform: translateX(-50%);
     top: -6rem;
-    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
     opacity: 0;
@@ -1401,7 +1389,6 @@
     z-index: 999;
     position: absolute;
     width: 100%;
-    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
   }
@@ -1415,7 +1402,6 @@
     margin-bottom: 0.5rem;
     transition: opacity 0.125s;
     justify-content: center;
-    -webkit-user-select: none;
     user-select: none;
 
     .textButton {

@@ -37,7 +37,6 @@ input[type="submit"] {
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
-  -webkit-user-select: none;
   user-select: none;
   align-content: center;
   align-items: center;
@@ -114,7 +113,6 @@ button.text,
   border-radius: var(--roundness);
   background: none;
   text-align: center;
-  -webkit-user-select: none;
   user-select: none;
   align-content: center;
   height: -moz-min-content;

@@ -25,7 +25,6 @@ textarea {
     top: -1.75rem;
     right: 0.25rem;
     color: var(--sub-color);
-    -webkit-user-select: none;
     user-select: none;
     &.error {
       color: var(--error-color);
@@ -41,13 +40,13 @@ textarea {
 }
 
 input[type="range"] {
-  -webkit-appearance: none;
+  appearance: none;
   padding: 0;
   width: 100%;
   height: 1.25em;
   border-radius: var(--roundness);
   &::-webkit-slider-thumb {
-    -webkit-appearance: none;
+    appearance: none;
     padding: 0;
     border: none;
     width: 25%;
@@ -63,7 +62,7 @@ input[type="range"] {
   }
 
   &::-moz-range-thumb {
-    -webkit-appearance: none;
+    appearance: none;
     padding: 0;
     border: none;
     width: 25%;
@@ -175,15 +174,11 @@ textarea:disabled {
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   margin: 0;
 }
 
 input[type="number"] {
-  -moz-appearance: textfield;
-  -webkit-appearance: textfield;
   appearance: textfield;
 }
 
@@ -201,7 +196,7 @@ select:-webkit-autofill:focus {
   outline: 0.15em solid var(--main-color);
   font-family: inherit;
   -webkit-text-fill-color: var(--text-color);
-  -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
   caret-color: var(--text-color);
 }
 
@@ -314,7 +309,7 @@ select:-webkit-autofill:focus {
         color: var(--sub-color);
       }
       &::-webkit-search-cancel-button {
-        -webkit-appearance: none;
+        appearance: none;
       }
     }
   }

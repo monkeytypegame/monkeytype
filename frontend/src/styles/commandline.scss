@@ -65,7 +65,6 @@
       max-height: calc(100vh - 12rem - 3rem);
       display: grid;
       cursor: pointer;
-      -webkit-user-select: none;
       user-select: none;
 
       .command {

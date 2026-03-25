@@ -16,7 +16,6 @@ export default {
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]
 
-    "property-no-vendor-prefix": null, // add
     "value-no-vendor-prefix": null, // add // default: [true, {ignoreValues: ['box', 'inline-box'],},] // `-webkit-box` is allowed as standard. See https://www.w3.org/TR/css-overflow-3/#webkit-line-clamp
 
     "at-rule-empty-line-before": null, // default: ['always', {except: ['blockless-after-same-name-blockless', 'first-nested'], ignore: ['after-comment'],},]

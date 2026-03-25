@@ -43,7 +43,6 @@ header {
   z-index: 3;
   align-items: center;
   gap: 0.5rem;
-  -webkit-user-select: none;
   user-select: none;
 
   #logo {
@@ -92,7 +91,6 @@ header {
       margin-top: -0.23em;
     }
     white-space: nowrap;
-    -webkit-user-select: none;
     user-select: none;
   }
 }

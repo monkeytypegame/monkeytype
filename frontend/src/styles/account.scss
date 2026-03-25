@@ -152,7 +152,7 @@
 
     &.history {
       table td {
-        -webkit-appearance: unset;
+        appearance: unset;
       }
 
       table tr {
@@ -170,9 +170,8 @@
         padding: 0.5rem;
         border-radius: var(--roundness);
         cursor: pointer;
-        -webkit-transition: 0.25s;
         transition: 0.25s;
-        -webkit-user-select: none;
+        user-select: none;
         display: -ms-grid;
         display: grid;
         -ms-flex-line-pack: center;
