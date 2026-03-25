@@ -111,7 +111,6 @@ const actionModals: Record<Action, SimpleModal> = {
     },
     execFn: async (_thisPopup) => {
       const tagId = _thisPopup.parameters[1] as string;
-      /*
       const response = await Ape.users.deleteTag({ params: { tagId } });
 
       if (response.status !== 200) {
@@ -126,7 +125,7 @@ const actionModals: Record<Action, SimpleModal> = {
       if (snapshot?.tags) {
         snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
       }
-*/
+
       deleteLocalTag(tagId);
 
       void Settings.update();
