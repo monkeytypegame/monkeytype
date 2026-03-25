@@ -2,15 +2,12 @@ import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
+import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import {
-  getFocus,
-  getResultVisible,
-  isLoggedIn,
-  restartTestEvent,
-} from "../../../states/core";
+import { isLoggedIn } from "../../../states/core";
 import { showModal } from "../../../states/modals";
+import { getResultVisible, getFocus } from "../../../states/test";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";

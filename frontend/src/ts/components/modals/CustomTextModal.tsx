@@ -7,8 +7,8 @@ import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
+import { restartTestEvent } from "../../events/test";
 import * as CustomTextState from "../../legacy-states/custom-text-name";
-import { restartTestEvent } from "../../states/core";
 import { hideModalAndClearChain, showModal } from "../../states/modals";
 import {
   showNoticeNotification,

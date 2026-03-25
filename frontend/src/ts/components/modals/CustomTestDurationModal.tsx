@@ -3,7 +3,7 @@ import { JSXElement } from "solid-js";
 
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { restartTestEvent } from "../../states/core";
+import { restartTestEvent } from "../../events/test";
 import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";

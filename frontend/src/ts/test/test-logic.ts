@@ -26,11 +26,9 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import {
-  getActivePage,
-  restartTestEvent,
-  setResultVisible,
-} from "../states/core";
+import { getActivePage } from "../states/core";
+import { setResultVisible } from "../states/test";
+import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";

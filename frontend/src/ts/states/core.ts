@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js";
-import { createEvent } from "../hooks/createEvent";
 import { PageName } from "../pages/page";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
@@ -27,7 +26,6 @@ export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
   string | null
 >(null);
 
-export const [getFocus, setFocus] = createSignal(false);
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
@@ -37,7 +35,3 @@ export const isLoggedIn = (): boolean => getUserId() !== null;
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
-export const [getResultVisible, setResultVisible] =
-  createSignal<boolean>(false);
-
-export const restartTestEvent = createEvent();

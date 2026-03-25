@@ -8,7 +8,8 @@ import { For, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { isLoggedIn, restartTestEvent } from "../../states/core";
+import { restartTestEvent } from "../../events/test";
+import { isLoggedIn } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { AnimatedModal } from "../common/AnimatedModal";
