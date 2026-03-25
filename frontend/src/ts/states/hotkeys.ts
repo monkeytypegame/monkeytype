@@ -5,9 +5,10 @@ import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
 import { wordsHaveNewline, wordsHaveTab } from "./test";
 import { getActivePage } from "./core";
+import { NoKey } from "../input/hotkeys/utils";
 
 const quickRestartHotkeyMap: Record<QuickRestart, Hotkey> = {
-  off: "" as Hotkey, //Dummy
+  off: NoKey,
   esc: "Escape",
   tab: "Tab",
   enter: "Enter",

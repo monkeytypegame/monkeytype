@@ -8,6 +8,8 @@ import {
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isInputElementFocused } from "../input-element";
 
+export const NoKey = "" as Hotkey;
+
 export function createHotkey(
   hotkey: Hotkey | (() => Hotkey),
   callback: HotkeyCallback,
@@ -32,6 +34,7 @@ export function createHotkey(
       preventDefault: false, //we set preventDefault in the callback if the hotkey executes
       requireReset: true,
       conflictBehavior: "replace",
+      enabled: (typeof hotkey === "function" ? hotkey() : hotkey) !== NoKey,
       ...options(),
     }),
   );
