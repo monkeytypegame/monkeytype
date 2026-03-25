@@ -37,7 +37,7 @@ type ModalState = {
   pendingIsChained: boolean;
 };
 
-const [modalState, setModalState] = createStore<ModalState>({
+export const [modalState, setModalState] = createStore<ModalState>({
   openModals: {},
   modalStack: [],
   pendingModal: null,
