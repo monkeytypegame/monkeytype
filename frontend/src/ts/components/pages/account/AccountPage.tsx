@@ -44,6 +44,7 @@ export function AccountPage(): JSXElement {
   const [selectedResultId, setSelectedResultId] = createSignal<null | string>(
     null,
   );
+  const [isExporting, setIsExporting] = createSignal(false);
 
   const data = useResultsLiveQuery({ queryState, sorting, limit });
 
@@ -87,7 +88,9 @@ export function AccountPage(): JSXElement {
                   text="Export CSV"
                   fa={{ icon: "fa-file-csv" }}
                   class="col-start-3 w-full"
+                  disabled={isExporting()}
                   onClick={() => {
+                    setIsExporting(true);
                     showLoaderBar();
                     const filteredResults = useResultsLiveQuery({
                       queryState,
@@ -96,6 +99,7 @@ export function AccountPage(): JSXElement {
                     });
                     void downloadResultsCSV(filteredResults()).finally(() => {
                       hideLoaderBar();
+                      setIsExporting(false);
                     });
                   }}
                 />
