@@ -23,6 +23,7 @@ import {
   resetIgnoreAuthCallback,
 } from "./firebase";
 import * as Sentry from "./sentry";
+import { setUserId } from "./states/core";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import {
   showNoticeNotification,
@@ -120,8 +121,10 @@ export async function onAuthStateChanged(
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     if (user) {
+      setUserId(user.uid);
       userPromise = loadUser(user);
     } else {
+      setUserId(null);
       DB.setSnapshot(undefined);
     }
   }
