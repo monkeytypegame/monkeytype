@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 
 import { hotkeys } from "../../states/hotkeys";
 import { isFirefox } from "../../utils/misc";
-import { Kbd } from "./Kbd";
+import { Kbd } from "../common/Kbd";
 
 export function CommandlineHotkey() {
   return (
