@@ -13,8 +13,6 @@ export default {
       },
     ], //default: true
 
-    "declaration-block-no-shorthand-property-overrides": null, // add
-
     "at-rule-no-unknown": null, // consider adding
     "declaration-property-value-no-unknown": null, // add
     "selector-type-no-unknown": null, // add // default: [true, {ignore: ['custom-elements'],},]
