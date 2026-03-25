@@ -8,8 +8,8 @@
 }
 
 header[data-focused] [data-nav-item],
-header[data-focused] nav:before,
-header[data-focused] nav:after {
+header[data-focused] nav::before,
+header[data-focused] nav::after {
   background: #99989f;
 }
 

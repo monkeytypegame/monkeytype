@@ -2,8 +2,8 @@
 
 header[data-focused] {
   & [data-nav-item],
-  & nav:before,
-  & nav:after {
+  & nav::before,
+  & nav::after {
     background: var(--bg-color);
   }
 }
