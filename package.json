@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "full-check": "turbo lint build test integration-test check-assets --force",
+    "full-check": "turbo lint build test integration-test lint-styles lint-json check-assets --force",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "ts-check": "turbo run ts-check",
@@ -49,6 +49,8 @@
     "hotfix-dry": "monkeytype-release --hotfix --dry",
     "format-check": "oxfmt . --check",
     "format-fix": "oxfmt .",
+    "lint-styles": "stylelint \"**/*.{scss,css}\"",
+    "lint-styles-fix": "stylelint \"**/*.{scss,css}\" --fix",
     "lint-json-assets": "turbo lint-json --filter @monkeytype/frontend",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
