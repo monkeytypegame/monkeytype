@@ -2,7 +2,16 @@
 export default {
   extends: ["stylelint-config-standard"],
   rules: {
-    "font-family-no-missing-generic-family-keyword": null, // add
+    "font-family-no-missing-generic-family-keyword": [
+      true,
+      {
+        ignoreFontFamilies: [
+          "Font Awesome",
+          "Font Awesome Brands",
+          "Gallaudet",
+        ],
+      },
+    ], //default: true
 
     "declaration-block-no-shorthand-property-overrides": null, // add
 
@@ -51,11 +60,6 @@ export default {
       files: ["**/*.scss"],
       extends: ["stylelint-config-standard-scss"],
       rules: {
-        "font-family-no-missing-generic-family-keyword": [
-          true,
-          { ignoreFontFamilies: ["Font Awesome", "Font Awesome Brands"] },
-        ], //default: true
-
         "selector-type-no-unknown": [
           true,
           { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint"] },
