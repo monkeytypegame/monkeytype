@@ -475,7 +475,7 @@ export function deleteLocalTag(tagId: string): void {
     const tagIndex = result.tags.indexOf(tagId);
     if (tagIndex > -1) {
       resultsCollection.update(result._id, (old) => {
-        const tags = result.tags;
+        const tags = [...result.tags];
         tags.splice(tagIndex, 1);
         old.tags = tags;
       });

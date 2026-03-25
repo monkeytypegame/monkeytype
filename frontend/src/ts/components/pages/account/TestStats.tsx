@@ -55,16 +55,20 @@ export function TestStats(props: {
               </div>
               <div class="text-2xl leading-[1.1] md:text-3xl lg:text-5xl">
                 {stats().completed}(
-                {Math.floor(
-                  (stats().completed /
-                    (stats().completed + stats().restarted)) *
-                    100,
-                )}
+                {stats().completed + stats().restarted > 0
+                  ? Math.floor(
+                      (stats().completed /
+                        (stats().completed + stats().restarted)) *
+                        100,
+                    )
+                  : 0}
                 %)
               </div>
               <div class="text-xs">
-                {(stats().restarted / stats().completed).toFixed(1)} restarts
-                per completed test
+                {stats().completed > 0
+                  ? (stats().restarted / stats().completed).toFixed(1)
+                  : "0.0"}{" "}
+                restarts per completed test
               </div>
             </div>
 

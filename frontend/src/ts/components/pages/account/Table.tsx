@@ -237,7 +237,8 @@ function getColumns<M extends Mode>({
                     .getValue()
                     .map(
                       (it) =>
-                        getSnapshot()?.tags.find((tag) => tag._id === it)?.name,
+                        getSnapshot()?.tags.find((tag) => tag._id === it)
+                          ?.name ?? "unknown tag",
                     )
                     .join(", ")
                 : "no tags",

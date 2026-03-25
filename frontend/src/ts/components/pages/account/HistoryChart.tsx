@@ -213,7 +213,7 @@ export function HistoryChart(props: {
                 axis: "y",
                 beginAtZero: props.beginAtZero,
                 min:
-                  Config.accountChart[0] === "on"
+                  Config.accountChart[0] === "on" || acc().length === 0
                     ? 0
                     : Math.floor(Math.min(...acc()) / 5) * 5,
                 max: 100,
