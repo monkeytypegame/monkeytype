@@ -1,4 +1,5 @@
 import {
+  CreateHotkeyOptions,
   Hotkey,
   HotkeyCallback,
   HotkeyCallbackContext,
@@ -10,6 +11,12 @@ import { isInputElementFocused } from "../input-element";
 export function createHotkey(
   hotkey: Hotkey | (() => Hotkey),
   callback: HotkeyCallback,
+  options: () => Partial<
+    Omit<
+      CreateHotkeyOptions,
+      "ignoreInputs" | "stopPropagation" | "preventDefault"
+    >
+  > = () => ({}),
 ): void {
   registerHotkey(
     hotkey,
@@ -19,15 +26,17 @@ export function createHotkey(
       e.preventDefault();
       callback(e, context);
     },
-    {
+    () => ({
       ignoreInputs: false, //hotkeys are active on the words input, but not on other interactive elements
       stopPropagation: false, //we set stopPropagation in the callback if the hotkey executes
       preventDefault: false, //we set preventDefault in the callback if the hotkey executes
       requireReset: true,
       conflictBehavior: "replace",
-    },
+      ...options(),
+    }),
   );
 }
+
 function isInteractiveElementFocused(): boolean {
   if (isInputElementFocused()) return false;
 

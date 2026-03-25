@@ -7,7 +7,7 @@ import { wordsHaveNewline, wordsHaveTab } from "./test";
 import { getActivePage } from "./core";
 
 const quickRestartHotkeyMap: Record<QuickRestart, Hotkey> = {
-  off: "Meta+Mod+Alt+Shift+F22" as Hotkey, //Dummy
+  off: "" as Hotkey, //Dummy
   esc: "Escape",
   tab: "Tab",
   enter: "Enter",
