@@ -13,7 +13,10 @@ export default {
       },
     ], //default: true
 
-    "at-rule-no-unknown": null, // consider adding
+    "at-rule-no-unknown": [
+      true,
+      { ignoreAtRules: ["theme", "utility", "tailwind", "apply", "source"] },
+    ], // source for lightningCss and the rest for tailwind //default: true
     "selector-type-no-unknown": [
       true,
       { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint", "key"] },
@@ -54,6 +57,8 @@ export default {
       files: ["**/*.scss"],
       extends: ["stylelint-config-standard-scss"],
       rules: {
+        "at-rule-no-unknown": null, // use "scss/at-rule-no-unknown" to override this
+
         "scss/at-extend-no-missing-placeholder": null,
         "scss/load-no-partial-leading-underscore": null,
         "scss/load-partial-extension": null, // default: never,
