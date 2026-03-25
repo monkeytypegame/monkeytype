@@ -2,8 +2,6 @@
 export default {
   extends: ["stylelint-config-standard"],
   rules: {
-    "no-descending-specificity": null, // add
-
     "no-duplicate-selectors": null, // add
 
     "font-family-no-missing-generic-family-keyword": null, // add

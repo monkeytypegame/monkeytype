@@ -13,22 +13,6 @@
   transition: 0.5s;
 }
 
-header[data-focused] {
-  & [data-ui-element="logo"] > div,
-  [data-ui-element="logo"] svg {
-    transform: rotateY(0deg);
-    direction: ltr;
-  }
-  & [data-nav-item] {
-    --nav-focus-opacity: 1;
-    background: var(--sub-color);
-    transform: rotateY(180deg);
-  }
-  & [data-nav-item="account"] {
-    --themable-button-bg: var(--sub-color);
-  }
-}
-
 #words .incorrect.extra {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
@@ -126,6 +110,22 @@ header[data-focused] {
 
 [data-nav-item="login"] {
   background: #ab92e1;
+}
+
+header[data-focused] {
+  & [data-ui-element="logo"] > div,
+  [data-ui-element="logo"] svg {
+    transform: rotateY(0deg);
+    direction: ltr;
+  }
+  & [data-nav-item] {
+    --nav-focus-opacity: 1;
+    background: var(--sub-color);
+    transform: rotateY(180deg);
+  }
+  & [data-nav-item="account"] {
+    --themable-button-bg: var(--sub-color);
+  }
 }
 
 body.crtmode {

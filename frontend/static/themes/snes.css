@@ -1,9 +1,3 @@
-header[data-focused] [data-nav-item],
-header[data-focused] nav:before,
-header[data-focused] nav:after {
-  background: #99989f;
-}
-
 [data-nav-item] {
   border-radius: 10rem !important;
   --themable-button-text: var(--bg-color);
@@ -11,6 +5,12 @@ header[data-focused] nav:after {
 
 [data-nav-item]:hover {
   filter: brightness(1.25);
+}
+
+header[data-focused] [data-nav-item],
+header[data-focused] nav:before,
+header[data-focused] nav:after {
+  background: #99989f;
 }
 
 [data-nav-item="test"] {

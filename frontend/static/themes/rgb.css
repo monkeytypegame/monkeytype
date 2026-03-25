@@ -71,6 +71,28 @@
   animation: rgb-bg 5s linear infinite !important;
 }
 
+[data-ui-element="logoSubtext"],
+#result .stats .group .bottom,
+[data-nav-item]:hover,
+footer button:hover,
+#words.flipped .word,
+footer a:hover {
+  animation: rgb 5s linear infinite;
+}
+
+[data-ui-element="accountMenu"] a:hover,
+[data-ui-element="accountMenu"] button:hover {
+  animation: none;
+}
+
+a:not(.button):not([data-ui-variant="button"]):hover {
+  animation: rgb 5s linear infinite;
+}
+
+header [data-ui-element="logo"] svg path {
+  animation: rgb-fill 5s linear infinite;
+}
+
 header[data-focused] {
   & [data-ui-element="logoSubtext"] {
     animation: none;
@@ -80,14 +102,8 @@ header[data-focused] {
   }
 }
 
-[data-ui-element="logoSubtext"],
-#result .stats .group .bottom,
-[data-nav-item]:hover,
-footer button:hover,
-#words.flipped .word,
-footer a:hover,
-a:not(.button):not([data-ui-variant="button"]):hover {
-  animation: rgb 5s linear infinite;
+header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
+  animation: rgb-fill 5s linear infinite;
 }
 
 #words {
@@ -97,14 +113,4 @@ a:not(.button):not([data-ui-variant="button"]):hover {
 #words.flipped {
   --correct-letter-animation: none;
   --untyped-letter-animation: rgb 5s linear infinite;
-}
-
-header [data-ui-element="logo"] svg path,
-header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
-  animation: rgb-fill 5s linear infinite;
-}
-
-[data-ui-element="accountMenu"] a:hover,
-[data-ui-element="accountMenu"] button:hover {
-  animation: none;
 }
