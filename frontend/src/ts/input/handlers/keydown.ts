@@ -28,7 +28,7 @@ import { Keycode } from "../../constants/keys";
 import { wordsHaveTab } from "../../states/test";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
-  if (wordsHaveTab()) {
+  if (wordsHaveTab() && !e.shiftKey) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
     return;
