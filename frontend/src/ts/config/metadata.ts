@@ -38,6 +38,18 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   fa: FaObject;
 
+  optionsMetadata?: ConfigSchemas.Config[K] extends string | number | symbol
+    ? Partial<
+        Record<
+          ConfigSchemas.Config[K],
+          {
+            displayString?: string;
+            fa?: FaObject;
+          }
+        >
+      >
+    : never;
+
   // commandline?: {
   //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
   //     ? Partial<Record<ConfigSchemas.Config[K], string>>
@@ -164,6 +176,23 @@ export const configMetadata: ConfigMetadataObject = {
     key: "mode",
     fa: { icon: "fa-bars" },
     changeRequiresRestart: true,
+    optionsMetadata: {
+      time: {
+        fa: { icon: "fa-clock" },
+      },
+      words: {
+        fa: { icon: "fa-font" },
+      },
+      quote: {
+        fa: { icon: "fa-quote-left" },
+      },
+      zen: {
+        fa: { icon: "fa-mountain" },
+      },
+      custom: {
+        fa: { icon: "fa-wrench" },
+      },
+    },
     group: "test",
     overrideConfig: ({ value }) => {
       if (value === "custom" || value === "quote" || value === "zen") {
