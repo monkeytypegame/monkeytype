@@ -14,7 +14,10 @@ export default {
     ], //default: true
 
     "at-rule-no-unknown": null, // consider adding
-    "selector-type-no-unknown": null, // add // default: [true, {ignore: ['custom-elements'],},]
+    "selector-type-no-unknown": [
+      true,
+      { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint", "key"] },
+    ], // default: [true, {ignore: ['custom-elements'],},]
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]
 
@@ -57,11 +60,6 @@ export default {
       files: ["**/*.scss"],
       extends: ["stylelint-config-standard-scss"],
       rules: {
-        "selector-type-no-unknown": [
-          true,
-          { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint"] },
-        ], // default: [true, {ignore: ['custom-elements'],},]
-
         "scss/at-extend-no-missing-placeholder": null,
         "scss/load-no-partial-leading-underscore": null,
         "scss/load-partial-extension": null, // default: never,
