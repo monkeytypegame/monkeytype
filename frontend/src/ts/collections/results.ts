@@ -448,11 +448,12 @@ export async function findFastestResultByTagId(
   const result = await createLiveQueryCollection((q) =>
     q
       .from({ r: buildSettingsResultsQuery(options) })
+      .where(({ r }) => inArray(options.tagId, r.tags))
       .orderBy(({ r }) => r.wpm, "desc")
       .limit(1)
       .findOne(),
   ).toArrayWhenReady();
-  return result.length === 1 || result[0] !== undefined
+  return result.length === 1 && result[0] !== undefined
     ? (result[0] as SnapshotResult<Mode>)
     : undefined;
 }
