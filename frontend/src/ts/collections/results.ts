@@ -473,13 +473,10 @@ function buildSettingsResultsQuery(filter: CurrentSettingsFilter) {
 
 export function deleteLocalTag(tagId: string): void {
   for (const result of resultsCollection.values()) {
-    const tagIndex = result.tags.indexOf(tagId);
-    if (tagIndex > -1) {
-      resultsCollection.update(result._id, (old) => {
-        const tags = [...result.tags];
-        tags.splice(tagIndex, 1);
-        old.tags = tags;
-      });
-    }
+    if (!result.tags.includes(tagId)) continue;
+    resultsCollection.update(result._id, (old) => {
+      const tags = old.tags.filter((it) => it !== tagId);
+      old.tags = tags;
+    });
   }
 }
