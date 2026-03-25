@@ -11,6 +11,8 @@ function quickRestart(e: KeyboardEvent): void {
     return;
   }
 
+  e.preventDefault();
+
   if (getActivePage() === "test") {
     restartTestEvent.dispatch({ isQuickRestart: !e.shiftKey });
   } else {
