@@ -44,7 +44,6 @@ export default {
     "selector-class-pattern": null,
     "selector-id-pattern": null,
 
-    "font-family-name-quotes": null, // add // default: always-where-recommended
     "function-url-quotes": null, // add // default: always
 
     "declaration-block-no-redundant-longhand-properties": null,
