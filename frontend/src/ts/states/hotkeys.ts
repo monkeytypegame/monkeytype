@@ -1,4 +1,4 @@
-import { Config, QuickRestart } from "@monkeytype/schemas/configs";
+import { QuickRestart } from "@monkeytype/schemas/configs";
 import { Hotkey } from "@tanstack/solid-hotkeys";
 import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
@@ -18,45 +18,31 @@ type Hotkeys = {
   commandline: Hotkey;
 };
 
-export const [hotkeys, setHotkeys] = createStore<Hotkeys>(
-  mapHotkeys(getConfig, {
-    shiftTab: false,
-    shiftEnter: false,
-  }),
-);
+export const [hotkeys, setHotkeys] = createStore<Hotkeys>(updateHotkeys());
 
 createEffect(() => {
-  const isOnTestPage = getActivePage() === "test";
-  setHotkeys(
-    mapHotkeys(getConfig, {
-      shiftTab: isOnTestPage && wordsHaveTab(),
-      shiftEnter: isOnTestPage && wordsHaveNewline(),
-    }),
-  );
+  getActivePage(); // depend on active page
+  setHotkeys(updateHotkeys());
 });
 
-function mapHotkeys(
-  config: Config,
-  options: { shiftTab: boolean; shiftEnter: boolean },
-): Hotkeys {
+function updateHotkeys(): Hotkeys {
+  const isOnTestPage = getActivePage() === "test";
   return {
-    quickRestart: shiftedHotkey(
-      quickRestartHotkeyMap[config.quickRestart],
-      options,
+    quickRestart: shiftHotkey(
+      quickRestartHotkeyMap[getConfig.quickRestart],
+      isOnTestPage && wordsHaveTab(),
     ),
-    commandline: shiftedHotkey(
+    commandline: shiftHotkey(
       getConfig.quickRestart === "esc" ? "Tab" : "Escape",
-      options,
+      isOnTestPage && wordsHaveNewline(),
     ),
   };
 }
 
-function shiftedHotkey(
-  hotkey: Hotkey,
-  options: { shiftTab: boolean; shiftEnter: boolean },
-): Hotkey {
-  if (hotkey === "Tab" && options.shiftTab) return "Shift+Tab";
-  if (hotkey === "Enter" && options.shiftEnter) return "Shift+Enter";
-
+function shiftHotkey(hotkey: Hotkey, shift: boolean): Hotkey {
+  if (shift) {
+    if (hotkey === "Tab") return "Shift+Tab";
+    if (hotkey === "Enter") return "Shift+Enter";
+  }
   return hotkey;
 }
