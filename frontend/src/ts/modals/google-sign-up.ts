@@ -15,12 +15,13 @@ import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
+import { googleSignUpEvent } from "../events/google-sign-up";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
+import { authEvent } from "../events/auth";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -109,6 +110,11 @@ async function apply(): Promise<void> {
       showSuccessNotification("Account created");
       await AccountController.loadUser(signedInUser.user);
 
+      authEvent.dispatch({
+        type: "authStateChanged",
+        data: { isUserSignedIn: true, loadPromise: Promise.resolve() },
+      });
+
       signedInUser = undefined;
       hideLoaderBar();
       void hide();
@@ -171,7 +177,7 @@ async function setup(modalEl: ElementWithUtils): Promise<void> {
   });
 }
 
-subscribeToSignUpEvent((signedInUser, isNewUser) => {
+googleSignUpEvent.subscribe(({ signedInUser, isNewUser }) => {
   if (signedInUser !== undefined && isNewUser) {
     show(signedInUser);
   }

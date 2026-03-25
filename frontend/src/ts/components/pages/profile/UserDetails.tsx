@@ -15,10 +15,9 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
-import { isFriend } from "../../../db";
+import { addFriend, isFriend } from "../../../db";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
-import { addFriend } from "../../../pages/friends";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isLoggedIn } from "../../../states/core";
 import {

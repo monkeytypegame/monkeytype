@@ -2,8 +2,8 @@ import { UserNameSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
+import { navigationEvent } from "../../../events/navigation";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import * as NavigationEvent from "../../../observables/navigation-event";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
 import { getActivePage } from "../../../states/core";
@@ -27,7 +27,10 @@ export function ProfileSearchPage(): JSXElement {
     onSubmit: async ({ value }) => {
       setEditable(false);
       try {
-        NavigationEvent.dispatch(`/profile/${value.username}`, {});
+        navigationEvent.dispatch({
+          url: `/profile/${value.username}`,
+          options: {},
+        });
       } finally {
         setEditable(true);
       }

@@ -7,7 +7,7 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import * as TTSEvent from "../../observables/tts-event";
+import { ttsEvent } from "../../events/tts";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -16,7 +16,7 @@ import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
-import * as KeymapEvent from "../../observables/keymap-event";
+import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
@@ -234,7 +234,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         showErrorNotification("Failed to load text-to-speech script");
         return;
       }
-      if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
+      if (params[0] !== undefined) ttsEvent.dispatch(params[0]);
     },
   },
   arrows: {
@@ -451,7 +451,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           LayoutfluidFunboxTimer.hide();
         }
         setTimeout(() => {
-          void KeymapEvent.highlight(
+          highlight(
             TestWords.words.getCurrent().charAt(TestInput.input.current.length),
           );
         }, 1);

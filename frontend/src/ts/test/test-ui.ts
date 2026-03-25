@@ -15,7 +15,7 @@ import * as Strings from "../utils/strings";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as CompositionState from "../legacy-states/composition";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import { getActivePage } from "../states/core";
@@ -35,7 +35,7 @@ import {
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
-import * as KeymapEvent from "../observables/keymap-event";
+import { highlight } from "../events/keymap";
 import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
@@ -50,7 +50,6 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as TestConfig from "./test-config";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as Ligatures from "./break-ligatures";
@@ -68,7 +67,8 @@ import {
   qsr,
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
-import { skipBreakdown } from "../states/header";
+import { skipBreakdownEvent } from "../states/header";
+import { wordsHaveNewline } from "../states/test";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -658,7 +658,7 @@ export function updateWordsWrapperHeight(force = false): void {
       wordsWrapperEl.setStyle({ height: wrapperHeight + "px" });
     } else {
       //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
-      if (TestWords.hasNewline) {
+      if (wordsHaveNewline()) {
         wordsWrapperEl.setStyle({ height: wordHeight * 3 + "px" });
       } else {
         const wordsHeight = wordsEl.getOffsetHeight() ?? wordHeight;
@@ -1750,7 +1750,7 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    void KeymapEvent.highlight(
+    highlight(
       TestWords.words.getCurrent().charAt(TestInput.input.current.length),
     );
   }
@@ -1887,7 +1887,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   qs("#result")?.hide();
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
-  TestConfig.show();
   Focus.set(false);
   LiveSpeed.instantHide();
   LiveSpeed.reset();
@@ -1918,7 +1917,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    skipBreakdown();
+    skipBreakdownEvent.dispatch();
   }
 
   currentTestLine = 0;
@@ -2025,7 +2024,7 @@ qs("#wordsWrapper")?.on("click", () => {
   focusWords();
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
   }

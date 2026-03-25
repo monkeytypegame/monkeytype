@@ -8,7 +8,22 @@ export type ModalId =
   | "DevOptions"
   | "DevInboxPicker"
   | "RegisterCaptcha"
-  | "Alerts";
+  | "Alerts"
+  | "SimpleModal"
+  | "CustomText"
+  | "SaveCustomText"
+  | "SavedTexts"
+  | "WordFilter"
+  | "CustomGenerator"
+  | "QuoteSearch"
+  | "QuoteRate"
+  | "QuoteReport"
+  | "QuoteSubmit"
+  | "QuoteApprove"
+  | "TestDuration"
+  | "ShareTestSettings"
+  | "CustomWordAmount"
+  | "MobileTestConfig";
 
 export type ModalVisibility = {
   visible: boolean;

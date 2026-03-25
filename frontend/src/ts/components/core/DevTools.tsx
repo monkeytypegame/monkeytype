@@ -3,9 +3,9 @@ import { JSXElement, lazy, onMount, Suspense } from "solid-js";
 let DevComponents: (() => JSXElement) | undefined;
 
 if (import.meta.env.DEV) {
-  const LazyQueryDevtools = lazy(async () =>
-    import("@tanstack/solid-query-devtools").then((m) => ({
-      default: m.SolidQueryDevtools,
+  const LazyTanstackDevtools = lazy(async () =>
+    import("./TanstackDevtools").then((m) => ({
+      default: m.TanStackDevtools,
     })),
   );
   const LazyDevOptionsModal = lazy(async () =>
@@ -31,7 +31,7 @@ if (import.meta.env.DEV) {
 
   DevComponents = () => (
     <Suspense>
-      <LazyQueryDevtools />
+      <LazyTanstackDevtools />
       <LazyDevOptionsModal />
       <LazySolidDevtoolsOverlay />
     </Suspense>

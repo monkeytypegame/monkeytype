@@ -22,7 +22,7 @@ import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
 import { Snapshot } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
-import * as AuthEvent from "../../observables/auth-event";
+import { authEvent } from "../../events/auth";
 import { sanitize } from "../../utils/sanitize";
 import { qs, qsa } from "../../utils/dom";
 
@@ -962,7 +962,7 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   return filter;
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     loadTags();
     void load();

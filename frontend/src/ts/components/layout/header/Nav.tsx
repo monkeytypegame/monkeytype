@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, JSXElement, Show } from "solid-js";
 
+import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
-import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import {
-  dispatchRestartTest,
-  getActivePage,
-  getFocus,
-} from "../../../states/core";
+  prefetchAboutPage,
+  prefetchLeaderboardPage,
+} from "../../../queries/prefetch";
+import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
+import { getActivePage } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -15,14 +16,13 @@ import {
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
 import { getSnapshot } from "../../../states/snapshot";
+import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
-import { prefetchAboutPage } from "../../pages/AboutPage";
-import { prefetchLeaderboardPage } from "../../pages/leaderboard/LeaderboardPage";
 import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
@@ -80,7 +80,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") dispatchRestartTest();
+          if (getActivePage() === "test") restartTestEvent.dispatch();
         }}
       />
       <Button

@@ -5,7 +5,7 @@ import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as Time from "../legacy-states/time";
 import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { animate } from "animejs";
@@ -251,6 +251,6 @@ export function updateStyle(): void {
   }, 125);
 }
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "timerStyle") updateStyle();
 });
