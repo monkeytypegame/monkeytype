@@ -19,7 +19,7 @@ export default {
     ], // source for lightningCss and the rest for tailwind //default: true
     "selector-type-no-unknown": [
       true,
-      { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint", "key"] },
+      { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint"] },
     ], // default: [true, {ignore: ['custom-elements'],},]
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]
