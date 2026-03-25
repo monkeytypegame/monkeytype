@@ -85,6 +85,9 @@
     ],
     "*.{ts,tsx,js}": [
       "oxlint --type-aware --type-check"
+    ],
+    "*.{scss,css}": [
+      "stylelint"
     ]
   },
   "engines": {
