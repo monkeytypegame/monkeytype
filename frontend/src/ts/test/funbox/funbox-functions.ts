@@ -761,14 +761,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return new PolyglotWordset(wordsWithLanguage, languageProperties);
     },
   },
-  dlss_5_on: {
-    applyGlobalCSS(): void {
-      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/dlss_5_on.css`);
-    },
-    clearGlobal(): void {
-      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
-    },
-  },
 };
 
 export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {

@@ -485,7 +485,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "DLSS 5 ON",
     canGetPb: true,
     difficultyLevel: 0,
-    frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
     name: "dlss_5_on",
   },
 };
