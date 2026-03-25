@@ -1,24 +1,3 @@
-@import "buttons" layer(custom-styles);
-@import "404" layer(custom-styles);
-@import "ads" layer(custom-styles);
-@import "account" layer(custom-styles);
-@import "animations" layer(custom-styles);
-@import "caret" layer(custom-styles);
-@import "commandline" layer(custom-styles);
-@import "core" layer(custom-styles);
-@import "fonts" layer(custom-styles);
-@import "inputs" layer(custom-styles);
-@import "keymap" layer(custom-styles);
-@import "monkey" layer(custom-styles);
-@import "popups" layer(custom-styles);
-@import "scroll" layer(custom-styles);
-@import "settings" layer(custom-styles);
-@import "account-settings" layer(custom-styles);
-@import "test" layer(custom-styles);
-@import "loading" layer(custom-styles);
-@import "friends" layer(custom-styles);
-@import "media-queries" layer(custom-styles);
-
 @layer hidden {
   // custom layer to hide elements without using !important
   // (as long as this layer is higher than custom-styles)
@@ -37,6 +16,11 @@
 }
 
 @layer custom-styles {
+  @import "buttons", "404", "ads", "account", "animations", "caret",
+    "commandline", "core", "fonts", "inputs", "keymap", "monkey", "popups",
+    "scroll", "settings", "account-settings", "test", "loading", "friends",
+    "media-queries";
+
   .chartCanvas {
     width: 100% !important;
   }

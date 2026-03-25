@@ -8,8 +8,6 @@
 @import "@fortawesome/fontawesome-free/scss/_animated.scss"; //fa-spin
 /** rotated **/
 @import "@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
-/** icons **/
-@import "@fortawesome/fontawesome-free/scss/_icons.scss";
 
 @font-face {
   font-family: "Font Awesome";
@@ -59,3 +57,5 @@
     src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
   }
 }
+
+@import "@fortawesome/fontawesome-free/scss/_icons.scss";

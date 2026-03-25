@@ -57,6 +57,8 @@ export default {
       files: ["**/*.scss"],
       extends: ["stylelint-config-standard-scss"],
       rules: {
+        "no-invalid-position-at-import-rule": null, // consider adding // default: [true, {ignoreAtRules: ['use', 'forward'],},]
+
         "at-rule-no-unknown": null, // use "scss/at-rule-no-unknown" to override this
 
         "scss/at-extend-no-missing-placeholder": null,

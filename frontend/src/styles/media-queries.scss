@@ -1,12 +1,3 @@
-//media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
-@import "media-queries-orange";
-@import "media-queries-yellow";
-@import "media-queries-green";
-@import "media-queries-blue";
-@import "media-queries-purple";
-@import "media-queries-brown";
-@import "media-queries-gray";
-
 body {
   &.mediaQueryDebugLevel1 {
     .content-grid {
@@ -22,6 +13,15 @@ body {
     }
   }
 }
+
+//media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
+@import "media-queries-orange";
+@import "media-queries-yellow";
+@import "media-queries-green";
+@import "media-queries-blue";
+@import "media-queries-purple";
+@import "media-queries-brown";
+@import "media-queries-gray";
 
 @media only screen and (max-width: 1875px) {
   .ad.ad-v {
