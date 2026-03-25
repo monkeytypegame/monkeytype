@@ -72,7 +72,7 @@ export async function update(): Promise<void> {
     }
     if (Config.quickRestart === "tab") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to restart<span></div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to restart</span></div>`,
       );
     }
   }
