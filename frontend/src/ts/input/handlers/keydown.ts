@@ -25,10 +25,10 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
-import { wordsHasTab } from "../../states/test";
+import { wordsHaveTab } from "../../states/test";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
-  if (wordsHasTab()) {
+  if (wordsHaveTab()) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
     return;

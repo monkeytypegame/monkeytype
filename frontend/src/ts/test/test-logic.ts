@@ -29,8 +29,8 @@ import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import {
   setResultVisible,
-  setWordsHasNewline,
-  setWordsHasTab,
+  setWordsHaveNewline,
+  setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
@@ -556,8 +556,8 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.setHasNumbers(hasNumbers);
-  setWordsHasTab(wordsHaveTab);
-  setWordsHasNewline(wordsHaveNewline);
+  setWordsHaveTab(wordsHaveTab);
+  setWordsHaveNewline(wordsHaveNewline);
 
   if (
     generatedWords

@@ -13,8 +13,8 @@ import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
 import {
-  wordsHasNewline,
-  wordsHasTab,
+  wordsHaveNewline,
+  wordsHaveTab,
   getLoadedChallenge,
 } from "../states/test";
 
@@ -61,7 +61,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (wordsHasTab()) {
+  if (wordsHaveTab()) {
     if (Config.quickRestart === "esc") {
       testModesNotice.appendHtml(
         `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to open commandline</span></div>`,
@@ -78,7 +78,7 @@ export async function update(): Promise<void> {
   }
 
   if (
-    (wordsHasNewline() || Config.funbox.includes("58008")) &&
+    (wordsHaveNewline() || Config.funbox.includes("58008")) &&
     Config.quickRestart === "enter"
   ) {
     testModesNotice.appendHtml(

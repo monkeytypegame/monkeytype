@@ -3,7 +3,7 @@ import { Hotkey } from "@tanstack/solid-hotkeys";
 import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
-import { wordsHasNewline, wordsHasTab } from "./test";
+import { wordsHaveNewline, wordsHaveTab } from "./test";
 import { getActivePage } from "./core";
 
 const hotkeyMapping: Record<QuickRestart, Hotkey> = {
@@ -29,8 +29,8 @@ createEffect(() => {
   const isOnTestPage = getActivePage() === "test";
   setHotkeys(
     calcHotkeys(getConfig, {
-      shiftTab: isOnTestPage && wordsHasTab(),
-      shiftEnter: isOnTestPage && wordsHasNewline(),
+      shiftTab: isOnTestPage && wordsHaveTab(),
+      shiftEnter: isOnTestPage && wordsHaveNewline(),
     }),
   );
 });
