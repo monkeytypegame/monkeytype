@@ -6,7 +6,7 @@ import { getConfig } from "../config/store";
 import { wordsHaveNewline, wordsHaveTab } from "./test";
 import { getActivePage } from "./core";
 
-const hotkeyMapping: Record<QuickRestart, Hotkey> = {
+const quickRestartHotkeyMap: Record<QuickRestart, Hotkey> = {
   off: "Meta+Mod+Alt+Shift+F22" as Hotkey, //Dummy
   esc: "Escape",
   tab: "Tab",
@@ -40,7 +40,10 @@ function calcHotkeys(
   options: { shiftTab: boolean; shiftEnter: boolean },
 ): Hotkeys {
   return {
-    quickRestart: shiftedHotkey(hotkeyMapping[config.quickRestart], options),
+    quickRestart: shiftedHotkey(
+      quickRestartHotkeyMap[config.quickRestart],
+      options,
+    ),
     commandline: shiftedHotkey(
       getConfig.quickRestart === "esc" ? "Tab" : "Escape",
       options,
