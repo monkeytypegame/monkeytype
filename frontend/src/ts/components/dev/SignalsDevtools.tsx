@@ -9,290 +9,28 @@ import {
   Show,
 } from "solid-js";
 
-import { getConfig } from "../../config/store";
-import { getBanners } from "../../states/banners";
-import { bp } from "../../states/breakpoints";
-import {
-  getActivePage,
-  setActivePage,
-  getVersion,
-  setVersion,
-  getThemeIndicator,
-  setThemeIndicator,
-  getCommandlineSubgroup,
-  setCommandlineSubgroup,
-  getGlobalOffsetTop,
-  setGlobalOffsetTop,
-  getIsScreenshotting,
-  setIsScreenshotting,
-  getUserId,
-  setUserId,
-  isLoggedIn,
-  getSelectedProfileName,
-  setSelectedProfileName,
-} from "../../states/core";
-import {
-  getAnimatedLevel,
-  setAnimatedLevel,
-  getAccountButtonSpinner,
-  setAccountButtonSpinner,
-  getXpBarData,
-  setXpBarData,
-} from "../../states/header";
-import { hotkeys } from "../../states/hotkeys";
-import {
-  getSelection,
-  getPage,
-  setPage,
-  getGoToUserPage,
-  setGoToUserPage,
-} from "../../states/leaderboard-selection";
-import {
-  getLoaderBarSignal,
-  showLoaderBar,
-  hideLoaderBar,
-} from "../../states/loader-bar";
-import {
-  getLoginPageInputsEnabled,
-  enableLoginPageInputs,
-  disableLoginPageInputs,
-} from "../../states/login";
-import { modalState } from "../../states/modals";
-import {
-  getNotifications,
-  getNotificationHistory,
-} from "../../states/notifications";
-import { getPsas } from "../../states/psas";
-import { currentQuote, quoteStats } from "../../states/quote-rate";
-import { quoteId } from "../../states/quote-report";
-import { simpleModalConfig } from "../../states/simple-modal";
-import {
-  getSnapshot,
-  getLastResult,
-  setLastResult,
-} from "../../states/snapshot";
-import {
-  wordsHaveNewline,
-  setWordsHaveNewline,
-  wordsHaveTab,
-  setWordsHaveTab,
-  getLoadedChallenge,
-  setLoadedChallenge,
-  getResultVisible,
-  setResultVisible,
-  getFocus,
-  setFocus,
-} from "../../states/test";
-import { setTheme, getTheme } from "../../states/theme";
+import { trackedSignals, type TrackedSignal } from "../../dev/signal-tracker";
+import { Balloon } from "../common/Balloon";
 
-type SignalEntry = {
-  name: string;
-  get: () => unknown;
-  set?: (value: unknown) => void;
-  actions?: Record<string, () => void>;
-};
-type SignalGroup = { file: string; signals: SignalEntry[] };
+type SignalGroup = { file: string; signals: TrackedSignal[] };
 
-const groups: SignalGroup[] = [
-  {
-    file: "banners",
-    signals: [{ name: "banners", get: getBanners }],
-  },
-  {
-    file: "breakpoints",
-    signals: [{ name: "bp", get: bp }],
-  },
-  {
-    file: "config/store",
-    signals: [{ name: "config", get: () => ({ ...getConfig }) }],
-  },
-  {
-    file: "core",
-    signals: [
-      {
-        name: "activePage",
-        get: getActivePage,
-        set: setActivePage as (v: unknown) => void,
-      },
-      {
-        name: "version",
-        get: getVersion,
-        set: setVersion as (v: unknown) => void,
-      },
-      {
-        name: "themeIndicator",
-        get: getThemeIndicator,
-        set: setThemeIndicator as (v: unknown) => void,
-      },
-      {
-        name: "commandlineSubgroup",
-        get: getCommandlineSubgroup,
-        set: setCommandlineSubgroup as (v: unknown) => void,
-      },
-      {
-        name: "globalOffsetTop",
-        get: getGlobalOffsetTop,
-        set: setGlobalOffsetTop as (v: unknown) => void,
-      },
-      {
-        name: "isScreenshotting",
-        get: getIsScreenshotting,
-        set: setIsScreenshotting as (v: unknown) => void,
-      },
-      {
-        name: "userId",
-        get: getUserId,
-        set: setUserId as (v: unknown) => void,
-      },
-      { name: "isLoggedIn", get: isLoggedIn },
-      {
-        name: "selectedProfileName",
-        get: getSelectedProfileName,
-        set: setSelectedProfileName as (v: unknown) => void,
-      },
-    ],
-  },
-  {
-    file: "header",
-    signals: [
-      {
-        name: "animatedLevel",
-        get: getAnimatedLevel,
-        set: setAnimatedLevel as (v: unknown) => void,
-      },
-      {
-        name: "accountButtonSpinner",
-        get: getAccountButtonSpinner,
-        set: setAccountButtonSpinner as (v: unknown) => void,
-      },
-      {
-        name: "xpBarData",
-        get: getXpBarData,
-        set: setXpBarData as (v: unknown) => void,
-      },
-    ],
-  },
-  {
-    file: "hotkeys",
-    signals: [{ name: "hotkeys", get: () => ({ ...hotkeys }) }],
-  },
-  {
-    file: "leaderboard-selection",
-    signals: [
-      { name: "selection", get: getSelection },
-      { name: "page", get: getPage, set: setPage as (v: unknown) => void },
-      {
-        name: "goToUserPage",
-        get: getGoToUserPage,
-        set: setGoToUserPage as (v: unknown) => void,
-      },
-    ],
-  },
-  {
-    file: "loader-bar",
-    signals: [
-      {
-        name: "loaderBarSignal",
-        get: getLoaderBarSignal,
-        actions: {
-          showLoaderBar: () => showLoaderBar(),
-          hideLoaderBar: () => hideLoaderBar(),
-        },
-      },
-    ],
-  },
-  {
-    file: "login",
-    signals: [
-      {
-        name: "loginPageInputsEnabled",
-        get: getLoginPageInputsEnabled,
-        actions: {
-          enable: () => enableLoginPageInputs(),
-          disable: () => disableLoginPageInputs(),
-        },
-      },
-    ],
-  },
-  {
-    file: "modals",
-    signals: [
-      { name: "openModals", get: () => ({ ...modalState.openModals }) },
-      { name: "modalStack", get: () => [...modalState.modalStack] },
-      { name: "pendingModal", get: () => modalState.pendingModal },
-      { name: "pendingIsChained", get: () => modalState.pendingIsChained },
-    ],
-  },
-  {
-    file: "notifications",
-    signals: [
-      { name: "notifications", get: getNotifications },
-      { name: "notificationHistory", get: getNotificationHistory },
-    ],
-  },
-  {
-    file: "psas",
-    signals: [{ name: "psas", get: getPsas }],
-  },
-  {
-    file: "quote-rate",
-    signals: [
-      { name: "currentQuote", get: currentQuote },
-      { name: "quoteStats", get: quoteStats },
-    ],
-  },
-  {
-    file: "quote-report",
-    signals: [{ name: "quoteId", get: quoteId }],
-  },
-  {
-    file: "simple-modal",
-    signals: [{ name: "simpleModalConfig", get: simpleModalConfig }],
-  },
-  {
-    file: "snapshot",
-    signals: [
-      { name: "snapshot", get: getSnapshot },
-      {
-        name: "lastResult",
-        get: getLastResult,
-        set: setLastResult as (v: unknown) => void,
-      },
-    ],
-  },
-  {
-    file: "theme",
-    signals: [
-      { name: "theme", get: getTheme, set: setTheme as (v: unknown) => void },
-    ],
-  },
-  {
-    file: "test",
-    signals: [
-      {
-        name: "wordsHaveNewline",
-        get: wordsHaveNewline,
-        set: setWordsHaveNewline as (v: unknown) => void,
-      },
-      {
-        name: "wordsHaveTab",
-        get: wordsHaveTab,
-        set: setWordsHaveTab as (v: unknown) => void,
-      },
-      {
-        name: "loadedChallenge",
-        get: getLoadedChallenge,
-        set: setLoadedChallenge as (v: unknown) => void,
-      },
-      {
-        name: "resultVisible",
-        get: getResultVisible,
-        set: setResultVisible as (v: unknown) => void,
-      },
-      { name: "focus", get: getFocus, set: setFocus as (v: unknown) => void },
-    ],
-  },
-];
+function buildGroups(): SignalGroup[] {
+  const groupMap = new Map<string, TrackedSignal[]>();
+
+  for (const s of trackedSignals) {
+    // extract filename from source path (e.g. "/ts/states/core.ts:4:44" -> "states/core.ts")
+    const match = /\/ts\/(.+?)(?::\d+)*(?:\)?)$/.exec(s.source);
+    const group = match?.[1] ?? (s.source !== "" ? s.source : s.owner);
+    const entries = groupMap.get(group) ?? [];
+    entries.push(s);
+    groupMap.set(group, entries);
+  }
+
+  return Array.from(groupMap.entries()).map(([file, signals]) => ({
+    file,
+    signals,
+  }));
+}
 
 function formatValue(value: unknown): string {
   if (value === null) return "null";
@@ -301,7 +39,11 @@ function formatValue(value: unknown): string {
   if (typeof value === "number" || typeof value === "boolean") {
     return `${value}`;
   }
-  return JSON.stringify(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return `[${typeof value}]`;
+  }
 }
 
 function parseValue(input: string): unknown {
@@ -319,14 +61,11 @@ function parseValue(input: string): unknown {
   }
 }
 
-function SignalRow(props: { signal: SignalEntry }): JSXElement {
+function SignalRow(props: { signal: TrackedSignal }): JSXElement {
   const [flashing, setFlashing] = createSignal(false);
   const [editing, setEditing] = createSignal(false);
   const [editValue, setEditValue] = createSignal("");
   let initialized = false;
-
-  const isEditable = (): boolean =>
-    props.signal.set !== undefined || props.signal.actions !== undefined;
 
   createEffect(
     on(
@@ -342,22 +81,19 @@ function SignalRow(props: { signal: SignalEntry }): JSXElement {
     ),
   );
 
-  function startEditing(): void {
-    if (!isEditable()) return;
+  const startEditing = (): void => {
     setEditValue(formatValue(props.signal.get()));
     setEditing(true);
-  }
+  };
 
-  function commitEdit(): void {
-    if (props.signal.set !== undefined) {
-      props.signal.set(parseValue(editValue()));
-    }
+  const commitEdit = (): void => {
+    props.signal.set(parseValue(editValue()));
     setEditing(false);
-  }
+  };
 
-  function cancelEdit(): void {
+  const cancelEdit = (): void => {
     setEditing(false);
-  }
+  };
 
   return (
     <tr
@@ -367,28 +103,34 @@ function SignalRow(props: { signal: SignalEntry }): JSXElement {
         "background-color": flashing() ? "rgba(83, 177, 253, 0.15)" : "",
       }}
     >
-      <td class="w-50 px-2 py-1 whitespace-nowrap">{props.signal.name}</td>
+      <td class="w-50 px-2 py-1 whitespace-nowrap">
+        <span class="mr-1">{props.signal.name}</span>
+        <Balloon
+          inline
+          text={`type: ${props.signal.type}\nowner: ${props.signal.ownerChain || props.signal.owner}\nsource: ${props.signal.source}\ninitial: ${props.signal.initialValue}\nobservers: ${props.signal.getObserverCount()}\nvalue type: ${typeof props.signal.get()}`}
+          position="right"
+          length="xlarge"
+          break
+        >
+          <span class="cursor-help text-[10px] opacity-30 hover:opacity-100">
+            ?
+          </span>
+        </Balloon>
+      </td>
       <td class="px-2 py-1 break-all">
         <Show
           when={editing()}
           fallback={
             <span
-              class={
-                props.signal.set !== undefined
-                  ? "cursor-pointer hover:underline"
-                  : ""
-              }
-              onClick={
-                props.signal.set !== undefined
-                  ? () => {
-                      if (typeof props.signal.get() === "boolean") {
-                        props.signal.set!(!props.signal.get());
-                      } else {
-                        startEditing();
-                      }
-                    }
-                  : undefined
-              }
+              class="cursor-pointer hover:underline"
+              onClick={() => {
+                const current = props.signal.get();
+                if (typeof current === "boolean") {
+                  props.signal.set(!current);
+                } else {
+                  startEditing();
+                }
+              }}
             >
               {formatValue(props.signal.get())}
             </span>
@@ -416,62 +158,41 @@ function SignalRow(props: { signal: SignalEntry }): JSXElement {
         </Show>
       </td>
       <td class="w-50 px-2 py-1 whitespace-nowrap">
-        <Show when={props.signal.set !== undefined}>
-          <Show
-            when={editing()}
-            fallback={
-              <button
-                type="button"
-                class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
-                style={{
-                  "background-color": "#313749",
-                  border: "1px solid #414962",
-                }}
-                onClick={startEditing}
-              >
-                edit
-              </button>
-            }
-          >
-            <div class="flex gap-1">
-              <button
-                type="button"
-                class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
-                style={{
-                  "background-color": "#313749",
-                  border: "1px solid #414962",
-                }}
-                onClick={commitEdit}
-              >
-                set
-              </button>
-              <button
-                type="button"
-                class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text/50 hover:text-text"
-                onClick={cancelEdit}
-              >
-                cancel
-              </button>
-            </div>
-          </Show>
-        </Show>
-        <Show when={props.signal.actions !== undefined}>
-          <div class="flex flex-wrap gap-1">
-            <For each={Object.entries(props.signal.actions ?? {})}>
-              {([name, fn]) => (
-                <button
-                  type="button"
-                  class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
-                  style={{
-                    "background-color": "#313749",
-                    border: "1px solid #414962",
-                  }}
-                  onClick={() => fn()}
-                >
-                  {name}
-                </button>
-              )}
-            </For>
+        <Show
+          when={editing()}
+          fallback={
+            <button
+              type="button"
+              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
+              style={{
+                "background-color": "#313749",
+                border: "1px solid #414962",
+              }}
+              onClick={startEditing}
+            >
+              edit
+            </button>
+          }
+        >
+          <div class="flex gap-1">
+            <button
+              type="button"
+              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
+              style={{
+                "background-color": "#313749",
+                border: "1px solid #414962",
+              }}
+              onClick={commitEdit}
+            >
+              set
+            </button>
+            <button
+              type="button"
+              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text/50 hover:text-text"
+              onClick={cancelEdit}
+            >
+              cancel
+            </button>
           </div>
         </Show>
       </td>
@@ -499,6 +220,9 @@ function SignalGroupSection(props: { group: SignalGroup }): JSXElement {
           &#9660;
         </span>
         {props.group.file}
+        <span class="ml-auto text-xs font-normal opacity-50">
+          {props.group.signals.length}
+        </span>
       </button>
       <Show when={!collapsed()}>
         <table class="w-full border-collapse">
@@ -515,6 +239,7 @@ function SignalGroupSection(props: { group: SignalGroup }): JSXElement {
 
 function SignalsPanel(): JSXElement {
   const [search, setSearch] = createSignal("");
+  const groups = buildGroups();
 
   const filteredGroups = (): SignalGroup[] => {
     const query = search().toLowerCase();
@@ -564,7 +289,7 @@ function SignalsPanel(): JSXElement {
 export function SignalsDevtoolsPlugin(): TanStackDevtoolsSolidPlugin {
   return {
     id: "core-signals",
-    name: "Core Signals",
+    name: "Signals",
     render: () => <SignalsPanel />,
   };
 }
