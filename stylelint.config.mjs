@@ -14,7 +14,6 @@ export default {
     ], //default: true
 
     "at-rule-no-unknown": null, // consider adding
-    "declaration-property-value-no-unknown": null, // add
     "selector-type-no-unknown": null, // add // default: [true, {ignore: ['custom-elements'],},]
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]

@@ -31,18 +31,21 @@
   width: 4px !important;
 }
 
+/* this is not taking effect since 4 years ago because it is
+refering to the old .config which does not exist anymore
+did not try it on the new #testConfig yet
 .config .toggleButton {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-  align-content: right;
+  //align-content: right; // there is no align-content: right
 }
 
 .config .mode .textButton {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-  align-content: right;
+  //align-content: right; // there is no align-content: right
 }
 
 .config .wordCount .textButton,
@@ -52,8 +55,9 @@
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-  align-content: right;
+  //align-content: right; // there is no align-content: right
 }
+*/
 
 [data-nav-item] {
   color: var(--bg-color);

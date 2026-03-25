@@ -81,7 +81,7 @@ body {
   bottom: 3rem;
   background-color: var(--sub-alt-color);
   color: var(--text-color);
-  font-style: bold;
+  font-weight: bold;
   border-radius: 3px;
   padding: 1rem 2rem;
   cursor: pointer;
