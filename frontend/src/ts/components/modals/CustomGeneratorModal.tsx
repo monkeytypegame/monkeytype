@@ -163,6 +163,7 @@ export function CustomGeneratorModal(props: {
           <div class="text-sub">presets</div>
           <div class="grid gap-2">
             <SlimSelect
+              appendTo="container"
               options={presetOptions}
               selected={selectedPreset()}
               onChange={setSelectedPreset}

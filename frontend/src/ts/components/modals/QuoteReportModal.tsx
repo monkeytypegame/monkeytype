@@ -145,6 +145,7 @@ export function QuoteReportModal(): JSXElement {
             <div class="grid gap-1">
               <label class="text-sub">reason</label>
               <SlimSelect
+                appendTo="container"
                 options={[
                   { value: "Grammatical error", text: "Grammatical error" },
                   { value: "Duplicate quote", text: "Duplicate quote" },

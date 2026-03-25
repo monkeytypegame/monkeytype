@@ -231,6 +231,7 @@ export function WordFilterModal(props: {
           <div class="grid gap-1">
             <div class="text-sub">language</div>
             <SlimSelect
+              appendTo="container"
               options={languageOptions}
               selected={language()}
               onChange={setLanguage}
@@ -309,6 +310,7 @@ export function WordFilterModal(props: {
               <div class="grid gap-1">
                 <div class="text-sub">presets</div>
                 <SlimSelect
+                  appendTo="container"
                   options={presetOptions}
                   selected={preset()}
                   onChange={setPreset}
@@ -318,6 +320,7 @@ export function WordFilterModal(props: {
               <div class="grid gap-1">
                 <div class="text-sub">layout</div>
                 <SlimSelect
+                  appendTo="container"
                   options={layoutOptions}
                   selected={layout()}
                   onChange={setLayout}

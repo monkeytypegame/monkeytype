@@ -164,6 +164,7 @@ export function QuoteSubmitModal(): JSXElement {
             <div class="grid gap-1">
               <label class="text-xs text-sub">language</label>
               <SlimSelect
+                appendTo="container"
                 options={languageOptions}
                 selected={field().state.value}
                 onChange={(val) => field().handleChange(val ?? "")}

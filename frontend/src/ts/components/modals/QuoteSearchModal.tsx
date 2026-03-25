@@ -493,6 +493,7 @@ export function QuoteSearchModal(): JSXElement {
           />
           <div class="grow">
             <SlimSelect
+              appendTo="container"
               multiple
               options={[
                 { value: "0", text: "short" },
