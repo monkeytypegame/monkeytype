@@ -29,13 +29,12 @@ function migrateFilterStorage(input: unknown): ResultFilters {
 function updateFilterStorage(filters: ResultFilters): ResultFilters {
   const result = mergeWithDefaultFilters(filters);
   const newTags: Record<string, boolean> = { none: false };
-  Object.keys(defaultResultFilters.tags).forEach((tag) => {
-    if (result.tags[tag] !== undefined) {
-      newTags[tag] = result.tags[tag];
-    } else {
-      newTags[tag] = true;
-    }
-  });
+  const snapshotTags = getSnapshot()?.tags?.map((t) => t._id) ?? [];
+  const allKnownTagIds = new Set(["none", ...snapshotTags]);
+
+  for (const tag of allKnownTagIds) {
+    newTags[tag] = result.tags[tag] ?? true;
+  }
 
   result.tags = newTags;
 
@@ -43,8 +42,6 @@ function updateFilterStorage(filters: ResultFilters): ResultFilters {
 }
 
 createEffect(() => {
-  getSnapshot()?.tags?.forEach((tag) => {
-    defaultResultFilters.tags[tag._id] ??= true;
-  });
+  getSnapshot();
   setFilters(updateFilterStorage);
 });
