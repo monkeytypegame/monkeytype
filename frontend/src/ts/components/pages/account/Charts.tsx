@@ -33,9 +33,10 @@ export function Charts(props: {
   const format = createMemo(() => new Formatting(getConfig));
 
   const resultsQuery = useLiveQuery((q) => {
-    if (props.queryState() === undefined) return undefined;
+    const state = props.queryState();
+    if (state === undefined) return undefined;
     return q
-      .from({ r: buildResultsQuery(props.queryState() as ResultsQueryState) })
+      .from({ r: buildResultsQuery(state) })
       .orderBy(({ r }) => r.timestamp, "desc");
   });
 
