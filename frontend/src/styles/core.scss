@@ -374,7 +374,7 @@ kbd {
 }
 
 // mouseover texts
-[aria-label][data-balloon-pos]:after {
+[aria-label][data-balloon-pos]::after {
   font-family: var(--font);
   font-size: var(--balloon-font-size);
   line-height: var(--balloon-font-size);

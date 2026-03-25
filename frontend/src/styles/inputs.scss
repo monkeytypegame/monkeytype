@@ -110,7 +110,7 @@ input[type="checkbox"] {
   position: relative;
   transition: background 0.125s;
   flex-shrink: 0;
-  &:after {
+  &::after {
     font-family: "Font Awesome";
     content: "\f00c";
     top: 0;
@@ -128,23 +128,23 @@ input[type="checkbox"] {
     color: transparent;
   }
 
-  &:checked:after {
+  &:checked::after {
     color: var(--main-color);
   }
-  &:hover:after {
+  &:hover::after {
     color: var(--bg-color);
   }
-  &:hover:checked:after {
+  &:hover:checked::after {
     color: var(--text-color);
   }
 
   &[disabled] {
     opacity: 0.33;
     pointer-events: none;
-    &:hover:after {
+    &:hover::after {
       color: var(--sub-alt-color);
     }
-    &:hover:checked:after {
+    &:hover:checked::after {
       color: var(--main-color);
     }
   }

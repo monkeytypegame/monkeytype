@@ -31,7 +31,6 @@ export default {
     "hue-degree-notation": null, // default: angle
     "media-feature-range-notation": null, // default: context
     "selector-not-notation": null, // default: complex
-    "selector-pseudo-element-colon-notation": null, // add // default: double
 
     // default pattern for these rules is a kebab case pattern
     "custom-property-pattern": null,

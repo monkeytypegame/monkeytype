@@ -740,8 +740,8 @@
   }
 
   &.noBalloons {
-    [aria-label][data-balloon-pos]:before,
-    [aria-label][data-balloon-pos]:after {
+    [aria-label][data-balloon-pos]::before,
+    [aria-label][data-balloon-pos]::after {
       display: none;
     }
   }
