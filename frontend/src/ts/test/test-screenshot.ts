@@ -25,7 +25,6 @@ function revert(): void {
   hideLoaderBar();
   qs("#ad-result-wrapper")?.show();
   qs("#ad-result-small-wrapper")?.show();
-  qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
@@ -94,7 +93,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qs("#nocss")?.hide();
   qs("#ad-result-wrapper")?.hide();
   qs("#ad-result-small-wrapper")?.hide();
-  qs("#testConfig")?.hide();
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");

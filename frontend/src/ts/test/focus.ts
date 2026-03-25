@@ -5,7 +5,7 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../legacy-states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getFocus, setFocus } from "../states/core";
+import { getFocus, setFocus } from "../states/test";
 import { qsa, ElementsWithUtils } from "../utils/dom";
 
 const unfocusPx = 3;

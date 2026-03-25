@@ -11,7 +11,6 @@ import {
   Language,
   LanguageObject,
   LanguageObjectSchema,
-  LanguageSchema,
 } from "@monkeytype/schemas/languages";
 import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
@@ -154,7 +153,7 @@ async function validateQuotes(): Promise<void> {
 
   const shortQuotes = JSON.parse(
     fs.readFileSync("./scripts/short-quotes.json", "utf8"),
-  ) as Partial<Record<QuoteData["language"], number[]>>;
+  ) as Record<QuoteData["language"], number[]>;
 
   const quotesFiles = fs.readdirSync("./static/quotes/");
   for (let quotefilename of quotesFiles) {
@@ -185,12 +184,7 @@ async function validateQuotes(): Promise<void> {
     }
 
     //check schema
-    const schema = QuoteDataSchema.extend({
-      language: LanguageSchema
-        //icelandic only exists as icelandic_1k, language in quote file is stripped of its size
-        .or(z.literal("icelandic")),
-    });
-    problems.addValidation(quotefilename, schema.safeParse(quoteData));
+    problems.addValidation(quotefilename, QuoteDataSchema.safeParse(quoteData));
 
     //check for duplicate ids
     const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));

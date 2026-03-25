@@ -4,10 +4,6 @@
   .content-grid {
     --content-max-width: 768px;
   }
-  #testConfig {
-    font-size: 0.7rem;
-    --horizontalPadding: 0.6em;
-  }
   .pageAccountSettings .main {
     gap: 2rem;
     .right .tab .section {
@@ -59,20 +55,6 @@
     }
   }
 
-  #customTextModal {
-    .modal {
-      grid-template-areas:
-        "topButtons topButtons"
-        "topButtons2 topButtons2"
-        "textArea textArea"
-        "checkboxes checkboxes"
-        "ok ok";
-      grid-template-columns: 1fr 1fr;
-      .inputs {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  }
   .testActivity {
     --gap-size: 0.1em;
     --font-size: 0.8em;

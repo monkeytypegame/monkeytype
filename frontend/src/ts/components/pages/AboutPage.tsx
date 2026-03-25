@@ -16,6 +16,8 @@ import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { H2, H3 } from "../common/Headers";
+import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../hotkeys/QuickRestartHotkey";
 
 export function AboutPage(): JSXElement {
   const isOpen = () => getActivePage() === "about";
@@ -200,10 +202,8 @@ export function AboutPage(): JSXElement {
       <section>
         <H3 fa={{ icon: "fa-keyboard" }} text="keybinds" />
         <p>
-          You can use <kbd>tab</kbd> and <kbd>enter</kbd> (or just{" "}
-          <kbd>tab</kbd> if you have quick tab mode enabled) to restart the
-          typing test. Open the command line by pressing <kbd>ctrl/cmd</kbd> +{" "}
-          <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd> - there you can
+          You can use <QuickRestartHotkey /> to restart the typing test. Open
+          the command line by pressing <CommandlineHotkey /> - there you can
           access all the functionality you need without touching your mouse.
         </p>
       </section>

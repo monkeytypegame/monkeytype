@@ -5,7 +5,6 @@ import Page from "./page";
 import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
-import * as TestConfig from "../test/test-config";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
 
@@ -30,7 +29,6 @@ export const page = new Page({
     TestLogic.restart({
       noAnim: true,
     });
-    void TestConfig.instantUpdate();
     void Keymap.refresh();
   },
 });

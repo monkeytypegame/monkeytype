@@ -10,8 +10,21 @@ export type ModalId =
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"
+  | "CustomText"
+  | "SaveCustomText"
+  | "SavedTexts"
+  | "WordFilter"
+  | "CustomGenerator"
+  | "QuoteSearch"
+  | "QuoteRate"
+  | "QuoteReport"
+  | "QuoteSubmit"
+  | "QuoteApprove"
+  | "TestDuration"
+  | "ShareTestSettings"
+  | "CustomWordAmount"
+  | "MobileTestConfig"
   | "MiniResultChartModal";
-
 export type ModalVisibility = {
   visible: boolean;
   chained: boolean;

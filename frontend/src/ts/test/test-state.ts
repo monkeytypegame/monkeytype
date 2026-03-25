@@ -1,10 +1,8 @@
-import { Challenge } from "@monkeytype/schemas/challenges";
 import { promiseWithResolvers } from "../utils/misc";
 
 export let isRepeated = false;
 export let isPaceRepeat = false;
 export let isActive = false;
-export let activeChallenge: null | Challenge = null;
 export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
@@ -24,10 +22,6 @@ export function setPaceRepeat(tf: boolean): void {
 
 export function setActive(tf: boolean): void {
   isActive = tf;
-}
-
-export function setActiveChallenge(val: null | Challenge): void {
-  activeChallenge = val;
 }
 
 export function setBailedOut(tf: boolean): void {
