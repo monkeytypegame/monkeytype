@@ -18,7 +18,7 @@ import { ConnectionSchema } from "./connections";
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: nameWithSeparators().max(16),
+  name: slug().max(16),
   pb: z
     .object({
       no: z.boolean(),
