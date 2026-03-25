@@ -2,8 +2,6 @@
 export default {
   extends: ["stylelint-config-standard-scss"],
   rules: {
-    "no-invalid-position-at-import-rule": null, // consider adding // default: [true, {ignoreAtRules: ['use', 'forward'],},]
-
     "font-family-no-missing-generic-family-keyword": [
       true,
       { ignoreFontFamilies: ["Font Awesome", "Font Awesome Brands"] },

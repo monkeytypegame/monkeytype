@@ -2,12 +2,14 @@
 @import "@fortawesome/fontawesome-free/scss/_mixins.scss";
 @import "@fortawesome/fontawesome-free/scss/_core.scss";
 
-/** fixed-with **/
+/** fixed-width **/
 @import "@fortawesome/fontawesome-free/scss/_fixed-width.scss"; //fa-fw
 /** animated **/
 @import "@fortawesome/fontawesome-free/scss/_animated.scss"; //fa-spin
 /** rotated **/
 @import "@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
+/** icons **/
+@import "@fortawesome/fontawesome-free/scss/_icons.scss";
 
 @font-face {
   font-family: "Font Awesome";
@@ -57,5 +59,3 @@
     src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
   }
 }
-
-@import "@fortawesome/fontawesome-free/scss/_icons.scss";
