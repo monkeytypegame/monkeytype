@@ -1,18 +1,24 @@
 /** @type {import('stylelint').Config} */
 export default {
-  extends: ["stylelint-config-standard-scss"],
+  extends: ["stylelint-config-standard"],
   rules: {
-    "font-family-no-missing-generic-family-keyword": [
-      true,
-      { ignoreFontFamilies: ["Font Awesome", "Font Awesome Brands"] },
-    ], //default: true
+    "no-descending-specificity": null, // add
 
-    "selector-type-no-unknown": [
-      true,
-      { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint"] },
-    ], // default: [true, {ignore: ['custom-elements'],},]
+    "no-duplicate-selectors": null, // add
+
+    "font-family-no-missing-generic-family-keyword": null, // add
+
+    "declaration-block-no-shorthand-property-overrides": null, // add
+
+    "at-rule-no-unknown": null, // consider adding
+    "declaration-property-value-no-unknown": null, // add
+    "selector-type-no-unknown": null, // add // default: [true, {ignore: ['custom-elements'],},]
 
     "length-zero-no-unit": null, // default: [true, {ignore: ['custom-properties'], ignorePreludeOfAtRules: ['function', 'mixin'],},]
+
+    "property-no-vendor-prefix": null, // add
+
+    "value-keyword-case": null, // default: lower
 
     "at-rule-empty-line-before": null, // default: ['always', {except: ['blockless-after-same-name-blockless', 'first-nested'], ignore: ['after-comment'],},]
     "comment-empty-line-before": null, // default: ['always', {except: ['first-nested'], ignore: ['stylelint-commands'],},]
@@ -23,9 +29,12 @@ export default {
     "alpha-value-notation": null, // default: ['percentage',{exceptProperties: ['opacity','fill-opacity','flood-opacity','stop-opacity','stroke-opacity',],},]
     "color-function-alias-notation": null, // default: without-alpha
     "color-function-notation": null, // default: modern
+    "color-hex-length": null, // default: short
     "hue-degree-notation": null, // default: angle
+    "import-notation": null, // default: url
     "media-feature-range-notation": null, // default: context
     "selector-not-notation": null, // default: complex
+    "selector-pseudo-element-colon-notation": null, // add // default: double
 
     // default pattern for these rules is a kebab case pattern
     "custom-property-pattern": null,
@@ -33,18 +42,39 @@ export default {
     "selector-class-pattern": null,
     "selector-id-pattern": null,
 
+    "font-family-name-quotes": null, // add // default: always-where-recommended
+    "function-url-quotes": null, // add // default: always
+
     "declaration-block-no-redundant-longhand-properties": null,
     "shorthand-property-no-redundant-values": null,
 
     "comment-whitespace-inside": null, // default: always
-
-    "scss/at-extend-no-missing-placeholder": null,
-    "scss/load-no-partial-leading-underscore": null,
-    "scss/load-partial-extension": null, // default: never,
-    "scss/no-global-function-names": null,
-
-    "scss/dollar-variable-pattern": null, // default pattern is a kebab case pattern
-    "scss/double-slash-comment-empty-line-before": null, // default: ['always', {except: ['first-nested'], ignore: ['between-comments', 'stylelint-commands'],},]
-    "scss/double-slash-comment-whitespace-inside": null, // default: always
   },
+  overrides: [
+    {
+      files: ["**/*.scss"],
+      extends: ["stylelint-config-standard-scss"],
+      rules: {
+        "font-family-no-missing-generic-family-keyword": [
+          true,
+          { ignoreFontFamilies: ["Font Awesome", "Font Awesome Brands"] },
+        ], //default: true
+
+        "selector-type-no-unknown": [
+          true,
+          { ignore: ["custom-elements"], ignoreTypes: ["letter", "hint"] },
+        ], // default: [true, {ignore: ['custom-elements'],},]
+
+        "scss/at-extend-no-missing-placeholder": null,
+        "scss/load-no-partial-leading-underscore": null,
+        "scss/load-partial-extension": null, // default: never,
+        "scss/no-global-function-names": null,
+
+        "scss/dollar-variable-pattern": null,
+        "scss/double-slash-comment-empty-line-before": null,
+        "scss/double-slash-comment-whitespace-inside": null,
+      },
+    },
+  ],
+  ignoreFiles: ["**/dist/**"],
 };
