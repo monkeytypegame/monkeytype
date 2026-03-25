@@ -26,6 +26,7 @@ import { AnimeShow } from "../../common/anime";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
+import { Separator } from "../../common/Separator";
 import SlimSelect from "../../ui/SlimSelect";
 import { verifyResultFiltersStructure } from "./utils";
 
@@ -86,7 +87,7 @@ export function Filters(props: {
       <Show when={props.presets.length > 0}>
         <div>
           <H3 fa={{ icon: "fa-sliders-h" }} text="filter presets" />
-          <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
+          <div class="grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full">
             <For each={props.presets}>
               {(preset) => (
                 <div class="flex w-full flex-row gap-2">
@@ -260,7 +261,7 @@ export function Filters(props: {
       </AsyncContent>
       <div>
         <H3 fa={{ icon: "fa-filter" }} text="filters" />
-        <div class="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-4 lg:flex lg:justify-evenly [&>button]:w-full">
+        <div class="mb-4 grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full">
           <Button
             text="all"
             onClick={() => props.onChangeFilters(defaultResultFilters)}
@@ -283,15 +284,16 @@ export function Filters(props: {
             }
           />
         </div>
+        <Separator class="mb-4 block lg:hidden" />
         <ButtonGroup
           singleSelect
           classOverride="grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
           group="date"
-          format={(val) =>
-            val === "last_3months"
-              ? "last 3 months"
-              : replaceUnderscoresWithSpaces(val)
-          }
+          format={(val) => {
+            if (val === "all") return "all time";
+            if (val === "last_3months") return "last 3 months";
+            return replaceUnderscoresWithSpaces(val);
+          }}
         />
 
         <AnimeShow when={isShowAdvanced()} slide>
