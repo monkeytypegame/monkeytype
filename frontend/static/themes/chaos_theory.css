@@ -20,7 +20,7 @@
 }
 
 #caret {
-  background-image: url(/images/themes/chaos_theory/caret.webp) !important;
+  background-image: url("/images/themes/chaos_theory/caret.webp") !important;
   background-color: transparent !important;
   background-size: 1rem !important;
   background-position: center !important;
