@@ -26,13 +26,13 @@ export function MiniResultChart(props: {
   );
 
   return (
-    <AnimatedModal id="MiniResultChartModal" modalClass="max-w-300 h-70">
+    <AnimatedModal id="MiniResultChartModal" modalClass="max-w-300">
       <AsyncContent query={query}>
         {(result) => {
           const data = result.chartData as ChartData;
 
           return (
-            <div>
+            <div class="h-60 w-full">
               <ChartJs
                 type="line"
                 data={{
