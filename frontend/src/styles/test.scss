@@ -1424,6 +1424,7 @@
 
     .textButton {
       padding: 0.5em 1em;
+      align-items: center;
       &.noInteraction {
         pointer-events: none;
       }

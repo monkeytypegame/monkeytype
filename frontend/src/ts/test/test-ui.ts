@@ -68,6 +68,7 @@ import {
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
+import { wordsHaveNewline } from "../states/test";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -657,7 +658,7 @@ export function updateWordsWrapperHeight(force = false): void {
       wordsWrapperEl.setStyle({ height: wrapperHeight + "px" });
     } else {
       //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
-      if (TestWords.hasNewline) {
+      if (wordsHaveNewline()) {
         wordsWrapperEl.setStyle({ height: wordHeight * 3 + "px" });
       } else {
         const wordsHeight = wordsEl.getOffsetHeight() ?? wordHeight;

@@ -27,7 +27,11 @@ import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
-import { setResultVisible } from "../states/test";
+import {
+  setResultVisible,
+  setWordsHaveNewline,
+  setWordsHaveTab,
+} from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
@@ -73,6 +77,7 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
+
 let failReason = "";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
@@ -551,8 +556,8 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.setHasNumbers(hasNumbers);
-  TestWords.setHasTab(wordsHaveTab);
-  TestWords.setHasNewline(wordsHaveNewline);
+  setWordsHaveTab(wordsHaveTab);
+  setWordsHaveNewline(wordsHaveNewline);
 
   if (
     generatedWords
@@ -1436,7 +1441,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
-restartTestEvent.subscribe(() => restart());
+restartTestEvent.subscribe((event) => restart(event));
 
 // ===============================
 

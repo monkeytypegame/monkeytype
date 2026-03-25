@@ -6,6 +6,7 @@ import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
 import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
+import { CommandlineHotkey } from "./hotkeys/CommandlineHotkey";
 import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
@@ -34,6 +35,7 @@ const components: Record<string, () => JSXElement> = {
   header: () => <Header />,
   devtools: () => <DevTools />,
   testconfig: () => <TestConfig />,
+  commandlinehotkey: () => <CommandlineHotkey />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
