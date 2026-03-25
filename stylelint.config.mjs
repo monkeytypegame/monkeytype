@@ -2,8 +2,6 @@
 export default {
   extends: ["stylelint-config-standard-scss"],
   rules: {
-    "declaration-block-no-duplicate-properties": null, // add // default: [true, {ignore: ['consecutive-duplicates-with-different-syntaxes'],},]
-
     "block-no-empty": null, // add
 
     "no-invalid-position-at-import-rule": null, // consider adding // default: [true, {ignoreAtRules: ['use', 'forward'],},]

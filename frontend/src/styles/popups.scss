@@ -329,7 +329,6 @@ body.darkMode {
     width: 100%;
     max-width: 1000px;
     aspect-ratio: 16/9;
-    display: grid;
     grid-template-areas: "middle";
     .preloader {
       grid-area: middle;
@@ -712,7 +711,6 @@ body.darkMode {
     }
 
     .badgeSelectionItem {
-      margin-bottom: 0.5rem;
       width: max-content;
       opacity: 25%;
       cursor: pointer;
