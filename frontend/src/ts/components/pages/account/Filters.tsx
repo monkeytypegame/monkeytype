@@ -208,13 +208,12 @@ export function Filters(props: {
               <Button
                 text={item.text ?? (item.id as string)}
                 active={props.filters[options.group][item.id] === true}
-                onClick={() => {
-                  if (options.singleSelect) {
+                onClick={(e) => {
+                  if (e.shiftKey || options.singleSelect) {
                     const newValue = Object.fromEntries(
-                      Object.entries(props.filters.date).map(([key]) => [
-                        key,
-                        key === item.id,
-                      ]),
+                      Object.entries(props.filters[options.group]).map(
+                        ([key]) => [key, key === item.id],
+                      ),
                     );
                     setFilter(options.group, newValue);
                   } else {
