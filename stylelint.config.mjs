@@ -38,8 +38,6 @@ export default {
     "selector-class-pattern": null,
     "selector-id-pattern": null,
 
-    "function-url-quotes": null, // add // default: always
-
     "declaration-block-no-redundant-longhand-properties": null,
     "shorthand-property-no-redundant-values": null,
 
