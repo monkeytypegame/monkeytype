@@ -6,10 +6,12 @@ import {
   For,
   JSXElement,
   on,
+  onMount,
   Show,
 } from "solid-js";
 
 import { trackedSignals, type TrackedSignal } from "../../dev/signal-tracker";
+import { useRef } from "../../hooks/useRef";
 import { cn } from "../../utils/cn";
 import { Balloon } from "../common/Balloon";
 
@@ -254,6 +256,7 @@ function SignalGroupSection(props: { group: SignalGroup }): JSXElement {
 function SignalsPanel(): JSXElement {
   const [search, setSearch] = createSignal("");
   const groups = buildGroups();
+  const [ref, el] = useRef<HTMLDivElement>();
 
   const filteredGroups = (): SignalGroup[] => {
     const query = search().toLowerCase();
@@ -269,15 +272,24 @@ function SignalsPanel(): JSXElement {
       .filter((group) => group.signals.length > 0);
   };
 
+  onMount(() => {
+    if (el()) {
+      el()?.parentElement?.style.setProperty("height", "100%");
+      el()?.parentElement?.style.setProperty("overflow", "scroll");
+    }
+  });
+
   return (
     <div
+      ref={ref}
       class={cn(
         "[--bg-color:#191C24] [--color-bg:#191C24]",
         "[--color-main:#53B1FD] [--main-color:#53B1FD]",
         "[--color-sub:#252937] [--sub-color:#252937]",
         "[--color-sub-alt:#111318] [--sub-alt-color:#111318]",
         "[--color-text:#E5E7EA] [--text-color:#E5E7EA]",
-        "relative max-h-100 overflow-scroll overflow-y-auto font-mono text-xs text-text",
+        "relative font-mono text-xs text-text",
+        // "max-h-100 overflow-scroll overflow-y-auto"
       )}
     >
       <div class="sticky top-0 z-10 bg-bg p-3 pb-0">
