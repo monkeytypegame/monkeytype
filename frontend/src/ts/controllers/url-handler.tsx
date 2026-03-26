@@ -315,18 +315,18 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   ).toLowerCase();
   if (getValue === "") return;
 
-  showNoticeNotification("Loading challenge");
+  // showNoticeNotification("Loading challenge");
   ChallengeController.setup(getValue)
     .then((result) => {
       if (result) {
-        showSuccessNotification("Challenge loaded");
+        // showSuccessNotification("Challenge loaded");
         restartTest({
           nosave: true,
         });
       }
     })
     .catch((e: unknown) => {
-      showErrorNotification("Failed to load challenge");
+      // showErrorNotification("Failed to load challenge");
       console.error(e);
     });
 }
@@ -337,7 +337,9 @@ authEvent.subscribe((event) => {
     const hash = window.location.hash;
     loadCustomThemeFromUrl(search);
     loadTestSettingsFromUrl(search);
-    loadChallengeFromUrl(search);
+    void event.data.loadPromise.then(() => {
+      loadChallengeFromUrl(search);
+    });
     void linkDiscord(hash);
   }
 });
