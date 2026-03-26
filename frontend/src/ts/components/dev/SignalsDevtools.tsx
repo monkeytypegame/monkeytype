@@ -10,6 +10,7 @@ import {
 } from "solid-js";
 
 import { trackedSignals, type TrackedSignal } from "../../dev/signal-tracker";
+import { cn } from "../../utils/cn";
 import { Balloon } from "../common/Balloon";
 
 type SignalGroup = { file: string; signals: TrackedSignal[] };
@@ -104,25 +105,69 @@ function SignalRow(props: { signal: TrackedSignal }): JSXElement {
       }}
     >
       <td class="w-50 px-2 py-1 whitespace-nowrap">
-        <span class="mr-1">{props.signal.name}</span>
-        <Balloon
-          inline
-          text={`type: ${props.signal.type}\nowner: ${props.signal.ownerChain || props.signal.owner}\nsource: ${props.signal.source}\ninitial: ${props.signal.initialValue}\nobservers: ${props.signal.getObserverCount()}\nvalue type: ${typeof props.signal.get()}`}
-          position="right"
-          length="xlarge"
-          break
-        >
-          <span class="cursor-help text-[10px] opacity-30 hover:opacity-100">
-            ?
-          </span>
-        </Balloon>
+        <div>
+          <span class="mr-1">{props.signal.name}</span>
+          <Balloon
+            inline
+            text={`type: ${props.signal.type}\nowner: ${props.signal.ownerChain || props.signal.owner}\nsource: ${props.signal.source}\ninitial: ${props.signal.initialValue}\nobservers: ${props.signal.getObserverCount()}\nvalue type: ${typeof props.signal.get()}`}
+            position="right"
+            length="xlarge"
+            break
+          >
+            <span class="cursor-help text-[10px] opacity-30 hover:opacity-100">
+              ?
+            </span>
+          </Balloon>
+        </div>
       </td>
-      <td class="px-2 py-1 break-all">
+      <td class="w-30">
+        <div class="grid w-25 grid-cols-2 gap-2">
+          <Show
+            when={editing()}
+            fallback={
+              <>
+                <div></div>
+                <button
+                  type="button"
+                  class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
+                  style={{
+                    "background-color": "#313749",
+                    border: "1px solid #414962",
+                  }}
+                  onClick={startEditing}
+                >
+                  edit
+                </button>
+              </>
+            }
+          >
+            <button
+              type="button"
+              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
+              style={{
+                "background-color": "#313749",
+                border: "1px solid #414962",
+              }}
+              onClick={commitEdit}
+            >
+              set
+            </button>
+            <button
+              type="button"
+              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text/50 hover:text-text"
+              onClick={cancelEdit}
+            >
+              cancel
+            </button>
+          </Show>
+        </div>
+      </td>
+      <td class="h-10 px-2 py-1 break-all">
         <Show
           when={editing()}
           fallback={
-            <span
-              class="cursor-pointer hover:underline"
+            <div
+              class="m-1 cursor-pointer hover:underline"
               onClick={() => {
                 const current = props.signal.get();
                 if (typeof current === "boolean") {
@@ -133,7 +178,7 @@ function SignalRow(props: { signal: TrackedSignal }): JSXElement {
               }}
             >
               {formatValue(props.signal.get())}
-            </span>
+            </div>
           }
         >
           <input
@@ -157,45 +202,9 @@ function SignalRow(props: { signal: TrackedSignal }): JSXElement {
           />
         </Show>
       </td>
-      <td class="w-50 px-2 py-1 whitespace-nowrap">
-        <Show
-          when={editing()}
-          fallback={
-            <button
-              type="button"
-              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
-              style={{
-                "background-color": "#313749",
-                border: "1px solid #414962",
-              }}
-              onClick={startEditing}
-            >
-              edit
-            </button>
-          }
-        >
-          <div class="flex gap-1">
-            <button
-              type="button"
-              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
-              style={{
-                "background-color": "#313749",
-                border: "1px solid #414962",
-              }}
-              onClick={commitEdit}
-            >
-              set
-            </button>
-            <button
-              type="button"
-              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text/50 hover:text-text"
-              onClick={cancelEdit}
-            >
-              cancel
-            </button>
-          </div>
-        </Show>
-      </td>
+      {/* <td class="w-30 px-2 py-1 whitespace-nowrap">
+        
+      </td> */}
     </tr>
   );
 }
@@ -256,11 +265,17 @@ function SignalsPanel(): JSXElement {
   };
 
   return (
-    <div class="relative max-h-100 overflow-scroll overflow-y-auto font-mono text-xs text-text">
-      <div
-        class="sticky top-0 z-10 p-3 pb-0"
-        style={{ "background-color": "#1A1C24" }}
-      >
+    <div
+      class={cn(
+        "[--bg-color:#191C24] [--color-bg:#191C24]",
+        "[--color-main:#53B1FD] [--main-color:#53B1FD]",
+        "[--color-sub:#252937] [--sub-color:#252937]",
+        "[--color-sub-alt:#111318] [--sub-alt-color:#111318]",
+        "[--color-text:#E5E7EA] [--text-color:#E5E7EA]",
+        "relative max-h-100 overflow-scroll overflow-y-auto font-mono text-xs text-text",
+      )}
+    >
+      <div class="sticky top-0 z-10 bg-bg p-3 pb-0">
         <input
           type="text"
           placeholder="Filter by signal or file name..."
@@ -270,7 +285,7 @@ function SignalsPanel(): JSXElement {
             e.stopImmediatePropagation();
             setSearch(e.currentTarget.value);
           }}
-          class="mb-3 w-full rounded border border-sub bg-bg px-2 py-1 text-xs text-text outline-none placeholder:text-sub focus:border-main"
+          class="mb-3 w-full rounded border border-sub bg-bg px-2 py-1 text-xs text-text outline-none placeholder:text-[#6f748d] focus:border-main"
           style={{
             "background-color": "#313749",
             "border-color": "#414962",
