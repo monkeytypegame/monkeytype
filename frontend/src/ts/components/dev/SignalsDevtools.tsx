@@ -286,6 +286,7 @@ function SignalsPanel(): JSXElement {
             setSearch(e.currentTarget.value);
           }}
           class="mb-3 w-full rounded border border-sub bg-bg px-2 py-1 text-xs text-text outline-none placeholder:text-[#6f748d] focus:border-main"
+          data-ui-element="signalDevtoolsInput"
           style={{
             "background-color": "#313749",
             "border-color": "#414962",
