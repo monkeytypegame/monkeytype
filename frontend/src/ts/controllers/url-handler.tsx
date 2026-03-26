@@ -309,37 +309,32 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 }
 
-export function loadChallengeFromUrl(getOverride?: string): void {
+export async function loadChallengeFromUrl(
+  getOverride?: string,
+): Promise<void> {
   const getValue = (
     Misc.findGetParameter("challenge", getOverride) ?? ""
   ).toLowerCase();
   if (getValue === "") return;
 
-  // showNoticeNotification("Loading challenge");
-  ChallengeController.setup(getValue)
-    .then((result) => {
-      if (result) {
-        // showSuccessNotification("Challenge loaded");
-        restartTest({
-          nosave: true,
-        });
-      }
-    })
-    .catch((e: unknown) => {
-      // showErrorNotification("Failed to load challenge");
-      console.error(e);
+  const result = await ChallengeController.setup(getValue);
+  if (result) {
+    restartTest({
+      nosave: true,
     });
+  }
 }
 
-authEvent.subscribe((event) => {
+authEvent.subscribe(async (event) => {
   if (event.type === "authStateChanged") {
     const search = window.location.search;
     const hash = window.location.hash;
     loadCustomThemeFromUrl(search);
     loadTestSettingsFromUrl(search);
-    void event.data.loadPromise.then(() => {
-      loadChallengeFromUrl(search);
-    });
+
+    await event.data.loadPromise;
+
+    void loadChallengeFromUrl(search);
     void linkDiscord(hash);
   }
 });
