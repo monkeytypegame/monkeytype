@@ -37,7 +37,7 @@ jobs:
         if: github.event_name != 'pull_request'
 
       - name: Detect changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -218,7 +218,7 @@ jobs:
             frontend
             packages
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
