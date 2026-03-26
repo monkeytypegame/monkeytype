@@ -329,11 +329,11 @@ authEvent.subscribe(async (event) => {
   if (event.type === "authStateChanged") {
     const search = window.location.search;
     const hash = window.location.hash;
-    loadCustomThemeFromUrl(search);
-    loadTestSettingsFromUrl(search);
 
     await event.data.loadPromise;
 
+    loadCustomThemeFromUrl(search);
+    loadTestSettingsFromUrl(search);
     void loadChallengeFromUrl(search);
     void linkDiscord(hash);
   }
