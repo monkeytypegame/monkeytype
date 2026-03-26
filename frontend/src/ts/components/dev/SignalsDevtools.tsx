@@ -199,6 +199,7 @@ function SignalRow(props: { signal: TrackedSignal }): JSXElement {
             }}
             ref={(el) => setTimeout(() => el.focus())}
             class="w-full rounded border px-1 py-0.5 text-xs text-text outline-none focus:border-main"
+            data-ui-element="signalDevtoolsInput"
             style={{
               "background-color": "#313749",
               "border-color": "#414962",
