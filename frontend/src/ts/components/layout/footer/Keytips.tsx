@@ -1,43 +1,28 @@
 import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { getFocus } from "../../../states/core";
-import { Conditional } from "../../common/Conditional";
+import { getFocus } from "../../../states/test";
+import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../../hotkeys/QuickRestartHotkey";
 
 export function Keytips(): JSXElement {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = (): string =>
-    getConfig.quickRestart === "esc" ? "tab" : "esc";
-
   return (
     <Show when={getConfig.showKeyTips}>
       <div
-        class="mb-8 text-center leading-loose transition-opacity"
+        class="mb-8 flex flex-col items-center gap-2 transition-opacity"
         classList={{
           "opacity-0": getFocus(),
         }}
       >
-        <Conditional
-          if={getConfig.quickRestart === "off"}
-          then={
-            <>
-              <kbd>tab</kbd> + <kbd>enter</kbd> - restart test
-            </>
-          }
-          else={
-            <>
-              <kbd>{getConfig.quickRestart}</kbd> - restart test
-            </>
-          }
-        />
-        <br />
-        <kbd>{commandKey()}</kbd> or <kbd>{modifierKey}</kbd> + <kbd>shift</kbd>{" "}
-        + <kbd>p</kbd> - command line
+        <div class="flex items-center gap-2">
+          <QuickRestartHotkey />
+          <span>- restart test</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <CommandlineHotkey />
+          <span>- command line</span>
+        </div>
       </div>
     </Show>
   );

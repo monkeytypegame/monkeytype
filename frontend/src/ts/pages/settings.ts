@@ -723,17 +723,6 @@ export async function update(
 
   CustomBackgroundFilter.updateUI();
 
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  qs(".pageSettings .tip")?.setHtml(`
-    tip: You can also change all these settings quickly using the
-    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
-
   if (
     customLayoutFluidSelect !== undefined &&
     //checking equal with order, because customLayoutFluid is ordered

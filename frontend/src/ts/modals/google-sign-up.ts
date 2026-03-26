@@ -21,6 +21,7 @@ import { resetIgnoreAuthCallback } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
+import { authEvent } from "../events/auth";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -108,6 +109,11 @@ async function apply(): Promise<void> {
       await sendEmailVerification(signedInUser.user);
       showSuccessNotification("Account created");
       await AccountController.loadUser(signedInUser.user);
+
+      authEvent.dispatch({
+        type: "authStateChanged",
+        data: { isUserSignedIn: true, loadPromise: Promise.resolve() },
+      });
 
       signedInUser = undefined;
       hideLoaderBar();
