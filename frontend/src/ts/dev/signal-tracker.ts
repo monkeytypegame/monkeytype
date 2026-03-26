@@ -151,10 +151,24 @@ if (DEV) {
     }
     pendingNodes.clear();
 
-    // Sync node values to reactive mirrors, only when tab is visible
+    // Sync node values to reactive mirrors, only when devtools is open
+    let devtoolsOpen = false;
+    setInterval(() => {
+      try {
+        const raw = localStorage.getItem("tanstack_devtools_state");
+        devtoolsOpen =
+          raw !== null &&
+          (JSON.parse(raw) as { persistOpen?: boolean }).persistOpen === true;
+      } catch {
+        devtoolsOpen = false;
+      }
+    }, 1000);
+
     const syncLoop = (): void => {
-      for (const mirror of mirrors) {
-        mirror.set(() => mirror.node.value);
+      if (devtoolsOpen) {
+        for (const mirror of mirrors) {
+          mirror.set(() => mirror.node.value);
+        }
       }
       requestAnimationFrame(syncLoop);
     };
