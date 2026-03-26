@@ -120,8 +120,8 @@ function SignalRow(props: { signal: TrackedSignal }): JSXElement {
           </Balloon>
         </div>
       </td>
-      <td class="w-30">
-        <div class="grid w-25 grid-cols-2 gap-2">
+      <td class="w-35">
+        <div class="grid w-30 grid-cols-2 gap-2">
           <Show
             when={editing()}
             fallback={
@@ -154,7 +154,11 @@ function SignalRow(props: { signal: TrackedSignal }): JSXElement {
             </button>
             <button
               type="button"
-              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text/50 hover:text-text"
+              class="cursor-pointer rounded px-1.5 py-0.5 text-xs text-text hover:brightness-125"
+              style={{
+                "background-color": "#313749",
+                border: "1px solid #414962",
+              }}
               onClick={cancelEdit}
             >
               cancel
