@@ -1,3 +1,6 @@
+// register signal tracking hook before any signals are created
+import "./dev/signal-tracker";
+
 //enable solidjs-devtools
 //import "solid-devtools";
 

@@ -452,7 +452,7 @@ function updateOverlap(now: number): void {
   }
 }
 
-function carryoverFirstKeypress(): void {
+export function carryoverFirstKeypress(): void {
   // Because keydown triggers before input, we need to grab the first keypress data here and carry it over
 
   // Take the key with the largest index
@@ -487,7 +487,7 @@ function carryoverFirstKeypress(): void {
   }
 }
 
-export function resetKeypressTimings(carryover: boolean): void {
+function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
       first: -1,
@@ -504,8 +504,6 @@ export function resetKeypressTimings(carryover: boolean): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
-
-  if (carryover) carryoverFirstKeypress();
 
   console.debug("Keypress timings reset");
 }
@@ -555,5 +553,5 @@ export function restart(): void {
     incorrect: 0,
   };
 
-  resetKeypressTimings(false);
+  resetKeypressTimings();
 }

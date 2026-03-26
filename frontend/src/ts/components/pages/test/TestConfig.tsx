@@ -1,5 +1,6 @@
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
+import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
@@ -8,7 +9,7 @@ import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isLoggedIn } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { getResultVisible, getFocus } from "../../../states/test";
-import { FaSolidIcon } from "../../../types/font-awesome";
+import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime, AnimeShow } from "../../common/anime";
@@ -59,7 +60,7 @@ export function TestConfig(): JSXElement {
 }
 
 function TCButton(props: {
-  icon: FaSolidIcon;
+  fa: FaObject;
   text: string;
   active?: boolean;
   disabled?: boolean;
@@ -69,7 +70,7 @@ function TCButton(props: {
     <Button
       variant="text"
       class={cn(buttonClass)}
-      fa={{ icon: props.icon, fixedWidth: true }}
+      fa={{ ...props.fa, fixedWidth: true }}
       text={props.text}
       active={props.active}
       onClick={props.onClick}
@@ -79,10 +80,7 @@ function TCButton(props: {
 }
 
 function PuncAndNum(): JSXElement {
-  const buttons = [
-    { icon: "fa-at", configKey: "punctuation" },
-    { icon: "fa-hashtag", configKey: "numbers" },
-  ] as const;
+  const buttons = ["punctuation", "numbers"] as const;
 
   return (
     <Anime
@@ -96,10 +94,10 @@ function PuncAndNum(): JSXElement {
       <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
         <div class={cardClass}>
           <For each={buttons}>
-            {({ icon, configKey }) => (
+            {(configKey) => (
               <TCButton
-                icon={icon}
-                text={configKey}
+                fa={configMetadata[configKey].fa}
+                text={configMetadata[configKey].displayString ?? configKey}
                 active={getConfig[configKey]}
                 disabled={
                   getConfig.mode === "zen" || getConfig.mode === "quote"
@@ -118,24 +116,24 @@ function PuncAndNum(): JSXElement {
 }
 
 function Mode(): JSXElement {
-  const modes = [
-    { icon: "fa-clock", mode: "time" },
-    { icon: "fa-font", mode: "words" },
-    { icon: "fa-quote-left", mode: "quote" },
-    { icon: "fa-mountain", mode: "zen" },
-    { icon: "fa-wrench", mode: "custom" },
-  ] as const;
+  const modeOptions = ["time", "words", "quote", "zen", "custom"] as const;
 
   return (
     <div class={cn("z-2", cardClass)}>
-      <For each={modes}>
-        {({ icon, mode }) => (
+      <For each={modeOptions}>
+        {(modeOption) => (
           <TCButton
-            icon={icon}
-            text={mode}
-            active={getConfig.mode === mode}
+            fa={
+              configMetadata.mode.optionsMetadata?.[modeOption]?.fa ??
+              configMetadata.mode.fa
+            }
+            text={
+              configMetadata.mode.optionsMetadata?.[modeOption]
+                ?.displayString ?? modeOption
+            }
+            active={getConfig.mode === modeOption}
             onClick={() => {
-              setConfig("mode", mode);
+              setConfig("mode", modeOption);
               restartTestEvent.dispatch();
             }}
           />

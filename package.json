@@ -73,7 +73,8 @@
     "oxlint-tsgolint": "0.17.3",
     "prettier": "3.7.1",
     "turbo": "2.7.5",
-    "vitest": "4.1.0"
+    "vitest": "4.1.0",
+    "yaml": "2.8.2"
   },
   "lint-staged": {
     "*": [
