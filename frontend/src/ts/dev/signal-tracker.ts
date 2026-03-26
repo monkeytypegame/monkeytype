@@ -33,15 +33,24 @@ function getCallerInfo(): { isUserCode: boolean; source: string } {
   const stack = new Error().stack;
   if (stack === undefined) return { isUserCode: false, source: "" };
   const frames = stack.split("\n").slice(1);
-  for (const frame of frames) {
+
+  if (frames.some((f) => f.includes("useRefWithUtils"))) {
+    return { isUserCode: false, source: "" };
+  }
+
+  for (const frame of frames.toReversed()) {
     if (frame.includes("signal-tracker")) continue;
     if (frame.includes("solid-js")) continue;
+    if (frame.includes("@solid-refresh")) continue;
     const isUserCode = !frame.includes("node_modules");
     const urlMatch = /https?:\/\/[^/]+(\/[^?)]+)(?:\?[^:]*)?(:[\d:]+)/.exec(
       frame,
     );
     const source =
       urlMatch !== null ? `${urlMatch[1]}${urlMatch[2]}` : frame.trim();
+    if (source.includes("AnimePresence")) {
+      console.log(source, frames);
+    }
     return { isUserCode, source };
   }
   return { isUserCode: false, source: "" };
