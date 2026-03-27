@@ -4,8 +4,8 @@ import { render } from "solid-js/web";
 
 import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
-import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
+import { DevTools } from "./dev/DevTools";
 import { CommandlineHotkey } from "./hotkeys/CommandlineHotkey";
 import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
