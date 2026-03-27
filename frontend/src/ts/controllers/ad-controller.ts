@@ -1,7 +1,7 @@
 /* oxlint-disable no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
-import * as ConfigEvent from "../observables/config-event";
-import Config from "../config";
+import { configEvent } from "../events/config";
+import { Config } from "../config/store";
 import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
@@ -286,7 +286,7 @@ window.addEventListener("resize", () => {
   debouncedBreakpoint2Update();
 });
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "ads") {
     if (newValue === "off") {
       removeAll();

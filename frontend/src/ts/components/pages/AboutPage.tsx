@@ -1,30 +1,24 @@
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
-import { queryClient } from "../../queries";
+import { getConfig } from "../../config/store";
 import {
   getContributorsQueryOptions,
   getSpeedHistogramQueryOptions,
   getSupportersQueryOptions,
   getTypingStatsQueryOptions,
 } from "../../queries/public";
-import { getConfig } from "../../signals/config";
-import { getActivePage } from "../../signals/core";
-import { getTheme } from "../../signals/theme";
-import { showModal } from "../../stores/modals";
+import { getActivePage } from "../../states/core";
+import { showModal } from "../../states/modals";
+import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
-
-export function prefetchAboutPage(): void {
-  void queryClient.prefetchQuery(getContributorsQueryOptions());
-  void queryClient.prefetchQuery(getSupportersQueryOptions());
-  void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-  void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
-}
+import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../hotkeys/QuickRestartHotkey";
 
 export function AboutPage(): JSXElement {
   const isOpen = () => getActivePage() === "about";
@@ -209,10 +203,8 @@ export function AboutPage(): JSXElement {
       <section>
         <H3 fa={{ icon: "fa-keyboard" }} text="keybinds" />
         <p>
-          You can use <kbd>tab</kbd> and <kbd>enter</kbd> (or just{" "}
-          <kbd>tab</kbd> if you have quick tab mode enabled) to restart the
-          typing test. Open the command line by pressing <kbd>ctrl/cmd</kbd> +{" "}
-          <kbd>shift</kbd> + <kbd>p</kbd> or <kbd>esc</kbd> - there you can
+          You can use <QuickRestartHotkey /> to restart the typing test. Open
+          the command line by pressing <CommandlineHotkey /> - there you can
           access all the functionality you need without touching your mouse.
         </p>
       </section>

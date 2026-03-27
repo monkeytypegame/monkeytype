@@ -1,7 +1,6 @@
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import {
-  createMemo,
   createSignal,
   For,
   JSXElement,
@@ -12,12 +11,12 @@ import {
 import { createEvent } from "../../../hooks/createEvent";
 import { createSignalWithSetters } from "../../../hooks/createSignalWithSetters";
 import { createEffectOn } from "../../../hooks/effects";
-import { getFocus } from "../../../signals/core";
 import {
-  getSkipBreakdownEvent,
+  skipBreakdownEvent,
   getXpBarData,
   setAnimatedLevel,
-} from "../../../signals/header";
+} from "../../../states/header";
+import { getFocus } from "../../../states/test";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
@@ -38,11 +37,11 @@ export function AccountXpBar(): JSXElement {
   const [getBarAnimationDuration, setBarAnimationDuration] = createSignal(0);
   const [getBarAnimationEase, setBarAnimationEase] = createSignal("out(5)");
 
-  const [getAnimationEvent, fireAnimationEvent] = createEvent();
+  const animationEvent = createEvent();
   const [getTotal, { setTotal }] = createSignalWithSetters(0)({
     setTotal: (set, value: number) => {
       set(value);
-      fireAnimationEvent();
+      animationEvent.dispatch();
     },
   });
 
@@ -54,23 +53,29 @@ export function AccountXpBar(): JSXElement {
   let skipped = false;
   let runId = 0;
 
-  const flashAnimation = createMemo(() => {
-    getAnimationEvent(); // trigger on every total update, even if value unchanged
+  const [flashAnimation, setFlashAnimation] = createSignal({
+    scale: [1, 1],
+    rotate: [0, 0],
+    duration: 2000,
+    ease: "out(5)",
+  });
+
+  animationEvent.useListener(() => {
     const rand = (Math.random() * 2 - 1) / 4;
     const rand2 = (Math.random() + 1) / 2;
-    return {
+    setFlashAnimation({
       scale: [1 + 0.5 * rand2, 1],
       rotate: [10 * rand, 0],
       duration: 2000,
       ease: "out(5)",
-    };
+    });
   });
 
   const addItem = (label: string, amount: number | string): void => {
     setBreakdownItems((items) => [...items, { label, amount }]);
   };
 
-  createEffectOn(getSkipBreakdownEvent, async () => {
+  skipBreakdownEvent.useListener(async () => {
     if (skipped || !canSkip) return;
 
     const myId = runId; // capture before first await

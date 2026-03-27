@@ -3,8 +3,9 @@ import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-background-picker";
-import { showNoticeNotification } from "../../stores/notifications";
-import Config, { setConfig } from "../../config";
+import { showNoticeNotification } from "../../states/notifications";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 
 const fromMeta = buildCommandForConfigKey("customBackground");
 

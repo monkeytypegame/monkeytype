@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import { Keycode } from "../constants/keys";
 import * as KeyConverter from "../utils/key-converter";
 

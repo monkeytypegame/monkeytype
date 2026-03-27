@@ -1,39 +1,10 @@
 import { JSXElement, Setter, Show } from "solid-js";
 
-import { ExecReturn, SimpleModal } from "../../../elements/simple-modal";
-import { setPage } from "../../../stores/leaderboard-selection";
+import { setPage } from "../../../states/leaderboard-selection";
+import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
-
-const goToPageModal = new SimpleModal({
-  id: "lbGoToPage",
-  title: "Go to page",
-  inputs: [
-    {
-      type: "number",
-      placeholder: "Page number",
-    },
-  ],
-  buttonText: "Go",
-  execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
-    const page = parseInt(pageNumber, 10);
-    if (isNaN(page) || page < 1) {
-      return {
-        status: "notice",
-        message: "Invalid page number",
-      };
-    }
-
-    setPage(page - 1);
-
-    return {
-      status: "success",
-      message: "Navigating to page " + page,
-      showNotification: false,
-    };
-  },
-});
 export function Navigation(props: {
   lastPage: number;
   userPage?: number;
@@ -84,7 +55,30 @@ export function Navigation(props: {
         class={buttonClass}
       />
       <Button
-        onClick={() => goToPageModal.show(undefined, {})}
+        onClick={() =>
+          showSimpleModal({
+            title: "Go to page",
+            inputs: [
+              {
+                type: "number",
+                placeholder: "Page number",
+              },
+            ],
+            buttonText: "Go",
+            execFn: async (pageNumber) => {
+              const page = parseInt(pageNumber, 10);
+              if (isNaN(page) || page < 1) {
+                return { status: "notice", message: "Invalid page number" };
+              }
+              setPage(page - 1);
+              return {
+                status: "success",
+                message: "Navigating to page " + page,
+                showNotification: false,
+              };
+            },
+          })
+        }
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
         class={buttonClass}
         disabled={props.lastPage <= 1}

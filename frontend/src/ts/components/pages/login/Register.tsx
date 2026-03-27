@@ -14,14 +14,15 @@ import {
   disableLoginPageInputs,
   enableLoginPageInputs,
   getLoginPageInputsEnabled,
-} from "../../../stores/login";
+} from "../../../states/login";
 import {
   showErrorNotification,
   showNoticeNotification,
-} from "../../../stores/notifications";
+} from "../../../states/notifications";
 import { isDevEnvironment } from "../../../utils/env";
 import { remoteValidationForm } from "../../../utils/remote-validation";
 import { H3 } from "../../common/Headers";
+import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import {
@@ -88,8 +89,19 @@ export function Register(): JSXElement {
     },
     onSubmit: async ({ value }) => {
       disableLoginPageInputs();
+      const captchaToken = await showRegisterCaptchaModal();
+      if (captchaToken === undefined || captchaToken === "") {
+        showErrorNotification("Please complete the captcha");
+        enableLoginPageInputs();
+        return;
+      }
       try {
-        const data = await signUp(value.username, value.email, value.password);
+        const data = await signUp(
+          value.username,
+          value.email,
+          value.password,
+          captchaToken,
+        );
         if (!data.success) {
           showErrorNotification(data.message);
         }

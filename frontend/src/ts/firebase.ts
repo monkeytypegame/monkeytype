@@ -31,9 +31,9 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
-import { addBanner } from "./stores/banners";
-import { setUserId } from "./signals/core";
+import { googleSignUpEvent } from "./events/google-sign-up";
+import { addBanner } from "./states/banners";
+import { setUserId } from "./states/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -156,7 +156,7 @@ export async function signInWithPopup(
   }
   const additionalUserInfo = getAdditionalUserInfo(signedInUser);
   if (additionalUserInfo?.isNewUser) {
-    dispatchSignUpEvent(signedInUser, true);
+    googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
     ignoreAuthCallback = false;
     await readyCallback?.(true, signedInUser.user);

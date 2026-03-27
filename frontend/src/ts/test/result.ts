@@ -1,22 +1,24 @@
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
-import Config, { setConfig } from "../config";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
   addNotificationWithLevel,
-} from "../stores/notifications";
+} from "../states/notifications";
 import { isAuthenticated } from "../firebase";
-import * as quoteRateModal from "../modals/quote-rate";
-import * as GlarsesMode from "../states/glarses-mode";
-import * as SlowTimer from "../states/slow-timer";
+import { getQuoteStats } from "../states/quote-rate";
+import * as GlarsesMode from "../legacy-states/glarses-mode";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -24,15 +26,14 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
-import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "./../states/custom-text-name";
+import * as CustomTextState from "./../legacy-states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
@@ -51,10 +52,10 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
-import * as ConnectionState from "../states/connection";
+import * as ConnectionState from "../legacy-states/connection";
 import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -431,7 +432,7 @@ function updateConsistency(): void {
 
 function updateTime(): void {
   const afkSecondsPercent = Numbers.roundTo2(
-    (result.afkDuration / result.testDuration) * 100,
+    (result.afkDuration / result.testDuration) * 100 || 0,
   );
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
@@ -900,8 +901,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
         ?.removeClass("far")
         ?.addClass("fas");
     }
-    quoteRateModal
-      .getQuoteStats(randomQuote)
+    getQuoteStats(randomQuote)
       .then((quoteStats) => {
         qs(".pageTest #result #rateQuoteButton .rating")?.setText(
           quoteStats?.average?.toFixed(1) ?? "",
@@ -1090,7 +1090,6 @@ export async function update(
     });
   }
 
-  TestConfig.hide();
   Focus.set(false);
 
   const canQuickRestart = canQuickRestartFn(
@@ -1402,7 +1401,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   }
 });
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
     TestState.resultVisible

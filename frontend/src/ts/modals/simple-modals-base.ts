@@ -1,4 +1,4 @@
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 import { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal } from "../elements/simple-modal";
 
@@ -19,9 +19,6 @@ export type PopupKey =
   | "revokeAllTokens"
   | "unlinkDiscord"
   | "editApeKey"
-  | "deleteCustomText"
-  | "deleteCustomTextLong"
-  | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
   | "devGenerateData";
@@ -43,9 +40,6 @@ export const list: Record<PopupKey, SimpleModal | undefined> = {
   revokeAllTokens: undefined,
   unlinkDiscord: undefined,
   editApeKey: undefined,
-  deleteCustomText: undefined,
-  deleteCustomTextLong: undefined,
-  resetProgressCustomTextLong: undefined,
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
   devGenerateData: undefined,

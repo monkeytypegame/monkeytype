@@ -1,18 +1,18 @@
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./lists";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
   getCommandlineSubgroup,
   setCommandlineSubgroup,
-} from "../signals/core";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+} from "../states/core";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
@@ -28,7 +28,7 @@ import {
   hideModal as storeHideModal,
   hideModalAndClearChain as storeClearChain,
   isModalOpen,
-} from "../stores/modals";
+} from "../states/modals";
 import { ValidationResult } from "../types/validation";
 
 type CommandlineMode = "search" | "input";

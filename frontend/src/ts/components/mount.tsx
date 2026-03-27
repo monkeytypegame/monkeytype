@@ -4,8 +4,9 @@ import { render } from "solid-js/web";
 
 import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
-import { DevTools } from "./core/DevTools";
 import { Theme } from "./core/Theme";
+import { DevTools } from "./dev/DevTools";
+import { CommandlineHotkey } from "./hotkeys/CommandlineHotkey";
 import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
@@ -16,6 +17,7 @@ import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
+import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
@@ -32,6 +34,8 @@ const components: Record<string, () => JSXElement> = {
   theme: () => <Theme />,
   header: () => <Header />,
   devtools: () => <DevTools />,
+  testconfig: () => <TestConfig />,
+  commandlinehotkey: () => <CommandlineHotkey />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

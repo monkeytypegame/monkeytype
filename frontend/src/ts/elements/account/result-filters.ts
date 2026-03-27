@@ -1,14 +1,14 @@
 import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 import * as DB from "../../db";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import Ape from "../../ape/index";
-import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/schemas/configs";
 import {
@@ -22,7 +22,7 @@ import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
 import { Snapshot } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
-import * as AuthEvent from "../../observables/auth-event";
+import { authEvent } from "../../events/auth";
 import { sanitize } from "../../utils/sanitize";
 import { qs, qsa } from "../../utils/dom";
 
@@ -962,7 +962,7 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   return filter;
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     loadTags();
     void load();

@@ -57,21 +57,11 @@ class Words {
 }
 
 export const words = new Words();
-export let hasTab = false;
-export let hasNewline = false;
 export let hasNumbers = false;
 export let currentQuote = null as QuoteWithTextSplit | null;
 
 export function setCurrentQuote(rq: QuoteWithTextSplit | null): void {
   currentQuote = rq;
-}
-
-export function setHasTab(tf: boolean): void {
-  hasTab = tf;
-}
-
-export function setHasNewline(tf: boolean): void {
-  hasNewline = tf;
 }
 
 export function setHasNumbers(tf: boolean): void {

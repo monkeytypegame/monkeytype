@@ -6,8 +6,9 @@ import {
   ConfigSchema,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
-import Config, { setConfig } from "../config";
-import { showSuccessNotification } from "../stores/notifications";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { showSuccessNotification } from "../states/notifications";
 import { ElementWithUtils } from "../utils/dom";
 import { Validation, ValidationResult } from "../types/validation";
 
@@ -189,6 +190,7 @@ export class ValidatedHtmlInputElement<
 
   override setValue(val: string | null): this {
     if (val === null) {
+      super.setValue("");
       this.indicator.hide();
       this.currentStatus = { status: "checking", success: false };
     } else {

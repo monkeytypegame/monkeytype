@@ -1,11 +1,11 @@
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import * as KeymapEvent from "../observables/keymap-event";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
+import { keymapEvent } from "../events/keymap";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
-import { showErrorNotification } from "../stores/notifications";
-import { getActivePage } from "../signals/core";
+import { showErrorNotification } from "../states/notifications";
+import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
 import * as ShiftTracker from "../test/shift-tracker";
@@ -17,7 +17,7 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 import { createEffectOn } from "../hooks/effects";
 
@@ -601,7 +601,7 @@ async function updateLegends(): Promise<void> {
 }
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   const handleMode = (): void => {
     keymap.qsa(".activeKey").removeClass("activeKey");
     keymap.qsa(".keymapKey").setAttribute("style", "");
@@ -672,7 +672,7 @@ ConfigEvent.subscribe(({ key }) => {
   }
 });
 
-KeymapEvent.subscribe((mode, key, correct) => {
+keymapEvent.subscribe(({ mode, key, correct }) => {
   if (mode === "highlight") {
     highlightKey(key);
   }

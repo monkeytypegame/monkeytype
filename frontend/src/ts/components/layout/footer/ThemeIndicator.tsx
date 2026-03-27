@@ -1,14 +1,15 @@
 import { JSXElement, Show } from "solid-js";
 
-import Config, { setConfig } from "../../../config";
+import { setConfig } from "../../../config/setters";
+import { Config } from "../../../config/store";
 import { isAuthenticated } from "../../../firebase";
 import {
   getThemeIndicator,
   setCommandlineSubgroup,
-} from "../../../signals/core";
-import { showModal } from "../../../stores/modals";
-import { showNoticeNotification } from "../../../stores/notifications";
-import { getSnapshot } from "../../../stores/snapshot";
+} from "../../../states/core";
+import { showModal } from "../../../states/modals";
+import { showNoticeNotification } from "../../../states/notifications";
+import { getSnapshot } from "../../../states/snapshot";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {

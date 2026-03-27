@@ -16,20 +16,19 @@ import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
 
-import Config, { applyConfigFromJson, setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../modals/custom-text";
+import { showModal } from "../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
   clearAllNotifications,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchModal from "../modals/quote-search";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
@@ -39,6 +38,7 @@ import {
   hideFpsCounter,
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
+import { applyConfigFromJson } from "../config/lifecycle";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -77,7 +77,7 @@ export const commands: CommandsSubgroup = {
       display: "Change custom text",
       icon: "fa-align-left",
       exec: (): void => {
-        CustomTextPopup.show();
+        showModal("CustomText");
       },
     },
     {
@@ -86,7 +86,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         setConfig("mode", "quote");
-        void QuoteSearchModal.show();
+        showModal("QuoteSearch");
       },
       shouldFocusTestUI: false,
     },
@@ -96,8 +96,8 @@ export const commands: CommandsSubgroup = {
       id: "shareTestSettings",
       display: "Share test settings",
       icon: "fa-share",
-      exec: async (): Promise<void> => {
-        ShareTestSettingsPopup.show();
+      exec: (): void => {
+        showModal("ShareTestSettings");
       },
     },
 

@@ -1,21 +1,21 @@
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import { isAuthenticated } from "../firebase";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import { format } from "date-fns/format";
-import { getActivePage, setIsScreenshotting } from "../signals/core";
+import { getActivePage, setIsScreenshotting } from "../states/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 let revealReplay = false;
 let revertCookie = false;
@@ -25,7 +25,6 @@ function revert(): void {
   hideLoaderBar();
   qs("#ad-result-wrapper")?.show();
   qs("#ad-result-small-wrapper")?.show();
-  qs("#testConfig")?.show();
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".pageTest .ssWatermark")?.hide();
   qs(".pageTest .ssWatermark")?.setText("monkeytype.com"); // Reset watermark text
@@ -94,7 +93,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qs("#nocss")?.hide();
   qs("#ad-result-wrapper")?.hide();
   qs("#ad-result-small-wrapper")?.hide();
-  qs("#testConfig")?.hide();
   // Ensure spacer is removed before adding a new one if function is called rapidly
   qs(".pageTest .screenshotSpacer")?.remove();
   qs(".page.pageTest")?.prependHtml("<div class='screenshotSpacer'></div>");

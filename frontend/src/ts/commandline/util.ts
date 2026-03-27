@@ -1,5 +1,6 @@
-import Config, { setConfig } from "../config";
-import { ConfigMetadata, configMetadata } from "../config-metadata";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { ConfigMetadata, configMetadata } from "../config/metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
@@ -135,7 +136,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   return {
     id: `change${capitalizeFirstLetter(key)}`,
     display: display,
-    icon: configMeta?.icon ?? "fa-cog",
+    icon: configMeta?.fa?.icon ?? "fa-cog",
     subgroup: {
       title: display,
       configKey: key,
@@ -229,7 +230,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     display: displayString,
     alias: inputProps?.alias ?? undefined,
     input: true,
-    icon: configMeta.icon ?? "fa-cog",
+    icon: configMeta?.fa?.icon ?? "fa-cog",
 
     //@ts-expect-error this is fine
     exec: ({ input }): void => {
