@@ -4,6 +4,7 @@ import { SolidQueryDevtoolsPanel } from "@tanstack/solid-query-devtools";
 import { JSXElement } from "solid-js";
 
 import { queryClient } from "../../queries";
+import { SignalsDevtoolsPlugin } from "./SignalsDevtools";
 
 export function TanStackDevtools(): JSXElement {
   return (
@@ -16,6 +17,7 @@ export function TanStackDevtools(): JSXElement {
           defaultOpen: true,
         },
         hotkeysDevtoolsPlugin(),
+        SignalsDevtoolsPlugin(),
       ]}
       config={{ defaultOpen: false }}
     />
