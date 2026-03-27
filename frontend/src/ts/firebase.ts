@@ -68,9 +68,9 @@ export async function init(callback: ReadyCallback): Promise<void> {
     await setPersistence(rememberMe, false);
 
     onAuthStateChanged(Auth, async (user) => {
+      setUserId(user?.uid ?? null);
       if (!ignoreAuthCallback) {
         await callback(true, user);
-        setUserId(user?.uid ?? null);
       }
     });
   } catch (e) {
@@ -159,6 +159,7 @@ export async function signInWithPopup(
     googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
     ignoreAuthCallback = false;
+    setUserId(signedInUser.user.uid);
     await readyCallback?.(true, signedInUser.user);
   }
 }
