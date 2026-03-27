@@ -141,6 +141,10 @@ export async function update(): Promise<void> {
     testModesNotice.appendHtml(
       `<button class="textButton" commands="difficulty"><i class="fas fa-star"></i>master</button>`,
     );
+  } else if (Config.difficulty === "custom") {
+    testModesNotice.appendHtml(
+      `<button class="textButton" commands="difficulty"><i class="fas fa-cog"></i>${Config.difficultyCustomAccuracy}% acc</button>`,
+    );
   }
 
   if (Config.blindMode) {

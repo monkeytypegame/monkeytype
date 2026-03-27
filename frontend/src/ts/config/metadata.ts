@@ -246,6 +246,21 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
     group: "behavior",
   },
+  difficultyCustomAccuracy: {
+    key: "difficultyCustomAccuracy",
+    fa: { icon: "fa-star" },
+    displayString: "custom difficulty accuracy",
+    changeRequiresRestart: true,
+    group: "behavior",
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.difficulty !== "custom") {
+        return {
+          difficulty: "custom",
+        };
+      }
+      return {};
+    },
+  },
   quickRestart: {
     key: "quickRestart",
     fa: { icon: "fa-redo-alt" },

@@ -131,12 +131,27 @@
       <div class="text">
         Normal is the classic typing test experience. Expert fails the test if
         you submit (press space) an incorrect word. Master fails if you press a
-        single incorrect key (meaning you have to achieve 100% accuracy).
+        single incorrect key (meaning you have to achieve 100% accuracy). Custom
+        allows you to set a custom accuracy threshold in words mode.
       </div>
-      <div class="buttons">
-        <button data-config-value="normal">normal</button>
-        <button data-config-value="expert">expert</button>
-        <button data-config-value="master">master</button>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="accuracy %"
+            class="input customDiffAcc"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+        </div>
+        <div class="buttons">
+          <button data-config-value="normal">normal</button>
+          <button data-config-value="expert">expert</button>
+          <button data-config-value="master">master</button>
+          <button data-config-value="custom">custom</button>
+        </div>
       </div>
     </div>
     <div class="section" data-config-name="quickRestart">

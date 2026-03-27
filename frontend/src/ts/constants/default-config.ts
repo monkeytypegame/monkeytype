@@ -33,6 +33,7 @@ const obj: Config = {
   fontSize: 2,
   freedomMode: false,
   difficulty: "normal",
+  difficultyCustomAccuracy: 100,
   blindMode: false,
   quickEnd: false,
   caretStyle: "default",

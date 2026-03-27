@@ -439,6 +439,15 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
+    input: qsr(".pageSettings .section[data-config-name='difficulty'] input"),
+    configName: "difficultyCustomAccuracy",
+    validation: {
+      schema: true,
+      inputValueConvert: Number,
+    },
+  });
+
+  handleConfigInput({
     input: qsr(".pageSettings .section[data-config-name='minBurst'] input"),
     configName: "minBurstCustomSpeed",
     validation: {

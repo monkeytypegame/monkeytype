@@ -157,17 +157,16 @@ function checkIfFailed(
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
-  TestInput.pushErrorToHistory();
-  TestInput.pushAfkToHistory();
+
   if (
-    Config.minWpm === "custom" &&
-    wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
-    TestState.activeWordIndex > 3
+    Config.difficulty === "custom" &&
+    Config.mode === "words" &&
+    acc < Config.difficultyCustomAccuracy
   ) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min speed" });
+    timerEvent.dispatch({ key: "fail", value: "custom difficulty" });
     return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {

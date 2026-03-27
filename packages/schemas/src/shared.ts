@@ -3,7 +3,12 @@ import { StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 
 //used by config and shared
-export const DifficultySchema = z.enum(["normal", "expert", "master"]);
+export const DifficultySchema = z.enum([
+  "normal",
+  "expert",
+  "master",
+  "custom",
+]);
 export type Difficulty = z.infer<typeof DifficultySchema>;
 
 //used by user and config

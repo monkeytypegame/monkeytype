@@ -336,6 +336,11 @@ export type MinWpmCustomSpeed = z.infer<typeof MinWpmCustomSpeedSchema>;
 export const MinimumAccuracyCustomSchema = z.number().nonnegative().max(100);
 export type MinimumAccuracyCustom = z.infer<typeof MinimumAccuracyCustomSchema>;
 
+export const DifficultyCustomAccuracySchema = z.number().nonnegative().max(100);
+export type DifficultyCustomAccuracy = z.infer<
+  typeof DifficultyCustomAccuracySchema
+>;
+
 export const MinimumBurstCustomSpeedSchema = z.number().nonnegative();
 export type MinimumBurstCustomSpeed = z.infer<
   typeof MinimumBurstCustomSpeedSchema
@@ -392,6 +397,7 @@ export const ConfigSchema = z
 
     // behavior
     difficulty: DifficultySchema,
+    difficultyCustomAccuracy: DifficultyCustomAccuracySchema,
     quickRestart: QuickRestartSchema,
     repeatQuotes: RepeatQuotesSchema,
     resultSaving: z.boolean(),
