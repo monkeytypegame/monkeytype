@@ -368,6 +368,23 @@ export async function setup(challengeName: string): Promise<boolean> {
         setConfig("keymapMode", "static", {
           nosave: true,
         });
+      } else if (challenge.name === "wingdings") {
+        // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
+        setConfig("mode", "words", {
+          nosave: true,
+        });
+        setConfig("words", 10, {
+          nosave: true,
+        });
+        setConfig("difficulty", "master", {
+          nosave: true,
+        });
+        setConfig("fontFamily", "Wingdings", {
+          nosave: true,
+        });
+        setConfig("keymapMode", "off", {
+          nosave: true,
+        });
       }
     }
     notitext = challenge.message;
@@ -405,6 +422,7 @@ configEvent.subscribe(({ key }) => {
       "keymapMode",
       "keymapLayout",
       "layout",
+      "fontFamily",
     ].includes(key)
   ) {
     clearActive();
