@@ -68,8 +68,8 @@ export async function init(callback: ReadyCallback): Promise<void> {
     await setPersistence(rememberMe, false);
 
     onAuthStateChanged(Auth, async (user) => {
-      setUserId(user?.uid ?? null);
       if (!ignoreAuthCallback) {
+        setUserId(user?.uid ?? null);
         await callback(true, user);
       }
     });
