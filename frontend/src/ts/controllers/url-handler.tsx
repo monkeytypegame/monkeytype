@@ -315,11 +315,9 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   ).toLowerCase();
   if (getValue === "") return;
 
-  showNoticeNotification("Loading challenge");
   ChallengeController.setup(getValue)
     .then((result) => {
       if (result) {
-        showSuccessNotification("Challenge loaded");
         restartTest({
           nosave: true,
         });

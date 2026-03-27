@@ -722,5 +722,17 @@
     "display": "Feet warrior",
     "type": "customTime",
     "parameters": [3600]
+  },
+  {
+    "name": "wingdings",
+    "display": "Ten Words of Pain",
+    "type": "special",
+    "parameters": [],
+    "message": "Complete a 10-word Master mode test using the Wingdings custom font. No keymap allowed.",
+    "requirements": {
+      "wpm": {
+        "min": 1
+      }
+    }
   }
 ]
