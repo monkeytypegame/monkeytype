@@ -8,22 +8,22 @@
   ],
   "quotes": [
     {
-      "text": "Obsaan mi'eessa, obsaan hojii baasa, obsaan rakkoos of irraa fageessa, obsi namaa qabeenya inni dhoksaa qabuu ti.",
+      "text": "Kaan obsaa, kaan immoo gorsaa, mul'ata keetti adeemuu qabda.",
       "source": "Mammaaksa Oromoo",
       "id": 1,
+      "length": 60
+    },
+    {
+      "text": "Obsaan mi'eessa, obsaan hojii baasa, obsaan rakkoos of irraa fageessa, obsi namaa qabeenya inni dhoksaa qabuu ti.",
+      "source": "Mammaaksa Oromoo",
+      "id": 2,
       "length": 113
     },
     {
       "text": "Murtoo murteessuuf dudduuba hin deebi'an. Murtoon jireenya keessatti barbaachisaadha, namoonni mo'atoon ni murteessu.",
       "source": "Mammaaksa Oromoo",
-      "id": 2,
-      "length": 117
-    },
-    {
-      "text": "Hin taane kiristinnaan badhaasaa itti deebi'aa kaasaa.",
-      "source": "Oromo Community",
       "id": 3,
-      "length": 54
+      "length": 117
     },
     {
       "text": "Bubbeen cimaan muka jabaataa hin buqqaatu, namni rakkoo keessa guddatee jabaate dhumarratti moo'ichaan ba'a yeroo hunda.",
@@ -32,1102 +32,1006 @@
       "length": 120
     },
     {
-      "text": "Abdii hin kutani. Yoo kufan ka'uu akka danda'an beeku.",
-      "source": "Jechoota Afaan Oromoo",
-      "id": 5,
-      "length": 54
-    },
-    {
       "text": "Muka biyya jiruun mana ijaaran, nama biyya jiruun biyya ijaaran jedha oromoon yommuu mammaaku.",
       "source": "Mammaaksa Oromoo",
-      "id": 6,
+      "id": 5,
       "length": 94
     },
     {
       "text": "Namarra yaaduuf yaali garuu nama hundumarra beekaadha, ofiin hin jedhin.",
       "source": "Mammaaksa Oromoo",
-      "id": 7,
+      "id": 6,
       "length": 72
     },
     {
       "text": "Daakaniif hin marqan, dharra'aniif hin argatan, Waaqni yoo kenne malee bu'aa hin qabu.",
       "source": "Mammaaksa Oromoo",
-      "id": 8,
+      "id": 7,
       "length": 86
     },
     {
       "text": "Galaanni Gibee guutus daaktuuf bidiruun nama ceesisaa garaan jaallate hin rafu.",
       "source": "Haacaaluu Hundeessaa — Sanyii Mootii",
       "length": 79,
-      "id": 9
+      "id": 8
     },
     {
       "text": "Gara galgala, murtoo hin qabu, murtoon ariitidhaan ykn yeroo sirrii hin taane keessatti fudhatamu sirrii miti.",
       "source": "Mammaaksa Oromoo",
-      "id": 10,
+      "id": 9,
       "length": 110
     },
     {
       "text": "Nama Waaqni uffise hattuun hin saamu, nama Waaqayyo eegu eegumsi addunyaa kanaa isa hin barbaachisu gonkumaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 11,
+      "id": 10,
       "length": 109
     },
     {
       "text": "Biyya hin beektu, nyaata hin argattu, kanaaf bakka deemtu hunda haala isaa qorachuun barbaachisaa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 12,
+      "id": 11,
       "length": 102
     },
     {
       "text": "Harkaan dhaabanii miilaan dhiituun amaluma dhala namaati, gaarummaa oolanii hammeenyaan deebisuun gocha badaadha.",
       "source": "Mammaaksa Oromoo",
-      "id": 13,
+      "id": 12,
       "length": 113
     },
     {
       "text": "Meeshaa nama kamuu irraa ergifatte namichi osoo sin gaafatin dursii deebisiif. Maallaqa dabalatee.",
       "source": "Mammaaksa Oromoo",
-      "id": 14,
+      "id": 13,
       "length": 98
     },
     {
       "text": "Ejersa halaalaarra qobboo qe'ee wayya, fira fagoorra ollaa dhihootti dhimma ba'uun baay'ee wayya jedhan.",
       "source": "Mammaaksa Oromoo",
-      "id": 15,
+      "id": 14,
       "length": 104
     },
     {
       "text": "Hirriibni baay'een duumessa hiyyummaati, namni rafuu jaallatu qabeenya hin horatu jedhan.",
       "source": "Oromo Work Ethic Proverb",
-      "id": 16,
+      "id": 15,
       "length": 89
     },
     {
       "text": "Maqaan baduu mannaa mataa baduu wayya, jette goondaan ciniintee haftee mataan cite.",
       "source": "Traditional Oromo Proverb",
-      "id": 17,
+      "id": 16,
       "length": 83
     },
     {
       "text": "Dharaan nutti duulanii kaleessa hoganamu awwaala cabse ka'ee dhugaan hin haguugamu.",
       "source": "Kemer Yousuf — Irreecha",
       "length": 83,
-      "id": 18
+      "id": 17
     },
     {
       "text": "Dhugaan ilmoo waaqaati, dhugaa dubbachuun aadaa Oromoo keessatti bakka guddaa qaba, Waaqayyo dhugaa jaalata.",
       "source": "Mammaaksa Oromoo",
-      "id": 19,
+      "id": 18,
       "length": 108
     },
     {
-      "text": "Jiruun dachee kuni furiidha gaaf-sana gaaffii hin hanqattu.",
+      "text": "Jiruun dachee kuni furiidha gaafa sana gaaffii hin hanqattu.",
       "source": "Haacaaluu Hundeessaa — Ajaa'iba",
-      "length": 59,
-      "id": 20
+      "length": 60,
+      "id": 19
     },
     {
       "text": "Dubbiin baay'atetti harreetti hin fe'ani, dhugaan haasaa gabaabaa keessatti ifa baati jedhan.",
       "source": "Mammaaksa Oromoo",
-      "id": 21,
+      "id": 20,
       "length": 93
     },
     {
       "text": "Jimma jirtattin quban si qabaa biyyaa hin fagaannee yaada keetaniin kophaa gungumaa malee hin maraannee.",
       "source": "Haacaaluu Hundeessaa — Sanyii Mootii",
       "length": 104,
-      "id": 22
+      "id": 21
     },
     {
       "text": "Bofa mataa dhahan eegeen isaa lafa hin lolu, diina cimaa yommuu of irraa ittisan madda isaa dhaabuu qabu dhugaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 23,
+      "id": 22,
       "length": 112
     },
     {
       "text": "Afaan hamii bare utubaatti hasaasa, namni hamii bare yeroo hunda hamachuu hin dhiisu kanaaf irraa eeggadhu.",
       "source": "Mammaaksa Oromoo",
-      "id": 24,
+      "id": 23,
       "length": 107
     },
     {
       "text": "Eeboo darbatani jinfuu hin qabatani, waan harka keetii ba'e deebisuun waan hin danda'amneef dura yaadi.",
       "source": "Mammaaksa Oromoo",
-      "id": 25,
+      "id": 24,
       "length": 103
     },
     {
       "text": "Namni abdataan wuulii nyaatee, lafati abdaatani sanyii nyaatee.",
       "source": "Obsa",
-      "id": 26,
+      "id": 25,
       "length": 63
     },
     {
       "text": "Waan nama duuba jiru hin jedhu, kanaafuu waan hojjennu yeroo hunda of eeggannoodhaan yaaduu qabna dhugumatti.",
       "source": "Mammaaksa Oromoo",
-      "id": 27,
+      "id": 26,
       "length": 109
     },
     {
       "text": "Teessoo na gaafannaan je'een Oromiyaa dhiiga lafee tiyyaa biyya abbaa kiyyaa.",
       "source": "Kemer Yousuf — Oromia",
       "length": 77,
-      "id": 28
+      "id": 27
     },
     {
       "text": "Namni Waaqa waliin deemu gufuun isa hin rukutu, daandii jireenyaa keessatti eegumsa argachuuf dhugaan deemi.",
       "source": "Mammaaksa Oromoo",
-      "id": 29,
+      "id": 28,
       "length": 108
     },
     {
       "text": "Firaan boonu malee firatti hin boonan, namni fira isaatti boone qofaa dhabatee hafa.",
       "source": "Mammaaksa Oromoo",
-      "id": 30,
+      "id": 29,
       "length": 84
     },
     {
       "text": "Ijibbaata beelaa eelee sagal dhaabu, yoo tokko bade kaanitti fayyadamuuf yaaduudhaan.",
       "source": "Oromo Oral Tradition",
-      "id": 31,
+      "id": 30,
       "length": 85
     },
     {
       "text": "Haadha laalii intala fuudhi, waan garaan kee barbaadu obsaan itti yaaddee raawwadhu.",
       "source": "Oromo Wisdom Literature",
-      "id": 32,
+      "id": 31,
       "length": 84
     },
     {
       "text": "Namni ija tokkoo biyyoo itti hin taphatu, wanta xiqqoo qabnu of eeggannoodhaan eeggachuu fi kunuunsuu qabna.",
       "source": "Mammaaksa Oromoo",
-      "id": 33,
+      "id": 32,
       "length": 108
     },
     {
       "text": "Kan koo lapheen sumaaf nuugii tumaa, natti taate kaa akka suusii bunaa.",
       "source": "Haacaaluu Hundeessaa — Sanyii Mootii",
       "length": 71,
-      "id": 34
+      "id": 33
     },
     {
       "text": "Kan kaffalu nama biroodha jettee nyaata guddaas ta'e dhugaatii guddaa hin ajajatin.",
       "source": "Mammaaksa Oromoo",
-      "id": 35,
+      "id": 34,
       "length": 83
     },
     {
       "text": "Jette jettee dhuugoomsanii karra shanan balleessanii dallaa nu gidduutt ijaranii.",
       "source": "Andualem Gosa — Ayyaantuu",
       "length": 81,
-      "id": 36
+      "id": 35
     },
     {
       "text": "Dhiiga ofii, fooni hin dhokatu, eenyummaan dhugaa fi sanyiin namaa yeroo hunda ifatti kan mul'atu dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 37,
+      "id": 36,
       "length": 102
     },
     {
       "text": "Onnee koo irraa ture kanan si jaallee ayyaana laallattummaan kee yoom naaf galee.",
       "source": "Abdi Nuressa — Ayyaana Laallattuu",
       "length": 81,
-      "id": 38
+      "id": 37
     },
     {
       "text": "Nama beekumsaan guutame hattuun hin saamuuf dandahamuu danda'u, kanaafuu beekumsa horachuuf tattaaffadhu yeroo hunda.",
       "source": "Mammaaksa Oromoo",
-      "id": 39,
+      "id": 38,
       "length": 117
     },
     {
       "text": "Soogidda, ofii jettu mi'aayi anaa jettu dhagaa tahi, ofii keetif of kabaji jalqaba kabaja argachuuf.",
       "source": "Mammaaksa Oromoo",
-      "id": 40,
+      "id": 39,
       "length": 100
     },
     {
       "text": "Waraabessi biyya ofii nama haa nyaatuu, alagaa biyya ormaa irra fira yaraatu wayya jedhan.",
       "source": "Oromo Wisdom Literature",
-      "id": 41,
+      "id": 40,
       "length": 90
     },
     {
       "text": "Kan garaa koo Rabbii na hin dhowwatu namummaa kootti ishee na jaalattuu.",
       "source": "Abdi Nuressa — Ayyaana Laallattuu",
       "length": 72,
-      "id": 42
+      "id": 41
     },
     {
       "text": "Mana ormaa bareedaarra, godoo ofii keessa jiraatan tu caala jedha mammaaksi Oromoo.",
       "source": "Mammaaksa Oromoo",
-      "id": 43,
+      "id": 42,
       "length": 83
     },
     {
       "text": "Najjoo gidduu lafaa yaa tessoo jajjabe nagaan sitti dhaamam yoon dhufuu dadhabe.",
       "source": "Gamme Borena",
-      "id": 44,
+      "id": 43,
       "length": 80
     },
     {
       "text": "Biyyi abbaa qabdu alagaadhaan hin bitamtu, ummanni tokkummaa qabu humna alaarra dhufe kamiyyuu ni injifata dhugaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 45,
+      "id": 44,
       "length": 114
     },
     {
       "text": "Waan warri waarii jedhu ijoolleen waaree jetti, ijoolleen daawwitii maatii isheeti jedhan.",
       "source": "Oromo Wisdom Literature",
-      "id": 46,
+      "id": 45,
       "length": 90
     },
     {
       "text": "Kan abdatan irra kan argatantu caala, waan harka kee keessa jiru sirriitti eeggadhu.",
       "source": "Traditional Oromo Proverb",
-      "id": 47,
+      "id": 46,
       "length": 84
     },
     {
       "text": "Fardi ija qabu boolla hin seenu, namni sammuu qabuu fi fagootti yaadu rakkoo keessa of hin galchu jedhan oromoon.",
       "source": "Mammaaksa Oromoo",
-      "id": 48,
+      "id": 47,
       "length": 113
     },
     {
       "text": "Namni kufe ka'uu hin dhiisu, gara fuula durattis itti fufee deema, kukkufuun dhumaa miti injifannoon isaa fuuldura jira.",
       "source": "Mammaaksa Oromoo",
-      "id": 49,
+      "id": 48,
       "length": 120
     },
     {
       "text": "Kan citaa hin qabneef kan citu baasti, rakkoon nama hiyyeessaa yeroo hunda walitti fufa.",
       "source": "Mammaaksa Oromoo",
-      "id": 50,
+      "id": 49,
       "length": 88
     },
     {
       "text": "Maraatanii biyya hin bulchan, mari'atanii bulchan malee namni tokko ofiin hin danda'u.",
       "source": "Traditional Oromo Proverb",
-      "id": 51,
+      "id": 50,
       "length": 86
     },
     {
       "text": "Wacitii abbaan cabsee kaa'e, kan dhiqee kaa'e itti kakata, balleessaan kan abbaati jedhan.",
       "source": "Mammaaksa Oromoo",
-      "id": 52,
+      "id": 51,
       "length": 90
-    },
-    {
-      "text": "Kormi biyya ofiitti baroodu biyya ormaatti ni mar'ata.",
-      "source": "Oromo Community",
-      "id": 53,
-      "length": 54
-    },
-    {
-      "text": "Dura na dhungatteef dhirsa naa hin taatu jette intalli.",
-      "source": "Oromo Community",
-      "id": 54,
-      "length": 55
     },
     {
       "text": "Sirni Gadaa walqixxummaa fi bilisummaa irratti ijaarameera, kanaafuu sirna kana eeguun dirqama dhaloota hunda ti.",
       "source": "Gadaa Principle",
-      "id": 55,
+      "id": 52,
       "length": 113
     },
     {
       "text": "Namni mana isaa keessatti guddaan, alatti yoo ba'u salphachuu in danda'a jedhan oromoon.",
       "source": "Traditional Oromo Proverb",
-      "id": 56,
+      "id": 53,
       "length": 88
-    },
-    {
-      "text": "Akkan hin dandeenye garaan koo hin beekti kanaaf roorrifte.",
-      "source": "Haacaaluu Hundeessaa — Ajaa'iba",
-      "length": 59,
-      "id": 57
     },
     {
       "text": "Yaadaa fi yaaddoo keetiin halkan ciisa dhabe waanuma kee yaadutti maaf hirriba dhaba.",
       "source": "Haacaaluu Hundeessaa — Kuullee koo",
       "length": 85,
-      "id": 58
-    },
-    {
-      "text": "Ilma Oromoo nama sanyii lencaan hin dhaabbatan barrii.",
-      "source": "Tadele Gemechu — Sanyii Leencaa",
-      "length": 54,
-      "id": 59
+      "id": 54
     },
     {
       "text": "Beekumsi qabeenyota addunyaa hundarraa ol ti, qabeenya biraa saamuu ni danda'ama, garuu beekumsa keessa jiru hin saamamu.",
       "source": "Mammaaksa Oromoo",
-      "id": 60,
+      "id": 55,
       "length": 121
     },
     {
       "text": "Abbaan Gadaa ummata isaa Waaqa jalatti eeguf kakate, kanaafuu abbootiin Gadaa yeroo hunda dhugaa fi naamusaaf dhaabbatu.",
       "source": "Gadaa System Wisdom",
-      "id": 61,
+      "id": 56,
       "length": 120
     },
     {
       "text": "An jaldeessa hin jaallu yaa goota koo enyumat doorsisaa yaa goota koo.",
       "source": "Haacaaluu Hundeessaa — Goota koo",
       "length": 70,
-      "id": 62
+      "id": 57
     },
     {
       "text": "Haa baddu humni onneen bira hin jirre, jedhe leenci waraabessan.",
       "source": "Mammaaksa Oromoo",
-      "id": 63,
+      "id": 58,
       "length": 64
-    },
-    {
-      "text": "Yoo hundumasaa dubbatan garaan duwwaatti hafa jedhan.",
-      "source": "Oromo Community",
-      "id": 64,
-      "length": 53
     },
     {
       "text": "Yoo namni tokko boolla qotu, ofii isaa keessa bu'a, namni daba hojjetu deebi'ee daba ofiitiin rukutama yeroo hunda.",
       "source": "Mammaaksa Oromoo",
-      "id": 65,
+      "id": 59,
       "length": 115
     },
     {
       "text": "Humni qofti hogganummaaf gahaa miti, beekumsa fi dhugummaan hogganummaa dhugaa keessatti murteessoo dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 66,
+      "id": 60,
       "length": 104
     },
     {
       "text": "Hiika jaalala koo wallaaltee malee badhaadhumnoo in dhufaa olee bubbulee.",
       "source": "Abdi Nuressa — Ayyaana Laallattuu",
       "length": 73,
-      "id": 67
+      "id": 61
     },
     {
       "text": "Oromoon duruu faayaa faayaan babareedani ijoolleen abbaa gadaa wal keessa areedani.",
       "source": "Kemer Yousuf — Irreecha",
       "length": 83,
-      "id": 68
+      "id": 62
     },
     {
       "text": "Rabbi wajjin sooromaafii eenyummaakee nu ilmaan kee si tikfanna.",
       "source": "Kemer Yousuf — Oromia",
       "length": 64,
-      "id": 69
+      "id": 63
     },
     {
       "text": "An sosodaadhe baranna qalbii kootii Gibee gamaan jaalladhee sanyii mootii.",
       "source": "Haacaaluu Hundeessaa — Sanyii Mootii",
       "length": 74,
-      "id": 70
+      "id": 64
     },
     {
       "text": "Barnootni bilisummaa ti, barnootni humna ti, barnootni malee egereen ifa hin qabu jiruu dhala Oromoo keessatti.",
       "source": "Oromo Cultural Wisdom",
-      "id": 71,
+      "id": 65,
       "length": 111
     },
     {
       "text": "Abbaan biyyaa yoo dammaqe biyyi hin badu, ummanni of beeku fi mirga isaa eeggedu tasuma garbummaa hin fudhatu.",
       "source": "Mammaaksa Oromoo",
-      "id": 72,
+      "id": 66,
       "length": 110
     },
     {
       "text": "Dubbii fi ulee gabaabsuun gaariidha, wanta baay'ee dubbachuurra xiqqoo dubbatanii hojitti agarsiisuu wayya.",
       "source": "Mammaaksa Oromoo",
-      "id": 73,
+      "id": 67,
       "length": 107
     },
     {
       "text": "Saba koo saba gamtaan hunda caaluu qe'ee abbaa keenyaa ormi hin dhaaluu.",
       "source": "Tadele Gemechu — Sanyii Leencaa",
       "length": 72,
-      "id": 74
+      "id": 68
     },
     {
       "text": "Tafkiin lafatti walnyaatti, namarratti wal baatti, hiyyeessi yoo wal lolu alagaatti tokko.",
       "source": "Oromo Wisdom Literature",
-      "id": 75,
+      "id": 69,
       "length": 90
-    },
-    {
-      "text": "Obsi koo naafuu raajii dha otoon miidhamuun jiraadha.",
-      "source": "Haacaaluu Hundeessaa — Ajaa'iba",
-      "length": 53,
-      "id": 76
-    },
-    {
-      "text": "Ofii jettu mi'aa'i yoo kaan dhagaa jedhanii si gatu jedhe.",
-      "source": "Oromo Community",
-      "id": 77,
-      "length": 58
     },
     {
       "text": "Ilmi abbaa malee hin dhalatuu biyyan qabaa kan na boonsiftu.",
       "source": "Kemer Yousuf — Oromia",
       "length": 60,
-      "id": 78
+      "id": 70
     },
     {
       "text": "Ollaan bultee beeka akka itti bule abbaatu beeka, rakkoo garaa keessaa ofiitu beeka jedhe.",
       "source": "Traditional Oromo Proverb",
-      "id": 79,
+      "id": 71,
       "length": 90
     },
     {
       "text": "Salphaa hin seyinii barbada daaraa keessaa lammii tuqanii maaltu walirraa dheessaa.",
       "source": "Tadele Gemechu — Sanyii Leencaa",
       "length": 83,
-      "id": 80
+      "id": 72
     },
     {
       "text": "Barcuma ulfinaa abbaatu of jala baata, nama biraa irraa ulfina eeguun walluuma guddaadha.",
       "source": "Traditional Oromo Proverb",
-      "id": 81,
+      "id": 73,
       "length": 89
     },
     {
       "text": "Namichi guyyaa bofa arge halkan gaaddidduu isaa dheessa, namni waan hamaan irra ga'e yeroo hunda ni sodaata.",
       "source": "Mammaaksa Oromoo",
-      "id": 82,
+      "id": 74,
       "length": 108
-    },
-    {
-      "text": "Hindaaqqoon haate haatee halbee ittin qalamtu baasti.",
-      "source": "Oromo Community",
-      "id": 83,
-      "length": 53
     },
     {
       "text": "Kormi biyya ofiitti baroodu biyya ormaatti ni mar'ata, kanaaf biyya ofii jaalachuun baay'ee murteessaa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 84,
+      "id": 75,
       "length": 107
-    },
-    {
-      "text": "Kan akka fardaa nyaatu gaafa akka namaatti nyaate du'a.",
-      "source": "Oromo Community",
-      "id": 85,
-      "length": 55
     },
     {
       "text": "Humna qarqa baasuufi soora ganna baasu abbaatu beeka, nama biraatu ofitti firoomsa.",
       "source": "Mammaaksa Oromoo",
-      "id": 86,
+      "id": 76,
       "length": 83
     },
     {
       "text": "Nama hogganu sodaa malee dhugaa dubbachuu danda'u barbaadi, hogganaan sodaattu biyya isaa dhumarra balleessa.",
       "source": "Mammaaksa Oromoo",
-      "id": 87,
+      "id": 77,
       "length": 109
     },
     {
       "text": "Hiriyyaan wal hinamanne, malkaa ceetutti wal kakti, shakkii jidduu firootaatti uumamu balleessuun ulfaataa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 88,
+      "id": 78,
       "length": 111
     },
     {
       "text": "Kan gabaan suuqii hin qabne, gabaa dhaqee maal godha yoo gatii gabaa hin beekne.",
       "source": "Mammaaksa Oromoo",
-      "id": 89,
+      "id": 79,
       "length": 80
     },
     {
       "text": "Hoggantichi ummata isaa dursee of dursa malee, kanaafuu hogganaa gaarii barbaadda taanaan gara namaatti ilaali.",
       "source": "Mammaaksa Oromoo",
-      "id": 90,
+      "id": 80,
       "length": 111
     },
     {
       "text": "Kan ilkaan hin qabne akaawwii hawwatti, wanta humni ishee hin dandeenye yaaddi gowwaan.",
       "source": "Mammaaksa Oromoo",
-      "id": 91,
+      "id": 81,
       "length": 87
     },
     {
       "text": "Mukni tokkichi ni aara malee hin buba'u, namni kophaa isaa rakkoo baachuu hin danda'u kanaaf tokkummaan wayya.",
       "source": "Mammaaksa Oromoo",
-      "id": 92,
+      "id": 82,
       "length": 110
     },
     {
       "text": "Diiganii gaara sanaa gaara diigamuu hin mallee nu baasan addaan baanee nu addaan bahuu hin mallee.",
       "source": "Haacaaluu Hundeessaa — Maalaan Jira",
       "length": 98,
-      "id": 93
+      "id": 83
     },
     {
       "text": "Gadaatu qaroomina qarooma jabeeffanna irreechi irree keenyaa waaqa galatoomffanna.",
       "source": "Kemer Yousuf — Irreecha",
       "length": 82,
-      "id": 94
+      "id": 84
     },
     {
       "text": "Waaqa fi lafa gargar baasuun hin danda'amu, akkasuma Oromoo fi aadaa isaa gargar baasuun waan hin danda'amne.",
       "source": "Oromo Cultural Wisdom",
-      "id": 95,
+      "id": 85,
       "length": 109
     },
     {
       "text": "Jireenya mataa kee oofuu yoo hin dandeenye jireenya namaa irratti imalaa taata. Kanaaf kan ormaa dhiisi kan kee gaggeeffadhu!",
       "source": "Jechoota Afaan Oromoo",
-      "id": 96,
+      "id": 86,
       "length": 125
     },
     {
       "text": "Yaa soogidda, ofii jettu mi'aa'i, ta'uu baannaan dhagaadha jedhanii si darbu.",
       "source": "Oromo Community",
-      "id": 97,
+      "id": 87,
       "length": 77
     },
     {
       "text": "Daa'imni barnoota barate guddatee biyya isaa ni ijaara, kanaafuu ijoollee barsiisuu dirqama maatii fi biyyaa ti.",
       "source": "Mammaaksa Oromoo",
-      "id": 98,
+      "id": 88,
       "length": 112
     },
     {
       "text": "Laga tokko qarqara dhaabatanii ce'uun hin danda'amu, kanaafuu tarkaanfii fudhachuun barbaachisaa dha yeroo hunda.",
       "source": "Mammaaksa Oromoo",
-      "id": 99,
+      "id": 89,
       "length": 113
     },
     {
       "text": "Shiran shiranii garaaf qalbii kiyya hatanii akkan sirraa cituuf yaadanii.",
       "source": "Haacaaluu Hundeessaa — Jirra",
       "length": 73,
-      "id": 100
+      "id": 90
     },
     {
       "text": "Namoota hojii isaaniif dinqisiifadhu. Hamaa yoo dalagan immoo qophaatti haasofsiisi.",
       "source": "Mammaaksa Oromoo",
-      "id": 101,
+      "id": 91,
       "length": 84
     },
     {
       "text": "Galaanni bakka bultii hin qabne, gudeelcha guuree deema, iddoo qubatu dhabuudhaan.",
       "source": "Mammaaksa Oromoo",
-      "id": 102,
+      "id": 92,
       "length": 82
     },
     {
       "text": "Osoo horiin hin galin, hattuun mooraa guutte jette haati ijoolleen ishee jalaa dhumte.",
       "source": "Traditional Oromo Proverb",
-      "id": 103,
+      "id": 93,
       "length": 86
     },
     {
       "text": "Yoollee si lixxee qoraatii dhoqee keessaa hin yaadda'inii lammitu gumaa baasaa.",
       "source": "Tadele Gemechu — Sanyii Leencaa",
       "length": 79,
-      "id": 104
+      "id": 94
     },
     {
       "text": "Kan mana qabu mala hin dhabu, iddoo itti dhokatu fi itti boqotu waan qabuuf dhiibbaa danda'a.",
       "source": "Traditional Oromo Proverb",
-      "id": 105,
+      "id": 95,
       "length": 93
     },
     {
       "text": "Adala gowwoomsuun suuta suutan, ariifannaan waan yaadame hunda hin milkeessu matumaa.",
       "source": "Traditional Oromo Proverb",
-      "id": 106,
+      "id": 96,
       "length": 85
     },
     {
       "text": "Beekumsa tuffachuun dhumarratti nama gadaanessaatti geessa, kanaafuu barnootaaf kabajaa fi jaalala qabaachuu qabna.",
       "source": "Mammaaksa Oromoo",
-      "id": 107,
+      "id": 97,
       "length": 115
     },
     {
       "text": "Wallaggaa yaa lixa biiftuu, dhagaan Gibee konkolaatee, waldhabne kaa shurrubbee koo, garaan didee tokko yaadee.",
       "source": "Abbitaw Kabbada",
-      "id": 108,
+      "id": 98,
       "length": 111
-    },
-    {
-      "text": "Wal irraa hin fagaannuu laal galootoo jara nu fageessee.",
-      "source": "Haacaaluu Hundeessaa — Maalaan Jira",
-      "length": 56,
-      "id": 109
-    },
-    {
-      "text": "Waan siif ta'e fi siif kenname hundaaf galateeffadhu.",
-      "source": "Mammaaksa Oromoo",
-      "id": 110,
-      "length": 53
     },
     {
       "text": "Onneen koo cimee sitti obsa karoorsaa, anatti anaan araarsita kottuu jiruu kiyya situ haaromsaa.",
       "source": "Andualem Gosa — Ayyaantuu",
       "length": 96,
-      "id": 111
+      "id": 99
     },
     {
       "text": "Afaan koo afaan Oromoo, eenyummaa koo ibsa, aadaa koo mul'isa, utuu afaan koo hin jiraatin anillee hin jiru.",
       "source": "Ali Birra",
-      "id": 112,
+      "id": 100,
       "length": 108
     },
     {
       "text": "Aak jedhan waa tufan, mammaakan waa himan, dubbiin mammaaksa hin qabne soogidda dhabe.",
       "source": "Oromo Wisdom Literature",
-      "id": 113,
+      "id": 101,
       "length": 86
     },
     {
       "text": "Dhiiga dhangala'aa, harka harka, namni gocha ofiitiif itti gaafatamummaa fudhachuun dirqama dhala namaati.",
       "source": "Mammaaksa Oromoo",
-      "id": 114,
+      "id": 102,
       "length": 106
     },
     {
       "text": "Maal taanaa, maal taanaa, yoo isin hin jirre nuti maal taanaa? Eenyummaan keenya saba keenya waliin jiraata.",
       "source": "Hachalu Hundessa",
-      "id": 115,
+      "id": 103,
       "length": 108
     },
     {
       "text": "Ilmoo bineensaa foontu gara bosonaa heda, uumamni uumama isaa hin dhiisu matumaa jedhan.",
       "source": "Oromo Wisdom Literature",
-      "id": 116,
+      "id": 104,
       "length": 88
     },
     {
       "text": "Yayyaba walaabuu maddite yaa Taliila bishaan ganamaa lixee daakee ba'uu dadhabe danbalii yaada keen raafama.",
       "source": "Haacaaluu Hundeessaa — Kuullee koo",
       "length": 108,
-      "id": 117
+      "id": 105
     },
     {
       "text": "Hamma namaa hin geessuu cabsa namaa hin teessu, dubbii namaa fiduun hamaa dha waan ta'eef irraa fagaadhu.",
       "source": "Mammaaksa Oromoo",
-      "id": 118,
+      "id": 106,
       "length": 105
     },
     {
       "text": "Hojiin jabina barbaada, obboleettiin jabinaa immoo obsa ti, obsa malee jabinni dhugaan argamuu hin danda'u gonkumaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 119,
+      "id": 107,
       "length": 116
     },
     {
       "text": "Ulfeessaniit ulfaatu, jettet haati ilmaaf farda qabdee lafa irra teessee of salphiste.",
       "source": "Oromo Wisdom Literature",
-      "id": 120,
+      "id": 108,
       "length": 86
     },
     {
       "text": "Hayyummaa Gadaa haa beeku hundii kan quba hin qabneetu hoo hoqa gadii.",
       "source": "Galaanaa Gaaromsaa — Kush",
       "length": 70,
-      "id": 121
+      "id": 109
     },
     {
       "text": "Ofii jettu mi'aa'i, yoo kaan dhagaa jedhanii si gatu jedhe namichi dammaan dubbatee.",
       "source": "Oromo Wisdom Literature",
-      "id": 122,
+      "id": 110,
       "length": 84
     },
     {
       "text": "Abbaa gabaabaa ijoolleen hiriyyaa seeti, nama guddaas yoo salphatu xiqqaatti ilaalti.",
       "source": "Mammaaksa Oromoo",
-      "id": 123,
+      "id": 111,
       "length": 85
     },
     {
       "text": "Ilmi baratu abbaa isaa kabajsiisa, beekumsi ijoollee yeroo hunda maatii fi saba isaaf eebbaa guddaa fi ulfinaa ti.",
       "source": "Mammaaksa Oromoo",
-      "id": 124,
+      "id": 112,
       "length": 114
     },
     {
       "text": "Ilkaan walitti aaree lafee caccabsa, namoonni yommuu tokko ta'an rakkoo cimaa kamiyyuu mo'achuu ni danda'u.",
       "source": "Mammaaksa Oromoo",
-      "id": 125,
+      "id": 113,
       "length": 107
     },
     {
       "text": "Kan akka fardaa nyaatu gaafa waan nyaatu dhabe du'a, kanaafuu yeroo qabnu qusachuun ogummaa guddaa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 126,
+      "id": 114,
       "length": 103
     },
     {
       "text": "Osoo namni sitti haasa'uu haasaa isaa addaan hin kutin, ha xumuruu. Namni kamuu waan keessasaa jiru haasa'uuf mirga qaba.",
       "source": "Jechoota Afaan Oromoo",
-      "id": 127,
+      "id": 115,
       "length": 121
     },
     {
       "text": "Waan dabruuf maqaa hin dabarre hin fuudhan, rakkoo yeroof jedhanii kabaja ofii dhabuun sirrii miti gonkumaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 128,
+      "id": 116,
       "length": 108
     },
     {
       "text": "Of bira si dhabee naa onneen cabee yaa furtuukoo karra jaalalaa si qabaachuun hunda caalaa.",
       "source": "Andualem Gosa — Ayyaantuu",
       "length": 91,
-      "id": 129
+      "id": 117
     },
     {
       "text": "Moluu tiyya boruufuu si'abdadhe jedhe jaarsi aduun mataa dhoofte.",
       "source": "Oromo Community",
-      "id": 130,
+      "id": 118,
       "length": 65
     },
     {
       "text": "Hogganni gaarii akka bishaan madda qabaatu ti, hundaaf dansaa fi qulqulluu, qixxummaan raabsuun waanjoo isaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 131,
+      "id": 119,
       "length": 109
     },
     {
       "text": "Hiriyyaan garaa walii hin beekne malkaa ceetu maratti walkaksiifti.",
       "source": "Oromo Community",
-      "id": 132,
+      "id": 120,
       "length": 67
     },
     {
       "text": "Bariin durii fi dubbiin durii deebitee hin argamtu, waan darbe yaaduun hin barbaachisu.",
       "source": "Oromo Wisdom Literature (Sumner, 1995)",
-      "id": 133,
+      "id": 121,
       "length": 87
     },
     {
       "text": "Of hin agarre raafuu lagatti, namni of hin beekne waan xixiqqoo tuffata ta'ullee ofii isaa gatii hin qabu.",
       "source": "Mammaaksa Oromoo",
-      "id": 134,
+      "id": 122,
       "length": 106
     },
     {
       "text": "Jaalalti anaaf haaraa dha kanaaf keessi koo miidhame natti hin murteessin.",
       "source": "Haacaaluu Hundeessaa — Ajaa'iba",
       "length": 74,
-      "id": 135
+      "id": 123
     },
     {
       "text": "Hin bari'u seetee manatti hagde, bariinaan salphina isheetiif daaraa itti naqatte jette.",
       "source": "Oromo Oral Tradition",
-      "id": 136,
+      "id": 124,
       "length": 88
     },
     {
       "text": "Lakkii mee lakkii gocha kee kanas hubadhu an sirraa citee hafuu dhaaf.",
       "source": "Haacaaluu Hundeessaa — Ajaa'iba",
       "length": 70,
-      "id": 137
+      "id": 125
     },
     {
       "text": "Bishaan darbe hin waraaban, dubbii darbe hin kaasani, yoo dammaqan malee jedhan warri.",
       "source": "Oromo Oral Tradition",
-      "id": 138,
+      "id": 126,
       "length": 86
     },
     {
       "text": "Kan qaban qaba hin guunne, gadhiisan bakkee guutti, jedhan warri dhugaa kana hubatan.",
       "source": "Oromo Oral Tradition",
-      "id": 139,
+      "id": 127,
       "length": 85
-    },
-    {
-      "text": "Kan akka fardaa nyaatu gaafa waan nyaatu dhabe du'a.",
-      "source": "Oromo Community",
-      "id": 140,
-      "length": 52
     },
     {
       "text": "Guyyaan ija qaba, halkan gurra qaba, yeroo hunda of eeggannoodhaan dubbachuun amala nama bilchaataa ti yeroo hunda.",
       "source": "Mammaaksa Oromoo",
-      "id": 141,
+      "id": 128,
       "length": 115
     },
     {
       "text": "Lolli kee inni hamaan waan beektuu fi miira sitti dhaga'amu gidduudha.",
       "source": "Mammaaksa Oromoo",
-      "id": 142,
+      "id": 129,
       "length": 70
     },
     {
       "text": "Soddaa jiruu sanuu, balbala jiruu wal hin lolan, wal kabajuun aadaa saba Oromoo bal'aati.",
       "source": "Oromo Societal Norms",
-      "id": 143,
+      "id": 130,
       "length": 89
     },
     {
       "text": "Iyyaniif dhalcha hin ta'u, jedhe korbeessi hoolaa korbeessa re'eetiin lafa dhiitee.",
       "source": "Mammaaksa Oromoo",
-      "id": 144,
+      "id": 131,
       "length": 83
     },
     {
       "text": "Bishaan lagaa dhume jennaan boosettiin ilil jette, sababni ishees qulqullina jibbuudha.",
       "source": "Oromo Oral Tradition",
-      "id": 145,
+      "id": 132,
       "length": 87
     },
     {
       "text": "Bara quufaa waraabessi adurree ciniina, yommuu nagaa fi quufni jiru namni waan hin taane hojjeta jedhan warri.",
       "source": "Mammaaksa Oromoo",
-      "id": 146,
+      "id": 133,
       "length": 110
     },
     {
       "text": "Cinqiin yeroo baayyee kan maddu sababa humnaa ol yaaduutiin, yeroo humnaa ol yaadnu sammuun teenya rakkinoota hin jirre hedduu waan uumuuf.",
       "source": "Mammaaksa Oromoo",
-      "id": 147,
+      "id": 134,
       "length": 139
-    },
-    {
-      "text": "Alagaatti garaakee titiisatti madaakee hin agarsiisin.",
-      "source": "Jechoota Afaan Oromoo",
-      "id": 148,
-      "length": 54
     },
     {
       "text": "Namni akka ofii isaa beeku eenyuyyuu isa hin beeku, of-baruu fi dhugaa ofii beekuun mallattoo qaroominaati.",
       "source": "Mammaaksa Oromoo",
-      "id": 149,
+      "id": 135,
       "length": 107
     },
     {
       "text": "Sirni Gadaa sirna dimokiraasii fi walqixxummaa irratti hundaa'e dha, namni hunduu mirga guutuu qaba Oromoo keessatti.",
       "source": "Gadaa System Principle",
-      "id": 150,
+      "id": 136,
       "length": 117
     },
     {
       "text": "Harki tokko ni dhiqa malee, hin qulqulleessu, harka lamaan waliin dhiquutu xurii baasa.",
       "source": "Oromo Wisdom Literature",
-      "id": 151,
+      "id": 137,
       "length": 87
     },
     {
       "text": "Yeroo dheeraaf bishaaniin tuqamu dhagaan caccabuun hin ooluu, kanaafuu tattaaffiin xiqqoo yeroo dheeraan gurguddaa galma gaha.",
       "source": "Mammaaksa Oromoo",
-      "id": 152,
+      "id": 138,
       "length": 126
-    },
-    {
-      "text": "Hiyyeessa boo'icha hin gorsan innuu jalleesee naqa.",
-      "source": "Oromo Community",
-      "id": 153,
-      "length": 51
     },
     {
       "text": "Utuu horiin hin galin, hattuun mooraa guutte, utuu qabeenyi hin argamin eegdonni baay'achuun rakkoo fida.",
       "source": "Mammaaksa Oromoo",
-      "id": 154,
+      "id": 139,
       "length": 105
     },
     {
       "text": "Nyaadhe fixuu yoon dadhabe hadhee fixuun hin dadhabu jette lukkuun.",
       "source": "Mammaaksa Oromoo",
-      "id": 155,
+      "id": 140,
       "length": 67
     },
     {
       "text": "Firri wallola malee gaafa rakkoo wal irratti hin ilaalu, dhiigni dhiiguma ta'a yoomiyyuu.",
       "source": "Oromo Societal Norms",
-      "id": 156,
+      "id": 141,
       "length": 89
     },
     {
       "text": "Hiyyeessaa fi ibiddi tuttuqaa hin jaalatu, kanaafuu nama harka dhalleeyyii akka malee dhiibuu fi tuquun hamaa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 157,
+      "id": 142,
       "length": 114
     },
     {
       "text": "Mallaqnii wanta hundaaf debbi ta'uu hin danda'uu garu jijiirama fida.",
       "source": "Mammaaksa Oromoo",
-      "id": 158,
+      "id": 143,
       "length": 69
     },
     {
       "text": "Haatee durbaa jennaan dur kaa jedhe mucaan, namni waan beeku dubbata waan ta'eef dhugaa dubbachuu qabna.",
       "source": "Mammaaksa Oromoo",
-      "id": 159,
+      "id": 144,
       "length": 104
     },
     {
       "text": "Fuulli fi nyaanni dhoksaa hin qabu, garaa keessa wanti jiru fuula irraa sirriitti mul'ata.",
       "source": "Traditional Oromo Proverb",
-      "id": 160,
+      "id": 145,
       "length": 90
     },
     {
       "text": "Ijoolleen haadha jalatti baratte iddoo biraatti hin boonu, aadaa fi safuu warra irraa barachuun baay'ee faayidaa.",
       "source": "Mammaaksa Oromoo",
-      "id": 161,
+      "id": 146,
       "length": 113
     },
     {
       "text": "Harreen ofiifuu hin galtuu, loon galchitiiree yoo ofii ishee karaa mana ishee wallaalte?",
       "source": "Oromo Oral Tradition",
-      "id": 162,
+      "id": 147,
       "length": 88
     },
     {
       "text": "Haati hattuun intala hin amantu, yeroo hunda waan hannaatiin shakkiti malee.",
       "source": "Oromo Wisdom Literature",
-      "id": 163,
+      "id": 148,
       "length": 76
     },
     {
       "text": "Namni rakkoo fuuldura dhaabachuu danda'u duwwaa dha milkaa'inni isaa itti argamu, salphaatti hin argamu yeroo hunda.",
       "source": "Mammaaksa Oromoo",
-      "id": 164,
+      "id": 149,
       "length": 116
     },
     {
       "text": "Dorgomaa cimaa waliin dorgomuu nama jajjabeessa fi guddisa, kanaafuu nama cimaa waliin dorgomuu irraa gonkumaa hin baqatin.",
       "source": "Mammaaksa Oromoo",
-      "id": 165,
+      "id": 150,
       "length": 123
     },
     {
       "text": "Kan argatanirra kan abdatantu caala, abdii qabaachuun jireenya keessatti furtuu milkaa'inaa ti jedha oromoon.",
       "source": "Mammaaksa Oromoo",
-      "id": 166,
+      "id": 151,
       "length": 109
     },
     {
       "text": "Kan darbe yaadatani, isa gara fuula duraa itti yaadan, seenaa ofii beekuun egeree ofii ijaaruuf murteessaa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 167,
+      "id": 152,
       "length": 111
     },
     {
       "text": "Bulchaa gaarii argachuuf ummanni yeroo hunda dammaqee jiraachuu qaba, bulchaan badaan ummata rafaa jiru balleessa.",
       "source": "Mammaaksa Oromoo",
-      "id": 168,
+      "id": 153,
       "length": 114
     },
     {
       "text": "Kan lafatti walii hin galle muka irratti wal hin gargaaru, yommuu nagaa qabnu waliigaluu baannaan rakkoo ta'a.",
       "source": "Mammaaksa Oromoo",
-      "id": 169,
+      "id": 154,
       "length": 110
     },
     {
       "text": "Garaan dhiibee yoo quufu, sammuun dammaqee waa yaada, nyaatanii quufuun qofti gahaa miti hojjechuu qabna.",
       "source": "Mammaaksa Oromoo",
-      "id": 170,
+      "id": 155,
       "length": 105
     },
     {
       "text": "Adaamiin olla agamsaa, imimmaan hin qoorfattu, waraansa ollaa isheerraa kan ka'e boo'icha.",
       "source": "Oromo Wisdom Literature",
-      "id": 171,
+      "id": 156,
       "length": 90
     },
     {
       "text": "Firri dhufe jedhanii dhabaa hin dhalanii, waan qaban dhiheessuun dirqama namummootaati.",
       "source": "Traditional Oromo Proverb",
-      "id": 172,
+      "id": 157,
       "length": 87
     },
     {
       "text": "Harkaan hojjetanii afaanitti dhiheeffachuun aadaa oromooti, hiyyummaa balleessuuf hojii jaalachuun murteessa.",
       "source": "Mammaaksa Oromoo",
-      "id": 173,
+      "id": 158,
       "length": 109
     },
     {
       "text": "Midhaan dura facaasan simbirri nyaatti, nama dura dubbate namni komata jedhan maanguddoon.",
       "source": "Traditional Oromo Proverb",
-      "id": 174,
+      "id": 159,
       "length": 90
     },
     {
       "text": "Rabbi moo namumaa kan seera jallisee? Haati keenya takka maaltu addaan nu baase?",
       "source": "Ali Birra",
-      "id": 175,
+      "id": 160,
       "length": 80
     },
     {
       "text": "Kaayyoon keenya saba keenya bilisa baasuu dha, kanaaf immoo wareegama barbaachisu hunda ni kaffalla dhugumatti.",
       "source": "Elemo Qilxu",
-      "id": 176,
+      "id": 161,
       "length": 111
     },
     {
       "text": "Nama cimaa ta'i jechuun hin kufiin jechuu miti, kuftee ka'uu danda'uu qabda jechuudha malee.",
       "source": "Mammaaksa Oromoo",
-      "id": 177,
+      "id": 162,
       "length": 92
     },
     {
       "text": "Tuulamanii taa'anii Waaqa ofii hin komatan, ofiin hojjetanii of qabuu wayya jedhan.",
       "source": "Gadaa Work Ethic Saying",
-      "id": 178,
+      "id": 163,
       "length": 83
     },
     {
       "text": "Biyya lafaarratti yommuu jiraannu, nagaa fi jaalalaan waliin jiraachuun furtuu jireenyaa isa guddaa dha jedha oromoon.",
       "source": "Oromo Cultural Wisdom",
-      "id": 179,
+      "id": 164,
       "length": 118
     },
     {
       "text": "Salphinni abbaa lafaa bara midhaan bade, yeroo hiyyummaa nama hundaatu salphata jedhan.",
       "source": "Gadaa Proverb",
-      "id": 180,
+      "id": 165,
       "length": 87
     },
     {
       "text": "Sangaan harree wajjin oole, innyaata dhiisee dhuufuu barata jedhan warri durii mammaakani.",
       "source": "Oromo Wisdom Literature",
-      "id": 181,
+      "id": 166,
       "length": 90
     },
     {
       "text": "Ol kaayan malee, ol ka'aniif waan barbaadan sana hin fuudhan, lafa kaa'an yaadachuu qabani.",
       "source": "Traditional Oromo Proverb",
-      "id": 182,
+      "id": 167,
       "length": 91
     },
     {
       "text": "Abbaan iyyatu malee ollaan hin birmatu, rakkoo ofii hawaasatti himachuun furmaata fida.",
       "source": "Traditional Oromo Proverb",
-      "id": 183,
+      "id": 168,
       "length": 87
     },
     {
       "text": "Galle jette lafoon farda jala galtee, of gowwoomsuun gatii dhabsiisa namaa fida waan ta'eef eeggadhu.",
       "source": "Mammaaksa Oromoo",
-      "id": 184,
+      "id": 169,
       "length": 101
     },
     {
       "text": "Obsan malee damma hin nyaatan, wanta gaarii argachuuf obsa qabaachuun ulaagaa isa duraa fi murteessaa dha.",
       "source": "Mammaaksa Oromoo",
-      "id": 185,
+      "id": 170,
       "length": 106
     },
     {
       "text": "Oromiyaa, Oromiyaa, biyya abbaa kootii, gammachuun koo hin guutu amma si arguuttii, situ anaaf jira jedhe sirbaan.",
       "source": "Ali Birra",
-      "id": 186,
+      "id": 171,
       "length": 114
-    },
-    {
-      "text": "Kaan obsaa, kaan immoo gorsaa, mul'ata keetti adeemuu qabda.",
-      "source": "Mammaaksa Oromoo",
-      "id": 187,
-      "length": 60
     }
   ]
 }
