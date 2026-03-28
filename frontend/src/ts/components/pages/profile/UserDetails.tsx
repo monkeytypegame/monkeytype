@@ -306,7 +306,9 @@ function AvatarAndName(props: {
             class="w-max"
             hideTextOnSmallScreens={false}
           />
-          <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
+          <Show
+            when={props.profile.inventory?.badges.some((it) => !it.selected)}
+          >
             <div class="flex flex-row gap-1">
               <For
                 each={props.profile.inventory?.badges
