@@ -4,7 +4,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as TestWords from "../../test/test-words";
 import { Command } from "../types";

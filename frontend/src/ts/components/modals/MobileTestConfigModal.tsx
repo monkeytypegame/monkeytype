@@ -9,7 +9,7 @@ import { For, JSXElement, Show } from "solid-js";
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../events/test";
-import { isLoggedIn } from "../../states/core";
+import { isAuthenticated } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -186,7 +186,7 @@ export function MobileTestConfigModal(): JSXElement {
           <Show when={getConfig.mode === "quote"}>
             <For each={quoteLengths}>
               {(ql) => (
-                <Show when={!("loginRequired" in ql) || isLoggedIn()}>
+                <Show when={!("loginRequired" in ql) || isAuthenticated()}>
                   <MCButton
                     text={ql.label}
                     active={isQuoteLengthActive(ql.value)}

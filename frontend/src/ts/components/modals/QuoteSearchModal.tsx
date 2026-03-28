@@ -15,7 +15,7 @@ import { Config } from "../../config/store";
 import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
-import { isLoggedIn } from "../../states/core";
+import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,
@@ -105,7 +105,7 @@ function Item(props: {
   onReport: () => void;
   onToggleFavorite: () => Promise<boolean>;
 }): JSXElement {
-  const loggedOut = (): boolean => !isLoggedIn();
+  const loggedOut = (): boolean => !isAuthenticated();
   const [isFav, setIsFav] = createSignal(
     // oxlint-disable-next-line solid/reactivity -- intentionally reading once as initial value
     !loggedOut() && QuotesController.isQuoteFavorite(props.quote),
@@ -455,7 +455,7 @@ export function QuoteSearchModal(): JSXElement {
         <div class="flex flex-col justify-between gap-2 sm:flex-row">
           <div class="text-2xl text-sub">Quote search</div>
           <div class="grid gap-2">
-            <Show when={isLoggedIn()}>
+            <Show when={isAuthenticated()}>
               <Button
                 fa={{ icon: "fa-plus" }}
                 text="Submit a quote"
@@ -509,7 +509,7 @@ export function QuoteSearchModal(): JSXElement {
               }}
             />
           </div>
-          <Show when={isLoggedIn()}>
+          <Show when={isAuthenticated()}>
             <Button
               variant="button"
               fa={{ icon: "fa-heart", fixedWidth: true }}

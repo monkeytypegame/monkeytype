@@ -2,7 +2,7 @@ import { showErrorNotification } from "../../states/notifications";
 import { Connection } from "@monkeytype/schemas/connections";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import * as DB from "../../db";
 import { getReceiverUid } from "../../db";
 import { qsr } from "../../utils/dom";
