@@ -7,7 +7,6 @@ import {
   Show,
   on,
 } from "solid-js";
-import { createDebouncedEffectOn } from "../../hooks/effects";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
@@ -15,6 +14,7 @@ import { Config } from "../../config/store";
 import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
+import { createDebouncedEffectOn } from "../../hooks/effects";
 import { isLoggedIn } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -32,6 +32,7 @@ import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
+import * as Misc from "../../utils/misc";
 import {
   buildSearchService,
   SearchService,
@@ -78,7 +79,7 @@ function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
         noMatch = true;
         break;
       }
-      currentMatches.push(RegExp.escape(match[0]));
+      currentMatches.push(Misc.escapeRegExp(match[0]));
     }
 
     if (!noMatch) {
@@ -256,7 +257,7 @@ export function QuoteSearchModal(): JSXElement {
 
     if (exactSearchQueries[0]) {
       const searchQueriesRaw = exactSearchQueries.map(
-        (query) => new RegExp(RegExp.escape(query[1] ?? ""), "i"),
+        (query) => new RegExp(Misc.escapeRegExp(query[1] ?? ""), "i"),
       );
       [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
         allQuotes,
