@@ -364,7 +364,8 @@ export function QuoteSearchModal(): JSXElement {
     }),
   );
 
-  const handleBeforeShow = (): void => {
+  const handleBeforeShow = (isChained: boolean): void => {
+    if (isChained) return;
     form.reset();
     setCurrentPage(1);
     setLengthFilter([]);
@@ -379,7 +380,7 @@ export function QuoteSearchModal(): JSXElement {
       Config.language,
     );
     setQuotes(fetchedQuotes);
-    performSearch("");
+    performSearch(form.state.values.searchText);
   };
 
   const applyQuote = (quoteId: number): void => {
