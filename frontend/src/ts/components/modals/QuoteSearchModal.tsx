@@ -15,7 +15,7 @@ import { Config } from "../../config/store";
 import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
-import { isAuthenticated } from "../../firebase";
+import { isLoggedIn } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,
@@ -100,12 +100,12 @@ function getLengthDesc(quote: Quote): string {
 function Item(props: {
   quote: Quote;
   matchedTerms: string[];
-  dataBalloonDirection: string;
+  isRtl: boolean;
   onSelect: () => void;
   onReport: () => void;
   onToggleFavorite: () => Promise<boolean>;
 }): JSXElement {
-  const loggedOut = (): boolean => !isAuthenticated();
+  const loggedOut = (): boolean => !isLoggedIn();
   const [isFav, setIsFav] = createSignal(
     // oxlint-disable-next-line solid/reactivity -- intentionally reading once as initial value
     !loggedOut() && QuotesController.isQuoteFavorite(props.quote),
@@ -169,7 +169,7 @@ function Item(props: {
                 }}
                 balloon={{
                   text: "Report quote",
-                  position: props.dataBalloonDirection as "left" | "right",
+                  position: props.isRtl ? "right" : "left",
                 }}
               />
               <Button
@@ -184,7 +184,7 @@ function Item(props: {
                 }}
                 balloon={{
                   text: "Favorite quote",
-                  position: props.dataBalloonDirection as "left" | "right",
+                  position: props.isRtl ? "right" : "left",
                 }}
               />
             </div>
@@ -213,7 +213,7 @@ export function QuoteSearchModal(): JSXElement {
     quotes: Quote[];
     matchedTerms: string[];
   }>({ quotes: [], matchedTerms: [] });
-  const [dataBalloonDirection, setDataBalloonDirection] = createSignal("left");
+  const [isRtl, setIsRtl] = createSignal(false);
   const [favVersion, setFavVersion] = createSignal(0);
 
   const debouncedSearch = debounce(250, (text: string) => {
@@ -374,7 +374,7 @@ export function QuoteSearchModal(): JSXElement {
 
   const handleAfterShow = async (): Promise<void> => {
     const quotesLanguage = await getLanguage(Config.language);
-    setDataBalloonDirection(quotesLanguage?.rightToLeft ? "right" : "left");
+    setIsRtl(quotesLanguage?.rightToLeft ?? false);
     const { quotes: fetchedQuotes } = await QuotesController.getQuotes(
       Config.language,
     );
@@ -455,7 +455,7 @@ export function QuoteSearchModal(): JSXElement {
         <div class="flex flex-col justify-between gap-2 sm:flex-row">
           <div class="text-2xl text-sub">Quote search</div>
           <div class="grid gap-2">
-            <Show when={isAuthenticated()}>
+            <Show when={isLoggedIn()}>
               <Button
                 fa={{ icon: "fa-plus" }}
                 text="Submit a quote"
@@ -509,7 +509,7 @@ export function QuoteSearchModal(): JSXElement {
               }}
             />
           </div>
-          <Show when={isAuthenticated()}>
+          <Show when={isLoggedIn()}>
             <Button
               variant="button"
               fa={{ icon: "fa-heart", fixedWidth: true }}
@@ -518,13 +518,16 @@ export function QuoteSearchModal(): JSXElement {
             />
           </Show>
         </div>
-        <div class="grid content-baseline gap-2 overflow-y-auto" dir="auto">
+        <div
+          class="grid content-baseline gap-2 overflow-y-auto"
+          dir={isRtl() ? "rtl" : undefined}
+        >
           <For each={pageQuotes()}>
             {(quote) => (
               <Item
                 quote={quote}
                 matchedTerms={searchResults().matchedTerms}
-                dataBalloonDirection={dataBalloonDirection()}
+                isRtl={isRtl()}
                 onSelect={() => applyQuote(quote.id)}
                 onReport={() => showQuoteReportModal(quote.id)}
                 // oxlint-disable-next-line solid/reactivity, typescript-eslint/promise-function-async -- fire-and-forget, no reactive tracking needed

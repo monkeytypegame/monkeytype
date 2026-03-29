@@ -70,7 +70,7 @@
     "only-allow": "1.2.1",
     "oxfmt": "0.42.0",
     "oxlint": "1.57.0",
-    "oxlint-tsgolint": "0.17.3",
+    "oxlint-tsgolint": "0.18.1",
     "prettier": "3.7.1",
     "turbo": "2.7.5",
     "vitest": "4.1.0",
