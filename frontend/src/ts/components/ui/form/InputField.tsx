@@ -12,6 +12,8 @@ export function InputField(props: {
   type?: string;
   disabled?: boolean;
   class?: string;
+  dir?: "ltr" | "rtl" | "auto";
+  maxLength?: number;
   onFocus?: () => void;
 }): JSXElement {
   return (
@@ -25,7 +27,6 @@ export function InputField(props: {
           props.showIndicator === true ? "pr-[1.85em]" : "",
           props.class,
         )}
-        id={props.field().name as string}
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? (props.field().name as string)}
         // oxlint-disable-next-line react/no-unknown-property
@@ -36,6 +37,8 @@ export function InputField(props: {
         onInput={(e) => props.field().handleChange(e.target.value)}
         disabled={props.disabled}
         onFocus={() => props.onFocus?.()}
+        dir={props.dir}
+        maxLength={props.maxLength}
       />
       <Show when={props.showIndicator}>
         <FieldIndicator field={props.field()} />

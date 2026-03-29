@@ -6,7 +6,7 @@ import { Fa } from "../../common/Fa";
 
 export function Checkbox(props: {
   field: Accessor<AnyFieldApi>;
-  label?: string;
+  label?: string | JSXElement;
   class?: string;
   disabled?: boolean;
 }): JSXElement {

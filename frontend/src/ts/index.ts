@@ -1,3 +1,6 @@
+// register signal tracking hook before any signals are created
+import "./dev/signal-tracker";
+
 //enable solidjs-devtools
 import "solid-devtools";
 
@@ -45,6 +48,8 @@ import { mountComponents } from "./components/mount";
 import "./ready";
 import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
+
+import "./input/hotkeys";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

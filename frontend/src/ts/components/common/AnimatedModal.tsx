@@ -37,7 +37,7 @@ type AnimatedModalProps = ParentProps<{
     hide?: AnimationConfig;
   };
   focusFirstInput?: true | "focusAndSelect";
-  beforeShow?: () => void | Promise<void>;
+  beforeShow?: (isChained: boolean) => void | Promise<void>;
   afterShow?: () => void | Promise<void>;
   beforeHide?: () => void | Promise<void>;
   afterHide?: () => void | Promise<void>;
@@ -75,7 +75,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     if (dialogEl() === undefined || modalEl() === undefined) return;
     if (dialogEl()?.native.open) return;
 
-    await props.beforeShow?.();
+    await props.beforeShow?.(isChained);
 
     // Open the dialog
     dialogEl()?.show();
