@@ -7,7 +7,7 @@ import {
   Show,
   on,
 } from "solid-js";
-import { debounce } from "throttle-debounce";
+import { createDebouncedEffectOn } from "../../hooks/effects";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
@@ -216,7 +216,8 @@ export function QuoteSearchModal(): JSXElement {
   const [isRtl, setIsRtl] = createSignal(false);
   const [favVersion, setFavVersion] = createSignal(0);
 
-  const debouncedSearch = debounce(250, (text: string) => {
+  const [searchText, setSearchText] = createSignal("");
+  createDebouncedEffectOn(250, searchText, (text) => {
     setCurrentPage(1);
     performSearch(text);
   });
@@ -439,17 +440,12 @@ export function QuoteSearchModal(): JSXElement {
     showModal("QuoteSubmit");
   };
 
-  const handleBeforeHide = (): void => {
-    debouncedSearch.cancel();
-  };
-
   return (
     <>
       <AnimatedModal
         id="QuoteSearch"
         focusFirstInput={true}
         beforeShow={handleBeforeShow}
-        beforeHide={handleBeforeHide}
         afterShow={handleAfterShow}
         modalClass="max-w-[1000px] h-[80vh] grid-rows-[auto_auto_1fr_auto]"
       >
@@ -478,7 +474,7 @@ export function QuoteSearchModal(): JSXElement {
             listeners={{
               onChange: ({ value }) => {
                 if (!isOpen()) return;
-                debouncedSearch(value);
+                setSearchText(value);
               },
             }}
             children={(field) => (
