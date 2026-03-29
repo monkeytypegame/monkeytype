@@ -218,10 +218,15 @@ export function QuoteSearchModal(): JSXElement {
   const [favVersion, setFavVersion] = createSignal(0);
 
   const [searchText, setSearchText] = createSignal("");
-  createDebouncedEffectOn(250, searchText, (text) => {
-    setCurrentPage(1);
-    performSearch(text);
-  });
+  createDebouncedEffectOn(
+    250,
+    searchText,
+    (text) => {
+      setCurrentPage(1);
+      performSearch(text);
+    },
+    { defer: true },
+  );
 
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
@@ -369,6 +374,7 @@ export function QuoteSearchModal(): JSXElement {
   const handleBeforeShow = (isChained: boolean): void => {
     if (isChained) return;
     form.reset();
+    setSearchText("");
     setCurrentPage(1);
     setLengthFilter([]);
     setShowFavoritesOnly(false);
