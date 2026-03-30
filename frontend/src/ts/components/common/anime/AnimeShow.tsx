@@ -1,7 +1,7 @@
 import { AnimationParams } from "animejs";
 import { JSXElement, ParentProps, Show } from "solid-js";
 
-import { Anime } from "./Anime";
+import { Anime, AnimeProps } from "./Anime";
 import { AnimePresence } from "./AnimePresence";
 
 /**
@@ -33,6 +33,7 @@ export function AnimeShow(
     slide?: true;
     duration?: number;
     class?: string;
+    animeProps?: Partial<AnimeProps>;
   }>,
 ): JSXElement {
   const duration = () => props.duration ?? 125;
@@ -47,6 +48,7 @@ export function AnimeShow(
               initial={{ opacity: 0 } as Partial<AnimationParams>}
               animate={{ opacity: 1, duration: duration() } as AnimationParams}
               exit={{ opacity: 0, duration: duration() } as AnimationParams}
+              {...props.animeProps}
               class={props.class}
             >
               {props.children}
@@ -64,6 +66,7 @@ export function AnimeShow(
             }
             exit={{ height: 0, duration: duration() } as AnimationParams}
             style={{ overflow: "hidden" }}
+            {...props.animeProps}
             class={props.class}
           >
             {props.children}

@@ -9,6 +9,7 @@ import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import * as SlowTimer from "../../legacy-states/slow-timer";
+import { wordsHaveNewline } from "../../states/test";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -53,7 +54,7 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !TestWords.hasNewline && Config.mode !== "zen") {
+  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
     return true;
   }
 

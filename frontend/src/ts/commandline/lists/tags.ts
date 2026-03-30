@@ -4,7 +4,7 @@ import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {

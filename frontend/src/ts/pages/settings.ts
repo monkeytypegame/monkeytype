@@ -18,9 +18,8 @@ import {
 } from "../states/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import { configEvent, type ConfigEventKey } from "../events/config";
-import { getActivePage } from "../states/core";
+import { getActivePage, isAuthenticated } from "../states/core";
 import { PageWithUrlParams } from "./page";
-import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
 import * as Skeleton from "../utils/skeleton";
@@ -722,17 +721,6 @@ export async function update(
   }
 
   CustomBackgroundFilter.updateUI();
-
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  qs(".pageSettings .tip")?.setHtml(`
-    tip: You can also change all these settings quickly using the
-    command line (<kbd>${commandKey}</kbd> or <kbd>${modifierKey}</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>)`);
 
   if (
     customLayoutFluidSelect !== undefined &&

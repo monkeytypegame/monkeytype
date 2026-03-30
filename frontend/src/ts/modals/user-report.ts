@@ -9,7 +9,7 @@ import {
 import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { CharacterCounter } from "../elements/character-counter";
 import { ReportUserReason } from "@monkeytype/schemas/users";
 import { qsr } from "../utils/dom";

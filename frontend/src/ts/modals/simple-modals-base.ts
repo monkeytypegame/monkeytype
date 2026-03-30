@@ -19,9 +19,6 @@ export type PopupKey =
   | "revokeAllTokens"
   | "unlinkDiscord"
   | "editApeKey"
-  | "deleteCustomText"
-  | "deleteCustomTextLong"
-  | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
   | "devGenerateData";
@@ -43,9 +40,6 @@ export const list: Record<PopupKey, SimpleModal | undefined> = {
   revokeAllTokens: undefined,
   unlinkDiscord: undefined,
   editApeKey: undefined,
-  deleteCustomText: undefined,
-  deleteCustomTextLong: undefined,
-  resetProgressCustomTextLong: undefined,
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
   devGenerateData: undefined,

@@ -153,7 +153,9 @@ describe("CommandlineUtils", () => {
             },
           },
           configMeta: {
-            icon: "icon",
+            fa: {
+              icon: "fa-keyboard",
+            },
           },
           schema,
         });
@@ -173,8 +175,10 @@ describe("CommandlineUtils", () => {
           defaultValue: expect.anything(),
           alias: "alias",
           input: true,
-          icon: "icon",
+          icon: "fa-keyboard",
           exec: expect.anything(),
+          hover: undefined,
+          configValue: undefined,
           inputValueConvert: Number,
           validation: expect.anything(),
         });
@@ -198,7 +202,9 @@ describe("CommandlineUtils", () => {
           },
         },
         configMeta: {
-          icon: "icon",
+          fa: {
+            icon: "fa-keyboard",
+          },
         },
         schema,
       });
@@ -210,7 +216,7 @@ describe("CommandlineUtils", () => {
           display: "custom test...",
           alias: "alias",
           input: true,
-          icon: "icon",
+          icon: "fa-keyboard",
         }),
       );
     });

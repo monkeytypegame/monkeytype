@@ -5,13 +5,18 @@ import * as Last10Average from "../elements/last-10-average";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { configEvent, type ConfigEventKey } from "../events/config";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import * as CustomTextState from "../legacy-states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
 import { qsr } from "../utils/dom";
+import {
+  wordsHaveNewline,
+  wordsHaveTab,
+  getLoadedChallenge,
+} from "../states/test";
 
 configEvent.subscribe(({ key }) => {
   const configKeys: ConfigEventKey[] = [
@@ -56,28 +61,28 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (TestWords.hasTab) {
+  if (wordsHaveTab()) {
     if (Config.quickRestart === "esc") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to open commandline</span></div>`,
       );
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`,
+        `<div class="textButton noInteraction"><kbd>esc</kbd><span> to restart</span></div>`,
       );
     }
     if (Config.quickRestart === "tab") {
       testModesNotice.appendHtml(
-        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`,
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to restart</span></div>`,
       );
     }
   }
 
   if (
-    (TestWords.hasNewline || Config.funbox.includes("58008")) &&
+    (wordsHaveNewline() || Config.funbox.includes("58008")) &&
     Config.quickRestart === "enter"
   ) {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`,
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd><span> to restart</span></div>`,
     );
   }
 
@@ -87,19 +92,20 @@ export async function update(): Promise<void> {
     testModesNotice.appendHtml(
       `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
         customTextName,
-      )} (shift + enter to save progress)</div>`,
+      )} (<kbd>shift + enter</kbd><span> to save progress</span>)</div>`,
     );
   }
 
-  if (TestState.activeChallenge) {
+  const loadedChallenge = getLoadedChallenge();
+  if (loadedChallenge !== null) {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`,
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${loadedChallenge.display}</div>`,
     );
   }
 
   if (Config.mode === "zen") {
     testModesNotice.appendHtml(
-      `<div class="textButton noInteraction"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`,
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd><span> to finish zen</span></div>`,
     );
   }
 

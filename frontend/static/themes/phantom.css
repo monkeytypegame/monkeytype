@@ -124,8 +124,9 @@ footer button:hover {
   background: none;
 }
 
-#testConfig button:hover {
+[data-ui-element="testConfig"] button:hover {
   background: none;
+  animation: phantom-glow 3s linear infinite;
 }
 
 .afk,

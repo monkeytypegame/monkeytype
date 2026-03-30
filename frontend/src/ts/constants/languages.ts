@@ -218,7 +218,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "esperanto_h_sistemo_36k",
   ],
   bangla: ["bangla", "bangla_letters", "bangla_10k"],
-  urdu: ["urdu", "urdu_1k", "urdu_5k", "urdish"],
+  urdu: ["urdu", "urdu_1k", "urdu_5k", "urdu_roman", "urdish"],
   albanian: ["albanian", "albanian_1k"],
   shona: ["shona", "shona_1k"],
   armenian: [
@@ -287,6 +287,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "typing_of_the_dead",
     "league_of_legends",
     "docker_file",
+    "pokemon_1k",
   ],
   amharic: ["amharic", "amharic_1k", "amharic_5k"],
   oromo: ["oromo", "oromo_1k", "oromo_5k"],

@@ -681,6 +681,11 @@ export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
+export function isFirefox(): boolean {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return userAgent.includes("firefox");
+}
+
 export function scrollToCenterOrTop(el: HTMLElement | null): void {
   if (!el) return;
 
