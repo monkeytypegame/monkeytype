@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import {
   prefetchAboutPage,
   prefetchLeaderboardPage,
 } from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -67,22 +65,6 @@ export function Nav(): JSXElement {
 
   return (
     <nav class={cn("z-5 flex w-full items-center gap-1 md:gap-2")}>
-      <Button
-        variant="text"
-        fa={{
-          icon: "fa-keyboard",
-          fixedWidth: true,
-        }}
-        router-link
-        href="/"
-        class={buttonClass()}
-        dataset={{
-          "data-nav-item": "test",
-        }}
-        onClick={() => {
-          if (getActivePage() === "test") restartTestEvent.dispatch();
-        }}
-      />
       <Button
         variant="text"
         fa={{
