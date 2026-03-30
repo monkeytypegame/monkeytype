@@ -107,7 +107,7 @@
     "magic-string": "0.30.17",
     "normalize.css": "8.0.1",
     "oxlint": "1.57.0",
-    "oxlint-tsgolint": "0.17.3",
+    "oxlint-tsgolint": "0.18.1",
     "postcss": "8.5.8",
     "sass": "1.70.0",
     "solid-devtools": "0.34.5",

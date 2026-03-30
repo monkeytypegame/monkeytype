@@ -69,8 +69,8 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
-        await callback(true, user);
         setUserId(user?.uid ?? null);
+        await callback(true, user);
       }
     });
   } catch (e) {
@@ -159,6 +159,7 @@ export async function signInWithPopup(
     googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
     ignoreAuthCallback = false;
+    setUserId(signedInUser.user.uid);
     await readyCallback?.(true, signedInUser.user);
   }
 }
