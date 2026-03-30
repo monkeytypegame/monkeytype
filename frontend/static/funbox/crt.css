@@ -63,12 +63,10 @@ body.crtmode #bannerCenter .banner {
     0 0 3px;
 }
 
-body.crtmode #testConfig,
 body.crtmode #testModesNotice {
   text-shadow: none;
 }
 
-body.crtmode #testConfig .textButton,
 body.crtmode #testModesNotice .textButton {
   text-shadow:
     3px 0 1px var(--crt-sub-color-glow),
@@ -76,7 +74,6 @@ body.crtmode #testModesNotice .textButton {
     0 0 3px;
 }
 
-body.crtmode #testConfig .textButton:hover,
 body.crtmode #testModesNotice .textButton:hover {
   text-shadow:
     3px 0 1px var(--crt-text-color-glow),
@@ -84,7 +81,6 @@ body.crtmode #testModesNotice .textButton:hover {
     0 0 3px;
 }
 
-body.crtmode #testConfig .textButton.active,
 body.crtmode #testModesNotice .textButton.active {
   text-shadow:
     3px 0 1px var(--crt-main-color-glow),
@@ -92,7 +88,6 @@ body.crtmode #testModesNotice .textButton.active {
     0 0 3px;
 }
 
-body.crtmode #testConfig .row,
 body.crtmode #testModesNotice .row {
   box-shadow:
     3px 0 1px var(--crt-sub-alt-color-glow),

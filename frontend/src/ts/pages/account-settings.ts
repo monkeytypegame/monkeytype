@@ -1,7 +1,7 @@
 import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import { getActivePage } from "../states/core";
+import { getAuthenticatedUser } from "../firebase";
+import { getActivePage, isAuthenticated } from "../states/core";
 import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";

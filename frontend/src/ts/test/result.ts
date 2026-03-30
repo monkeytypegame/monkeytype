@@ -15,8 +15,8 @@ import {
   showSuccessNotification,
   addNotificationWithLevel,
 } from "../states/notifications";
-import { isAuthenticated } from "../firebase";
-import * as quoteRateModal from "../modals/quote-rate";
+import { isAuthenticated } from "../states/core";
+import { getQuoteStats } from "../states/quote-rate";
 import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
@@ -26,7 +26,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
-import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
@@ -902,8 +901,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
         ?.removeClass("far")
         ?.addClass("fas");
     }
-    quoteRateModal
-      .getQuoteStats(randomQuote)
+    getQuoteStats(randomQuote)
       .then((quoteStats) => {
         qs(".pageTest #result #rateQuoteButton .rating")?.setText(
           quoteStats?.average?.toFixed(1) ?? "",
@@ -1092,7 +1090,6 @@ export async function update(
     });
   }
 
-  TestConfig.hide();
   Focus.set(false);
 
   const canQuickRestart = canQuickRestartFn(

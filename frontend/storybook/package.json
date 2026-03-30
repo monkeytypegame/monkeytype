@@ -13,6 +13,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "dependencies": {
+    "slim-select": "2.9.2"
+  },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.1",
     "@storybook/addon-a11y": "^10.2.14",

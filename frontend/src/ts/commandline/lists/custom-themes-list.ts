@@ -1,5 +1,5 @@
 import { setConfig } from "../../config/setters";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";

@@ -1,5 +1,5 @@
 import { Config } from "@monkeytype/schemas/configs";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { showErrorNotification } from "../states/notifications";
 import Ape from ".";
 
