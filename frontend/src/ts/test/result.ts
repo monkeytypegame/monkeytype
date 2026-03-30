@@ -15,7 +15,7 @@ import {
   showSuccessNotification,
   addNotificationWithLevel,
 } from "../states/notifications";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { getQuoteStats } from "../states/quote-rate";
 import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";

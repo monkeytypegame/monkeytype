@@ -124,6 +124,7 @@ export default function AsyncContent<T extends QueryMapping>(
     if (data === undefined || data === null) {
       return false;
     }
+    if ("defaultQuery" in source()) return true;
 
     return Object.values(data).every((v) => v !== undefined && v !== null);
   };

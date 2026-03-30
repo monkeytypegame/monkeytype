@@ -19,7 +19,7 @@ import { addFriend, isFriend } from "../../../db";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
-import { getUserId, isLoggedIn } from "../../../states/core";
+import { getUserId, isAuthenticated } from "../../../states/core";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -113,7 +113,7 @@ function ActionButtons(props: {
 
   const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
-    isLoggedIn() && !isUsersProfile() && !hasFriendRequest();
+    isAuthenticated() && !isUsersProfile() && !hasFriendRequest();
 
   createEffect(() => {
     setHasFriendRequest(

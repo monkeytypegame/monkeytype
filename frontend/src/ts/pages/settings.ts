@@ -18,9 +18,8 @@ import {
 } from "../states/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import { configEvent, type ConfigEventKey } from "../events/config";
-import { getActivePage } from "../states/core";
+import { getActivePage, isAuthenticated } from "../states/core";
 import { PageWithUrlParams } from "./page";
-import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
 import * as Skeleton from "../utils/skeleton";

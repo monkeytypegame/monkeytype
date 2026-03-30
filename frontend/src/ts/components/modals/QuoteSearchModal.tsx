@@ -7,7 +7,6 @@ import {
   Show,
   on,
 } from "solid-js";
-import { debounce } from "throttle-debounce";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
@@ -15,7 +14,8 @@ import { Config } from "../../config/store";
 import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
-import { isLoggedIn } from "../../states/core";
+import { createDebouncedEffectOn } from "../../hooks/effects";
+import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,
@@ -32,6 +32,7 @@ import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
+import * as Misc from "../../utils/misc";
 import {
   buildSearchService,
   SearchService,
@@ -78,7 +79,7 @@ function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
         noMatch = true;
         break;
       }
-      currentMatches.push(RegExp.escape(match[0]));
+      currentMatches.push(Misc.escapeRegExp(match[0]));
     }
 
     if (!noMatch) {
@@ -105,7 +106,7 @@ function Item(props: {
   onReport: () => void;
   onToggleFavorite: () => Promise<boolean>;
 }): JSXElement {
-  const loggedOut = (): boolean => !isLoggedIn();
+  const loggedOut = (): boolean => !isAuthenticated();
   const [isFav, setIsFav] = createSignal(
     // oxlint-disable-next-line solid/reactivity -- intentionally reading once as initial value
     !loggedOut() && QuotesController.isQuoteFavorite(props.quote),
@@ -216,10 +217,16 @@ export function QuoteSearchModal(): JSXElement {
   const [isRtl, setIsRtl] = createSignal(false);
   const [favVersion, setFavVersion] = createSignal(0);
 
-  const debouncedSearch = debounce(250, (text: string) => {
-    setCurrentPage(1);
-    performSearch(text);
-  });
+  const [searchText, setSearchText] = createSignal("");
+  createDebouncedEffectOn(
+    250,
+    searchText,
+    (text) => {
+      setCurrentPage(1);
+      performSearch(text);
+    },
+    { defer: true },
+  );
 
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
@@ -255,7 +262,7 @@ export function QuoteSearchModal(): JSXElement {
 
     if (exactSearchQueries[0]) {
       const searchQueriesRaw = exactSearchQueries.map(
-        (query) => new RegExp(RegExp.escape(query[1] ?? ""), "i"),
+        (query) => new RegExp(Misc.escapeRegExp(query[1] ?? ""), "i"),
       );
       [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
         allQuotes,
@@ -364,8 +371,10 @@ export function QuoteSearchModal(): JSXElement {
     }),
   );
 
-  const handleBeforeShow = (): void => {
+  const handleBeforeShow = (isChained: boolean): void => {
+    if (isChained) return;
     form.reset();
+    setSearchText("");
     setCurrentPage(1);
     setLengthFilter([]);
     setShowFavoritesOnly(false);
@@ -379,7 +388,7 @@ export function QuoteSearchModal(): JSXElement {
       Config.language,
     );
     setQuotes(fetchedQuotes);
-    performSearch("");
+    performSearch(form.state.values.searchText);
   };
 
   const applyQuote = (quoteId: number): void => {
@@ -438,24 +447,19 @@ export function QuoteSearchModal(): JSXElement {
     showModal("QuoteSubmit");
   };
 
-  const handleBeforeHide = (): void => {
-    debouncedSearch.cancel();
-  };
-
   return (
     <>
       <AnimatedModal
         id="QuoteSearch"
         focusFirstInput={true}
         beforeShow={handleBeforeShow}
-        beforeHide={handleBeforeHide}
         afterShow={handleAfterShow}
         modalClass="max-w-[1000px] h-[80vh] grid-rows-[auto_auto_1fr_auto]"
       >
         <div class="flex flex-col justify-between gap-2 sm:flex-row">
           <div class="text-2xl text-sub">Quote search</div>
           <div class="grid gap-2">
-            <Show when={isLoggedIn()}>
+            <Show when={isAuthenticated()}>
               <Button
                 fa={{ icon: "fa-plus" }}
                 text="Submit a quote"
@@ -477,7 +481,7 @@ export function QuoteSearchModal(): JSXElement {
             listeners={{
               onChange: ({ value }) => {
                 if (!isOpen()) return;
-                debouncedSearch(value);
+                setSearchText(value);
               },
             }}
             children={(field) => (
@@ -509,7 +513,7 @@ export function QuoteSearchModal(): JSXElement {
               }}
             />
           </div>
-          <Show when={isLoggedIn()}>
+          <Show when={isAuthenticated()}>
             <Button
               variant="button"
               fa={{ icon: "fa-heart", fixedWidth: true }}

@@ -3,7 +3,8 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "./states/notifications";
-import { isAuthenticated, getAuthenticatedUser } from "./firebase";
+import { getAuthenticatedUser } from "./firebase";
+import { isAuthenticated } from "./states/core";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {

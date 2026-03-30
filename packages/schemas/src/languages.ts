@@ -271,6 +271,7 @@ export const LanguageSchema = z.enum(
     "urdu",
     "urdu_1k",
     "urdu_5k",
+    "urdu_roman",
     "urdish",
     "albanian",
     "albanian_1k",
