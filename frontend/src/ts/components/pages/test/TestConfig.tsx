@@ -33,7 +33,7 @@ export function TestConfig(): JSXElement {
         class={cn(
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
-          "transition-opacity duration-125",
+          "mx-auto transition-opacity duration-125",
           getFocus() || getResultVisible()
             ? "pointer-events-none opacity-0"
             : "",
