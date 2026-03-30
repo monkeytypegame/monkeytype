@@ -7,11 +7,8 @@ import { showNoticeNotification } from "../states/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import { FirebaseError } from "firebase/app";
-import {
-  isAuthenticated,
-  getAuthenticatedUser,
-  isAuthAvailable,
-} from "../firebase";
+import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import {
   EmailAuthProvider,
   User,

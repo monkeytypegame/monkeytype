@@ -1,11 +1,14 @@
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
-import { isAuthenticated } from "../firebase";
+import {
+  getActivePage,
+  isAuthenticated,
+  setIsScreenshotting,
+} from "../states/core";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import { format } from "date-fns/format";
-import { getActivePage, setIsScreenshotting } from "../states/core";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import {
   showNoticeNotification,

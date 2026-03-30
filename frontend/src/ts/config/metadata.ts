@@ -1,7 +1,7 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "../db";
 import { showNoticeNotification } from "../states/notifications";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { canSetFunboxWithConfig } from "./funbox-validation";
 import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";

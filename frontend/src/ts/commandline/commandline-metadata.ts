@@ -3,11 +3,11 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
-import { isAuthenticated } from "../firebase";
+
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { Config } from "../config/store";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { getActivePage } from "../states/core";
+import { getActivePage, isAuthenticated } from "../states/core";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
