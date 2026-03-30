@@ -1,5 +1,5 @@
 import { navigate } from "../../controllers/route-controller";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
 import { Command } from "../types";
 

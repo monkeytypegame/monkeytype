@@ -6,7 +6,7 @@ import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isLoggedIn } from "../../../states/core";
+import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { getResultVisible, getFocus } from "../../../states/test";
 import { FaObject } from "../../../types/font-awesome";
@@ -345,7 +345,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           />
         )}
       </For>
-      <Show when={isLoggedIn()}>
+      <Show when={isAuthenticated()}>
         <Button
           class={buttonClass}
           fa={{

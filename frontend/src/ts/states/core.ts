@@ -30,7 +30,7 @@ export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
 export const [getUserId, setUserId] = createSignal<string | null>(null);
-export const isLoggedIn = (): boolean => getUserId() !== null;
+export const isAuthenticated = (): boolean => getUserId() !== null;
 
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined

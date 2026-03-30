@@ -11,7 +11,7 @@ import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isLoggedIn } from "../states/core";
+import { isAuthenticated } from "../states/core";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
 import { showErrorNotification } from "../states/notifications";
 
@@ -92,7 +92,7 @@ export async function flushPendingChanges({
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useInboxQuery(enabled: Accessor<boolean>) {
   return useLiveQuery((q) => {
-    if (!isLoggedIn() || !enabled()) return undefined;
+    if (!isAuthenticated() || !enabled()) return undefined;
     return q
       .from({ inbox: inboxCollection })
       .where(({ inbox }) => not(eq(inbox.status, "deleted")))

@@ -91,10 +91,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
   }
 }
 
-export function isAuthenticated(): boolean {
-  return Auth?.currentUser !== undefined && Auth?.currentUser !== null;
-}
-
 /**
  *
  * @returns the current user if authenticated, else `null`
