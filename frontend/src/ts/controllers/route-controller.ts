@@ -1,7 +1,8 @@
 import * as PageController from "./page-controller";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../legacy-states/page-transition";
-import { isAuthAvailable, isAuthenticated } from "../firebase";
+import { isAuthAvailable } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import { showNoticeNotification } from "../states/notifications";

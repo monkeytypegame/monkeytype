@@ -5,7 +5,7 @@ import * as Last10Average from "../elements/last-10-average";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { configEvent, type ConfigEventKey } from "../events/config";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import * as CustomTextState from "../legacy-states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../singletons/format";

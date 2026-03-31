@@ -56,6 +56,17 @@ describe("AsyncContent", () => {
       expect(preloader).not.toBeInTheDocument();
     });
 
+    it("renders on resolve with object containing null", async () => {
+      const { container } = renderWithQuery({
+        result: { text: "Test Data", extra: null } as any,
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("content")).toBeVisible();
+      });
+      expect(container.innerHTML).toContain("static content");
+    });
+
     it("renders default error message on fail", async () => {
       const error = new Error("Test error");
       renderWithQuery({ result: error });
@@ -152,7 +163,7 @@ describe("AsyncContent", () => {
           <AsyncContent query={myQuery} {...(options as Props<string>)}>
             {(data: string | undefined) => (
               <>
-                foo
+                static content
                 <Show when={data !== undefined} fallback={<div>no data</div>}>
                   <div data-testid="content">{data}</div>
                 </Show>

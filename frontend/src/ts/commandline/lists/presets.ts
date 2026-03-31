@@ -3,7 +3,7 @@ import * as ModesNotice from "../../elements/modes-notice";
 import * as Settings from "../../pages/settings";
 import * as PresetController from "../../controllers/preset-controller";
 import * as EditPresetPopup from "../../modals/edit-preset";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
