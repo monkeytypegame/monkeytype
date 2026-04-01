@@ -15,7 +15,7 @@ import { AnimePresence } from "./AnimePresence";
  * @example
  * ```tsx
  * <AnimeConditional
- *   if={isLoggedIn()}
+ *   if={isAuthenticated()}
  *   then={<Dashboard />}
  *   else={<LoginForm />}
  *   exitBeforeEnter

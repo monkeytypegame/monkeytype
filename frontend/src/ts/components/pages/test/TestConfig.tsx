@@ -6,7 +6,7 @@ import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isLoggedIn } from "../../../states/core";
+import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { getResultVisible, getFocus } from "../../../states/test";
 import { FaObject } from "../../../types/font-awesome";
@@ -33,7 +33,7 @@ export function TestConfig(): JSXElement {
         class={cn(
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
-          "transition-opacity duration-125",
+          "mx-auto transition-opacity duration-125",
           getFocus() || getResultVisible()
             ? "pointer-events-none opacity-0"
             : "",
@@ -345,7 +345,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           />
         )}
       </For>
-      <Show when={isLoggedIn()}>
+      <Show when={isAuthenticated()}>
         <Button
           class={buttonClass}
           fa={{

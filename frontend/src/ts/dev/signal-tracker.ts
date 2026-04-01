@@ -39,6 +39,7 @@ function getCallerInfo(): { isUserCode: boolean; source: string } {
   }
 
   for (const frame of frames.toReversed()) {
+    if (frame === "") continue;
     if (frame.includes("signal-tracker")) continue;
     if (frame.includes("solid-js")) continue;
     if (frame.includes("@solid-refresh")) continue;

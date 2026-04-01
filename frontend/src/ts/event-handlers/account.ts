@@ -1,7 +1,7 @@
 import * as PbTablesModal from "../modals/pb-tables";
 import * as EditProfileModal from "../modals/edit-profile";
 import { getSnapshot } from "../db";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import {
   showNoticeNotification,
   showErrorNotification,
