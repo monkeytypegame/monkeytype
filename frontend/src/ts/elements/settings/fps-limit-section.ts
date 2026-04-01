@@ -27,8 +27,7 @@ export function update(): void {
 }
 
 function save(value: number): void {
-  if (getfpsLimit() === value) return;
-  if (setfpsLimit(value)) {
+  if (getfpsLimit() !== value && setfpsLimit(value)) {
     showNoticeNotification("FPS limit updated");
   }
   update();
