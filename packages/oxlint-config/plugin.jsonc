@@ -11,7 +11,6 @@
   },
   "jsPlugins": ["./plugins/monkeytype-rules.js"],
   "rules": {
-    "all": "off",
     "monkeytype-rules/no-testing-access": "error",
     "monkeytype-rules/no-mixed-nullish-coalescing": "error",
   },
