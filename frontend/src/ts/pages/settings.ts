@@ -8,7 +8,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
-import * as TagController from "../controllers/tag-controller";
+import { getTags, toggleTagActive } from "../collections/tags";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import {
@@ -519,7 +519,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const tagsEl = qs(".pageSettings .section.tags .tagsList")?.empty();
-    DB.getSnapshot()?.tags?.forEach((tag) => {
+    getTags().forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -786,7 +786,7 @@ qs(".pageSettings .section.tags")?.onChild(
   (e) => {
     const target = e.childTarget as HTMLElement;
     const tagid = target.parentElement?.getAttribute("data-id") as string;
-    TagController.toggle(tagid);
+    toggleTagActive(tagid);
     target.classList.toggle("active");
   },
 );

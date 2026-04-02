@@ -21,6 +21,7 @@ import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
 import { Snapshot } from "../../constants/default-snapshot";
+import { getTags, getActiveTags, getTag } from "../../collections/tags";
 import { LanguageList } from "../../constants/languages";
 import { authEvent } from "../../events/auth";
 import { sanitize } from "../../utils/sanitize";
@@ -277,11 +278,7 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
 }
 
 export function loadTags(): void {
-  const snapshot = DB.getSnapshot();
-
-  if (snapshot === undefined) return;
-
-  snapshot.tags.forEach((tag) => {
+  getTags().forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
@@ -432,13 +429,7 @@ export function updateActive(): void {
         ret += aboveChartDisplay.tags?.array
           ?.map((id) => {
             if (id === "none") return id;
-            const snapshot = DB.getSnapshot();
-            if (snapshot === undefined) return id;
-            const name = snapshot.tags?.find((t) => t._id === id);
-            if (name !== undefined) {
-              return snapshot.tags?.find((t) => t._id === id)?.display;
-            }
-            return name;
+            return getTag(id)?.display ?? id;
           })
           .join(", ");
       } else {
@@ -677,11 +668,9 @@ qs(".pageAccount .topFilters button.currentConfigFilter")?.on("click", () => {
 
   filters.tags["none"] = true;
 
-  DB.getSnapshot()?.tags?.forEach((tag) => {
-    if (tag.active === true) {
-      filters.tags["none"] = false;
-      filters.tags[tag._id] = true;
-    }
+  getActiveTags().forEach((tag) => {
+    filters.tags["none"] = false;
+    filters.tags[tag._id] = true;
   });
 
   filters.date.all = true;
@@ -772,13 +761,9 @@ let selectChangeCallbackFn: () => void = () => {
 };
 
 export function updateTagsDropdownOptions(): void {
-  const snapshot = DB.getSnapshot();
+  const tags = getTags();
 
-  if (snapshot === undefined) {
-    return;
-  }
-
-  const newTags = snapshot.tags.filter(
+  const newTags = tags.filter(
     (it) => defaultResultFilters.tags[it._id] === undefined,
   );
   if (newTags.length > 0) {
@@ -808,7 +793,7 @@ export function updateTagsDropdownOptions(): void {
   html += "<option value='all'>all</option>";
   html += "<option value='none'>no tag</option>";
 
-  for (const tag of snapshot.tags) {
+  for (const tag of tags) {
     html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
   }
 
@@ -823,7 +808,7 @@ export async function appendDropdowns(
   //snapshot at this point is guaranteed to exist
   const snapshot = DB.getSnapshot() as Snapshot;
 
-  tagDropdownUpdate(snapshot);
+  tagDropdownUpdate();
 
   if (buttonsAppended) return;
 
@@ -896,12 +881,12 @@ export async function appendDropdowns(
   buttonsAppended = true;
 }
 
-function tagDropdownUpdate(snapshot: Snapshot): void {
+function tagDropdownUpdate(): void {
   const tagsSection = qs(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags",
   );
 
-  if (snapshot.tags.length === 0) {
+  if (getTags().length === 0) {
     tagsSection?.hide();
     if (groupSelects["tags"]) {
       groupSelects["tags"].destroy();

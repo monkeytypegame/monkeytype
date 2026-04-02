@@ -10,6 +10,7 @@ import * as AccountPage from "../pages/account";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
+import { getTags, getTag, updateLocalTagPB } from "../collections/tags";
 
 type State = {
   resultId: string;
@@ -64,14 +65,11 @@ function appendButtons(): void {
     return;
   }
 
-  const tagIds = new Set([
-    ...(DB.getSnapshot()?.tags.map((tag) => tag._id) ?? []),
-    ...state.tags,
-  ]);
+  const tagIds = new Set([...getTags().map((tag) => tag._id), ...state.tags]);
 
   buttonsEl.empty();
   for (const tagId of tagIds) {
-    const tag = DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+    const tag = getTag(tagId);
     const button = document.createElement("button");
     button.classList.add("toggleTag");
     button.setAttribute("data-tag-id", tagId);
@@ -126,6 +124,8 @@ async function save(): Promise<void> {
 
   showSuccessNotification("Tags updated", { durationMs: 2000 });
 
+  const results = DB.getSnapshot()?.results ?? [];
+
   DB.getSnapshot()?.results?.forEach((result) => {
     if (result._id === state.resultId) {
       const tagsToUpdate = [
@@ -134,7 +134,7 @@ async function save(): Promise<void> {
       ];
       result.tags = state.tags;
       tagsToUpdate.forEach((tag) => {
-        void DB.updateLocalTagPB(
+        updateLocalTagPB(
           tag,
           result.mode,
           result.mode2,
@@ -143,6 +143,7 @@ async function save(): Promise<void> {
           result.language,
           result.difficulty,
           result.lazyMode,
+          results,
         );
       });
     }

@@ -4,12 +4,8 @@ import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
-import { SnapshotUserTag } from "../constants/default-snapshot";
 import { IsValidResponse } from "../types/validation";
-
-function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
-  return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
-}
+import { insertTag, updateTag, deleteTag } from "../collections/tags";
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
@@ -45,18 +41,7 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.getSnapshot()?.tags?.push({
-        display: propTagName,
-        name: response.body.data.name,
-        _id: response.body.data._id,
-        personalBests: {
-          time: {},
-          words: {},
-          quote: {},
-          zen: {},
-          custom: {},
-        },
-      });
+      insertTag(response.body.data);
       void Settings.update();
 
       return { status: "success", message: `Tag added` };
@@ -92,12 +77,10 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const matchingTag = getTagFromSnapshot(tagId);
-
-      if (matchingTag !== undefined) {
-        matchingTag.name = tagName;
-        matchingTag.display = propTagName;
-      }
+      updateTag(tagId, (tag) => {
+        tag.name = tagName;
+        tag.display = propTagName;
+      });
 
       void Settings.update();
 
@@ -123,12 +106,8 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const snapshot = DB.getSnapshot();
-      if (snapshot?.tags) {
-        snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
-      }
-
-      DB.deleteLocalTag(tagId);
+      deleteTag(tagId);
+      DB.removeTagFromResults(tagId);
 
       void Settings.update();
 
@@ -156,17 +135,15 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      const matchingTag = getTagFromSnapshot(tagId);
-
-      if (matchingTag !== undefined) {
-        matchingTag.personalBests = {
+      updateTag(tagId, (tag) => {
+        tag.personalBests = {
           time: {},
           words: {},
           quote: {},
           zen: {},
           custom: {},
         };
-      }
+      });
 
       void Settings.update();
       return { status: "success", message: `Tag PB cleared` };

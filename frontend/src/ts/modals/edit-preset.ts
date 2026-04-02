@@ -1,5 +1,6 @@
 import Ape from "../ape";
 import * as DB from "../db";
+import { getActiveTags } from "../collections/tags";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Settings from "../pages/settings";
 import {
@@ -389,11 +390,7 @@ function getConfigChanges(): Partial<ConfigType> {
     state.presetType === "partial"
       ? getPartialConfigChanges(getConfigChangesFromConfig())
       : getConfigChangesFromConfig();
-  const tags = DB.getSnapshot()?.tags ?? [];
-
-  const activeTagIds: string[] = tags
-    .filter((tag) => tag.active)
-    .map((tag) => tag._id);
+  const activeTagIds: string[] = getActiveTags().map((tag) => tag._id);
 
   const setTags: boolean =
     state.presetType === "full" || state.checkboxes.get("behavior") === true;

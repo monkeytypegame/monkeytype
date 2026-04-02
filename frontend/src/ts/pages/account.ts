@@ -1,5 +1,6 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
+import { getTags, getTag } from "../collections/tags";
 import * as ChartController from "../controllers/chart-controller";
 
 import { Config } from "../config/store";
@@ -123,11 +124,10 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
   if (result.tags !== undefined && result.tags.length > 0) {
     tagNames = "";
     result.tags.forEach((tag) => {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames += snaptag.display + ", ";
-        }
-      });
+      const snaptag = getTag(tag);
+      if (snaptag !== undefined) {
+        tagNames += snaptag.display + ", ";
+      }
     });
     tagNames = tagNames.substring(0, tagNames.length - 2);
   }
@@ -424,14 +424,14 @@ async function fillContent(): Promise<void> {
       let tagHide = true;
       if (result.tags === undefined || result.tags.length === 0) {
         //no tags, show when no tag is enabled
-        if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
+        if (getTags().length > 0) {
           if (ResultFilters.getFilter("tags", "none")) tagHide = false;
         } else {
           tagHide = false;
         }
       } else {
         //tags exist
-        const validTags = DB.getSnapshot()?.tags?.map((t) => t._id);
+        const validTags = getTags().map((t) => t._id);
 
         if (validTags === undefined) return;
 
@@ -983,11 +983,10 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames.push(snaptag.display);
-        }
-      });
+      const snaptag = getTag(tag);
+      if (snaptag !== undefined) {
+        tagNames.push(snaptag.display);
+      }
     }
   }
 

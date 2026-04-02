@@ -1,6 +1,7 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
 import * as DB from "../db";
+import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
@@ -72,7 +73,7 @@ export async function init(): Promise<void> {
         )
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
-    wpm = await DB.getActiveTagsPB(
+    wpm = getActiveTagsPB(
       Config.mode,
       mode2,
       Config.punctuation,

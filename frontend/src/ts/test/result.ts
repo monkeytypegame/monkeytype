@@ -45,7 +45,14 @@ import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { SnapshotUserTag } from "../constants/default-snapshot";
+import {
+  getActiveTags,
+  getTags,
+  getTag,
+  getLocalTagPB,
+  saveLocalTagPB,
+  type TagItem,
+} from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
@@ -662,15 +669,8 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: SnapshotUserTag[] = [];
-  const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
-  try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTags.push(tag);
-      }
-    });
-  } catch (e) {}
+  const activeTags: TagItem[] = getActiveTags();
+  const userTagsCount = getTags().length;
 
   if (userTagsCount === 0) {
     qs("#result .stats .tags")?.hide();
@@ -697,7 +697,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   for (const tag of activeTags) {
-    const tpb = await DB.getLocalTagPB(
+    const tpb = getLocalTagPB(
       tag._id,
       Config.mode,
       result.mode2,
@@ -718,7 +718,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        await DB.saveLocalTagPB(
+        saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -1268,11 +1268,10 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames.push(snaptag.display);
-        }
-      });
+      const snaptag = getTag(tag);
+      if (snaptag !== undefined) {
+        tagNames.push(snaptag.display);
+      }
     }
   }
 

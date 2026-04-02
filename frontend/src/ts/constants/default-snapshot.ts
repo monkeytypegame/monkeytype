@@ -2,7 +2,6 @@ import {
   ResultFilters,
   User,
   UserProfileDetails,
-  UserTag,
 } from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -15,11 +14,6 @@ import {
 import { Preset } from "@monkeytype/schemas/presets";
 import { Language } from "@monkeytype/schemas/languages";
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
-
-export type SnapshotUserTag = UserTag & {
-  active?: boolean;
-  display: string;
-};
 
 export type SnapshotResult<M extends Mode> = Omit<
   Result<M>,
@@ -78,7 +72,6 @@ export type Snapshot = Omit<
   filterPresets: ResultFilters[];
   isPremium: boolean;
   streakHourOffset?: number;
-  tags: SnapshotUserTag[];
   presets: SnapshotPreset[];
   results?: SnapshotResult<Mode>[];
   xp: number;
@@ -107,7 +100,6 @@ const defaultSnap = {
   config: getDefaultConfig(),
   customThemes: [],
   presets: [],
-  tags: [],
   banned: undefined,
   verified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
