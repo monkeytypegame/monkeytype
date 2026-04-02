@@ -45,7 +45,9 @@ export function TestConfig(): JSXElement {
         <Mode2 />
       </div>
       <Button
-        class={cn("flex place-self-center px-4 py-2 text-sub sm:hidden")}
+        class={cn(
+          "mx-auto flex place-self-center px-4 py-2 text-sub sm:hidden",
+        )}
         variant="button"
         onClick={() => {
           showModal("MobileTestConfig");
