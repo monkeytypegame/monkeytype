@@ -1,7 +1,7 @@
 import * as Commandline from "../commandline/commandline";
 import { Config } from "../config/store";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
-import { getTags } from "../collections/tags";
+import { getTags } from "../features/tags";
 import * as TestWords from "../test/test-words";
 import {
   showNoticeNotification,

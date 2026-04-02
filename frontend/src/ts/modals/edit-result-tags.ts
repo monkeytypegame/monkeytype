@@ -10,7 +10,7 @@ import * as AccountPage from "../pages/account";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
-import { getTags, getTag, updateLocalTagPB } from "../collections/tags";
+import { getTags, getTag, updateLocalTagPB } from "../features/tags";
 
 type State = {
   resultId: string;

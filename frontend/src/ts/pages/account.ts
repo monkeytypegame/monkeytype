@@ -1,6 +1,6 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
-import { getTags, getTag } from "../collections/tags";
+import { getTags, getTag } from "../features/tags";
 import * as ChartController from "../controllers/chart-controller";
 
 import { Config } from "../config/store";

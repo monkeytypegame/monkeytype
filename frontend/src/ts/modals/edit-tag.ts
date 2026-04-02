@@ -5,7 +5,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { IsValidResponse } from "../types/validation";
-import { insertTag, updateTag, deleteTag } from "../collections/tags";
+import { insertTag, updateTag, deleteTag } from "../features/tags";
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {

@@ -8,7 +8,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
-import { getTags, toggleTagActive } from "../collections/tags";
+import { getTags, toggleTagActive } from "../features/tags";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import {

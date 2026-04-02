@@ -1,10 +1,6 @@
-import { z } from "zod";
-import { UserTag } from "@monkeytype/schemas/users";
-import { createStore, produce, reconcile } from "solid-js/store";
-import { SnapshotResult } from "../constants/default-snapshot";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import { IdSchema } from "@monkeytype/schemas/util";
-import { authEvent } from "../events/auth";
+import { SnapshotResult } from "../../constants/default-snapshot";
+import { setTags, getTag, getActiveTags } from "./store";
+import { produce } from "solid-js/store";
 import {
   Mode,
   Mode2,
@@ -13,130 +9,6 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-
-// --- Types ---
-
-export type TagItem = UserTag & { active: boolean; display: string };
-
-// --- localStorage ---
-
-const activeTagsLS = new LocalStorageWithSchema({
-  key: "activeTags",
-  schema: z.array(IdSchema),
-  fallback: [],
-});
-
-// --- Store ---
-
-const [tags, setTags] = createStore<TagItem[]>([]);
-
-// --- Seed ---
-
-export function seedFromUserData(userTags: UserTag[]): void {
-  const items: TagItem[] = userTags
-    .map((tag) => ({
-      ...tag,
-      active: false,
-      display: tag.name.replaceAll("_", " "),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  setTags(reconcile(items, { key: "_id", merge: true }));
-}
-
-// --- Reactive accessors (for SolidJS components) ---
-
-export { tags };
-
-// --- Imperative accessors ---
-
-export function getTags(): TagItem[] {
-  return [...tags];
-}
-
-export function getTag(id: string): TagItem | undefined {
-  return tags.find((tag) => tag._id === id);
-}
-
-export function getActiveTags(): TagItem[] {
-  return tags.filter((tag) => tag.active);
-}
-
-// --- Active state management ---
-
-export function saveActiveToLocalStorage(): void {
-  activeTagsLS.set(tags.filter((t) => t.active).map((t) => t._id));
-}
-
-export function toggleTagActive(tagId: string, nosave = false): void {
-  setTags(
-    (tag) => tag._id === tagId,
-    produce((tag) => {
-      tag.active = !tag.active;
-    }),
-  );
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-export function setTagActive(
-  tagId: string,
-  state: boolean,
-  nosave = false,
-): void {
-  setTags(
-    (tag) => tag._id === tagId,
-    produce((tag) => {
-      tag.active = state;
-    }),
-  );
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-export function clearActiveTags(nosave = false): void {
-  setTags(
-    (tag) => tag.active,
-    produce((tag) => {
-      tag.active = false;
-    }),
-  );
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-function loadActiveFromLocalStorage(): void {
-  const savedIds = activeTagsLS.get();
-  for (const id of savedIds) {
-    toggleTagActive(id, true);
-  }
-  saveActiveToLocalStorage();
-}
-
-// --- CRUD helpers ---
-
-export function insertTag(tag: UserTag): void {
-  setTags((prev) =>
-    [
-      ...prev,
-      {
-        ...tag,
-        active: false,
-        display: tag.name.replaceAll("_", " "),
-      },
-    ].sort((a, b) => a.name.localeCompare(b.name)),
-  );
-}
-
-export function updateTag(
-  tagId: string,
-  updater: (old: TagItem) => void,
-): void {
-  setTags((tag) => tag._id === tagId, produce(updater));
-}
-
-export function deleteTag(tagId: string): void {
-  setTags((prev) => prev.filter((tag) => tag._id !== tagId));
-}
-
-// --- PB logic ---
 
 export function getLocalTagPB<M extends Mode>(
   tagId: string,
@@ -345,11 +217,3 @@ export function getActiveTagsPB<M extends Mode>(
   }
   return tagPbWpm;
 }
-
-// --- Auth integration ---
-
-authEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
-    loadActiveFromLocalStorage();
-  }
-});

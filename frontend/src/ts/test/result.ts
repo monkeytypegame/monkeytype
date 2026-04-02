@@ -52,7 +52,7 @@ import {
   getLocalTagPB,
   saveLocalTagPB,
   type TagItem,
-} from "../collections/tags";
+} from "../features/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";

@@ -41,7 +41,7 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
-import { getActiveTags, seedFromUserData } from "./collections/tags";
+import { getActiveTags, seedFromUserData } from "./features/tags";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();

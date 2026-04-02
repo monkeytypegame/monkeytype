@@ -21,7 +21,7 @@ import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
 import { Snapshot } from "../../constants/default-snapshot";
-import { getTags, getActiveTags, getTag } from "../../collections/tags";
+import { getTags, getActiveTags, getTag } from "../../features/tags";
 import { LanguageList } from "../../constants/languages";
 import { authEvent } from "../../events/auth";
 import { sanitize } from "../../utils/sanitize";

@@ -1,6 +1,6 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import { getActiveTags } from "../collections/tags";
+import { getActiveTags } from "../features/tags";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Settings from "../pages/settings";
 import {
