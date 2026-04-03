@@ -1,5 +1,6 @@
-export type { TagItem } from "./store";
+export type { TagItem } from "../../collections/tags";
 export {
+  tagsCollection,
   seedFromUserData,
   getTags,
   getTag,
@@ -7,21 +8,12 @@ export {
   insertTag,
   updateTag,
   deleteTag,
-} from "./store";
-
-export {
   saveActiveToLocalStorage,
   toggleTagActive,
   setTagActive,
   clearActiveTags,
-} from "./active";
-
-export {
   getLocalTagPB,
   saveLocalTagPB,
   updateLocalTagPB,
   getActiveTagsPB,
-} from "./personal-bests";
-
-// Side-effect: registers authEvent listener for loading active tags from localStorage
-import "./active";
+} from "../../collections/tags";
