@@ -1,7 +1,7 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
 import * as DB from "../db";
-import { getActiveTagsPB } from "../features/tags";
+import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
 import { configEvent } from "../events/config";

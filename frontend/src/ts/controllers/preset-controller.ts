@@ -12,7 +12,7 @@ import {
   clearActiveTags,
   setTagActive,
   saveActiveToLocalStorage,
-} from "../features/tags";
+} from "../collections/tags";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
 

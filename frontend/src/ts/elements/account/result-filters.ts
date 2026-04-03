@@ -20,8 +20,7 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
-import { Snapshot } from "../../constants/default-snapshot";
-import { getTags, getActiveTags, getTag } from "../../features/tags";
+import { getTags, getActiveTags, getTag } from "../../collections/tags";
 import { LanguageList } from "../../constants/languages";
 import { authEvent } from "../../events/auth";
 import { sanitize } from "../../utils/sanitize";
@@ -805,9 +804,6 @@ let buttonsAppended = false;
 export async function appendDropdowns(
   selectChangeCallback: () => void,
 ): Promise<void> {
-  //snapshot at this point is guaranteed to exist
-  const snapshot = DB.getSnapshot() as Snapshot;
-
   tagDropdownUpdate();
 
   if (buttonsAppended) return;
