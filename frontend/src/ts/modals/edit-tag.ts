@@ -7,6 +7,10 @@ import { TagNameSchema } from "@monkeytype/schemas/users";
 import { IsValidResponse } from "../types/validation";
 import { insertTag, updateTag, deleteTag } from "../collections/tags";
 
+function errorMessage(e: unknown): string {
+  return e instanceof Error ? e.message : String(e);
+}
+
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
   const validationResult = TagNameSchema.safeParse(cleanTagName(tagName));
@@ -29,21 +33,17 @@ const actionModals: Record<Action, SimpleModal> = {
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
       const tagName = cleanTagName(propTagName);
-      const response = await Ape.users.createTag({ body: { tagName } });
 
-      if (response.status !== 200) {
+      try {
+        await insertTag(tagName);
+      } catch (e) {
         return {
           status: "error",
-          message:
-            "Failed to add tag: " +
-            response.body.message.replace(tagName, propTagName),
-          notificationOptions: { response },
+          message: "Failed to add tag: " + errorMessage(e),
         };
       }
 
-      insertTag(response.body.data);
       void Settings.update();
-
       return { status: "success", message: `Tag added` };
     },
   }),
@@ -96,19 +96,17 @@ const actionModals: Record<Action, SimpleModal> = {
     },
     execFn: async (_thisPopup) => {
       const tagId = _thisPopup.parameters[1] as string;
-      const response = await Ape.users.deleteTag({ params: { tagId } });
 
-      if (response.status !== 200) {
+      try {
+        await deleteTag(tagId);
+      } catch (e) {
         return {
           status: "error",
-          message: "Failed to remove tag",
-          notificationOptions: { response },
+          message: "Failed to remove tag: " + errorMessage(e),
         };
       }
 
-      deleteTag(tagId);
       DB.removeTagFromResults(tagId);
-
       void Settings.update();
 
       return { status: "success", message: `Tag removed` };

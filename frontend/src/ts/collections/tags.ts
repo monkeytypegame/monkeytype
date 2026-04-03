@@ -5,7 +5,6 @@ import { z } from "zod";
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { showErrorNotification } from "../states/notifications";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
 import { authEvent } from "../events/auth";
@@ -53,9 +52,6 @@ export const tagsCollection = createCollection(
             body: { tagName: it.name },
           });
           if (response.status !== 200) {
-            showErrorNotification(
-              `Failed to add tag: ${response.body.message}`,
-            );
             throw new Error(`Failed to add tag: ${response.body.message}`);
           }
           return toTagItem(response.body.data);
@@ -76,9 +72,6 @@ export const tagsCollection = createCollection(
             params: { tagId: id },
           });
           if (response.status !== 200) {
-            showErrorNotification(
-              `Failed to delete tag: ${response.body.message}`,
-            );
             throw new Error(`Failed to delete tag: ${response.body.message}`);
           }
         }),
@@ -94,10 +87,15 @@ export const tagsCollection = createCollection(
 
 // --- CRUD helpers ---
 
-export function insertTag(tag: UserTag): void {
-  tagsCollection.utils.writeBatch(() => {
-    tagsCollection.utils.writeInsert(toTagItem(tag));
+export async function insertTag(tagName: string): Promise<void> {
+  const transaction = tagsCollection.insert({
+    _id: crypto.randomUUID(),
+    name: tagName,
+    personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
+    active: false,
+    display: tagName.replaceAll("_", " "),
   });
+  await transaction.isPersisted.promise;
 }
 
 export function updateTag(
@@ -107,10 +105,9 @@ export function updateTag(
   tagsCollection.update(tagId, updater);
 }
 
-export function deleteTag(tagId: string): void {
-  tagsCollection.utils.writeBatch(() => {
-    tagsCollection.utils.writeDelete(tagId);
-  });
+export async function deleteTag(tagId: string): Promise<void> {
+  const transaction = tagsCollection.delete(tagId);
+  await transaction.isPersisted.promise;
 }
 
 export function getTags(): TagItem[] {
@@ -170,12 +167,14 @@ export function setTagActive(
 }
 
 export function clearActiveTags(nosave = false): void {
+  const activeIds: string[] = [];
   tagsCollection.forEach((tag) => {
-    if (tag.active) {
-      tagsCollection.update(tag._id, (t) => {
-        t.active = false;
-      });
-    }
+    if (tag.active) activeIds.push(tag._id);
+  });
+  tagsCollection.update(activeIds, (tags) => {
+    tags.forEach((tag) => {
+      tag.active = false;
+    });
   });
   if (!nosave) saveActiveToLocalStorage();
 }
