@@ -62,8 +62,9 @@ export function TestConfig(): JSXElement {
 }
 
 function TCButton(props: {
-  fa: FaObject;
-  text: string;
+  class?: string;
+  fa?: FaObject;
+  text?: string;
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -71,12 +72,12 @@ function TCButton(props: {
   return (
     <Button
       variant="text"
-      class={cn(buttonClass)}
-      fa={{ ...props.fa, fixedWidth: true }}
+      class={cn(buttonClass, props.class)}
+      fa={props.fa ? { ...props.fa, fixedWidth: true } : undefined}
       text={props.text}
       active={props.active}
       onClick={props.onClick}
-      disabled={props.disabled}
+      disabled={getFocus() || getResultVisible() || props.disabled}
     />
   );
 }
@@ -228,13 +229,11 @@ function Mode2(): JSXElement {
         <Mode2Quote class={cn(cardClass, sClass)} ref={quoteRef} />
         <Mode2Custom class={cn(cardClass, sClass)} ref={customRef} />
       </Anime>
-      <Button
-        variant="text"
-        class={cn(
-          buttonClass,
-          "absolute right-0 self-center px-(--horizontal-padding) opacity-0 transition-[margin-right,background-color,opacity] duration-125 group-hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)] group-hover:opacity-100 hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)] hover:opacity-100",
-        )}
-        fa={{ icon: "fa-share", fixedWidth: true }}
+      <TCButton
+        class={
+          "pointer-events-none absolute right-0 self-center px-(--horizontal-padding) opacity-0 transition-[margin-right,background-color,opacity] duration-125 group-hover:pointer-events-auto group-hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)] group-hover:opacity-100 hover:mr-[calc((1.25em+(var(--horizontal-padding)*2))*-1)] hover:opacity-100"
+        }
+        fa={{ icon: "fa-share" }}
         onClick={() => showModal("ShareTestSettings")}
       />
     </div>
@@ -248,9 +247,7 @@ function Mode2Time(props: ComponentProps<"div">): JSXElement {
     <div {...props}>
       <For each={times}>
         {(time) => (
-          <Button
-            class={buttonClass}
-            variant="text"
+          <TCButton
             text={`${time}`}
             active={getConfig.time === time}
             onClick={() => {
@@ -260,13 +257,10 @@ function Mode2Time(props: ComponentProps<"div">): JSXElement {
           />
         )}
       </For>
-      <Button
-        class={buttonClass}
-        variant="text"
+      <TCButton
         active={!times.includes(getConfig.time as (typeof times)[number])}
         fa={{
           icon: "fa-tools",
-          fixedWidth: true,
         }}
         onClick={() => {
           showModal("TestDuration");
@@ -283,9 +277,7 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
     <div {...props}>
       <For each={wordCounts}>
         {(count) => (
-          <Button
-            class={buttonClass}
-            variant="text"
+          <TCButton
             text={`${count}`}
             active={getConfig.words === count}
             onClick={() => {
@@ -295,15 +287,12 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
           />
         )}
       </For>
-      <Button
-        class={buttonClass}
-        variant="text"
+      <TCButton
         active={
           !wordCounts.includes(getConfig.words as (typeof wordCounts)[number])
         }
         fa={{
           icon: "fa-tools",
-          fixedWidth: true,
         }}
         onClick={() => {
           showModal("CustomWordAmount");
@@ -323,9 +312,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
 
   return (
     <div {...props}>
-      <Button
-        class={buttonClass}
-        variant="text"
+      <TCButton
         text="all"
         active={areUnsortedArraysEqual(getConfig.quoteLength, [0, 1, 2, 3])}
         onClick={() => {
@@ -335,9 +322,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
       />
       <For each={quoteLengths}>
         {({ text, length }) => (
-          <Button
-            class={buttonClass}
-            variant="text"
+          <TCButton
             text={text}
             active={areUnsortedArraysEqual(getConfig.quoteLength, [length])}
             onClick={() => {
@@ -348,12 +333,10 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
         )}
       </For>
       <Show when={isAuthenticated()}>
-        <Button
-          class={buttonClass}
+        <TCButton
           fa={{
             icon: "fa-heart",
           }}
-          variant="text"
           active={areUnsortedArraysEqual(getConfig.quoteLength, [-3])}
           onClick={() => {
             setConfig("quoteLength", [-3]);
@@ -361,12 +344,9 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           }}
         />
       </Show>
-      <Button
-        class={buttonClass}
-        variant="text"
+      <TCButton
         fa={{
           icon: "fa-search",
-          fixedWidth: true,
         }}
         onClick={() => {
           showModal("QuoteSearch");
@@ -379,9 +359,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
 function Mode2Custom(props: ComponentProps<"div">): JSXElement {
   return (
     <div {...props}>
-      <Button
-        class={buttonClass}
-        variant="text"
+      <TCButton
         text="change"
         onClick={() => {
           showModal("CustomText");
