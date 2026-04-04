@@ -7,7 +7,6 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
-import { authEvent } from "../events/auth";
 import { SnapshotResult } from "../constants/default-snapshot";
 import {
   Mode,
@@ -32,16 +31,18 @@ function toTagItem(tag: UserTag): TagItem {
   };
 }
 
+let seedData: TagItem[] = [];
+
 export const tagsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    startSync: true,
     queryKey: queryKeys.root(),
 
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      //return empty array. We load the user with the snapshot and fill the collection from there
-      return [] as TagItem[];
+      return seedData;
     },
     onInsert: async ({ transaction }) => {
       const newItems = transaction.mutations.map((m) => m.modified);
@@ -123,13 +124,16 @@ export function getActiveTags(): TagItem[] {
 }
 
 export function seedFromUserData(userTags: UserTag[]): void {
-  const items = userTags
-    .map(toTagItem)
+  const activeIds = activeTagsLS.get();
+
+  seedData = userTags
+    .map((tag) => ({
+      ...toTagItem(tag),
+      active: activeIds.includes(tag._id),
+    }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  tagsCollection.utils.writeBatch(() => {
-    items.forEach((it) => tagsCollection.utils.writeInsert(it));
-  });
+  void queryClient.invalidateQueries({ queryKey: queryKeys.root() });
 }
 
 // --- Active state ---
@@ -178,20 +182,6 @@ export function clearActiveTags(nosave = false): void {
   });
   if (!nosave) saveActiveToLocalStorage();
 }
-
-function loadActiveFromLocalStorage(): void {
-  const savedIds = activeTagsLS.get();
-  for (const id of savedIds) {
-    toggleTagActive(id, true);
-  }
-  saveActiveToLocalStorage();
-}
-
-authEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
-    loadActiveFromLocalStorage();
-  }
-});
 
 // --- Personal bests ---
 
