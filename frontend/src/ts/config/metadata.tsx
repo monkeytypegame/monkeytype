@@ -1,15 +1,17 @@
 import { checkCompatibility } from "@monkeytype/funbox";
-import * as DB from "../db";
-import { showNoticeNotification } from "../states/notifications";
-import { isAuthenticated } from "../states/core";
-import { canSetFunboxWithConfig } from "./funbox-validation";
-import { reloadAfter } from "../utils/misc";
-import { isDevEnvironment } from "../utils/env";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
-import { capitalizeFirstLetter } from "../utils/strings";
+import { JSX } from "solid-js/jsx-runtime";
+
 import { getDefaultConfig } from "../constants/default-config";
+import * as DB from "../db";
+import { isAuthenticated } from "../states/core";
+import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
+import { isDevEnvironment } from "../utils/env";
+import { reloadAfter } from "../utils/misc";
+import { capitalizeFirstLetter } from "../utils/strings";
+import { canSetFunboxWithConfig } from "./funbox-validation";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -23,6 +25,16 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    * The config key that this metadata is for
    */
   key: K;
+
+  /**
+   * Config description that is shown in the settings page.
+   */
+  description?: string | JSX.Element;
+
+  /**
+   * How this config should be displayed on the settings page.
+   */
+  settingsVariant?: "buttons";
 
   /**
    * Optional display string for the config key.
@@ -242,16 +254,33 @@ export const configMetadata: ConfigMetadataObject = {
   // behavior
   difficulty: {
     key: "difficulty",
+    description:
+      "Normal is the classic typing test experience. Expert fails the test if you submit (press space) an incorrect word. Master fails if you press a single incorrect key (meaning you have to achieve 100% accuracy).",
     fa: { icon: "fa-star" },
     changeRequiresRestart: true,
     group: "behavior",
+    settingsVariant: "buttons",
   },
   quickRestart: {
     key: "quickRestart",
     fa: { icon: "fa-redo-alt" },
+    description: (
+      <>
+        Press
+        <kbd>tab</kbd>,<kbd>esc</kbd>
+        or
+        <kbd>enter</kbd>
+        to quickly restart the test, or to quickly jump to the test page. These
+        options disable tab navigation on most parts of the website. Using the
+        &quot;esc&quot; option will move opening the commandline to the
+        <kbd>tab</kbd>
+        key.
+      </>
+    ),
     displayString: "quick restart",
     changeRequiresRestart: false,
     group: "behavior",
+    settingsVariant: "buttons",
   },
   repeatQuotes: {
     key: "repeatQuotes",
@@ -262,10 +291,13 @@ export const configMetadata: ConfigMetadataObject = {
   },
   resultSaving: {
     key: "resultSaving",
+    description:
+      "Disable result saving, in case you want to practice without affecting your account stats.",
     fa: { icon: "fa-save" },
     displayString: "result saving",
     changeRequiresRestart: false,
     group: "behavior",
+    settingsVariant: "buttons",
   },
   blindMode: {
     key: "blindMode",
