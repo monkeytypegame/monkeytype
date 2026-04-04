@@ -3334,7 +3334,7 @@ describe("user controller test", () => {
           '"keyboard" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
           '"socialProfiles.twitter" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
           '"socialProfiles.github" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
-          '"socialProfiles.website" Unallowed detected. Please remove it. If you believe this is a mistake, please contact us (https://i-luv-miodec.com).',
+          '"socialProfiles.website" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (https://i-luv-miodec.com).',
         ],
       });
     });
