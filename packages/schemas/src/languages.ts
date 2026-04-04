@@ -438,6 +438,8 @@ export const LanguageSchema = z.enum(
     "code_cuda",
     "kinyarwanda",
     "pokemon_1k",
+    "kokanu",
+    "likanu",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
