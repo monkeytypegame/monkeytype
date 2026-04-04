@@ -11,8 +11,7 @@ import {
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import * as DB from "../../db";
 import { configEvent } from "../../events/config";
-import { isAuthenticated } from "../../firebase";
-import { getActivePage } from "../../states/core";
+import { getActivePage, isAuthenticated } from "../../states/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ColorName, ThemesList, ThemeWithName } from "../../constants/themes";

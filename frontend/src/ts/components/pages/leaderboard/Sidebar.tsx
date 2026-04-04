@@ -3,7 +3,7 @@ import { Language } from "@monkeytype/schemas/languages";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Accessor, For, JSXElement, Show } from "solid-js";
 
-import { isLoggedIn } from "../../../states/core";
+import { isAuthenticated } from "../../../states/core";
 import { Selection } from "../../../states/leaderboard-selection";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Button } from "../../common/Button";
@@ -65,7 +65,7 @@ export function Sidebar(props: {
           { id: "daily", text: "daily", icon: "fa-sun" },
         ]}
       />
-      <Show when={isLoggedIn() && props.connectionsEnabled}>
+      <Show when={isAuthenticated() && props.connectionsEnabled}>
         <Group
           selected={props.selection().friendsOnly}
           onSelect={selectFriendsOnly}
