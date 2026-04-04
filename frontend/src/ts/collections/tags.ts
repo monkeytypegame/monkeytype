@@ -1,6 +1,6 @@
 import { UserTag } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection, type WritableDeep } from "@tanstack/solid-db";
+import { createCollection, useLiveQuery } from "@tanstack/solid-db";
 import { z } from "zod";
 import Ape from "../ape";
 import { queryClient } from "../queries";
@@ -86,6 +86,14 @@ export const tagsCollection = createCollection(
   }),
 );
 
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export const useTagsLiveQuery = () =>
+  useLiveQuery((q) => {
+    return q.from({
+      collection: tagsCollection,
+    });
+  });
+
 // --- CRUD helpers ---
 
 export async function insertTag(tagName: string): Promise<void> {
@@ -101,9 +109,13 @@ export async function insertTag(tagName: string): Promise<void> {
 
 export function updateTag(
   tagId: string,
-  updater: (tag: WritableDeep<TagItem>) => void,
+  updater: (tag: TagItem) => void,
 ): void {
-  tagsCollection.update(tagId, updater);
+  const tag = tagsCollection.get(tagId);
+  if (tag === undefined) return;
+  const copy = structuredClone(tag);
+  updater(copy);
+  tagsCollection.utils.writeUpdate(copy);
 }
 
 export async function deleteTag(tagId: string): Promise<void> {
@@ -153,9 +165,9 @@ export function saveActiveToLocalStorage(): void {
 }
 
 export function toggleTagActive(tagId: string, nosave = false): void {
-  tagsCollection.update(tagId, (tag) => {
-    tag.active = !tag.active;
-  });
+  const tag = tagsCollection.get(tagId);
+  if (tag === undefined) return;
+  tagsCollection.utils.writeUpdate({ ...tag, active: !tag.active });
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -164,20 +176,18 @@ export function setTagActive(
   state: boolean,
   nosave = false,
 ): void {
-  tagsCollection.update(tagId, (tag) => {
-    tag.active = state;
-  });
+  const tag = tagsCollection.get(tagId);
+  if (tag === undefined) return;
+  tagsCollection.utils.writeUpdate({ ...tag, active: state });
   if (!nosave) saveActiveToLocalStorage();
 }
 
 export function clearActiveTags(nosave = false): void {
-  const activeIds: string[] = [];
-  tagsCollection.forEach((tag) => {
-    if (tag.active) activeIds.push(tag._id);
-  });
-  tagsCollection.update(activeIds, (tags) => {
-    tags.forEach((tag) => {
-      tag.active = false;
+  tagsCollection.utils.writeBatch(() => {
+    tagsCollection.forEach((tag) => {
+      if (tag.active) {
+        tagsCollection.utils.writeUpdate({ ...tag, active: false });
+      }
     });
   });
   if (!nosave) saveActiveToLocalStorage();

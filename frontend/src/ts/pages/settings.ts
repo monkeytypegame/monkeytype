@@ -8,7 +8,11 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
-import { getTags, toggleTagActive } from "../collections/tags";
+import {
+  getTags,
+  toggleTagActive,
+  useTagsLiveQuery,
+} from "../collections/tags";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import {
@@ -51,6 +55,8 @@ import { authEvent } from "../events/auth";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
+import { createEffectOn } from "../hooks/effects";
+import { createMemo } from "solid-js";
 
 let settingsInitialized = false;
 
@@ -515,6 +521,10 @@ function setActiveFunboxButton(): void {
     }
   }
 }
+
+const tagsQuery = useTagsLiveQuery();
+const activeTags = createMemo(() => tagsQuery().filter((tag) => tag.active));
+createEffectOn(activeTags, refreshTagsSettingsSection);
 
 function refreshTagsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
