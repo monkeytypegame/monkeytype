@@ -12,7 +12,7 @@ import {
   PersonalBestSchema,
 } from "./shared";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
-import { doesNotContainProfanity } from "./validation/validation";
+import { doesNotContainBadWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";
 
 const NoneFilterSchema = z.literal("none");
@@ -85,7 +85,7 @@ export type UserTag = z.infer<typeof UserTagSchema>;
 function profileDetailsBase(
   schema: ZodString,
 ): ZodEffects<ZodOptional<ZodEffects<ZodString>>> {
-  return doesNotContainProfanity("word", schema)
+  return doesNotContainBadWords("word", schema)
     .optional()
     .transform((value) => (value === null ? undefined : value));
 }
@@ -242,7 +242,7 @@ export const FavoriteQuotesSchema = z.record(
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
 export const UserEmailSchema = z.string().email();
-export const UserNameSchema = doesNotContainProfanity(
+export const UserNameSchema = doesNotContainBadWords(
   "substring",
   z
     .string()
