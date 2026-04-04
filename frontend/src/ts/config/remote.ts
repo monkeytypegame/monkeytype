@@ -15,9 +15,6 @@ export async function updateFromServer(): Promise<void> {
     JSON.stringify(Config) === JSON.stringify(remoteConfig);
 
   if (Config === undefined || !areConfigsEqual) {
-    console.log(
-      "no local config or local and db configs are different - applying db",
-    );
     await applyConfig(remoteConfig);
     saveFullConfigToLocalStorage(true);
   }

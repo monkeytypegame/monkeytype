@@ -108,7 +108,6 @@ export function isAuthAvailable(): boolean {
 }
 
 export async function signOut(): Promise<void> {
-  console.log("auth signout");
   await Auth?.signOut();
 }
 
@@ -147,7 +146,6 @@ export async function signInWithPopup(
   );
   if (error !== null) {
     ignoreAuthCallback = false;
-    console.log(error);
     throw translateFirebaseError(error, "Failed to sign in with popup");
   }
   const additionalUserInfo = getAdditionalUserInfo(signedInUser);

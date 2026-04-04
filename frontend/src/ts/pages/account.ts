@@ -43,9 +43,6 @@ let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
   filterDebug = !filterDebug;
-  if (filterDebug) {
-    console.log("filterDebug is on");
-  }
 }
 
 let filteredResults: SnapshotResult<Mode>[] = [];
@@ -206,8 +203,6 @@ let chartData: ChartController.HistoryChartData[] = [];
 let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
-  console.log("updating account page");
-
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
@@ -275,23 +270,14 @@ async function fillContent(): Promise<void> {
     //apply filters
     try {
       if (!ResultFilters.getFilter("pb", result.isPb ? "yes" : "no")) {
-        if (filterDebug) {
-          console.log(`skipping result due to pb filter`, result);
-        }
         return;
       }
 
       let resdiff = result.difficulty ?? "normal";
       if (!ResultFilters.getFilter("difficulty", resdiff)) {
-        if (filterDebug) {
-          console.log(`skipping result due to difficulty filter`, result);
-        }
         return;
       }
       if (!ResultFilters.getFilter("mode", result.mode)) {
-        if (filterDebug) {
-          console.log(`skipping result due to mode filter`, result);
-        }
         return;
       }
 
@@ -310,9 +296,6 @@ async function fillContent(): Promise<void> {
             timefilter as "custom" | "15" | "30" | "60" | "120",
           )
         ) {
-          if (filterDebug) {
-            console.log(`skipping result due to time filter`, result);
-          }
           return;
         }
       } else if (result.mode === "words") {
@@ -330,9 +313,6 @@ async function fillContent(): Promise<void> {
             wordfilter as "custom" | "10" | "25" | "50" | "100",
           )
         ) {
-          if (filterDebug) {
-            console.log(`skipping result due to word filter`, result);
-          }
           return;
         }
       }
@@ -353,9 +333,6 @@ async function fillContent(): Promise<void> {
           filter !== undefined &&
           !ResultFilters.getFilter("quoteLength", filter)
         ) {
-          if (filterDebug) {
-            console.log(`skipping result due to quoteLength filter`, result);
-          }
           return;
         }
       }
@@ -370,9 +347,6 @@ async function fillContent(): Promise<void> {
         langFilter = true;
       }
       if (!langFilter) {
-        if (filterDebug) {
-          console.log(`skipping result due to language filter`, result);
-        }
         return;
       }
 
@@ -381,9 +355,6 @@ async function fillContent(): Promise<void> {
         puncfilter = "on";
       }
       if (!ResultFilters.getFilter("punctuation", puncfilter)) {
-        if (filterDebug) {
-          console.log(`skipping result due to punctuation filter`, result);
-        }
         return;
       }
 
@@ -392,17 +363,11 @@ async function fillContent(): Promise<void> {
         numfilter = "on";
       }
       if (!ResultFilters.getFilter("numbers", numfilter)) {
-        if (filterDebug) {
-          console.log(`skipping result due to numbers filter`, result);
-        }
         return;
       }
 
       if (result.funbox === undefined || result.funbox.length === 0) {
         if (!ResultFilters.getFilter("funbox", "none")) {
-          if (filterDebug) {
-            console.log(`skipping result due to funbox filter`, result);
-          }
           return;
         }
       } else {
@@ -414,9 +379,6 @@ async function fillContent(): Promise<void> {
           }
         }
         if (counter === 0) {
-          if (filterDebug) {
-            console.log(`skipping result due to funbox filter`, result);
-          }
           return;
         }
       }
@@ -450,9 +412,6 @@ async function fillContent(): Promise<void> {
       }
 
       if (tagHide) {
-        if (filterDebug) {
-          console.log(`skipping result due to tag filter`, result);
-        }
         return;
       }
 
@@ -475,9 +434,6 @@ async function fillContent(): Promise<void> {
       }
 
       if (datehide) {
-        if (filterDebug) {
-          console.log(`skipping result due to date filter`, result);
-        }
         return;
       }
 
@@ -486,7 +442,6 @@ async function fillContent(): Promise<void> {
       showNoticeNotification(
         "Something went wrong when filtering. Resetting filters.",
       );
-      console.log(result);
       console.error(e);
       ResultFilters.reset();
       ResultFilters.updateActive();

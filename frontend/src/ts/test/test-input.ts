@@ -354,14 +354,6 @@ function getEventCode(event: KeyboardEvent): string {
 let noCodeIndex = 0;
 export function recordKeyupTime(now: number, event: KeyboardEvent): void {
   if (event.repeat) {
-    console.log(
-      "Keyup not recorded - repeat",
-      event.key,
-      event.code,
-      //ignore for logging
-      // oxlint-disable-next-line no-deprecated
-      event.which,
-    );
     return;
   }
 
@@ -381,7 +373,6 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
   const diff = Math.abs(keyDownDataForKey.timestamp - now);
   keypressTimings.duration.array[keyDownDataForKey.index] = diff;
 
-  console.debug("Keyup recorded", key, diff);
   // oxlint-disable-next-line no-dynamic-delete
   delete keyDownData[key];
 
@@ -390,26 +381,16 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
 
 export function recordKeydownTime(now: number, event: KeyboardEvent): void {
   if (event.repeat) {
-    console.log(
-      "Keydown not recorded - repeat",
-      event.key,
-      event.code,
-      //ignore for logging
-      // oxlint-disable-next-line no-deprecated
-      event.which,
-    );
     return;
   }
 
   let key = getEventCode(event);
 
   if (!keysToTrack.has(key)) {
-    console.debug("Keydown not recorded - not tracked", key);
     return;
   }
 
   if (keyDownData[key] !== undefined) {
-    console.debug("Key already down", key);
     return;
   }
 
@@ -429,12 +410,10 @@ export function recordKeydownTime(now: number, event: KeyboardEvent): void {
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(now - keypressTimings.spacing.last);
     keypressTimings.spacing.array.push(roundTo2(diff));
-    console.debug("Keydown recorded", key, diff);
   }
   keypressTimings.spacing.last = now;
   if (keypressTimings.spacing.first === -1) {
     keypressTimings.spacing.first = now;
-    console.debug("First keydown recorded", key, now);
   }
 }
 
@@ -504,8 +483,6 @@ function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
-
-  console.debug("Keypress timings reset");
 }
 
 export function pushMissedWord(word: string): void {

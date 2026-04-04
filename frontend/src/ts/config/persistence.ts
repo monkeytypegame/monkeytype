@@ -39,7 +39,6 @@ export function saveToLocalStorage(
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
-  console.log("saving full config to localStorage");
   configLS.set(Config);
   if (!noDbCheck) {
     setAccountButtonSpinner(true);

@@ -631,7 +631,6 @@ export async function generateWords(
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
 
   const wordOrder = getWordOrder();
-  console.debug("Word order", wordOrder);
 
   let wordList = language.words;
   if (Config.mode === "custom") {
@@ -646,9 +645,6 @@ export async function generateWords(
     Config.mode === "custom" && CustomText.getPipeDelimiter();
 
   const limit = getLimit();
-  console.debug(
-    `${customAndUsingPipeDelimiter ? "Section" : "Word"} limit ${limit}`,
-  );
 
   if (wordOrder === "reverse") {
     wordList = wordList.reverse();
@@ -671,8 +667,6 @@ export async function generateWords(
   } else {
     currentWordset = await withWords(wordList);
   }
-
-  console.debug("Wordset", currentWordset);
 
   if (limit === 0) {
     return ret;
@@ -744,16 +738,6 @@ export async function getNextWord(
   previousWord: string,
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
-  console.debug("Getting next word", {
-    isRepeated: TestState.isRepeated,
-    currentWordset,
-    wordIndex,
-    language: currentLanguage,
-    wordsBound,
-    previousWord,
-    previousWord2,
-  });
-
   if (currentWordset === null) {
     throw new WordGenError("Current wordset is null");
   }
@@ -791,13 +775,8 @@ export async function getNextWord(
 
       if (!continueRandomGeneration) {
         throw new WordGenError("Repeated word is undefined");
-      } else {
-        console.debug(
-          "Repeated word is undefined but random generation is allowed - getting random word",
-        );
       }
     } else {
-      console.debug("Repeated word: ", repeated);
       sectionIndex++;
       return repeated;
     }
@@ -961,8 +940,6 @@ export async function getNextWord(
   }
 
   randomWord = applyFunboxesToWord(randomWord, wordIndex, wordsBound);
-
-  console.debug("Word:", randomWord);
 
   const ret = {
     word: randomWord,

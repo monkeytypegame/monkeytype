@@ -211,17 +211,11 @@ export async function change(
   options = { ...defaultOptions, ...options };
 
   if (PageTransition.get() && !options.force) {
-    console.debug(
-      `change page to ${pageName} stopped, page transition is true`,
-    );
     return false;
   }
 
   if (!options.force && getActivePage() === pageName) {
-    console.debug(`change page ${pageName} stoped, page already active`);
     return false;
-  } else {
-    console.log(`changing page ${pageName}`);
   }
 
   const previousPage = pages[getActivePage()];

@@ -388,7 +388,6 @@ let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
-  console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
     if (lastInitError) {
@@ -494,23 +493,8 @@ async function init(): Promise<boolean> {
   }
 
   if (Config.mode === "custom") {
-    console.debug("Custom text", CustomText.getData());
+    // Custom text validation
   }
-
-  console.log("Inializing test", {
-    language: {
-      ...language,
-      words: `${language.words.length} words`,
-    },
-    customText: {
-      ...CustomText.getData(),
-      text: `${CustomText.getText().length} words`,
-    },
-    mode: Config.mode,
-    mode2: Misc.getMode2(Config, null),
-    funbox: Config.funbox,
-    currentQuote: TestWords.currentQuote,
-  });
 
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
@@ -596,11 +580,6 @@ async function init(): Promise<boolean> {
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  console.debug("Test initialized with words", generatedWords);
-  console.debug(
-    "Test initialized with section indexes",
-    generatedSectionIndexes,
-  );
   return true;
 }
 
@@ -642,11 +621,9 @@ export async function addWord(): Promise<void> {
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
   if (TestWords.words.length - TestInput.input.getHistory().length > bound) {
-    console.debug("Not adding word, enough words already");
     return;
   }
   if (areAllTestWordsGenerated()) {
-    console.debug("Not adding word, all words generated");
     return;
   }
   const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
@@ -983,8 +960,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const ce = buildCompletedEvent(stats, rawPerSecond);
 
-  console.debug("Completed event object", ce);
-
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
       return isNaN(input) ? 1 : 0;
@@ -1003,7 +978,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let dontSave = false;
 
   if (countUndefined(ce) > 0) {
-    console.log(ce);
     showErrorNotification(
       "Failed to build result object: One of the fields is undefined or NaN",
     );
@@ -1260,7 +1234,6 @@ async function saveResult(
         retrySaving.completedEvent = result;
       }
     }
-    console.log("Error saving result", result);
     if (response.body.message === "Old key data format") {
       response.body.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";

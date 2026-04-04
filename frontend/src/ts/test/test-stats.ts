@@ -382,33 +382,7 @@ function countChars(final = false): CharCount {
 }
 
 export function calculateFinalStats(): Stats {
-  console.debug("Calculating result stats");
   let testSeconds = calculateTestSeconds();
-  console.debug(
-    "Test seconds",
-    testSeconds,
-    " (date based) ",
-    (end2 - start2) / 1000,
-    " (performance.now based)",
-    (end3 - start3) / 1000,
-    " (new Date based)",
-  );
-  console.debug(
-    "Test seconds",
-    Numbers.roundTo1(testSeconds),
-    " (date based) ",
-    Numbers.roundTo1((end2 - start2) / 1000),
-    " (performance.now based)",
-    Numbers.roundTo1((end3 - start3) / 1000),
-    " (new Date based)",
-  );
-  if (Config.mode !== "custom") {
-    testSeconds = Numbers.roundTo2(testSeconds);
-    console.debug(
-      "Mode is not custom - rounding to 2. New time: ",
-      testSeconds,
-    );
-  }
 
   //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
@@ -431,6 +405,5 @@ export function calculateFinalStats(): Stats {
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
   };
-  console.debug("Result stats", ret);
   return ret;
 }

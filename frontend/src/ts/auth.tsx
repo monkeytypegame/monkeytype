@@ -62,7 +62,6 @@ export async function sendVerificationEmail(): Promise<void> {
 
 async function getDataAndInit(): Promise<boolean> {
   try {
-    console.log("getting account data");
     const snapshot = await DB.initSnapshot();
 
     if (snapshot === false) {
@@ -113,12 +112,9 @@ export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
   user: UserType | null,
 ): Promise<void> {
-  console.debug(`account controller ready`);
-
   let userPromise: Promise<void> = Promise.resolve();
 
   if (authInitialisedAndConnected) {
-    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     if (user) {
       userPromise = loadUser(user);
     } else {

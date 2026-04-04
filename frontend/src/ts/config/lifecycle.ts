@@ -42,7 +42,6 @@ export async function applyConfigFromJson(json: string): Promise<void> {
 }
 
 export async function loadFromLocalStorage(): Promise<void> {
-  console.log("loading localStorage config");
   const newConfig = configLS.get();
   if (newConfig === undefined) {
     await resetConfig();

@@ -45,8 +45,6 @@ type PoemObject = {
 };
 
 export async function getPoem(): Promise<Section | false> {
-  console.log("Getting poem");
-
   try {
     const response = await fetch(apiURL);
     const data = (await response.json()) as PoemObject[];
@@ -66,7 +64,6 @@ export async function getPoem(): Promise<Section | false> {
 
     return new Poem(poemObj.title, poemObj.author, words);
   } catch (e) {
-    console.log(e);
     return false;
   }
 }
