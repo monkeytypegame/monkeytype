@@ -376,12 +376,16 @@ async function updateHintsPosition(): Promise<void> {
   }
 }
 
-function buildWordHTML(word: string, wordIndex: number): string {
+type RequireOnly<T, K extends keyof T> = Required<Pick<T, K>> &
+  Partial<Omit<T, K>>;
+type WordTextWithDirection = RequireOnly<TestWords.Word, "text" | "direction">;
+
+function buildWordHTML(word: WordTextWithDirection, wordIndex: number): string {
   let newlineafter = false;
-  let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
+  let retval = `<div class='word ${word.direction}' data-wordindex='${wordIndex}'>`;
 
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-  const chars = Strings.splitIntoCharacters(word);
+  const chars = Strings.splitIntoCharacters(word.text);
   for (const char of chars) {
     if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
@@ -504,7 +508,9 @@ function showWords(): void {
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += buildWordHTML(TestWords.words.getText(i), i);
+      const word = TestWords.words.get(i);
+      if (!word) continue;
+      wordsHTML += buildWordHTML(word, i);
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -688,7 +694,7 @@ function updateWordsMargin(): void {
 }
 
 export function addWord(
-  word: string,
+  word: WordTextWithDirection,
   wordIndex = TestWords.words.length - 1,
 ): void {
   // if the current active word is the last word, we need to NOT use raf

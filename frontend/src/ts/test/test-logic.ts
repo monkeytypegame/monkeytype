@@ -661,7 +661,7 @@ export async function addWord(): Promise<void> {
           direction = Strings.reverseDirection(direction);
         }
         TestWords.words.push({ text: wordText, direction, sectionIndex: i });
-        TestUI.addWord(wordText);
+        TestUI.addWord({ text: wordText, direction });
       }
     }
   }
@@ -675,7 +675,7 @@ export async function addWord(): Promise<void> {
     );
 
     TestWords.words.push(randomWord);
-    TestUI.addWord(randomWord.text);
+    TestUI.addWord(randomWord);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
