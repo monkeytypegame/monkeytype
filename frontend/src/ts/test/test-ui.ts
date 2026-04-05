@@ -227,13 +227,8 @@ async function joinOverlappingHints(
   activeWordLetters: ElementsWithUtils,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  let wordDirection = Strings.getWordDirection(
-    TestWords.words.getCurrentText(),
-    TestState.isLanguageRightToLeft ? "rtl" : "ltr",
-  );
-  if (TestState.isDirectionReversed) {
-    wordDirection = Strings.reverseDirection(wordDirection);
-  }
+  let wordDirection = TestWords.words.getCurrent()?.direction;
+  if (!wordDirection) return;
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -519,7 +514,8 @@ function showWords(): void {
     initial: true,
   });
   updateWordWrapperClasses();
-  PaceCaret.resetCaretPosition();
+  Caret.resetPosition();
+  PaceCaret.resetPosition();
 }
 
 export function appendEmptyWordElement(

@@ -7,6 +7,7 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
+import { reverseDirection, type Direction } from "../utils/strings";
 
 type Settings = {
   wpm: number;
@@ -27,6 +28,8 @@ export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
 
 let lastTestWpm = 0;
 
+let testDirection: Direction;
+
 export function setLastTestWpm(wpm: number): void {
   if (
     !TestState.isPaceRepeat ||
@@ -36,7 +39,7 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-export function resetCaretPosition(): void {
+export function resetPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (Config.mode === "zen") return;
 
@@ -47,8 +50,8 @@ export function resetCaretPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    testDirection,
+    zenWordDirection: undefined,
     animate: false,
   });
 }
@@ -127,6 +130,11 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
+
+  const langDirection = TestState.isLanguageRightToLeft ? "rtl" : "ltr";
+  testDirection = TestState.isDirectionReversed
+    ? reverseDirection(langDirection)
+    : langDirection;
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
@@ -153,8 +161,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      testDirection,
+      zenWordDirection: undefined,
       animate: true,
       animationOptions: {
         duration,

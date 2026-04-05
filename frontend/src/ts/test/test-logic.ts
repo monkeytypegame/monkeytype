@@ -301,7 +301,6 @@ export function restart(options = {} as RestartOptions): void {
   Replay.stopReplayRecording();
   Replay.pauseReplay();
   TestState.setBailedOut(false);
-  Caret.resetPosition();
   PaceCaret.reset();
   clearQuoteStats();
   CompositionState.setComposing(false);
@@ -356,6 +355,7 @@ export function restart(options = {} as RestartOptions): void {
         return;
       }
 
+      Caret.init();
       await PaceCaret.init();
 
       for (const fb of getActiveFunboxesWithFunction("restart")) {
