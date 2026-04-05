@@ -1,9 +1,15 @@
 import { QuoteWithTextSplit } from "../controllers/quotes-controller";
 import * as TestState from "./test-state";
+import type { Direction } from "../utils/strings";
+
+export type Word = {
+  text: string;
+  direction: Direction;
+  sectionIndex: number;
+};
 
 class Words {
-  public list: string[];
-  public sectionIndexList: number[];
+  public list: Word[];
   public length: number;
   public haveNumbers: boolean;
   public haveNewlines: boolean;
@@ -12,7 +18,6 @@ class Words {
 
   constructor() {
     this.list = [];
-    this.sectionIndexList = [];
     this.length = 0;
     this.haveNumbers = false;
     this.haveNewlines = false;
@@ -20,49 +25,60 @@ class Words {
     this.koreanStatus = false;
   }
 
-  get(i?: undefined, raw?: boolean): string[];
-  get(i: number, raw?: boolean): string;
-  get(i?: number, raw = false): string | string[] | undefined {
-    if (i === undefined) {
-      return this.list;
+  get(i?: undefined): Word[];
+  get(i: number): Word | undefined;
+  get(i?: number): Word[] | Word | undefined {
+    if (i === undefined) return this.list;
+    else return this.list[i];
+  }
+
+  getText(i?: undefined): string[];
+  getText(i: number): string;
+  getText(i?: number): string[] | string {
+    if (i === undefined) return this.list.map((w) => w.text);
+    else return this.list[i]?.text ?? "";
+  }
+
+  getCurrent(): Word | undefined {
+    return this.list[TestState.activeWordIndex];
+  }
+  getCurrentText(): string {
+    return this.list[TestState.activeWordIndex]?.text ?? "";
+  }
+
+  getLast(): Word | undefined {
+    return this.list[this.length - 1];
+  }
+
+  push(words: Word[] | Word): void {
+    if (Array.isArray(words)) {
+      this.list.push(...words);
+      this.length += words.length;
     } else {
-      if (raw) {
-        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
-      } else {
-        return this.list[i];
-      }
+      this.list.push(words);
+      this.length++;
     }
-  }
-  getCurrent(): string {
-    return this.list[TestState.activeWordIndex] ?? "";
-  }
-  getLast(): string {
-    return this.list[this.list.length - 1] as string;
-  }
-  push(word: string, sectionIndex: number): void {
-    this.list.push(word);
-    this.sectionIndexList.push(sectionIndex);
-    this.length = this.list.length;
   }
 
   reset(): void {
     this.list = [];
-    this.sectionIndexList = [];
-    this.length = this.list.length;
+    this.length = 0;
     this.haveNumbers = false;
     this.haveNewlines = false;
     this.haveTabs = false;
     this.koreanStatus = false;
   }
+
   clean(): void {
-    for (const s of this.list) {
-      if (/ +/.test(s)) {
-        const id = this.list.indexOf(s);
-        const tempList = s.split(" ");
-        this.list.splice(id, 1);
-        for (let i = 0; i < tempList.length; i++) {
-          this.list.splice(id + i, 0, tempList[i] as string);
-        }
+    for (let i = 0; i < this.length; i++) {
+      const word = this.get(i);
+      if (!word) continue;
+      if (/ +/.test(word.text)) {
+        const tempList = word.text
+          .split(" ")
+          .map((text) => ({ ...word, text }));
+        this.list.splice(i, 1, ...tempList);
+        this.length += tempList.length - 1;
       }
     }
   }

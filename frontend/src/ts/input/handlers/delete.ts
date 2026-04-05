@@ -20,7 +20,7 @@ export function onDelete(inputType: DeleteInputType): void {
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
-    .getCurrent()
+    .getCurrentText()
     .startsWith(TestInput.input.current);
 
   //special check for code languages
@@ -31,7 +31,7 @@ export function onDelete(inputType: DeleteInputType): void {
     beforeDeleteOnlyTabs &&
     allTabsCorrect
     // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-    //   TestWords.words.get(TestState.activeWordIndex - 1) ||
+    //   TestWords.words.getText(TestState.activeWordIndex - 1) ||
     //   Config.freedomMode)
   ) {
     setInputElementValue("");

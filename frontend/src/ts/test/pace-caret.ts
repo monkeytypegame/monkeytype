@@ -191,49 +191,57 @@ export function reset(): void {
 function incrementLetterIndex(): void {
   if (settings === null) return;
 
-  try {
-    settings.currentLetterIndex++;
-    if (
-      settings.currentLetterIndex >=
-      TestWords.words.get(settings.currentWordIndex).length + 1
-    ) {
-      //go to the next word
-      settings.currentLetterIndex = 0;
-      settings.currentWordIndex++;
-    }
-    if (!Config.blindMode) {
-      if (settings.correction < 0) {
-        while (settings.correction < 0) {
-          settings.currentLetterIndex--;
-          if (settings.currentLetterIndex <= -2) {
-            //go to the previous word
-            settings.currentLetterIndex =
-              TestWords.words.get(settings.currentWordIndex - 1).length - 1;
-            settings.currentWordIndex--;
-          }
-          settings.correction++;
-        }
-      } else if (settings.correction > 0) {
-        while (settings.correction > 0) {
-          settings.currentLetterIndex++;
-          if (
-            settings.currentLetterIndex >=
-            TestWords.words.get(settings.currentWordIndex).length
-          ) {
-            //go to the next word
-            settings.currentLetterIndex = 0;
-            settings.currentWordIndex++;
-          }
-          settings.correction--;
-        }
-      }
-    }
-  } catch (e) {
+  const finish = (): void => {
     //out of words
     settings = null;
     console.log("pace caret out of words");
     caret.hide();
+  };
+
+  settings.currentLetterIndex++;
+
+  const currentWord = TestWords.words.get(settings.currentWordIndex);
+  if (currentWord === undefined) {
+    finish();
     return;
+  }
+
+  if (settings.currentLetterIndex > currentWord.text.length) {
+    //go to the next word
+    settings.currentLetterIndex = 0;
+    settings.currentWordIndex++;
+  }
+
+  if (Config.blindMode) return;
+
+  while (settings.correction < 0) {
+    settings.currentLetterIndex--;
+    if (settings.currentLetterIndex < 0) {
+      //go to the previous word
+      const previousWord = TestWords.words.get(settings.currentWordIndex - 1);
+      if (previousWord === undefined) {
+        finish();
+        return;
+      }
+      settings.currentLetterIndex = previousWord.text.length;
+      settings.currentWordIndex--;
+    }
+    settings.correction++;
+  }
+
+  while (settings.correction > 0) {
+    settings.currentLetterIndex++;
+    const currentWord = TestWords.words.get(settings.currentWordIndex);
+    if (currentWord === undefined) {
+      finish();
+      return;
+    }
+    if (settings.currentLetterIndex > currentWord.text.length) {
+      //go to the next word
+      settings.currentLetterIndex = 0;
+      settings.currentWordIndex++;
+    }
+    settings.correction--;
   }
 }
 

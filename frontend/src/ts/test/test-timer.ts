@@ -27,6 +27,7 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { splitIntoCharacters } from "../utils/strings";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -142,7 +143,9 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+            splitIntoCharacters(TestWords.words.getCurrentText())[
+              TestInput.input.current.length
+            ] as string,
           );
         }, 1);
       }

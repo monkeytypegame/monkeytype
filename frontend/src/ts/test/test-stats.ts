@@ -64,10 +64,9 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(
-      0,
-      TestInput.input.getHistory().length,
-    ),
+    wordsHistory: TestWords.words
+      .getText()
+      .slice(0, TestInput.input.getHistory().length),
     inputHistory: TestInput.input.getHistory(),
   };
 
@@ -268,14 +267,14 @@ function getTargetWords(): string[] {
   let targetWords = [
     ...(Config.mode === "zen"
       ? TestInput.input.getHistory()
-      : TestWords.words.list),
+      : TestWords.words.getText()),
   ];
 
   if (TestState.isActive) {
     targetWords.push(
       Config.mode === "zen"
         ? TestInput.input.current
-        : TestWords.words.getCurrent(),
+        : TestWords.words.getCurrentText(),
     );
   }
 

@@ -142,7 +142,9 @@ const commands: Command[] = [
       const words = (
         Config.mode === "zen"
           ? TestInput.input.getHistory()
-          : TestWords.words.list.slice(0, TestInput.input.getHistory().length)
+          : TestWords.words
+              .getText()
+              .slice(0, TestInput.input.getHistory().length)
       ).join(" ");
 
       navigator.clipboard.writeText(words).then(
