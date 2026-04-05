@@ -375,9 +375,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
-      showNoticeNotification(`Challenge '${challenge.display}' loaded.`);
+      showSuccessNotification(`Challenge '${challenge.display}' loaded.`);
     } else {
-      showNoticeNotification("Challenge loaded. " + notitext);
+      showSuccessNotification("Challenge loaded. " + notitext);
     }
     setLoadedChallenge(challenge);
     challengeLoading = false;
