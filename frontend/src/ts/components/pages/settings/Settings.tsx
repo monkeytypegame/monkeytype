@@ -48,12 +48,13 @@ function Settings(props: Props): JSXElement {
         <div class="grid grid-flow-col gap-2">
           <For each={values()}>
             {(value) => {
+              const key = String(value);
+              const om = meta.optionsMetadata as
+                | Record<string, { displayString?: string }>
+                | undefined;
               const text =
-                typeof value === "boolean"
-                  ? value
-                    ? "on"
-                    : "off"
-                  : String(value);
+                om?.[key]?.displayString ??
+                (typeof value === "boolean" ? (value ? "on" : "off") : key);
 
               return (
                 <Button
@@ -119,6 +120,7 @@ export function SettingsTest(): JSXElement {
       <Settings configKey="difficulty" />
       <Settings configKey="quickRestart" />
       <Settings configKey="resultSaving" />
+      <Settings configKey="blindMode" />
     </div>
   );
 }

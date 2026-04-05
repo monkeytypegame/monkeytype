@@ -60,7 +60,18 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
           }
         >
       >
-    : never;
+    : ConfigSchemas.Config[K] extends boolean
+      ? Partial<{
+          true: {
+            displayString?: string;
+            fa?: FaObject;
+          };
+          false: {
+            displayString?: string;
+            fa?: FaObject;
+          };
+        }>
+      : never;
 
   // commandline?: {
   //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
@@ -305,6 +316,14 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "blind mode",
     changeRequiresRestart: false,
     group: "behavior",
+    settingsVariant: "buttons",
+    description:
+      "No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled, quick end is recommended.",
+    optionsMetadata: {
+      true: {
+        displayString: "‎",
+      },
+    },
   },
   alwaysShowWordsHistory: {
     key: "alwaysShowWordsHistory",
