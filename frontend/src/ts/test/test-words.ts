@@ -5,11 +5,13 @@ class Words {
   public list: string[];
   public sectionIndexList: number[];
   public length: number;
+  public koreanStatus: boolean;
 
   constructor() {
     this.list = [];
     this.sectionIndexList = [];
     this.length = 0;
+    this.koreanStatus = false;
   }
 
   get(i?: undefined, raw?: boolean): string[];
@@ -41,6 +43,7 @@ class Words {
     this.list = [];
     this.sectionIndexList = [];
     this.length = this.list.length;
+    this.koreanStatus = false;
   }
   clean(): void {
     for (const s of this.list) {
