@@ -2,7 +2,7 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "../utils/misc";
-import { isWordRightToLeft } from "../utils/strings";
+import { getWordDirection, reverseDirection } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "../utils/dom";
@@ -422,11 +422,13 @@ export class Caret {
       Config.mode === "zen" ||
       Config.mode === "custom" ||
       Config.funbox.includes("polyglot");
-    const [isWordRTL, isFullMatch] = isWordRightToLeft(
+    let wordDirection = getWordDirection(
       checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
-      options.isLanguageRightToLeft,
-      options.isDirectionReversed,
+      options.isLanguageRightToLeft ? "rtl" : "ltr",
     );
+    if (options.isDirectionReversed) {
+      wordDirection = reverseDirection(wordDirection);
+    }
 
     //if the letter is not visible, use the closest visible letter
     const isLetterVisible = letter.getOffsetWidth() > 0;
@@ -458,8 +460,8 @@ export class Caret {
       wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
 
     // yes, this is all super verbose, but its easier to maintain and understand
-    if (isWordRTL) {
-      if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
+    if (wordDirection === "rtl") {
+      if (!checkRtlByLetter) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {

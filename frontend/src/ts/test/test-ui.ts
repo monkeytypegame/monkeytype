@@ -227,11 +227,13 @@ async function joinOverlappingHints(
   activeWordLetters: ElementsWithUtils,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  const [isWordRightToLeft] = Strings.isWordRightToLeft(
+  let wordDirection = Strings.getWordDirection(
     TestWords.words.getCurrent(),
-    TestState.isLanguageRightToLeft,
-    TestState.isDirectionReversed,
+    TestState.isLanguageRightToLeft ? "rtl" : "ltr",
   );
+  if (TestState.isDirectionReversed) {
+    wordDirection = Strings.reverseDirection(wordDirection);
+  }
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -268,8 +270,8 @@ async function joinOverlappingHints(
     const sameTop =
       block1Letter1.getOffsetTop() === block2Letter1.getOffsetTop();
 
-    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
-    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
+    const leftBlock = wordDirection === "ltr" ? hintBlock1 : hintBlock2;
+    const rightBlock = wordDirection === "ltr" ? hintBlock2 : hintBlock1;
 
     // block edge is offset half its width because of transform: translate(-50%)
     const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
@@ -284,7 +286,7 @@ async function joinOverlappingHints(
 
       const block1Letter1Pos =
         block1Letter1.getOffsetLeft() +
-        (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
+        (wordDirection === "ltr" ? 0 : block1Letter1.getOffsetWidth());
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left =
