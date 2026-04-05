@@ -13,6 +13,7 @@ import * as TestState from "../test/test-state";
 import { typedKeys, triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
 import { Config, setConfigStore } from "./store";
+import { reconcile } from "solid-js/store";
 import { FunboxName } from "@monkeytype/schemas/configs";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
@@ -132,7 +133,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   });
 
   if (!options?.partOfFullConfigChange) {
-    setConfigStore(key, value);
+    setConfigStore(reconcile({ ...Config, [key]: value }));
   }
 
   if (metadata.triggerResize && !options?.nosave) {
@@ -194,6 +195,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   }
 
   Config.funbox = newConfig;
+  setConfigStore(reconcile({ ...Config }));
   saveToLocalStorage("funbox", nosave);
   configEvent.dispatch({
     key: "funbox",
