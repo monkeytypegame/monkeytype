@@ -431,7 +431,7 @@ export async function refresh(): Promise<void> {
     }
 
     const showTopRow =
-      (TestWords.hasNumbers && Config.keymapMode === "next") ||
+      (TestWords.words.haveNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
       (layoutData.keymapShowTopRow && Config.keymapShowTopRow !== "never");
 

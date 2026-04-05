@@ -601,6 +601,7 @@ type GenerateWordsReturn = {
   sectionIndexes: number[];
   hasTab: boolean;
   hasNewline: boolean;
+  hasNumbers: boolean;
   allRightToLeft?: boolean;
   allLigatures?: boolean;
 };
@@ -624,6 +625,7 @@ export async function generateWords(
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
+    hasNumbers: false,
     allRightToLeft: language.rightToLeft,
     allLigatures: language.ligatures ?? false,
   };
@@ -721,6 +723,7 @@ export async function generateWords(
     currentWordset.words.some((w) => w.includes("\n")) ||
     (Config.mode === "quote" &&
       (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+  ret.hasNumbers = currentWordset.words.some((w) => /\d/g.test(w));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;

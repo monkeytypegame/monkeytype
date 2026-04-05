@@ -510,6 +510,7 @@ async function init(): Promise<boolean> {
     currentQuote: TestWords.currentQuote,
   });
 
+  let wordsHaveNumbers = false;
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
   let allRightToLeft: boolean | undefined = undefined;
@@ -520,8 +521,10 @@ async function init(): Promise<boolean> {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
+    wordsHaveNumbers = gen.hasNumbers;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
+
     ({ allRightToLeft, allLigatures } = gen);
   } catch (e) {
     hideLoaderBar();
@@ -545,15 +548,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  let hasNumbers = false;
-
-  for (const word of generatedWords) {
-    if (/\d/g.test(word) && !hasNumbers) {
-      hasNumbers = true;
-    }
-  }
-
-  TestWords.setHasNumbers(hasNumbers);
+  TestWords.words.haveNumbers = wordsHaveNumbers;
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 

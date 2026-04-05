@@ -5,12 +5,14 @@ class Words {
   public list: string[];
   public sectionIndexList: number[];
   public length: number;
+  public haveNumbers: boolean;
   public koreanStatus: boolean;
 
   constructor() {
     this.list = [];
     this.sectionIndexList = [];
     this.length = 0;
+    this.haveNumbers = false;
     this.koreanStatus = false;
   }
 
@@ -43,6 +45,7 @@ class Words {
     this.list = [];
     this.sectionIndexList = [];
     this.length = this.list.length;
+    this.haveNumbers = false;
     this.koreanStatus = false;
   }
   clean(): void {
@@ -60,13 +63,9 @@ class Words {
 }
 
 export const words = new Words();
-export let hasNumbers = false;
+
 export let currentQuote = null as QuoteWithTextSplit | null;
 
 export function setCurrentQuote(rq: QuoteWithTextSplit | null): void {
   currentQuote = rq;
-}
-
-export function setHasNumbers(tf: boolean): void {
-  hasNumbers = tf;
 }
