@@ -4,6 +4,7 @@
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
+  "re2": "^1.22.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "full-check": "turbo lint build test integration-test check-assets --force",

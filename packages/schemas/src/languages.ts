@@ -27,6 +27,7 @@ export const LanguageSchema = z.enum(
     "french_bitoduc",
     "nepali",
     "nepali_1k",
+    "nepali_constitution",
     "nepali_romanized",
     "sanskrit",
     "sanskrit_roman",

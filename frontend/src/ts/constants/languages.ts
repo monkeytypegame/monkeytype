@@ -237,7 +237,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   hindi: ["hindi", "hindi_1k", "hinglish"],
   sanskrit: ["sanskrit", "sanskrit_roman"],
   gujarati: ["gujarati", "gujarati_1k"],
-  nepali: ["nepali", "nepali_1k", "nepali_romanized"],
+  nepali: ["nepali", "nepali_1k", "nepali_romanized","nepali_constitution"],
   santali: ["santali"],
   macedonian: [
     "macedonian",
