@@ -28,6 +28,8 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
+import { WebGptWordGenerator } from "../llm/webgpt-word-generator";
+import { clearWebGptRuntimeCache } from "../llm/webgpt-runtime";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -459,6 +461,83 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     getResultContent(): string {
       return Config.customLayoutfluid.join(" ");
+    },
+  },
+  llm: {
+    clearGlobal(): void {
+      clearWebGptRuntimeCache();
+    },
+    applyConfig(): void {
+      setConfig("punctuation", false, {
+        nosave: true,
+      });
+      setConfig("numbers", false, {
+        nosave: true,
+      });
+    },
+    rememberSettings(): void {
+      save("punctuation", Config.punctuation);
+      save("numbers", Config.numbers);
+    },
+    async withWords(words?: string[]): Promise<Wordset> {
+      if (words === undefined) {
+        throw new WordGenError("LLM funbox requires a word set");
+      }
+
+      const gpu =
+        typeof navigator !== "undefined" && "gpu" in navigator
+          ? (navigator as { gpu: { requestAdapter(): Promise<unknown> } }).gpu
+          : null;
+
+      if (gpu === null || (await gpu.requestAdapter()) === null) {
+        throw new WordGenError(
+          "LLM funbox requires WebGPU (Chrome/Edge 113+, Safari 26+, or Firefox 141+)",
+        );
+      }
+
+      // pre-filter words that monkeytype would reject at generation time,
+      // so the constraint engine never produces them and wastes forward passes.
+      // mirrors the rejection rules in words-generator's dedup loop.
+      const isCodeLanguage = Config.language.startsWith("code");
+      const punctuationCharsRegex = /[-=_+[\]{};'\\:"|,./<>?]/;
+      const numberCharsRegex = /[0-9]/;
+      const filteredWords = words.filter((w) => {
+        if (
+          !Config.punctuation &&
+          !isCodeLanguage &&
+          (w === "I" || punctuationCharsRegex.test(w))
+        ) {
+          return false;
+        }
+        if (!Config.numbers && numberCharsRegex.test(w)) {
+          return false;
+        }
+        return true;
+      });
+
+      const generator = new WebGptWordGenerator(filteredWords, {
+        contextWindowSize: 5,
+        initialWords: 1,
+        bufferMinWords: 10,
+        bufferTargetWords: 100,
+        maxTokensPerFill: 128,
+      });
+
+      try {
+        await generator.waitForReady();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new WordGenError(`LLM model loading failed: ${message}`);
+      }
+
+      try {
+        await generator.ensureMinBuffer(generator.getInitialWordCount() ?? 1);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new WordGenError(`LLM word generation failed: ${message}`);
+      }
+
+      return generator;
     },
   },
   gibberish: {

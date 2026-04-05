@@ -189,6 +189,15 @@ export function checkCompatibility(
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesCapitalisation"),
     ).length <= 1;
+  const llmCompatibility =
+    funboxesToCheck.filter((f) => f.name === "llm").length === 0 ||
+    funboxesToCheck.filter(
+      (f) =>
+        f.name !== "llm" &&
+        (f.frontendFunctions?.includes("alterText") === true ||
+          f.properties?.includes("wordOrder:reverse") === true ||
+          f.properties?.includes("changesWordsFrequency") === true),
+    ).length === 0;
 
   const oneCssModificationPerElement = Object.values(
     funboxesToCheck
@@ -243,6 +252,7 @@ export function checkCompatibility(
     oneCharCheckerMax &&
     oneCharReplacerMax &&
     oneChangesCapitalisationMax &&
+    llmCompatibility &&
     oneCssModificationPerElement &&
     noConfigConflicts &&
     oneWordOrderMax

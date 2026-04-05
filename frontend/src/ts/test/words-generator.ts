@@ -645,7 +645,7 @@ export async function generateWords(
   const customAndUsingPipeDelimiter =
     Config.mode === "custom" && CustomText.getPipeDelimiter();
 
-  const limit = getLimit();
+  let limit = getLimit();
   console.debug(
     `${customAndUsingPipeDelimiter ? "Section" : "Word"} limit ${limit}`,
   );
@@ -655,6 +655,10 @@ export async function generateWords(
   }
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
+  if (currentWordset !== null) {
+    await currentWordset.dispose();
+  }
+
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
     // PolyglotWordset if polyglot otherwise Wordset
@@ -670,6 +674,18 @@ export async function generateWords(
     }
   } else {
     currentWordset = await withWords(wordList);
+  }
+
+  if (currentWordset !== null) {
+    const initialWordCount = currentWordset.getInitialWordCount();
+
+    if (
+      limit > 0 &&
+      initialWordCount !== null &&
+      initialWordCount !== undefined
+    ) {
+      limit = initialWordCount;
+    }
   }
 
   console.debug("Wordset", currentWordset);
@@ -724,6 +740,10 @@ export async function generateWords(
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
+}
+
+export function getStreamingBufferTarget(): number | null {
+  return currentWordset?.getStreamingBufferTarget() ?? null;
 }
 
 export let sectionIndex = 0;
@@ -803,8 +823,17 @@ export async function getNextWord(
     }
   }
 
+  const wordset = currentWordset;
+
+  if (wordset === null) {
+    throw new WordGenError("Current wordset is null");
+  }
+
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
-  let randomWord = currentWordset.randomWord(funboxFrequency);
+  const getRandomWord = async (): Promise<string> => {
+    return await wordset.randomWordAsync(funboxFrequency);
+  };
+  let randomWord = await getRandomWord();
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   const previousWord2Raw = previousWord2
     ?.replace(/[.?!":\-,']/g, "")
@@ -814,22 +843,22 @@ export async function getNextWord(
     const funboxSection = await getFunboxSection();
 
     if (Config.mode === "quote") {
-      randomWord = currentWordset.nextWord();
+      randomWord = wordset.nextWord();
     } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
-      randomWord = currentWordset.nextWord();
+      randomWord = wordset.nextWord();
     } else if (
       Config.mode === "custom" &&
       CustomText.getMode() === "random" &&
-      (currentWordset.length < 4 || PractiseWords.before.mode !== null)
+      (wordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
-      randomWord = currentWordset.randomWord(funboxFrequency);
+      randomWord = await getRandomWord();
     } else if (Config.mode === "custom" && CustomText.getMode() === "shuffle") {
-      randomWord = currentWordset.shuffledWord();
+      randomWord = wordset.shuffledWord();
     } else if (
       Config.mode === "custom" &&
       CustomText.getLimitMode() === "section"
     ) {
-      randomWord = currentWordset.randomWord(funboxFrequency);
+      randomWord = await getRandomWord();
 
       const previousSection = Arrays.nthElementFromArray(sectionHistory, -1);
       const previousSection2 = Arrays.nthElementFromArray(sectionHistory, -2);
@@ -840,11 +869,11 @@ export async function getNextWord(
         (previousSection === randomWord || previousSection2 === randomWord)
       ) {
         regenerationCount++;
-        randomWord = currentWordset.randomWord(funboxFrequency);
+        randomWord = await getRandomWord();
       }
     } else if (isCurrentlyUsingFunboxSection) {
       randomWord = funboxSection.join(" ");
-    } else {
+    } else if (!wordset.skipsWordRejection()) {
       let regenarationCount = 0; //infinite loop emergency stop button
       let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
       let firstAfterSplitLazy = applyLazyModeToWord(
@@ -867,7 +896,7 @@ export async function getNextWord(
             /[0-9]/i.test(randomWord)))
       ) {
         regenarationCount++;
-        randomWord = currentWordset.randomWord(funboxFrequency);
+        randomWord = await getRandomWord();
         firstAfterSplit = randomWord.split(" ")[0] as string;
         firstAfterSplitLazy = applyLazyModeToWord(
           firstAfterSplit,
@@ -878,7 +907,7 @@ export async function getNextWord(
     randomWord = randomWord.replace(/ +/g, " ");
     randomWord = randomWord.replace(/(^ )|( $)/g, "");
 
-    randomWord = getFunboxWord(randomWord, wordIndex, currentWordset);
+    randomWord = getFunboxWord(randomWord, wordIndex, wordset);
 
     currentSection = [...randomWord.split(" ")];
     sectionHistory.push(randomWord);

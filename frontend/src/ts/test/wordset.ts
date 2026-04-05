@@ -31,6 +31,10 @@ export class Wordset {
     }
   }
 
+  async randomWordAsync(mode: FunboxWordsFrequency): Promise<string> {
+    return this.randomWord(mode);
+  }
+
   shuffledWord(): string {
     if (this.shuffledIndexes.length === 0) {
       this.generateShuffledIndexes();
@@ -51,6 +55,22 @@ export class Wordset {
       this.orderedIndex = 0;
     }
     return this.words[this.orderedIndex++] as string;
+  }
+
+  getInitialWordCount(): number | null {
+    return null;
+  }
+
+  getStreamingBufferTarget(): number | null {
+    return null;
+  }
+
+  skipsWordRejection(): boolean {
+    return false;
+  }
+
+  async dispose(): Promise<void> {
+    return;
   }
 }
 

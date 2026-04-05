@@ -47,6 +47,7 @@ describe("funbox-validation", () => {
           "58008", //getWord
           "wikipedia", //pullSection
           "polyglot", //withWords
+          "llm", //withWords
           "zipf", //changesWordsFrequency
         ].map((funbox) => ({
           key: "mode",

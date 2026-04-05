@@ -115,6 +115,22 @@ describe("validation", () => {
         true,
       );
     });
+
+    it("should reject llm with word-altering funboxes", () => {
+      getFunboxMock.mockReturnValueOnce([
+        {
+          name: "llm",
+          frontendFunctions: ["withWords"],
+        } as FunboxMetadata,
+        {
+          name: "backwards",
+          frontendFunctions: ["alterText"],
+          properties: ["wordOrder:reverse"],
+        } as FunboxMetadata,
+      ]);
+
+      expect(Validation.checkCompatibility(["llm", "backwards"])).toBe(false);
+    });
     describe("should validate two funboxes modifying the wordset", () => {
       const testCases = [
         {

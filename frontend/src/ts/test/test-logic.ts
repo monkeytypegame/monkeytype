@@ -77,8 +77,89 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-
+import { showBlockingLoadingScreen } from "../controllers/loading-screen";
 let failReason = "";
+let streamingAbortController: AbortController | null = null;
+let streamingAddInFlight = false;
+let generationId = 0;
+let addWordQueue: Promise<unknown> = Promise.resolve();
+let streamingHardFailed = false;
+
+function stopStreamingWords(preserveFailure = false): void {
+  generationId++;
+
+  if (streamingAbortController) {
+    streamingAbortController.abort();
+    streamingAbortController = null;
+  }
+
+  streamingAddInFlight = false;
+
+  if (!preserveFailure) {
+    streamingHardFailed = false;
+  }
+}
+
+async function streamWords(
+  signal: AbortSignal,
+  bufferTarget: number,
+): Promise<void> {
+  while (!signal.aborted) {
+    if (streamingHardFailed) {
+      return;
+    }
+
+    if (areAllTestWordsGenerated()) {
+      return;
+    }
+
+    if (TestState.testRestarting || TestState.resultVisible) {
+      await Misc.sleep(50);
+      continue;
+    }
+
+    const wordsAhead =
+      TestWords.words.length - TestInput.input.getHistory().length;
+
+    if (wordsAhead >= bufferTarget) {
+      await Misc.sleep(50);
+      continue;
+    }
+
+    if (streamingAddInFlight) {
+      await Misc.sleep(0);
+      continue;
+    }
+
+    streamingAddInFlight = true;
+
+    try {
+      await addWord();
+    } finally {
+      streamingAddInFlight = false;
+    }
+
+    await Misc.sleep(0);
+  }
+}
+
+function startStreamingWords(): void {
+  stopStreamingWords();
+
+  if (Config.mode === "zen") {
+    return;
+  }
+
+  const bufferTarget = WordsGenerator.getStreamingBufferTarget();
+
+  if (bufferTarget === null || bufferTarget <= 0) {
+    return;
+  }
+
+  const controller = new AbortController();
+  streamingAbortController = controller;
+  void streamWords(controller.signal, bufferTarget);
+}
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   if (notSignedInLastResult === null) return;
@@ -207,6 +288,9 @@ export function restart(options = {} as RestartOptions): void {
     options.event?.preventDefault();
     return;
   }
+
+  stopStreamingWords();
+
   if (TestState.isActive) {
     if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
@@ -389,6 +473,7 @@ let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
   console.debug("Initializing test");
+  stopStreamingWords();
   testReinitCount++;
   if (testReinitCount > 3) {
     if (lastInitError) {
@@ -409,13 +494,21 @@ async function init(): Promise<boolean> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
-  showLoaderBar();
+  const useLlmLoadingScreen = getActiveFunboxNames().includes("llm");
+
+  if (!useLlmLoadingScreen) {
+    showLoaderBar();
+  }
+
   const { data: language, error } = await tryCatch(
     JSONData.getLanguage(Config.language),
   );
-  hideLoaderBar();
 
   if (error) {
+    if (!useLlmLoadingScreen) {
+      hideLoaderBar();
+    }
+
     showErrorNotification("Failed to load language", { error });
   }
 
@@ -518,15 +611,57 @@ async function init(): Promise<boolean> {
   let allLigatures: boolean | undefined = undefined;
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
+
   try {
-    const gen = await WordsGenerator.generateWords(language);
+    let gen;
+
+    if (useLlmLoadingScreen) {
+      await showBlockingLoadingScreen({
+        loadingOptions: [
+          {
+            loadingMode: () => "sync",
+            loadingPromise: async () => {
+              gen = await WordsGenerator.generateWords(language);
+            },
+            style: "bar",
+            keyframes: [
+              {
+                percentage: 30,
+                durationMs: 800,
+                text: "Downloading model weights...",
+              },
+              {
+                percentage: 70,
+                durationMs: 1500,
+                text: "Initializing WebGPU runtime...",
+              },
+              {
+                percentage: 90,
+                durationMs: 400,
+                text: "Generating first words...",
+              },
+            ],
+          },
+        ],
+      });
+    } else {
+      gen = await WordsGenerator.generateWords(language);
+    }
+
+    if (gen === undefined) {
+      throw new WordGenError("Generated words are undefined");
+    }
+
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
     ({ allRightToLeft, allLigatures } = gen);
   } catch (e) {
-    hideLoaderBar();
+    if (!useLlmLoadingScreen) {
+      hideLoaderBar();
+    }
+
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }
@@ -545,6 +680,10 @@ async function init(): Promise<boolean> {
     }
 
     return await init();
+  }
+
+  if (!useLlmLoadingScreen) {
+    hideLoaderBar();
   }
 
   let hasNumbers = false;
@@ -601,6 +740,9 @@ async function init(): Promise<boolean> {
     "Test initialized with section indexes",
     generatedSectionIndexes,
   );
+
+  startStreamingWords();
+
   return true;
 }
 
@@ -626,9 +768,24 @@ export function areAllTestWordsGenerated(): boolean {
 
 //add word during the test
 export async function addWord(): Promise<void> {
+  const currentGenerationId = generationId;
+  const addWordPromise = addWordQueue.then(
+    async () => await addWordInternal(currentGenerationId),
+    async () => await addWordInternal(currentGenerationId),
+  );
+
+  addWordQueue = addWordPromise.catch(() => undefined);
+  await addWordPromise;
+}
+
+async function addWordInternal(callerGenerationId: number): Promise<boolean> {
+  if (callerGenerationId !== generationId) {
+    return false;
+  }
+
   if (Config.mode === "zen") {
     TestUI.appendEmptyWordElement();
-    return;
+    return true;
   }
 
   let bound = 100; // how many extra words to aim for AFTER the current word
@@ -643,11 +800,11 @@ export async function addWord(): Promise<void> {
 
   if (TestWords.words.length - TestInput.input.getHistory().length > bound) {
     console.debug("Not adding word, enough words already");
-    return;
+    return true;
   }
   if (areAllTestWordsGenerated()) {
     console.debug("Not adding word, all words generated");
-    return;
+    return true;
   }
   const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
   if (sectionFunbox) {
@@ -662,10 +819,10 @@ export async function addWord(): Promise<void> {
         );
         toggleFunbox(sectionFunbox.name);
         restart();
-        return;
+        return false;
       }
 
-      if (section === undefined) return;
+      if (section === undefined) return false;
 
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
@@ -673,10 +830,17 @@ export async function addWord(): Promise<void> {
         if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
+
+        if (callerGenerationId !== generationId) {
+          return false;
+        }
+
         wordCount++;
         TestWords.words.push(word, i);
         TestUI.addWord(word);
       }
+
+      return true;
     }
   }
 
@@ -688,10 +852,25 @@ export async function addWord(): Promise<void> {
       TestWords.words.get(TestWords.words.length - 2),
     );
 
+    if (callerGenerationId !== generationId) {
+      return false;
+    }
+
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
     TestUI.addWord(randomWord.word);
+    return true;
   } catch (e) {
-    timerEvent.dispatch({ key: "fail", value: "word generation error" });
+    // generationId mismatch means a restart/stop happened while we were generating
+    if (callerGenerationId !== generationId) {
+      return false;
+    }
+
+    streamingHardFailed = true;
+    stopStreamingWords(true);
+
+    if (TestState.isActive) {
+      timerEvent.dispatch({ key: "fail", value: "word generation error" });
+    }
     showErrorNotification(
       "Error while getting next word. Please try again later",
       {
@@ -699,6 +878,7 @@ export async function addWord(): Promise<void> {
         important: true,
       },
     );
+    return false;
   }
 }
 
@@ -879,6 +1059,7 @@ function buildCompletedEvent(
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
+  stopStreamingWords();
   TestUI.setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear();

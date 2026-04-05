@@ -1,0 +1,13 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "moduleResolution": "Bundler",
+    "module": "ES2022",
+    "target": "ES2022",
+    "lib": ["es2022", "dom"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": ["node_modules", "dist", ".turbo", "src/vendor"],
+  "extends": [
+    "../oxlint-config/index.jsonc"
+    // "@monkeytype/oxlint-config"
+  ]
+}
