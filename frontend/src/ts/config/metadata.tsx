@@ -34,7 +34,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**
    * How this config should be displayed on the settings page.
    */
-  settingsVariant?: "buttons";
+  settingsVariant?: "buttons" | "buttonsFullWidth";
 
   /**
    * Optional display string for the config key.
@@ -409,6 +409,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-gamepad" },
     changeRequiresRestart: true,
     group: "behavior",
+    settingsVariant: "buttonsFullWidth",
     isBlocked: ({ value, currentConfig }) => {
       if (!checkCompatibility(value)) {
         showNoticeNotification(

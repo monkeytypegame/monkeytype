@@ -73,6 +73,11 @@ export function checkCompatibility(
   funboxNames: FunboxName[],
   withFunbox?: FunboxName,
 ): boolean {
+  if (!Array.isArray(funboxNames)) {
+    console.error("Funbox names should be an array");
+    return false;
+  }
+
   if (funboxNames.length === 0) return true;
 
   let funboxesToCheck: FunboxMetadata[];

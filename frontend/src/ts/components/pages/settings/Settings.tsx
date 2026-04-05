@@ -12,7 +12,6 @@ import { H3 } from "../../common/Headers";
 
 type Props = {
   configKey: keyof Config;
-  fullWidthInputs?: boolean;
   inputs?: JSXElement;
 };
 
@@ -23,13 +22,27 @@ function Settings(props: Props): JSXElement {
 
   const schema = ConfigSchema.shape[configKey];
 
+  let schemaType = "unknown";
+
   console.log("schema", configKey, schema);
   const values = () => {
-    if ("options" in schema) {
-      return schema.options as string[];
+    if (schema._def.typeName === ZodFirstPartyTypeKind.ZodEnum) {
+      schemaType = "enum";
+      return schema._def.values as string[];
     }
     if (schema._def.typeName === ZodFirstPartyTypeKind.ZodBoolean) {
+      schemaType = "boolean";
       return [false, true];
+    }
+    if (
+      "_def" in schema &&
+      schema._def.typeName === ZodFirstPartyTypeKind.ZodArray
+    ) {
+      const type = schema._def.type;
+      if (type._def.typeName === ZodFirstPartyTypeKind.ZodEnum) {
+        schemaType = "array-enum";
+        return type._def.values as string[];
+      }
     }
     return undefined;
   };
@@ -43,9 +56,13 @@ function Settings(props: Props): JSXElement {
       );
     }
 
-    if (meta.settingsVariant === "buttons" && values()) {
+    if (
+      (meta.settingsVariant === "buttons" ||
+        meta.settingsVariant === "buttonsFullWidth") &&
+      values()
+    ) {
       return (
-        <div class="grid grid-flow-col gap-2">
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-2">
           <For each={values()}>
             {(value) => {
               const key = String(value);
@@ -54,15 +71,63 @@ function Settings(props: Props): JSXElement {
                 | undefined;
               const text =
                 om?.[key]?.displayString ??
-                (typeof value === "boolean" ? (value ? "on" : "off") : key);
+                (typeof value === "boolean"
+                  ? value
+                    ? "on"
+                    : "off"
+                  : key.replace(/_/g, " "));
+
+              const active = () => {
+                if (schemaType.startsWith("array")) {
+                  return (getConfig[configKey] as unknown as string[]).includes(
+                    value as string,
+                  );
+                }
+                return getConfig[configKey] === value;
+              };
+
+              const setter = () => {
+                if (schemaType.startsWith("array")) {
+                  const current = getConfig[configKey] as unknown as string[];
+                  if (current.includes(value as string)) {
+                    setConfig(
+                      configKey,
+                      current.filter(
+                        (v) => v !== value,
+                      ) as Config[keyof Config],
+                    );
+                  } else {
+                    setConfig(configKey, [
+                      ...current,
+                      value,
+                    ] as Config[keyof Config]);
+                  }
+                } else {
+                  setConfig(configKey, value);
+                }
+              };
+
+              const disabled = () => {
+                const isBlocked = meta.isBlocked as
+                  | ((opts: {
+                      value: unknown;
+                      currentConfig: Readonly<Config>;
+                    }) => boolean)
+                  | undefined;
+                const v = schemaType.startsWith("array") ? [value] : value;
+                return (
+                  isBlocked?.({ value: v, currentConfig: getConfig }) ?? false
+                );
+              };
 
               return (
                 <Button
                   text={text}
-                  active={getConfig[configKey] === value}
+                  active={active()}
+                  disabled={disabled()}
                   onClick={() => {
-                    if (getConfig[configKey] === value) return;
-                    setConfig(configKey, value);
+                    if (!schemaType.startsWith("array") && active()) return;
+                    setter();
                   }}
                 />
               );
@@ -95,7 +160,7 @@ function Settings(props: Props): JSXElement {
           "md:grid-cols-[1fr_1fr] md:gap-x-8",
           "lg:grid-cols-[1.5fr_1fr]",
           "xl:grid-cols-[2fr_1fr]",
-          props.fullWidthInputs &&
+          meta.settingsVariant === "buttonsFullWidth" &&
             "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1",
         )}
       >
@@ -116,11 +181,12 @@ function Settings(props: Props): JSXElement {
 
 export function SettingsTest(): JSXElement {
   return (
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-8 border border-main">
       <Settings configKey="difficulty" />
       <Settings configKey="quickRestart" />
       <Settings configKey="resultSaving" />
       <Settings configKey="blindMode" />
+      <Settings configKey="funbox" />
     </div>
   );
 }
