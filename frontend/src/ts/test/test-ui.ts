@@ -1257,32 +1257,46 @@ export function setLigatures(isEnabled: boolean): void {
 }
 
 function buildWordLettersHTML(
-  charCount: number,
   input: string,
   corrected: string,
-  inputCharacters: string[],
-  wordCharacters: string[],
-  correctedCharacters: string[],
+  word: string,
   containsKorean: boolean,
 ): string {
+  const inputCharacters = Strings.splitIntoCharacters(input);
+  const correctedCharacters = Strings.splitIntoCharacters(corrected);
+  const wordCharacters = Strings.splitIntoCharacters(word);
+
+  const koreanCorrectedCharacters = Strings.splitIntoCharacters(
+    Hangul.assemble(corrected.split("")),
+  );
+
+  let loopCharCount;
+  if (Config.mode === "zen" || inputCharacters.length > wordCharacters.length) {
+    //input is longer - extra characters possible (loop over input)
+    loopCharCount = inputCharacters.length;
+  } else {
+    //input is shorter or equal (loop over word list)
+    loopCharCount = wordCharacters.length;
+  }
+
   let out = "";
-  for (let c = 0; c < charCount; c++) {
+  for (let c = 0; c < loopCharCount; c++) {
     let correctedChar;
     try {
       correctedChar = !containsKorean
         ? correctedCharacters[c]
-        : Hangul.assemble(corrected.split(""))[c];
+        : koreanCorrectedCharacters[c];
     } catch (e) {
       correctedChar = undefined;
     }
     let extraCorrected = "";
-    const historyWord: string = !containsKorean
-      ? corrected
-      : Hangul.assemble(corrected.split(""));
+    const historyChars = !containsKorean
+      ? correctedCharacters
+      : koreanCorrectedCharacters;
     if (
-      c + 1 === charCount &&
-      historyWord !== undefined &&
-      historyWord.length > input.length
+      c + 1 === loopCharCount &&
+      historyChars !== undefined &&
+      historyChars.length > input.length
     ) {
       extraCorrected = "extraCorrected";
     }
@@ -1378,28 +1392,12 @@ async function loadWordsHistory(): Promise<boolean> {
         wordEl.setAttribute("input", input.replace(/ /g, "_"));
       }
 
-      const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word);
-      const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
-
-      let loop;
-      if (Config.mode === "zen" || input.length > word.length) {
-        //input is longer - extra characters possible (loop over input)
-        loop = inputCharacters.length;
-      } else {
-        //input is shorter or equal (loop over word list)
-        loop = wordCharacters.length;
-      }
-
       if (corrected === undefined) throw new Error("empty corrected word");
 
       wordEl.innerHTML = buildWordLettersHTML(
-        loop,
         input,
         corrected,
-        inputCharacters,
-        wordCharacters,
-        correctedCharacters,
+        word,
         containsKorean,
       );
     } catch (e) {
