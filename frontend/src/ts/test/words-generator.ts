@@ -713,16 +713,8 @@ export async function generateWords(
     throw new WordGenError("Random quote is null");
   }
 
-  ret.hasTab =
-    ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
-  ret.hasNewline =
-    ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+  ret.hasTab = currentWordset.words.some((w) => w.includes("\t"));
+  ret.hasNewline = currentWordset.words.some((w) => w.includes("\n"));
   ret.hasNumbers = currentWordset.words.some((w) => /\d/g.test(w));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?

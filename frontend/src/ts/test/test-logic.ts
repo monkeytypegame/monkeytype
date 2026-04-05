@@ -549,6 +549,8 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.words.haveNumbers = wordsHaveNumbers;
+  TestWords.words.haveNewlines = wordsHaveNewline;
+  TestWords.words.haveTabs = wordsHaveTab;
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 

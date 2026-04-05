@@ -6,6 +6,8 @@ class Words {
   public sectionIndexList: number[];
   public length: number;
   public haveNumbers: boolean;
+  public haveNewlines: boolean;
+  public haveTabs: boolean;
   public koreanStatus: boolean;
 
   constructor() {
@@ -13,6 +15,8 @@ class Words {
     this.sectionIndexList = [];
     this.length = 0;
     this.haveNumbers = false;
+    this.haveNewlines = false;
+    this.haveTabs = false;
     this.koreanStatus = false;
   }
 
@@ -46,6 +50,8 @@ class Words {
     this.sectionIndexList = [];
     this.length = this.list.length;
     this.haveNumbers = false;
+    this.haveNewlines = false;
+    this.haveTabs = false;
     this.koreanStatus = false;
   }
   clean(): void {
