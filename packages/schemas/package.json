@@ -31,6 +31,7 @@
     "tsup": "8.4.0",
     "typescript": "6.0.2",
     "vitest": "4.1.0"
+    "re2": "^1.21.4"
   },
   "peerDependencies": {
     "zod": "3.23.8"
