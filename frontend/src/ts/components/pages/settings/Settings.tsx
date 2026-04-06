@@ -127,6 +127,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
       </Button>
       <AnimeShow when={isOpen()} slide class="grid gap-8">
         {props.children}
+        <div class="h-16"></div>
       </AnimeShow>
     </div>
   );
