@@ -53,10 +53,10 @@ export function Settings(): JSXElement {
       </Section>
       <Section title="caret">
         <KeyedSetting key="smoothCaret" autoInputs />
-        <KeyedSetting key="caretStyle" autoInputs />
+        <KeyedSetting key="caretStyle" autoInputs autoWide />
         {/* pace caret */}
+        <KeyedSetting key="paceCaretStyle" autoInputs autoWide />
         <KeyedSetting key="repeatedPace" autoInputs />
-        <KeyedSetting key="paceCaretStyle" autoInputs />
       </Section>
       <Section title="appearance">
         <KeyedSetting key="timerStyle" autoInputs autoWide />
@@ -171,7 +171,7 @@ function KeyedSetting(props: {
                     return "off";
                   }
 
-                  return option.toString();
+                  return option.toString().replace(/_/g, " ");
                 };
                 return (
                   <Button
