@@ -1,9 +1,11 @@
 import { Config, ConfigSchema } from "@monkeytype/schemas/configs";
 import { createSignal, For, JSXElement, Show } from "solid-js";
+import { z } from "zod";
 
 import { configMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import { isFirefox } from "../../../utils/misc";
@@ -140,21 +142,31 @@ export function Settings(): JSXElement {
 }
 
 function AccountSettingsNotice(): JSXElement {
+  const [dismissed, setDismissed] = useLocalStorage({
+    key: "accountSettingsMessageDismissed",
+    schema: z.boolean(),
+    fallback: false,
+  });
   return (
-    <div class="grid grid-cols-[auto_1fr_auto] items-center gap-8 rounded px-8 py-4 ring-4 ring-sub-alt">
-      <Fa icon="fa-user-cog" class="text-4xl text-sub" />
-      <div>
-        Account settings have moved. You can now access them by hovering over
-        the account button in the top right corner, then clicking &quot;Account
-        settings&quot;.
+    <Show when={!dismissed()}>
+      <div class="grid grid-cols-[auto_1fr_auto] items-center gap-8 rounded px-8 py-4 ring-4 ring-sub-alt">
+        <Fa icon="fa-user-cog" class="text-4xl text-sub" />
+        <div>
+          Account settings have moved. You can now access them by hovering over
+          the account button in the top right corner, then clicking
+          &quot;Account settings&quot;.
+        </div>
+        <Button
+          text="go to account settings"
+          href="/account-settings"
+          class="p-4"
+          router-link
+          onClick={() => {
+            setDismissed(true);
+          }}
+        />
       </div>
-      <Button
-        text="go to account settings"
-        href="/account-settings"
-        class="p-4"
-        router-link
-      />
-    </div>
+    </Show>
   );
 }
 
