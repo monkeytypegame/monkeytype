@@ -66,6 +66,7 @@ export function Funbox(): JSXElement {
                     disabled={disabled()}
                     balloon={{
                       text: funbox.description,
+                      length: "xlarge",
                     }}
                     class="w-full"
                   >
