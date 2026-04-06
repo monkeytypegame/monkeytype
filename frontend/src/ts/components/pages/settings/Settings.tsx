@@ -84,6 +84,23 @@ export function Settings(): JSXElement {
         <KeyedSetting key="keymapShowTopRow" autoInputs autoWide />
         {/* todo: keymap size */}
       </Section>
+      <Section title="theme">
+        <KeyedSetting key="flipTestColors" autoInputs />
+        <KeyedSetting key="colorfulMode" autoInputs />
+        {/* todo: custom background (url + local image + size) */}
+        {/* todo: custom background filter */}
+        <KeyedSetting key="autoSwitchTheme" autoInputs />
+        {/* todo: auto switch theme inputs (light/dark selects) */}
+        <KeyedSetting key="randomTheme" autoInputs autoWide />
+        {/* todo: theme picker (preset + custom tabs) */}
+      </Section>
+      <Section title="hide elements">
+        <KeyedSetting key="showKeyTips" autoInputs />
+        <KeyedSetting key="showOutOfFocusWarning" autoInputs />
+        <KeyedSetting key="capsLockWarning" autoInputs />
+        <KeyedSetting key="showAverage" autoInputs />
+      </Section>
+      {/* todo: danger zone */}
     </div>
   );
 }
@@ -95,7 +112,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
     <div>
       <Button
         variant="text"
-        class="w-min gap-4 p-0 text-4xl"
+        class="mb-8 w-max gap-4 p-0 text-4xl"
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <Anime
@@ -108,8 +125,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
         </Anime>
         {props.title}
       </Button>
-      {/* pt-8 doesnt animate here, it jumps */}
-      <AnimeShow when={isOpen()} slide class="grid gap-8 pt-8">
+      <AnimeShow when={isOpen()} slide class="grid gap-8">
         {props.children}
       </AnimeShow>
     </div>
