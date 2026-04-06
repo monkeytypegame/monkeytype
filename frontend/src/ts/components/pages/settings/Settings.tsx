@@ -20,90 +20,90 @@ export function Settings(): JSXElement {
   return (
     <div class="outline">
       <Section title="behavior">
-        <KeyedSetting key="resultSaving" autoInputs />
-        <KeyedSetting key="difficulty" autoInputs />
-        <KeyedSetting key="quickRestart" autoInputs />
-        <KeyedSetting key="repeatQuotes" autoInputs />
-        <KeyedSetting key="blindMode" autoInputs />
-        <KeyedSetting key="alwaysShowWordsHistory" autoInputs />
-        <KeyedSetting key="singleListCommandLine" autoInputs />
+        <KeyedSetting key="resultSaving" />
+        <KeyedSetting key="difficulty" />
+        <KeyedSetting key="quickRestart" />
+        <KeyedSetting key="repeatQuotes" />
+        <KeyedSetting key="blindMode" />
+        <KeyedSetting key="alwaysShowWordsHistory" />
+        <KeyedSetting key="singleListCommandLine" />
         <MinSpeed />
         <MinAcc />
         <MinBurst />
-        <KeyedSetting key="britishEnglish" autoInputs />
+        <KeyedSetting key="britishEnglish" />
         <Language />
         <Funbox />
         {/* todo: custom layoutfluid */}
         {/* todo: polyglot languages */}
       </Section>
       <Section title="input">
-        <KeyedSetting key="freedomMode" autoInputs />
-        <KeyedSetting key="strictSpace" autoInputs />
-        <KeyedSetting key="oppositeShiftMode" autoInputs />
-        <KeyedSetting key="stopOnError" autoInputs />
-        <KeyedSetting key="confidenceMode" autoInputs />
-        <KeyedSetting key="quickEnd" autoInputs />
-        <KeyedSetting key="indicateTypos" autoInputs />
-        <KeyedSetting key="hideExtraLetters" autoInputs />
-        <KeyedSetting key="compositionDisplay" autoInputs />
-        <KeyedSetting key="lazyMode" autoInputs />
+        <KeyedSetting key="freedomMode" />
+        <KeyedSetting key="strictSpace" />
+        <KeyedSetting key="oppositeShiftMode" />
+        <KeyedSetting key="stopOnError" />
+        <KeyedSetting key="confidenceMode" />
+        <KeyedSetting key="quickEnd" />
+        <KeyedSetting key="indicateTypos" />
+        <KeyedSetting key="hideExtraLetters" />
+        <KeyedSetting key="compositionDisplay" />
+        <KeyedSetting key="lazyMode" />
         {/* todo: layout emulator */}
-        <KeyedSetting key="codeUnindentOnBackspace" autoInputs />
+        <KeyedSetting key="codeUnindentOnBackspace" />
       </Section>
       <Section title="sound">
         {/* todo: sound volume */}
-        <KeyedSetting key="playSoundOnClick" autoInputs autoWide />
-        <KeyedSetting key="playSoundOnError" autoInputs autoWide />
-        <KeyedSetting key="playTimeWarning" autoInputs autoWide />
+        <KeyedSetting key="playSoundOnClick" wide />
+        <KeyedSetting key="playSoundOnError" wide />
+        <KeyedSetting key="playTimeWarning" wide />
       </Section>
       <Section title="caret">
-        <KeyedSetting key="smoothCaret" autoInputs />
-        <KeyedSetting key="caretStyle" autoInputs autoWide />
+        <KeyedSetting key="smoothCaret" />
+        <KeyedSetting key="caretStyle" wide />
         {/* pace caret */}
-        <KeyedSetting key="paceCaretStyle" autoInputs autoWide />
-        <KeyedSetting key="repeatedPace" autoInputs />
+        <KeyedSetting key="paceCaretStyle" wide />
+        <KeyedSetting key="repeatedPace" />
       </Section>
       <Section title="appearance">
-        <KeyedSetting key="timerStyle" autoInputs autoWide />
-        <KeyedSetting key="liveSpeedStyle" autoInputs />
-        <KeyedSetting key="liveAccStyle" autoInputs />
-        <KeyedSetting key="liveBurstStyle" autoInputs />
-        <KeyedSetting key="timerColor" autoInputs />
-        <KeyedSetting key="timerOpacity" autoInputs />
-        <KeyedSetting key="highlightMode" autoInputs autoWide />
-        <KeyedSetting key="typedEffect" autoInputs />
-        <KeyedSetting key="tapeMode" autoInputs />
+        <KeyedSetting key="timerStyle" wide />
+        <KeyedSetting key="liveSpeedStyle" />
+        <KeyedSetting key="liveAccStyle" />
+        <KeyedSetting key="liveBurstStyle" />
+        <KeyedSetting key="timerColor" />
+        <KeyedSetting key="timerOpacity" />
+        <KeyedSetting key="highlightMode" wide />
+        <KeyedSetting key="typedEffect" />
+        <KeyedSetting key="tapeMode" />
         {/* todo: tape margin */}
-        <KeyedSetting key="smoothLineScroll" autoInputs />
-        <KeyedSetting key="showAllLines" autoInputs />
-        <KeyedSetting key="alwaysShowDecimalPlaces" autoInputs />
-        <KeyedSetting key="typingSpeedUnit" autoInputs />
-        <KeyedSetting key="startGraphsAtZero" autoInputs />
+        <KeyedSetting key="smoothLineScroll" />
+        <KeyedSetting key="showAllLines" />
+        <KeyedSetting key="alwaysShowDecimalPlaces" />
+        <KeyedSetting key="typingSpeedUnit" />
+        <KeyedSetting key="startGraphsAtZero" />
         {/* todo: max line width */}
         {/* todo: font size */}
         {/* todo: font family */}
-        <KeyedSetting key="keymapMode" autoInputs />
+        <KeyedSetting key="keymapMode" />
         {/* todo: keymap layout */}
-        <KeyedSetting key="keymapStyle" autoInputs autoWide />
-        <KeyedSetting key="keymapLegendStyle" autoInputs autoWide />
-        <KeyedSetting key="keymapShowTopRow" autoInputs autoWide />
+        <KeyedSetting key="keymapStyle" wide />
+        <KeyedSetting key="keymapLegendStyle" wide />
+        <KeyedSetting key="keymapShowTopRow" wide />
         {/* todo: keymap size */}
       </Section>
       <Section title="theme">
-        <KeyedSetting key="flipTestColors" autoInputs />
-        <KeyedSetting key="colorfulMode" autoInputs />
+        <KeyedSetting key="flipTestColors" />
+        <KeyedSetting key="colorfulMode" />
         {/* todo: custom background (url + local image + size) */}
         {/* todo: custom background filter */}
-        <KeyedSetting key="autoSwitchTheme" autoInputs />
+        <KeyedSetting key="autoSwitchTheme" />
         {/* todo: auto switch theme inputs (light/dark selects) */}
-        <KeyedSetting key="randomTheme" autoInputs autoWide />
+        <KeyedSetting key="randomTheme" wide />
         {/* todo: theme picker (preset + custom tabs) */}
       </Section>
       <Section title="hide elements">
-        <KeyedSetting key="showKeyTips" autoInputs />
-        <KeyedSetting key="showOutOfFocusWarning" autoInputs />
-        <KeyedSetting key="capsLockWarning" autoInputs />
-        <KeyedSetting key="showAverage" autoInputs />
+        <KeyedSetting key="showKeyTips" />
+        <KeyedSetting key="showOutOfFocusWarning" />
+        <KeyedSetting key="capsLockWarning" />
+        <KeyedSetting key="showAverage" />
       </Section>
       {/* todo: danger zone */}
     </div>
@@ -141,59 +141,53 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
 function KeyedSetting(props: {
   key: keyof Config;
   inputs?: JSXElement;
-  fullWidthInputs?: JSXElement;
-  autoInputs?: boolean;
-  autoWide?: boolean;
+  wide?: boolean;
 }): JSXElement {
   const autoInputs = () => {
-    if (props.autoInputs === true) {
-      const options = getOptions(ConfigSchema.shape[props.key]);
-      if (options !== undefined) {
-        return (
-          <div
-            class={cn(
-              "grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2",
-              props.autoWide &&
-                "grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))]",
-            )}
-          >
-            <For each={options}>
-              {(option) => {
-                const text = () => {
-                  const optionsMeta = configMetadata[props.key]
-                    .optionsMetadata as
-                    | Record<string, { displayString?: string }>
-                    | undefined;
-                  const match = optionsMeta?.[String(option)];
-                  if (match?.displayString !== undefined) {
-                    return match.displayString;
-                  }
+    const options = getOptions(ConfigSchema.shape[props.key]);
+    if (options !== undefined) {
+      return (
+        <div
+          class={cn(
+            "grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2",
+            props.wide && "grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))]",
+          )}
+        >
+          <For each={options}>
+            {(option) => {
+              const text = () => {
+                const optionsMeta = configMetadata[props.key].optionsMetadata as
+                  | Record<string, { displayString?: string }>
+                  | undefined;
+                const match = optionsMeta?.[String(option)];
+                if (match?.displayString !== undefined) {
+                  return match.displayString;
+                }
 
-                  if (option === true) {
-                    return "on";
-                  }
-                  if (option === false) {
-                    return "off";
-                  }
+                if (option === true) {
+                  return "on";
+                }
+                if (option === false) {
+                  return "off";
+                }
 
-                  return option.toString().replace(/_/g, " ");
-                };
-                return (
-                  <Button
-                    active={getConfig[props.key] === option}
-                    onClick={() => {
-                      if (getConfig[props.key] === option) return;
-                      setConfig(props.key, option);
-                    }}
-                  >
-                    {text()}
-                  </Button>
-                );
-              }}
-            </For>
-          </div>
-        );
-      }
+                return option.toString().replace(/_/g, " ");
+              };
+              return (
+                <Button
+                  active={getConfig[props.key] === option}
+                  onClick={() => {
+                    if (getConfig[props.key] === option) return;
+                    setConfig(props.key, option);
+                  }}
+                >
+                  {text()}
+                </Button>
+              );
+            }}
+          </For>
+        </div>
+      );
     }
     return undefined;
   };
@@ -203,11 +197,9 @@ function KeyedSetting(props: {
       title={configMetadata[props.key].displayString ?? props.key}
       fa={configMetadata[props.key].fa}
       description={configMetadata[props.key].description}
-      inputs={!props.autoWide ? autoInputs() : props.inputs}
+      inputs={!props.wide ? autoInputs() : props.inputs}
       fullWidthInputs={
-        props.autoWide
-          ? (autoInputs() ?? props.fullWidthInputs)
-          : props.fullWidthInputs
+        props.wide ? (autoInputs() ?? props.inputs) : props.inputs
       }
     />
   );
