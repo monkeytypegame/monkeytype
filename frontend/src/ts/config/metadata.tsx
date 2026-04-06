@@ -1,15 +1,17 @@
 import { checkCompatibility } from "@monkeytype/funbox";
-import * as DB from "../db";
-import { showNoticeNotification } from "../states/notifications";
-import { isAuthenticated } from "../states/core";
-import { canSetFunboxWithConfig } from "./funbox-validation";
-import { reloadAfter } from "../utils/misc";
-import { isDevEnvironment } from "../utils/env";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
-import { capitalizeFirstLetter } from "../utils/strings";
+import { JSXElement } from "solid-js";
+
 import { getDefaultConfig } from "../constants/default-config";
+import * as DB from "../db";
+import { isAuthenticated } from "../states/core";
+import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
+import { isDevEnvironment } from "../utils/env";
+import { reloadAfter } from "../utils/misc";
+import { capitalizeFirstLetter } from "../utils/strings";
+import { canSetFunboxWithConfig } from "./funbox-validation";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -33,6 +35,8 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   triggerResize?: true;
 
+  description?: string | JSXElement;
+
   /**
    * Fa object (icon)
    */
@@ -48,7 +52,18 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
           }
         >
       >
-    : never;
+    : ConfigSchemas.Config[K] extends boolean
+      ? Partial<{
+          true: {
+            displayString?: string;
+            fa?: FaObject;
+          };
+          false: {
+            displayString?: string;
+            fa?: FaObject;
+          };
+        }>
+      : never;
 
   // commandline?: {
   //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
@@ -230,6 +245,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "language",
     changeRequiresRestart: true,
     group: "test",
+    description: "Change in which language you want to type.",
   },
   burstHeatmap: {
     key: "burstHeatmap",
@@ -245,6 +261,8 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-star" },
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "Normal is the classic typing test experience. Expert fails the test if you submit (press space) an incorrect word. Master fails if you press a single incorrect key (meaning you have to achieve 100% accuracy).",
   },
   quickRestart: {
     key: "quickRestart",
@@ -252,6 +270,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "quick restart",
     changeRequiresRestart: false,
     group: "behavior",
+    description:
+      'Press tab, esc or enter to quickly restart the test, or to quickly jump to the test page. These options disable tab navigation on most parts of the website. Using the "esc" option will move opening the commandline to the tab key.',
   },
   repeatQuotes: {
     key: "repeatQuotes",
@@ -259,6 +279,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "repeat quotes",
     changeRequiresRestart: false,
     group: "behavior",
+    description:
+      "This setting changes the restarting behavior when typing in quote mode. Changing it to 'typing' will repeat the quote if you restart while typing.",
   },
   resultSaving: {
     key: "resultSaving",
@@ -266,13 +288,22 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "result saving",
     changeRequiresRestart: false,
     group: "behavior",
+    description:
+      "Disable result saving, in case you want to practice without affecting your account stats.",
   },
   blindMode: {
     key: "blindMode",
     fa: { icon: "fa-eye-slash" },
+    optionsMetadata: {
+      true: {
+        displayString: "‎",
+      },
+    },
     displayString: "blind mode",
     changeRequiresRestart: false,
     group: "behavior",
+    description:
+      "No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled, quick end is recommended.",
   },
   alwaysShowWordsHistory: {
     key: "alwaysShowWordsHistory",
@@ -280,6 +311,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "always show words history",
     changeRequiresRestart: false,
     group: "behavior",
+    description:
+      "This option will automatically show the words history at the end of the test. Can cause slight lag with a lot of words.",
   },
   singleListCommandLine: {
     key: "singleListCommandLine",
@@ -287,6 +320,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "single list command line",
     changeRequiresRestart: false,
     group: "behavior",
+    description:
+      "When enabled, it will show the command line with all commands in a single list instead of submenu arrangements. Selecting 'manual' will expose all commands only after typing >.",
   },
   minWpm: {
     key: "minWpm",
@@ -294,6 +329,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "min speed",
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "Automatically fails a test if your speed falls below a threshold.",
   },
   minWpmCustomSpeed: {
     key: "minWpmCustomSpeed",
@@ -316,6 +353,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "min accuracy",
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "Automatically fails a test if your accuracy falls below a threshold.",
   },
   minAccCustom: {
     key: "minAccCustom",
@@ -338,6 +377,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "min word burst",
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "Automatically fails a test if your raw for a single word falls below this threshold. Selecting 'flex' allows for this threshold to automatically decrease for longer words.",
   },
   minBurstCustomSpeed: {
     key: "minBurstCustomSpeed",
@@ -352,12 +393,16 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "british english",
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "When enabled, the website will use the British spelling instead of American. Note that this might not replace all words correctly. If you find any issues, please let us know.",
   },
   funbox: {
     key: "funbox",
     fa: { icon: "fa-gamepad" },
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "These are special modes that change the website in some special way (by altering the word generation, behavior of the website or the looks). Give each one of them a try!",
     isBlocked: ({ value, currentConfig }) => {
       if (!checkCompatibility(value)) {
         showNoticeNotification(
@@ -387,6 +432,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
     group: "behavior",
+    description:
+      "Select which layouts you want the layoutfluid funbox to cycle through.",
     overrideValue: ({ value }) => {
       return Array.from(new Set(value));
     },
@@ -397,6 +444,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom polyglot",
     changeRequiresRestart: false,
     group: "behavior",
+    description: "Select which languages you want the polyglot funbox to use.",
     overrideValue: ({ value }) => {
       return Array.from(new Set(value));
     },
@@ -409,6 +457,8 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     displayString: "freedom mode",
     group: "input",
+    description:
+      "Allows you to delete any word, even if it was typed correctly.",
     overrideConfig: ({ value }) => {
       if (value) {
         return {
@@ -424,6 +474,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "strict space",
     changeRequiresRestart: true,
     group: "input",
+    description:
+      "Pressing space at the beginning of a word will insert a space character when this mode is enabled.",
   },
   oppositeShiftMode: {
     key: "oppositeShiftMode",
@@ -431,6 +483,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "opposite shift mode",
     changeRequiresRestart: false,
     group: "input",
+    description:
+      'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "keymap layout" setting.',
   },
   stopOnError: {
     key: "stopOnError",
@@ -438,6 +492,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "stop on error",
     changeRequiresRestart: true,
     group: "input",
+    description:
+      "Letter mode will stop input when pressing any incorrect letters. Word mode will not allow you to continue to the next word until you correct all mistakes.",
     overrideConfig: ({ value }) => {
       if (value !== "off") {
         return {
@@ -453,6 +509,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "confidence mode",
     changeRequiresRestart: false,
     group: "input",
+    description:
+      "When enabled, you will not be able to go back to previous words to fix mistakes. When turned up to the max, you won't be able to backspace at all.",
     overrideConfig: ({ value }) => {
       if (value !== "off") {
         return {
@@ -469,6 +527,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "quick end",
     changeRequiresRestart: false,
     group: "input",
+    description:
+      "This only applies to the words mode - when enabled, the test will end as soon as the last word has been typed, even if it's incorrect. When disabled, you need to manually confirm the last incorrect entry with a space.",
   },
   indicateTypos: {
     key: "indicateTypos",
@@ -476,6 +536,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "indicate typos",
     changeRequiresRestart: false,
     group: "input",
+    description:
+      'Shows typos that you\'ve made. "Below" shows what you typed below the letters, "replace" will replace the letters with the ones you typed and "both" will do the same as replace and below, but it will show the correct letters below your mistakes.',
   },
   compositionDisplay: {
     key: "compositionDisplay",
@@ -483,6 +545,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "composition display",
     changeRequiresRestart: false,
     group: "input",
+    description:
+      'Change how composition is displayed. "off" will just underline the letter if composition is active. "below" will show the composed character below the test. "replace" will replace the letter in the test with the composed character.',
   },
   hideExtraLetters: {
     key: "hideExtraLetters",
@@ -490,6 +554,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "hide extra letters",
     changeRequiresRestart: false,
     group: "input",
+    description:
+      "Hides extra letters. This will completely avoid words jumping lines (due to changing width), but might feel a bit confusing when you press a key and nothing happens.",
   },
   lazyMode: {
     key: "lazyMode",
@@ -497,6 +563,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "lazy mode",
     changeRequiresRestart: true,
     group: "input",
+    description:
+      "Replaces accents / diacritics / special characters with their normal letter equivalents.",
   },
   layout: {
     key: "layout",
@@ -504,6 +572,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "layout",
     changeRequiresRestart: true,
     group: "input",
+    description:
+      "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",
   },
   codeUnindentOnBackspace: {
     key: "codeUnindentOnBackspace",
@@ -511,6 +581,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "code unindent on backspace",
     changeRequiresRestart: true,
     group: "input",
+    description:
+      "Automatically go back to the previous line when deleting line leading tab characters. Only works in code languages.",
   },
 
   // sound
@@ -520,6 +592,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "sound volume",
     changeRequiresRestart: false,
     group: "sound",
+    description: "Change the volume of the sound effects.",
   },
   playSoundOnClick: {
     key: "playSoundOnClick",
@@ -527,6 +600,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "play sound on click",
     changeRequiresRestart: false,
     group: "sound",
+    description: "Plays a short sound when you press a key.",
   },
   playSoundOnError: {
     key: "playSoundOnError",
@@ -534,6 +608,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "play sound on error",
     changeRequiresRestart: false,
     group: "sound",
+    description:
+      "Plays a short sound if you press an incorrect key or press space too early.",
   },
   playTimeWarning: {
     key: "playTimeWarning",
@@ -541,6 +617,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "play time warning",
     changeRequiresRestart: false,
     group: "sound",
+    description:
+      "Play a short warning sound if you are close to the end of a timed test.",
   },
 
   // caret
@@ -550,6 +628,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "smooth caret",
     changeRequiresRestart: false,
     group: "caret",
+    description: "The caret will move smoothly between letters and words.",
   },
   caretStyle: {
     key: "caretStyle",
@@ -557,6 +636,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "caret style",
     changeRequiresRestart: false,
     group: "caret",
+    description: "Change the style of the caret during the test.",
   },
   paceCaret: {
     key: "paceCaret",
@@ -564,6 +644,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "pace caret",
     changeRequiresRestart: false,
     group: "caret",
+    description:
+      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
@@ -597,6 +679,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "pace caret style",
     changeRequiresRestart: false,
     group: "caret",
+    description: "Change the style of the pace caret during the test.",
   },
   repeatedPace: {
     key: "repeatedPace",
@@ -604,6 +687,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "repeated pace",
     changeRequiresRestart: false,
     group: "caret",
+    description:
+      "When repeating a test, a pace caret will automatically be enabled for one test with the speed of your previous test. It does not override the pace caret if it's already enabled.",
   },
 
   // appearance
@@ -613,6 +698,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live progress style",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      'Change the style of the timer/word count during a test. "Flash" styles will briefly show the timer in timed modes every 15 seconds.',
   },
   liveSpeedStyle: {
     key: "liveSpeedStyle",
@@ -620,6 +707,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live speed style",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Change the style of the live speed displayed during the test.",
   },
   liveAccStyle: {
     key: "liveAccStyle",
@@ -627,6 +716,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live accuracy style",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Change the style of the live accuracy displayed during the test.",
   },
   liveBurstStyle: {
     key: "liveBurstStyle",
@@ -634,6 +725,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live word burst style",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Change the style of the live burst speed displayed during the test.",
   },
   timerColor: {
     key: "timerColor",
@@ -641,6 +734,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "timer color",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Change the color of the progress, live speed, accuracy and burst text.",
   },
   timerOpacity: {
     key: "timerOpacity",
@@ -648,6 +743,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "timer opacity",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Change the opacity of the progress, live speed, burst and accuracy text.",
   },
   highlightMode: {
     key: "highlightMode",
@@ -655,6 +752,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "highlight mode",
     changeRequiresRestart: false,
     group: "appearance",
+    description: "Change what is highlighted during the test.",
   },
   typedEffect: {
     key: "typedEffect",
@@ -662,6 +760,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "typed effect",
     changeRequiresRestart: false,
     group: "appearance",
+    description: "Change how typed words are shown.",
   },
   tapeMode: {
     key: "tapeMode",
@@ -670,6 +769,8 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     displayString: "tape mode",
     group: "appearance",
+    description:
+      "Only shows one line which scrolls horizontally. Setting this to 'word' will make it scroll after every word and 'letter' will scroll after every keypress. Works best with smooth line scroll enabled and a monospace font.",
     overrideConfig: ({ value }) => {
       if (value !== "off") {
         return {
@@ -686,6 +787,8 @@ export const configMetadata: ConfigMetadataObject = {
     triggerResize: true,
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "When in tape mode, set the carets position from the left edge of the typing test as a percentage (for example, 50% centers it).",
   },
   smoothLineScroll: {
     key: "smoothLineScroll",
@@ -693,6 +796,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "smooth line scroll",
     changeRequiresRestart: false,
     group: "appearance",
+    description: "When enabled, the line transition will be animated.",
   },
   showAllLines: {
     key: "showAllLines",
@@ -700,6 +804,8 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     displayString: "show all lines",
     group: "appearance",
+    description:
+      "When enabled, the website will show all lines for word, custom and quote mode tests - otherwise the lines will be limited to 3, and will automatically scroll. Using this could cause the timer text and live speed to not be visible.",
     isBlocked: ({ value, currentConfig }) => {
       if (value && currentConfig.tapeMode !== "off") {
         showNoticeNotification("Show all lines doesn't support tape mode.");
@@ -716,6 +822,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "always show decimal places",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Always shows decimal places for values on the result page, without the need to hover over the stats.",
   },
   typingSpeedUnit: {
     key: "typingSpeedUnit",
@@ -723,6 +831,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "typing speed unit",
     changeRequiresRestart: false,
     group: "appearance",
+    description: "Display typing speed in the specified unit.",
   },
   startGraphsAtZero: {
     key: "startGraphsAtZero",
@@ -730,6 +839,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "start graphs at zero",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Force graph axis to always start at zero, no matter what the data is. Turning this off may exaggerate the value changes.",
   },
   maxLineWidth: {
     key: "maxLineWidth",
@@ -738,6 +849,8 @@ export const configMetadata: ConfigMetadataObject = {
     triggerResize: true,
     displayString: "max line width",
     group: "appearance",
+    description:
+      "Change the maximum width of the typing test, measured in characters. Setting this to 0 will align the words to the edges of the content area.",
   },
   fontSize: {
     key: "fontSize",
@@ -746,6 +859,7 @@ export const configMetadata: ConfigMetadataObject = {
     triggerResize: true,
     displayString: "font size",
     group: "appearance",
+    description: "Change the font size of the test words.",
   },
   fontFamily: {
     key: "fontFamily",
@@ -753,6 +867,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "font family",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Change the font family used by the website. Using a local font will override your choice.",
   },
   keymapMode: {
     key: "keymapMode",
@@ -760,6 +876,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "keymap mode",
     changeRequiresRestart: false,
     group: "appearance",
+    description:
+      "Displays your current layout while taking a test. React shows what you pressed and Next shows what you need to press next.",
   },
   keymapLayout: {
     key: "keymapLayout",
@@ -767,6 +885,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "keymap layout",
     changeRequiresRestart: false,
     group: "appearance",
+    description: "Controls which layout is displayed on the keymap.",
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
@@ -804,6 +923,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     displayString: "keymap size",
     group: "appearance",
+    description: "Change the size of the keymap.",
     overrideValue: ({ value }) => {
       if (value < 0.5) value = 0.5;
       if (value > 3.5) value = 3.5;
@@ -820,6 +940,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "flip test colors",
     changeRequiresRestart: false,
     group: "theme",
+    description:
+      "By default, typed text is brighter than the future text. When enabled, the colors will be flipped and the future text will be brighter than the already typed text.",
   },
   colorfulMode: {
     key: "colorfulMode",
@@ -827,6 +949,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "colorful mode",
     changeRequiresRestart: false,
     group: "theme",
+    description:
+      "When enabled, the test words will use the main color, instead of the text color, making the website more colorful.",
   },
   customBackground: {
     key: "customBackground",
@@ -844,6 +968,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom background size",
     changeRequiresRestart: false,
     group: "theme",
+    description:
+      "Set an image url or local image to be a custom background image. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
   },
   customBackgroundFilter: {
     key: "customBackgroundFilter",
@@ -851,6 +977,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom background filter",
     changeRequiresRestart: false,
     group: "theme",
+    description: "Apply various effects to the custom background.",
   },
   autoSwitchTheme: {
     key: "autoSwitchTheme",
@@ -858,6 +985,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "auto switch theme",
     changeRequiresRestart: false,
     group: "theme",
+    description:
+      "Enabling this will automatically switch the theme between light and dark depending on the system theme.",
   },
   themeLight: {
     key: "themeLight",
@@ -879,6 +1008,8 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     displayString: "random theme",
     group: "theme",
+    description:
+      "After completing a test, the theme will be set to a random one. The random themes are not saved to your config. If set to 'favorite' only favorite themes will be randomized. If set to 'light' or 'dark', only presets with light or dark background colors will be randomized, respectively. If set to 'auto' dark or light themes are used, depending on your system theme. If set to 'custom', custom themes will be randomized.",
     isBlocked: ({ value }) => {
       if (value === "custom") {
         const snapshot = DB.getSnapshot();
@@ -952,6 +1083,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "show key tips",
     changeRequiresRestart: false,
     group: "hideElements",
+    description: "Shows the keybind tips at the bottom of the page.",
   },
   showOutOfFocusWarning: {
     key: "showOutOfFocusWarning",
@@ -959,6 +1091,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "show out of focus warning",
     changeRequiresRestart: false,
     group: "hideElements",
+    description:
+      "Shows an out of focus reminder after 1 second of being 'out of focus' (not being able to type).",
   },
   capsLockWarning: {
     key: "capsLockWarning",
@@ -966,6 +1100,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "caps lock warning",
     changeRequiresRestart: false,
     group: "hideElements",
+    description: "Displays a warning when caps lock is on.",
   },
   showAverage: {
     key: "showAverage",
@@ -973,6 +1108,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "show average",
     changeRequiresRestart: false,
     group: "hideElements",
+    description:
+      "Displays your average speed and/or accuracy over the last 10 tests.",
   },
   showPb: {
     key: "showPb",

@@ -11,22 +11,8 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema, ZodFirstPartySchemaTypes } from "zod";
-
-function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
-  if (schema instanceof z.ZodLiteral) {
-    return [schema.value] as z.infer<T>[];
-  } else if (schema instanceof z.ZodEnum) {
-    return schema.options as z.infer<T>[];
-  } else if (schema instanceof z.ZodBoolean) {
-    return [true, false] as z.infer<T>[];
-  } else if (schema instanceof z.ZodUnion) {
-    return (schema.options as ZodSchema[])
-      .flatMap(getOptions)
-      .filter((it) => it !== undefined) as z.infer<T>[];
-  }
-  return undefined;
-}
+import { ZodSchema, ZodFirstPartySchemaTypes } from "zod";
+import { getOptions } from "../utils/zod";
 
 export function buildCommandForConfigKey<
   K extends keyof CommandlineConfigMetadataObject,
