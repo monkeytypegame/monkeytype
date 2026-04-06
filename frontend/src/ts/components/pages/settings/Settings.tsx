@@ -6,14 +6,14 @@ import { configMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { hotkeys } from "../../../states/hotkeys";
+// import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
-import { isFirefox } from "../../../utils/misc";
+// import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { Kbd } from "../../common/Kbd";
+// import { Kbd } from "../../common/Kbd";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { Funbox } from "./custom-setting/Funbox";
@@ -30,7 +30,8 @@ export function Settings(): JSXElement {
   return (
     <div class="grid gap-8">
       <QuickNav />
-      <Show when={getConfig.showKeyTips}>
+      {/* todo: bring back */}
+      {/* <Show when={getConfig.showKeyTips}>
         <div class="text-center text-sub">
           tip: You can also change all these settings quickly using the command
           line
@@ -41,7 +42,7 @@ export function Settings(): JSXElement {
           </Show>
           )
         </div>
-      </Show>
+      </Show> */}
       <AccountSettingsNotice />
       <textarea class="h-100 resize-y bg-sub-alt">
         use me to align left and right size
@@ -90,8 +91,8 @@ export function Settings(): JSXElement {
           <AutoSetting key="smoothCaret" />
           <AutoSetting key="caretStyle" wide />
           {/* pace caret */}
-          <AutoSetting key="paceCaretStyle" wide />
           <AutoSetting key="repeatedPace" />
+          <AutoSetting key="paceCaretStyle" wide />
         </Section>
         <Section title="appearance">
           <AutoSetting key="timerStyle" wide />
