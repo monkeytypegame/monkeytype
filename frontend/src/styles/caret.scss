@@ -76,6 +76,7 @@
     background: transparent;
     border: 0.05em solid var(--caret-color);
     border-radius: 0.05em;
+    outline-style: none !important; // override tailwind class of the same name
   }
 
   &.underline {
