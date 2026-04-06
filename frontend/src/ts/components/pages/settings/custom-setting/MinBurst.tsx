@@ -1,4 +1,4 @@
-import { MinWpmCustomSpeedSchema } from "@monkeytype/schemas/configs";
+import { MinimumBurstCustomSpeedSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement } from "solid-js";
 
@@ -13,37 +13,37 @@ import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
-export function MinSpeed(): JSXElement {
+export function MinBurst(): JSXElement {
   const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
 
   const form = createForm(() => ({
     defaultValues: {
-      minWpmCustomSpeed: getConfig.minWpmCustomSpeed,
+      minBurstCustomSpeed: getConfig.minBurstCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minWpmCustomSpeed));
-      if (val === getConfig.minWpmCustomSpeed) return;
-      if (getConfig.minWpm === "custom") {
+      const val = parseInt(String(value.minBurstCustomSpeed));
+      if (val === getConfig.minBurstCustomSpeed) return;
+      if (getConfig.minBurst !== "off") {
         //
       } else {
-        setConfig("minWpm", "custom");
+        setConfig("minBurst", "fixed");
       }
-      // showSuccessNotification("Min speed saved", {
+      // showSuccessNotification("Min burst saved", {
       //   durationMs: 1000,
       // });
       setShowSavedIndicator(true);
       setTimeout(() => {
         setShowSavedIndicator(false);
       }, 2000);
-      setConfig("minWpmCustomSpeed", val);
+      setConfig("minBurstCustomSpeed", val);
     },
   }));
 
   return (
     <Setting
-      title={configMetadata.minWpm.displayString ?? "min speed"}
-      fa={configMetadata.minWpm.fa}
-      description={configMetadata.minWpm.description}
+      title={configMetadata.minBurst.displayString ?? "min burst"}
+      fa={configMetadata.minBurst.fa}
+      description={configMetadata.minBurst.description}
       inputs={
         <div class="grid w-full gap-2">
           <form
@@ -54,14 +54,16 @@ export function MinSpeed(): JSXElement {
             }}
           >
             <form.Field
-              name="minWpmCustomSpeed"
+              name="minBurstCustomSpeed"
               validators={{
                 onChange: ({ value }) => {
                   const val = parseInt(String(value));
                   if (isNaN(val)) {
                     return "must be a number";
                   }
-                  return fromSchema(MinWpmCustomSpeedSchema)({ value: val });
+                  return fromSchema(MinimumBurstCustomSpeedSchema)({
+                    value: val,
+                  });
                 },
                 onBlur: () => {
                   void form.handleSubmit();
@@ -72,7 +74,7 @@ export function MinSpeed(): JSXElement {
                   <InputField
                     field={field}
                     placeholder={
-                      configMetadata.minWpm.displayString ?? "min speed"
+                      configMetadata.minBurst.displayString ?? "min burst"
                     }
                     showIndicator
                     type="number"
@@ -87,24 +89,33 @@ export function MinSpeed(): JSXElement {
             />
           </form>
           {/* <input class="w-full" value={inputValue()} /> */}
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-3 gap-2">
             <Button
-              active={getConfig.minWpm === "off"}
+              active={getConfig.minBurst === "off"}
               onClick={() => {
-                if (getConfig.minWpm === "off") return;
-                setConfig("minWpm", "off");
+                if (getConfig.minBurst === "off") return;
+                setConfig("minBurst", "off");
               }}
             >
               off
             </Button>
             <Button
-              active={getConfig.minWpm === "custom"}
+              active={getConfig.minBurst === "fixed"}
               onClick={() => {
-                if (getConfig.minWpm === "custom") return;
-                setConfig("minWpm", "custom");
+                if (getConfig.minBurst === "fixed") return;
+                setConfig("minBurst", "fixed");
               }}
             >
-              custom
+              fixed
+            </Button>
+            <Button
+              active={getConfig.minBurst === "flex"}
+              onClick={() => {
+                if (getConfig.minBurst === "flex") return;
+                setConfig("minBurst", "flex");
+              }}
+            >
+              flex
             </Button>
           </div>
         </div>

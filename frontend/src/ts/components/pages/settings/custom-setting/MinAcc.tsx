@@ -1,4 +1,4 @@
-import { MinWpmCustomSpeedSchema } from "@monkeytype/schemas/configs";
+import { MinimumAccuracyCustomSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement } from "solid-js";
 
@@ -13,37 +13,37 @@ import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
-export function MinSpeed(): JSXElement {
+export function MinAcc(): JSXElement {
   const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
 
   const form = createForm(() => ({
     defaultValues: {
-      minWpmCustomSpeed: getConfig.minWpmCustomSpeed,
+      minAccCustom: getConfig.minAccCustom,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minWpmCustomSpeed));
-      if (val === getConfig.minWpmCustomSpeed) return;
-      if (getConfig.minWpm === "custom") {
+      const val = parseInt(String(value.minAccCustom));
+      if (val === getConfig.minAccCustom) return;
+      if (getConfig.minAcc === "custom") {
         //
       } else {
-        setConfig("minWpm", "custom");
+        setConfig("minAcc", "custom");
       }
-      // showSuccessNotification("Min speed saved", {
+      // showSuccessNotification("Min accuracy saved", {
       //   durationMs: 1000,
       // });
       setShowSavedIndicator(true);
       setTimeout(() => {
         setShowSavedIndicator(false);
       }, 2000);
-      setConfig("minWpmCustomSpeed", val);
+      setConfig("minAccCustom", val);
     },
   }));
 
   return (
     <Setting
-      title={configMetadata.minWpm.displayString ?? "min speed"}
-      fa={configMetadata.minWpm.fa}
-      description={configMetadata.minWpm.description}
+      title={configMetadata.minAcc.displayString ?? "min accuracy"}
+      fa={configMetadata.minAcc.fa}
+      description={configMetadata.minAcc.description}
       inputs={
         <div class="grid w-full gap-2">
           <form
@@ -54,14 +54,16 @@ export function MinSpeed(): JSXElement {
             }}
           >
             <form.Field
-              name="minWpmCustomSpeed"
+              name="minAccCustom"
               validators={{
                 onChange: ({ value }) => {
                   const val = parseInt(String(value));
                   if (isNaN(val)) {
                     return "must be a number";
                   }
-                  return fromSchema(MinWpmCustomSpeedSchema)({ value: val });
+                  return fromSchema(MinimumAccuracyCustomSchema)({
+                    value: val,
+                  });
                 },
                 onBlur: () => {
                   void form.handleSubmit();
@@ -72,7 +74,7 @@ export function MinSpeed(): JSXElement {
                   <InputField
                     field={field}
                     placeholder={
-                      configMetadata.minWpm.displayString ?? "min speed"
+                      configMetadata.minAcc.displayString ?? "min accuracy"
                     }
                     showIndicator
                     type="number"
@@ -89,19 +91,19 @@ export function MinSpeed(): JSXElement {
           {/* <input class="w-full" value={inputValue()} /> */}
           <div class="grid grid-cols-2 gap-2">
             <Button
-              active={getConfig.minWpm === "off"}
+              active={getConfig.minAcc === "off"}
               onClick={() => {
-                if (getConfig.minWpm === "off") return;
-                setConfig("minWpm", "off");
+                if (getConfig.minAcc === "off") return;
+                setConfig("minAcc", "off");
               }}
             >
               off
             </Button>
             <Button
-              active={getConfig.minWpm === "custom"}
+              active={getConfig.minAcc === "custom"}
               onClick={() => {
-                if (getConfig.minWpm === "custom") return;
-                setConfig("minWpm", "custom");
+                if (getConfig.minAcc === "custom") return;
+                setConfig("minAcc", "custom");
               }}
             >
               custom
