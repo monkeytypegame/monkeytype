@@ -1,7 +1,7 @@
 {
   "name": "hebrew",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursive": true,
   "noLazyMode": true,
   "bcp47": "he-IL",
   "words": [

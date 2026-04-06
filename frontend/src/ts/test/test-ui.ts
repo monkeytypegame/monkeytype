@@ -52,7 +52,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
-import * as Ligatures from "./break-ligatures";
+import * as Cursive from "./break-cursive";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -147,7 +147,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          Ligatures.set(previousActiveWord, true);
+          Cursive.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
         }
@@ -164,7 +164,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    Ligatures.set(newActiveWord, false);
+    Cursive.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
@@ -1240,15 +1240,15 @@ export async function lineJump(
   return;
 }
 
-export function setLigatures(isEnabled: boolean): void {
+export function setCursiveClass(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
-    wordsEl.addClass("withLigatures");
-    qs("#resultWordsHistory .words")?.addClass("withLigatures");
-    qs("#resultReplay .words")?.addClass("withLigatures");
+    wordsEl.addClass("cursive");
+    qs("#resultWordsHistory .words")?.addClass("cursive");
+    qs("#resultReplay .words")?.addClass("cursive");
   } else {
-    wordsEl.removeClass("withLigatures");
-    qs("#resultWordsHistory .words")?.removeClass("withLigatures");
-    qs("#resultReplay .words")?.removeClass("withLigatures");
+    wordsEl.removeClass("cursive");
+    qs("#resultWordsHistory .words")?.removeClass("cursive");
+    qs("#resultReplay .words")?.removeClass("cursive");
   }
 }
 
@@ -2083,7 +2083,7 @@ configEvent.subscribe(({ key, newValue }) => {
   ) {
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
-      Ligatures.update(key, wordsEl);
+      Cursive.update(key, wordsEl);
     }
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {

@@ -1,6 +1,6 @@
 {
   "name": "bangla_letters",
-  "ligatures": true,
+  "cursive": true,
   "noLazyMode": true,
   "bcp47": "bn-BD",
   "words": [

@@ -1,6 +1,6 @@
 {
   "name": "korean_1k",
-  "ligatures": true,
+  "cursive": true,
   "noLazyMode": true,
   "bcp47": "ko-KR",
   "words": [

@@ -1,7 +1,7 @@
 {
   "name": "yiddish",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursive": true,
   "bcp47": "yi",
   "additionalAccents": [
     ["אַ", "א"],

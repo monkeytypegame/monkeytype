@@ -18,7 +18,7 @@ export type FunboxProperty =
   | "speaks"
   | "unspeakable"
   | "noInfiniteDuration"
-  | "noLigatures"
+  | "noCursive"
   | `toPush:${number}`
   | "wordOrder:reverse"
   | "reverseDirection"

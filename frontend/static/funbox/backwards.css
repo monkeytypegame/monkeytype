@@ -6,6 +6,6 @@
   direction: ltr;
 }
 
-#words.withLigatures .word {
+#words.cursive .word {
   unicode-bidi: bidi-override;
 }

@@ -1,7 +1,6 @@
 {
   "name": "euskera",
   "rightToLeft": false,
-  "ligatures": false,
   "bcp47": "eu",
   "words": [
     "eta",

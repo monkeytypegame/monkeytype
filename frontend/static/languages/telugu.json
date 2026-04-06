@@ -2,7 +2,7 @@
   "name": "telugu",
   "noLazyMode": true,
   "bcp47": "te-IN",
-  "ligatures": true,
+  "cursive": true,
   "words": [
     "గా",
     "నేను",

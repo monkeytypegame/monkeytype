@@ -21,15 +21,19 @@ The contents of the file should be as follows:
 {
   "name": string,
   "rightToLeft": boolean,
-  "ligatures": boolean,
+  "cursive": boolean,
   "orderedByFrequency": boolean,
   "bcp47": string,
   "words": string[]
 }
 ```
 
-It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `rightToLeft` indicates how the language is written. If it is written right to left then put `true`, otherwise put `false`.
-`ligatures` A ligature occurs when multiple letters are joined together to form a character [more details](<https://en.wikipedia.org/wiki/Ligature_(writing)>). If there's joining in the words, which is the case in languages like (Arabic, Malayalam, Persian, Sanskrit, Central_Kurdish... etc.), then set the value to `true`, otherwise set it to `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). If the words you're adding are ordered by frequency (most common words at the top, least at the bottom) set the value of `orderedByFrequency` to `true`, otherwise `false`. Finally, add your list of words to the `words` field.
+It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language.
+`rightToLeft` indicates how the language is written. If it is written right to left then put `true`, otherwise put `false`.
+`cursive` indicates whether the language requires cursive joining to render correctly. Set it to `true` if characters must join with surrounding characters or if their shapes change based on position in a word (initial, medial, final, or isolated). Otherwise, set it to `false.`
+For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag).
+If the words you're adding are ordered by frequency (most common words at the top, least at the bottom) set the value of `orderedByFrequency` to `true`, otherwise `false`.
+Finally, add your list of words to the `words` field.
 
 Then, go to `packages/schemas/src/languages.ts` and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 

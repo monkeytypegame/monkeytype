@@ -1,7 +1,7 @@
 {
   "name": "malayalam",
   "noLazyMode": true,
-  "ligatures": true,
+  "cursive": true,
   "bcp47": "ml-IN",
   "words": [
     "അടി",

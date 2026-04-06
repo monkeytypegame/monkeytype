@@ -1,7 +1,7 @@
 {
   "name": "gujarati",
   "rightToLeft": false,
-  "ligatures": true,
+  "cursive": true,
   "noLazyMode": true,
   "bcp47": "gu-IN",
   "words": [

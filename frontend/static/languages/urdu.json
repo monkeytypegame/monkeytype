@@ -1,7 +1,7 @@
 {
   "name": "urdu",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursive": true,
   "noLazyMode": true,
   "words": [
     "آئے",

@@ -3,9 +3,9 @@ import { ElementWithUtils } from "../utils/dom";
 
 function canBreak(wordEl: ElementWithUtils): boolean {
   if (Config.typedEffect !== "dots") return false;
-  if (wordEl.hasClass("broken-ligatures")) return false;
+  if (wordEl.hasClass("broken-cursive")) return false;
 
-  return wordEl.getParent()?.hasClass("withLigatures") ?? false;
+  return wordEl.getParent()?.hasClass("cursive") ?? false;
 }
 
 function applyIfNeeded(wordEl: ElementWithUtils): void {
@@ -25,28 +25,25 @@ function applyIfNeeded(wordEl: ElementWithUtils): void {
     wordEl.setStyle({ width: "" });
     wordEl.addClass("needs-wrap");
   }
-  wordEl.addClass("broken-ligatures");
+  wordEl.addClass("broken-cursive");
 }
 
 function reset(wordEl: ElementWithUtils): void {
-  if (!wordEl.hasClass("broken-ligatures")) return;
-  wordEl.removeClass("broken-ligatures");
+  if (!wordEl.hasClass("broken-cursive")) return;
+  wordEl.removeClass("broken-cursive");
   wordEl.removeClass("needs-wrap");
   wordEl.setStyle({ width: "" });
 }
 
-export function set(
-  wordEl: ElementWithUtils,
-  areLigaturesBroken: boolean,
-): void {
-  areLigaturesBroken ? applyIfNeeded(wordEl) : reset(wordEl);
+export function set(wordEl: ElementWithUtils, cursiveBroken: boolean): void {
+  cursiveBroken ? applyIfNeeded(wordEl) : reset(wordEl);
 }
 
 export function update(key: string, wordsEl: ElementWithUtils): void {
   const words = wordsEl.qsa(".word.typed");
 
   const shouldReset =
-    !wordsEl.hasClass("withLigatures") ||
+    !wordsEl.hasClass("cursive") ||
     Config.typedEffect !== "dots" ||
     key === "fontFamily" ||
     key === "fontSize";

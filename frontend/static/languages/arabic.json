@@ -1,7 +1,7 @@
 {
   "name": "arabic",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursive": true,
   "bcp47": "ar-SA",
   "words": [
     "أَتَمَنَّى",
