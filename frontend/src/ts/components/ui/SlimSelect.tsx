@@ -23,6 +23,7 @@ function updateSlimSelectData(
 
 export type SlimSelectProps = {
   options?: Pick<Option, "value" | "text">[];
+  optionGroups?: Optgroup[];
   values?: string[]; // Simple string array where value === text
   settings?: Config["settings"] & {
     scrollToTop?: boolean;
@@ -33,6 +34,7 @@ export type SlimSelectProps = {
   children?: JSX.Element;
   ref?: (instance: SlimSelectCore | null) => void;
   disabled?: boolean;
+  appendToBody?: boolean;
 } & (
   | {
       multiple?: never;
@@ -80,6 +82,11 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       return props.values.map((v) => ({ value: v, text: v }));
     }
     return [];
+  };
+
+  const getInitialData = (): (Partial<Option> | Partial<Optgroup>)[] => {
+    if (props.optionGroups) return props.optionGroups;
+    return getDataWithAll(buildData(getOptions(), getSelected()));
   };
 
   // Build option data with selection state
@@ -244,10 +251,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
     const config: Config = {
       select: selectRef,
-      data: getDataWithAll(buildData(getOptions(), getSelected())) as Option[],
+      data: getInitialData() as Option[],
       settings: {
         ...props.settings,
-        contentLocation: containerRef,
+        ...(props.appendToBody ? {} : { contentLocation: containerRef }),
       },
       ...(props.cssClasses && { cssClasses: props.cssClasses }),
       events: {
@@ -354,9 +361,12 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
     setIsInitialMount(false);
 
-    // Initialize with selected values
+    // Initialize currentSelected from data without firing onChange
     requestAnimationFrame(() => {
-      if (!props.onChange || (!props.options && !props.values) || !slimSelect) {
+      if (
+        (!props.options && !props.values && !props.optionGroups) ||
+        !slimSelect
+      ) {
         setIsInitializing(false);
         return;
       }
@@ -377,13 +387,6 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           }
         }
 
-        if (initialValue.length > 0 && props.onChange !== undefined) {
-          if (props.multiple) {
-            props.onChange(initialValue);
-          } else {
-            props.onChange(initialValue[0] ?? "");
-          }
-        }
         currentSelected = initialValue;
       }
 
@@ -405,6 +408,9 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       currentSelected = selected;
       return;
     }
+
+    // When using optionGroups without selected prop, selection is embedded in the data
+    if (props.selected === undefined) return;
 
     if (slimSelect && selected !== undefined) {
       currentSelected = selected;

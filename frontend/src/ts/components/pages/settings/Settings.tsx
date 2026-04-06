@@ -9,6 +9,7 @@ import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { Language } from "./custom-setting/Language";
 import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
@@ -29,7 +30,7 @@ export function Settings(): JSXElement {
         <MinAcc />
         <MinBurst />
         <KeyedSetting key="britishEnglish" autoInputs />
-        {/* todo: language */}
+        <Language />
         {/* todo: funbox */}
         {/* todo: custom layoutfluid */}
         {/* todo: polyglot languages */}
