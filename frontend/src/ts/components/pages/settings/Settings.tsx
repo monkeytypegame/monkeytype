@@ -18,6 +18,7 @@ import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { Funbox } from "./custom-setting/Funbox";
 import { Language } from "./custom-setting/Language";
+import { Layout } from "./custom-setting/Layout";
 import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
@@ -75,7 +76,7 @@ export function Settings(): JSXElement {
           <AutoSetting key="hideExtraLetters" />
           <AutoSetting key="compositionDisplay" />
           <AutoSetting key="lazyMode" />
-          {/* todo: layout emulator */}
+          <Layout />
           <AutoSetting key="codeUnindentOnBackspace" />
         </Section>
         <Section title="sound">
