@@ -9,6 +9,7 @@ import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { Funbox } from "./custom-setting/Funbox";
 import { Language } from "./custom-setting/Language";
 import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
@@ -19,6 +20,7 @@ export function Settings(): JSXElement {
   return (
     <div class="outline">
       <Section title="behavior">
+        <Funbox />
         <KeyedSetting key="resultSaving" autoInputs />
         <KeyedSetting key="difficulty" autoInputs />
         <KeyedSetting key="quickRestart" autoInputs />

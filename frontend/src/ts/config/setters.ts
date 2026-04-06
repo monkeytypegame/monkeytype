@@ -202,5 +202,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     previousValue,
   });
 
+  setConfigStore("funbox", newConfig);
+
   return true;
 }
