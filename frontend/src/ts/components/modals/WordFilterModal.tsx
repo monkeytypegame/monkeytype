@@ -249,17 +249,13 @@ export function WordFilterModal(props: {
                 <div class="grid gap-1">
                   <div class="text-sub">min length</div>
                   <form.Field name="minLength">
-                    {(field) => (
-                      <InputField field={field} type="number" />
-                    )}
+                    {(field) => <InputField field={field} type="number" />}
                   </form.Field>
                 </div>
                 <div class="grid gap-1">
                   <div class="text-sub">max length</div>
                   <form.Field name="maxLength">
-                    {(field) => (
-                      <InputField field={field} type="number" />
-                    )}
+                    {(field) => <InputField field={field} type="number" />}
                   </form.Field>
                 </div>
               </div>
@@ -292,10 +288,7 @@ export function WordFilterModal(props: {
                 <div class="text-sub">exclude</div>
                 <form.Field name="exclude">
                   {(field) => (
-                    <InputField
-                      field={field}
-                      disabled={isExactMatch()}
-                    />
+                    <InputField field={field} disabled={isExactMatch()} />
                   )}
                 </form.Field>
               </div>
