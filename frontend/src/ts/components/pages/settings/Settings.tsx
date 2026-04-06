@@ -22,6 +22,7 @@ import { Layout } from "./custom-setting/Layout";
 import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
+import { SoundVolume } from "./custom-setting/SoundVolume";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
@@ -80,7 +81,7 @@ export function Settings(): JSXElement {
           <AutoSetting key="codeUnindentOnBackspace" />
         </Section>
         <Section title="sound">
-          {/* todo: sound volume */}
+          <SoundVolume />
           <AutoSetting key="playSoundOnClick" wide />
           <AutoSetting key="playSoundOnError" wide />
           <AutoSetting key="playTimeWarning" wide />
