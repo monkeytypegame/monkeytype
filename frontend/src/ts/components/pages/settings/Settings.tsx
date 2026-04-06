@@ -9,11 +9,14 @@ import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { MinSpeed } from "./custom-setting/MinSpeed";
 import { Setting } from "./Setting";
 
 export function Settings(): JSXElement {
   return (
     <div class="outline">
+      <MinSpeed />
+
       <Section title="behavior">
         <KeyedSetting key="resultSaving" autoInputs />
         <KeyedSetting key="difficulty" autoInputs />
@@ -22,7 +25,6 @@ export function Settings(): JSXElement {
         <KeyedSetting key="blindMode" autoInputs />
         <KeyedSetting key="alwaysShowWordsHistory" autoInputs />
         <KeyedSetting key="singleListCommandLine" autoInputs />
-        {/* todo: min speed */}
         {/* todo: min accuracy */}
         {/* todo: min burst */}
         <KeyedSetting key="britishEnglish" autoInputs />
