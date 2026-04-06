@@ -1,18 +1,117 @@
 import { Config, ConfigSchema } from "@monkeytype/schemas/configs";
-import { For, JSXElement } from "solid-js";
+import { createSignal, For, JSXElement } from "solid-js";
 
 import { configMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
+import { cn } from "../../../utils/cn";
 import { getOptions } from "../../../utils/zod";
+import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
+import { Fa } from "../../common/Fa";
 import { Setting } from "./Setting";
 
 export function Settings(): JSXElement {
   return (
-    <div class="grid gap-8 outline">
-      <KeyedSetting key="resultSaving" autoInputs />
-      <KeyedSetting key="difficulty" autoInputs />
+    <div class="outline">
+      <Section title="behavior">
+        <KeyedSetting key="resultSaving" autoInputs />
+        <KeyedSetting key="difficulty" autoInputs />
+        <KeyedSetting key="quickRestart" autoInputs />
+        <KeyedSetting key="repeatQuotes" autoInputs />
+        <KeyedSetting key="blindMode" autoInputs />
+        <KeyedSetting key="alwaysShowWordsHistory" autoInputs />
+        <KeyedSetting key="singleListCommandLine" autoInputs />
+        {/* todo: min speed */}
+        {/* todo: min accuracy */}
+        {/* todo: min burst */}
+        <KeyedSetting key="britishEnglish" autoInputs />
+        {/* todo: language */}
+        {/* todo: funbox */}
+        {/* todo: custom layoutfluid */}
+        {/* todo: polyglot languages */}
+      </Section>
+      <Section title="input">
+        <KeyedSetting key="freedomMode" autoInputs />
+        <KeyedSetting key="strictSpace" autoInputs />
+        <KeyedSetting key="oppositeShiftMode" autoInputs />
+        <KeyedSetting key="stopOnError" autoInputs />
+        <KeyedSetting key="confidenceMode" autoInputs />
+        <KeyedSetting key="quickEnd" autoInputs />
+        <KeyedSetting key="indicateTypos" autoInputs />
+        <KeyedSetting key="hideExtraLetters" autoInputs />
+        <KeyedSetting key="compositionDisplay" autoInputs />
+        <KeyedSetting key="lazyMode" autoInputs />
+        {/* todo: layout emulator */}
+        <KeyedSetting key="codeUnindentOnBackspace" autoInputs />
+      </Section>
+      <Section title="sound">
+        {/* todo: sound volume */}
+        <KeyedSetting key="playSoundOnClick" autoInputs autoWide />
+        <KeyedSetting key="playSoundOnError" autoInputs autoWide />
+        <KeyedSetting key="playTimeWarning" autoInputs autoWide />
+      </Section>
+      <Section title="caret">
+        <KeyedSetting key="smoothCaret" autoInputs />
+        <KeyedSetting key="caretStyle" autoInputs />
+        {/* pace caret */}
+        <KeyedSetting key="repeatedPace" autoInputs />
+        <KeyedSetting key="paceCaretStyle" autoInputs />
+      </Section>
+      <Section title="appearance">
+        <KeyedSetting key="timerStyle" autoInputs autoWide />
+        <KeyedSetting key="liveSpeedStyle" autoInputs />
+        <KeyedSetting key="liveAccStyle" autoInputs />
+        <KeyedSetting key="liveBurstStyle" autoInputs />
+        <KeyedSetting key="timerColor" autoInputs />
+        <KeyedSetting key="timerOpacity" autoInputs />
+        <KeyedSetting key="highlightMode" autoInputs autoWide />
+        <KeyedSetting key="typedEffect" autoInputs />
+        <KeyedSetting key="tapeMode" autoInputs />
+        {/* todo: tape margin */}
+        <KeyedSetting key="smoothLineScroll" autoInputs />
+        <KeyedSetting key="showAllLines" autoInputs />
+        <KeyedSetting key="alwaysShowDecimalPlaces" autoInputs />
+        <KeyedSetting key="typingSpeedUnit" autoInputs />
+        <KeyedSetting key="startGraphsAtZero" autoInputs />
+        {/* todo: max line width */}
+        {/* todo: font size */}
+        {/* todo: font family */}
+        <KeyedSetting key="keymapMode" autoInputs />
+        {/* todo: keymap layout */}
+        <KeyedSetting key="keymapStyle" autoInputs autoWide />
+        <KeyedSetting key="keymapLegendStyle" autoInputs autoWide />
+        <KeyedSetting key="keymapShowTopRow" autoInputs autoWide />
+        {/* todo: keymap size */}
+      </Section>
+    </div>
+  );
+}
+
+function Section(props: { title: string; children: JSXElement }): JSXElement {
+  const [isOpen, setIsOpen] = createSignal(true);
+
+  return (
+    <div>
+      <Button
+        variant="text"
+        class="w-min gap-4 p-0 text-4xl"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <Anime
+          animation={{
+            rotate: isOpen() ? 0 : -90,
+            duration: 125,
+          }}
+        >
+          <Fa icon="fa-chevron-down" />
+        </Anime>
+        {props.title}
+      </Button>
+      {/* pt-8 doesnt animate here, it jumps */}
+      <AnimeShow when={isOpen()} slide class="grid gap-8 pt-8">
+        {props.children}
+      </AnimeShow>
     </div>
   );
 }
@@ -22,13 +121,20 @@ function KeyedSetting(props: {
   inputs?: JSXElement;
   fullWidthInputs?: JSXElement;
   autoInputs?: boolean;
+  autoWide?: boolean;
 }): JSXElement {
-  const inputs = () => {
+  const autoInputs = () => {
     if (props.autoInputs === true) {
       const options = getOptions(ConfigSchema.shape[props.key]);
       if (options !== undefined) {
         return (
-          <div class="grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2">
+          <div
+            class={cn(
+              "grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2",
+              props.autoWide &&
+                "grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))]",
+            )}
+          >
             <For each={options}>
               {(option) => {
                 const text = () => {
@@ -67,7 +173,7 @@ function KeyedSetting(props: {
         );
       }
     }
-    return props.inputs;
+    return undefined;
   };
 
   return (
@@ -75,8 +181,12 @@ function KeyedSetting(props: {
       title={configMetadata[props.key].displayString ?? props.key}
       fa={configMetadata[props.key].fa}
       description={configMetadata[props.key].description}
-      inputs={inputs()}
-      fullWidthInputs={props.fullWidthInputs}
+      inputs={!props.autoWide ? autoInputs() : props.inputs}
+      fullWidthInputs={
+        props.autoWide
+          ? (autoInputs() ?? props.fullWidthInputs)
+          : props.fullWidthInputs
+      }
     />
   );
 }
