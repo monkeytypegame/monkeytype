@@ -9,6 +9,8 @@ import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
+import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { Funbox } from "./custom-setting/Funbox";
 import { Language } from "./custom-setting/Language";
 import { MinAcc } from "./custom-setting/MinAcc";
@@ -33,8 +35,8 @@ export function Settings(): JSXElement {
         <AutoSetting key="britishEnglish" />
         <Language />
         <Funbox />
-        {/* todo: custom layoutfluid */}
-        {/* todo: polyglot languages */}
+        <CustomLayoutfluid />
+        <CustomPolyglot />
       </Section>
       <Section title="input">
         <AutoSetting key="freedomMode" />

@@ -441,7 +441,7 @@ export const configMetadata: ConfigMetadataObject = {
   customPolyglot: {
     key: "customPolyglot",
     fa: { icon: "fa-language" },
-    displayString: "custom polyglot",
+    displayString: "polyglot languages",
     changeRequiresRestart: false,
     group: "behavior",
     description: "Select which languages you want the polyglot funbox to use.",
