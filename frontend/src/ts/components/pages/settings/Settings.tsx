@@ -20,90 +20,90 @@ export function Settings(): JSXElement {
   return (
     <div class="outline">
       <Section title="behavior">
-        <KeyedSetting key="resultSaving" />
-        <KeyedSetting key="difficulty" />
-        <KeyedSetting key="quickRestart" />
-        <KeyedSetting key="repeatQuotes" />
-        <KeyedSetting key="blindMode" />
-        <KeyedSetting key="alwaysShowWordsHistory" />
-        <KeyedSetting key="singleListCommandLine" />
+        <KeyedAutoSetting key="resultSaving" />
+        <KeyedAutoSetting key="difficulty" />
+        <KeyedAutoSetting key="quickRestart" />
+        <KeyedAutoSetting key="repeatQuotes" />
+        <KeyedAutoSetting key="blindMode" />
+        <KeyedAutoSetting key="alwaysShowWordsHistory" />
+        <KeyedAutoSetting key="singleListCommandLine" />
         <MinSpeed />
         <MinAcc />
         <MinBurst />
-        <KeyedSetting key="britishEnglish" />
+        <KeyedAutoSetting key="britishEnglish" />
         <Language />
         <Funbox />
         {/* todo: custom layoutfluid */}
         {/* todo: polyglot languages */}
       </Section>
       <Section title="input">
-        <KeyedSetting key="freedomMode" />
-        <KeyedSetting key="strictSpace" />
-        <KeyedSetting key="oppositeShiftMode" />
-        <KeyedSetting key="stopOnError" />
-        <KeyedSetting key="confidenceMode" />
-        <KeyedSetting key="quickEnd" />
-        <KeyedSetting key="indicateTypos" />
-        <KeyedSetting key="hideExtraLetters" />
-        <KeyedSetting key="compositionDisplay" />
-        <KeyedSetting key="lazyMode" />
+        <KeyedAutoSetting key="freedomMode" />
+        <KeyedAutoSetting key="strictSpace" />
+        <KeyedAutoSetting key="oppositeShiftMode" />
+        <KeyedAutoSetting key="stopOnError" />
+        <KeyedAutoSetting key="confidenceMode" />
+        <KeyedAutoSetting key="quickEnd" />
+        <KeyedAutoSetting key="indicateTypos" />
+        <KeyedAutoSetting key="hideExtraLetters" />
+        <KeyedAutoSetting key="compositionDisplay" />
+        <KeyedAutoSetting key="lazyMode" />
         {/* todo: layout emulator */}
-        <KeyedSetting key="codeUnindentOnBackspace" />
+        <KeyedAutoSetting key="codeUnindentOnBackspace" />
       </Section>
       <Section title="sound">
         {/* todo: sound volume */}
-        <KeyedSetting key="playSoundOnClick" wide />
-        <KeyedSetting key="playSoundOnError" wide />
-        <KeyedSetting key="playTimeWarning" wide />
+        <KeyedAutoSetting key="playSoundOnClick" wide />
+        <KeyedAutoSetting key="playSoundOnError" wide />
+        <KeyedAutoSetting key="playTimeWarning" wide />
       </Section>
       <Section title="caret">
-        <KeyedSetting key="smoothCaret" />
-        <KeyedSetting key="caretStyle" wide />
+        <KeyedAutoSetting key="smoothCaret" />
+        <KeyedAutoSetting key="caretStyle" wide />
         {/* pace caret */}
-        <KeyedSetting key="paceCaretStyle" wide />
-        <KeyedSetting key="repeatedPace" />
+        <KeyedAutoSetting key="paceCaretStyle" wide />
+        <KeyedAutoSetting key="repeatedPace" />
       </Section>
       <Section title="appearance">
-        <KeyedSetting key="timerStyle" wide />
-        <KeyedSetting key="liveSpeedStyle" />
-        <KeyedSetting key="liveAccStyle" />
-        <KeyedSetting key="liveBurstStyle" />
-        <KeyedSetting key="timerColor" />
-        <KeyedSetting key="timerOpacity" />
-        <KeyedSetting key="highlightMode" wide />
-        <KeyedSetting key="typedEffect" />
-        <KeyedSetting key="tapeMode" />
+        <KeyedAutoSetting key="timerStyle" wide />
+        <KeyedAutoSetting key="liveSpeedStyle" />
+        <KeyedAutoSetting key="liveAccStyle" />
+        <KeyedAutoSetting key="liveBurstStyle" />
+        <KeyedAutoSetting key="timerColor" />
+        <KeyedAutoSetting key="timerOpacity" />
+        <KeyedAutoSetting key="highlightMode" wide />
+        <KeyedAutoSetting key="typedEffect" />
+        <KeyedAutoSetting key="tapeMode" />
         {/* todo: tape margin */}
-        <KeyedSetting key="smoothLineScroll" />
-        <KeyedSetting key="showAllLines" />
-        <KeyedSetting key="alwaysShowDecimalPlaces" />
-        <KeyedSetting key="typingSpeedUnit" />
-        <KeyedSetting key="startGraphsAtZero" />
+        <KeyedAutoSetting key="smoothLineScroll" />
+        <KeyedAutoSetting key="showAllLines" />
+        <KeyedAutoSetting key="alwaysShowDecimalPlaces" />
+        <KeyedAutoSetting key="typingSpeedUnit" />
+        <KeyedAutoSetting key="startGraphsAtZero" />
         {/* todo: max line width */}
         {/* todo: font size */}
         {/* todo: font family */}
-        <KeyedSetting key="keymapMode" />
+        <KeyedAutoSetting key="keymapMode" />
         {/* todo: keymap layout */}
-        <KeyedSetting key="keymapStyle" wide />
-        <KeyedSetting key="keymapLegendStyle" wide />
-        <KeyedSetting key="keymapShowTopRow" wide />
+        <KeyedAutoSetting key="keymapStyle" wide />
+        <KeyedAutoSetting key="keymapLegendStyle" wide />
+        <KeyedAutoSetting key="keymapShowTopRow" wide />
         {/* todo: keymap size */}
       </Section>
       <Section title="theme">
-        <KeyedSetting key="flipTestColors" />
-        <KeyedSetting key="colorfulMode" />
+        <KeyedAutoSetting key="flipTestColors" />
+        <KeyedAutoSetting key="colorfulMode" />
         {/* todo: custom background (url + local image + size) */}
         {/* todo: custom background filter */}
-        <KeyedSetting key="autoSwitchTheme" />
+        <KeyedAutoSetting key="autoSwitchTheme" />
         {/* todo: auto switch theme inputs (light/dark selects) */}
-        <KeyedSetting key="randomTheme" wide />
+        <KeyedAutoSetting key="randomTheme" wide />
         {/* todo: theme picker (preset + custom tabs) */}
       </Section>
       <Section title="hide elements">
-        <KeyedSetting key="showKeyTips" />
-        <KeyedSetting key="showOutOfFocusWarning" />
-        <KeyedSetting key="capsLockWarning" />
-        <KeyedSetting key="showAverage" />
+        <KeyedAutoSetting key="showKeyTips" />
+        <KeyedAutoSetting key="showOutOfFocusWarning" />
+        <KeyedAutoSetting key="capsLockWarning" />
+        <KeyedAutoSetting key="showAverage" />
       </Section>
       {/* todo: danger zone */}
     </div>
@@ -138,7 +138,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
   );
 }
 
-function KeyedSetting(props: {
+function KeyedAutoSetting(props: {
   key: keyof Config;
   inputs?: JSXElement;
   wide?: boolean;
