@@ -20,7 +20,6 @@ export function Settings(): JSXElement {
   return (
     <div class="outline">
       <Section title="behavior">
-        <Funbox />
         <KeyedSetting key="resultSaving" autoInputs />
         <KeyedSetting key="difficulty" autoInputs />
         <KeyedSetting key="quickRestart" autoInputs />
@@ -33,7 +32,7 @@ export function Settings(): JSXElement {
         <MinBurst />
         <KeyedSetting key="britishEnglish" autoInputs />
         <Language />
-        {/* todo: funbox */}
+        <Funbox />
         {/* todo: custom layoutfluid */}
         {/* todo: polyglot languages */}
       </Section>
