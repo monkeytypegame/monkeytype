@@ -52,7 +52,7 @@ function updateHotkeys(): Hotkeys {
     ),
     commandline: shiftHotkey(
       getConfig.quickRestart === "esc" ? "Tab" : "Escape",
-      isOnTestPage && (wordsHaveNewline() || !canQuickRestart()),
+      isOnTestPage && wordsHaveNewline(),
     ),
   };
 }
