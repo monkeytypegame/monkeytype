@@ -5,6 +5,8 @@ import { restartTestEvent } from "../../events/test";
 import { getActivePage } from "../../states/core";
 import { hotkeys } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
+import { isLongTest } from "../../states/test";
+import { createEffect } from "solid-js";
 
 function quickRestart(e: KeyboardEvent): void {
   if (isAnyPopupVisible()) {
@@ -19,5 +21,11 @@ function quickRestart(e: KeyboardEvent): void {
     void navigate("");
   }
 }
+
+createEffect(() => {
+  if (isLongTest()) {
+    createHotkey(() => "Tab", quickRestart);
+  }
+});
 
 createHotkey(() => hotkeys.quickRestart, quickRestart);
