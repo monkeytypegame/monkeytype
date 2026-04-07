@@ -7,6 +7,7 @@ import { hotkeys } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { isLongTest } from "../../states/test";
 import { createEffect } from "solid-js";
+import { Hotkey } from "@tanstack/solid-hotkeys";
 
 function quickRestart(e: KeyboardEvent): void {
   if (isAnyPopupVisible()) {
@@ -24,7 +25,11 @@ function quickRestart(e: KeyboardEvent): void {
 
 createEffect(() => {
   if (isLongTest()) {
-    createHotkey(() => "Tab", quickRestart);
+    createHotkey(
+      () =>
+        (hotkeys.quickRestart.split("+")[1] ?? hotkeys.quickRestart) as Hotkey,
+      quickRestart,
+    );
   }
 });
 
