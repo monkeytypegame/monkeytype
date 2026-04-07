@@ -142,7 +142,7 @@ export function QuoteReportModal(): JSXElement {
         <form.Field
           name="reason"
           children={(field) => (
-            <LabeledField label="reason" id="reason">
+            <LabeledField label="reason">
               <SlimSelect
                 options={[
                   { value: "Grammatical error", text: "Grammatical error" },
@@ -172,10 +172,9 @@ export function QuoteReportModal(): JSXElement {
           name="comment"
           validators={{ onChange: fieldMandatory<string>() }}
           children={(field) => (
-            <LabeledField label="comment" id="comment">
+            <LabeledField label="comment">
               <div class="relative">
                 <textarea
-                  id="comment"
                   class="bg-bg-secondary min-h-50 w-full rounded p-2 text-text"
                   value={field().state.value}
                   onInput={(e) => field().handleChange(e.currentTarget.value)}

@@ -14,7 +14,7 @@ export function LabeledField(props: {
       <label
         // oxlint-disable-next-line react/no-unknown-property
         for={props.id}
-        class="cursor-pointer text-sub lowercase"
+        class="text-sub lowercase"
       >
         {props.label}
       </label>
