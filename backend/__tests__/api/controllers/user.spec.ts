@@ -193,7 +193,7 @@ describe("user controller test", () => {
         ],
       });
     });
-    it("should fail if username contains bad word", async () => {
+    it("should fail if username contains disallowed word", async () => {
       //GIVEN
       const newUser = {
         uid: uid,
@@ -212,7 +212,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"name" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"name" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
         ],
       });
     });
@@ -277,7 +277,7 @@ describe("user controller test", () => {
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
-    it("returns 422 if username contains bad word", async () => {
+    it("returns 422 if username contains disallowed word", async () => {
       await mockApp
         .get("/users/checkName/newMiodec")
         //no authentication required
@@ -1139,7 +1139,7 @@ describe("user controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should fail if username contains bad word", async () => {
+    it("should fail if username contains disallowed word", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
@@ -1151,7 +1151,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"name" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"name" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
         ],
       });
     });
@@ -3310,7 +3310,7 @@ describe("user controller test", () => {
         expect.objectContaining({}),
       );
     });
-    it("should fail with bad word", async () => {
+    it("should fail with disallowed word", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
@@ -3330,11 +3330,11 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"bio" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
-          '"keyboard" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
-          '"socialProfiles.twitter" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
-          '"socialProfiles.github" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
-          '"socialProfiles.website" Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (https://i-luv-miodec.com).',
+          '"bio" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"keyboard" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.twitter" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.github" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.website" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (https://i-luv-miodec.com).',
         ],
       });
     });

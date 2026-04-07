@@ -2,7 +2,7 @@ import { replaceHomoglyphs } from "./homoglyphs";
 import { ZodEffects, ZodString } from "zod";
 
 // Sorry for the bad words
-const badWords = [
+const disallowedWords = [
   "miodec",
   "bitly",
   "niqqa",
@@ -403,7 +403,10 @@ function sanitizeString(str: string | undefined): string | undefined {
     .replace(/\s{3,}/g, "  ");
 }
 
-function containsBadWords(text: string, mode: "word" | "substring"): boolean {
+function containsDisallowedWords(
+  text: string,
+  mode: "word" | "substring",
+): boolean {
   const normalizedText = text
     .toLowerCase()
     .split(/[.,"/#!?$%^&*;:{}=\-_`~()\s\n]+/g)
@@ -411,29 +414,29 @@ function containsBadWords(text: string, mode: "word" | "substring"): boolean {
       return replaceHomoglyphs(sanitizeString(str) ?? "");
     });
 
-  const hasBadWords = badWords.some((badWord) => {
+  const hasDisallowedWords = disallowedWords.some((disallowedWord) => {
     return normalizedText.some((word) => {
       return mode === "word"
-        ? word.startsWith(badWord)
-        : word.includes(badWord);
+        ? word.startsWith(disallowedWord)
+        : word.includes(disallowedWord);
     });
   });
 
-  return hasBadWords;
+  return hasDisallowedWords;
 }
 
-export function doesNotContainBadWords(
+export function doesNotContainDisallowedWords(
   mode: "word" | "substring",
   schema: ZodString,
 ): ZodEffects<ZodString> {
   return schema.refine(
     (val) => {
-      return !containsBadWords(val, mode);
+      return !containsDisallowedWords(val, mode);
     },
     (val) => ({
-      message: `Unallowed word detected. Please remove it. If you believe this is a mistake, please contact us (${val}).`,
+      message: `Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (${val}).`,
     }),
   );
 }
 
-export const __testing = { containsBadWords };
+export const __testing = { containsDisallowedWords };

@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import * as Validation from "@monkeytype/schemas/validation/validation";
 
-const containsBadWords = Validation.__testing.containsBadWords;
+const containsDisallowedWords = Validation.__testing.containsDisallowedWords;
 
 describe("validation", () => {
-  it("containsBadWords", () => {
+  it("containsDisallowedWords", () => {
     const testCases = [
       {
         text: "https://www.fuckyou.com",
@@ -37,7 +37,7 @@ describe("validation", () => {
     ];
 
     testCases.forEach((testCase) => {
-      expect(containsBadWords(testCase.text, "substring")).toBe(
+      expect(containsDisallowedWords(testCase.text, "substring")).toBe(
         testCase.expected,
       );
     });
