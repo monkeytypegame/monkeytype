@@ -69,6 +69,14 @@ export function capitalizeFirstLetter(str: string): string {
 }
 
 /**
+ * Normalizes free-form names to canonical storage format.
+ * Trims edge whitespace and collapses all inner whitespace runs to underscores.
+ */
+export function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, "_");
+}
+
+/**
  * @param text String to split
  * @param delimiters Single character delimiters.
  */
@@ -320,10 +328,17 @@ export function areCharactersVisuallyEqual(
 }
 
 export function toHex(buffer: ArrayBuffer): string {
-  if (Uint8Array.prototype.toHex !== undefined) {
-    return new Uint8Array(buffer).toHex();
+  const u8 = new Uint8Array(buffer);
+
+  // Use native toHex if available (modern browsers / future runtimes)
+  if (
+    "toHex" in u8 &&
+    typeof (u8 as { toHex?: unknown }).toHex === "function"
+  ) {
+    return (u8 as unknown as { toHex(): string }).toHex();
   }
-  const hashArray = Array.from(new Uint8Array(buffer));
+
+  const hashArray = Array.from(u8);
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

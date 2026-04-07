@@ -36,6 +36,7 @@ const runCommand = (command, force) => {
       process.exit(1);
     }
   }
+  return undefined;
 };
 
 const runProjectRootCommand = (command, force) => {
@@ -54,6 +55,7 @@ const runProjectRootCommand = (command, force) => {
       process.exit(1);
     }
   }
+  return undefined;
 };
 
 const checkBranchSync = () => {

@@ -14,13 +14,13 @@
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
   "dependencies": {
-    "@octokit/rest": "21.1.1",
+    "@octokit/rest": "22.0.1",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
   },
   "devDependencies": {
     "nodemon": "3.1.14",
-    "oxlint": "1.57.0",
-    "oxlint-tsgolint": "0.18.1"
+    "oxlint": "1.59.0",
+    "oxlint-tsgolint": "0.20.0"
   }
 }
