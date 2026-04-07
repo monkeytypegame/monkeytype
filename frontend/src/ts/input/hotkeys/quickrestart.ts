@@ -6,7 +6,6 @@ import { getActivePage } from "../../states/core";
 import { hotkeys } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { isLongTest } from "../../states/test";
-import { createEffect } from "solid-js";
 import { Hotkey } from "@tanstack/solid-hotkeys";
 
 function quickRestart(e: KeyboardEvent): void {
@@ -23,14 +22,10 @@ function quickRestart(e: KeyboardEvent): void {
   }
 }
 
-createEffect(() => {
-  if (isLongTest()) {
-    createHotkey(
-      () =>
-        (hotkeys.quickRestart.split("+")[1] ?? hotkeys.quickRestart) as Hotkey,
-      quickRestart,
-    );
-  }
-});
+createHotkey(
+  () => (hotkeys.quickRestart.split("+")[1] ?? hotkeys.quickRestart) as Hotkey,
+  quickRestart,
+  () => ({ enabled: isLongTest() }),
+);
 
 createHotkey(() => hotkeys.quickRestart, quickRestart);
