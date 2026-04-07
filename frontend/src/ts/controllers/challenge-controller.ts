@@ -341,7 +341,7 @@ export async function setup(challengeName: string): Promise<boolean> {
           nosave: true,
         });
       }
-    } else if (challenge.type === "special") {
+    } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         setConfig("mode", "time", {
