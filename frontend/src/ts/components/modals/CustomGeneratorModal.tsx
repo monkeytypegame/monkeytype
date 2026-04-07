@@ -161,7 +161,7 @@ export function CustomGeneratorModal(props: {
         class="grid gap-4"
       >
         <LabeledField label="presets">
-          <div class="grid grid-cols-[1fr,auto] gap-2">
+          <div class="grid grid-cols-[1fr_auto] gap-2">
             <SlimSelect
               options={presetOptions}
               selected={selectedPreset()}
