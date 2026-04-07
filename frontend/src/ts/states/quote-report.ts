@@ -3,7 +3,7 @@ import { isCaptchaAvailable } from "../controllers/captcha-controller";
 import { showModal } from "./modals";
 import { showErrorNotification } from "./notifications";
 
-const [quoteId, setQuoteId] = createSignal<number>(0);
+const [quoteId, setQuoteId] = createSignal(0);
 
 export { quoteId };
 
