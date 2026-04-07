@@ -1,4 +1,4 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../../utils/cn";
 
@@ -11,10 +11,16 @@ export function LabeledField(props: {
 }): JSXElement {
   return (
     <div class={cn("grid gap-1", props.class)}>
-      <label for={props.id} class="text-sub cursor-pointer lowercase">
+      <label
+        // oxlint-disable-next-line react/no-unknown-property
+        for={props.id}
+        class="cursor-pointer text-sub lowercase"
+      >
         {props.label}
       </label>
-      {props.sub && <div class="mb-1 text-xs text-sub">{props.sub}</div>}
+      <Show when={props.sub}>
+        <div class="mb-1 text-xs text-sub">{props.sub}</div>
+      </Show>
       {props.children}
     </div>
   );
