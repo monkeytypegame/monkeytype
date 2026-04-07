@@ -7,7 +7,7 @@ import { wordsHaveNewline, wordsHaveTab, isLongTest } from "./test";
 import { getActivePage } from "./core";
 import { NoKey } from "../input/hotkeys/utils";
 
-const quickRestartHotkeyMap: Record<QuickRestart, Hotkey> = {
+export const quickRestartHotkeyMap: Record<QuickRestart, Hotkey> = {
   off: NoKey,
   esc: "Escape",
   tab: "Tab",

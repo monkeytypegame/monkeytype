@@ -3,11 +3,10 @@ import { isAnyPopupVisible } from "../../utils/misc";
 import { navigate } from "../../controllers/route-controller";
 import { restartTestEvent } from "../../events/test";
 import { getActivePage } from "../../states/core";
-import { hotkeys } from "../../states/hotkeys";
+import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { isLongTest } from "../../states/test";
 import { getConfig } from "../../config/store";
-import { Hotkey } from "@tanstack/solid-hotkeys";
 
 function quickRestart(e: KeyboardEvent): void {
   if (isAnyPopupVisible()) {
@@ -24,7 +23,7 @@ function quickRestart(e: KeyboardEvent): void {
 }
 
 createHotkey(
-  () => getConfig.quickRestart as Hotkey,
+  () => quickRestartHotkeyMap[getConfig.quickRestart],
   quickRestart,
   () => ({ enabled: isLongTest() }),
 );
