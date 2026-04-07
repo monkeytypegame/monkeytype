@@ -726,7 +726,7 @@
   {
     "name": "wingdings",
     "display": "Ten Words of Pain",
-    "type": "special",
+    "type": "other",
     "parameters": [],
     "message": "Complete a 10-word Master mode test using the Wingdings custom font. No keymap allowed. Minimum 60 WPM and 100% accuracy required.",
     "requirements": {
