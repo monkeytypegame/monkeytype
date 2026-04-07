@@ -109,26 +109,48 @@ describe("Config", () => {
       expect(Config.setConfig("showAllLines", true)).toBe(false);
     });
 
-    it("shows a notice when monkey conflicts with live text stats", () => {
+    it("disables live text stats when enabling monkey", () => {
       //GIVEN
-      replaceConfig({ liveSpeedStyle: "text", monkey: false });
+      replaceConfig({
+        liveSpeedStyle: "text",
+        liveAccStyle: "text",
+        monkey: false,
+      });
 
       //WHEN / THEN
-      expect(Config.setConfig("monkey", true)).toBe(false);
-      expect(notificationAddMock).toHaveBeenCalledWith(
-        "Monkey can't be enabled while live speed or live accuracy is set to text.",
-      );
+      expect(Config.setConfig("monkey", true)).toBe(true);
+      expect(getConfig()).toMatchObject({
+        monkey: true,
+        liveSpeedStyle: "off",
+        liveAccStyle: "off",
+      });
+      expect(notificationAddMock).not.toHaveBeenCalled();
     });
 
-    it("shows a notice when live speed text conflicts with monkey", () => {
+    it("disables monkey when enabling live speed text", () => {
       //GIVEN
       replaceConfig({ monkey: true, liveSpeedStyle: "off" });
 
       //WHEN / THEN
-      expect(Config.setConfig("liveSpeedStyle", "text")).toBe(false);
-      expect(notificationAddMock).toHaveBeenCalledWith(
-        "Live speed can't be set to text while monkey is enabled.",
-      );
+      expect(Config.setConfig("liveSpeedStyle", "text")).toBe(true);
+      expect(getConfig()).toMatchObject({
+        monkey: false,
+        liveSpeedStyle: "text",
+      });
+      expect(notificationAddMock).not.toHaveBeenCalled();
+    });
+
+    it("disables monkey when enabling live accuracy text", () => {
+      //GIVEN
+      replaceConfig({ monkey: true, liveAccStyle: "off" });
+
+      //WHEN / THEN
+      expect(Config.setConfig("liveAccStyle", "text")).toBe(true);
+      expect(getConfig()).toMatchObject({
+        monkey: false,
+        liveAccStyle: "text",
+      });
+      expect(notificationAddMock).not.toHaveBeenCalled();
     });
 
     it("should use overrideValue", () => {

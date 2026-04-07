@@ -620,14 +620,13 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live speed style",
     changeRequiresRestart: false,
     group: "appearance",
-    isBlocked: ({ value, currentConfig }) => {
-      if (value === "text" && currentConfig.monkey) {
-        showNoticeNotification(
-          "Live speed can't be set to text while monkey is enabled.",
-        );
-        return true;
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
       }
-      return false;
+      return {};
     },
   },
   liveAccStyle: {
@@ -636,14 +635,13 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live accuracy style",
     changeRequiresRestart: false,
     group: "appearance",
-    isBlocked: ({ value, currentConfig }) => {
-      if (value === "text" && currentConfig.monkey) {
-        showNoticeNotification(
-          "Live accuracy can't be set to text while monkey is enabled.",
-        );
-        return true;
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
       }
-      return false;
+      return {};
     },
   },
   liveBurstStyle: {
@@ -1023,18 +1021,20 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "monkey",
     changeRequiresRestart: false,
     group: "hidden",
-    isBlocked: ({ value, currentConfig }) => {
-      if (
-        value &&
-        (currentConfig.liveSpeedStyle === "text" ||
-          currentConfig.liveAccStyle === "text")
-      ) {
-        showNoticeNotification(
-          "Monkey can't be enabled while live speed or live accuracy is set to text.",
-        );
-        return true;
+    overrideConfig: ({ value, currentConfig }) => {
+      if (value) {
+        return {
+          liveSpeedStyle:
+            currentConfig.liveSpeedStyle === "text"
+              ? "off"
+              : currentConfig.liveSpeedStyle,
+          liveAccStyle:
+            currentConfig.liveAccStyle === "text"
+              ? "off"
+              : currentConfig.liveAccStyle,
+        };
       }
-      return false;
+      return {};
     },
   },
   monkeyPowerLevel: {
