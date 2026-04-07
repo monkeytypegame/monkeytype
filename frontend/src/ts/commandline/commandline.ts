@@ -172,6 +172,7 @@ export function show(
       await showCommands();
       await updateActiveCommand();
       setTimeout(() => {
+        lastActiveIndex = undefined;
         keepActiveCommandInView();
         if (showInputCommand) {
           const escaped =
@@ -488,6 +489,11 @@ async function showCommands(): Promise<void> {
 
   for (const command of list) {
     if (command.found !== true) continue;
+
+    if (command.isActive && firstActive === null && inputValue === "") {
+      firstActive = index;
+    }
+
     let customStyle = "";
     if (command.customStyle !== undefined && command.customStyle !== "") {
       customStyle = command.customStyle;
