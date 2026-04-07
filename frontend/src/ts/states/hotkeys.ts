@@ -2,6 +2,9 @@ import { QuickRestart } from "@monkeytype/schemas/configs";
 import { Hotkey } from "@tanstack/solid-hotkeys";
 import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
+import { getData as getCustomTextData } from "../test/custom-text";
+import { isCustomTextLong } from "../legacy-states/custom-text-name";
+import { canQuickRestart } from "../utils/quick-restart";
 import { getConfig } from "../config/store";
 import { wordsHaveNewline, wordsHaveTab } from "./test";
 import { getActivePage } from "./core";
@@ -28,14 +31,21 @@ createEffect(() => {
 
 function updateHotkeys(): Hotkeys {
   const isOnTestPage = getActivePage() === "test";
+  const isLongTest = !canQuickRestart(
+    getConfig.mode,
+    getConfig.words,
+    getConfig.time,
+    getCustomTextData(),
+    isCustomTextLong() ?? false,
+  );
   return {
     quickRestart: shiftHotkey(
       quickRestartHotkeyMap[getConfig.quickRestart],
-      isOnTestPage && wordsHaveTab(),
+      isOnTestPage && (wordsHaveTab() || isLongTest),
     ),
     commandline: shiftHotkey(
       getConfig.quickRestart === "esc" ? "Tab" : "Escape",
-      isOnTestPage && wordsHaveNewline(),
+      isOnTestPage && (wordsHaveNewline() || isLongTest),
     ),
   };
 }
