@@ -133,7 +133,7 @@ if (DEV) {
     const mirrors: { node: SolidNode; set: (v: unknown) => void }[] = [];
 
     for (const [node, info] of pendingNodes) {
-      const [get, set] = createSignal<unknown>(node.value);
+      const [get, set] = createSignal(node.value);
 
       trackedSignals.push({
         name: info.name,

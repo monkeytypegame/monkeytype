@@ -11,8 +11,7 @@ export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-export const [getResultVisible, setResultVisible] =
-  createSignal<boolean>(false);
+export const [getResultVisible, setResultVisible] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
 
 export const [isLongTest, setIsLongTest] = createSignal(false);
