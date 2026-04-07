@@ -7,6 +7,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 import { InputField } from "../ui/form/InputField";
+import { LabeledField } from "../ui/form/LabeledField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import { TextareaField } from "../ui/form/TextareaField";
 import SlimSelect from "../ui/SlimSelect";
@@ -159,9 +160,8 @@ export function CustomGeneratorModal(props: {
         }}
         class="grid gap-4"
       >
-        <div class="grid gap-1">
-          <div class="text-sub">presets</div>
-          <div class="grid gap-2">
+        <LabeledField label="presets">
+          <div class="grid grid-cols-[1fr,auto] gap-2">
             <SlimSelect
               options={presetOptions}
               selected={selectedPreset()}
@@ -169,14 +169,13 @@ export function CustomGeneratorModal(props: {
             />
             <Button variant="button" text="apply" onClick={applyPreset} />
           </div>
-        </div>
+        </LabeledField>
         <Separator />
         <div class="text-xs text-sub">
           Enter characters or strings separated by spaces. Random combinations
           will be generated using these inputs.
         </div>
-        <div class="grid gap-1">
-          <div class="text-sub">character set</div>
+        <LabeledField label="character set">
           <form.Field
             name="characterSet"
             validators={{
@@ -188,27 +187,24 @@ export function CustomGeneratorModal(props: {
               <TextareaField field={field} class="min-h-25 p-2 text-text" />
             )}
           </form.Field>
-        </div>
+        </LabeledField>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div class="grid gap-1">
-            <div class="text-sub">min length</div>
+          <LabeledField label="min length">
             <form.Field name="minLength">
               {(field) => <InputField field={field} type="number" />}
             </form.Field>
-          </div>
-          <div class="grid gap-1">
-            <div class="text-sub">max length</div>
+          </LabeledField>
+          <LabeledField label="max length">
             <form.Field name="maxLength">
               {(field) => <InputField field={field} type="number" />}
             </form.Field>
-          </div>
+          </LabeledField>
         </div>
-        <div class="grid gap-1">
-          <div class="text-sub">word count</div>
+        <LabeledField label="word count">
           <form.Field name="wordCount">
             {(field) => <InputField field={field} type="number" />}
           </form.Field>
-        </div>
+        </LabeledField>
         <div class="text-xs text-sub">
           {
             '"Set" replaces the current custom text with generated words, "Add" appends generated words to the current custom text.'
