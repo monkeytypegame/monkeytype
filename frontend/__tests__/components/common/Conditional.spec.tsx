@@ -119,7 +119,7 @@ describe("Conditional", () => {
 
   describe("reactivity", () => {
     it("switches from else to then when if becomes truthy", async () => {
-      const [condition, setCondition] = createSignal<boolean>(false);
+      const [condition, setCondition] = createSignal(false);
 
       render(() => (
         <Conditional
@@ -139,7 +139,7 @@ describe("Conditional", () => {
     });
 
     it("switches from then to else when if becomes falsy", async () => {
-      const [condition, setCondition] = createSignal<boolean>(true);
+      const [condition, setCondition] = createSignal(true);
 
       render(() => (
         <Conditional

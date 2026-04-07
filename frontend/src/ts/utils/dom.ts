@@ -493,7 +493,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   ): ElementsWithUtils<U> {
     const elements = Array.from(this.native.querySelectorAll<U>(selector))
       .filter((el) => el !== null)
-      .map((el) => new ElementWithUtils<U>(el));
+      .map((el) => new ElementWithUtils(el));
 
     return new ElementsWithUtils<U>(...elements);
   }
@@ -1058,7 +1058,7 @@ export class ElementsWithUtils<
 
     for (const item of this) {
       const found = item.native.querySelector<U>(selector);
-      if (found) allElements.push(new ElementWithUtils<U>(found));
+      if (found) allElements.push(new ElementWithUtils(found));
     }
 
     return new ElementsWithUtils<U>(...allElements);
@@ -1075,7 +1075,7 @@ export class ElementsWithUtils<
     for (const item of this) {
       const elements = Array.from(item.native.querySelectorAll<U>(selector));
       for (const el of elements) {
-        if (el !== null) allElements.push(new ElementWithUtils<U>(el));
+        if (el !== null) allElements.push(new ElementWithUtils(el));
       }
     }
 

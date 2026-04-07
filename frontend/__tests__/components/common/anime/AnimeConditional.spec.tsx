@@ -71,7 +71,7 @@ describe("AnimeConditional", () => {
   });
 
   it("switches reactively from `then` to `else`", () => {
-    const [condition, setCondition] = createSignal<boolean>(true);
+    const [condition, setCondition] = createSignal(true);
 
     render(() => (
       <AnimeConditional
@@ -90,7 +90,7 @@ describe("AnimeConditional", () => {
   });
 
   it("switches reactively from `else` to `then`", () => {
-    const [condition, setCondition] = createSignal<boolean>(false);
+    const [condition, setCondition] = createSignal(false);
 
     render(() => (
       <AnimeConditional
@@ -134,7 +134,7 @@ describe("AnimeConditional", () => {
   });
 
   it("does not throw on mount/unmount", () => {
-    const [show, setShow] = createSignal<boolean>(true);
+    const [show, setShow] = createSignal(true);
 
     expect(() => {
       render(() => (

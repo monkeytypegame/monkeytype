@@ -17,9 +17,7 @@ const defaultTheme: Theme & { name: ThemeIdentifier } = {
   colorfulErrorExtra: "#7e2a33",
 };
 
-export const [getTheme, setTheme] = createSignal<
-  Theme & { name: ThemeIdentifier }
->(defaultTheme);
+export const [getTheme, setTheme] = createSignal(defaultTheme);
 
 export function updateThemeColor(key: ColorName, color: string): void {
   setTheme((prev) => ({
