@@ -69,6 +69,14 @@ export function capitalizeFirstLetter(str: string): string {
 }
 
 /**
+ * Normalizes free-form names to canonical storage format.
+ * Trims edge whitespace and collapses all inner whitespace runs to underscores.
+ */
+export function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, "_");
+}
+
+/**
  * @param text String to split
  * @param delimiters Single character delimiters.
  */

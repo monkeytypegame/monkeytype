@@ -187,7 +187,6 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
 export async function createFilterPreset(
   name: string,
 ): Promise<number | undefined> {
-  name = name.replace(/ /g, "_");
   showLoaderBar();
   const result = await Ape.users.addResultFilterPreset({
     body: { ...filters, name },
