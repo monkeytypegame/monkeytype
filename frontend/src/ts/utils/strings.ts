@@ -356,14 +356,13 @@ export function checkAccentOrderMismatch(
   targetWord: string,
   language?: Language,
 ): { inputPattern: string; patternStart: number } | null {
-  const langRules =
-    language && LANGUAGE_ACCENT_RULES[language]
-      ? LANGUAGE_ACCENT_RULES[language]
-      : [];
-  return _checkAccentOrderMismatchWithRules(input, targetWord, [
-    ...langRules,
-    ...ACCENT_RULES,
-  ]);
+  const accentRules: string[][] = [];
+  if (language !== undefined) {
+    const langRules = LANGUAGE_ACCENT_RULES[removeLanguageSize(language)];
+    if (langRules !== undefined) accentRules.push(...langRules);
+  }
+  accentRules.push(...ACCENT_RULES);
+  return _checkAccentOrderMismatchWithRules(input, targetWord, accentRules);
 }
 
 function _checkAccentOrderMismatchWithRules(
