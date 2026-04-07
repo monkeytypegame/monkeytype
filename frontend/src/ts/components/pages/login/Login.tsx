@@ -106,6 +106,7 @@ export function Login(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="email"
               autocomplete="current-email"
               disabled={!getLoginPageInputsEnabled()}
             />
@@ -116,6 +117,7 @@ export function Login(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="password"
               type="password"
               autocomplete="current-password"
               disabled={!getLoginPageInputsEnabled()}

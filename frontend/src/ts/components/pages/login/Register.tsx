@@ -165,6 +165,7 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="username"
               showIndicator
               autocomplete="new-username"
               disabled={!getLoginPageInputsEnabled()}
@@ -185,6 +186,7 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="email"
               showIndicator
               autocomplete="new-email"
               disabled={!getLoginPageInputsEnabled()}
@@ -235,6 +237,7 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="password"
               showIndicator
               autocomplete="new-password"
               type="password"

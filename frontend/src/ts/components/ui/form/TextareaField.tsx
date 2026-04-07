@@ -23,7 +23,7 @@ export function TextareaField(props: {
       )}
       id={props.field().name as string}
       name={props.field().name as string}
-      placeholder={props.placeholder ?? (props.field().name as string)}
+      placeholder={props.placeholder ?? ""}
       value={props.field().state.value as string}
       onBlur={() => props.field().handleBlur()}
       onInput={(e) => props.field().handleChange(e.currentTarget.value)}

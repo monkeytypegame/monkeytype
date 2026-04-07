@@ -481,6 +481,7 @@ export function CustomTextModal(): JSXElement {
                   <TextareaField
                     field={field}
                     ref={textareaRef}
+                    placeholder="type or paste your custom text"
                     class="min-h-182.5 self-start overflow-x-hidden overflow-y-scroll p-4 text-base font-(--font) text-text"
                     onKeyDown={handleTextareaKeydown}
                     onKeyPress={handleTextareaKeypress}

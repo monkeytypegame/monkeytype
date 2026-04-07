@@ -28,7 +28,7 @@ export function InputField(props: {
           props.class,
         )}
         type={props.type ?? "text"}
-        placeholder={props.placeholder ?? (props.field().name as string)}
+        placeholder={props.placeholder ?? ""}
         // oxlint-disable-next-line react/no-unknown-property
         autocomplete={props.autocomplete}
         name={props.field().name as string}
