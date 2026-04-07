@@ -3,9 +3,12 @@ import { isAnyPopupVisible } from "../../utils/misc";
 import { navigate } from "../../controllers/route-controller";
 import { restartTestEvent } from "../../events/test";
 import { getActivePage } from "../../states/core";
-import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
+import {
+  hotkeys,
+  quickRestartHotkeyMap,
+  canQuickRestart,
+} from "../../states/hotkeys";
 import { createHotkey } from "./utils";
-import { isLongTest } from "../../states/test";
 import { getConfig } from "../../config/store";
 
 function quickRestart(e: KeyboardEvent): void {
@@ -25,7 +28,7 @@ function quickRestart(e: KeyboardEvent): void {
 createHotkey(
   () => quickRestartHotkeyMap[getConfig.quickRestart],
   quickRestart,
-  () => ({ enabled: isLongTest() }),
+  () => ({ enabled: !canQuickRestart() }),
 );
 
 createHotkey(() => hotkeys.quickRestart, quickRestart);
