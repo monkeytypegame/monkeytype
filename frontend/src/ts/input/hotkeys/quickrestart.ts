@@ -5,7 +5,6 @@ import { restartTestEvent } from "../../events/test";
 import { getActivePage } from "../../states/core";
 import { hotkeys } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
-import { Hotkey } from "@tanstack/solid-hotkeys";
 
 function quickRestart(e: KeyboardEvent): void {
   if (isAnyPopupVisible()) {
@@ -22,4 +21,3 @@ function quickRestart(e: KeyboardEvent): void {
 }
 
 createHotkey(() => hotkeys.quickRestart, quickRestart);
-createHotkey(() => `Shift+${hotkeys.quickRestart}` as Hotkey, quickRestart);
