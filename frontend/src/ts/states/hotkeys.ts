@@ -61,6 +61,7 @@ function shiftHotkey(hotkey: Hotkey, shift: boolean): Hotkey {
   if (shift) {
     if (hotkey === "Tab") return "Shift+Tab";
     if (hotkey === "Enter") return "Shift+Enter";
+    if (hotkey === "Escape") return "Shift+Escape";
   }
   return hotkey;
 }
