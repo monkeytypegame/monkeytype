@@ -96,7 +96,7 @@
     "autoprefixer": "10.4.27",
     "caniuse-lite": "1.0.30001778",
     "concurrently": "8.2.2",
-    "eslint": "9.39.1",
+    "eslint": "10.2.0",
     "eslint-plugin-compat": "7.0.0",
     "eslint-plugin-solid": "0.14.5",
     "firebase-tools": "13.15.1",
