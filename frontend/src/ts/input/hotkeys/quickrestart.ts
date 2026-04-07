@@ -23,7 +23,8 @@ function quickRestart(e: KeyboardEvent): void {
 }
 
 createHotkey(
-  () => (hotkeys.quickRestart.split("+")[1] ?? hotkeys.quickRestart) as Hotkey,
+  () =>
+    (hotkeys.quickRestart.split("+").at(-1) ?? hotkeys.quickRestart) as Hotkey,
   quickRestart,
   () => ({ enabled: isLongTest() }),
 );
