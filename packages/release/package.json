@@ -14,7 +14,7 @@
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
   "dependencies": {
-    "@octokit/rest": "21.1.1",
+    "@octokit/rest": "22.0.1",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
   },
