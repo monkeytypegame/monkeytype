@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@octokit/rest": "21.1.1",
-    "dotenv": "16.4.5",
+    "dotenv": "17.4.1",
     "readline-sync": "1.4.10"
   },
   "devDependencies": {

@@ -34,7 +34,7 @@
     "cors": "2.8.5",
     "cron": "2.3.0",
     "date-fns": "3.6.0",
-    "dotenv": "16.4.5",
+    "dotenv": "17.4.1",
     "etag": "1.8.1",
     "express": "5.2.0",
     "express-rate-limit": "7.5.1",
