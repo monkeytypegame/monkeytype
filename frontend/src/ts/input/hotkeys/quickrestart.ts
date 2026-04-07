@@ -22,7 +22,7 @@ function quickRestart(e: KeyboardEvent): void {
   }
 }
 
-// Disable restart when quick restart key is enter, because `shift + enter, shift +
+// Disable restart when we're in long test and quick restart key is enter, because `shift + enter, shift +
 // enter` is already reserved for bail out keybind.
 createHotkey(
   () => hotkeys.quickRestart,
