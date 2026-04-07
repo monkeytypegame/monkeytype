@@ -22,9 +22,10 @@ function quickRestart(e: KeyboardEvent): void {
   }
 }
 
-// We also want to have a hotkey without shift, so when test is considered long (which
-// means that we can't quick restart), we show a notification when user presses quick
-// restart key without shift, and restart when pressed with shift.
+// We also want to have a hotkey for quick restart key without shift, so when the
+// test is considered long (which means that we can't quick restart), we show a
+// notification when the user tries to press the quick restart key without shift,
+// and we'll restart when it's pressed with shift.
 createHotkey(
   () => quickRestartHotkeyMap[getConfig.quickRestart],
   quickRestart,
