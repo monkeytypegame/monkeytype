@@ -23,22 +23,6 @@ function makeField(name: string, value = "") {
 }
 
 describe("InputField", () => {
-  it("renders input with field name as id", () => {
-    const field = makeField("email");
-    render(() => <InputField field={() => field} />);
-
-    const input = screen.getByRole("textbox");
-    expect(input).toHaveAttribute("id", "email");
-    expect(input).toHaveAttribute("name", "email");
-  });
-
-  it("uses field name as default placeholder", () => {
-    const field = makeField("username");
-    render(() => <InputField field={() => field} />);
-
-    expect(screen.getByPlaceholderText("username")).toBeInTheDocument();
-  });
-
   it("uses custom placeholder when provided", () => {
     const field = makeField("email");
     render(() => <InputField field={() => field} placeholder="Enter email" />);

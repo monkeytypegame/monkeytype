@@ -27,17 +27,18 @@ import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { qs } from "../utils/dom";
+import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
 
 let challengeLoading = false;
 
 export function clearActive(): void {
   if (
-    TestState.activeChallenge &&
+    getLoadedChallenge() !== null &&
     !challengeLoading &&
     !TestState.testRestarting
   ) {
     showNoticeNotification("Challenge cleared");
-    TestState.setActiveChallenge(null);
+    setLoadedChallenge(null);
   }
 }
 
@@ -148,7 +149,9 @@ function verifyRequirement(
 }
 
 export function verify(result: CompletedEvent): string | null {
-  if (!TestState.activeChallenge) return null;
+  const loadedChallenge = getLoadedChallenge();
+
+  if (loadedChallenge === null) return null;
 
   try {
     const afk = (result.afkDuration / result.testDuration) * 100;
@@ -158,20 +161,18 @@ export function verify(result: CompletedEvent): string | null {
       return null;
     }
 
-    if (TestState.activeChallenge.requirements === undefined) {
-      showSuccessNotification(
-        `${TestState.activeChallenge.display} challenge passed!`,
-      );
-      return TestState.activeChallenge.name;
+    if (loadedChallenge.requirements === undefined) {
+      showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
+      return loadedChallenge.name || null;
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
       for (const requirementType of Misc.typedKeys(
-        TestState.activeChallenge.requirements,
+        loadedChallenge.requirements,
       )) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
-          TestState.activeChallenge.requirements,
+          loadedChallenge.requirements,
           requirementType,
         );
         if (!passed) {
@@ -180,20 +181,18 @@ export function verify(result: CompletedEvent): string | null {
         failReasons.push(...requirementFailReasons);
       }
       if (requirementsMet) {
-        if (TestState.activeChallenge.autoRole) {
+        if (loadedChallenge.autoRole) {
           showSuccessNotification(
             "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
             { durationMs: 5000 },
           );
         }
-        showSuccessNotification(
-          `${TestState.activeChallenge.display} challenge passed!`,
-        );
-        return TestState.activeChallenge.name;
+        showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
+        return loadedChallenge.name;
       } else {
         showNoticeNotification(
           `${
-            TestState.activeChallenge.display
+            loadedChallenge.display
           } challenge failed: ${failReasons.join(", ")}`,
         );
         return null;
@@ -342,7 +341,7 @@ export async function setup(challengeName: string): Promise<boolean> {
           nosave: true,
         });
       }
-    } else if (challenge.type === "special") {
+    } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         setConfig("mode", "time", {
@@ -369,6 +368,23 @@ export async function setup(challengeName: string): Promise<boolean> {
         setConfig("keymapMode", "static", {
           nosave: true,
         });
+      } else if (challenge.name === "wingdings") {
+        // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
+        setConfig("mode", "words", {
+          nosave: true,
+        });
+        setConfig("words", 10, {
+          nosave: true,
+        });
+        setConfig("difficulty", "master", {
+          nosave: true,
+        });
+        setConfig("fontFamily", "Wingdings", {
+          nosave: true,
+        });
+        setConfig("keymapMode", "off", {
+          nosave: true,
+        });
       }
     }
     notitext = challenge.message;
@@ -376,11 +392,11 @@ export async function setup(challengeName: string): Promise<boolean> {
     qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
-      showNoticeNotification(`Challenge '${challenge.display}' loaded.`);
+      showSuccessNotification(`Challenge '${challenge.display}' loaded.`);
     } else {
-      showNoticeNotification("Challenge loaded. " + notitext);
+      showSuccessNotification("Challenge loaded. " + notitext);
     }
-    TestState.setActiveChallenge(challenge);
+    setLoadedChallenge(challenge);
     challengeLoading = false;
     return true;
   } catch (e) {
@@ -406,6 +422,7 @@ configEvent.subscribe(({ key }) => {
       "keymapMode",
       "keymapLayout",
       "layout",
+      "fontFamily",
     ].includes(key)
   ) {
     clearActive();

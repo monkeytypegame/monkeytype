@@ -1,10 +1,8 @@
 import { JSXElement } from "solid-js";
 
-import {
-  restartTestEvent,
-  getActivePage,
-  getFocus,
-} from "../../../states/core";
+import { restartTestEvent } from "../../../events/test";
+import { getActivePage } from "../../../states/core";
+import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
@@ -27,7 +25,7 @@ export function Logo(): JSXElement {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="-680 -1030 300 180"
-        class={cn("fill-[currentColor] text-main transition-colors", {
+        class={cn("h-full fill-[currentColor] text-main transition-colors", {
           "text-sub": getFocus(),
         })}
       >

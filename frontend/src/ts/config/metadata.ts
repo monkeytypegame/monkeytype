@@ -1,7 +1,7 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "../db";
 import { showNoticeNotification } from "../states/notifications";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { canSetFunboxWithConfig } from "./funbox-validation";
 import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";
@@ -9,6 +9,7 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getDefaultConfig } from "../constants/default-config";
+import { FaObject } from "../types/font-awesome";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -19,6 +20,11 @@ import { getDefaultConfig } from "../constants/default-config";
 
 export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**
+   * The config key that this metadata is for
+   */
+  key: K;
+
+  /**
    * Optional display string for the config key.
    */
   displayString?: string;
@@ -28,9 +34,21 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   triggerResize?: true;
 
   /**
-   * Icon to display in the commandline and settings
+   * Fa object (icon)
    */
-  icon: string;
+  fa: FaObject;
+
+  optionsMetadata?: ConfigSchemas.Config[K] extends string | number | symbol
+    ? Partial<
+        Record<
+          ConfigSchemas.Config[K],
+          {
+            displayString?: string;
+            fa?: FaObject;
+          }
+        >
+      >
+    : never;
 
   // commandline?: {
   //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
@@ -97,7 +115,10 @@ export type ConfigMetadataObject = {
 export const configMetadata: ConfigMetadataObject = {
   // test
   punctuation: {
-    icon: "fa-at",
+    key: "punctuation",
+    fa: {
+      icon: "fa-at",
+    },
     changeRequiresRestart: true,
     group: "test",
     overrideValue: ({ value, currentConfig }) => {
@@ -108,7 +129,10 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   numbers: {
-    icon: "fa-hashtag",
+    key: "numbers",
+    fa: {
+      icon: "fa-hashtag",
+    },
     changeRequiresRestart: true,
     group: "test",
     overrideValue: ({ value, currentConfig }) => {
@@ -119,7 +143,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   words: {
-    icon: "fa-font",
+    key: "words",
+    fa: { icon: "fa-font" },
     displayString: "word count",
     changeRequiresRestart: true,
     group: "test",
@@ -133,7 +158,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   time: {
-    icon: "fa-clock",
+    key: "time",
+    fa: { icon: "fa-clock" },
     changeRequiresRestart: true,
     displayString: "time",
     group: "test",
@@ -147,8 +173,26 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   mode: {
-    icon: "fa-bars",
+    key: "mode",
+    fa: { icon: "fa-bars" },
     changeRequiresRestart: true,
+    optionsMetadata: {
+      time: {
+        fa: { icon: "fa-clock" },
+      },
+      words: {
+        fa: { icon: "fa-font" },
+      },
+      quote: {
+        fa: { icon: "fa-quote-left" },
+      },
+      zen: {
+        fa: { icon: "fa-mountain" },
+      },
+      custom: {
+        fa: { icon: "fa-wrench" },
+      },
+    },
     group: "test",
     overrideConfig: ({ value }) => {
       if (value === "custom" || value === "quote" || value === "zen") {
@@ -166,7 +210,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   quoteLength: {
-    icon: "fa-quote-right",
+    key: "quoteLength",
+    fa: { icon: "fa-quote-right" },
     displayString: "quote length",
     changeRequiresRestart: true,
     group: "test",
@@ -180,13 +225,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   language: {
-    icon: "fa-language",
+    key: "language",
+    fa: { icon: "fa-language" },
     displayString: "language",
     changeRequiresRestart: true,
     group: "test",
   },
   burstHeatmap: {
-    icon: "fa-fire",
+    key: "burstHeatmap",
+    fa: { icon: "fa-fire" },
     displayString: "word burst heatmap",
     changeRequiresRestart: false,
     group: "test",
@@ -194,54 +241,63 @@ export const configMetadata: ConfigMetadataObject = {
 
   // behavior
   difficulty: {
-    icon: "fa-star",
+    key: "difficulty",
+    fa: { icon: "fa-star" },
     changeRequiresRestart: true,
     group: "behavior",
   },
   quickRestart: {
-    icon: "fa-redo-alt",
+    key: "quickRestart",
+    fa: { icon: "fa-redo-alt" },
     displayString: "quick restart",
     changeRequiresRestart: false,
     group: "behavior",
   },
   repeatQuotes: {
-    icon: "fa-sync-alt",
+    key: "repeatQuotes",
+    fa: { icon: "fa-sync-alt" },
     displayString: "repeat quotes",
     changeRequiresRestart: false,
     group: "behavior",
   },
   resultSaving: {
-    icon: "fa-save",
+    key: "resultSaving",
+    fa: { icon: "fa-save" },
     displayString: "result saving",
     changeRequiresRestart: false,
     group: "behavior",
   },
   blindMode: {
-    icon: "fa-eye-slash",
+    key: "blindMode",
+    fa: { icon: "fa-eye-slash" },
     displayString: "blind mode",
     changeRequiresRestart: false,
     group: "behavior",
   },
   alwaysShowWordsHistory: {
-    icon: "fa-align-left",
+    key: "alwaysShowWordsHistory",
+    fa: { icon: "fa-align-left" },
     displayString: "always show words history",
     changeRequiresRestart: false,
     group: "behavior",
   },
   singleListCommandLine: {
-    icon: "fa-list",
+    key: "singleListCommandLine",
+    fa: { icon: "fa-list" },
     displayString: "single list command line",
     changeRequiresRestart: false,
     group: "behavior",
   },
   minWpm: {
-    icon: "fa-bomb",
+    key: "minWpm",
+    fa: { icon: "fa-bomb" },
     displayString: "min speed",
     changeRequiresRestart: true,
     group: "behavior",
   },
   minWpmCustomSpeed: {
-    icon: "fa-bomb",
+    key: "minWpmCustomSpeed",
+    fa: { icon: "fa-bomb" },
     displayString: "min speed custom",
     changeRequiresRestart: true,
     group: "behavior",
@@ -255,13 +311,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   minAcc: {
-    icon: "fa-bomb",
+    key: "minAcc",
+    fa: { icon: "fa-bomb" },
     displayString: "min accuracy",
     changeRequiresRestart: true,
     group: "behavior",
   },
   minAccCustom: {
-    icon: "fa-bomb",
+    key: "minAccCustom",
+    fa: { icon: "fa-bomb" },
     displayString: "min accuracy custom",
     changeRequiresRestart: true,
     group: "behavior",
@@ -275,25 +333,29 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   minBurst: {
-    icon: "fa-bomb",
+    key: "minBurst",
+    fa: { icon: "fa-bomb" },
     displayString: "min word burst",
     changeRequiresRestart: true,
     group: "behavior",
   },
   minBurstCustomSpeed: {
-    icon: "fa-bomb",
+    key: "minBurstCustomSpeed",
+    fa: { icon: "fa-bomb" },
     displayString: "min word burst custom speed",
     changeRequiresRestart: true,
     group: "behavior",
   },
   britishEnglish: {
-    icon: "fa-language",
+    key: "britishEnglish",
+    fa: { icon: "fa-language" },
     displayString: "british english",
     changeRequiresRestart: true,
     group: "behavior",
   },
   funbox: {
-    icon: "fa-gamepad",
+    key: "funbox",
+    fa: { icon: "fa-gamepad" },
     changeRequiresRestart: true,
     group: "behavior",
     isBlocked: ({ value, currentConfig }) => {
@@ -320,7 +382,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customLayoutfluid: {
-    icon: "fa-tint",
+    key: "customLayoutfluid",
+    fa: { icon: "fa-tint" },
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
     group: "behavior",
@@ -329,7 +392,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customPolyglot: {
-    icon: "fa-language",
+    key: "customPolyglot",
+    fa: { icon: "fa-language" },
     displayString: "custom polyglot",
     changeRequiresRestart: false,
     group: "behavior",
@@ -340,7 +404,8 @@ export const configMetadata: ConfigMetadataObject = {
 
   // input
   freedomMode: {
-    icon: "fa-feather-alt",
+    key: "freedomMode",
+    fa: { icon: "fa-feather-alt" },
     changeRequiresRestart: false,
     displayString: "freedom mode",
     group: "input",
@@ -354,19 +419,22 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   strictSpace: {
-    icon: "fa-minus",
+    key: "strictSpace",
+    fa: { icon: "fa-minus" },
     displayString: "strict space",
     changeRequiresRestart: true,
     group: "input",
   },
   oppositeShiftMode: {
-    icon: "fa-exchange-alt",
+    key: "oppositeShiftMode",
+    fa: { icon: "fa-exchange-alt" },
     displayString: "opposite shift mode",
     changeRequiresRestart: false,
     group: "input",
   },
   stopOnError: {
-    icon: "fa-hand-paper",
+    key: "stopOnError",
+    fa: { icon: "fa-hand-paper" },
     displayString: "stop on error",
     changeRequiresRestart: true,
     group: "input",
@@ -380,7 +448,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   confidenceMode: {
-    icon: "fa-backspace",
+    key: "confidenceMode",
+    fa: { icon: "fa-backspace" },
     displayString: "confidence mode",
     changeRequiresRestart: false,
     group: "input",
@@ -395,43 +464,50 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   quickEnd: {
-    icon: "fa-step-forward",
+    key: "quickEnd",
+    fa: { icon: "fa-step-forward" },
     displayString: "quick end",
     changeRequiresRestart: false,
     group: "input",
   },
   indicateTypos: {
-    icon: "fa-exclamation",
+    key: "indicateTypos",
+    fa: { icon: "fa-exclamation" },
     displayString: "indicate typos",
     changeRequiresRestart: false,
     group: "input",
   },
   compositionDisplay: {
-    icon: "fa-language",
+    key: "compositionDisplay",
+    fa: { icon: "fa-language" },
     displayString: "composition display",
     changeRequiresRestart: false,
     group: "input",
   },
   hideExtraLetters: {
-    icon: "fa-eye-slash",
+    key: "hideExtraLetters",
+    fa: { icon: "fa-eye-slash" },
     displayString: "hide extra letters",
     changeRequiresRestart: false,
     group: "input",
   },
   lazyMode: {
-    icon: "fa-couch",
+    key: "lazyMode",
+    fa: { icon: "fa-couch" },
     displayString: "lazy mode",
     changeRequiresRestart: true,
     group: "input",
   },
   layout: {
-    icon: "fa-keyboard",
+    key: "layout",
+    fa: { icon: "fa-keyboard" },
     displayString: "layout",
     changeRequiresRestart: true,
     group: "input",
   },
   codeUnindentOnBackspace: {
-    icon: "fa-code",
+    key: "codeUnindentOnBackspace",
+    fa: { icon: "fa-code" },
     displayString: "code unindent on backspace",
     changeRequiresRestart: true,
     group: "input",
@@ -439,25 +515,29 @@ export const configMetadata: ConfigMetadataObject = {
 
   // sound
   soundVolume: {
-    icon: "fa-volume-down",
+    key: "soundVolume",
+    fa: { icon: "fa-volume-down" },
     displayString: "sound volume",
     changeRequiresRestart: false,
     group: "sound",
   },
   playSoundOnClick: {
-    icon: "fa-volume-up",
+    key: "playSoundOnClick",
+    fa: { icon: "fa-volume-up" },
     displayString: "play sound on click",
     changeRequiresRestart: false,
     group: "sound",
   },
   playSoundOnError: {
-    icon: "fa-volume-mute",
+    key: "playSoundOnError",
+    fa: { icon: "fa-volume-mute" },
     displayString: "play sound on error",
     changeRequiresRestart: false,
     group: "sound",
   },
   playTimeWarning: {
-    icon: "fa-exclamation-triangle",
+    key: "playTimeWarning",
+    fa: { icon: "fa-exclamation-triangle" },
     displayString: "play time warning",
     changeRequiresRestart: false,
     group: "sound",
@@ -465,19 +545,22 @@ export const configMetadata: ConfigMetadataObject = {
 
   // caret
   smoothCaret: {
-    icon: "fa-i-cursor",
+    key: "smoothCaret",
+    fa: { icon: "fa-i-cursor" },
     displayString: "smooth caret",
     changeRequiresRestart: false,
     group: "caret",
   },
   caretStyle: {
-    icon: "fa-i-cursor",
+    key: "caretStyle",
+    fa: { icon: "fa-i-cursor" },
     displayString: "caret style",
     changeRequiresRestart: false,
     group: "caret",
   },
   paceCaret: {
-    icon: "fa-i-cursor",
+    key: "paceCaret",
+    fa: { icon: "fa-i-cursor" },
     displayString: "pace caret",
     changeRequiresRestart: false,
     group: "caret",
@@ -494,7 +577,8 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   paceCaretCustomSpeed: {
-    icon: "fa-i-cursor",
+    key: "paceCaretCustomSpeed",
+    fa: { icon: "fa-i-cursor" },
     displayString: "pace caret custom speed",
     changeRequiresRestart: false,
     group: "caret",
@@ -508,13 +592,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   paceCaretStyle: {
-    icon: "fa-i-cursor",
+    key: "paceCaretStyle",
+    fa: { icon: "fa-i-cursor" },
     displayString: "pace caret style",
     changeRequiresRestart: false,
     group: "caret",
   },
   repeatedPace: {
-    icon: "fa-i-cursor",
+    key: "repeatedPace",
+    fa: { icon: "fa-i-cursor" },
     displayString: "repeated pace",
     changeRequiresRestart: false,
     group: "caret",
@@ -522,55 +608,80 @@ export const configMetadata: ConfigMetadataObject = {
 
   // appearance
   timerStyle: {
-    icon: "fa-chart-pie",
+    key: "timerStyle",
+    fa: { icon: "fa-chart-pie" },
     displayString: "live progress style",
     changeRequiresRestart: false,
     group: "appearance",
   },
   liveSpeedStyle: {
-    icon: "fa-tachometer-alt",
+    key: "liveSpeedStyle",
+    fa: { icon: "fa-tachometer-alt" },
     displayString: "live speed style",
     changeRequiresRestart: false,
     group: "appearance",
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
+      }
+      return {};
+    },
   },
   liveAccStyle: {
-    icon: "fa-tachometer-alt",
+    key: "liveAccStyle",
+    fa: { icon: "fa-tachometer-alt" },
     displayString: "live accuracy style",
     changeRequiresRestart: false,
     group: "appearance",
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
+      }
+      return {};
+    },
   },
   liveBurstStyle: {
-    icon: "fa-tachometer-alt",
+    key: "liveBurstStyle",
+    fa: { icon: "fa-tachometer-alt" },
     displayString: "live word burst style",
     changeRequiresRestart: false,
     group: "appearance",
   },
   timerColor: {
-    icon: "fa-chart-pie",
+    key: "timerColor",
+    fa: { icon: "fa-chart-pie" },
     displayString: "timer color",
     changeRequiresRestart: false,
     group: "appearance",
   },
   timerOpacity: {
-    icon: "fa-chart-pie",
+    key: "timerOpacity",
+    fa: { icon: "fa-chart-pie" },
     displayString: "timer opacity",
     changeRequiresRestart: false,
     group: "appearance",
   },
   highlightMode: {
-    icon: "fa-highlighter",
+    key: "highlightMode",
+    fa: { icon: "fa-highlighter" },
     displayString: "highlight mode",
     changeRequiresRestart: false,
     group: "appearance",
   },
   typedEffect: {
-    icon: "fa-eye",
+    key: "typedEffect",
+    fa: { icon: "fa-eye" },
     displayString: "typed effect",
     changeRequiresRestart: false,
     group: "appearance",
   },
   tapeMode: {
-    icon: "fa-tape",
+    key: "tapeMode",
+    fa: { icon: "fa-tape" },
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "tape mode",
@@ -585,20 +696,23 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   tapeMargin: {
-    icon: "fa-tape",
+    key: "tapeMargin",
+    fa: { icon: "fa-tape" },
     displayString: "tape margin",
     triggerResize: true,
     changeRequiresRestart: false,
     group: "appearance",
   },
   smoothLineScroll: {
-    icon: "fa-align-left",
+    key: "smoothLineScroll",
+    fa: { icon: "fa-align-left" },
     displayString: "smooth line scroll",
     changeRequiresRestart: false,
     group: "appearance",
   },
   showAllLines: {
-    icon: "fa-align-left",
+    key: "showAllLines",
+    fa: { icon: "fa-align-left" },
     changeRequiresRestart: false,
     displayString: "show all lines",
     group: "appearance",
@@ -611,51 +725,61 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   alwaysShowDecimalPlaces: {
-    icon: "00",
+    key: "alwaysShowDecimalPlaces",
+    fa: {
+      icon: "fa-ellipsis-h",
+    },
     displayString: "always show decimal places",
     changeRequiresRestart: false,
     group: "appearance",
   },
   typingSpeedUnit: {
-    icon: "fa-tachometer-alt",
+    key: "typingSpeedUnit",
+    fa: { icon: "fa-tachometer-alt" },
     displayString: "typing speed unit",
     changeRequiresRestart: false,
     group: "appearance",
   },
   startGraphsAtZero: {
-    icon: "fa-chart-line",
+    key: "startGraphsAtZero",
+    fa: { icon: "fa-chart-line" },
     displayString: "start graphs at zero",
     changeRequiresRestart: false,
     group: "appearance",
   },
   maxLineWidth: {
-    icon: "fa-text-width",
+    key: "maxLineWidth",
+    fa: { icon: "fa-text-width" },
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
     group: "appearance",
   },
   fontSize: {
-    icon: "fa-font",
+    key: "fontSize",
+    fa: { icon: "fa-font" },
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
     group: "appearance",
   },
   fontFamily: {
-    icon: "fa-font",
+    key: "fontFamily",
+    fa: { icon: "fa-font" },
     displayString: "font family",
     changeRequiresRestart: false,
     group: "appearance",
   },
   keymapMode: {
-    icon: "fa-keyboard",
+    key: "keymapMode",
+    fa: { icon: "fa-keyboard" },
     displayString: "keymap mode",
     changeRequiresRestart: false,
     group: "appearance",
   },
   keymapLayout: {
-    icon: "fa-keyboard",
+    key: "keymapLayout",
+    fa: { icon: "fa-keyboard" },
     displayString: "keymap layout",
     changeRequiresRestart: false,
     group: "appearance",
@@ -663,7 +787,8 @@ export const configMetadata: ConfigMetadataObject = {
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapStyle: {
-    icon: "fa-keyboard",
+    key: "keymapStyle",
+    fa: { icon: "fa-keyboard" },
     displayString: "keymap style",
     changeRequiresRestart: false,
     group: "appearance",
@@ -671,7 +796,8 @@ export const configMetadata: ConfigMetadataObject = {
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapLegendStyle: {
-    icon: "fa-keyboard",
+    key: "keymapLegendStyle",
+    fa: { icon: "fa-keyboard" },
     displayString: "keymap legend style",
     changeRequiresRestart: false,
     group: "appearance",
@@ -679,7 +805,8 @@ export const configMetadata: ConfigMetadataObject = {
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapShowTopRow: {
-    icon: "fa-keyboard",
+    key: "keymapShowTopRow",
+    fa: { icon: "fa-keyboard" },
     displayString: "keymap show top row",
     changeRequiresRestart: false,
     group: "appearance",
@@ -687,7 +814,8 @@ export const configMetadata: ConfigMetadataObject = {
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapSize: {
-    icon: "fa-keyboard",
+    key: "keymapSize",
+    fa: { icon: "fa-keyboard" },
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "keymap size",
@@ -703,19 +831,22 @@ export const configMetadata: ConfigMetadataObject = {
 
   // theme
   flipTestColors: {
-    icon: "fa-adjust",
+    key: "flipTestColors",
+    fa: { icon: "fa-adjust" },
     displayString: "flip test colors",
     changeRequiresRestart: false,
     group: "theme",
   },
   colorfulMode: {
-    icon: "fa-fill-drip",
+    key: "colorfulMode",
+    fa: { icon: "fa-fill-drip" },
     displayString: "colorful mode",
     changeRequiresRestart: false,
     group: "theme",
   },
   customBackground: {
-    icon: "fa-link",
+    key: "customBackground",
+    fa: { icon: "fa-link" },
     displayString: "URL background",
     changeRequiresRestart: false,
     group: "theme",
@@ -724,37 +855,43 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customBackgroundSize: {
-    icon: "fa-image",
+    key: "customBackgroundSize",
+    fa: { icon: "fa-image" },
     displayString: "custom background size",
     changeRequiresRestart: false,
     group: "theme",
   },
   customBackgroundFilter: {
-    icon: "fa-image",
+    key: "customBackgroundFilter",
+    fa: { icon: "fa-image" },
     displayString: "custom background filter",
     changeRequiresRestart: false,
     group: "theme",
   },
   autoSwitchTheme: {
-    icon: "fa-palette",
+    key: "autoSwitchTheme",
+    fa: { icon: "fa-palette" },
     displayString: "auto switch theme",
     changeRequiresRestart: false,
     group: "theme",
   },
   themeLight: {
-    icon: "fa-palette",
+    key: "themeLight",
+    fa: { icon: "fa-palette" },
     displayString: "theme light",
     changeRequiresRestart: false,
     group: "theme",
   },
   themeDark: {
-    icon: "fa-palette",
+    key: "themeDark",
+    fa: { icon: "fa-palette" },
     displayString: "theme dark",
     changeRequiresRestart: false,
     group: "theme",
   },
   randomTheme: {
-    icon: "fa-palette",
+    key: "randomTheme",
+    fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
     displayString: "random theme",
     group: "theme",
@@ -784,13 +921,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   favThemes: {
-    icon: "fa-palette",
+    key: "favThemes",
+    fa: { icon: "fa-palette" },
     displayString: "favorite themes",
     changeRequiresRestart: false,
     group: "theme",
   },
   theme: {
-    icon: "fa-palette",
+    key: "theme",
+    fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
     group: "theme",
     overrideConfig: () => {
@@ -800,13 +939,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customTheme: {
-    icon: "fa-palette",
+    key: "customTheme",
+    fa: { icon: "fa-palette" },
     displayString: "custom theme",
     changeRequiresRestart: false,
     group: "theme",
   },
   customThemeColors: {
-    icon: "fa-palette",
+    key: "customThemeColors",
+    fa: { icon: "fa-palette" },
     displayString: "custom theme colors",
     changeRequiresRestart: false,
     group: "theme",
@@ -822,31 +963,36 @@ export const configMetadata: ConfigMetadataObject = {
 
   // hide elements
   showKeyTips: {
-    icon: "fa-question",
+    key: "showKeyTips",
+    fa: { icon: "fa-question" },
     displayString: "show key tips",
     changeRequiresRestart: false,
     group: "hideElements",
   },
   showOutOfFocusWarning: {
-    icon: "fa-exclamation",
+    key: "showOutOfFocusWarning",
+    fa: { icon: "fa-exclamation" },
     displayString: "show out of focus warning",
     changeRequiresRestart: false,
     group: "hideElements",
   },
   capsLockWarning: {
-    icon: "fa-exclamation-triangle",
+    key: "capsLockWarning",
+    fa: { icon: "fa-exclamation-triangle" },
     displayString: "caps lock warning",
     changeRequiresRestart: false,
     group: "hideElements",
   },
   showAverage: {
-    icon: "fa-chart-bar",
+    key: "showAverage",
+    fa: { icon: "fa-chart-bar" },
     displayString: "show average",
     changeRequiresRestart: false,
     group: "hideElements",
   },
   showPb: {
-    icon: "fa-crown",
+    key: "showPb",
+    fa: { icon: "fa-crown" },
     displayString: "show personal best",
     changeRequiresRestart: false,
     group: "hideElements",
@@ -854,7 +1000,8 @@ export const configMetadata: ConfigMetadataObject = {
 
   // other (hidden)
   accountChart: {
-    icon: "fa-chart-line",
+    key: "accountChart",
+    fa: { icon: "fa-chart-line" },
     displayString: "account chart",
     changeRequiresRestart: false,
     group: "hidden",
@@ -869,13 +1016,30 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   monkey: {
-    icon: "fa-egg",
+    key: "monkey",
+    fa: { icon: "fa-egg" },
     displayString: "monkey",
     changeRequiresRestart: false,
     group: "hidden",
+    overrideConfig: ({ value, currentConfig }) => {
+      if (value) {
+        return {
+          liveSpeedStyle:
+            currentConfig.liveSpeedStyle === "text"
+              ? "mini"
+              : currentConfig.liveSpeedStyle,
+          liveAccStyle:
+            currentConfig.liveAccStyle === "text"
+              ? "mini"
+              : currentConfig.liveAccStyle,
+        };
+      }
+      return {};
+    },
   },
   monkeyPowerLevel: {
-    icon: "fa-egg",
+    key: "monkeyPowerLevel",
+    fa: { icon: "fa-egg" },
     displayString: "monkey power level",
     changeRequiresRestart: false,
     group: "hidden",
@@ -883,7 +1047,8 @@ export const configMetadata: ConfigMetadataObject = {
 
   // ads
   ads: {
-    icon: "fa-ad",
+    key: "ads",
+    fa: { icon: "fa-ad" },
     changeRequiresRestart: false,
     group: "ads",
     overrideValue: ({ value }) => {

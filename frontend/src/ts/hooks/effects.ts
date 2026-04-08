@@ -1,4 +1,4 @@
-import { createEffect, on } from "solid-js";
+import { createEffect, on, onCleanup } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 type Accessor<T = unknown> = () => T;
@@ -33,6 +33,7 @@ export function createDebouncedEffectOn<
   debounceOptions: { atBegin?: boolean } = {},
 ): void {
   const debouncedFn = debounce(delay, fn, debounceOptions);
+  onCleanup(() => debouncedFn.cancel());
   //@ts-expect-error huh?
   createEffect(on(deps as unknown, debouncedFn as unknown, options));
 }

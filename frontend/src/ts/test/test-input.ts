@@ -452,10 +452,10 @@ function updateOverlap(now: number): void {
   }
 }
 
-export function resetKeypressTimings(): void {
-  //because keydown triggers before input, we need to grab the first keypress data here and carry it over
+export function carryoverFirstKeypress(): void {
+  // Because keydown triggers before input, we need to grab the first keypress data here and carry it over
 
-  //take the key with the largest index
+  // Take the key with the largest index
   const lastKey = Object.keys(keyDownData).reduce((a, b) => {
     const aIndex = keyDownData[a]?.index;
     const bIndex = keyDownData[b]?.index;
@@ -464,10 +464,30 @@ export function resetKeypressTimings(): void {
     return aIndex > bIndex ? a : b;
   }, "");
 
-  //get the data
+  // Get the data
   const lastKeyData = keyDownData[lastKey];
 
-  //reset
+  // Carry over
+  if (lastKeyData !== undefined) {
+    keypressTimings = {
+      spacing: {
+        first: lastKeyData.timestamp,
+        last: lastKeyData.timestamp,
+        array: [],
+      },
+      duration: {
+        array: [0],
+      },
+    };
+    keyDownData[lastKey] = {
+      timestamp: lastKeyData.timestamp,
+      // Make sure to set it to the first index
+      index: 0,
+    };
+  }
+}
+
+function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
       first: -1,
@@ -484,25 +504,6 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
-
-  //carry over
-  if (lastKeyData !== undefined) {
-    keypressTimings = {
-      spacing: {
-        first: lastKeyData.timestamp,
-        last: lastKeyData.timestamp,
-        array: [],
-      },
-      duration: {
-        array: [0],
-      },
-    };
-    keyDownData[lastKey] = {
-      timestamp: lastKeyData.timestamp,
-      // make sure to set it to the first index
-      index: 0,
-    };
-  }
 
   console.debug("Keypress timings reset");
 }
@@ -551,4 +552,6 @@ export function restart(): void {
     correct: 0,
     incorrect: 0,
   };
+
+  resetKeypressTimings();
 }

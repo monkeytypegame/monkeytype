@@ -1,17 +1,21 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createMemo, JSXElement, Show } from "solid-js";
+import {
+  createMemo,
+  createSignal,
+  JSXElement,
+  onCleanup,
+  Show,
+} from "solid-js";
 
+import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
+import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import {
   prefetchAboutPage,
   prefetchLeaderboardPage,
 } from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import {
-  restartTestEvent,
-  getActivePage,
-  getFocus,
-} from "../../../states/core";
+import { getActivePage } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -19,6 +23,7 @@ import {
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
 import { getSnapshot } from "../../../states/snapshot";
+import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { AnimeConditional } from "../../common/anime";
@@ -29,6 +34,19 @@ import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
 export function Nav(): JSXElement {
+  const [getAccountMenuOpen, setAccountMenuOpen] = createSignal(false);
+  const isCoarse = () => window.matchMedia("(pointer: coarse)").matches;
+  const [accountMenuRef, accountMenuEl] = useRefWithUtils<HTMLDivElement>();
+
+  const handleClickOutside = (e: MouseEvent) => {
+    const el = accountMenuEl();
+    if (getAccountMenuOpen() && el && !el.native.contains(e.target as Node)) {
+      setAccountMenuOpen(false);
+    }
+  };
+  document.addEventListener("click", handleClickOutside);
+  onCleanup(() => document.removeEventListener("click", handleClickOutside));
+
   const buttonClass = () =>
     cn("aspect-square", {
       "opacity-(--nav-focus-opacity)": getFocus(),
@@ -156,12 +174,27 @@ export function Nav(): JSXElement {
         then={(snap) => (
           <>
             <div
+              ref={accountMenuRef}
               class={cn(
                 "relative",
                 !getFocus() &&
                   "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
                 "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
+                getAccountMenuOpen() &&
+                  "**:data-[ui-element='accountMenu']:pointer-events-auto **:data-[ui-element='accountMenu']:opacity-100",
               )}
+              // oxlint-disable-next-line react/no-unknown-property
+              on:click={(e: MouseEvent) => {
+                if (isCoarse()) {
+                  if (e.target instanceof HTMLAnchorElement) {
+                    if (e.target.dataset["navItem"] === "account") {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                    setAccountMenuOpen((prev) => !prev);
+                  }
+                }
+              }}
             >
               <Button
                 variant="text"
@@ -189,6 +222,11 @@ export function Nav(): JSXElement {
               </Button>
               <AccountMenu
                 showFriendsNotificationBubble={showFriendsNotificationBubble()}
+                // onClick={() => {
+                //   if (isCoarse()) {
+                //     setAccountMenuOpen(false);
+                //   }
+                // }}
               />
             </div>
             <div class="relative">

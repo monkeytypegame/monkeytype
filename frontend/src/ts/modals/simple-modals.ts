@@ -6,13 +6,9 @@ import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
-import * as CustomText from "../test/custom-text";
 import { FirebaseError } from "firebase/app";
-import {
-  isAuthenticated,
-  getAuthenticatedUser,
-  isAuthAvailable,
-} from "../firebase";
+import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import {
   EmailAuthProvider,
   User,
@@ -24,7 +20,6 @@ import {
 import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";
 import { createErrorMessage } from "../utils/error";
-import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
 import * as AccountSettings from "../pages/account-settings";
 import {
@@ -974,66 +969,6 @@ list.unlinkDiscord = new SimpleModal({
       status: "success",
       message: "Discord unlinked",
     };
-  },
-});
-
-list.deleteCustomText = new SimpleModal({
-  id: "deleteCustomText",
-  title: "Delete custom text",
-  text: "Are you sure?",
-  buttonText: "delete",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
-    CustomTextState.setCustomTextName("", undefined);
-
-    return {
-      status: "success",
-      message: "Custom text deleted",
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
-  },
-});
-
-list.deleteCustomTextLong = new SimpleModal({
-  id: "deleteCustomTextLong",
-  title: "Delete custom text",
-  text: "Are you sure?",
-  buttonText: "delete",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
-    CustomTextState.setCustomTextName("", undefined);
-
-    return {
-      status: "success",
-      message: "Custom text deleted",
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
-  },
-});
-
-list.resetProgressCustomTextLong = new SimpleModal({
-  id: "resetProgressCustomTextLong",
-  title: "Reset progress for custom text",
-  text: "Are you sure?",
-  buttonText: "reset",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    const text = CustomText.getCustomText(
-      _thisPopup.parameters[0] as string,
-      true,
-    );
-    CustomText.setText(text);
-    return {
-      status: "success",
-      message: "Custom text progress reset",
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
 });
 

@@ -5,7 +5,6 @@ import { getCharFromEvent } from "../../test/layout-emulator";
 import * as Monkey from "../../test/monkey";
 import { emulateInsertText } from "./insert-text";
 import * as TestState from "../../test/test-state";
-import * as TestWords from "../../test/test-words";
 import * as JSONData from "../../utils/json-data";
 import {
   showNoticeNotification,
@@ -26,16 +25,10 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
+import { wordsHaveTab } from "../../states/test";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
-  if (Config.quickRestart === "tab") {
-    e.preventDefault();
-    if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
-      TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      return;
-    }
-  }
-  if (TestWords.hasTab) {
+  if (wordsHaveTab() && !e.shiftKey) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
     return;
@@ -78,14 +71,6 @@ export async function handleEnter(
         void TestLogic.finish();
         return;
       }
-    }
-  }
-
-  if (Config.quickRestart === "enter") {
-    e.preventDefault();
-    if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
-      TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      return;
     }
   }
 }
@@ -190,12 +175,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   if (event.key === "Enter") {
     await handleEnter(event, now);
-    return;
-  }
-
-  if (event.key === "Escape" && Config.quickRestart === "esc") {
-    event.preventDefault();
-    TestLogic.restart({ isQuickRestart: !event.shiftKey });
     return;
   }
 }

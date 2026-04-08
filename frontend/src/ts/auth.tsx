@@ -15,7 +15,6 @@ import { authEvent } from "./events/auth";
 import {
   isAuthAvailable,
   getAuthenticatedUser,
-  isAuthenticated,
   signOut as authSignOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -23,6 +22,7 @@ import {
   resetIgnoreAuthCallback,
 } from "./firebase";
 import * as Sentry from "./sentry";
+import { isAuthenticated } from "./states/core";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import {
   showNoticeNotification,

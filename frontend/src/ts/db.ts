@@ -3,7 +3,8 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "./states/notifications";
-import { isAuthenticated, getAuthenticatedUser } from "./firebase";
+import { getAuthenticatedUser } from "./firebase";
+import { isAuthenticated } from "./states/core";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
@@ -217,7 +218,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.tags =
       userData.tags?.map((tag) => ({
         ...tag,
-        display: tag.name.replaceAll("_", " "),
+        display: tag.name.replace(/_/g, " "),
       })) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
@@ -234,7 +235,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       const presetsWithDisplay = presetsData.map((preset) => {
         return {
           ...preset,
-          display: preset.name.replace(/_/gi, " "),
+          display: preset.name.replace(/_/g, " "),
         };
       }) as SnapshotPreset[];
       snap.presets = presetsWithDisplay;
@@ -1143,6 +1144,34 @@ function convertConnections(
       ];
     }),
   );
+}
+
+export function getReceiverUid(
+  connection: Pick<Connection, "initiatorUid" | "receiverUid">,
+): string {
+  const me = getAuthenticatedUser();
+  if (me === null) {
+    throw new Error("expected to be authenticated in getReceiverUid");
+  }
+
+  if (me.uid === connection.initiatorUid) return connection.receiverUid;
+  return connection.initiatorUid;
+}
+
+export async function addFriend(receiverName: string): Promise<true | string> {
+  const result = await Ape.connections.create({ body: { receiverName } });
+
+  if (result.status !== 200) {
+    return `Friend request failed: ${result.body.message}`;
+  } else {
+    const snapshot = getSnapshot();
+    if (snapshot !== undefined) {
+      const receiverUid = getReceiverUid(result.body.data);
+      // oxlint-disable-next-line no-unsafe-member-access
+      snapshot.connections[receiverUid] = result.body.data.status;
+    }
+    return true;
+  }
 }
 
 export function isFriend(uid: string | undefined): boolean {
