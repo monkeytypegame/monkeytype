@@ -22,6 +22,7 @@ import { Layout } from "./custom-setting/Layout";
 import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
+import { PaceCaret } from "./custom-setting/PaceCaret";
 import { SoundVolume } from "./custom-setting/SoundVolume";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
@@ -90,7 +91,7 @@ export function Settings(): JSXElement {
         <Section title="caret">
           <AutoSetting key="smoothCaret" />
           <AutoSetting key="caretStyle" wide />
-          {/* pace caret */}
+          <PaceCaret />
           <AutoSetting key="repeatedPace" />
           <AutoSetting key="paceCaretStyle" wide />
         </Section>

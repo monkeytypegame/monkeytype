@@ -679,6 +679,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "caret",
     description:
       "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
+    optionsMetadata: {
+      tagPb: {
+        displayString: "tag pb",
+      },
+    },
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
