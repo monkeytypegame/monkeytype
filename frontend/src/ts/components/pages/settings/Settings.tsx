@@ -16,7 +16,11 @@ import { Fa } from "../../common/Fa";
 // import { Kbd } from "../../common/Kbd";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
+import { FontFamily } from "./custom-setting/FontFamily";
+import { FontSize } from "./custom-setting/FontSize";
 import { Funbox } from "./custom-setting/Funbox";
+import { KeymapLayout } from "./custom-setting/KeymapLayout";
+import { KeymapSize } from "./custom-setting/KeymapSize";
 import { Language } from "./custom-setting/Language";
 import { Layout } from "./custom-setting/Layout";
 import { MaxLineWidth } from "./custom-setting/MaxLineWidth";
@@ -114,14 +118,14 @@ export function Settings(): JSXElement {
           <AutoSetting key="typingSpeedUnit" />
           <AutoSetting key="startGraphsAtZero" />
           <MaxLineWidth />
-          {/* todo: font size */}
-          {/* todo: font family */}
+          <FontSize />
+          <FontFamily />
           <AutoSetting key="keymapMode" />
-          {/* todo: keymap layout */}
+          <KeymapLayout />
           <AutoSetting key="keymapStyle" wide />
           <AutoSetting key="keymapLegendStyle" wide />
           <AutoSetting key="keymapShowTopRow" wide />
-          {/* todo: keymap size */}
+          <KeymapSize />
         </Section>
         <Section title="theme">
           <AutoSetting key="flipTestColors" />

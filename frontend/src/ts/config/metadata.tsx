@@ -917,7 +917,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the font family used by the website. Using a local font will override your choice.",
+      "Change the font family used by the website. Using a local font will override your choice. ",
+    optionsMetadata: {
+      Comic_Sans_MS: {
+        displayString: "Helvetica",
+      },
+    },
   },
   keymapMode: {
     key: "keymapMode",
