@@ -137,7 +137,7 @@ export function Settings(): JSXElement {
           <AutoSetting key="randomTheme" wide />
           {/* todo: theme picker (preset + custom tabs) */}
         </Section>
-        <Section title="hide elements">
+        <Section title="hide_elements">
           <AutoSetting key="showKeyTips" />
           <AutoSetting key="showOutOfFocusWarning" />
           <AutoSetting key="capsLockWarning" />
