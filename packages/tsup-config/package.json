@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
+    "@types/node": "24.9.1",
     "oxlint": "1.59.0",
     "oxlint-tsgolint": "0.20.0",
     "typescript": "6.0.2"
