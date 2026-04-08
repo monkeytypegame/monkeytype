@@ -20,6 +20,12 @@ import { canSetFunboxWithConfig } from "./funbox-validation";
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
+export type OptionMetadata = {
+  displayString?: string;
+  fa?: FaObject;
+  visible?: boolean;
+};
+
 export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**
    * The config key that this metadata is for
@@ -43,25 +49,11 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   fa: FaObject;
 
   optionsMetadata?: ConfigSchemas.Config[K] extends string | number | symbol
-    ? Partial<
-        Record<
-          ConfigSchemas.Config[K],
-          {
-            displayString?: string;
-            fa?: FaObject;
-          }
-        >
-      >
+    ? Partial<Record<ConfigSchemas.Config[K], OptionMetadata>>
     : ConfigSchemas.Config[K] extends boolean
       ? Partial<{
-          true: {
-            displayString?: string;
-            fa?: FaObject;
-          };
-          false: {
-            displayString?: string;
-            fa?: FaObject;
-          };
+          true: OptionMetadata;
+          false: OptionMetadata;
         }>
       : never;
 
@@ -667,6 +659,17 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description: "Change the style of the caret during the test.",
+    optionsMetadata: {
+      banana: {
+        visible: false,
+      },
+      carrot: {
+        visible: false,
+      },
+      monkey: {
+        visible: false,
+      },
+    },
   },
   paceCaret: {
     key: "paceCaret",
@@ -710,6 +713,17 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description: "Change the style of the pace caret during the test.",
+    optionsMetadata: {
+      banana: {
+        visible: false,
+      },
+      carrot: {
+        visible: false,
+      },
+      monkey: {
+        visible: false,
+      },
+    },
   },
   repeatedPace: {
     key: "repeatedPace",
