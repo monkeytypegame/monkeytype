@@ -121,8 +121,8 @@ describe("Config", () => {
       expect(Config.setConfig("monkey", true)).toBe(true);
       expect(getConfig()).toMatchObject({
         monkey: true,
-        liveSpeedStyle: "off",
-        liveAccStyle: "off",
+        liveSpeedStyle: "mini",
+        liveAccStyle: "mini",
       });
       expect(notificationAddMock).not.toHaveBeenCalled();
     });

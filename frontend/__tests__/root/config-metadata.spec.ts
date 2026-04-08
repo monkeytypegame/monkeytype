@@ -265,7 +265,7 @@ describe("ConfigMeta", () => {
         {
           value: true,
           given: { liveSpeedStyle: "text", liveAccStyle: "text" },
-          expected: { liveSpeedStyle: "off", liveAccStyle: "off" },
+          expected: { liveSpeedStyle: "mini", liveAccStyle: "mini" },
         },
       ],
       liveSpeedStyle: [

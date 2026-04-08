@@ -1026,11 +1026,11 @@ export const configMetadata: ConfigMetadataObject = {
         return {
           liveSpeedStyle:
             currentConfig.liveSpeedStyle === "text"
-              ? "off"
+              ? "mini"
               : currentConfig.liveSpeedStyle,
           liveAccStyle:
             currentConfig.liveAccStyle === "text"
-              ? "off"
+              ? "mini"
               : currentConfig.liveAccStyle,
         };
       }
