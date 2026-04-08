@@ -1,6 +1,6 @@
 {
   "name": "monkeytype",
-  "version": "26.14.0",
+  "version": "26.15.0",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
@@ -68,13 +68,13 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxfmt": "0.42.0",
-    "oxlint": "1.57.0",
-    "oxlint-tsgolint": "0.18.1",
+    "oxfmt": "0.44.0",
+    "oxlint": "1.59.0",
+    "oxlint-tsgolint": "0.20.0",
     "prettier": "3.7.1",
     "turbo": "2.7.5",
     "vitest": "4.1.0",
-    "yaml": "2.8.2"
+    "yaml": "2.8.3"
   },
   "lint-staged": {
     "*": [
