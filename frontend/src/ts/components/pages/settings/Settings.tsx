@@ -121,13 +121,11 @@ export function Settings(): JSXElement {
           <FontSize />
           <FontFamily />
           <AutoSetting key="keymapMode" />
-          <Show when={getConfig.keymapMode !== "off"}>
-            <KeymapLayout />
-            <AutoSetting key="keymapStyle" wide />
-            <AutoSetting key="keymapLegendStyle" wide />
-            <AutoSetting key="keymapShowTopRow" wide />
-            <KeymapSize />
-          </Show>
+          <KeymapLayout />
+          <AutoSetting key="keymapStyle" wide />
+          <AutoSetting key="keymapLegendStyle" wide />
+          <AutoSetting key="keymapShowTopRow" wide />
+          <KeymapSize />
         </Section>
         <Section title="theme">
           <AutoSetting key="flipTestColors" />
