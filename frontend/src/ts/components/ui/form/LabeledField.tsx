@@ -4,7 +4,7 @@ import { cn } from "../../../utils/cn";
 
 export function LabeledField(props: {
   label: string;
-  sub?: string;
+  subLabel?: string;
   id?: string;
   children: JSXElement;
   class?: string;
@@ -18,8 +18,8 @@ export function LabeledField(props: {
       >
         {props.label}
       </label>
-      <Show when={props.sub}>
-        <div class="mb-1 text-xs text-sub">{props.sub}</div>
+      <Show when={props.subLabel}>
+        <div class="mb-1 text-em-xs text-sub opacity-50">{props.subLabel}</div>
       </Show>
       {props.children}
     </div>

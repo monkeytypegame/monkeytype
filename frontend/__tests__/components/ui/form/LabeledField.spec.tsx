@@ -26,7 +26,7 @@ describe("LabeledField", () => {
 
   it("renders subtext when provided", () => {
     render(() => (
-      <LabeledField label="test" sub="helper text">
+      <LabeledField label="test" subLabel="helper text">
         <input />
       </LabeledField>
     ));
