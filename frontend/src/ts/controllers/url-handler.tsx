@@ -317,12 +317,18 @@ export async function loadChallengeFromUrl(
   ).toLowerCase();
   if (getValue === "") return;
 
-  const result = await ChallengeController.setup(getValue);
-  if (result) {
-    restartTest({
-      nosave: true,
+  ChallengeController.setup(getValue)
+    .then((result) => {
+      if (result) {
+        restartTest({
+          nosave: true,
+        });
+      }
+    })
+    .catch((e: unknown) => {
+      showErrorNotification("Failed to load challenge");
+      console.error(e);
     });
-  }
 }
 
 authEvent.subscribe(async (event) => {
