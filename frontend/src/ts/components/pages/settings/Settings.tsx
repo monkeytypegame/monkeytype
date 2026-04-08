@@ -2,7 +2,7 @@ import { Config, ConfigSchema } from "@monkeytype/schemas/configs";
 import { createSignal, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
-import { configMetadata } from "../../../config/metadata";
+import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
@@ -207,7 +207,18 @@ function AutoSetting(props: {
   wide?: boolean;
 }): JSXElement {
   const autoInputs = () => {
-    const options = getOptions(ConfigSchema.shape[props.key]);
+    const options = getOptions(ConfigSchema.shape[props.key])?.filter((opt) => {
+      const optionsMeta = (
+        configMetadata[props.key] as {
+          optionsMetadata?: Record<string, OptionMetadata> | undefined;
+        }
+      ).optionsMetadata;
+
+      const optionMeta = optionsMeta?.[String(opt)];
+
+      return optionMeta?.visible !== false;
+    });
+
     if (options !== undefined) {
       return (
         <div
@@ -219,7 +230,8 @@ function AutoSetting(props: {
           <For each={options}>
             {(option) => {
               const text = () => {
-                const optionsMeta = configMetadata[props.key].optionsMetadata as
+                const optionsMeta = configMetadata[props.key]
+                  .optionsMetadata as
                   | Record<string, { displayString?: string }>
                   | undefined;
                 const match = optionsMeta?.[String(option)];
