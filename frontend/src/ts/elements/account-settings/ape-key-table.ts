@@ -11,7 +11,7 @@ import {
 } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
 import { SimpleModal, TextArea } from "../simple-modal";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { qs, qsr } from "../../utils/dom";
 
 const editApeKey = new SimpleModal({

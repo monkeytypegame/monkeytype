@@ -3,7 +3,8 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "./states/notifications";
-import { isAuthenticated, getAuthenticatedUser } from "./firebase";
+import { getAuthenticatedUser } from "./firebase";
+import { isAuthenticated } from "./states/core";
 import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
@@ -217,7 +218,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.tags =
       userData.tags?.map((tag) => ({
         ...tag,
-        display: tag.name.replaceAll("_", " "),
+        display: tag.name.replace(/_/g, " "),
       })) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
@@ -234,7 +235,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       const presetsWithDisplay = presetsData.map((preset) => {
         return {
           ...preset,
-          display: preset.name.replace(/_/gi, " "),
+          display: preset.name.replace(/_/g, " "),
         };
       }) as SnapshotPreset[];
       snap.presets = presetsWithDisplay;

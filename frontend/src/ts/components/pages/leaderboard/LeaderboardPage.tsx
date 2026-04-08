@@ -10,7 +10,7 @@ import {
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage, isLoggedIn } from "../../../states/core";
+import { getActivePage, isAuthenticated } from "../../../states/core";
 import {
   getGoToUserPage,
   getPage,
@@ -100,7 +100,7 @@ export function LeaderboardPage(): JSXElement {
 
   const rankQuery = useQuery(() => ({
     ...getRankQueryOptions(getSelection()),
-    enabled: isLoggedIn() && isOpen(),
+    enabled: isAuthenticated() && isOpen(),
   }));
 
   const serverConfigurationQuery = useQuery(() => ({
@@ -191,7 +191,7 @@ export function LeaderboardPage(): JSXElement {
           />
 
           <Show
-            when={isLoggedIn() && !dataQuery.isLoading}
+            when={isAuthenticated() && !dataQuery.isLoading}
             fallback={<Separator />}
           >
             <AsyncContent

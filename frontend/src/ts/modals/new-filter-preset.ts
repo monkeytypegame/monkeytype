@@ -1,6 +1,7 @@
 import { ResultFiltersSchema } from "@monkeytype/schemas/users";
 import { createFilterPreset } from "../elements/account/result-filters";
 import { SimpleModal } from "../elements/simple-modal";
+import { normalizeName } from "../utils/strings";
 
 export function show(): void {
   newFilterPresetModal.show(undefined, {});
@@ -15,13 +16,23 @@ const newFilterPresetModal = new SimpleModal({
       type: "text",
       initVal: "",
       validation: {
-        schema: ResultFiltersSchema.shape.name,
+        isValid: async (name) => {
+          const parsed = ResultFiltersSchema.shape.name.safeParse(
+            normalizeName(name),
+          );
+          if (parsed.success) return true;
+          return parsed.error.errors.map((err) => err.message).join(", ");
+        },
+        debounceDelay: 0,
       },
     },
   ],
   buttonText: "add",
   execFn: async (_thisPopup, name) => {
-    const status = await createFilterPreset(name);
+    const cleanedName = ResultFiltersSchema.shape.name.parse(
+      normalizeName(name),
+    );
+    const status = await createFilterPreset(cleanedName);
 
     if (status === 1) {
       return { status: "success", message: "Filter preset created" };

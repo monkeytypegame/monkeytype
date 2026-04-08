@@ -7,7 +7,6 @@ import {
   Show,
   on,
 } from "solid-js";
-import { debounce } from "throttle-debounce";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
@@ -15,7 +14,8 @@ import { Config } from "../../config/store";
 import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
-import { isAuthenticated } from "../../firebase";
+import { createDebouncedEffectOn } from "../../hooks/effects";
+import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,
@@ -32,6 +32,7 @@ import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
+import * as Misc from "../../utils/misc";
 import {
   buildSearchService,
   SearchService,
@@ -78,7 +79,7 @@ function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
         noMatch = true;
         break;
       }
-      currentMatches.push(RegExp.escape(match[0]));
+      currentMatches.push(Misc.escapeRegExp(match[0]));
     }
 
     if (!noMatch) {
@@ -100,7 +101,7 @@ function getLengthDesc(quote: Quote): string {
 function Item(props: {
   quote: Quote;
   matchedTerms: string[];
-  dataBalloonDirection: string;
+  isRtl: boolean;
   onSelect: () => void;
   onReport: () => void;
   onToggleFavorite: () => Promise<boolean>;
@@ -169,7 +170,7 @@ function Item(props: {
                 }}
                 balloon={{
                   text: "Report quote",
-                  position: props.dataBalloonDirection as "left" | "right",
+                  position: props.isRtl ? "right" : "left",
                 }}
               />
               <Button
@@ -184,7 +185,7 @@ function Item(props: {
                 }}
                 balloon={{
                   text: "Favorite quote",
-                  position: props.dataBalloonDirection as "left" | "right",
+                  position: props.isRtl ? "right" : "left",
                 }}
               />
             </div>
@@ -213,13 +214,19 @@ export function QuoteSearchModal(): JSXElement {
     quotes: Quote[];
     matchedTerms: string[];
   }>({ quotes: [], matchedTerms: [] });
-  const [dataBalloonDirection, setDataBalloonDirection] = createSignal("left");
+  const [isRtl, setIsRtl] = createSignal(false);
   const [favVersion, setFavVersion] = createSignal(0);
 
-  const debouncedSearch = debounce(250, (text: string) => {
-    setCurrentPage(1);
-    performSearch(text);
-  });
+  const [searchText, setSearchText] = createSignal("");
+  createDebouncedEffectOn(
+    250,
+    searchText,
+    (text) => {
+      setCurrentPage(1);
+      performSearch(text);
+    },
+    { defer: true },
+  );
 
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
@@ -255,7 +262,7 @@ export function QuoteSearchModal(): JSXElement {
 
     if (exactSearchQueries[0]) {
       const searchQueriesRaw = exactSearchQueries.map(
-        (query) => new RegExp(RegExp.escape(query[1] ?? ""), "i"),
+        (query) => new RegExp(Misc.escapeRegExp(query[1] ?? ""), "i"),
       );
       [exactSearchMatches, exactSearchMatchedQueryTerms] = exactSearch(
         allQuotes,
@@ -364,8 +371,10 @@ export function QuoteSearchModal(): JSXElement {
     }),
   );
 
-  const handleBeforeShow = (): void => {
+  const handleBeforeShow = (isChained: boolean): void => {
+    if (isChained) return;
     form.reset();
+    setSearchText("");
     setCurrentPage(1);
     setLengthFilter([]);
     setShowFavoritesOnly(false);
@@ -374,12 +383,12 @@ export function QuoteSearchModal(): JSXElement {
 
   const handleAfterShow = async (): Promise<void> => {
     const quotesLanguage = await getLanguage(Config.language);
-    setDataBalloonDirection(quotesLanguage?.rightToLeft ? "right" : "left");
+    setIsRtl(quotesLanguage?.rightToLeft ?? false);
     const { quotes: fetchedQuotes } = await QuotesController.getQuotes(
       Config.language,
     );
     setQuotes(fetchedQuotes);
-    performSearch("");
+    performSearch(form.state.values.searchText);
   };
 
   const applyQuote = (quoteId: number): void => {
@@ -438,17 +447,12 @@ export function QuoteSearchModal(): JSXElement {
     showModal("QuoteSubmit");
   };
 
-  const handleBeforeHide = (): void => {
-    debouncedSearch.cancel();
-  };
-
   return (
     <>
       <AnimatedModal
         id="QuoteSearch"
         focusFirstInput={true}
         beforeShow={handleBeforeShow}
-        beforeHide={handleBeforeHide}
         afterShow={handleAfterShow}
         modalClass="max-w-[1000px] h-[80vh] grid-rows-[auto_auto_1fr_auto]"
       >
@@ -477,7 +481,7 @@ export function QuoteSearchModal(): JSXElement {
             listeners={{
               onChange: ({ value }) => {
                 if (!isOpen()) return;
-                debouncedSearch(value);
+                setSearchText(value);
               },
             }}
             children={(field) => (
@@ -518,13 +522,16 @@ export function QuoteSearchModal(): JSXElement {
             />
           </Show>
         </div>
-        <div class="grid content-baseline gap-2 overflow-y-auto" dir="auto">
+        <div
+          class="grid content-baseline gap-2 overflow-y-auto"
+          dir={isRtl() ? "rtl" : undefined}
+        >
           <For each={pageQuotes()}>
             {(quote) => (
               <Item
                 quote={quote}
                 matchedTerms={searchResults().matchedTerms}
-                dataBalloonDirection={dataBalloonDirection()}
+                isRtl={isRtl()}
                 onSelect={() => applyQuote(quote.id)}
                 onReport={() => showQuoteReportModal(quote.id)}
                 // oxlint-disable-next-line solid/reactivity, typescript-eslint/promise-function-async -- fire-and-forget, no reactive tracking needed

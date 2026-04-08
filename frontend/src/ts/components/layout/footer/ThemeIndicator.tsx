@@ -2,9 +2,9 @@ import { JSXElement, Show } from "solid-js";
 
 import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
-import { isAuthenticated } from "../../../firebase";
 import {
   getThemeIndicator,
+  isAuthenticated,
   setCommandlineSubgroup,
 } from "../../../states/core";
 import { showModal } from "../../../states/modals";

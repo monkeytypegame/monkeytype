@@ -26,7 +26,7 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import { getActivePage } from "../states/core";
+import { getActivePage, isAuthenticated } from "../states/core";
 import {
   setResultVisible,
   setWordsHaveNewline,
@@ -42,7 +42,7 @@ import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { getAuthenticatedUser, isAuthenticated } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import * as ConnectionState from "../legacy-states/connection";
 import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
@@ -145,7 +145,7 @@ export function startTest(now: number): boolean {
   TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
-  TestInput.resetKeypressTimings(true);
+  TestInput.carryoverFirstKeypress();
   Time.set(0);
   TestTimer.clear();
 
