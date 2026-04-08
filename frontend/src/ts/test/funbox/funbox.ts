@@ -115,7 +115,7 @@ export async function activate(
     return false;
   }
 
-  if (language.cursive) {
+  if (language.cursiveScript) {
     if (isFunboxActiveWithProperty("noCursive")) {
       showNoticeNotification(
         "Current language does not support this funbox mode",

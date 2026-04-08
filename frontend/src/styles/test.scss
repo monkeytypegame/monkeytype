@@ -324,7 +324,7 @@
       unicode-bidi: bidi-override;
     }
   }
-  &.cursive {
+  &.cursiveScript {
     .word {
       overflow-wrap: anywhere;
       padding-bottom: 0.05em; // compensate for letter border
@@ -536,8 +536,8 @@
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
-    &:not(.cursive) .word,
-    &.cursive .word.broken-cursive {
+    &:not(.cursiveScript) .word,
+    &.cursiveScript .word.broken-cursive {
       letter {
         position: relative;
         display: inline-block;
@@ -555,7 +555,7 @@
       }
     }
     // unify dot spacing
-    &.cursive .word.broken-cursive {
+    &.cursiveScript .word.broken-cursive {
       letter {
         width: 0.4em;
       }
@@ -564,8 +564,8 @@
       white-space: nowrap;
     }
 
-    &:not(.cursive) .word.typed,
-    &.cursive .word.broken-cursive.typed {
+    &:not(.cursiveScript) .word.typed,
+    &.cursiveScript .word.broken-cursive.typed {
       letter {
         color: var(--bg-color);
         animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
@@ -576,18 +576,18 @@
       }
     }
 
-    &:not(.cursive):not(.blind) {
+    &:not(.cursiveScript):not(.blind) {
       .word letter.incorrect::after {
         background: var(--c-dot--error);
       }
     }
-    &.cursive:not(.blind) .word.broken-cursive letter.incorrect::after {
+    &.cursiveScript:not(.blind) .word.broken-cursive letter.incorrect::after {
       background: var(--c-dot--error);
     }
 
     @media (prefers-reduced-motion) {
-      &:not(.cursive) .word.typed,
-      &.cursive .word.broken-cursive.typed {
+      &:not(.cursiveScript) .word.typed,
+      &.cursiveScript .word.broken-cursive.typed {
         letter {
           animation: none !important;
           transform: scale(0.4);
@@ -880,7 +880,7 @@
             unicode-bidi: bidi-override;
           }
         }
-        &.cursive {
+        &.cursiveScript {
           .word {
             overflow-wrap: anywhere;
             padding-bottom: 2px; // compensate for letter border

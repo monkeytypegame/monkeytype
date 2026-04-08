@@ -6,6 +6,6 @@
   direction: ltr;
 }
 
-#words.cursive .word {
+#words.cursiveScript .word {
   unicode-bidi: bidi-override;
 }

@@ -1,7 +1,7 @@
 {
   "name": "tamil_old",
   "rightToLeft": false,
-  "cursive": true,
+  "cursiveScript": true,
   "bcp47": "ta",
   "words": [
     "அஞ்சல்",

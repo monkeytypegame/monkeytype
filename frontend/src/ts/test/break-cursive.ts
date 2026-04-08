@@ -5,7 +5,7 @@ function canBreak(wordEl: ElementWithUtils): boolean {
   if (Config.typedEffect !== "dots") return false;
   if (wordEl.hasClass("broken-cursive")) return false;
 
-  return wordEl.getParent()?.hasClass("cursive") ?? false;
+  return wordEl.getParent()?.hasClass("cursiveScript") ?? false;
 }
 
 function applyIfNeeded(wordEl: ElementWithUtils): void {
@@ -43,7 +43,7 @@ export function update(key: string, wordsEl: ElementWithUtils): void {
   const words = wordsEl.qsa(".word.typed");
 
   const shouldReset =
-    !wordsEl.hasClass("cursive") ||
+    !wordsEl.hasClass("cursiveScript") ||
     Config.typedEffect !== "dots" ||
     key === "fontFamily" ||
     key === "fontSize";

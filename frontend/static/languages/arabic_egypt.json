@@ -1,7 +1,7 @@
 {
   "name": "arabic_egypt",
   "rightToLeft": true,
-  "cursive": true,
+  "cursiveScript": true,
   "bcp47": "ar-EG",
   "words": [
     "ازيك",

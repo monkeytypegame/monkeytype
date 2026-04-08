@@ -1,6 +1,6 @@
 {
   "name": "sanskrit",
-  "cursive": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "bcp47": "sa",
   "words": [

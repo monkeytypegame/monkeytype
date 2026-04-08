@@ -1,6 +1,6 @@
 {
   "name": "khmer",
-  "cursive": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "bcp47": "km-KH",
   "words": [

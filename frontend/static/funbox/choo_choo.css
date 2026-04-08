@@ -18,6 +18,6 @@
 }
 
 #words letter,
-#words.cursive .word letter {
+#words.cursiveScript .word letter {
   display: inline-block;
 }

@@ -1,6 +1,6 @@
 {
   "name": "nepali_1k",
-  "cursive": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "bcp47": "ne-NP",
   "words": [

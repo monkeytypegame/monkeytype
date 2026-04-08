@@ -1,7 +1,7 @@
 {
   "name": "tibetan",
   "rightToLeft": false,
-  "cursive": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "bcp47": "bo-TI",
   "words": [

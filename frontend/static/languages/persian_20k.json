@@ -1,7 +1,7 @@
 {
   "name": "persian_20k",
   "rightToLeft": true,
-  "cursive": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "bcp47": "fa",
   "words": [

@@ -82,7 +82,7 @@ export async function getLayout(layoutName: string): Promise<LayoutObject> {
 // used for polyglot wordset language-specific properties
 export type LanguageProperties = Pick<
   LanguageObject,
-  "noLazyMode" | "cursive" | "rightToLeft" | "additionalAccents"
+  "noLazyMode" | "cursiveScript" | "rightToLeft" | "additionalAccents"
 >;
 
 let currentLanguage: LanguageObject;

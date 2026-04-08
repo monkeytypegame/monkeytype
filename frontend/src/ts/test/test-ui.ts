@@ -1242,13 +1242,13 @@ export async function lineJump(
 
 export function setCursiveClass(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
-    wordsEl.addClass("cursive");
-    qs("#resultWordsHistory .words")?.addClass("cursive");
-    qs("#resultReplay .words")?.addClass("cursive");
+    wordsEl.addClass("cursiveScript");
+    qs("#resultWordsHistory .words")?.addClass("cursiveScript");
+    qs("#resultReplay .words")?.addClass("cursiveScript");
   } else {
-    wordsEl.removeClass("cursive");
-    qs("#resultWordsHistory .words")?.removeClass("cursive");
-    qs("#resultReplay .words")?.removeClass("cursive");
+    wordsEl.removeClass("cursiveScript");
+    qs("#resultWordsHistory .words")?.removeClass("cursiveScript");
+    qs("#resultReplay .words")?.removeClass("cursiveScript");
   }
 }
 

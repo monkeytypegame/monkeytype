@@ -1,7 +1,7 @@
 {
   "name": "arabic_morocco",
   "rightToLeft": true,
-  "cursive": true,
+  "cursiveScript": true,
   "orderedByFrequency": false,
   "bcp47": "ar-MA",
   "words": [
