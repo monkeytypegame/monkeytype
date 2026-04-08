@@ -42,7 +42,7 @@ export function useLocalStorage<T>(
   });
 
   // Create signal with initial value from storage
-  const [value, setValueInternal] = createSignal<T>(storage.get());
+  const [value, setValueInternal] = createSignal(storage.get());
 
   // Custom setter that syncs to localStorage
   const setValue = (newValue: T | ((prev: T) => T)): T => {
