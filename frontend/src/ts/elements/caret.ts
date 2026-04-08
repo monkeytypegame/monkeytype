@@ -287,8 +287,8 @@ export class Caret {
       const word = wordsCache.qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
-      const letters = word?.qsa("letter") ?? [];
-      const wordText = TestWords.words.get(options.wordIndex);
+      const wordText = TestWords.words.get(options.wordIndex) ?? "";
+      const wordLength = Array.from(wordText).length;
 
       // caret can be either on the left side of the target letter or the right
       // we stick to the left side unless we are on the last letter or beyond
@@ -297,13 +297,20 @@ export class Caret {
       // we also clamp the letterIndex to be within the range of actual letters
       // anything beyond just goes to the edge of the word
       let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-      if (options.letterIndex >= letters.length) {
-        side = "afterLetter";
+      if (Config.mode === "zen") {
+        if (options.letterIndex > 0) {
+          side = "afterLetter";
+          options.letterIndex -= 1;
+        }
+      } else {
+        if (options.letterIndex >= wordLength) {
+          side = "afterLetter";
 
-        if (Config.blindMode || Config.hideExtraLetters) {
-          options.letterIndex = (wordText?.length ?? letters.length) - 1;
-        } else {
-          options.letterIndex = letters.length - 1;
+          if (Config.blindMode || Config.hideExtraLetters) {
+            options.letterIndex = wordLength - 1;
+          } else {
+            options.letterIndex -= 1;
+          }
         }
       }
 
@@ -311,29 +318,11 @@ export class Caret {
         options.letterIndex = 0;
       }
 
-      let letter = word?.qsa("letter")[options.letterIndex];
-
-      if (word === null || letter === undefined) {
-        return;
-      }
-
-      if (caretDebug) {
-        if (this.id === "paceCaret") {
-          for (const l of document.querySelectorAll(".word letter")) {
-            l.classList.remove("debugCaretTarget");
-            l.classList.remove("debugCaretTarget2");
-            l.classList.add("debugCaret");
-          }
-          letter?.addClass("debugCaretTarget");
-          this.element.addClass("debug");
-        }
-      } else {
-        this.element.removeClass("debug");
-      }
+      if (word === null) return;
 
       const { left, top, width } = this.getTargetPositionAndWidth({
         word,
-        letter,
+        letterIndex: options.letterIndex,
         wordText,
         side,
         isLanguageRightToLeft: options.isLanguageRightToLeft,
@@ -399,59 +388,67 @@ export class Caret {
 
   private getTargetPositionAndWidth(options: {
     word: ElementWithUtils;
-    letter: ElementWithUtils;
+    letterIndex: number;
     wordText: string;
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
+    const letters = options.word?.qsa("letter");
+    let letter;
+    if (!letters?.length || !(letter = letters[options.letterIndex])) {
+      // maybe we should return null here instead of throwing
+      throw new Error(
+        "Caret getTargetPositionAndWidth: no letters found in word",
+      );
+    }
+
+    if (caretDebug) {
+      if (this.id === "paceCaret") {
+        for (const l of document.querySelectorAll(".word letter")) {
+          l.classList.remove("debugCaretTarget");
+          l.classList.remove("debugCaretTarget2");
+          l.classList.add("debugCaret");
+        }
+        letter?.addClass("debugCaretTarget");
+        this.element.addClass("debug");
+      }
+    } else {
+      this.element.removeClass("debug");
+    }
+
     // in zen, custom or polyglot mode we need to check per-letter
     const checkRtlByLetter =
       Config.mode === "zen" ||
       Config.mode === "custom" ||
       Config.funbox.includes("polyglot");
     const [isWordRTL, isFullMatch] = isWordRightToLeft(
-      checkRtlByLetter
-        ? (options.letter.native.textContent ?? "")
-        : options.wordText,
+      checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
     );
 
     //if the letter is not visible, use the closest visible letter
-    const isLetterVisible = options.letter.getOffsetWidth() > 0;
+    const isLetterVisible = letter.getOffsetWidth() > 0;
     if (!isLetterVisible) {
-      const letters = options.word.qsa("letter");
-      if (letters.length === 0) {
-        throw new Error("Caret getLeftTopWidth: no letters found in word");
-      }
-
-      // ignore letters after the current letter
-      let ignore = true;
-      for (let i = letters.length - 1; i >= 0; i--) {
+      for (let i = options.letterIndex - 1; i >= 0; i--) {
         const loopLetter = letters[i] as ElementWithUtils;
-        if (loopLetter === options.letter) {
-          // at the current letter, stop ignoring, continue to the next
-          ignore = false;
-          continue;
-        }
-        if (ignore) continue;
 
-        // found the closest visible letter before the current letter
+        // find the closest visible letter before the current letter
         if (loopLetter.getOffsetWidth() > 0) {
-          options.letter = loopLetter;
+          letter = loopLetter;
           break;
         }
       }
       if (caretDebug) {
-        options.letter.addClass("debugCaretTarget2");
+        letter.addClass("debugCaretTarget2");
       }
     }
 
     const spaceWidth = getTotalInlineMargin(options.word.native);
     let width = spaceWidth;
     if (this.isFullWidth() && options.side === "beforeLetter") {
-      width = options.letter.getOffsetWidth();
+      width = letter.getOffsetWidth();
     }
 
     let left = 0;
@@ -468,22 +465,22 @@ export class Caret {
         if (this.isFullWidth()) {
           afterLetterCorrection += spaceWidth * -1;
         } else {
-          afterLetterCorrection += options.letter.getOffsetWidth() * -1;
+          afterLetterCorrection += letter.getOffsetWidth() * -1;
         }
       }
       if (Config.tapeMode === "off") {
         if (!this.isFullWidth()) {
-          left += options.letter.getOffsetWidth();
+          left += letter.getOffsetWidth();
         }
-        left += options.letter.getOffsetLeft();
+        left += letter.getOffsetLeft();
         left += options.word.getOffsetLeft();
         left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         if (!this.isFullWidth()) {
-          left += options.letter.getOffsetWidth();
+          left += letter.getOffsetWidth();
         }
         left += options.word.getOffsetWidth() * -1;
-        left += options.letter.getOffsetLeft();
+        left += letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
@@ -498,7 +495,7 @@ export class Caret {
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
         } else {
-          left += options.letter.getOffsetLeft();
+          left += letter.getOffsetLeft();
           left += options.word.getOffsetLeft();
           left += afterLetterCorrection;
           left += width;
@@ -507,14 +504,14 @@ export class Caret {
     } else {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
-        afterLetterCorrection += options.letter.getOffsetWidth();
+        afterLetterCorrection += letter.getOffsetWidth();
       }
       if (Config.tapeMode === "off") {
-        left += options.letter.getOffsetLeft();
+        left += letter.getOffsetLeft();
         left += options.word.getOffsetLeft();
         left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
-        left += options.letter.getOffsetLeft();
+        left += letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += tapeOffset;
@@ -525,7 +522,7 @@ export class Caret {
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += tapeOffset;
         } else {
-          left += options.letter.getOffsetLeft();
+          left += letter.getOffsetLeft();
           left += options.word.getOffsetLeft();
           left += afterLetterCorrection;
         }
@@ -533,15 +530,15 @@ export class Caret {
     }
 
     //top position
-    top += options.letter.getOffsetTop();
+    top += letter.getOffsetTop();
     top += options.word.getOffsetTop();
 
     if (this.style === "underline") {
       // if style is underline, add the height of the letter to the top
-      top += options.letter.getOffsetHeight();
+      top += letter.getOffsetHeight();
     } else {
       // else center vertically in the letter
-      top += (options.letter.getOffsetHeight() - this.getHeight()) / 2;
+      top += (letter.getOffsetHeight() - this.getHeight()) / 2;
     }
 
     // also center horizontally
