@@ -19,11 +19,13 @@ import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { Funbox } from "./custom-setting/Funbox";
 import { Language } from "./custom-setting/Language";
 import { Layout } from "./custom-setting/Layout";
+import { MaxLineWidth } from "./custom-setting/MaxLineWidth";
 import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
 import { PaceCaret } from "./custom-setting/PaceCaret";
 import { SoundVolume } from "./custom-setting/SoundVolume";
+import { TapeMargin } from "./custom-setting/TapeMargin";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
@@ -105,13 +107,13 @@ export function Settings(): JSXElement {
           <AutoSetting key="highlightMode" wide />
           <AutoSetting key="typedEffect" />
           <AutoSetting key="tapeMode" />
-          {/* todo: tape margin */}
+          <TapeMargin />
           <AutoSetting key="smoothLineScroll" />
           <AutoSetting key="showAllLines" />
           <AutoSetting key="alwaysShowDecimalPlaces" />
           <AutoSetting key="typingSpeedUnit" />
           <AutoSetting key="startGraphsAtZero" />
-          {/* todo: max line width */}
+          <MaxLineWidth />
           {/* todo: font size */}
           {/* todo: font family */}
           <AutoSetting key="keymapMode" />

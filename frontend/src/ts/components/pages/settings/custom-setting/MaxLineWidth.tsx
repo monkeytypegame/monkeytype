@@ -1,4 +1,4 @@
-import { MinimumBurstCustomSpeedSchema } from "@monkeytype/schemas/configs";
+import { MaxLineWidthSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement } from "solid-js";
 
@@ -7,43 +7,34 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { AnimeShow } from "../../../common/anime";
 // import { showSuccessNotification } from "../../../../states/notifications";
-import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
-export function MinBurst(): JSXElement {
+export function MaxLineWidth(): JSXElement {
   const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
 
   const form = createForm(() => ({
     defaultValues: {
-      minBurstCustomSpeed: getConfig.minBurstCustomSpeed,
+      maxLineWidth: getConfig.maxLineWidth,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minBurstCustomSpeed));
-      if (val === getConfig.minBurstCustomSpeed) return;
-      if (getConfig.minBurst !== "off") {
-        //
-      } else {
-        setConfig("minBurst", "fixed");
-      }
-      // showSuccessNotification("Min burst saved", {
-      //   durationMs: 1000,
-      // });
+      const val = parseInt(String(value.maxLineWidth));
+      if (val === getConfig.maxLineWidth) return;
       setShowSavedIndicator(true);
       setTimeout(() => {
         setShowSavedIndicator(false);
       }, 2000);
-      setConfig("minBurstCustomSpeed", val);
+      setConfig("maxLineWidth", val);
     },
   }));
 
   return (
     <Setting
-      title={configMetadata.minBurst.displayString ?? "min burst"}
-      fa={configMetadata.minBurst.fa}
-      description={configMetadata.minBurst.description}
+      title={configMetadata.maxLineWidth.displayString ?? "max line width"}
+      fa={configMetadata.maxLineWidth.fa}
+      description={configMetadata.maxLineWidth.description}
       inputs={
         <div class="grid w-full gap-2">
           <form
@@ -54,14 +45,14 @@ export function MinBurst(): JSXElement {
             }}
           >
             <form.Field
-              name="minBurstCustomSpeed"
+              name="maxLineWidth"
               validators={{
                 onChange: ({ value }) => {
                   const val = parseInt(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
-                  return fromSchema(MinimumBurstCustomSpeedSchema)({
+                  return fromSchema(MaxLineWidthSchema)({
                     value: val,
                   });
                 },
@@ -74,7 +65,8 @@ export function MinBurst(): JSXElement {
                   <InputField
                     field={field}
                     placeholder={
-                      configMetadata.minBurst.displayString ?? "min burst"
+                      configMetadata.maxLineWidth.displayString ??
+                      "max line width"
                     }
                     showIndicator
                     type="number"
@@ -88,36 +80,6 @@ export function MinBurst(): JSXElement {
               )}
             />
           </form>
-          {/* <input class="w-full" value={inputValue()} /> */}
-          <div class="grid grid-cols-3 gap-2">
-            <Button
-              active={getConfig.minBurst === "off"}
-              onClick={() => {
-                if (getConfig.minBurst === "off") return;
-                setConfig("minBurst", "off");
-              }}
-            >
-              off
-            </Button>
-            <Button
-              active={getConfig.minBurst === "fixed"}
-              onClick={() => {
-                if (getConfig.minBurst === "fixed") return;
-                setConfig("minBurst", "fixed");
-              }}
-            >
-              fixed
-            </Button>
-            <Button
-              active={getConfig.minBurst === "flex"}
-              onClick={() => {
-                if (getConfig.minBurst === "flex") return;
-                setConfig("minBurst", "flex");
-              }}
-            >
-              flex
-            </Button>
-          </div>
         </div>
       }
     />

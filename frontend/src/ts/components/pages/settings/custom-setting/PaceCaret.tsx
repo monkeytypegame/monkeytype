@@ -59,7 +59,7 @@ export function PaceCaret(): JSXElement {
                 onChange: ({ value }) => {
                   const val = parseInt(String(value));
                   if (isNaN(val)) {
-                    return "must be a number";
+                    return "Must be a number";
                   }
                   return fromSchema(PaceCaretCustomSpeedSchema)({
                     value: val,

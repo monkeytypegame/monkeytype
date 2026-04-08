@@ -59,7 +59,7 @@ export function MinAcc(): JSXElement {
                 onChange: ({ value }) => {
                   const val = parseInt(String(value));
                   if (isNaN(val)) {
-                    return "must be a number";
+                    return "Must be a number";
                   }
                   return fromSchema(MinimumAccuracyCustomSchema)({
                     value: val,
