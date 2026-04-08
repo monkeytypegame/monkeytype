@@ -533,6 +533,12 @@
     }
   }
 
+  &.typed-effect-tumble {
+    .word.typed:not(.error) {
+      opacity: 0;
+    }
+  }
+
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
@@ -600,6 +606,13 @@
       }
     }
   }
+}
+
+.tumble-clone {
+  animation: typedEffectTumble 1s cubic-bezier(0.5, 0, 1, 1) forwards;
+  display: inline-block;
+  pointer-events: none;
+  z-index: 1000;
 }
 
 .word {

@@ -147,6 +147,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
+          triggerTumbleTypedEffect(previousActiveWord);
           Ligatures.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
@@ -164,6 +165,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
+    newActiveWord.setStyle({ opacity: "" });
     Ligatures.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
@@ -302,6 +304,46 @@ async function joinOverlappingHints(
     }
     previousBlocksAdjacent = true;
   }
+}
+
+function triggerTumbleTypedEffect(word: ElementWithUtils): void {
+  if (Config.typedEffect !== "tumble") return;
+  if (word.hasClass("error")) return;
+
+  const rect = word.native.getBoundingClientRect();
+  if (rect.width === 0 && rect.height === 0) return;
+
+  const computedStyle = window.getComputedStyle(word.native);
+  const clone = word.native.cloneNode(true) as HTMLElement;
+  const randomRotation = (Math.random() - 0.5) * 45;
+  const randomX = (Math.random() - 0.5) * 100;
+
+  clone.classList.add("tumble-clone");
+  clone.style.position = "fixed";
+  clone.style.top = `${rect.top}px`;
+  clone.style.left = `${rect.left}px`;
+  clone.style.width = `${rect.width}px`;
+  clone.style.height = `${rect.height}px`;
+  clone.style.fontSize = computedStyle.fontSize;
+  clone.style.fontFamily = computedStyle.fontFamily;
+  clone.style.color = computedStyle.color;
+  clone.style.margin = "0";
+  clone.style.pointerEvents = "none";
+  clone.style.zIndex = "1000";
+  clone.style.setProperty("--fall-rotation", `${randomRotation}deg`);
+  clone.style.setProperty("--fall-x", `${randomX}px`);
+
+  document.body.appendChild(clone);
+  word.setStyle({ opacity: "0" });
+
+  clone.addEventListener("animationend", () => {
+    clone.remove();
+  });
+}
+
+function clearTumbleTypedEffect(): void {
+  qsa(".tumble-clone").remove();
+  wordsEl.qsa(".word").setStyle({ opacity: "" });
 }
 
 async function updateHintsPosition(): Promise<void> {
@@ -495,6 +537,7 @@ function updateWordWrapperClasses(): void {
 }
 
 function showWords(): void {
+  clearTumbleTypedEffect();
   wordsEl.setHtml("");
 
   if (Config.mode === "zen") {
@@ -1937,6 +1980,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 }
 
 export function onTestFinish(): void {
+  clearTumbleTypedEffect();
   Caret.hide();
   LiveSpeed.hide();
   LiveAcc.hide();
