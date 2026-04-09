@@ -1,8 +1,4 @@
-import {
-  Config,
-  ConfigSchema,
-  TapeMarginSchema,
-} from "@monkeytype/schemas/configs";
+import { Config, ConfigSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
@@ -24,7 +20,6 @@ import { fromSchema } from "../../ui/form/utils";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { FontFamily } from "./custom-setting/FontFamily";
-import { FontSize } from "./custom-setting/FontSize";
 import { Funbox } from "./custom-setting/Funbox";
 import { KeymapLayout } from "./custom-setting/KeymapLayout";
 import { KeymapSize } from "./custom-setting/KeymapSize";
@@ -118,14 +113,13 @@ export function Settings(): JSXElement {
           <AutoSetting key="typedEffect" />
           <AutoSetting key="tapeMode" />
           <AutoSetting key="tapeMargin" />
-          {/* <TapeMargin /> */}
           <AutoSetting key="smoothLineScroll" />
           <AutoSetting key="showAllLines" />
           <AutoSetting key="alwaysShowDecimalPlaces" />
           <AutoSetting key="typingSpeedUnit" />
           <AutoSetting key="startGraphsAtZero" />
           <MaxLineWidth />
-          <FontSize />
+          <AutoSetting key="fontSize" />
           <FontFamily />
           <AutoSetting key="keymapMode" />
           <KeymapLayout />
@@ -255,14 +249,16 @@ function AutoSetting(props: {
             }}
           >
             <form.Field
-              name="tapeMargin"
+              name={props.key}
               validators={{
                 onChange: ({ value }) => {
                   const val = parseInt(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
-                  return fromSchema(TapeMarginSchema)({
+                  return fromSchema(
+                    ConfigSchema.shape[props.key] as z.ZodNumber,
+                  )({
                     value: val,
                   });
                 },
@@ -275,7 +271,7 @@ function AutoSetting(props: {
                   <InputField
                     field={field}
                     placeholder={
-                      configMetadata.tapeMargin.displayString ?? "tape margin"
+                      configMetadata[props.key].displayString ?? props.key
                     }
                     showIndicator
                     type="number"
