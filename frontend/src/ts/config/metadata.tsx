@@ -758,6 +758,14 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Change the style of the live speed displayed during the test.",
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
+      }
+      return {};
+    },
   },
   liveAccStyle: {
     key: "liveAccStyle",
@@ -767,6 +775,14 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Change the style of the live accuracy displayed during the test.",
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
+      }
+      return {};
+    },
   },
   liveBurstStyle: {
     key: "liveBurstStyle",
@@ -1196,6 +1212,21 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "monkey",
     changeRequiresRestart: false,
     group: "hidden",
+    overrideConfig: ({ value, currentConfig }) => {
+      if (value) {
+        return {
+          liveSpeedStyle:
+            currentConfig.liveSpeedStyle === "text"
+              ? "mini"
+              : currentConfig.liveSpeedStyle,
+          liveAccStyle:
+            currentConfig.liveAccStyle === "text"
+              ? "mini"
+              : currentConfig.liveAccStyle,
+        };
+      }
+      return {};
+    },
   },
   monkeyPowerLevel: {
     key: "monkeyPowerLevel",
