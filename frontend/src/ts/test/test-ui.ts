@@ -2086,6 +2086,9 @@ configEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
+    if (key === "typedEffect") {
+      TypedEffects.clear();
+    }
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
       Ligatures.update(key, wordsEl);
