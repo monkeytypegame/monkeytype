@@ -241,14 +241,10 @@ function AutoSetting(props: {
   }));
 
   const autoInputs = () => {
-    console.log("created auto inputs for", props.key);
-
     if (
       ConfigSchema.shape[props.key]._def.typeName ===
       z.ZodFirstPartyTypeKind.ZodNumber
     ) {
-      console.log("number input for", props.key);
-
       return (
         <div class="grid w-full gap-2">
           <form
