@@ -2050,7 +2050,7 @@ qs("#wordsInput")?.on("focusout", () => {
   if (!isInputElementFocused()) {
     OutOfFocus.show();
   }
-  //Caret.hide();
+  Caret.hide();
 });
 
 qs(".pageTest")?.onChild("click", "#showWordHistoryButton", () => {
