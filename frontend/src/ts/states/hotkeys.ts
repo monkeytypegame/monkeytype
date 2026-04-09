@@ -28,14 +28,25 @@ createEffect(() => {
 
 function updateHotkeys(): Hotkeys {
   const isOnTestPage = getActivePage() === "test";
+
+  const quickRestartIsTab = getConfig.quickRestart === "tab";
+  const quickRestartIsEnter = getConfig.quickRestart === "enter";
+  // const quickRestartIsEsc = getConfig.quickRestart === "esc";
+
+  const commandlineIsTab = getConfig.quickRestart === "esc";
+  // const commandlineIsEsc = getConfig.quickRestart !== "esc";
+
   return {
     quickRestart: shiftHotkey(
       quickRestartHotkeyMap[getConfig.quickRestart],
-      isOnTestPage && (wordsHaveTab() || isLongTest()),
+      isOnTestPage &&
+        ((wordsHaveTab() && quickRestartIsTab) ||
+          (wordsHaveNewline() && quickRestartIsEnter) ||
+          isLongTest()),
     ),
     commandline: shiftHotkey(
-      getConfig.quickRestart === "esc" ? "Tab" : "Escape",
-      isOnTestPage && wordsHaveNewline(),
+      commandlineIsTab ? "Tab" : "Escape",
+      isOnTestPage && wordsHaveTab() && commandlineIsTab,
     ),
   };
 }
