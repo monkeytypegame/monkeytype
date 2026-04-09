@@ -23,6 +23,8 @@ export function show(): void {
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();
+      originalState = getProfileState();
+      updateSaveButtonState();
       initializeCharacterCounters();
     },
   });
@@ -31,6 +33,10 @@ export function show(): void {
 function hide(): void {
   void modal.hide();
 }
+
+const saveButton = qsr<HTMLButtonElement>(
+  "#editProfileModal .edit-profile-submit",
+);
 
 const bioInput = qsr<HTMLTextAreaElement>("#editProfileModal .bio");
 const keyboardInput = qsr<HTMLTextAreaElement>("#editProfileModal .keyboard");
@@ -42,10 +48,28 @@ const showActivityOnPublicProfileInput = qsr<HTMLInputElement>(
   "#editProfileModal .editProfileShowActivityOnPublicProfile",
 );
 
+const inputs = [
+  bioInput,
+  keyboardInput,
+  twitterInput,
+  githubInput,
+  websiteInput,
+];
+
+inputs.forEach((input) => {
+  input.on("input", updateSaveButtonState);
+});
+
+showActivityOnPublicProfileInput.on("change", updateSaveButtonState);
+
 const indicators = [
-  addValidation(twitterInput, TwitterProfileSchema),
-  addValidation(githubInput, GithubProfileSchema),
-  addValidation(websiteInput, WebsiteSchema),
+  addValidation(
+    twitterInput,
+    TwitterProfileSchema,
+    () => originalState.twitter,
+  ),
+  addValidation(githubInput, GithubProfileSchema, () => originalState.github),
+  addValidation(websiteInput, WebsiteSchema, () => originalState.website),
 ];
 
 let currentSelectedBadgeId = -1;
@@ -100,66 +124,96 @@ function hydrateInputs(): void {
 
       badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
       (currentTarget as HTMLElement).classList.add("selected");
+      updateSaveButtonState();
     });
 
   indicators.forEach((it) => it.hide());
 }
 
+let characterCountersInitialized = false;
+
 function initializeCharacterCounters(): void {
+  if (characterCountersInitialized) return;
   new CharacterCounter(bioInput, 250);
   new CharacterCounter(keyboardInput, 75);
+  characterCountersInitialized = true;
 }
 
-function buildUpdatesFromInputs(): UserProfileDetails {
-  const bio = bioInput.getValue() ?? "";
-  const keyboard = keyboardInput.getValue() ?? "";
-  const twitter = twitterInput.getValue() ?? "";
-  const github = githubInput.getValue() ?? "";
-  const website = websiteInput.getValue() ?? "";
-  const showActivityOnPublicProfile =
-    showActivityOnPublicProfileInput.isChecked() ?? false;
+type ProfileState = {
+  bio: string;
+  keyboard: string;
+  twitter: string;
+  github: string;
+  website: string;
+  badgeId: number;
+  showActivityOnPublicProfile: boolean;
+};
 
-  const profileUpdates: UserProfileDetails = {
-    bio,
-    keyboard,
-    socialProfiles: {
-      twitter,
-      github,
-      website,
-    },
-    showActivityOnPublicProfile,
+function getProfileState(): ProfileState {
+  return {
+    bio: bioInput.getValue() ?? "",
+    keyboard: keyboardInput.getValue() ?? "",
+    twitter: twitterInput.getValue() ?? "",
+    github: githubInput.getValue() ?? "",
+    website: websiteInput.getValue() ?? "",
+    badgeId: currentSelectedBadgeId,
+    showActivityOnPublicProfile:
+      showActivityOnPublicProfileInput.isChecked() ?? false,
   };
+}
 
-  return profileUpdates;
+function buildUpdatesFromState(state: ProfileState): UserProfileDetails {
+  return {
+    bio: state.bio,
+    keyboard: state.keyboard,
+    socialProfiles: {
+      twitter: state.twitter,
+      github: state.github,
+      website: state.website,
+    },
+    showActivityOnPublicProfile: state.showActivityOnPublicProfile,
+  };
+}
+
+let originalState: ProfileState;
+
+function hasProfileChanged(
+  originalProfile: ProfileState,
+  currentProfile: ProfileState,
+): boolean {
+  return (
+    originalProfile.bio !== currentProfile.bio ||
+    originalProfile.keyboard !== currentProfile.keyboard ||
+    originalProfile.twitter !== currentProfile.twitter ||
+    originalProfile.github !== currentProfile.github ||
+    originalProfile.website !== currentProfile.website ||
+    originalProfile.badgeId !== currentProfile.badgeId ||
+    originalProfile.showActivityOnPublicProfile !==
+      currentProfile.showActivityOnPublicProfile
+  );
+}
+
+function updateSaveButtonState(): void {
+  const currentState = getProfileState();
+  const hasChanges = hasProfileChanged(originalState, currentState);
+
+  const hasValidationErrors = [
+    { value: currentState.twitter, schema: TwitterProfileSchema },
+    { value: currentState.github, schema: GithubProfileSchema },
+    { value: currentState.website, schema: WebsiteSchema },
+  ].some(
+    ({ value, schema }) => value !== "" && !schema.safeParse(value).success,
+  );
+
+  saveButton.native.disabled = !hasChanges || hasValidationErrors;
 }
 
 async function updateProfile(): Promise<void> {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
-  const updates = buildUpdatesFromInputs();
 
-  // check for length resctrictions before sending server requests
-  const githubLengthLimit = 39;
-  if (
-    updates.socialProfiles?.github !== undefined &&
-    updates.socialProfiles?.github.length > githubLengthLimit
-  ) {
-    showErrorNotification(
-      `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
-    );
-    return;
-  }
-
-  const twitterLengthLimit = 20;
-  if (
-    updates.socialProfiles?.twitter !== undefined &&
-    updates.socialProfiles?.twitter.length > twitterLengthLimit
-  ) {
-    showErrorNotification(
-      `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
-    );
-    return;
-  }
+  const currentState = getProfileState();
+  const updates = buildUpdatesFromState(currentState);
 
   showLoaderBar();
   const response = await Ape.users.updateProfile({
@@ -185,7 +239,7 @@ async function updateProfile(): Promise<void> {
   });
 
   DB.setSnapshot(snapshot);
-
+  originalState = currentState;
   showSuccessNotification("Profile updated");
 
   hide();
@@ -194,6 +248,7 @@ async function updateProfile(): Promise<void> {
 function addValidation(
   element: ElementWithUtils<HTMLInputElement>,
   schema: Zod.Schema,
+  getOriginalValue: () => string,
 ): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
@@ -213,7 +268,7 @@ function addValidation(
 
   element.on("input", (event) => {
     const value = (event.target as HTMLInputElement).value;
-    if (value === undefined || value === "") {
+    if (value === undefined || value === "" || value === getOriginalValue()) {
       indicator.hide();
       return;
     }
