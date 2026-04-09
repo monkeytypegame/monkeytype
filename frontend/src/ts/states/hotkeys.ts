@@ -41,7 +41,8 @@ function updateHotkeys(): Hotkeys {
       quickRestartHotkeyMap[getConfig.quickRestart],
       isOnTestPage &&
         ((wordsHaveTab() && quickRestartIsTab) ||
-          (wordsHaveNewline() && quickRestartIsEnter) ||
+          ((wordsHaveNewline() || getConfig.funbox.includes("58008")) &&
+            quickRestartIsEnter) ||
           isLongTest()),
     ),
     commandline: shiftHotkey(
