@@ -46,8 +46,8 @@ export function apply(): void {
     filter: filterCSS,
     width: `calc(100% + ${filters.blur.value * 4}rem)`,
     height: `calc(100% + ${filters.blur.value * 4}rem)`,
-    left: `-${filters.blur.value * 2}rem`,
-    top: `-${filters.blur.value * 2}rem`,
+    // left: `-${filters.blur.value * 2}rem`,
+    // top: `-${filters.blur.value * 2}rem`,
     position: "absolute",
   };
   qs(".customBackground img")?.setStyle(css);
