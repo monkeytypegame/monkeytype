@@ -1,4 +1,9 @@
-import { Config, ConfigSchema } from "@monkeytype/schemas/configs";
+import {
+  Config,
+  ConfigSchema,
+  TapeMarginSchema,
+} from "@monkeytype/schemas/configs";
+import { createForm } from "@tanstack/solid-form";
 import { createSignal, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
@@ -13,6 +18,8 @@ import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { InputField } from "../../ui/form/InputField";
+import { fromSchema } from "../../ui/form/utils";
 // import { Kbd } from "../../common/Kbd";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
@@ -29,7 +36,6 @@ import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
 import { PaceCaret } from "./custom-setting/PaceCaret";
 import { SoundVolume } from "./custom-setting/SoundVolume";
-import { TapeMargin } from "./custom-setting/TapeMargin";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
@@ -111,7 +117,8 @@ export function Settings(): JSXElement {
           <AutoSetting key="highlightMode" wide />
           <AutoSetting key="typedEffect" />
           <AutoSetting key="tapeMode" />
-          <TapeMargin />
+          <AutoSetting key="tapeMargin" />
+          {/* <TapeMargin /> */}
           <AutoSetting key="smoothLineScroll" />
           <AutoSetting key="showAllLines" />
           <AutoSetting key="alwaysShowDecimalPlaces" />
@@ -216,7 +223,80 @@ function AutoSetting(props: {
   inputs?: JSXElement;
   wide?: boolean;
 }): JSXElement {
+  const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+
+  const form = createForm(() => ({
+    defaultValues: {
+      [props.key]: getConfig[props.key],
+    },
+    onSubmit: ({ value }) => {
+      const val = parseInt(String(value[props.key]));
+      if (val === getConfig[props.key]) return;
+      setShowSavedIndicator(true);
+      setTimeout(() => {
+        setShowSavedIndicator(false);
+      }, 2000);
+      setConfig(props.key, val);
+    },
+  }));
+
   const autoInputs = () => {
+    console.log("created auto inputs for", props.key);
+
+    if (
+      ConfigSchema.shape[props.key]._def.typeName ===
+      z.ZodFirstPartyTypeKind.ZodNumber
+    ) {
+      console.log("number input for", props.key);
+
+      return (
+        <div class="grid w-full gap-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+          >
+            <form.Field
+              name="tapeMargin"
+              validators={{
+                onChange: ({ value }) => {
+                  const val = parseInt(String(value));
+                  if (isNaN(val)) {
+                    return "Must be a number";
+                  }
+                  return fromSchema(TapeMarginSchema)({
+                    value: val,
+                  });
+                },
+                onBlur: () => {
+                  void form.handleSubmit();
+                },
+              }}
+              children={(field) => (
+                <div class="relative">
+                  <InputField
+                    field={field}
+                    placeholder={
+                      configMetadata.tapeMargin.displayString ?? "tape margin"
+                    }
+                    showIndicator
+                    type="number"
+                  />
+                  <AnimeShow when={showSavedIndicator()}>
+                    <div class="absolute top-0 right-0 rounded bg-sub-alt p-[0.5em] text-main">
+                      <Fa icon="fa-save" fixedWidth />
+                    </div>
+                  </AnimeShow>
+                </div>
+              )}
+            />
+          </form>
+        </div>
+      );
+    }
+
     const options = getOptions(ConfigSchema.shape[props.key])?.filter((opt) => {
       const optionsMeta = (
         configMetadata[props.key] as {
