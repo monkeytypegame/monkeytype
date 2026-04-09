@@ -537,6 +537,12 @@
     .word.typed:not(.error) {
       opacity: 0;
     }
+
+    @media (prefers-reduced-motion) {
+      .word.typed:not(.error) {
+        opacity: 1;
+      }
+    }
   }
 
   &.typed-effect-dots {

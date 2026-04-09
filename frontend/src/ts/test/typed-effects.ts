@@ -1,7 +1,9 @@
 import { Config } from "../config/store";
+import * as Misc from "../utils/misc";
 import { ElementWithUtils, qsa, qsr } from "../utils/dom";
 
 const wordsEl = qsr(".pageTest #words");
+const TUMBLE_DURATION_MS = 1000;
 
 export function onWordTyped(word: ElementWithUtils): void {
   switch (Config.typedEffect) {
@@ -20,6 +22,7 @@ export function clear(): void {
 
 function triggerTumble(word: ElementWithUtils): void {
   if (word.hasClass("error")) return;
+  if (Misc.prefersReducedMotion()) return;
 
   const rect = word.native.getBoundingClientRect();
   if (rect.width === 0 && rect.height === 0) return;
@@ -47,7 +50,10 @@ function triggerTumble(word: ElementWithUtils): void {
   document.body.appendChild(clone);
   word.setStyle({ opacity: "0" });
 
-  clone.addEventListener("animationend", () => {
+  const cleanup = (): void => {
     clone.remove();
-  });
+  };
+
+  clone.addEventListener("animationend", cleanup, { once: true });
+  window.setTimeout(cleanup, TUMBLE_DURATION_MS);
 }
