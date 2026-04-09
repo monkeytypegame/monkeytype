@@ -1123,7 +1123,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   }
 
   /* change to new #words & .afterNewline margins */
-  let tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+  const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
   let typedWidth = -1 * (wordsWidthBeforeActive + currentWordWidth);
   let newMargin = tapeMarginPx + typedWidth;
   if (isTestRightToLeft) {
