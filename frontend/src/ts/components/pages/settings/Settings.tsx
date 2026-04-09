@@ -16,6 +16,7 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
+import { CustomBackground } from "./custom-setting/CustomBackground";
 // import { Kbd } from "../../common/Kbd";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
@@ -132,6 +133,7 @@ export function Settings(): JSXElement {
           <AutoSetting key="flipTestColors" />
           <AutoSetting key="colorfulMode" />
           {/* todo: custom background (url + local image + size) */}
+          <CustomBackground />
           {/* todo: custom background filter */}
           <AutoSetting key="autoSwitchTheme" />
           {/* todo: auto switch theme inputs (light/dark selects) */}
@@ -149,7 +151,6 @@ export function Settings(): JSXElement {
         </Section>
       </div>
 
-      {/* todo: danger zone */}
       <AccountSettingsNotice />
     </div>
   );

@@ -1025,12 +1025,14 @@ export const configMetadata: ConfigMetadataObject = {
   customBackground: {
     key: "customBackground",
     fa: { icon: "fa-link" },
-    displayString: "URL background",
+    displayString: "custom background",
     changeRequiresRestart: false,
     group: "theme",
     overrideValue: ({ value }) => {
       return value.trim();
     },
+    description:
+      "Set an image url or local image to be a custom background image. Local image always take priority over the image url. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
   },
   customBackgroundSize: {
     key: "customBackgroundSize",

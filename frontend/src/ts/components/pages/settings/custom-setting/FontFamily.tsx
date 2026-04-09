@@ -35,7 +35,7 @@ export function FontFamily(): JSXElement {
         <>
           {configMetadata.fontFamily.description}
           <br />
-          <div class="text-em-xs">
+          <div class="mt-2 text-em-xs">
             Note: Local fonts are not sent to the server and will not persist
             across devices.
           </div>
