@@ -80,6 +80,7 @@ const wordsWrapperEl = qsr(".pageTest #wordsWrapper");
 const resultWordsHistoryEl = qsr(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
+export let wordTopBeforeLineJump = 0;
 export let activeWordHeight = 0;
 export let lineTransition = false;
 export let currentTestLine = 0;
@@ -902,7 +903,14 @@ export async function updateWordLetters({
         if (!Config.showAllLines) {
           const wordTopAfterUpdate = wordAtIndex.getOffsetTop();
           if (wordTopAfterUpdate > activeWordTop) {
-            await lineJump(activeWordTop, true);
+            let jump = false;
+            if (!lineTransition) {
+              wordTopBeforeLineJump = wordTopAfterUpdate;
+              jump = true;
+            } else if (wordTopAfterUpdate > wordTopBeforeLineJump) {
+              jump = true;
+            }
+            if (jump) await lineJump(activeWordTop);
           }
         }
       }
