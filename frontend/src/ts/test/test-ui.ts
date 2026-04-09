@@ -80,10 +80,10 @@ const wordsWrapperEl = qsr(".pageTest #wordsWrapper");
 const resultWordsHistoryEl = qsr(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
-export let wordTopBeforeLineJump = 0;
 export let activeWordHeight = 0;
-export let lineTransition = false;
-export let currentTestLine = 0;
+let wordTopBeforeLineJump = 0;
+let lineTransition = false;
+let currentTestLine = 0;
 export let resultCalculating = false;
 
 export function setResultCalculating(val: boolean): void {
@@ -1171,19 +1171,13 @@ function removeTestElements(lastElementIndexToRemove: number): void {
 
 let currentLinesJumping = 0;
 
-export async function lineJump(
-  currentTop: number,
-  force = false,
-): Promise<void> {
+async function lineJump(currentTop: number, force = false): Promise<void> {
   //last word of the line
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop;
 
     const activeWordEl = getActiveWordElement();
-    if (!activeWordEl) {
-      // resolve();
-      return;
-    }
+    if (!activeWordEl) return;
 
     // index of the active word in all #words.children
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
