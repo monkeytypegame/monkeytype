@@ -1,5 +1,6 @@
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
+import { generate as generatePython } from "../python-peg-grammar";
 import { Config } from "../../config/store";
 import { setConfig, toggleFunbox } from "../../config/setters";
 import * as Misc from "../../utils/misc";
@@ -761,7 +762,40 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return new PolyglotWordset(wordsWithLanguage, languageProperties);
     },
   },
+  code_generator: {
+    async pullSection(): Promise<JSONData.Section | false> {
+      const text = generatePython({ mode: "words", target: 80 });
+      const words = splitCodeToWords(text);
+      return new JSONData.Section("Python Code", "", words);
+    },
+  },
 };
+
+function splitCodeToWords(text: string): string[] {
+  const lines = text.split("\n");
+  const words: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] as string;
+    // Convert leading 4-space groups to tab characters
+    const stripped = line.replace(/^( {4})+/, "");
+    const indentLevel = (line.length - stripped.length) / 4;
+    const tabs = "\t".repeat(indentLevel);
+
+    const tokens = stripped.split(/\s+/).filter((t) => t.length > 0);
+    if (tokens.length === 0) continue;
+
+    // Prepend tabs to first token of indented lines
+    if (tabs.length > 0) {
+      tokens[0] = tabs + (tokens[0] as string);
+    }
+    // Append newline to last token (except on the final line)
+    if (i < lines.length - 1) {
+      tokens[tokens.length - 1] += "\n";
+    }
+    words.push(...tokens);
+  }
+  return words;
+}
 
 export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {
   return list as Record<FunboxName, FunboxFunctions>;

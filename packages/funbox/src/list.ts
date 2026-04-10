@@ -481,6 +481,18 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     name: "no_quit",
   },
+  code_generator: {
+    description: "Type procedurally generated Python code.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+    frontendFunctions: ["pullSection"],
+    name: "code_generator",
+  },
 };
 
 export function getObject(): Record<FunboxName, FunboxMetadata> {
