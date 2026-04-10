@@ -16,11 +16,11 @@ body {
   background-position: center;
 }
 
-main {
+main .pageTest #typingTest {
   perspective: 500px;
-  overflow: hidden;
 }
 
-main .page {
-  transform: rotateX(35deg);
+main .pageTest #wordsWrapper {
+  transform: rotateX(24deg);
+  transform-origin: center center;
 }
