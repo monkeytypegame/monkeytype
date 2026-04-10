@@ -36,7 +36,15 @@ export const projects: UserWorkspaceConfig[] = [
   },
   {
     ssr: {
-      noExternal: ["@solidjs/meta"],
+      noExternal: [
+        "@solidjs/meta",
+        "@tanstack/solid-store",
+        "@tanstack/solid-form",
+        "@tanstack/solid-query",
+        "@tanstack/solid-table",
+        "@tanstack/solid-hotkeys",
+        "@tanstack/solid-db",
+      ],
     },
     test: {
       name: { label: "jsx", color: "green" },
@@ -61,7 +69,15 @@ export default defineConfig({
     deps: {
       optimizer: {
         web: {
-          include: ["@monkeytype/funbox"],
+          include: [
+            "@monkeytype/funbox",
+            "@tanstack/solid-store",
+            "@tanstack/solid-form",
+            "@tanstack/solid-query",
+            "@tanstack/solid-table",
+            "@tanstack/solid-hotkeys",
+            "@tanstack/solid-db",
+          ],
         },
       },
     },
