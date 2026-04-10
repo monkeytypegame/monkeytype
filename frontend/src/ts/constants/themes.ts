@@ -2326,7 +2326,7 @@ export const themes: Record<ThemeName, Theme> = {
 
 export type ThemeWithName = Theme & { name: ThemeName };
 export const ThemesList: ThemeWithName[] = Object.keys(themes)
-  .sort((a, b) => a.localeCompare(b))
+  .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
   .map(
     (it) =>
       ({
