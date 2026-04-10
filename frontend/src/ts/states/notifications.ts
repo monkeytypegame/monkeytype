@@ -188,8 +188,8 @@ export function showNoticeNotification(
 export function showSuccessNotification(
   message: string,
   options?: AddNotificationOptions,
-): void {
-  addNotificationWithLevel(message, "success", options);
+): number {
+  return addNotificationWithLevel(message, "success", options);
 }
 
 export function showErrorNotification(
