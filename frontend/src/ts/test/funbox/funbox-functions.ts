@@ -28,6 +28,7 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
+import { convertRemToPixels } from "../../utils/numbers";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -167,6 +168,12 @@ export class PolyglotWordset extends Wordset {
 }
 
 let tunnelVisionAnimationFrame: number | null = null;
+
+function getTunnelVisionRadiusPx(): number {
+  const fontSizePx = convertRemToPixels(Config.fontSize);
+
+  return Math.max(48, Math.min(220, fontSizePx * 4.5));
+}
 
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
@@ -684,25 +691,37 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   tunnel_vision: {
     applyGlobalCSS(): void {
       const words = qs("#words");
-      if (!words) return;
+      const wordsWrapper = qs("#wordsWrapper");
+      if (!words || !wordsWrapper) return;
 
       const updateCaretPos = (): void => {
         const caretElem = qs("#caret");
         if (caretElem !== null) {
-          const caretStyle = caretElem.getStyle();
-          const left = caretStyle.left || "0px";
-          const top = caretStyle.top || "0px";
-          const marginLeft = caretStyle.marginLeft || "0px";
-          const marginTop = caretStyle.marginTop || "0px";
+          const wordsRect = words.native.getBoundingClientRect();
+          const wordsWrapperRect = wordsWrapper.native.getBoundingClientRect();
+          const caretRect = caretElem.native.getBoundingClientRect();
+          const caretLeft =
+            caretRect.left - wordsRect.left + caretRect.width / 2;
+          const caretTop = caretRect.top - wordsRect.top + caretRect.height / 2;
+          const wrapperCaretLeft =
+            caretRect.left - wordsWrapperRect.left + caretRect.width / 2;
+          const wrapperCaretTop =
+            caretRect.top - wordsWrapperRect.top + caretRect.height / 2;
+          const radius = `${getTunnelVisionRadiusPx()}px`;
 
-          words.native.style.setProperty(
+          words.native.style.setProperty("--caret-left", `${caretLeft}px`);
+          words.native.style.setProperty("--caret-top", `${caretTop}px`);
+          words.native.style.setProperty("--tunnel-radius", radius);
+
+          wordsWrapper.native.style.setProperty(
             "--caret-left",
-            `calc(${left} + ${marginLeft})`,
+            `${wrapperCaretLeft}px`,
           );
-          words.native.style.setProperty(
+          wordsWrapper.native.style.setProperty(
             "--caret-top",
-            `calc(${top} + ${marginTop})`,
+            `${wrapperCaretTop}px`,
           );
+          wordsWrapper.native.style.setProperty("--tunnel-radius", radius);
         }
         tunnelVisionAnimationFrame = requestAnimationFrame(updateCaretPos);
       };
@@ -718,9 +737,16 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         tunnelVisionAnimationFrame = null;
       }
       const words = qs("#words");
+      const wordsWrapper = qs("#wordsWrapper");
       if (words) {
         words.native.style.removeProperty("--caret-left");
         words.native.style.removeProperty("--caret-top");
+        words.native.style.removeProperty("--tunnel-radius");
+      }
+      if (wordsWrapper) {
+        wordsWrapper.native.style.removeProperty("--caret-left");
+        wordsWrapper.native.style.removeProperty("--caret-top");
+        wordsWrapper.native.style.removeProperty("--tunnel-radius");
       }
     },
   },
