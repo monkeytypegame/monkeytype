@@ -72,7 +72,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter(modal.getModal().qsr(".comment"), 250); // NOSONAR - constructor registers DOM listeners as side effect
+  new CharacterCounter(modal.getModal().qsr(".comment"), 250);
 }
 
 async function hide(): Promise<void> {
