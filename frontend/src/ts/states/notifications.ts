@@ -115,7 +115,7 @@ export function addNotificationWithLevel(
   message: string,
   level: NotificationLevel,
   options: AddNotificationOptions = {},
-): void {
+): number {
   let details = options.details;
 
   if (options.response !== undefined) {
@@ -174,13 +174,15 @@ export function addNotificationWithLevel(
     }, durationMs + 250);
     autoRemoveTimers.set(notifId, timer);
   }
+
+  return notifId;
 }
 
 export function showNoticeNotification(
   message: string,
   options?: AddNotificationOptions,
-): void {
-  addNotificationWithLevel(message, "notice", options);
+): number {
+  return addNotificationWithLevel(message, "notice", options);
 }
 
 export function showSuccessNotification(
@@ -193,6 +195,6 @@ export function showSuccessNotification(
 export function showErrorNotification(
   message: string,
   options?: AddNotificationOptions,
-): void {
-  addNotificationWithLevel(message, "error", options);
+): number {
+  return addNotificationWithLevel(message, "error", options);
 }

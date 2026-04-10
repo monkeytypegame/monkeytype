@@ -14,6 +14,7 @@ import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
+  removeNotification,
 } from "../states/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
@@ -52,6 +53,7 @@ type TimerStats = {
 };
 
 let slowTimerCount = 0;
+let slowTimerNotifIds: number[] = [];
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
@@ -282,8 +284,10 @@ function checkIfTimerIsSlow(drift: number): void {
         'This could be caused by "efficiency mode" on Microsoft Edge.',
       );
 
-      showErrorNotification(
-        "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+      slowTimerNotifIds.push(
+        showErrorNotification(
+          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+        ),
       );
 
       timerEvent.dispatch({ key: "fail", value: "slow timer" });
@@ -294,6 +298,10 @@ function checkIfTimerIsSlow(drift: number): void {
 export async function start(): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
+  for (const id of slowTimerNotifIds) {
+    removeNotification(id, "clear");
+  }
+  slowTimerNotifIds = [];
   void _startNew();
   // void _startOld();
 }
