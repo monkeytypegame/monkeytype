@@ -331,7 +331,7 @@ export async function aggregateWithAcceptedConnections<T>(
 
 function getKey(initiatorUid: string, receiverUid: string): string {
   const ids = [initiatorUid, receiverUid];
-  ids.sort();
+  ids.sort((a, b) => a.localeCompare(b));
   return ids.join("/");
 }
 

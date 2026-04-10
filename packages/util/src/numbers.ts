@@ -46,7 +46,7 @@ export function stdDev(array: number[]): number {
     const n = array.length;
     const meanValue = mean(array);
     return Math.sqrt(
-      array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b) / n,
+      array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b, 0) / n,
     );
   } catch (e) {
     return 0;

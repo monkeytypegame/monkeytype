@@ -186,7 +186,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     newConfig = newConfig.filter((it) => it !== funbox);
   } else {
     newConfig.push(funbox);
-    newConfig.sort();
+    newConfig.sort((a, b) => a.localeCompare(b));
   }
 
   if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {

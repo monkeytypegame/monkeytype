@@ -539,6 +539,7 @@ export function promiseWithResolvers<T = void>(): {
 
   const promiseLike = {
     // oxlint-disable-next-line no-thenable promise-function-async require-await
+    // NOSONAR
     async then<TResult1 = T, TResult2 = never>(
       onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
       onrejected?:
