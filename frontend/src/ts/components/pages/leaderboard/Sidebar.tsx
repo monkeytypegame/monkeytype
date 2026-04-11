@@ -149,9 +149,7 @@ function normalizeSelection(
   if (validModes === undefined) throw new Error("no valid leaderboards");
 
   if (mode === null || validModes[mode] === undefined) {
-    const firstMode = Object.keys(validModes).sort((a, b) =>
-      a < b ? -1 : a > b ? 1 : 0,
-    )[0] as Mode | undefined;
+    const firstMode = Object.keys(validModes).sort()[0] as Mode | undefined;
     if (!firstMode) {
       throw new Error(`No valid mode for type ${draft.type}`);
     }
@@ -176,9 +174,7 @@ function normalizeSelection(
   }
 
   if (!language || !supportedLanguages.includes(language)) {
-    language = supportedLanguages.sort((a, b) =>
-      a < b ? -1 : a > b ? 1 : 0,
-    )[0] as Language;
+    language = supportedLanguages.sort()[0] as Language;
   }
 
   return { ...draft, mode, mode2, language };
