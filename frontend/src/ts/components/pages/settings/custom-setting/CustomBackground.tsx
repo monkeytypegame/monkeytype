@@ -39,8 +39,9 @@ export function CustomBackground(): JSXElement {
     },
   }));
 
-  const [hasLocalBackground, { refetch }] = createResource(async () =>
-    FileStorage.hasFile("LocalBackgroundFile"),
+  const [hasLocalBackground] = createResource(
+    () => FileStorage.track("LocalBackgroundFile"),
+    async () => FileStorage.hasFile("LocalBackgroundFile"),
   );
 
   const readFileAsDataURL = async (file: File): Promise<string> => {
@@ -82,7 +83,6 @@ export function CustomBackground(): JSXElement {
                   void FileStorage.deleteFile("LocalBackgroundFile").then(
                     () => {
                       void applyCustomBackground();
-                      void refetch();
                     },
                   );
                 }}
@@ -114,7 +114,6 @@ export function CustomBackground(): JSXElement {
                     await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
 
                     void applyCustomBackground();
-                    void refetch();
 
                     fileInput.value = "";
                   }}

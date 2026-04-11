@@ -1,6 +1,6 @@
 import { Config, ConfigSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import { createResource, createSignal, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
 import { configMetadata, OptionMetadata } from "../../../config/metadata";
@@ -9,6 +9,7 @@ import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
+import fileStorage from "../../../utils/file-storage";
 // import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
@@ -37,6 +38,11 @@ import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
 export function Settings(): JSXElement {
+  const [hasLocalBg] = createResource(
+    () => fileStorage.track("LocalBackgroundFile"),
+    async () => fileStorage.hasFile("LocalBackgroundFile"),
+  );
+
   return (
     <div class="grid gap-8">
       <QuickNav />
@@ -134,7 +140,9 @@ export function Settings(): JSXElement {
           <AutoSetting key="flipTestColors" />
           <AutoSetting key="colorfulMode" />
           <CustomBackground />
-          <CustomBackgroundFilters />
+          <Show when={getConfig.customBackground !== "" || hasLocalBg()}>
+            <CustomBackgroundFilters />
+          </Show>
           <AutoSetting key="autoSwitchTheme" />
           {/* todo: auto switch theme inputs (light/dark selects) */}
           <AutoSetting key="randomTheme" wide />
