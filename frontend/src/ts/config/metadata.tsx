@@ -1082,6 +1082,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "After completing a test, the theme will be set to a random one. The random themes are not saved to your config. If set to 'favorite' only favorite themes will be randomized. If set to 'light' or 'dark', only presets with light or dark background colors will be randomized, respectively. If set to 'auto' dark or light themes are used, depending on your system theme. If set to 'custom', custom themes will be randomized.",
+    optionsMetadata: {
+      fav: {
+        displayString: "favorite",
+      },
+    },
     isBlocked: ({ value }) => {
       if (value === "custom") {
         const snapshot = DB.getSnapshot();

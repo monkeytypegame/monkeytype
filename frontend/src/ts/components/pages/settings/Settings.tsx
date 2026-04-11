@@ -17,6 +17,7 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
+import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";
 // import { Kbd } from "../../common/Kbd";
@@ -143,8 +144,7 @@ export function Settings(): JSXElement {
           <Show when={getConfig.customBackground !== "" || hasLocalBg()}>
             <CustomBackgroundFilters />
           </Show>
-          <AutoSetting key="autoSwitchTheme" />
-          {/* todo: auto switch theme inputs (light/dark selects) */}
+          <AutoSwitchTheme />
           <AutoSetting key="randomTheme" wide />
           {/* todo: theme picker (preset + custom tabs) */}
         </Section>
