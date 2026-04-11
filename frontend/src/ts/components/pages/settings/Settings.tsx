@@ -3,10 +3,13 @@ import { createForm } from "@tanstack/solid-form";
 import { createResource, createSignal, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
+import { resetConfig } from "../../../config/lifecycle";
 import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { showErrorNotification } from "../../../states/notifications";
+import { showSimpleModal } from "../../../states/simple-modal";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
@@ -17,6 +20,7 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
+import { AnimationFpsLimit } from "./custom-setting/AnimationFpsLimit";
 import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";
@@ -25,6 +29,7 @@ import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { FontFamily } from "./custom-setting/FontFamily";
 import { Funbox } from "./custom-setting/Funbox";
+import { ImportExport } from "./custom-setting/ImportExport";
 import { KeymapLayout } from "./custom-setting/KeymapLayout";
 import { KeymapSize } from "./custom-setting/KeymapSize";
 import { Language } from "./custom-setting/Language";
@@ -156,7 +161,63 @@ export function Settings(): JSXElement {
           <AutoSetting key="showAverage" />
         </Section>
         <Section title="danger zone">
+          <ImportExport />
           <AutoSetting key="ads" />
+          <Setting
+            title="update cookie preferences"
+            description="If you changed your mind about which cookies you consent to, you can change your preferences here."
+            fa={{
+              icon: "fa-cookie-bite",
+            }}
+            inputs={
+              <Button
+                class="w-full"
+                onClick={() => {
+                  showErrorNotification("//todo");
+                }}
+              >
+                open
+              </Button>
+            }
+          />
+          <AnimationFpsLimit />
+          <Setting
+            title="reset settings"
+            description={
+              <div>
+                Resets settings to the default (but doesn&apos;t touch your tags
+                and presets).
+                <br />
+                <div class="text-error">You can&apos;t undo this!</div>
+              </div>
+            }
+            fa={{
+              icon: "fa-cookie-bite",
+            }}
+            inputs={
+              <Button
+                class="w-full"
+                danger
+                onClick={() => {
+                  showSimpleModal({
+                    title: "Are you sure?",
+                    // text: "Are you sure?",
+                    buttonText: "reset",
+                    execFn: async () => {
+                      await resetConfig();
+                      await fileStorage.deleteFile("LocalBackgroundFile");
+                      return {
+                        status: "success",
+                        message: "Settings reset",
+                      };
+                    },
+                  });
+                }}
+              >
+                reset settings
+              </Button>
+            }
+          />
         </Section>
       </div>
 
