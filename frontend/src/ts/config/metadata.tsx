@@ -1163,6 +1163,10 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "hideElements",
     description: "Shows the keybind tips at the bottom of the page.",
+    optionsMetadata: {
+      true: { displayString: "show" },
+      false: { displayString: "hide" },
+    },
   },
   showOutOfFocusWarning: {
     key: "showOutOfFocusWarning",
@@ -1172,6 +1176,10 @@ export const configMetadata: ConfigMetadataObject = {
     group: "hideElements",
     description:
       "Shows an out of focus reminder after 1 second of being 'out of focus' (not being able to type).",
+    optionsMetadata: {
+      true: { displayString: "show" },
+      false: { displayString: "hide" },
+    },
   },
   capsLockWarning: {
     key: "capsLockWarning",
@@ -1180,6 +1188,10 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "hideElements",
     description: "Displays a warning when caps lock is on.",
+    optionsMetadata: {
+      true: { displayString: "show" },
+      false: { displayString: "hide" },
+    },
   },
   showAverage: {
     key: "showAverage",
