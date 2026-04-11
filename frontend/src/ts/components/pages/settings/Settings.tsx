@@ -35,6 +35,7 @@ import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
 import { PaceCaret } from "./custom-setting/PaceCaret";
 import { SoundVolume } from "./custom-setting/SoundVolume";
+import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
@@ -146,7 +147,7 @@ export function Settings(): JSXElement {
           </Show>
           <AutoSwitchTheme />
           <AutoSetting key="randomTheme" wide />
-          {/* todo: theme picker (preset + custom tabs) */}
+          <Theme />
         </Section>
         <Section title="hide elements">
           <AutoSetting key="showKeyTips" />

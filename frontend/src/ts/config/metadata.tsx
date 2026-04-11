@@ -1124,6 +1124,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
     group: "theme",
+    description: "Change the theme of the website.",
     overrideConfig: () => {
       return {
         customTheme: false,
