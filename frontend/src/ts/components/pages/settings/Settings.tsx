@@ -62,17 +62,17 @@ export function Settings(): JSXElement {
         </div>
       </Show> */}
       <AccountSettingsNotice />
-      <textarea class="h-100 resize-y bg-sub-alt">
+      <textarea class="h-20 resize-y bg-sub-alt">
         use me to align left and right size
       </textarea>
       <div>
         <Section title="behavior">
           {/* todo: tags */}
           {/* todo: presets */}
-          <AutoSetting key="resultSaving" />
-          <AutoSetting key="difficulty" />
-          <AutoSetting key="quickRestart" />
-          <AutoSetting key="repeatQuotes" />
+          {/* <AutoSetting key="resultSaving" /> */}
+          {/* <AutoSetting key="difficulty" /> */}
+          {/* <AutoSetting key="quickRestart" /> */}
+          {/* <AutoSetting key="repeatQuotes" /> */}
           <AutoSetting key="blindMode" />
           <AutoSetting key="alwaysShowWordsHistory" />
           <AutoSetting key="singleListCommandLine" />

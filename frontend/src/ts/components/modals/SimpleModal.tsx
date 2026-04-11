@@ -116,6 +116,17 @@ function FieldInput(props: {
           type={props.input.type}
           placeholder={props.input.placeholder}
           disabled={props.input.disabled}
+          readOnly={
+            props.input.type === "text"
+              ? (props.input as { readOnly?: boolean }).readOnly
+              : undefined
+          }
+          clickToSelect={
+            props.input.type === "text"
+              ? (props.input as { clickToSelect?: boolean }).clickToSelect
+              : undefined
+          }
+          class={props.input.class}
           autocomplete="off"
         />
       }
@@ -125,18 +136,25 @@ function FieldInput(props: {
           field={props.field}
           label={(props.input as { label: string }).label}
           disabled={props.input.disabled}
+          class={props.input.class}
         />
       </Match>
       <Match when={props.input.type === "textarea"}>
         <textarea
-          class="w-full"
+          class={cn("w-full", props.input.class)}
           placeholder={props.input.placeholder}
           value={props.field().state.value as string}
           disabled={props.input.disabled}
+          readOnly={(props.input as { readOnly?: boolean }).readOnly}
           autocomplete="off"
           onInput={(e) => {
             props.field().handleChange(e.currentTarget.value);
             props.input.oninput?.(e);
+          }}
+          onClick={(e) => {
+            if ((props.input as { clickToSelect?: boolean }).clickToSelect) {
+              e.currentTarget.select();
+            }
           }}
           onBlur={() => props.field().handleBlur()}
         ></textarea>
@@ -145,7 +163,11 @@ function FieldInput(props: {
         <div class="flex items-center gap-2">
           <input
             type="range"
-            class={cn(props.input.hidden && "hidden", "w-full")}
+            class={cn(
+              props.input.hidden && "hidden",
+              "w-full",
+              props.input.class,
+            )}
             min={(props.input as { min: number }).min}
             max={(props.input as { max: number }).max}
             step={(props.input as { step?: number }).step}
@@ -167,7 +189,7 @@ function FieldInput(props: {
       >
         <input
           type={props.input.type}
-          class="w-full"
+          class={cn("w-full", props.input.class)}
           value={props.field().state.value as string}
           disabled={props.input.disabled}
           min={
@@ -237,6 +259,7 @@ export function SimpleModal(): JSXElement {
       title={config()?.title}
       focusFirstInput={true}
       beforeShow={resetForm}
+      modalClass={config()?.class}
     >
       <form
         class="grid gap-4"
@@ -291,7 +314,10 @@ export function SimpleModal(): JSXElement {
             variant="button"
             class="w-full"
             text={config()?.buttonText}
-            skipDirtyCheck={(config()?.inputs?.length ?? 0) === 0}
+            skipDirtyCheck={
+              config()?.buttonAlwaysEnabled === true ||
+              (config()?.inputs?.length ?? 0) === 0
+            }
           />
         </Show>
       </form>
