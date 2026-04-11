@@ -133,3 +133,4 @@ frontend/static/webfonts-preview
 frontend/.env.sentry-build-plugin
 .claude/worktrees
 1024MiB
+.claude/settings.local.json

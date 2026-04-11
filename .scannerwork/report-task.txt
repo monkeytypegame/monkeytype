@@ -1,0 +1,6 @@
+projectKey=monkeytype
+serverUrl=http://localhost:9000
+serverVersion=26.3.0.120487
+dashboardUrl=http://localhost:9000/dashboard?id=monkeytype
+ceTaskId=64806580-c325-406c-aa9a-f7af7ef77360
+ceTaskUrl=http://localhost:9000/api/ce/task?id=64806580-c325-406c-aa9a-f7af7ef77360
