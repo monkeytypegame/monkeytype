@@ -546,6 +546,10 @@
         gap: 0.5rem;
         .button {
           transition: transform 0.125s;
+          position: relative;
+          &:hover {
+            z-index: 10;
+          }
           &:hover .themeBubbles {
             opacity: 1;
           }
