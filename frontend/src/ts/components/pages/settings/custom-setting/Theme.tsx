@@ -352,7 +352,7 @@ function Picker(props: { color: ColorName }): JSXElement {
 
   return (
     <div
-      class="grid w-full grid-cols-[auto_7rem_min-content] items-center gap-2"
+      class="grid w-full grid-cols-[1fr_1fr_min-content] items-center gap-2"
       style={{
         "--picker-bg": getTheme().bg,
         "--picker-main": getTheme().main,

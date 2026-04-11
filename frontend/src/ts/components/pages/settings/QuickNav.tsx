@@ -7,8 +7,13 @@ export function QuickNav(): JSXElement {
   const buttonClass = "px-3 py-3";
   return (
     <div>
-      {/* todo: responsiveness */}
-      <div class="mx-auto w-max rounded bg-sub-alt text-em-xs">
+      <div
+        class={cn(
+          "mx-auto rounded bg-sub-alt text-em-xs",
+          "grid w-full grid-cols-[repeat(auto-fit,minmax(12rem,1fr))]",
+          "lg:block lg:w-max lg:grid-cols-none",
+        )}
+      >
         <Button
           class={cn(buttonClass, "pl-6")}
           variant="text"
