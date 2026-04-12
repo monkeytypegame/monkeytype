@@ -284,7 +284,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const handleKeyDown = (e: KeyboardEvent): void => {
     if (e.key === "Escape" && visibility()) {
-      if (!props.closeOnEscape) return;
+      if (props.closeOnEscape === false) return;
       e.preventDefault();
       e.stopPropagation();
       if (props.onEscape) {
@@ -296,7 +296,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   };
 
   const handleBackdropClick = (e: MouseEvent): void => {
-    if (!props.closeOnWrapperClick) return;
+    if (props.closeOnWrapperClick === false) return;
     if (e.target === dialogEl()?.native) {
       if (props.onBackdropClick) {
         props.onBackdropClick(e);

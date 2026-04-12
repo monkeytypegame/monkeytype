@@ -1,7 +1,7 @@
 import { createEffect, createSignal, JSXElement } from "solid-js";
 
 import { showConsentPopup } from "../../controllers/ad-controller";
-import { setAcceptedCookies } from "../../cookies";
+import { getAcceptedCookies, setAcceptedCookies } from "../../cookies";
 import { hideModal, isModalOpen } from "../../states/modals";
 import { showErrorNotification } from "../../states/notifications";
 import { cn } from "../../utils/cn";
@@ -13,11 +13,13 @@ import { H3 } from "../common/Headers";
 export function CookiesModal(): JSXElement {
   // const isOpen = (): boolean => isModalOpen("Cookies");
   const [showSettings, setShowSettings] = createSignal(false);
-  const [accepted, setAccepted] = createSignal({
-    security: true,
-    analytics: false,
-    sentry: false,
-  });
+  const [accepted, setAccepted] = createSignal(
+    getAcceptedCookies() ?? {
+      security: true,
+      analytics: false,
+      sentry: false,
+    },
+  );
 
   createEffect(() => {
     if (!isModalOpen("Cookies")) {

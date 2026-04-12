@@ -192,7 +192,7 @@ export function Settings(): JSXElement {
               </div>
             }
             fa={{
-              icon: "fa-cookie-bite",
+              icon: "fa-undo",
             }}
             inputs={
               <Button
