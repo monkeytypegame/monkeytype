@@ -8,16 +8,19 @@ import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { hotkeys } from "../../../states/hotkeys";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
+import { isFirefox } from "../../../utils/misc";
 // import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { Kbd } from "../../common/Kbd";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
 import { AnimationFpsLimit } from "./custom-setting/AnimationFpsLimit";
@@ -53,8 +56,7 @@ export function Settings(): JSXElement {
   return (
     <div class="grid gap-8">
       <QuickNav />
-      {/* todo: bring back */}
-      {/* <Show when={getConfig.showKeyTips}>
+      <Show when={getConfig.showKeyTips}>
         <div class="text-center text-sub">
           tip: You can also change all these settings quickly using the command
           line
@@ -65,7 +67,7 @@ export function Settings(): JSXElement {
           </Show>
           )
         </div>
-      </Show> */}
+      </Show>
       <AccountSettingsNotice />
       <textarea class="h-20 resize-y bg-sub-alt">
         use me to align left and right size
@@ -74,10 +76,10 @@ export function Settings(): JSXElement {
         <Section title="behavior">
           {/* todo: tags */}
           {/* todo: presets */}
-          {/* <AutoSetting key="resultSaving" /> */}
-          {/* <AutoSetting key="difficulty" /> */}
-          {/* <AutoSetting key="quickRestart" /> */}
-          {/* <AutoSetting key="repeatQuotes" /> */}
+          <AutoSetting key="resultSaving" />
+          <AutoSetting key="difficulty" />
+          <AutoSetting key="quickRestart" />
+          <AutoSetting key="repeatQuotes" />
           <AutoSetting key="blindMode" />
           <AutoSetting key="alwaysShowWordsHistory" />
           <AutoSetting key="singleListCommandLine" />
