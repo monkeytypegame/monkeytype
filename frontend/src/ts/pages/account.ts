@@ -124,9 +124,9 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
   if (result.tags !== undefined && result.tags.length > 0) {
     tagNames = "";
     result.tags.forEach((tag) => {
-      const snaptag = getTag(tag);
-      if (snaptag !== undefined) {
-        tagNames += snaptag.display + ", ";
+      const localTag = getTag(tag);
+      if (localTag !== undefined) {
+        tagNames += localTag.display + ", ";
       }
     });
     tagNames = tagNames.substring(0, tagNames.length - 2);
@@ -983,9 +983,9 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      const snaptag = getTag(tag);
-      if (snaptag !== undefined) {
-        tagNames.push(snaptag.display);
+      const localTag = getTag(tag);
+      if (localTag !== undefined) {
+        tagNames.push(localTag.display);
       }
     }
   }
