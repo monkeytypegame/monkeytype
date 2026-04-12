@@ -69,9 +69,6 @@ export function Settings(): JSXElement {
         </div>
       </Show>
       <AccountSettingsNotice />
-      <textarea class="h-20 resize-y bg-sub-alt">
-        use me to align left and right size
-      </textarea>
       <div>
         <Section title="behavior">
           {/* todo: tags */}
