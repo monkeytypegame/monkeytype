@@ -82,7 +82,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       updateTag(tagId, (tag) => {
         tag.name = tagName;
-        tag.display = propTagName.replace(/_/g, " ");
+        tag.display = tagName.replace(/_/g, " ");
       });
 
       void Settings.update();
