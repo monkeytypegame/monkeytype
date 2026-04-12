@@ -41,6 +41,13 @@ export const tagsCollection = createCollection(
 
     queryClient,
     getKey: (it) => it._id,
+    onUpdate: async ({ transaction }) => {
+      const updatedItems = transaction.mutations.map((m) => m.modified);
+      tagsCollection.utils.writeBatch(() => {
+        updatedItems.forEach((it) => tagsCollection.utils.writeUpdate(it));
+      });
+      return { refetch: false };
+    },
     queryFn: async () => {
       return seedData;
     },
@@ -124,7 +131,7 @@ export async function deleteTag(tagId: string): Promise<void> {
 }
 
 export function getTags(): TagItem[] {
-  return tagsCollection.map((tag) => tag);
+  return [...tagsCollection.values()];
 }
 
 export function getTag(id: string): TagItem | undefined {
@@ -132,7 +139,7 @@ export function getTag(id: string): TagItem | undefined {
 }
 
 export function getActiveTags(): TagItem[] {
-  return tagsCollection.map((tag) => tag).filter((tag) => tag.active);
+  return [...tagsCollection.values()].filter((tag) => tag.active);
 }
 
 export function seedFromUserData(userTags: UserTag[]): void {
@@ -239,7 +246,13 @@ export function saveLocalTagPB<M extends Mode>(
 ): void {
   if (mode === "quote") return;
 
-  tagsCollection.update(tagId, (tag) => {
+  console.log("aaa");
+  console.log(tagsCollection.isReady());
+  console.log(tagsCollection.values());
+
+  // if (!tagsCollection.isReady()) return;
+
+  updateTag(tagId, (tag) => {
     tag.personalBests ??= {
       time: {},
       words: {},
