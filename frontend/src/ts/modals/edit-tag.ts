@@ -33,8 +33,9 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const normalized = normalizeName(propTagName);
-      const tagName = cleanTagName(normalized);
+      const tagName = TagNameSchema.parse(
+        cleanTagName(normalizeName(propTagName)),
+      );
 
       try {
         await insertTag(tagName);
