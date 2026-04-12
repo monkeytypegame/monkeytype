@@ -33,7 +33,7 @@ function toTagItem(tag: UserTag): TagItem {
 
 let seedData: TagItem[] = [];
 
-export const tagsCollection = createCollection(
+const tagsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     startSync: true,
@@ -42,10 +42,32 @@ export const tagsCollection = createCollection(
     queryClient,
     getKey: (it) => it._id,
     onUpdate: async ({ transaction }) => {
-      const updatedItems = transaction.mutations.map((m) => m.modified);
-      tagsCollection.utils.writeBatch(() => {
-        updatedItems.forEach((it) => tagsCollection.utils.writeUpdate(it));
-      });
+      const mutation = transaction.mutations[0];
+      if (mutation === undefined) return { refetch: false };
+
+      const action = (mutation.metadata as Record<string, string>)?.[
+        "action"
+      ] as string;
+
+      if (action === "updateTagName") {
+        const response = await Ape.users.editTag({
+          body: {
+            tagId: mutation.key as string,
+            newName: mutation.modified.name,
+          },
+        });
+        if (response.status !== 200) {
+          throw new Error(`Failed to update tag: ${response.body.message}`);
+        }
+      } else if (action === "clearTagPBs") {
+        const response = await Ape.users.deleteTagPersonalBest({
+          params: { tagId: mutation.key as string },
+        });
+        if (response.status !== 200) {
+          throw new Error(`Failed to clear tag PBs: ${response.body.message}`);
+        }
+      }
+
       return { refetch: false };
     },
     queryFn: async () => {
@@ -114,15 +136,36 @@ export async function insertTag(tagName: string): Promise<void> {
   await transaction.isPersisted.promise;
 }
 
-export function updateTag(
+export async function updateTagName(
   tagId: string,
-  updater: (tag: TagItem) => void,
-): void {
-  const tag = tagsCollection.get(tagId);
-  if (tag === undefined) return;
-  const copy = structuredClone(tag);
-  updater(copy);
-  tagsCollection.utils.writeUpdate(copy);
+  newName: string,
+): Promise<void> {
+  const transaction = tagsCollection.update(
+    tagId,
+    { metadata: { action: "updateTagName" } },
+    (tag) => {
+      tag.name = newName;
+      tag.display = newName.replaceAll("_", " ");
+    },
+  );
+  await transaction.isPersisted.promise;
+}
+
+export async function clearTagPBs(tagId: string): Promise<void> {
+  const transaction = tagsCollection.update(
+    tagId,
+    { metadata: { action: "clearTagPBs" } },
+    (tag) => {
+      tag.personalBests = {
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+      };
+    },
+  );
+  await transaction.isPersisted.promise;
 }
 
 export async function deleteTag(tagId: string): Promise<void> {
@@ -246,89 +289,88 @@ export function saveLocalTagPB<M extends Mode>(
 ): void {
   if (mode === "quote") return;
 
-  console.log("aaa");
-  console.log(tagsCollection.isReady());
-  console.log(tagsCollection.values());
+  const collectionTag = tagsCollection.get(tagId);
+  if (collectionTag === undefined) return;
+  const tag = structuredClone(collectionTag);
 
-  // if (!tagsCollection.isReady()) return;
+  tag.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
 
-  updateTag(tagId, (tag) => {
-    tag.personalBests ??= {
+  tag.personalBests[mode] ??= {
+    [mode2]: [],
+  };
+
+  tag.personalBests[mode][mode2] ??=
+    [] as unknown as PersonalBests[M][Mode2<M>];
+
+  try {
+    let found = false;
+
+    (tag.personalBests[mode][mode2] as unknown as PersonalBest[]).forEach(
+      (pb) => {
+        if (
+          (pb.punctuation ?? false) === punctuation &&
+          (pb.numbers ?? false) === numbers &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        ) {
+          found = true;
+          pb.wpm = wpm;
+          pb.acc = acc;
+          pb.raw = raw;
+          pb.timestamp = Date.now();
+          pb.consistency = consistency;
+          pb.lazyMode = lazyMode;
+        }
+      },
+    );
+    if (!found) {
+      (tag.personalBests[mode][mode2] as unknown as PersonalBest[]).push({
+        language,
+        difficulty,
+        lazyMode,
+        punctuation,
+        numbers,
+        wpm,
+        acc,
+        raw,
+        timestamp: Date.now(),
+        consistency,
+      });
+    }
+  } catch {
+    tag.personalBests = {
       time: {},
       words: {},
       quote: {},
       zen: {},
       custom: {},
     };
+    tag.personalBests[mode][mode2] = [
+      {
+        language,
+        difficulty,
+        lazyMode,
+        punctuation,
+        numbers,
+        wpm,
+        acc,
+        raw,
+        timestamp: Date.now(),
+        consistency,
+      },
+    ] as unknown as PersonalBests[M][Mode2<M>];
+  }
 
-    tag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
-
-    tag.personalBests[mode][mode2] ??=
-      [] as unknown as PersonalBests[M][Mode2<M>];
-
-    try {
-      let found = false;
-
-      (tag.personalBests[mode][mode2] as unknown as PersonalBest[]).forEach(
-        (pb) => {
-          if (
-            (pb.punctuation ?? false) === punctuation &&
-            (pb.numbers ?? false) === numbers &&
-            pb.difficulty === difficulty &&
-            pb.language === language &&
-            (pb.lazyMode === lazyMode ||
-              (pb.lazyMode === undefined && !lazyMode))
-          ) {
-            found = true;
-            pb.wpm = wpm;
-            pb.acc = acc;
-            pb.raw = raw;
-            pb.timestamp = Date.now();
-            pb.consistency = consistency;
-            pb.lazyMode = lazyMode;
-          }
-        },
-      );
-      if (!found) {
-        (tag.personalBests[mode][mode2] as unknown as PersonalBest[]).push({
-          language,
-          difficulty,
-          lazyMode,
-          punctuation,
-          numbers,
-          wpm,
-          acc,
-          raw,
-          timestamp: Date.now(),
-          consistency,
-        });
-      }
-    } catch {
-      tag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      tag.personalBests[mode][mode2] = [
-        {
-          language,
-          difficulty,
-          lazyMode,
-          punctuation,
-          numbers,
-          wpm,
-          acc,
-          raw,
-          timestamp: Date.now(),
-          consistency,
-        },
-      ] as unknown as PersonalBests[M][Mode2<M>];
-    }
-  });
+  // using utils.writeUpdate instead of collection.update because we dont need to send this to the API
+  // the result saving already updates the tag pb in the db
+  tagsCollection.utils.writeUpdate(tag);
 }
 
 export function updateLocalTagPB<M extends Mode>(

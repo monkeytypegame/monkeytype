@@ -1,11 +1,15 @@
-import Ape from "../ape";
 import * as DB from "../db";
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { IsValidResponse } from "../types/validation";
-import { insertTag, updateTag, deleteTag } from "../collections/tags";
+import {
+  insertTag,
+  deleteTag,
+  updateTagName,
+  clearTagPBs,
+} from "../collections/tags";
 import { normalizeName } from "../utils/strings";
 
 function errorMessage(e: unknown): string {
@@ -68,22 +72,14 @@ const actionModals: Record<Action, SimpleModal> = {
       const tagName = TagNameSchema.parse(normalizeName(propTagName));
       const tagId = _thisPopup.parameters[1] as string;
 
-      const response = await Ape.users.editTag({
-        body: { tagId, newName: tagName },
-      });
-
-      if (response.status !== 200) {
+      try {
+        await updateTagName(tagId, tagName);
+      } catch (e) {
         return {
           status: "error",
-          message: "Failed to edit tag",
-          notificationOptions: { response },
+          message: "Failed to update tag: " + errorMessage(e),
         };
       }
-
-      updateTag(tagId, (tag) => {
-        tag.name = tagName;
-        tag.display = tagName.replace(/_/g, " ");
-      });
 
       void Settings.update();
 
@@ -124,27 +120,15 @@ const actionModals: Record<Action, SimpleModal> = {
     },
     execFn: async (_thisPopup) => {
       const tagId = _thisPopup.parameters[1] as string;
-      const response = await Ape.users.deleteTagPersonalBest({
-        params: { tagId },
-      });
 
-      if (response.status !== 200) {
+      try {
+        await clearTagPBs(tagId);
+      } catch (e) {
         return {
           status: "error",
-          message: "Failed to clear tag pb",
-          notificationOptions: { response },
+          message: "Failed to clear tag PBs: " + errorMessage(e),
         };
       }
-
-      updateTag(tagId, (tag) => {
-        tag.personalBests = {
-          time: {},
-          words: {},
-          quote: {},
-          zen: {},
-          custom: {},
-        };
-      });
 
       void Settings.update();
       return { status: "success", message: `Tag PB cleared` };
