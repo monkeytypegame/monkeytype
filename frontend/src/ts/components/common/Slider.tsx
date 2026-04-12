@@ -12,7 +12,7 @@ type Props = {
 };
 
 export function Slider(props: Props): JSXElement {
-  // oxlint-disable-next-line solid/reactivity props.value only used as the initial value, not tracked
+  // oxlint-disable-next-line solid/reactivity props.value only used as the initial value, not tracked.
   const [value, setValue] = createSignal(props.value);
 
   createEffect(() => setValue(props.value));
