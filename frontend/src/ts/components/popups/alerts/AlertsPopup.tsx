@@ -12,7 +12,7 @@ export function AlertsPopup(): JSXElement {
   return (
     <AnimatedModal
       id="Alerts"
-      wrapperClass="justify-end overflow-x-hidden p-0"
+      dialogClass="justify-end overflow-x-hidden p-0"
       modalClass="h-full absolute right-0 top-0 max-w-[calc(100vw-5rem)] sm:max-w-[calc(350px+2rem)] rounded-l bg-bg sm:p-4 p-4 sm:pt-8 pt-8 block overflow-hidden"
       customAnimations={{
         show: {

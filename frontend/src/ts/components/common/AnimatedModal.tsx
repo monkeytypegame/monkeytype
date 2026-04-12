@@ -45,9 +45,14 @@ type AnimatedModalProps = ParentProps<{
   onBackdropClick?: (e: MouseEvent) => void;
   onScroll?: (e: Event) => void;
 
+  closeOnWrapperClick?: boolean;
+  closeOnEscape?: boolean;
+
   title?: string;
   modalClass?: string;
+  dialogClass?: string;
   wrapperClass?: string;
+  //todo check if wrapper and dialog can be merged into one
 }>;
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -279,6 +284,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const handleKeyDown = (e: KeyboardEvent): void => {
     if (e.key === "Escape" && visibility()) {
+      if (!props.closeOnEscape) return;
       e.preventDefault();
       e.stopPropagation();
       if (props.onEscape) {
@@ -290,6 +296,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   };
 
   const handleBackdropClick = (e: MouseEvent): void => {
+    if (!props.closeOnWrapperClick) return;
     if (e.target === dialogEl()?.native) {
       if (props.onBackdropClick) {
         props.onBackdropClick(e);
@@ -311,12 +318,17 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       ref={dialogRef}
       class={cn(
         "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
-        props.wrapperClass,
+        props.dialogClass,
       )}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div class="pointer-events-none flex h-full w-full items-center justify-center">
+      <div
+        class={cn(
+          "pointer-events-none flex h-full w-full items-center justify-center",
+          props.wrapperClass,
+        )}
+      >
         <div
           class={cn(
             "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",

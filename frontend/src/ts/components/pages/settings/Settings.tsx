@@ -8,7 +8,7 @@ import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { showErrorNotification } from "../../../states/notifications";
+import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
@@ -173,7 +173,7 @@ export function Settings(): JSXElement {
               <Button
                 class="w-full"
                 onClick={() => {
-                  showErrorNotification("//todo");
+                  showModal("Cookies");
                 }}
               >
                 open
