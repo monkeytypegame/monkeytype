@@ -1268,9 +1268,9 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      const snaptag = getTag(tag);
-      if (snaptag !== undefined) {
-        tagNames.push(snaptag.display);
+      const localTag = getTag(tag);
+      if (localTag !== undefined) {
+        tagNames.push(localTag.display);
       }
     }
   }
