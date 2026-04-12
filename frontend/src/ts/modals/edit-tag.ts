@@ -16,7 +16,6 @@ function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
-const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
   const validationResult = TagNameSchema.safeParse(normalizeName(tagName));
   if (validationResult.success) return true;
@@ -37,9 +36,7 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = TagNameSchema.parse(
-        cleanTagName(normalizeName(propTagName)),
-      );
+      const tagName = TagNameSchema.parse(normalizeName(propTagName));
 
       try {
         await insertTag(tagName);
