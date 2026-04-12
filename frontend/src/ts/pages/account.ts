@@ -433,8 +433,6 @@ async function fillContent(): Promise<void> {
         //tags exist
         const validTags = getTags().map((t) => t._id);
 
-        if (validTags === undefined) return;
-
         result.tags.forEach((tag) => {
           //check if i even need to check tags anymore
           if (!tagHide) return;
