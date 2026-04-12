@@ -8,6 +8,7 @@ import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { isAuthenticated } from "../../../states/core";
 import { hotkeys } from "../../../states/hotkeys";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
@@ -73,7 +74,9 @@ export function Settings(): JSXElement {
         <Section title="behavior">
           {/* todo: tags */}
           {/* todo: presets */}
-          <AutoSetting key="resultSaving" />
+          <Show when={isAuthenticated()}>
+            <AutoSetting key="resultSaving" />
+          </Show>
           <AutoSetting key="difficulty" />
           <AutoSetting key="quickRestart" />
           <AutoSetting key="repeatQuotes" />
