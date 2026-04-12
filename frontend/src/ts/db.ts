@@ -202,7 +202,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       const presetsWithDisplay = presetsData.map((preset) => {
         return {
           ...preset,
-          display: preset.name.replace(/_/gi, " "),
+          display: preset.name.replace(/_/g, " "),
         };
       }) as SnapshotPreset[];
       snap.presets = presetsWithDisplay;

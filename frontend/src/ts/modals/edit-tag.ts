@@ -6,6 +6,7 @@ import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { IsValidResponse } from "../types/validation";
 import { insertTag, updateTag, deleteTag } from "../collections/tags";
+import { normalizeName } from "../utils/strings";
 
 function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
@@ -13,7 +14,7 @@ function errorMessage(e: unknown): string {
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
-  const validationResult = TagNameSchema.safeParse(cleanTagName(tagName));
+  const validationResult = TagNameSchema.safeParse(normalizeName(tagName));
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
 };
@@ -32,7 +33,8 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = cleanTagName(propTagName);
+      const normalized = normalizeName(propTagName);
+      const tagName = cleanTagName(normalized);
 
       try {
         await insertTag(tagName);
@@ -62,7 +64,7 @@ const actionModals: Record<Action, SimpleModal> = {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
     },
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = cleanTagName(propTagName);
+      const tagName = TagNameSchema.parse(normalizeName(propTagName));
       const tagId = _thisPopup.parameters[1] as string;
 
       const response = await Ape.users.editTag({
@@ -79,7 +81,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       updateTag(tagId, (tag) => {
         tag.name = tagName;
-        tag.display = propTagName;
+        tag.display = propTagName.replace(/_/g, " ");
       });
 
       void Settings.update();

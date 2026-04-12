@@ -27,6 +27,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { ElementWithUtils } from "../utils/dom";
 import { configMetadata } from "../config/metadata";
 import { getConfigChanges as getConfigChangesFromConfig } from "../config/utils";
+import { normalizeName } from "../utils/strings";
 
 const state = {
   presetType: "full" as PresetType,
@@ -47,7 +48,12 @@ export function show(action: string, id?: string, name?: string): void {
       presetNameEl ??= new ValidatedHtmlInputElement(
         modalEl.qsr("input[type=text]"),
         {
-          schema: PresetNameSchema,
+          isValid: async (name) => {
+            const parsed = PresetNameSchema.safeParse(normalizeName(name));
+            if (parsed.success) return true;
+            return parsed.error.errors.map((err) => err.message).join(", ");
+          },
+          debounceDelay: 0,
         },
       );
       if (action === "add") {
@@ -67,7 +73,7 @@ export function show(action: string, id?: string, name?: string): void {
         modalEl.setAttribute("data-preset-id", id);
         modalEl.qsr(".popupTitle").setHtml("Edit preset");
         modalEl.qsr(".submit").setHtml(`save`);
-        presetNameEl?.setValue(name.replaceAll(" ", "_"));
+        presetNameEl?.setValue(name);
         presetNameEl?.getParent()?.show();
 
         modalEl.qsa("input").show();
@@ -222,7 +228,7 @@ function hide(): void {
 async function apply(): Promise<void> {
   const modalEl = modal.getModal();
   const action = modalEl.getAttribute("data-action");
-  const presetName = modalEl
+  const propPresetName = modalEl
     .qsr<HTMLInputElement>(".group input[title='presets']")
     .getValue() as string;
   const presetId = modalEl.getAttribute("data-preset-id") as string;
@@ -249,21 +255,23 @@ async function apply(): Promise<void> {
   }
 
   const addOrEditAction = action === "add" || action === "edit";
-  if (addOrEditAction) {
-    //validate the preset name only in add or edit mode
 
-    const noPresetName: boolean =
-      presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
-    if (noPresetName) {
-      showNoticeNotification("Preset name cannot be empty");
-      return;
-    }
-
-    if (presetNameEl?.getValidationResult().status === "failed") {
-      showNoticeNotification("Preset name is not valid");
-      return;
-    }
+  if (addOrEditAction && propPresetName.trim().length === 0) {
+    showNoticeNotification("Preset name cannot be empty");
+    return;
   }
+
+  const cleanedPresetName = normalizeName(propPresetName);
+  const parsedPresetName = addOrEditAction
+    ? PresetNameSchema.safeParse(cleanedPresetName)
+    : null;
+
+  if (parsedPresetName && !parsedPresetName.success) {
+    showNoticeNotification("Preset name is not valid");
+    return;
+  }
+
+  const presetName = parsedPresetName?.data ?? "";
 
   hide();
 
@@ -292,7 +300,7 @@ async function apply(): Promise<void> {
         ...(state.presetType === "partial" && {
           settingGroups: activeSettingGroups,
         }),
-        display: presetName.replaceAll("_", " "),
+        display: presetName.replace(/_/g, " "),
         _id: response.body.data.presetId,
       } as SnapshotPreset);
     }
@@ -324,7 +332,7 @@ async function apply(): Promise<void> {
       showSuccessNotification("Preset updated");
 
       preset.name = presetName;
-      preset.display = presetName.replaceAll("_", " ");
+      preset.display = presetName.replace(/_/g, " ");
       if (updateConfig) {
         preset.config = configChanges;
         if (state.presetType === "partial") {

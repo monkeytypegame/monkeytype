@@ -174,7 +174,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (Config.keymapMode === "react") {
     flash(data, correct);
   }
-  if (testInput.length === 0) {
+  if (testInput.length === 0 && !isCompositionEnding) {
     TestInput.setBurstStart(now);
   }
   if (!shouldGoToNextWord) {
