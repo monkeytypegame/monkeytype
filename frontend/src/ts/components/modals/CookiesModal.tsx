@@ -11,7 +11,6 @@ import { Button } from "../common/Button";
 import { H3 } from "../common/Headers";
 
 export function CookiesModal(): JSXElement {
-  // const isOpen = (): boolean => isModalOpen("Cookies");
   const [showSettings, setShowSettings] = createSignal(false);
   const [accepted, setAccepted] = createSignal(
     getAcceptedCookies() ?? {
