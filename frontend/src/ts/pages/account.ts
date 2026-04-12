@@ -437,7 +437,7 @@ async function fillContent(): Promise<void> {
           //check if i even need to check tags anymore
           if (!tagHide) return;
           //check if tag is valid
-          if (validTags?.includes(tag)) {
+          if (validTags.includes(tag)) {
             //tag valid, check if filter is on
             if (ResultFilters.getFilter("tags", tag)) tagHide = false;
           } else {
