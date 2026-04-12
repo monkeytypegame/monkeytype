@@ -50,6 +50,7 @@ import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
+import { showModal } from "./states/modals";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -81,6 +82,7 @@ Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
   CookiesModal.show();
+  showModal("Cookies");
 }
 void init(onAuthStateChanged).then(() => {
   if (accepted !== null) {

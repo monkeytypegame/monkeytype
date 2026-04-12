@@ -1,8 +1,8 @@
-import { createEffect, createSignal, JSXElement, onMount } from "solid-js";
+import { createEffect, createSignal, JSXElement } from "solid-js";
 
 import { showConsentPopup } from "../../controllers/ad-controller";
 import { setAcceptedCookies } from "../../cookies";
-import { hideModal, isModalOpen, showModal } from "../../states/modals";
+import { hideModal, isModalOpen } from "../../states/modals";
 import { showErrorNotification } from "../../states/notifications";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -17,12 +17,6 @@ export function CookiesModal(): JSXElement {
     security: true,
     analytics: false,
     sentry: false,
-  });
-
-  onMount(() => {
-    setTimeout(() => {
-      showModal("Cookies");
-    }, 100);
   });
 
   createEffect(() => {
