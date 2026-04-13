@@ -15,6 +15,7 @@ import {
 } from "../collections/tags";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
+import * as ModesNotice from "../elements/modes-notice";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
@@ -46,6 +47,7 @@ export async function apply(_id: string): Promise<void> {
       saveActiveToLocalStorage();
     }
   }
+  void ModesNotice.update();
   TestLogic.restart();
   showSuccessNotification("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
