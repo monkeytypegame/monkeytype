@@ -195,7 +195,14 @@ export function seedFromUserData(userTags: UserTag[]): void {
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  void queryClient.invalidateQueries({ queryKey: queryKeys.root() });
+  tagsCollection.utils.writeBatch(() => {
+    tagsCollection.forEach((tag) => {
+      tagsCollection.utils.writeDelete(tag._id);
+    });
+    seedData.forEach((item) => {
+      tagsCollection.utils.writeInsert(item);
+    });
+  });
 }
 
 // --- Active state ---
