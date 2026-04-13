@@ -327,6 +327,106 @@ export function areCharactersVisuallyEqual(
   return false;
 }
 
+// put rules with longer patterns first
+const ACCENT_RULES = [
+  ["َّ", "َّ"],
+  ["ًّ", "ًّ"],
+  ["ُّ", "ُّ"],
+  ["ٌّ", "ٌّ"],
+  ["ِّ", "ِّ"],
+  ["ٍّ", "ٍّ"],
+];
+const LANGUAGE_ACCENT_RULES: Partial<Record<Language, string[][]>> = {
+  // rules with longer patterns first
+  arabic: [
+    ["ّاً", "ًّا", "ًّا"],
+    ["اً", "ًا"],
+  ],
+};
+
+/**
+ * Checks if there is a mismatch in patterns between 2 words: input and target word.
+ * A mismatch is when those words contain different patterns that are considered
+ * equivalent according to pre-determined set of rules, at the same position.
+ * The target word needs to have the full pattern, but the input only
+ * needs to end with the first part of the pattern.
+ * The rules have the following priority (from highest to lowest): language-specific
+ * rules - rules with longest pattern - rules having the longest overlap with input.
+ * If the input matches 2 patterns within a rule, earliest pattern is returned.
+ * @param input input word to check if it ends with pattern
+ * @param targetWord target word to check if it contains pattern
+ * @param language optional language to check for language-specific rules
+ * @returns an object containing the input pattern with its start position if there
+ * is a mismatch, null otherwise (having no equivalent patterns, or the same pattern)
+ */
+export function checkAccentOrderMismatch(
+  input: string,
+  targetWord: string,
+  language?: Language,
+): { inputPattern: string; patternStart: number } | null {
+  const accentRules: string[][] = [];
+  if (language !== undefined) {
+    const langRules = LANGUAGE_ACCENT_RULES[removeLanguageSize(language)];
+    if (langRules !== undefined) accentRules.push(...langRules);
+  }
+  accentRules.push(...ACCENT_RULES);
+  return _checkAccentOrderMismatchWithRules(input, targetWord, accentRules);
+}
+
+function _checkAccentOrderMismatchWithRules(
+  input: string,
+  targetWord: string,
+  accentRules: string[][],
+): { inputPattern: string; patternStart: number } | null {
+  const minWordsLength = Math.min(input.length, targetWord.length);
+
+  for (const rule of accentRules) {
+    const patternLength = rule[0]?.length ?? 0;
+    const minLength = Math.min(patternLength, minWordsLength);
+
+    for (let overlapLen = minLength; overlapLen >= 1; overlapLen--) {
+      let inputPattern: string | null = null;
+      let wordPattern: string | null = null;
+      let patternStart: number | null = null;
+
+      let mismatch;
+      const checkMismatch = (): {
+        inputPattern: string;
+        patternStart: number;
+      } | null => {
+        if (
+          inputPattern !== null &&
+          patternStart !== null &&
+          wordPattern !== null &&
+          inputPattern !== wordPattern
+        ) {
+          return { inputPattern, patternStart };
+        }
+        return null;
+      };
+
+      const overlap = input.slice(-overlapLen);
+      const matchStart = input.length - overlapLen;
+      const matchEnd = matchStart + patternLength;
+      const wordSlice = targetWord.slice(matchStart, matchEnd);
+
+      for (const pattern of rule) {
+        if (inputPattern === null && pattern.startsWith(overlap)) {
+          inputPattern = pattern;
+          patternStart = matchStart;
+          // same pattern in both, no mismatch
+          if (wordSlice === pattern) return null;
+        } else if (wordSlice === pattern) {
+          wordPattern = pattern;
+        }
+        if ((mismatch = checkMismatch())) return mismatch;
+      }
+    }
+  }
+
+  return null;
+}
+
 export function toHex(buffer: ArrayBuffer): string {
   const u8 = new Uint8Array(buffer);
 
@@ -380,4 +480,7 @@ export function isSpace(char: string): boolean {
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,
+  ACCENT_RULES,
+  LANGUAGE_ACCENT_RULES,
+  _checkAccentOrderMismatchWithRules,
 };
