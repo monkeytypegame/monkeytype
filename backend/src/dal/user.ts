@@ -589,7 +589,7 @@ export async function updateLastHashes(
     { uid },
     {
       $set: {
-        lastResultHashes: lastHashes, //TODO fix typo
+        lastResultHashes: lastHashes,
       },
     },
   );
