@@ -41,53 +41,6 @@ const presetsCollection = createCollection(
     queryFn: async () => {
       return [] as PresetItem[];
     },
-    onInsert: async ({ transaction }) => {
-      const newItems = transaction.mutations.map((m) => m.modified);
-
-      const serverItems = await Promise.all(
-        newItems.map(async (it) => {
-          const response = await Ape.presets.add({
-            body: {
-              name: it.name,
-              config: it.config,
-              ...(it.settingGroups !== undefined &&
-                it.settingGroups !== null && {
-                  settingGroups: it.settingGroups,
-                }),
-            },
-          });
-          if (response.status !== 200) {
-            throw new Error(`Failed to add preset: ${response.body.message}`);
-          }
-          return toPresetItem({
-            ...it,
-            _id: response.body.data.presetId,
-          });
-        }),
-      );
-
-      presetsCollection.utils.writeBatch(() => {
-        serverItems.forEach((it) => presetsCollection.utils.writeInsert(it));
-      });
-      return { refetch: false };
-    },
-    onDelete: async ({ transaction }) => {
-      const ids = transaction.mutations.map((it) => it.key as string);
-
-      await Promise.all(
-        ids.map(async (id) => {
-          const response = await Ape.presets.delete({
-            params: { presetId: id },
-          });
-          if (response.status !== 200) {
-            throw new Error(
-              `Failed to delete preset: ${response.body.message}`,
-            );
-          }
-        }),
-      );
-      return { refetch: false };
-    },
   }),
 );
 
@@ -130,6 +83,14 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to add preset: ${response.body.message}`);
       }
+      presetsCollection.utils.writeInsert(
+        toPresetItem({
+          _id: response.body.data.presetId,
+          name: name,
+          settingGroups: settingGroups,
+          config: config,
+        }),
+      );
     },
   }),
   editPreset: createOptimisticAction<ActionType["editPreset"]>({
@@ -166,17 +127,6 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to edit preset: ${response.body.message}`);
       }
-
-      // todo: is this actually not needed?
-      // presetsCollection.utils.writeBatch(() => {
-      //   presetsCollection.utils.writeUpdate({
-      //     ...existing,
-      //     name,
-      //     display: name.replaceAll("_", " "),
-      //     ...(config !== undefined && { config }),
-      //     ...(settingGroups !== undefined && { settingGroups }),
-      //   });
-      // });
     },
   }),
   deletePreset: createOptimisticAction<ActionType["deletePreset"]>({
@@ -190,6 +140,7 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to delete preset: ${response.body.message}`);
       }
+      presetsCollection.delete(presetId);
     },
   }),
 };
