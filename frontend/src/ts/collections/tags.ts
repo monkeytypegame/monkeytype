@@ -1,6 +1,10 @@
 import { UserTag } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection, useLiveQuery } from "@tanstack/solid-db";
+import {
+  createCollection,
+  createOptimisticAction,
+  useLiveQuery,
+} from "@tanstack/solid-db";
 import { z } from "zod";
 import Ape from "../ape";
 import { queryClient } from "../queries";
@@ -31,8 +35,6 @@ function toTagItem(tag: UserTag): TagItem {
   };
 }
 
-let seedData: TagItem[] = [];
-
 const tagsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
@@ -41,135 +43,138 @@ const tagsCollection = createCollection(
 
     queryClient,
     getKey: (it) => it._id,
-    onUpdate: async ({ transaction }) => {
-      const mutation = transaction.mutations[0];
-      if (mutation === undefined) return { refetch: false };
-
-      const action = (mutation.metadata as Record<string, string>)?.[
-        "action"
-      ] as string;
-
-      if (action === "updateTagName") {
-        const response = await Ape.users.editTag({
-          body: {
-            tagId: mutation.key as string,
-            newName: mutation.modified.name,
-          },
-        });
-        if (response.status !== 200) {
-          throw new Error(`Failed to update tag: ${response.body.message}`);
-        }
-      } else if (action === "clearTagPBs") {
-        const response = await Ape.users.deleteTagPersonalBest({
-          params: { tagId: mutation.key as string },
-        });
-        if (response.status !== 200) {
-          throw new Error(`Failed to clear tag PBs: ${response.body.message}`);
-        }
-      }
-
-      return { refetch: false };
-    },
     queryFn: async () => {
-      return seedData;
-    },
-    onInsert: async ({ transaction }) => {
-      const newItems = transaction.mutations.map((m) => m.modified);
-
-      const serverItems = await Promise.all(
-        newItems.map(async (it) => {
-          const response = await Ape.users.createTag({
-            body: { tagName: it.name },
-          });
-          if (response.status !== 200) {
-            throw new Error(`Failed to add tag: ${response.body.message}`);
-          }
-          return toTagItem(response.body.data);
-        }),
-      );
-
-      tagsCollection.utils.writeBatch(() => {
-        serverItems.forEach((it) => tagsCollection.utils.writeInsert(it));
-      });
-      return { refetch: false };
-    },
-    onDelete: async ({ transaction }) => {
-      const ids = transaction.mutations.map((it) => it.key as string);
-
-      await Promise.all(
-        ids.map(async (id) => {
-          const response = await Ape.users.deleteTag({
-            params: { tagId: id },
-          });
-          if (response.status !== 200) {
-            throw new Error(`Failed to delete tag: ${response.body.message}`);
-          }
-        }),
-      );
-
-      tagsCollection.utils.writeBatch(() => {
-        ids.forEach((id) => tagsCollection.utils.writeDelete(id));
-      });
-      return { refetch: false };
+      return [] as TagItem[];
     },
   }),
 );
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
-export const useTagsLiveQuery = () =>
-  useLiveQuery((q) => {
-    return q.from({
-      collection: tagsCollection,
-    });
+export function useTagsLiveQuery() {
+  return useLiveQuery((q) => {
+    return q.from({ tag: tagsCollection }).select((t) => ({ ...t }));
   });
+}
 
-// --- CRUD helpers ---
+type ActionType = {
+  insertTag: {
+    name: string;
+  };
+  updateTagName: {
+    tagId: string;
+    newName: string;
+  };
+  clearTagPBs: {
+    tagId: string;
+  };
+  deleteTag: {
+    tagId: string;
+  };
+};
 
-export async function insertTag(tagName: string): Promise<void> {
-  const transaction = tagsCollection.insert({
-    _id: crypto.randomUUID(),
-    name: tagName,
-    personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
-    active: false,
-    display: tagName.replaceAll("_", " "),
-  });
+const actions = {
+  insertTag: createOptimisticAction<ActionType["insertTag"]>({
+    onMutate: ({ name }) => {
+      tagsCollection.insert({
+        _id: "temp-" + Date.now(),
+        name,
+        personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
+        active: false,
+        display: name.replaceAll("_", " "),
+      });
+    },
+    mutationFn: async ({ name }) => {
+      const response = await Ape.users.createTag({
+        body: { tagName: name },
+      });
+      if (response.status !== 200) {
+        throw new Error(`Failed to add tag: ${response.body.message}`);
+      }
+      const newTag = toTagItem(response.body.data);
+
+      tagsCollection.utils.writeInsert(newTag);
+    },
+  }),
+  updateTagName: createOptimisticAction<ActionType["updateTagName"]>({
+    onMutate: ({ tagId, newName }) => {
+      tagsCollection.update(tagId, (tag) => {
+        tag.name = newName;
+        tag.display = newName.replaceAll("_", " ");
+      });
+    },
+    mutationFn: async ({ tagId, newName }) => {
+      const response = await Ape.users.editTag({
+        body: { tagId, newName },
+      });
+      if (response.status !== 200) {
+        throw new Error(`Failed to update tag: ${response.body.message}`);
+      }
+    },
+  }),
+  clearTagPBs: createOptimisticAction<ActionType["clearTagPBs"]>({
+    onMutate: ({ tagId }) => {
+      tagsCollection.update(tagId, (tag) => {
+        tag.personalBests = {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+        };
+      });
+    },
+    mutationFn: async ({ tagId }) => {
+      const response = await Ape.users.deleteTagPersonalBest({
+        params: { tagId },
+      });
+      if (response.status !== 200) {
+        throw new Error(`Failed to clear tag PBs: ${response.body.message}`);
+      }
+    },
+  }),
+  deleteTag: createOptimisticAction<ActionType["deleteTag"]>({
+    onMutate: ({ tagId }) => {
+      tagsCollection.delete(tagId);
+    },
+    mutationFn: async ({ tagId }) => {
+      const response = await Ape.users.deleteTag({
+        params: { tagId },
+      });
+      if (response.status !== 200) {
+        throw new Error(`Failed to delete tag: ${response.body.message}`);
+      }
+      tagsCollection.utils.writeDelete(tagId);
+    },
+  }),
+};
+
+// --- Public API ---
+
+export async function insertTag(
+  params: ActionType["insertTag"],
+): Promise<void> {
+  const transaction = actions.insertTag(params);
   await transaction.isPersisted.promise;
 }
 
 export async function updateTagName(
-  tagId: string,
-  newName: string,
+  params: ActionType["updateTagName"],
 ): Promise<void> {
-  const transaction = tagsCollection.update(
-    tagId,
-    { metadata: { action: "updateTagName" } },
-    (tag) => {
-      tag.name = newName;
-      tag.display = newName.replaceAll("_", " ");
-    },
-  );
+  const transaction = actions.updateTagName(params);
   await transaction.isPersisted.promise;
 }
 
-export async function clearTagPBs(tagId: string): Promise<void> {
-  const transaction = tagsCollection.update(
-    tagId,
-    { metadata: { action: "clearTagPBs" } },
-    (tag) => {
-      tag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-    },
-  );
+export async function clearTagPBs(
+  params: ActionType["clearTagPBs"],
+): Promise<void> {
+  const transaction = actions.clearTagPBs(params);
   await transaction.isPersisted.promise;
 }
 
-export async function deleteTag(tagId: string): Promise<void> {
-  const transaction = tagsCollection.delete(tagId);
+export async function deleteTag(
+  params: ActionType["deleteTag"],
+): Promise<void> {
+  const transaction = actions.deleteTag(params);
   await transaction.isPersisted.promise;
 }
 
@@ -185,10 +190,10 @@ export function getActiveTags(): TagItem[] {
   return [...tagsCollection.values()].filter((tag) => tag.active);
 }
 
-export function seedFromUserData(userTags: UserTag[]): void {
+export function fillTagsCollection(userTags: UserTag[]): void {
   const activeIds = activeTagsLS.get();
 
-  seedData = userTags
+  const tagItems = userTags
     .map((tag) => ({
       ...toTagItem(tag),
       active: activeIds.includes(tag._id),
@@ -199,7 +204,7 @@ export function seedFromUserData(userTags: UserTag[]): void {
     tagsCollection.forEach((tag) => {
       tagsCollection.utils.writeDelete(tag._id);
     });
-    seedData.forEach((item) => {
+    tagItems.forEach((item) => {
       tagsCollection.utils.writeInsert(item);
     });
   });

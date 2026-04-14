@@ -39,7 +39,8 @@ const actionModals: Record<Action, SimpleModal> = {
       const tagName = TagNameSchema.parse(normalizeName(propTagName));
 
       try {
-        await insertTag(tagName);
+        //todo: do we await? if we do, optimistic updates are kinda pointless?
+        await insertTag({ name: tagName });
       } catch (e) {
         return {
           status: "error",
@@ -70,7 +71,7 @@ const actionModals: Record<Action, SimpleModal> = {
       const tagId = _thisPopup.parameters[1] as string;
 
       try {
-        await updateTagName(tagId, tagName);
+        await updateTagName({ tagId, newName: tagName });
       } catch (e) {
         return {
           status: "error",
@@ -94,7 +95,7 @@ const actionModals: Record<Action, SimpleModal> = {
       const tagId = _thisPopup.parameters[1] as string;
 
       try {
-        await deleteTag(tagId);
+        await deleteTag({ tagId });
       } catch (e) {
         return {
           status: "error",
@@ -119,7 +120,7 @@ const actionModals: Record<Action, SimpleModal> = {
       const tagId = _thisPopup.parameters[1] as string;
 
       try {
-        await clearTagPBs(tagId);
+        await clearTagPBs({ tagId });
       } catch (e) {
         return {
           status: "error",
