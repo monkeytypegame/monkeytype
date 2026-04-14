@@ -23,7 +23,6 @@ import {
 import {
   getDefaultSnapshot,
   Snapshot,
-  SnapshotPreset,
   SnapshotResult,
   SnapshotUserTag,
 } from "./constants/default-snapshot";
@@ -42,6 +41,7 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
+import { seedFromUserData as seedPresetsFromUserData } from "./collections/presets";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -231,27 +231,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       }
     });
 
-    if (presetsData !== undefined && presetsData !== null) {
-      const presetsWithDisplay = presetsData.map((preset) => {
-        return {
-          ...preset,
-          display: preset.name.replace(/_/g, " "),
-        };
-      }) as SnapshotPreset[];
-      snap.presets = presetsWithDisplay;
-
-      snap.presets = snap.presets?.sort(
-        (a: SnapshotPreset, b: SnapshotPreset) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        },
-      );
-    }
+    seedPresetsFromUserData(presetsData ?? []);
 
     snap.connections = convertConnections(connectionsData);
 
