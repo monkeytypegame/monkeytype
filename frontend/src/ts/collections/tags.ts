@@ -52,7 +52,7 @@ const tagsCollection = createCollection(
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useTagsLiveQuery() {
   return useLiveQuery((q) => {
-    return q.from({ tag: tagsCollection }).select((t) => ({ ...t }));
+    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
   });
 }
 
