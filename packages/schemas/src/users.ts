@@ -89,7 +89,7 @@ function profileDetailsBase(
     .transform((value) => (value === null ? undefined : value));
 }
 
-export const TwitterProfileSchema = profileDetailsBase(slug().max(20)).or(
+export const TwitterProfileSchema = profileDetailsBase(slug().max(15)).or(
   z.literal(""),
 );
 
