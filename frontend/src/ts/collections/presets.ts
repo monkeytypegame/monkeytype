@@ -55,6 +55,13 @@ const presetsCollection = createCollection(
         }
       }
 
+      transaction.mutations.forEach((mutation) => {
+        presetsCollection.utils.writeUpdate({
+          ...mutation.original,
+          ...mutation.changes,
+        });
+      });
+
       return { refetch: false };
     },
     queryFn: async () => {
@@ -167,8 +174,6 @@ export async function editPreset(
       preset.name = name;
       preset.display = name.replaceAll("_", " ");
 
-      //todo: config doesnt seem to get updated. related to objects?
-
       if (config !== undefined) {
         preset.config = config;
       }
@@ -177,8 +182,6 @@ export async function editPreset(
       }
     },
   );
-
-  console.log("transaction", transaction);
 
   await transaction.isPersisted.promise;
 }
