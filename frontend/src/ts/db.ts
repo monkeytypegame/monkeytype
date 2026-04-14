@@ -41,7 +41,7 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
-import { seedFromUserData as seedPresetsFromUserData } from "./collections/presets";
+import { fillPresetsCollection } from "./collections/presets";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -231,7 +231,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       }
     });
 
-    seedPresetsFromUserData(presetsData ?? []);
+    fillPresetsCollection(presetsData ?? []);
 
     snap.connections = convertConnections(connectionsData);
 

@@ -281,11 +281,12 @@ async function apply(): Promise<void> {
     if (action === "add") {
       const configChanges = getConfigChanges();
       const activeSettingGroups = getActiveSettingGroupsFromState();
-      await addPreset(
-        presetName,
-        configChanges,
-        state.presetType === "partial" ? activeSettingGroups : undefined,
-      );
+      await addPreset({
+        name: presetName,
+        config: configChanges,
+        settingGroups:
+          state.presetType === "partial" ? activeSettingGroups : undefined,
+      });
       showSuccessNotification("Preset added", { durationMs: 2000 });
     } else if (action === "edit") {
       const existing = getPreset(presetId);
@@ -298,15 +299,15 @@ async function apply(): Promise<void> {
         state.presetType === "partial"
           ? getActiveSettingGroupsFromState()
           : null;
-      await editPreset(
+      await editPreset({
         presetId,
-        presetName,
-        updateConfig ? configChanges : undefined,
-        updateConfig ? activeSettingGroups : undefined,
-      );
+        name: presetName,
+        config: updateConfig ? configChanges : undefined,
+        settingGroups: updateConfig ? activeSettingGroups : undefined,
+      });
       showSuccessNotification("Preset updated");
     } else if (action === "remove") {
-      await deletePreset(presetId);
+      await deletePreset({ presetId });
       showSuccessNotification("Preset removed");
     }
   } catch (e) {
