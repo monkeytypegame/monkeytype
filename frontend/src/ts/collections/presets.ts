@@ -55,10 +55,12 @@ const presetsCollection = createCollection(
         }
       }
 
-      transaction.mutations.forEach((mutation) => {
-        presetsCollection.utils.writeUpdate({
-          ...mutation.original,
-          ...mutation.changes,
+      presetsCollection.utils.writeBatch(() => {
+        transaction.mutations.forEach((mutation) => {
+          presetsCollection.utils.writeUpdate({
+            ...mutation.original,
+            ...mutation.changes,
+          });
         });
       });
 
