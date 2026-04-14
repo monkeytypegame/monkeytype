@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { migrate } from "../../../__migration__/lasgit tResultHashes";
+import { migrate } from "../../../__migration__/lastResultHashes";
 import * as DB from "../../../src/init/db";
 
 describe("lastResultHashes migration", () => {
