@@ -144,6 +144,7 @@ export const PlaySoundOnClickSchema = z.enum([
   "14",
   "15",
   "16",
+  "17",
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 
