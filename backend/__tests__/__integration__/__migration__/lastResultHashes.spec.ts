@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { migrate } from "../../../../__migration__/lastResultHashes"; // Adjust this path if needed to point to your script
-import * as DB from "../../../../src/init/db";
+import { migrate } from "../../../__migration__/lasgit tResultHashes";
+import * as DB from "../../../src/init/db";
 
 describe("lastResultHashes migration", () => {
   const collectionName = "users";
