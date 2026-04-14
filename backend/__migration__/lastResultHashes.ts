@@ -1,17 +1,21 @@
 import "dotenv/config";
 import * as DB from "../src/init/db";
-import { Collection } from "mongodb";
+import { Collection, Filter } from "mongodb";
 
 import readlineSync from "readline-sync";
 import { DBUser } from "../src/dal/user";
 
+type MigrationDBUser = DBUser & {
+  lastReultHashes?: string[];
+};
+
 const batchSize = 1000;
 
 let appRunning = true;
-let userCollection: Collection<DBUser>;
+let userCollection: Collection<MigrationDBUser>;
 
 // Only documents that still carry the misspelled field need migrating.
-const filter = { lastReultHashes: { $exists: true } };
+const filter: Filter<MigrationDBUser> = { lastReultHashes: { $exists: true } };
 
 process.on("SIGINT", () => {
   console.log("\nshutting down...");
