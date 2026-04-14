@@ -140,7 +140,7 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to delete preset: ${response.body.message}`);
       }
-      presetsCollection.delete(presetId);
+      presetsCollection.utils.writeDelete(presetId);
     },
   }),
 };
