@@ -955,6 +955,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   const widthRemovedFromLine: number[] = [];
   const afterNewlinesNewMargins: number[] = [];
   const toRemove: ElementWithUtils[] = [];
+  let removedAfterNewlines = 0;
 
   /* remove leading `.afterNewline` elements */
   for (const child of wordsChildrenArr) {
@@ -970,6 +971,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       toRemove.push(child);
       leadingNewLine = true;
       lastAfterNewLineElement = child;
+      removedAfterNewlines++;
     }
   }
 
@@ -1051,6 +1053,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   /* remove overflown elements */
   if (toRemove.length > 0) {
     for (const el of toRemove) el.remove();
+    afterNewLineEls.splice(0, removedAfterNewlines);
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as ElementWithUtils;
       const currentLineIndent =
