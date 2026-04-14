@@ -67,7 +67,7 @@ If you want to contribute themes but don't know how, check [THEMES.md](/docs/THE
 
 - Do not include expletive words
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
-- Be sure to add your language to the `_list` and `_groups` files
+- Be sure to add your language to the [packages/schemas/src/languages.ts](/packages/schemas/src/languages.ts) and [frontend/src/ts/constants/languages.ts](/frontend/src/ts/constants/languages.ts) files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
 If you want to contribute languages but don't know how, check [LANGUAGES.md](/docs/LANGUAGES.md)
