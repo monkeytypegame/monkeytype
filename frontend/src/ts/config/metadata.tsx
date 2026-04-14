@@ -634,6 +634,7 @@ export const configMetadata: ConfigMetadataObject = {
       "24": { displayString: "razer green" },
       "25": { displayString: "tealios v2" },
       "26": { displayString: "trust gxt" },
+      "27": { displayString: "chalk" },
     },
     fa: { icon: "fa-volume-up" },
     displayString: "play sound on click",
