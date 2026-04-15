@@ -1149,7 +1149,7 @@ export function updatePremid(): void {
   qs(".pageTest #premidSecondsLeft")?.setText(`${Config.time}`);
 }
 
-let currentLinesJumping = 0;
+let currentHeightJumping = 0;
 export async function lineJump(
   currentTop: number,
   force = false,
@@ -1183,10 +1183,10 @@ export async function lineJump(
       return;
     }
 
-    currentLinesJumping++;
+    currentHeightJumping +=
+      word?.getOuterHeight() ?? activeWordEl.getOuterHeight();
 
-    const wordHeight = activeWordEl.getOuterHeight();
-    const newMarginTop = -1 * wordHeight * currentLinesJumping;
+    const newMarginTop = -1 * currentHeightJumping;
     const duration = 125;
 
     // remove leading .beforeNewline and .newline after last word to remove
@@ -1210,14 +1210,14 @@ export async function lineJump(
         marginTop: newMarginTop,
         duration,
       });
-      currentLinesJumping = 0;
+      currentHeightJumping = 0;
       activeWordTop = activeWordEl.getOffsetTop();
       activeWordHeight = activeWordEl.getOffsetHeight();
       removeTestElements(i);
       wordsEl.setStyle({ marginTop: "0" });
       lineTransition = false;
     } else {
-      currentLinesJumping = 0;
+      currentHeightJumping = 0;
       removeTestElements(i);
     }
   }
