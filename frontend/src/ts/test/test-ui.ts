@@ -980,7 +980,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   // index of the active word in all #words.children
   // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
   const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
-  // this will be 0 or 1
+  // this will between 0 and 2
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndex)
     .filter((child) => child.hasClass("afterNewline")).length;
@@ -1006,16 +1006,12 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     const child = wordsChildrenArr[i] as ElementWithUtils;
     if (child.hasClass("word")) {
       leadingNewLine = false;
-      const childComputedStyle = window.getComputedStyle(child.native);
-      const wordOuterWidth =
-        child.getOffsetWidth() +
-        parseFloat(childComputedStyle.marginRight) +
-        parseFloat(childComputedStyle.marginLeft);
-      const forWordLeft = Math.floor(child.getOffsetLeft());
-      const forWordWidth = Math.floor(child.getOffsetWidth());
+      const wordOuterWidth = child.getOuterWidth();
+      const wordLeft = Math.floor(child.getOffsetLeft());
+      const wordWidth = Math.floor(child.getOffsetWidth());
       if (
-        (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
-        (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
+        (!isTestRightToLeft && wordLeft < 0 - wordWidth) ||
+        (isTestRightToLeft && wordLeft > wordsWrapperWidth)
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
