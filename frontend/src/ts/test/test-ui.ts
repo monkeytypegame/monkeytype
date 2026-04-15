@@ -169,25 +169,25 @@ export function updateActiveElement(
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
 
-    updateWordsInputPosition();
+    if (previousActiveWordTop !== null) {
+      const isTimedTest =
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-    if (previousActiveWordTop === null) return;
-
-    const isTimedTest =
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-    if (isTimedTest || !Config.showAllLines) {
-      const newActiveWordTop = newActiveWord.getOffsetTop();
-      if (newActiveWordTop > previousActiveWordTop) {
-        await lineJump(previousActiveWordTop);
+      if (isTimedTest || !Config.showAllLines) {
+        const newActiveWordTop = newActiveWord.getOffsetTop();
+        if (newActiveWordTop > previousActiveWordTop) {
+          await lineJump(previousActiveWordTop);
+        }
       }
     }
 
     if (!initial && Config.tapeMode !== "off") {
       await scrollTape();
     }
+
+    updateWordsInputPosition();
   });
 }
 
