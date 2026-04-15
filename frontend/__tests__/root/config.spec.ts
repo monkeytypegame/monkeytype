@@ -109,6 +109,50 @@ describe("Config", () => {
       expect(Config.setConfig("showAllLines", true)).toBe(false);
     });
 
+    it("disables live text stats when enabling monkey", () => {
+      //GIVEN
+      replaceConfig({
+        liveSpeedStyle: "text",
+        liveAccStyle: "text",
+        monkey: false,
+      });
+
+      //WHEN / THEN
+      expect(Config.setConfig("monkey", true)).toBe(true);
+      expect(getConfig()).toMatchObject({
+        monkey: true,
+        liveSpeedStyle: "mini",
+        liveAccStyle: "mini",
+      });
+      expect(notificationAddMock).not.toHaveBeenCalled();
+    });
+
+    it("disables monkey when enabling live speed text", () => {
+      //GIVEN
+      replaceConfig({ monkey: true, liveSpeedStyle: "off" });
+
+      //WHEN / THEN
+      expect(Config.setConfig("liveSpeedStyle", "text")).toBe(true);
+      expect(getConfig()).toMatchObject({
+        monkey: false,
+        liveSpeedStyle: "text",
+      });
+      expect(notificationAddMock).not.toHaveBeenCalled();
+    });
+
+    it("disables monkey when enabling live accuracy text", () => {
+      //GIVEN
+      replaceConfig({ monkey: true, liveAccStyle: "off" });
+
+      //WHEN / THEN
+      expect(Config.setConfig("liveAccStyle", "text")).toBe(true);
+      expect(getConfig()).toMatchObject({
+        monkey: false,
+        liveAccStyle: "text",
+      });
+      expect(notificationAddMock).not.toHaveBeenCalled();
+    });
+
     it("should use overrideValue", () => {
       //WHEN
       Config.setConfig("customLayoutfluid", ["3l", "ABNT2", "3l"]);
