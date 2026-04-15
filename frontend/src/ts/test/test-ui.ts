@@ -1149,20 +1149,7 @@ export function updatePremid(): void {
   qs(".pageTest #premidSecondsLeft")?.setText(`${Config.time}`);
 }
 
-function removeTestElements(lastElementIndexToRemove: number): void {
-  const wordsChildren = wordsEl.getChildren();
-
-  if (wordsChildren === undefined) return;
-
-  for (let i = lastElementIndexToRemove; i >= 0; i--) {
-    const child = wordsChildren[i];
-    if (!child || !child.native.isConnected) continue;
-    child.remove();
-  }
-}
-
 let currentLinesJumping = 0;
-
 export async function lineJump(
   currentTop: number,
   force = false,
@@ -1172,34 +1159,25 @@ export async function lineJump(
     const hideBound = currentTop;
 
     const activeWordEl = getActiveWordElement();
-    if (!activeWordEl) {
-      // resolve();
-      return;
-    }
+    if (!activeWordEl) return;
+
+    const wordsChildren = wordsEl.getChildren();
+    const removeTestElements = (lastWordToRemoveIndex: number): void => {
+      let i = lastWordToRemoveIndex;
+      while (i >= 0) wordsChildren[i--]?.remove();
+    };
 
     // index of the active word in all #words.children
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-    const wordsChildren = wordsEl.getChildren();
-    const activeWordElementIndex = wordsChildren.indexOf(activeWordEl);
-
-    let lastElementIndexToRemove: number | undefined = undefined;
-    for (let i = activeWordElementIndex - 1; i >= 0; i--) {
-      const child = wordsChildren[i] as ElementWithUtils;
-      if (child.hasClass("hidden")) continue;
-      if (Math.floor(child.getOffsetTop()) < hideBound) {
-        if (child.hasClass("word")) {
-          lastElementIndexToRemove = i;
-          break;
-        } else if (child.hasClass("beforeNewline")) {
-          // set it to .newline but check .beforeNewline.offsetTop
-          // because it's more reliable
-          lastElementIndexToRemove = i + 1;
-          break;
-        }
-      }
+    let i = wordsChildren.indexOf(activeWordEl);
+    let word: ElementWithUtils | undefined;
+    // find i: index of last word to remove
+    while (i >= 0 && (word = wordsChildren[--i])) {
+      if (word.isHidden()) continue;
+      if (word.hasClass("word") && word.getOffsetTop() < hideBound) break;
     }
 
-    if (lastElementIndexToRemove === undefined) {
+    if (i < 0) {
       currentTestLine++;
       updateWordsWrapperHeight();
       return;
@@ -1210,6 +1188,14 @@ export async function lineJump(
     const wordHeight = activeWordEl.getOuterHeight();
     const newMarginTop = -1 * wordHeight * currentLinesJumping;
     const duration = 125;
+
+    // remove leading .beforeNewline and .newline after last word to remove
+    while (
+      wordsChildren[i + 1]?.hasClass("beforeNewline") ||
+      wordsChildren[i + 1]?.hasClass("newline")
+    ) {
+      i++;
+    }
 
     const caretLineJumpOptions = {
       newMarginTop,
@@ -1227,12 +1213,12 @@ export async function lineJump(
       currentLinesJumping = 0;
       activeWordTop = activeWordEl.getOffsetTop();
       activeWordHeight = activeWordEl.getOffsetHeight();
-      removeTestElements(lastElementIndexToRemove);
+      removeTestElements(i);
       wordsEl.setStyle({ marginTop: "0" });
       lineTransition = false;
     } else {
       currentLinesJumping = 0;
-      removeTestElements(lastElementIndexToRemove);
+      removeTestElements(i);
     }
   }
   currentTestLine++;
