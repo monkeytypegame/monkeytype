@@ -127,6 +127,15 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to edit preset: ${response.body.message}`);
       }
+
+      // if this is missing getPreset is out of sync
+      presetsCollection.utils.writeUpdate({
+        _id: presetId,
+        name,
+        display: name.replaceAll("_", " "),
+        ...(config !== undefined && { config }),
+        ...(settingGroups !== undefined && { settingGroups }),
+      });
     },
   }),
   deletePreset: createOptimisticAction<ActionType["deletePreset"]>({
