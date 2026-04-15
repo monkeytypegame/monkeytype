@@ -206,20 +206,6 @@
     width: inherit;
   }
 
-  .beforeNewline {
-    display: inline-block;
-    vertical-align: top;
-    margin: 0.25em 0;
-    box-sizing: content-box;
-    height: 1em; //.word line-height
-    border-top: 0.05em solid transparent; // letter border-bottom
-    border-bottom: 2px solid transparent; //.word border
-  }
-
-  .afterNewline {
-    display: inline-block;
-  }
-
   --correct-letter-color: var(--text-color);
   --correct-letter-animation: none;
   --untyped-letter-color: var(--sub-color);
@@ -313,6 +299,24 @@
       display: inline-block;
       vertical-align: top;
     }
+    .beforeNewline {
+      display: inline-block;
+      vertical-align: top;
+      margin: 0.25em 0;
+      box-sizing: content-box;
+      height: 1em; //.word line-height
+      border-top: 0.05em solid transparent; // letter border-bottom
+      border-bottom: 2px solid transparent; //.word border
+    }
+    .afterNewline {
+      display: inline-block;
+    }
+    &.withLigatures {
+      .beforeNewline {
+        border-top: unset;
+        padding-bottom: 0.05em;
+      }
+    }
   }
 
   /* a little hack for right-to-left languages */
@@ -336,10 +340,6 @@
       letter {
         display: inline;
       }
-    }
-    .beforeNewline {
-      border-top: unset;
-      padding-bottom: 0.05em;
     }
   }
   &.blurred {
