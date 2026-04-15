@@ -58,7 +58,7 @@ Before submitting a theme make sure...
 
 - your theme is unique and isn't visually similar to any we already have.
 - the text color is either black or white (or very close to these colors)
-- your theme has been added to the `_list` file and the `textColor` property is the theme's main color
+- your theme has been added to the [packages/schemas/src/themes.ts](/packages/schemas/src/themes.ts) and [frontend/src/ts/constants/themes.ts](/frontend/src/ts/constants/themes.ts) files and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
 If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md)

@@ -15,7 +15,7 @@ First you will have to make a personal copy of the Monkeytype repository, also k
 
 Pick a name for your theme. It must be all lowercase, with spaces replaced by underscores.
 
-Go to `./packages/schemas/src/themes.ts` and add your new theme name to the __end__ of the `ThemeNameSchema` enum. Make sure to end the line with a comma.
+Go to [packages/schemas/src/themes.ts](/packages/schemas/src/themes.ts) and add your new theme name to the __end__ of the `ThemeNameSchema` enum. Make sure to end the line with a comma.
 
 ```typescript
 export const ThemeNameSchema = z.enum([
@@ -26,7 +26,7 @@ export const ThemeNameSchema = z.enum([
 ]);
 ```
 
-Then, go to `./frontend/src/ts/constants/themes.ts` and add the following code to the __end__ of the `themes` object near to the very end of the file:
+Then, go to [frontend/src/ts/constants/themes.ts](/frontend/src/ts/constants/themes.ts) and add the following code to the __end__ of the `themes` object near to the very end of the file:
 
 ```typescript
 export const themes: Record<ThemeName, Theme>  = {
