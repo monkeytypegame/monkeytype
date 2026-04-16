@@ -30,8 +30,8 @@
   - [ ] Add some screenshots of the theme, especially with different test settings (colorful, flip colors) to your pull request
 - [ ] Adding a layout?
   - [ ] Make sure to follow the [layouts documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/LAYOUTS.md)
-  - [ ] Add layout to `packages/schemas/src/layouts.ts`
-  - [ ] Add layout json file to `frontend/static/layouts`
+  - [ ] Add layout to [packages/schemas/src/layouts.ts](/packages/schemas/src/layouts.ts)
+  - [ ] Add layout json file to [frontend/static/layouts](/frontend/static/layouts)
 - [ ] Adding a font?
   - Make sure to follow the [fonts documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/FONTS.md)
   - [ ] Add font file to [frontend/static/webfonts](/frontend/static/webfonts)
