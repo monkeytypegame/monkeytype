@@ -18,7 +18,7 @@ Once you have forked the repository you can now add your font. Place the font fi
 > [!NOTE]
 > Your font needs to be in the `.woff2` format. Your filename cannot include spaces or start with a number.
 
-Open `./packages/schemas/src/fonts.ts` and add the new font at the _end_ of the `KnownFontNameSchema` list like this:
+Open [packages/schemas/src/fonts.ts](/packages/schemas/src/fonts.ts) and add the new font at the _end_ of the `KnownFontNameSchema` list like this:
 
 ```typescript
 const KnownFontNameSchema = z.enum(
@@ -31,7 +31,7 @@ const KnownFontNameSchema = z.enum(
 
 Call it whatever you want but make sure you replace spaces with underscores and the font does not start with a number.
 
-Then, go to `./frontend/src/ts/constants/fonts.ts` and add the following code to the _end_ of the `Fonts` object near to the very end of the file:
+Then, go to [frontend/src/ts/constants/fonts.ts](/frontend/src/ts/constants/fonts.ts) and add the following code to the _end_ of the `Fonts` object near to the very end of the file:
 
 ```typescript
 export const Fonts: Record<KnownFontName, FontConfig> = {
