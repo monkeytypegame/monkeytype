@@ -23,8 +23,8 @@ describe("funbox-validation", () => {
         "rAnDoMcAsE", //changesCapitalisation
         "nospace", //nospace
         "plus_one", //toPush:
-        "read_ahead_easy", //changesWordVisibility
-        "tunnel_vision", //changesWordVisibility
+        "read_ahead_easy", //changesWordsVisibility
+        "tunnel_vision", //changesWordsVisibility
         "tts", //speaks
         "layout_mirror", //changesLayout
         "zipf", //changesWordsFrequency

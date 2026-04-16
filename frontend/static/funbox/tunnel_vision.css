@@ -1,44 +1,18 @@
-#words {
-  mask-image: radial-gradient(
-    circle var(--tunnel-radius, 150px) at var(--caret-left) var(--caret-top),
-    black 0%,
-    black 50%,
-    transparent 100%
-  );
-  -webkit-mask-image: radial-gradient(
-    circle var(--tunnel-radius, 150px) at var(--caret-left) var(--caret-top),
-    black 0%,
-    black 50%,
-    transparent 100%
-  );
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-}
-
-body.fb-tunnel-vision #wordsWrapper.tape {
+body.fb-tunnel-vision #wordsWrapper {
   isolation: isolate;
 }
 
-body.fb-tunnel-vision #wordsWrapper.tape #words {
-  mask-image: none;
-  -webkit-mask-image: none;
-}
-
-body.fb-tunnel-vision #wordsWrapper.tape::after {
+body.fb-tunnel-vision #wordsWrapper::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background: radial-gradient(
-    circle var(--tunnel-radius, 150px) at var(--caret-left) var(--caret-top),
+    circle var(--tunnel-radius, 150px) at var(--caret-left, 50%)
+      var(--caret-top, 50%),
     transparent 0%,
     transparent 50%,
     var(--bg-color) 100%
   );
-}
-
-body.fb-tunnel-vision #wordsWrapper.tape #caret,
-body.fb-tunnel-vision #wordsWrapper.tape #paceCaret {
-  z-index: 2;
 }

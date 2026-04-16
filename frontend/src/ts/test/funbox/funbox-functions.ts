@@ -28,7 +28,6 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
-import { convertRemToPixels } from "../../utils/numbers";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -168,12 +167,6 @@ export class PolyglotWordset extends Wordset {
 }
 
 let tunnelVisionAnimationFrame: number | null = null;
-
-function getTunnelVisionRadiusPx(): number {
-  const fontSizePx = convertRemToPixels(Config.fontSize);
-
-  return Math.max(48, Math.min(220, fontSizePx * 4.5));
-}
 
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
@@ -690,28 +683,21 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   tunnel_vision: {
     applyGlobalCSS(): void {
-      const words = qs("#words");
       const wordsWrapper = qs("#wordsWrapper");
-      if (!words || !wordsWrapper) return;
+      if (!wordsWrapper) return;
+      const getTunnelVisionRadiusRem = (): number =>
+        Math.max(3, Math.min(13.75, Config.fontSize * 4.5));
 
       const updateCaretPos = (): void => {
         const caretElem = qs("#caret");
         if (caretElem !== null) {
-          const wordsRect = words.native.getBoundingClientRect();
           const wordsWrapperRect = wordsWrapper.native.getBoundingClientRect();
           const caretRect = caretElem.native.getBoundingClientRect();
-          const caretLeft =
-            caretRect.left - wordsRect.left + caretRect.width / 2;
-          const caretTop = caretRect.top - wordsRect.top + caretRect.height / 2;
           const wrapperCaretLeft =
             caretRect.left - wordsWrapperRect.left + caretRect.width / 2;
           const wrapperCaretTop =
             caretRect.top - wordsWrapperRect.top + caretRect.height / 2;
-          const radius = `${getTunnelVisionRadiusPx()}px`;
-
-          words.native.style.setProperty("--caret-left", `${caretLeft}px`);
-          words.native.style.setProperty("--caret-top", `${caretTop}px`);
-          words.native.style.setProperty("--tunnel-radius", radius);
+          const radius = `${getTunnelVisionRadiusRem()}rem`;
 
           wordsWrapper.native.style.setProperty(
             "--caret-left",
@@ -736,13 +722,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         cancelAnimationFrame(tunnelVisionAnimationFrame);
         tunnelVisionAnimationFrame = null;
       }
-      const words = qs("#words");
       const wordsWrapper = qs("#wordsWrapper");
-      if (words) {
-        words.native.style.removeProperty("--caret-left");
-        words.native.style.removeProperty("--caret-top");
-        words.native.style.removeProperty("--tunnel-radius");
-      }
       if (wordsWrapper) {
         wordsWrapper.native.style.removeProperty("--caret-left");
         wordsWrapper.native.style.removeProperty("--caret-top");
