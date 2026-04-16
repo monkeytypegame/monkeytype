@@ -66,4 +66,6 @@ Create a pull request:
 
 ## Language Guidelines
 
-Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
+- Do not include expletive words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)

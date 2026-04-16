@@ -90,4 +90,6 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 
 ## Theme Guidelines
 
-Make sure your theme follows the [Theme guidelines](./CONTRIBUTING.md#theme-guidelines).
+- your theme is unique and isn't visually similar to any we already have.
+- the text color is either black or white (or very close to these colors)
+- your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled

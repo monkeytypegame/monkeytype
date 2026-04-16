@@ -50,25 +50,13 @@ For types, we use the following:
 - `impr(quotes): add english quotes (@username)`
 - `fix(leaderboard): show user rank correctly (@user1, @user2, @user3)`
 
-### Theme Guidelines
+### Adding Themes
 
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
 
-Before submitting a theme make sure...
-
-- your theme is unique and isn't visually similar to any we already have.
-- the text color is either black or white (or very close to these colors)
-- your theme has been added to the [packages/schemas/src/themes.ts](/packages/schemas/src/themes.ts) and [frontend/src/ts/constants/themes.ts](/frontend/src/ts/constants/themes.ts) files and the `textColor` property is the theme's main color
-- your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
-
 If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md)
 
-### Language Guidelines
-
-- Do not include expletive words
-- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
-- Be sure to add your language to the [packages/schemas/src/languages.ts](/packages/schemas/src/languages.ts) and [frontend/src/ts/constants/languages.ts](/frontend/src/ts/constants/languages.ts) files
-- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
+### Adding Languages
 
 If you want to contribute languages but don't know how, check [LANGUAGES.md](/docs/LANGUAGES.md)
 
