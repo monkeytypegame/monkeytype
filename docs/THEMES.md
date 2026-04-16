@@ -54,7 +54,7 @@ If you don't want to add any custom styling you can skip the next section.
 
 #### Adding custom CSS (optional)
 
-Create a CSS file in `./frontend/static/themes/` matching the name you picked earlier. Update the theme configuration in `./frontend/src/ts/constants/themes.ts`  and add `hasCss: true` like this:
+Create a CSS file in [frontend/static/themes](/frontend/static/themes) matching the name you picked earlier. Update the theme configuration in `./frontend/src/ts/constants/themes.ts`  and add `hasCss: true` like this:
 
 ```typescript
 export const themes: Record<ThemeName, Theme>  = {
