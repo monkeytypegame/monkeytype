@@ -1,8 +1,6 @@
 import { Config } from "../config/store";
 import * as Misc from "../utils/misc";
-import { ElementWithUtils, qsa, qsr } from "../utils/dom";
-
-const wordsEl = qsr(".pageTest #words");
+import { ElementWithUtils, qsa } from "../utils/dom";
 const TUMBLE_DURATION_MS = 1000;
 
 export function onWordTyped(word: ElementWithUtils): void {
@@ -17,7 +15,6 @@ export function onWordTyped(word: ElementWithUtils): void {
 
 export function clear(): void {
   qsa(".tumble-clone").remove();
-  wordsEl.qsa(".word").setStyle({ opacity: "" });
 }
 
 function triggerTumble(word: ElementWithUtils): void {
@@ -48,7 +45,6 @@ function triggerTumble(word: ElementWithUtils): void {
   clone.style.setProperty("--fall-x", `${randomX}px`);
 
   document.body.appendChild(clone);
-  word.setStyle({ opacity: "0" });
 
   const cleanup = (): void => {
     clone.remove();

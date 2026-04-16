@@ -166,7 +166,6 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    newActiveWord.setStyle({ opacity: "" });
     Ligatures.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
@@ -2086,7 +2085,7 @@ configEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
-    if (key === "typedEffect") {
+    if (key === "typedEffect" && newValue !== "tumble") {
       TypedEffects.clear();
     }
     if (key !== "fontFamily") updateWordWrapperClasses();
