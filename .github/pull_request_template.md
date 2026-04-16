@@ -24,9 +24,9 @@
   - [ ] Add language json file to `frontend/static/languages`
 - [ ] Adding a theme?
   - Make sure to follow the [themes documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/THEMES.md)
-  - [ ] Add theme to `packages/schemas/src/themes.ts`
-  - [ ] Add theme to `frontend/src/ts/constants/themes.ts`
-  - [ ] (optional) Add theme css file to `frontend/static/themes`
+  - [ ] Add theme to [packages/schemas/src/themes.ts](/packages/schemas/src/themes.ts)
+  - [ ] Add theme to [frontend/src/ts/constants/themes.ts](/frontend/src/ts/constants/themes.ts)
+  - [ ] (optional) Add theme css file to [frontend/static/themes](/frontend/static/themes)
   - [ ] Add some screenshots of the theme, especially with different test settings (colorful, flip colors) to your pull request
 - [ ] Adding a layout?
   - [ ] Make sure to follow the [layouts documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/LAYOUTS.md)
