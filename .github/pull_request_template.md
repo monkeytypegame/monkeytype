@@ -34,9 +34,9 @@
   - [ ] Add layout json file to `frontend/static/layouts`
 - [ ] Adding a font?
   - Make sure to follow the [fonts documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/FONTS.md)
-  - [ ] Add font file to `frontend/static/webfonts`
-  - [ ] Add font to `packages/schemas/src/fonts.ts`
-  - [ ] Add font to `frontend/src/ts/constants/fonts.ts`
+  - [ ] Add font file to [frontend/static/webfonts](/frontend/static/webfonts)
+  - [ ] Add font to [packages/schemas/src/fonts.ts](/packages/schemas/src/fonts.ts)
+  - [ ] Add font to [frontend/src/ts/constants/fonts.ts](/frontend/src/ts/constants/fonts.ts)
 - [ ] Check if any open issues are related to this PR; if so, be sure to tag them below.
 - [ ] Make sure the PR title follows the Conventional Commits standard. (https://www.conventionalcommits.org for more info)
 - [ ] Make sure to include your GitHub username prefixed with @ inside parentheses at the end of the PR title.
