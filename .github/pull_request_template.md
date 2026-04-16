@@ -19,9 +19,9 @@
   - [ ] Make sure to include translations for the quotes in the description (or another comment) so we can verify their content.
 - [ ] Adding a language?
   - Make sure to follow the [languages documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/LANGUAGES.md)
-  - [ ] Add language to `packages/schemas/src/languages.ts`
-  - [ ] Add language to exactly one group in `frontend/src/ts/constants/languages.ts`
-  - [ ] Add language json file to `frontend/static/languages`
+  - [ ] Add language to [packages/schemas/src/languages.ts](/packages/schemas/src/languages.ts)
+  - [ ] Add language to exactly one group in [frontend/src/ts/constants/languages.ts](/frontend/src/ts/constants/languages.ts)
+  - [ ] Add language json file to [frontend/static/languages](/frontend/static/languages)
 - [ ] Adding a theme?
   - Make sure to follow the [themes documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/THEMES.md)
   - [ ] Add theme to [packages/schemas/src/themes.ts](/packages/schemas/src/themes.ts)
