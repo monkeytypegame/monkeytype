@@ -41,16 +41,12 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
   }
 ```
 
-### Committing Languages
+### Committing Fonts
 
-Once you have created your language, you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your languages on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
+Once you have created your font(s), you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your fonts on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
 
 Update branch:
 <img width="1552" alt="Screenshot showing how to update the fork to match the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
 
 Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
-
-## Language Guidelines
-
-Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
