@@ -64,7 +64,7 @@ If you want to contribute languages but don't know how, check [LANGUAGES.md](/do
 
 If you want to contribute quotes but don't know how, check [QUOTES.md](/docs/QUOTES.md)
 
-### Layout Guidelines
+### Adding Layouts
 
 If you want to contribute layouts but don't know how, check [LAYOUTS.md](/docs/LAYOUTS.md)
 
