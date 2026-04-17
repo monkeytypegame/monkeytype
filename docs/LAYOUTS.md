@@ -116,7 +116,3 @@ Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
 Make sure your PR title follow the syntax `feat(layout): add <YOUR_LAYOUT> layout (@<YOUR_GITHUB_NAME>)`, e.g. `feat(layout): add qwerty layout (@teddinotteddy)`
-
-## Layout Guidelines
-
-Make sure your layout follows the [Layout guidelines](./CONTRIBUTING.md#layout-guidelines).
