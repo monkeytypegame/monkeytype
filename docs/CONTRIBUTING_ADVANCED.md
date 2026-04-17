@@ -79,7 +79,7 @@ The account system will not let you create an account without a Firebase project
 
 ### Config file
 
-Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
+Within the [frontend/src/ts/constants](/frontend/src/ts/constants) directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
 
 - If you skipped the Firebase step, you can leave the fields blank
 - Otherwise:
