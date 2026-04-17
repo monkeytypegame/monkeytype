@@ -13,7 +13,7 @@ First, you will have to make a personal copy of the Monkeytype repository, also 
 
 ## Adding Fonts
 
-Once you have forked the repository you can now add your font. Place the font file in `./frontend/static/webfonts` e.g. `My-Font.woff2`.
+Once you have forked the repository you can now add your font. Place the font file in [frontend/static/webfonts](/frontend/static/webfonts) e.g. `My-Font.woff2`.
 
 > [!NOTE]
 > Your font needs to be in the `.woff2` format. Your filename cannot include spaces or start with a number.
