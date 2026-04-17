@@ -40,7 +40,7 @@ For types, we use the following:
 - `perf`: A code change that improves performance
 - `test`: Adding missing tests or correcting existing tests
 - `build`: Changes that affect the build system or external dependencies (example scopes: vite, tsup-node, npm)
-- `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Workflows)
+- `ci`: Changes to our CI configuration files and scripts (e.g., GitHub Workflows)
 - `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
 
