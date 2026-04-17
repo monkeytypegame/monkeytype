@@ -51,6 +51,6 @@ Update branch:
 Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
-### Font Guidelines
+## Font Guidelines
 
 - Ensure that your font is distinct from existing fonts
