@@ -53,4 +53,4 @@ Create a pull request:
 
 ## Font Guidelines
 
-- Ensure that your font is distinct from existing fonts
+- Ensure that your font is distinct from existing fonts.
