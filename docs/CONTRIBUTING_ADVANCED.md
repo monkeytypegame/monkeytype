@@ -61,7 +61,7 @@ The account system will not let you create an account without a Firebase project
 1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
+   - Save as `serviceAccountKey.json` inside the [backend/src/credentials](/backend/src/credentials) directory.
 
 1. Run `pnpm add -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
