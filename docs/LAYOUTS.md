@@ -94,7 +94,7 @@ For ansi layouts the number of keys need to be exactly thirteen for `row1` and `
 
 For iso the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and `row3`, eleven for `row4` and one or two for `row5`.
 
-In addition to the layout file you need to add your layout to the `packages/schemas/src/layouts.ts` file. Just append your layout name (without the `.json`) at the **end** of the `LayoutNameSchema`. Remember to add a comma like this:
+In addition to the layout file you need to add your layout to the [packages/schemas/src/layouts.ts](/packages/schemas/src/layouts.ts) file. Just append your layout name (without the `.json`) at the **end** of the `LayoutNameSchema`. Remember to add a comma like this:
 
 ```ts
 export const LayoutNameSchema = z.enum([
