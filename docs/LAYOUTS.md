@@ -12,7 +12,7 @@ First, you will have to make a personal copy of the Monkeytype repository, also 
 
 ## Creating Layouts
 
-Once you have forked the repository you can now add your layout. Create a new JSON file in `./frontend/static/layouts/`, named as the layout name, e.g. `qwerty.json`.
+Once you have forked the repository you can now add your layout. Create a new JSON file in [frontend/static/layouts](/frontend/static/layouts), named as the layout name, e.g. `qwerty.json`.
 
 The contents of the file should be as follows:
 
