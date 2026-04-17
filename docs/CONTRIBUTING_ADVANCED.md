@@ -65,7 +65,7 @@ The account system will not let you create an account without a Firebase project
 
 1. Run `pnpm add -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
-1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
+1. Within the [frontend](/frontend) directory, duplicate [.firebaserc_example](/frontend/.firebaserc_example), rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
    - Run `firebase projects:list` to find your firebase project ID.
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
