@@ -30,7 +30,6 @@ function triggerTumble(word: ElementWithUtils): void {
   const randomX = (Math.random() - 0.5) * 100;
 
   clone.classList.add("tumble-clone");
-  clone.style.position = "fixed";
   clone.style.top = `${rect.top}px`;
   clone.style.left = `${rect.left}px`;
   clone.style.width = `${rect.width}px`;
@@ -38,9 +37,6 @@ function triggerTumble(word: ElementWithUtils): void {
   clone.style.fontSize = computedStyle.fontSize;
   clone.style.fontFamily = computedStyle.fontFamily;
   clone.style.color = computedStyle.color;
-  clone.style.margin = "0";
-  clone.style.pointerEvents = "none";
-  clone.style.zIndex = "1000";
   clone.style.setProperty("--fall-rotation", `${randomRotation}deg`);
   clone.style.setProperty("--fall-x", `${randomX}px`);
 
