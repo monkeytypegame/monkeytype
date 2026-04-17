@@ -152,7 +152,7 @@ If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
 Code formatting and linting is enforced by [Oxc (Oxfmt and Oxlint)](https://github.com/oxc-project/oxc), which automatically run every time you make a commit.
 
-For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
+For guidelines on commit messages, adding themes, languages, layouts, fonts or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
 
