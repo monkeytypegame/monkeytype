@@ -60,16 +60,7 @@ If you want to contribute themes but don't know how, check [THEMES.md](/docs/THE
 
 If you want to contribute languages but don't know how, check [LANGUAGES.md](/docs/LANGUAGES.md)
 
-### Quote Guidelines
-
-- Do not include content that contains any libelous or otherwise unlawful, abusive, or obscene text.
-- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
-- Verify quotes added aren't duplicates of any already present
-- Verify the `length` property is correct (length of the text in characters)
-- Verify the `id` property is incremented correctly
-- Please do not add extremely short quotes (less than 60 characters)
-- For quotes not in English, please include translations of quotes in the description of your pull request. This assists in the verification process to ensure the integrity of the quotes.
-- Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
+### Adding Quotes
 
 If you want to contribute quotes but don't know how, check [QUOTES.md](/docs/QUOTES.md)
 
