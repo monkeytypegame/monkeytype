@@ -9,8 +9,16 @@ const plugins = [
   solidPlugin({ hot: false }),
 ];
 
+const tanstackSolidNoExternal = [
+  "@solidjs/meta",
+  /@tanstack\/solid-.*/,
+] as const;
+
 export const projects: UserWorkspaceConfig[] = [
   {
+    ssr: {
+      noExternal: tanstackSolidNoExternal,
+    },
     test: {
       name: { label: "unit", color: "blue" },
       include: ["__tests__/**/*.spec.ts"],
@@ -26,6 +34,9 @@ export const projects: UserWorkspaceConfig[] = [
     plugins,
   },
   {
+    ssr: {
+      noExternal: tanstackSolidNoExternal,
+    },
     test: {
       name: { label: "jsdom", color: "yellow" },
       include: ["__tests__/**/*.jsdom-spec.ts"],
@@ -36,15 +47,7 @@ export const projects: UserWorkspaceConfig[] = [
   },
   {
     ssr: {
-      noExternal: [
-        "@solidjs/meta",
-        "@tanstack/solid-store",
-        "@tanstack/solid-form",
-        "@tanstack/solid-query",
-        "@tanstack/solid-table",
-        "@tanstack/solid-hotkeys",
-        "@tanstack/solid-db",
-      ],
+      noExternal: tanstackSolidNoExternal,
     },
     test: {
       name: { label: "jsx", color: "green" },
@@ -69,15 +72,7 @@ export default defineConfig({
     deps: {
       optimizer: {
         web: {
-          include: [
-            "@monkeytype/funbox",
-            "@tanstack/solid-store",
-            "@tanstack/solid-form",
-            "@tanstack/solid-query",
-            "@tanstack/solid-table",
-            "@tanstack/solid-hotkeys",
-            "@tanstack/solid-db",
-          ],
+          include: ["@monkeytype/funbox"],
         },
       },
     },
