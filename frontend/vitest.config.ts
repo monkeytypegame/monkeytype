@@ -9,10 +9,10 @@ const plugins = [
   solidPlugin({ hot: false }),
 ];
 
-const tanstackSolidNoExternal = [
+const tanstackSolidNoExternal: (string | RegExp)[] = [
   "@solidjs/meta",
   /@tanstack\/solid-.*/,
-] as const;
+];
 
 export const projects: UserWorkspaceConfig[] = [
   {
