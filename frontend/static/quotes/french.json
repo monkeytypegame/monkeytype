@@ -6728,10 +6728,10 @@
         "length": 339
     },
     {
-        "text": "L'État, c'est moi.",
-        "source": "Louis XIV (apocryphe)",
+        "text": "Il ne faut pas vendre la peau de l'ours, surtout si l'ours est encore dedans !",
+        "source": "Patrick Sébastien",
         "id": 1143,
-        "length": 18
+        "length": 79
     },
     {
         "text": "Pour venir à bout des choses, le premier pas est de les croire possibles.",
@@ -6870,12 +6870,6 @@
         "source": "Patrick Sébastien",
         "id": 1166,
         "length": 105
-    },
-    {
-        "text": "Il ne faut pas vendre la peau de l'ours, surtout si l'ours est encore dedans !",
-        "source": "Patrick Sébastien",
-        "id": 1167,
-        "length": 79
     }
   ]
 }
