@@ -529,7 +529,7 @@
 
   &.typed-effect-fade {
     .word.typed {
-      animation: fadeOut 250ms ease-in 1 forwards !important;
+      animation: fadeOut 250ms ease-in 1 forwards;
     }
   }
 
@@ -570,7 +570,7 @@
         color: var(--bg-color);
         animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
         &::after {
-          animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards !important;
+          animation: typedEffectFadeIn 100ms ease-in 100ms 1 forwards;
           background: var(--c-dot);
         }
       }
@@ -583,6 +583,21 @@
     }
     &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
       background: var(--c-dot--error);
+    }
+
+    @media (prefers-reduced-motion) {
+      &:not(.withLigatures) .word.typed,
+      &.withLigatures .word.broken-ligatures.typed {
+        letter {
+          animation: none !important;
+          transform: scale(0.4);
+          color: transparent;
+          &::after {
+            animation: none !important;
+            opacity: 1;
+          }
+        }
+      }
     }
   }
 }
