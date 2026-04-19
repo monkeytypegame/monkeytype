@@ -1,5 +1,4 @@
 import { Config } from "../config/store";
-import * as Misc from "../utils/misc";
 import { ElementWithUtils, qsa } from "../utils/dom";
 const TUMBLE_DURATION_MS = 1000;
 
@@ -19,7 +18,6 @@ export function clear(): void {
 
 function triggerTumble(word: ElementWithUtils): void {
   if (word.hasClass("error")) return;
-  if (Misc.prefersReducedMotion()) return;
 
   const rect = word.native.getBoundingClientRect();
   if (rect.width === 0 && rect.height === 0) return;
