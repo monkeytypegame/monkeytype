@@ -1,5 +1,9 @@
 import { Language } from "@monkeytype/schemas/languages";
-import { STRONG_RTL_TYPE, STRONG_LTR_TYPE } from "./direction-regex";
+import {
+  STRONG_RTL_TYPE,
+  STRONG_LTR_TYPE,
+  NUMERAL_TYPE,
+} from "./direction-regex";
 
 /**
  * Removes accents from a string.
@@ -243,11 +247,16 @@ export function getWordDirection(
   const firstLTRChar = STRONG_LTR_TYPE.exec(word)?.index ?? Infinity;
 
   let direction: Direction | null;
-  // word has no characters with strong type, return fallback
-  if (firstRTLChar === Infinity && firstLTRChar === Infinity) direction = null;
-  // first char with strong type is rtl
-  else if (firstRTLChar < firstLTRChar) direction = "rtl";
-  else direction = "ltr";
+  if (firstRTLChar === Infinity && firstLTRChar === Infinity) {
+    // word has no characters with strong type, check for numerals
+    if (NUMERAL_TYPE.test(word)) direction = "ltr";
+    else direction = null;
+  } else if (firstRTLChar < firstLTRChar) {
+    // first char with strong type is rtl
+    direction = "rtl";
+  } else {
+    direction = "ltr";
+  }
 
   wordDirectionCache.set(word, direction);
   return direction ?? fallback;
