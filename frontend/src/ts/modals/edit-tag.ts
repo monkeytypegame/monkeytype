@@ -11,14 +11,13 @@ import {
   clearTagPBs,
   __nonReactive,
 } from "../collections/tags";
-import { normalizeName } from "../utils/strings";
 
 function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
-  const validationResult = TagNameSchema.safeParse(normalizeName(tagName));
+  const validationResult = TagNameSchema.safeParse(tagName);
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
 };
@@ -37,7 +36,7 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = TagNameSchema.parse(normalizeName(propTagName));
+      const tagName = TagNameSchema.parse(propTagName);
 
       try {
         //todo: do we await? if we do, optimistic updates are kinda pointless?
@@ -69,7 +68,7 @@ const actionModals: Record<Action, SimpleModal> = {
       (_thisPopup.inputs[0] as TextInput).initVal = tag?.name ?? "";
     },
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = TagNameSchema.parse(normalizeName(propTagName));
+      const tagName = TagNameSchema.parse(propTagName);
       const tagId = _thisPopup.parameters[0] as string;
 
       try {
