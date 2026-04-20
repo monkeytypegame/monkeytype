@@ -46,7 +46,6 @@ export function useTagsLiveQuery() {
   return useLiveQuery((q) => {
     return q
       .from({ tag: tagsCollection })
-      .select(({ tag }) => ({ ...tag }))
       .orderBy(({ tag }) => tag.name, "asc");
   });
 }
@@ -202,9 +201,7 @@ function getTag(id: string): TagItem | undefined {
 }
 
 function getActiveTags(): TagItem[] {
-  return [...tagsCollection.values()]
-    .filter((tag) => tag.active)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return getTags().filter((tag) => tag.active);
 }
 
 export function fillTagsCollection(userTags: UserTag[]): void {
