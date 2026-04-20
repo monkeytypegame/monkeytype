@@ -204,7 +204,9 @@ function getActiveTags(): TagItem[] {
   return getTags().filter((tag) => tag.active);
 }
 
-export function fillTagsCollection(userTags: UserTag[]): void {
+export async function fillTagsCollection(userTags: UserTag[]): Promise<void> {
+  await tagsCollection.cleanup();
+
   const activeIds = activeTagsLS.get();
 
   const tagItems = userTags.map((tag) => ({
