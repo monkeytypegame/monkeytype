@@ -1,7 +1,7 @@
 import * as Commandline from "../commandline/commandline";
 import { Config } from "../config/store";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
-import { getTags } from "../collections/tags";
+import { __nonReactive } from "../collections/tags";
 import * as TestWords from "../test/test-words";
 import {
   showNoticeNotification,
@@ -33,7 +33,7 @@ testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
 });
 
 testPage?.onChild("click", ".tags .editTagsButton", () => {
-  if (getTags().length > 0) {
+  if (__nonReactive.getTags().length > 0) {
     const resultid =
       qs(".pageTest .tags .editTagsButton")?.getAttribute("data-result-id") ??
       "";

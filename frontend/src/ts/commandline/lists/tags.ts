@@ -1,10 +1,9 @@
 import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import {
-  getTags,
-  getTag,
   clearActiveTags,
   toggleTagActive,
+  __nonReactive,
 } from "../../collections/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
@@ -32,7 +31,7 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const tags = getTags();
+  const tags = __nonReactive.getTags();
   subgroup.list = [];
 
   if (tags.length > 0) {
@@ -57,10 +56,10 @@ function update(): void {
     for (const tag of tags) {
       subgroup.list.push({
         id: "toggleTag" + tag._id,
-        display: tag.display,
+        display: tag.name,
         sticky: true,
         active: () => {
-          return getTag(tag._id)?.active ?? false;
+          return __nonReactive.getTag(tag._id)?.active ?? false;
         },
         exec: async (): Promise<void> => {
           toggleTagActive(tag._id);

@@ -188,15 +188,15 @@ export async function deleteTag(
   await transaction.isPersisted.promise;
 }
 
-export function getTags(): TagItem[] {
+function getTags(): TagItem[] {
   return [...tagsCollection.values()];
 }
 
-export function getTag(id: string): TagItem | undefined {
+function getTag(id: string): TagItem | undefined {
   return tagsCollection.get(id);
 }
 
-export function getActiveTags(): TagItem[] {
+function getActiveTags(): TagItem[] {
   return [...tagsCollection.values()].filter((tag) => tag.active);
 }
 
@@ -206,6 +206,7 @@ export function fillTagsCollection(userTags: UserTag[]): void {
   const tagItems = userTags
     .map((tag) => ({
       ...tag,
+      name: tag.name.replace(/_/g, " "),
       active: activeIds.includes(tag._id),
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -476,3 +477,12 @@ export function getActiveTagsPB<M extends Mode>(
   }
   return tagPbWpm;
 }
+
+/**
+ * Used for non reactive access. Do not use in Solid components.
+ */
+export const __nonReactive = {
+  getTags,
+  getTag,
+  getActiveTags,
+};

@@ -10,7 +10,7 @@ import * as AccountPage from "../pages/account";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
-import { getTags, getTag, updateLocalTagPB } from "../collections/tags";
+import { __nonReactive, updateLocalTagPB } from "../collections/tags";
 
 type State = {
   resultId: string;
@@ -65,15 +65,18 @@ function appendButtons(): void {
     return;
   }
 
-  const tagIds = new Set([...getTags().map((tag) => tag._id), ...state.tags]);
+  const tagIds = new Set([
+    ...__nonReactive.getTags().map((tag) => tag._id),
+    ...state.tags,
+  ]);
 
   buttonsEl.empty();
   for (const tagId of tagIds) {
-    const tag = getTag(tagId);
+    const tag = __nonReactive.getTag(tagId);
     const button = document.createElement("button");
     button.classList.add("toggleTag");
     button.setAttribute("data-tag-id", tagId);
-    button.innerHTML = tag?.display ?? "unknown tag";
+    button.innerHTML = tag?.name ?? tag?._id ?? "unknown tag"; //this shouldnt happen?
     button.addEventListener("click", (e) => {
       toggleTag(tagId);
       updateActiveButtons();

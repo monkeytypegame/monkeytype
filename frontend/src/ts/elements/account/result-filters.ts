@@ -20,7 +20,7 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
-import { getTags, getActiveTags, getTag } from "../../collections/tags";
+import { __nonReactive } from "../../collections/tags";
 import { LanguageList } from "../../constants/languages";
 import { authEvent } from "../../events/auth";
 import { sanitize } from "../../utils/sanitize";
@@ -276,7 +276,7 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
 }
 
 export function loadTags(): void {
-  getTags().forEach((tag) => {
+  __nonReactive.getTags().forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
@@ -427,7 +427,7 @@ export function updateActive(): void {
         ret += aboveChartDisplay.tags?.array
           ?.map((id) => {
             if (id === "none") return id;
-            return getTag(id)?.display ?? id;
+            return __nonReactive.getTag(id)?.name ?? id;
           })
           .join(", ");
       } else {
@@ -666,7 +666,7 @@ qs(".pageAccount .topFilters button.currentConfigFilter")?.on("click", () => {
 
   filters.tags["none"] = true;
 
-  getActiveTags().forEach((tag) => {
+  __nonReactive.getActiveTags().forEach((tag) => {
     filters.tags["none"] = false;
     filters.tags[tag._id] = true;
   });
@@ -759,7 +759,7 @@ let selectChangeCallbackFn: () => void = () => {
 };
 
 export function updateTagsDropdownOptions(): void {
-  const tags = getTags();
+  const tags = __nonReactive.getTags();
 
   const newTags = tags.filter(
     (it) => defaultResultFilters.tags[it._id] === undefined,
@@ -792,7 +792,7 @@ export function updateTagsDropdownOptions(): void {
   html += "<option value='none'>no tag</option>";
 
   for (const tag of tags) {
-    html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
+    html += `<option value="${tag._id}" filter="${tag.name}">${tag.name}</option>`;
   }
 
   el.innerHTML = html;
@@ -881,7 +881,7 @@ function tagDropdownUpdate(): void {
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags",
   );
 
-  if (getTags().length === 0) {
+  if (__nonReactive.getTags().length === 0) {
     tagsSection?.hide();
     if (groupSelects["tags"]) {
       groupSelects["tags"].destroy();

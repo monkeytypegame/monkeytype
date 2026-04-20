@@ -41,7 +41,7 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
-import { getActiveTags, fillTagsCollection } from "./collections/tags";
+import { fillTagsCollection, __nonReactive } from "./collections/tags";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -396,7 +396,7 @@ export async function getUserAverage10<M extends Mode>(
 
   function cont(): [number, number] {
     const activeTagIds: string[] = [];
-    getActiveTags().forEach((tag) => {
+    __nonReactive.getActiveTags().forEach((tag) => {
       activeTagIds.push(tag._id);
     });
 
@@ -479,7 +479,7 @@ export async function getUserDailyBest<M extends Mode>(
 
   function cont(): number {
     const activeTagIds: string[] = [];
-    getActiveTags().forEach((tag) => {
+    __nonReactive.getActiveTags().forEach((tag) => {
       activeTagIds.push(tag._id);
     });
 

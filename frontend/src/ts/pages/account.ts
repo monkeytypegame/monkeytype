@@ -1,6 +1,6 @@
 import * as DB from "../db";
 import * as ResultFilters from "../elements/account/result-filters";
-import { getTags, getTag } from "../collections/tags";
+import { __nonReactive } from "../collections/tags";
 import * as ChartController from "../controllers/chart-controller";
 
 import { Config } from "../config/store";
@@ -124,9 +124,9 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
   if (result.tags !== undefined && result.tags.length > 0) {
     tagNames = "";
     result.tags.forEach((tag) => {
-      const localTag = getTag(tag);
+      const localTag = __nonReactive.getTag(tag);
       if (localTag !== undefined) {
-        tagNames += localTag.display + ", ";
+        tagNames += localTag.name + ", ";
       }
     });
     tagNames = tagNames.substring(0, tagNames.length - 2);
@@ -424,14 +424,14 @@ async function fillContent(): Promise<void> {
       let tagHide = true;
       if (result.tags === undefined || result.tags.length === 0) {
         //no tags, show when no tag is enabled
-        if (getTags().length > 0) {
+        if (__nonReactive.getTags().length > 0) {
           if (ResultFilters.getFilter("tags", "none")) tagHide = false;
         } else {
           tagHide = false;
         }
       } else {
         //tags exist
-        const validTags = getTags().map((t) => t._id);
+        const validTags = __nonReactive.getTags().map((t) => t._id);
 
         result.tags.forEach((tag) => {
           //check if i even need to check tags anymore
@@ -981,9 +981,9 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      const localTag = getTag(tag);
+      const localTag = __nonReactive.getTag(tag);
       if (localTag !== undefined) {
-        tagNames.push(localTag.display);
+        tagNames.push(localTag.name);
       }
     }
   }

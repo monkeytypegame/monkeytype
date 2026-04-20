@@ -9,7 +9,7 @@ import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
 import {
-  getTags,
+  __nonReactive,
   toggleTagActive,
   useTagsLiveQuery,
 } from "../collections/tags";
@@ -529,7 +529,7 @@ createEffectOn(activeTags, refreshTagsSettingsSection);
 function refreshTagsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const tagsEl = qs(".pageSettings .section.tags .tagsList")?.empty();
-    getTags().forEach((tag) => {
+    __nonReactive.getTags().forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;

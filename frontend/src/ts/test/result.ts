@@ -46,12 +46,10 @@ import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import {
-  getActiveTags,
-  getTags,
-  getTag,
   getLocalTagPB,
   saveLocalTagPB,
   type TagItem,
+  __nonReactive,
 } from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
@@ -669,8 +667,8 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: TagItem[] = getActiveTags();
-  const userTagsCount = getTags().length;
+  const activeTags: TagItem[] = __nonReactive.getActiveTags();
+  const userTagsCount = __nonReactive.getTags().length;
 
   if (userTagsCount === 0) {
     qs("#result .stats .tags")?.hide();
@@ -708,7 +706,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.lazyMode,
     );
     qs("#result .stats .tags .bottom")?.appendHtml(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
+      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
@@ -763,7 +761,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             display: true,
-            content: `${tag.display} PB: ${Numbers.roundTo2(
+            content: `${tag.name} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb),
             ).toFixed(2)}`,
           },
@@ -1268,9 +1266,9 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      const localTag = getTag(tag);
+      const localTag = __nonReactive.getTag(tag);
       if (localTag !== undefined) {
-        tagNames.push(localTag.display);
+        tagNames.push(localTag.name);
       }
     }
   }
