@@ -27,6 +27,7 @@ import { baseKey } from "../queries/utils/keys";
 import { __nonReactive as tagsNonReactive } from "./tags";
 import { ExactlyOneTrue } from "../utils/types";
 import { isAuthenticated } from "../states/core";
+import { createEffectOn } from "../hooks/effects";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -482,3 +483,9 @@ export function deleteLocalTag(tagId: string): void {
     });
   }
 }
+
+createEffectOn(isAuthenticated, (hasUser) => {
+  if (hasUser) {
+    void resultsCollection.utils.refetch();
+  }
+});
