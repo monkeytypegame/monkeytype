@@ -6,8 +6,8 @@ import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
+import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
-import { getSnapshot } from "../../../db";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Formatting } from "../../../utils/format";
 import {
@@ -31,6 +31,7 @@ export function Charts(props: {
     getTypingSpeedUnit(getConfig.typingSpeedUnit),
   );
   const format = createMemo(() => new Formatting(getConfig));
+  const tags = useTagsLiveQuery();
 
   const resultsQuery = useLiveQuery((q) => {
     const state = props.queryState();
@@ -45,7 +46,7 @@ export function Charts(props: {
       {(results) => (
         <div class="flex flex-col gap-8">
           <div>
-            <FilterSummary filters={props.filters} />
+            <FilterSummary filters={props.filters} tags={tags()} />
             <HistoryChart
               results={results}
               beginAtZero={beginAtZero()}
@@ -72,7 +73,10 @@ export function Charts(props: {
   );
 }
 
-function FilterSummary(props: { filters: ResultFilters }): JSXElement {
+function FilterSummary(props: {
+  filters: ResultFilters;
+  tags: TagItem[];
+}): JSXElement {
   const Item = <
     T extends ResultFiltersKeys,
     K extends keyof ResultFilters[T],
@@ -123,9 +127,7 @@ function FilterSummary(props: { filters: ResultFilters }): JSXElement {
       <Item
         group="tags"
         icon="fa-tags"
-        format={(tag) =>
-          getSnapshot()?.tags.find((it) => it._id === tag)?.display ?? tag
-        }
+        format={(tag) => props.tags.find((it) => it._id === tag)?.name ?? tag}
       />
     </div>
   );

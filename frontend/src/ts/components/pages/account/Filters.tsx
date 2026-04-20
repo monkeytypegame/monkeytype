@@ -11,10 +11,10 @@ import { SetStoreFunction, unwrap } from "solid-js/store";
 import { z } from "zod";
 
 import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
+import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { SimpleModal } from "../../../elements/simple-modal";
-import { getSnapshot } from "../../../states/snapshot";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";
 import {
@@ -235,6 +235,7 @@ export function Filters(props: {
     );
   };
 
+  const tags = useTagsLiveQuery();
   const [isShowAdvanced, setShowAdvanced] = createSignal(false);
 
   const setFilter = (
@@ -267,7 +268,7 @@ export function Filters(props: {
           />
           <Button
             text="current settings"
-            onClick={() => props.onChangeFilters(fromCurrentSettings())}
+            onClick={() => props.onChangeFilters(fromCurrentSettings(tags()))}
           />
           <Button
             text="advanced"
@@ -324,8 +325,7 @@ export function Filters(props: {
               format={(tag) =>
                 tag === "none"
                   ? "no tag"
-                  : (getSnapshot()?.tags.find((it) => it._id === tag)
-                      ?.display ?? tag)
+                  : (tags().find((it) => it._id === tag)?.name ?? tag)
               }
             />
             <Dropdown
@@ -361,7 +361,7 @@ function noFilters(): ResultFilters {
   return filters;
 }
 
-function fromCurrentSettings(): ResultFilters {
+function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   const filters = noFilters();
 
   filters.pb.no = true;
@@ -424,8 +424,8 @@ function fromCurrentSettings(): ResultFilters {
 
   filters.tags["none"] = true;
 
-  getSnapshot()?.tags?.forEach((tag) => {
-    if (tag.active === true) {
+  tags.forEach((tag) => {
+    if (tag.active) {
       filters.tags["none"] = false;
       filters.tags[tag._id] = true;
     }

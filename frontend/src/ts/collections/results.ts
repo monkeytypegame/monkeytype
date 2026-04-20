@@ -24,9 +24,9 @@ import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { getSnapshot } from "../states/snapshot";
+import { __nonReactive as tagsNonReactive } from "./tags";
 import { ExactlyOneTrue } from "../utils/types";
-import { isLoggedIn } from "../states/core";
+import { isAuthenticated } from "../states/core";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -195,8 +195,10 @@ export const resultsCollection = createCollection(
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryFn: async () => {
-      if (!isLoggedIn()) return [];
-      const knownTagIds = new Set(getSnapshot()?.tags.map((it) => it._id));
+      if (!isAuthenticated()) return [];
+      const knownTagIds = new Set(
+        tagsNonReactive.getTags().map((it) => it._id),
+      );
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
@@ -414,9 +416,7 @@ export async function getUserAverage(
       lastDayOnly: boolean;
     }>,
 ): Promise<{ wpm: number; acc: number }> {
-  const activeTagIds = getSnapshot()
-    ?.tags.filter((it) => it.active === true)
-    .map((it) => it._id);
+  const activeTagIds = tagsNonReactive.getActiveTags().map((it) => it._id);
 
   const result = await createLiveQueryCollection((q) => {
     let query = q
@@ -424,8 +424,8 @@ export async function getUserAverage(
       .where(({ r }) =>
         or(
           false,
-          activeTagIds === undefined || activeTagIds.length === 0,
-          ...(activeTagIds ?? []).map((it) => inArray(it, r.tags)),
+          activeTagIds.length === 0,
+          ...activeTagIds.map((it) => inArray(it, r.tags)),
         ),
       );
 

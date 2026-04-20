@@ -4,9 +4,9 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
+import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getSnapshot } from "../../../db";
 import * as EditResultTagsModal from "../../../modals/edit-result-tags";
 import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
@@ -31,9 +31,12 @@ export function Table<M extends Mode>(props: {
     undefined,
   );
 
+  const tags = useTagsLiveQuery();
+
   const columns = createMemo(() =>
     getColumns<M>({
       format: new Formatting(getConfig),
+      tags: tags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);
         if (id !== undefined) showModal("MiniResultChartModal");
@@ -78,9 +81,11 @@ export function Table<M extends Mode>(props: {
 
 function getColumns<M extends Mode>({
   format,
+  tags,
   onMiniResultChartSelected,
 }: {
   format: Formatting;
+  tags: TagItem[];
   onMiniResultChartSelected(val: string): void;
 }): DataTableColumnDef<SnapshotResult<M>>[] {
   const defineColumn = createColumnHelper<SnapshotResult<M>>().accessor;
@@ -237,8 +242,8 @@ function getColumns<M extends Mode>({
                     .getValue()
                     .map(
                       (it) =>
-                        getSnapshot()?.tags.find((tag) => tag._id === it)
-                          ?.name ?? "unknown tag",
+                        tags.find((tag) => tag._id === it)?.name ??
+                        "unknown tag",
                     )
                     .join(", ")
                 : "no tags",

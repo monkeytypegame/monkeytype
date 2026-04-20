@@ -5,7 +5,9 @@ import defaultResultFilters from "../constants/default-result-filters";
 import { useLocalStorageStore } from "../hooks/useLocalStorageStore";
 import { isObject } from "../utils/misc";
 import { sanitize } from "../utils/sanitize";
-import { getSnapshot } from "./snapshot";
+import { useTagsLiveQuery } from "../collections/tags";
+
+const tags = useTagsLiveQuery();
 
 export const [filters, setFilters] = useLocalStorageStore({
   key: "resultFilters",
@@ -29,7 +31,7 @@ function migrateFilterStorage(input: unknown): ResultFilters {
 function updateFilterStorage(filters: ResultFilters): ResultFilters {
   const result = mergeWithDefaultFilters(filters);
   const newTags: Record<string, boolean> = { none: false };
-  const snapshotTags = getSnapshot()?.tags?.map((t) => t._id) ?? [];
+  const snapshotTags = tags().map((t) => t._id);
   const allKnownTagIds = new Set(["none", ...snapshotTags]);
 
   for (const tag of allKnownTagIds) {
@@ -42,6 +44,6 @@ function updateFilterStorage(filters: ResultFilters): ResultFilters {
 }
 
 createEffect(() => {
-  getSnapshot();
+  tags();
   setFilters(updateFilterStorage);
 });
