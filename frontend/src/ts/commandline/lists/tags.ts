@@ -83,7 +83,7 @@ function update(): void {
     shouldFocusTestUI: false,
     opensModal: true,
     exec: ({ commandlineModal }): void => {
-      EditTagsPopup.show("add", undefined, undefined, commandlineModal);
+      EditTagsPopup.show("add", undefined, commandlineModal);
     },
   });
 }

@@ -9,6 +9,7 @@ import {
   deleteTag,
   updateTagName,
   clearTagPBs,
+  __nonReactive,
 } from "../collections/tags";
 import { normalizeName } from "../utils/strings";
 
@@ -64,11 +65,12 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "save",
     beforeInitFn: (_thisPopup) => {
-      (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
+      const tag = __nonReactive.getTag(_thisPopup.parameters[0] as string);
+      (_thisPopup.inputs[0] as TextInput).initVal = tag?.name ?? "";
     },
     execFn: async (_thisPopup, propTagName) => {
       const tagName = TagNameSchema.parse(normalizeName(propTagName));
-      const tagId = _thisPopup.parameters[1] as string;
+      const tagId = _thisPopup.parameters[0] as string;
 
       try {
         await updateTagName({ tagId, newName: tagName });
@@ -89,10 +91,11 @@ const actionModals: Record<Action, SimpleModal> = {
     title: "Delete tag",
     buttonText: "delete",
     beforeInitFn: (_thisPopup) => {
-      _thisPopup.text = `Are you sure you want to delete tag ${_thisPopup.parameters[0]} ?`;
+      const tag = __nonReactive.getTag(_thisPopup.parameters[0] as string);
+      _thisPopup.text = `Are you sure you want to delete tag ${tag?.name ?? _thisPopup.parameters[0]}?`;
     },
     execFn: async (_thisPopup) => {
-      const tagId = _thisPopup.parameters[1] as string;
+      const tagId = _thisPopup.parameters[0] as string;
 
       try {
         await deleteTag({ tagId });
@@ -114,10 +117,11 @@ const actionModals: Record<Action, SimpleModal> = {
     title: "Clear personal bests",
     buttonText: "clear",
     beforeInitFn: (_thisPopup) => {
-      _thisPopup.text = `Are you sure you want to clear personal bests for tag ${_thisPopup.parameters[0]} ?`;
+      const tag = __nonReactive.getTag(_thisPopup.parameters[0] as string);
+      _thisPopup.text = `Are you sure you want to clear personal bests for tag ${tag?.name ?? _thisPopup.parameters[0]}?`;
     },
     execFn: async (_thisPopup) => {
-      const tagId = _thisPopup.parameters[1] as string;
+      const tagId = _thisPopup.parameters[0] as string;
 
       try {
         await clearTagPBs({ tagId });
@@ -137,14 +141,13 @@ const actionModals: Record<Action, SimpleModal> = {
 export function show(
   action: Action,
   id?: string,
-  name?: string,
   modalChain?: AnimatedModal,
 ): void {
   const options: ShowOptions = {
     modalChain,
     focusFirstInput: "focusAndSelect",
   };
-  if (action !== "add" && (name === undefined || id === undefined)) return;
+  if (action !== "add" && id === undefined) return;
 
-  actionModals[action].show([name ?? "", id ?? ""], options);
+  actionModals[action].show([id ?? ""], options);
 }
