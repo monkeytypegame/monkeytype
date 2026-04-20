@@ -1,5 +1,4 @@
 import Ape from "../ape";
-import * as DB from "../db";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
@@ -10,6 +9,7 @@ import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
 import { resultsCollection } from "../collections/results";
+import { __nonReactive, updateLocalTagPB } from "../collections/tags";
 
 type State = {
   resultId: string;
@@ -65,17 +65,17 @@ function appendButtons(): void {
   }
 
   const tagIds = new Set([
-    ...(DB.getSnapshot()?.tags.map((tag) => tag._id) ?? []),
+    ...__nonReactive.getTags().map((tag) => tag._id),
     ...state.tags,
   ]);
 
   buttonsEl.empty();
   for (const tagId of tagIds) {
-    const tag = DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+    const tag = __nonReactive.getTag(tagId);
     const button = document.createElement("button");
     button.classList.add("toggleTag");
     button.setAttribute("data-tag-id", tagId);
-    button.innerHTML = tag?.display ?? "unknown tag";
+    button.innerHTML = tag?.name ?? tag?._id ?? "unknown tag"; //this shouldnt happen?
     button.addEventListener("click", (e) => {
       toggleTag(tagId);
       updateActiveButtons();
@@ -133,7 +133,7 @@ async function save(): Promise<void> {
     ];
     result.tags = state.tags;
     tagsToUpdate.forEach((tag) => {
-      void DB.updateLocalTagPB(
+      updateLocalTagPB(
         tag,
         result.mode,
         result.mode2,
@@ -142,6 +142,7 @@ async function save(): Promise<void> {
         result.language,
         result.difficulty,
         result.lazyMode,
+        [],
       );
     });
   });

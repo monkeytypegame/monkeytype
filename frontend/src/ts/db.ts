@@ -24,7 +24,6 @@ import {
   Snapshot,
   SnapshotPreset,
   SnapshotResult,
-  SnapshotUserTag,
 } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
@@ -34,10 +33,7 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
-import {
-  findFastestResultByTagId,
-  insertLocalResult,
-} from "./collections/results";
+import { insertLocalResult } from "./collections/results";
 import { resultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
@@ -46,6 +42,7 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
+import { fillTagsCollection, __nonReactive } from "./collections/tags";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -199,40 +196,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.customThemes = userData.customThemes ?? [];
 
-    // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
-
-    // userDataTags.forEach((tag) => {
-    //   tag.display = tag.name.replaceAll("_", " ");
-    //   tag.personalBests ??= {
-    //     time: {},
-    //     words: {},
-    //     quote: {},
-    //     zen: {},
-    //     custom: {},
-    //   };
-
-    //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-    //     tag.personalBests[mode as keyof PersonalBests] ??= {};
-    //   }
-    // });
-
-    // snap.tags = userDataTags;
-
-    snap.tags =
-      userData.tags?.map((tag) => ({
-        ...tag,
-        display: tag.name.replace(/_/g, " "),
-      })) ?? [];
-
-    snap.tags = snap.tags?.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      } else if (a.name < b.name) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+    fillTagsCollection(userData.tags ?? []);
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
@@ -367,37 +331,6 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-export async function getActiveTagsPB<M extends Mode>(
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: string,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<number> {
-  const snapshot = getSnapshot();
-  if (!snapshot) return 0;
-
-  let tagPbWpm = 0;
-  for (const tag of snapshot.tags) {
-    if (!tag.active) continue;
-    const currTagPB = await getLocalTagPB(
-      tag._id,
-      mode,
-      mode2,
-      punctuation,
-      numbers,
-      language,
-      difficulty,
-      lazyMode,
-    );
-    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
-  }
-
-  return tagPbWpm;
-}
-
 export async function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
@@ -501,212 +434,6 @@ function saveLocalPB<M extends Mode>(
   if (dbSnapshot !== null) {
     cont();
   }
-}
-
-export async function getLocalTagPB<M extends Mode>(
-  tagId: string,
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: string,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<number> {
-  if (dbSnapshot === null) return 0;
-
-  let ret = 0;
-
-  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
-
-  if (filteredtag === undefined) return ret;
-
-  filteredtag.personalBests ??= {
-    time: {},
-    words: {},
-    quote: {},
-    zen: {},
-    custom: {},
-  };
-
-  filteredtag.personalBests[mode] ??= {
-    [mode2]: [],
-  };
-
-  filteredtag.personalBests[mode][mode2] ??=
-    [] as unknown as PersonalBests[M][Mode2<M>];
-
-  const personalBests = (filteredtag.personalBests[mode][mode2] ??
-    []) as PersonalBest[];
-
-  ret =
-    personalBests.find(
-      (pb) =>
-        (pb.punctuation ?? false) === punctuation &&
-        (pb.numbers ?? false) === numbers &&
-        pb.difficulty === difficulty &&
-        pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode)),
-    )?.wpm ?? 0;
-
-  return ret;
-}
-
-export async function saveLocalTagPB<M extends Mode>(
-  tagId: string,
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: Language,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-  wpm: number,
-  acc: number,
-  raw: number,
-  consistency: number,
-): Promise<number | undefined> {
-  if (!dbSnapshot) return;
-  if (mode === "quote") return;
-  function cont(): void {
-    const filteredtag = dbSnapshot?.tags?.find(
-      (t) => t._id === tagId,
-    ) as SnapshotUserTag;
-
-    filteredtag.personalBests ??= {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
-
-    filteredtag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
-
-    filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as PersonalBests[M][Mode2<M>];
-
-    try {
-      let found = false;
-
-      (
-        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          (pb.punctuation ?? false) === punctuation &&
-          (pb.numbers ?? false) === numbers &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          found = true;
-          pb.wpm = wpm;
-          pb.acc = acc;
-          pb.raw = raw;
-          pb.timestamp = Date.now();
-          pb.consistency = consistency;
-          pb.lazyMode = lazyMode;
-        }
-      });
-      if (!found) {
-        //nothing found
-        (
-          filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
-        ).push({
-          language,
-          difficulty,
-          lazyMode,
-          punctuation,
-          numbers,
-          wpm,
-          acc,
-          raw,
-          timestamp: Date.now(),
-          consistency,
-        });
-      }
-    } catch (e) {
-      //that mode or mode2 is not found
-      filteredtag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      filteredtag.personalBests[mode][mode2] = [
-        {
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          numbers: numbers,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        },
-      ] as unknown as PersonalBests[M][Mode2<M>];
-    }
-  }
-
-  if (dbSnapshot !== null) {
-    cont();
-  }
-
-  return;
-}
-export async function updateLocalTagPB(
-  tagId: string,
-  mode: Mode,
-  mode2: Mode2<Mode>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: Language,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<void> {
-  if (dbSnapshot === null) return;
-
-  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
-
-  if (filteredtag === undefined) return;
-
-  const fastest = await findFastestResultByTagId({
-    tagId,
-    mode,
-    mode2,
-    punctuation,
-    numbers,
-    language,
-    difficulty,
-    lazyMode,
-  });
-
-  const pb = {
-    wpm: fastest?.wpm ?? 0,
-    acc: fastest?.acc ?? 0,
-    rawWpm: fastest?.rawWpm ?? 0,
-    consistency: fastest?.consistency ?? 0,
-  };
-
-  await saveLocalTagPB(
-    tagId,
-    mode,
-    mode2,
-    punctuation,
-    numbers,
-    language,
-    difficulty,
-    lazyMode,
-    pb.wpm,
-    pb.acc,
-    pb.rawWpm,
-    pb.consistency,
-  );
 }
 
 export async function updateLbMemory<M extends Mode>(
@@ -966,50 +693,4 @@ export function isFriend(uid: string | undefined): boolean {
   return Object.entries(snapshot.connections).some(
     ([receiverUid, status]) => receiverUid === uid && status === "accepted",
   );
-}
-
-// export async function DB.getLocalTagPB(tagId) {
-//   function cont() {
-//     let ret = 0;
-//     try {
-//       ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
-//       if (ret === undefined) {
-//         ret = 0;
-//       }
-//       return ret;
-//     } catch (e) {
-//       return ret;
-//     }
-//   }
-
-//   const retval = dbSnapshot !== null ? cont() : undefined;
-
-//   return retval;
-// }
-
-// export async functio(tagId, wpm) {
-//   function cont() {
-//     dbSnapshot.tags.forEach((tag) => {
-//       if (tag._id === tagId) {
-//         tag.pb = wpm;
-//       }
-//     });
-//   }
-
-//   if (dbSnapshot !== null) {
-//     cont();
-//   }
-// }
-
-export function updateTagById(
-  tagId: string,
-  update: (old: SnapshotUserTag) => SnapshotUserTag,
-): void {
-  if (dbSnapshot === undefined) return;
-
-  dbSnapshot.tags = dbSnapshot?.tags.map((it) => {
-    if (it._id !== tagId) return it;
-    return update(it);
-  });
-  setSnapshot(dbSnapshot);
 }

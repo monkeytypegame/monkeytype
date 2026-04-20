@@ -1,4 +1,4 @@
-import { User, UserProfileDetails, UserTag } from "@monkeytype/schemas/users";
+import { User, UserProfileDetails } from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
@@ -10,11 +10,6 @@ import {
 import { Preset } from "@monkeytype/schemas/presets";
 import { Language } from "@monkeytype/schemas/languages";
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
-
-export type SnapshotUserTag = UserTag & {
-  active?: boolean;
-  display: string;
-};
 
 export type SnapshotResult<M extends Mode> = Omit<
   Result<M>,
@@ -74,7 +69,6 @@ export type Snapshot = Omit<
   maxStreak: number;
   isPremium: boolean;
   streakHourOffset?: number;
-  tags: SnapshotUserTag[];
   presets: SnapshotPreset[];
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
@@ -101,7 +95,6 @@ const defaultSnap = {
   config: getDefaultConfig(),
   customThemes: [],
   presets: [],
-  tags: [],
   banned: undefined,
   verified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },

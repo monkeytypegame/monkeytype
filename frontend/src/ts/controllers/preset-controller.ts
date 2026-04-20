@@ -8,9 +8,14 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
-import * as TagController from "./tag-controller";
+import {
+  clearActiveTags,
+  setTagActive,
+  saveActiveToLocalStorage,
+} from "../collections/tags";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
+import * as ModesNotice from "../elements/modes-notice";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
@@ -34,14 +39,15 @@ export async function apply(_id: string): Promise<void> {
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")
   ) {
-    TagController.clear(true);
+    clearActiveTags(true);
     if (presetToApply.config.tags) {
       for (const tagId of presetToApply.config.tags) {
-        TagController.set(tagId, true, false);
+        setTagActive(tagId, true, false);
       }
-      TagController.saveActiveToLocalStorage();
+      saveActiveToLocalStorage();
     }
   }
+  void ModesNotice.update();
   TestLogic.restart();
   showSuccessNotification("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();

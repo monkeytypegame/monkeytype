@@ -1,16 +1,20 @@
-import Ape from "../ape";
-import * as DB from "../db";
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
-import { SnapshotUserTag } from "../constants/default-snapshot";
 import { IsValidResponse } from "../types/validation";
+import {
+  insertTag,
+  deleteTag,
+  updateTagName,
+  clearTagPBs,
+  __nonReactive,
+} from "../collections/tags";
 import { normalizeName } from "../utils/strings";
 import { deleteLocalTag } from "../collections/results";
 
-function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
-  return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+function errorMessage(e: unknown): string {
+  return e instanceof Error ? e.message : String(e);
 }
 
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
@@ -34,35 +38,18 @@ const actionModals: Record<Action, SimpleModal> = {
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
       const tagName = TagNameSchema.parse(normalizeName(propTagName));
-      const response = await Ape.users.createTag({ body: { tagName } });
 
-      if (response.status !== 200) {
+      try {
+        //todo: do we await? if we do, optimistic updates are kinda pointless?
+        await insertTag({ name: tagName });
+      } catch (e) {
         return {
           status: "error",
-          message:
-            "Failed to add tag: " +
-            response.body.message.replace(tagName, propTagName),
-          notificationOptions: { response },
+          message: "Failed to add tag: " + errorMessage(e),
         };
       }
 
-      const snap = DB.getSnapshot();
-      snap?.tags?.push({
-        display: tagName.replace(/_/g, " "),
-        name: tagName,
-        _id: response.body.data._id,
-        personalBests: {
-          time: {},
-          words: {},
-          quote: {},
-          zen: {},
-          custom: {},
-        },
-      });
-      DB.setSnapshot(snap);
-
       void Settings.update();
-
       return { status: "success", message: `Tag added` };
     },
   }),
@@ -78,29 +65,20 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "save",
     beforeInitFn: (_thisPopup) => {
-      (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
+      const tag = __nonReactive.getTag(_thisPopup.parameters[0] as string);
+      (_thisPopup.inputs[0] as TextInput).initVal = tag?.name ?? "";
     },
     execFn: async (_thisPopup, propTagName) => {
       const tagName = TagNameSchema.parse(normalizeName(propTagName));
-      const tagId = _thisPopup.parameters[1] as string;
+      const tagId = _thisPopup.parameters[0] as string;
 
-      const response = await Ape.users.editTag({
-        body: { tagId, newName: tagName },
-      });
-
-      if (response.status !== 200) {
+      try {
+        await updateTagName({ tagId, newName: tagName });
+      } catch (e) {
         return {
           status: "error",
-          message: "Failed to edit tag",
-          notificationOptions: { response },
+          message: "Failed to update tag: " + errorMessage(e),
         };
-      }
-
-      const matchingTag = getTagFromSnapshot(tagId);
-
-      if (matchingTag !== undefined) {
-        matchingTag.name = tagName;
-        matchingTag.display = tagName.replace(/_/g, " ");
       }
 
       void Settings.update();
@@ -113,27 +91,22 @@ const actionModals: Record<Action, SimpleModal> = {
     title: "Delete tag",
     buttonText: "delete",
     beforeInitFn: (_thisPopup) => {
-      _thisPopup.text = `Are you sure you want to delete tag ${_thisPopup.parameters[0]} ?`;
+      const tag = __nonReactive.getTag(_thisPopup.parameters[0] as string);
+      _thisPopup.text = `Are you sure you want to delete tag ${tag?.name ?? _thisPopup.parameters[0]}?`;
     },
     execFn: async (_thisPopup) => {
-      const tagId = _thisPopup.parameters[1] as string;
-      const response = await Ape.users.deleteTag({ params: { tagId } });
+      const tagId = _thisPopup.parameters[0] as string;
 
-      if (response.status !== 200) {
+      try {
+        await deleteTag({ tagId });
+      } catch (e) {
         return {
           status: "error",
-          message: "Failed to remove tag",
-          notificationOptions: { response },
+          message: "Failed to remove tag: " + errorMessage(e),
         };
       }
 
-      const snapshot = DB.getSnapshot();
-      if (snapshot?.tags) {
-        snapshot.tags = snapshot.tags.filter((it) => it._id !== tagId);
-      }
-
       deleteLocalTag(tagId);
-
       void Settings.update();
 
       return { status: "success", message: `Tag removed` };
@@ -144,32 +117,20 @@ const actionModals: Record<Action, SimpleModal> = {
     title: "Clear personal bests",
     buttonText: "clear",
     beforeInitFn: (_thisPopup) => {
-      _thisPopup.text = `Are you sure you want to clear personal bests for tag ${_thisPopup.parameters[0]} ?`;
+      const tag = __nonReactive.getTag(_thisPopup.parameters[0] as string);
+      _thisPopup.text = `Are you sure you want to clear personal bests for tag ${tag?.name ?? _thisPopup.parameters[0]}?`;
     },
     execFn: async (_thisPopup) => {
-      const tagId = _thisPopup.parameters[1] as string;
-      const response = await Ape.users.deleteTagPersonalBest({
-        params: { tagId },
-      });
+      const tagId = _thisPopup.parameters[0] as string;
 
-      if (response.status !== 200) {
+      try {
+        await clearTagPBs({ tagId });
+      } catch (e) {
         return {
           status: "error",
-          message: "Failed to clear tag pb",
-          notificationOptions: { response },
+          message: "Failed to clear tag PBs: " + errorMessage(e),
         };
       }
-
-      DB.updateTagById(tagId, (it) => ({
-        ...it,
-        personalBests: {
-          time: {},
-          words: {},
-          quote: {},
-          zen: {},
-          custom: {},
-        },
-      }));
 
       void Settings.update();
       return { status: "success", message: `Tag PB cleared` };
@@ -180,14 +141,13 @@ const actionModals: Record<Action, SimpleModal> = {
 export function show(
   action: Action,
   id?: string,
-  name?: string,
   modalChain?: AnimatedModal,
 ): void {
   const options: ShowOptions = {
     modalChain,
     focusFirstInput: "focusAndSelect",
   };
-  if (action !== "add" && (name === undefined || id === undefined)) return;
+  if (action !== "add" && id === undefined) return;
 
-  actionModals[action].show([name ?? "", id ?? ""], options);
+  actionModals[action].show([id ?? ""], options);
 }
