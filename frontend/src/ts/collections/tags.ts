@@ -109,6 +109,12 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to update tag: ${response.body.message}`);
       }
+
+      tagsCollection.utils.writeUpdate({
+        _id: tagId,
+        name: newName,
+        display: newName.replaceAll("_", " "),
+      });
     },
   }),
   clearTagPBs: createOptimisticAction<ActionType["clearTagPBs"]>({
@@ -130,6 +136,17 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to clear tag PBs: ${response.body.message}`);
       }
+
+      tagsCollection.utils.writeUpdate({
+        _id: tagId,
+        personalBests: {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+        },
+      });
     },
   }),
   deleteTag: createOptimisticAction<ActionType["deleteTag"]>({
