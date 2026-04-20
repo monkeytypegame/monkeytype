@@ -26,7 +26,7 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { getSnapshot } from "../states/snapshot";
 import { ExactlyOneTrue } from "../utils/types";
-import { isLoggedIn } from "../states/core";
+import { isAuthenticated } from "../states/core";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -195,7 +195,7 @@ export const resultsCollection = createCollection(
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryFn: async () => {
-      if (!isLoggedIn()) return [];
+      if (!isAuthenticated()) return [];
       const knownTagIds = new Set(getSnapshot()?.tags.map((it) => it._id));
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
