@@ -4,12 +4,17 @@ import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
+import { SnapshotUserTag } from "../constants/default-snapshot";
 import { IsValidResponse } from "../types/validation";
+import { normalizeName } from "../utils/strings";
 import { deleteLocalTag } from "../collections/results";
 
-const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
+function getTagFromSnapshot(tagId: string): SnapshotUserTag | undefined {
+  return DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+}
+
 const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
-  const validationResult = TagNameSchema.safeParse(cleanTagName(tagName));
+  const validationResult = TagNameSchema.safeParse(normalizeName(tagName));
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
 };
@@ -28,7 +33,7 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     buttonText: "add",
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = cleanTagName(propTagName);
+      const tagName = TagNameSchema.parse(normalizeName(propTagName));
       const response = await Ape.users.createTag({ body: { tagName } });
 
       if (response.status !== 200) {
@@ -43,8 +48,8 @@ const actionModals: Record<Action, SimpleModal> = {
 
       const snap = DB.getSnapshot();
       snap?.tags?.push({
-        display: propTagName,
-        name: response.body.data.name,
+        display: tagName.replace(/_/g, " "),
+        name: tagName,
         _id: response.body.data._id,
         personalBests: {
           time: {},
@@ -76,7 +81,7 @@ const actionModals: Record<Action, SimpleModal> = {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
     },
     execFn: async (_thisPopup, propTagName) => {
-      const tagName = cleanTagName(propTagName);
+      const tagName = TagNameSchema.parse(normalizeName(propTagName));
       const tagId = _thisPopup.parameters[1] as string;
 
       const response = await Ape.users.editTag({
@@ -91,11 +96,12 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      DB.updateTagById(tagId, (it) => ({
-        ...it,
-        name: tagName,
-        display: propTagName,
-      }));
+      const matchingTag = getTagFromSnapshot(tagId);
+
+      if (matchingTag !== undefined) {
+        matchingTag.name = tagName;
+        matchingTag.display = tagName.replace(/_/g, " ");
+      }
 
       void Settings.update();
 

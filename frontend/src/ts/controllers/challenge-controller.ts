@@ -341,7 +341,7 @@ export async function setup(challengeName: string): Promise<boolean> {
           nosave: true,
         });
       }
-    } else if (challenge.type === "special") {
+    } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         setConfig("mode", "time", {
@@ -368,6 +368,23 @@ export async function setup(challengeName: string): Promise<boolean> {
         setConfig("keymapMode", "static", {
           nosave: true,
         });
+      } else if (challenge.name === "wingdings") {
+        // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
+        setConfig("mode", "words", {
+          nosave: true,
+        });
+        setConfig("words", 10, {
+          nosave: true,
+        });
+        setConfig("difficulty", "master", {
+          nosave: true,
+        });
+        setConfig("fontFamily", "Wingdings", {
+          nosave: true,
+        });
+        setConfig("keymapMode", "off", {
+          nosave: true,
+        });
       }
     }
     notitext = challenge.message;
@@ -375,9 +392,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
-      showNoticeNotification(`Challenge '${challenge.display}' loaded.`);
+      showSuccessNotification(`Challenge '${challenge.display}' loaded.`);
     } else {
-      showNoticeNotification("Challenge loaded. " + notitext);
+      showSuccessNotification("Challenge loaded. " + notitext);
     }
     setLoadedChallenge(challenge);
     challengeLoading = false;
@@ -405,6 +422,7 @@ configEvent.subscribe(({ key }) => {
       "keymapMode",
       "keymapLayout",
       "layout",
+      "fontFamily",
     ].includes(key)
   ) {
     clearActive();

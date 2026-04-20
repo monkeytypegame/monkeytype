@@ -32,7 +32,8 @@ import * as TestStats from "../test/test-stats";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
-import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
+import { isAuthAvailable, signOut } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {
   hideFpsCounter,

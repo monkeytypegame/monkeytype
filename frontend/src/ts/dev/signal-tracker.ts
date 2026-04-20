@@ -32,13 +32,14 @@ type SolidOwner = {
 function getCallerInfo(): { isUserCode: boolean; source: string } {
   const stack = new Error().stack;
   if (stack === undefined) return { isUserCode: false, source: "" };
-  const frames = stack.split("\n").slice(1);
+  const frames = stack.split("\n");
 
   if (frames.some((f) => f.includes("useRefWithUtils"))) {
     return { isUserCode: false, source: "" };
   }
 
   for (const frame of frames.toReversed()) {
+    if (frame === "" || frame === "Error") continue;
     if (frame.includes("signal-tracker")) continue;
     if (frame.includes("solid-js")) continue;
     if (frame.includes("@solid-refresh")) continue;
@@ -132,7 +133,7 @@ if (DEV) {
     const mirrors: { node: SolidNode; set: (v: unknown) => void }[] = [];
 
     for (const [node, info] of pendingNodes) {
-      const [get, set] = createSignal<unknown>(node.value);
+      const [get, set] = createSignal(node.value);
 
       trackedSignals.push({
         name: info.name,

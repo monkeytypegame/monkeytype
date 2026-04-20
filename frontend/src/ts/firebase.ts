@@ -69,9 +69,9 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
-        await callback(true, user);
         setUserId(user?.uid ?? null);
         setUserVerified(user?.emailVerified ?? false);
+        await callback(true, user);
       }
     });
   } catch (e) {
@@ -91,10 +91,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
   } finally {
     resolveAuthPromise();
   }
-}
-
-export function isAuthenticated(): boolean {
-  return Auth?.currentUser !== undefined && Auth?.currentUser !== null;
 }
 
 /**
@@ -161,6 +157,7 @@ export async function signInWithPopup(
     googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
     ignoreAuthCallback = false;
+    setUserId(signedInUser.user.uid);
     await readyCallback?.(true, signedInUser.user);
   }
 }

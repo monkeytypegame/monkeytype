@@ -18,6 +18,7 @@ import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { InputField } from "../ui/form/InputField";
+import { LabeledField } from "../ui/form/LabeledField";
 import { fieldMandatory } from "../ui/form/utils";
 import SlimSelect from "../ui/SlimSelect";
 
@@ -123,8 +124,7 @@ export function QuoteSubmitModal(): JSXElement {
           name="text"
           validators={{ onChange: fieldMandatory<string>() }}
           children={(field) => (
-            <div class="grid gap-1">
-              <label class="text-xs text-sub">quote</label>
+            <LabeledField label="quote">
               <div class="relative">
                 <textarea
                   class="bg-bg-secondary w-full rounded p-2 text-text"
@@ -140,36 +140,34 @@ export function QuoteSubmitModal(): JSXElement {
                   {250 - field().state.value.length}
                 </div>
               </div>
-            </div>
+            </LabeledField>
           )}
         />
         <form.Field
           name="source"
           validators={{ onChange: fieldMandatory<string>() }}
           children={(field) => (
-            <div class="grid gap-1">
-              <label class="text-xs text-sub">source</label>
+            <LabeledField label="source">
               <InputField
                 class="bg-bg-secondary w-full rounded p-2 text-text"
                 type="text"
                 field={field}
                 autocomplete="off"
               />
-            </div>
+            </LabeledField>
           )}
         />
         <form.Field
           name="language"
           children={(field) => (
-            <div class="grid gap-1">
-              <label class="text-xs text-sub">language</label>
+            <LabeledField label="language">
               <SlimSelect
                 appendTo="container"
                 options={languageOptions}
                 selected={field().state.value}
                 onChange={(val) => field().handleChange(val ?? "")}
               />
-            </div>
+            </LabeledField>
           )}
         />
         <div ref={captchaRef}></div>

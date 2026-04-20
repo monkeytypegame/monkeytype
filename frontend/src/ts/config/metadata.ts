@@ -1,7 +1,7 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "../db";
 import { showNoticeNotification } from "../states/notifications";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { canSetFunboxWithConfig } from "./funbox-validation";
 import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";
@@ -620,6 +620,14 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live speed style",
     changeRequiresRestart: false,
     group: "appearance",
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
+      }
+      return {};
+    },
   },
   liveAccStyle: {
     key: "liveAccStyle",
@@ -627,6 +635,14 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "live accuracy style",
     changeRequiresRestart: false,
     group: "appearance",
+    overrideConfig: ({ value }) => {
+      if (value === "text") {
+        return {
+          monkey: false,
+        };
+      }
+      return {};
+    },
   },
   liveBurstStyle: {
     key: "liveBurstStyle",
@@ -1005,6 +1021,21 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "monkey",
     changeRequiresRestart: false,
     group: "hidden",
+    overrideConfig: ({ value, currentConfig }) => {
+      if (value) {
+        return {
+          liveSpeedStyle:
+            currentConfig.liveSpeedStyle === "text"
+              ? "mini"
+              : currentConfig.liveSpeedStyle,
+          liveAccStyle:
+            currentConfig.liveAccStyle === "text"
+              ? "mini"
+              : currentConfig.liveAccStyle,
+        };
+      }
+      return {};
+    },
   },
   monkeyPowerLevel: {
     key: "monkeyPowerLevel",

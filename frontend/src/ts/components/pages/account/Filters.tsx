@@ -19,7 +19,7 @@ import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";
 import {
   getLanguageDisplayString,
-  replaceSpacesWithUnderscores,
+  normalizeName,
   replaceUnderscoresWithSpaces,
 } from "../../../utils/strings";
 import { AnimeShow } from "../../common/anime";
@@ -34,7 +34,7 @@ const presetNameValidation = async (
   tagName: string,
 ): Promise<IsValidResponse> => {
   const validationResult = ResultFiltersSchema.shape.name.safeParse(
-    replaceSpacesWithUnderscores(tagName),
+    normalizeName(tagName),
   );
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
@@ -64,7 +64,7 @@ const newFilterPresetModal = new SimpleModal({
     try {
       const tx = resultFilterPresetsCollection.insert({
         ...structuredClone(filters),
-        name: replaceSpacesWithUnderscores(name),
+        name: normalizeName(name),
       });
       await tx.isPersisted.promise;
       return { status: "success", message: "Filter preset created" };

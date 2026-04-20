@@ -7,6 +7,9 @@
         "argsIgnorePattern": "^(_|e|event)",
         "caughtErrorsIgnorePattern": "^(_|e|error)",
         "varsIgnorePattern": "^_",
+        "fix": {
+          "imports": "safe-fix",
+        },
       },
     ],
     "no-var": "error",

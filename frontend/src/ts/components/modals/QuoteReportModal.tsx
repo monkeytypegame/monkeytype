@@ -19,6 +19,7 @@ import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
+import { LabeledField } from "../ui/form/LabeledField";
 import { fieldMandatory } from "../ui/form/utils";
 import SlimSelect from "../ui/SlimSelect";
 
@@ -133,17 +134,15 @@ export function QuoteReportModal(): JSXElement {
         <br />
         <span class="text-error">Please add comments in English only.</span>
         <Separator />
-        <div class="grid gap-1">
-          <label class="text-sub">quote</label>
+        <LabeledField label="quote">
           <div class="text-xl text-text" dir="auto">
             {quoteText()}
           </div>
-        </div>
+        </LabeledField>
         <form.Field
           name="reason"
           children={(field) => (
-            <div class="grid gap-1">
-              <label class="text-sub">reason</label>
+            <LabeledField label="reason">
               <SlimSelect
                 appendTo="container"
                 options={[
@@ -167,15 +166,14 @@ export function QuoteReportModal(): JSXElement {
                 }
                 settings={{ showSearch: false }}
               />
-            </div>
+            </LabeledField>
           )}
         />
         <form.Field
           name="comment"
           validators={{ onChange: fieldMandatory<string>() }}
           children={(field) => (
-            <div class="grid gap-1">
-              <label class="text-sub">comment</label>
+            <LabeledField label="comment">
               <div class="relative">
                 <textarea
                   class="bg-bg-secondary min-h-50 w-full rounded p-2 text-text"
@@ -190,7 +188,7 @@ export function QuoteReportModal(): JSXElement {
                   {250 - field().state.value.length}
                 </div>
               </div>
-            </div>
+            </LabeledField>
           )}
         />
         <div ref={captchaRef}></div>

@@ -19,7 +19,7 @@ import { addFriend, isFriend } from "../../../db";
 import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
-import { getUserId, isLoggedIn } from "../../../states/core";
+import { getUserId, isAuthenticated } from "../../../states/core";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -113,7 +113,7 @@ function ActionButtons(props: {
 
   const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
-    isLoggedIn() && !isUsersProfile() && !hasFriendRequest();
+    isAuthenticated() && !isUsersProfile() && !hasFriendRequest();
 
   createEffect(() => {
     setHasFriendRequest(
@@ -306,7 +306,9 @@ function AvatarAndName(props: {
             class="w-max"
             hideTextOnSmallScreens={false}
           />
-          <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
+          <Show
+            when={props.profile.inventory?.badges.some((it) => !it.selected)}
+          >
             <div class="flex flex-row gap-1">
               <For
                 each={props.profile.inventory?.badges

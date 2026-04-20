@@ -271,6 +271,7 @@ export const LanguageSchema = z.enum(
     "urdu",
     "urdu_1k",
     "urdu_5k",
+    "urdu_roman",
     "urdish",
     "albanian",
     "albanian_1k",
@@ -437,6 +438,8 @@ export const LanguageSchema = z.enum(
     "code_cuda",
     "kinyarwanda",
     "pokemon_1k",
+    "kokanu",
+    "likanu",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
