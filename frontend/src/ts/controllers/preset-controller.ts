@@ -5,16 +5,13 @@ import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
-import {
-  getPreset as getPresetFromCollection,
-  PresetItem,
-} from "../collections/presets";
+import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
-  const presetToApply = getPresetFromCollection(_id);
+  const presetToApply = __nonReactive.getPreset(_id);
   if (presetToApply === undefined) {
     return;
   }

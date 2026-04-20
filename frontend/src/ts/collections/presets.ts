@@ -26,7 +26,9 @@ function toPresetItem(preset: Preset): PresetItem {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function usePresetsLiveQuery() {
   return useLiveQuery((q) => {
-    return q.from({ preset: presetsCollection }).select((p) => ({ ...p }));
+    return q
+      .from({ preset: presetsCollection })
+      .orderBy(({ preset }) => preset.name, "asc");
   });
 }
 
@@ -156,25 +158,20 @@ const actions = {
 
 // --- Public API ---
 
-// todo: this might not be reactive
-export function getPresets(): PresetItem[] {
-  return [...presetsCollection.values()];
+function getPresets(): PresetItem[] {
+  return [...presetsCollection.values()].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 }
 
-// todo: this might not be reactive
-export function getPreset(id: string): PresetItem | undefined {
+function getPreset(id: string): PresetItem | undefined {
   return presetsCollection.get(id);
 }
 
 export function fillPresetsCollection(presets: Preset[]): void {
-  const presetItems = presets
-    .map(toPresetItem)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const presetItems = presets.map(toPresetItem);
 
   presetsCollection.utils.writeBatch(() => {
-    presetsCollection.forEach((preset) => {
-      presetsCollection.utils.writeDelete(preset._id);
-    });
     presetItems.forEach((item) => {
       presetsCollection.utils.writeInsert(item);
     });
@@ -201,3 +198,11 @@ export async function deletePreset(
   const transaction = actions.deletePreset(params);
   await transaction.isPersisted.promise;
 }
+
+/**
+ * Used for non reactive access. Do not use in Solid components.
+ */
+export const __nonReactive = {
+  getPresets,
+  getPreset,
+};

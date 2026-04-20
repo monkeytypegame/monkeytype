@@ -33,7 +33,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
-import { getPresets, PresetItem } from "../collections/presets";
+import { __nonReactive, usePresetsLiveQuery } from "../collections/presets";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { ThemesList, ThemeWithName } from "../constants/themes";
@@ -51,6 +51,7 @@ import { authEvent } from "../events/auth";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
+import { createEffectOn } from "../hooks/effects";
 
 let settingsInitialized = false;
 
@@ -553,14 +554,17 @@ function refreshTagsSettingsSection(): void {
   }
 }
 
+const presetsQuery = usePresetsLiveQuery();
+createEffectOn(presetsQuery, refreshPresetsSettingsSection);
+
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = qs(
       ".pageSettings .section.presets .presetsList",
     )?.empty();
-    getPresets().forEach((preset: PresetItem) => {
+    __nonReactive.getPresets().forEach((preset) => {
       presetsEl?.appendHtml(`
-      <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
+      <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}">
         <button class="presetButton">${preset.display}</button>
         <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
@@ -569,7 +573,7 @@ function refreshPresetsSettingsSection(): void {
           <i class="fas fa-trash fa-fw"></i>
         </button>
       </div>
-      
+
       `);
     });
     qs(".pageSettings .section.presets")?.show();

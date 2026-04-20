@@ -13,7 +13,7 @@ import {
   PresetTypeSchema,
 } from "@monkeytype/schemas/presets";
 import {
-  getPreset,
+  __nonReactive,
   addPreset,
   editPreset,
   deletePreset,
@@ -112,7 +112,7 @@ function initializeEditState(id: string): void {
   for (const key of state.checkboxes.keys()) {
     state.checkboxes.set(key, false);
   }
-  const edittedPreset = getPreset(id);
+  const edittedPreset = __nonReactive.getPreset(id);
   if (edittedPreset === undefined) {
     showErrorNotification("Preset not found");
     return;
@@ -289,7 +289,7 @@ async function apply(): Promise<void> {
       });
       showSuccessNotification("Preset added", { durationMs: 2000 });
     } else if (action === "edit") {
-      const existing = getPreset(presetId);
+      const existing = __nonReactive.getPreset(presetId);
       if (existing === undefined) {
         showErrorNotification("Preset not found");
         return;
