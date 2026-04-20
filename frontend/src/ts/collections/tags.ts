@@ -21,19 +21,11 @@ import {
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 
-export type TagItem = UserTag & { active: boolean; display: string };
+export type TagItem = UserTag & { active: boolean };
 
 const queryKeys = {
   root: () => [...baseKey("tags", { isUserSpecific: true })],
 };
-
-function toTagItem(tag: UserTag): TagItem {
-  return {
-    ...tag,
-    active: false,
-    display: tag.name.replaceAll("_", " "),
-  };
-}
 
 const tagsCollection = createCollection(
   queryCollectionOptions({
@@ -80,17 +72,20 @@ const actions = {
         name,
         personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
         active: false,
-        display: name.replaceAll("_", " "),
       });
     },
     mutationFn: async ({ name }) => {
       const response = await Ape.users.createTag({
-        body: { tagName: name },
+        body: { tagName: name.replace(/ /g, "_") },
       });
       if (response.status !== 200) {
         throw new Error(`Failed to add tag: ${response.body.message}`);
       }
-      const newTag = toTagItem(response.body.data);
+      const newTag = {
+        ...response.body.data,
+        name: response.body.data.name.replace(/_/g, " "),
+        active: false,
+      };
 
       tagsCollection.utils.writeInsert(newTag);
     },
@@ -99,12 +94,11 @@ const actions = {
     onMutate: ({ tagId, newName }) => {
       tagsCollection.update(tagId, (tag) => {
         tag.name = newName;
-        tag.display = newName.replaceAll("_", " ");
       });
     },
     mutationFn: async ({ tagId, newName }) => {
       const response = await Ape.users.editTag({
-        body: { tagId, newName },
+        body: { tagId, newName: newName.replace(/ /g, "_") },
       });
       if (response.status !== 200) {
         throw new Error(`Failed to update tag: ${response.body.message}`);
@@ -113,7 +107,6 @@ const actions = {
       tagsCollection.utils.writeUpdate({
         _id: tagId,
         name: newName,
-        display: newName.replaceAll("_", " "),
       });
     },
   }),
@@ -212,7 +205,7 @@ export function fillTagsCollection(userTags: UserTag[]): void {
 
   const tagItems = userTags
     .map((tag) => ({
-      ...toTagItem(tag),
+      ...tag,
       active: activeIds.includes(tag._id),
     }))
     .sort((a, b) => a.name.localeCompare(b.name));

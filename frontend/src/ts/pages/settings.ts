@@ -536,13 +536,11 @@ function refreshTagsSettingsSection(): void {
       // }
       tagsEl?.appendHtml(`
 
-      <div class="buttons tag" data-id="${tag._id}" data-name="${
-        tag.name
-      }" data-display="${tag.display}">
+      <div class="buttons tag" data-id="${tag._id}" data-name="${tag.name}">
         <button class="tagButton ${tag.active ? "active" : ""}" active="${
           tag.active
         }">
-          ${tag.display}
+          ${tag.name}
         </button>
         <button class="clearPbButton" aria-label="clear tags personal bests" data-balloon-pos="left" >
           <i class="fas fa-crown fa-fw"></i>
