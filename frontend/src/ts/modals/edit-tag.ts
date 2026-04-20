@@ -100,6 +100,7 @@ const actionModals: Record<Action, SimpleModal> = {
 
       try {
         await deleteTag({ tagId });
+        deleteLocalTag(tagId);
       } catch (e) {
         return {
           status: "error",
