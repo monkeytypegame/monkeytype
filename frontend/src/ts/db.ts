@@ -24,7 +24,6 @@ import {
   Snapshot,
   SnapshotPreset,
   SnapshotResult,
-  SnapshotUserTag,
 } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
@@ -34,10 +33,7 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
-import {
-  findFastestResultByTagId,
-  insertLocalResult,
-} from "./collections/results";
+import { insertLocalResult } from "./collections/results";
 import { resultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
@@ -46,6 +42,7 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
+import { fillTagsCollection, __nonReactive } from "./collections/tags";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -199,40 +196,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.customThemes = userData.customThemes ?? [];
 
-    // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
-
-    // userDataTags.forEach((tag) => {
-    //   tag.display = tag.name.replaceAll("_", " ");
-    //   tag.personalBests ??= {
-    //     time: {},
-    //     words: {},
-    //     quote: {},
-    //     zen: {},
-    //     custom: {},
-    //   };
-
-    //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-    //     tag.personalBests[mode as keyof PersonalBests] ??= {};
-    //   }
-    // });
-
-    // snap.tags = userDataTags;
-
-    snap.tags =
-      userData.tags?.map((tag) => ({
-        ...tag,
-        display: tag.name.replace(/_/g, " "),
-      })) ?? [];
-
-    snap.tags = snap.tags?.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      } else if (a.name < b.name) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+    fillTagsCollection(userData.tags ?? []);
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
@@ -367,7 +331,90 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-export async function getActiveTagsPB<M extends Mode>(
+export async function getUserAverage10<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: string,
+  difficulty: Difficulty,
+  lazyMode: boolean,
+): Promise<[number, number]> {
+  const snapshot = getSnapshot();
+
+  if (!snapshot) return [0, 0];
+
+  function cont(): [number, number] {
+    const activeTagIds: string[] = [];
+    __nonReactive.getActiveTags().forEach((tag) => {
+      activeTagIds.push(tag._id);
+    });
+
+    let wpmSum = 0;
+    let accSum = 0;
+    let last10Wpm = 0;
+    let last10Acc = 0;
+    let count = 0;
+    let last10Count = 0;
+
+    if (snapshot?.results !== undefined) {
+      for (const result of snapshot.results) {
+        if (
+          result.mode === mode &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
+          result.language === language &&
+          result.difficulty === difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && !lazyMode)) &&
+          (activeTagIds.length === 0 ||
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
+        ) {
+          // Continue if the mode2 doesn't match and it's not a quote
+          if (
+            `${result.mode2}` !== `${mode2 as string | number}` &&
+            mode !== "quote"
+          ) {
+            //using template strings because legacy results might use numbers in mode2
+            continue;
+          }
+
+          // Grab the most recent results from the current mode
+          if (last10Count < 10) {
+            last10Wpm += result.wpm;
+            last10Acc += result.acc;
+            last10Count++;
+          }
+
+          // Check if the mode2 matches and if it does, add it to the sum, for quotes, this is the quote id
+          if (`${result.mode2}` === `${mode2 as string | number}`) {
+            //using template strings because legacy results might use numbers in mode2
+            wpmSum += result.wpm;
+            accSum += result.acc;
+            count++;
+
+            if (count >= 10) break;
+          }
+        }
+      }
+    }
+
+    // Return the last 10 average wpm & acc for quote
+    // if the current quote id has never been completed before by the user
+    if (count === 0 && mode === "quote") {
+      return [last10Wpm / last10Count, last10Acc / last10Count];
+    }
+
+    return [wpmSum / count, accSum / count];
+  }
+
+  const retval: [number, number] =
+    snapshot === null || (await getUserResults()) === null ? [0, 0] : cont();
+
+  return retval;
+}
+
+export async function getUserDailyBest<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   punctuation: boolean,
@@ -377,25 +424,57 @@ export async function getActiveTagsPB<M extends Mode>(
   lazyMode: boolean,
 ): Promise<number> {
   const snapshot = getSnapshot();
+
   if (!snapshot) return 0;
 
-  let tagPbWpm = 0;
-  for (const tag of snapshot.tags) {
-    if (!tag.active) continue;
-    const currTagPB = await getLocalTagPB(
-      tag._id,
-      mode,
-      mode2,
-      punctuation,
-      numbers,
-      language,
-      difficulty,
-      lazyMode,
-    );
-    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
+  function cont(): number {
+    const activeTagIds: string[] = [];
+    __nonReactive.getActiveTags().forEach((tag) => {
+      activeTagIds.push(tag._id);
+    });
+
+    let bestWpm = 0;
+
+    if (snapshot?.results !== undefined) {
+      for (const result of snapshot.results) {
+        if (
+          result.mode === mode &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
+          result.language === language &&
+          result.difficulty === difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && !lazyMode)) &&
+          (activeTagIds.length === 0 ||
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
+        ) {
+          if (result.timestamp < Date.now() - 86400000) {
+            continue;
+          }
+
+          // Continue if the mode2 doesn't match and it's not a quote
+          if (
+            `${result.mode2}` !== `${mode2 as string | number}` &&
+            mode !== "quote"
+          ) {
+            //using template strings because legacy results might use numbers in mode2
+            continue;
+          }
+
+          if (result.wpm > bestWpm) {
+            bestWpm = result.wpm;
+          }
+        }
+      }
+    }
+
+    return bestWpm;
   }
 
-  return tagPbWpm;
+  const retval: number =
+    snapshot === null || (await getUserResults()) === null ? 0 : cont();
+
+  return retval;
 }
 
 export async function getLocalPB<M extends Mode>(
@@ -503,210 +582,13 @@ function saveLocalPB<M extends Mode>(
   }
 }
 
-export async function getLocalTagPB<M extends Mode>(
-  tagId: string,
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: string,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<number> {
-  if (dbSnapshot === null) return 0;
-
-  let ret = 0;
-
-  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
-
-  if (filteredtag === undefined) return ret;
-
-  filteredtag.personalBests ??= {
-    time: {},
-    words: {},
-    quote: {},
-    zen: {},
-    custom: {},
-  };
-
-  filteredtag.personalBests[mode] ??= {
-    [mode2]: [],
-  };
-
-  filteredtag.personalBests[mode][mode2] ??=
-    [] as unknown as PersonalBests[M][Mode2<M>];
-
-  const personalBests = (filteredtag.personalBests[mode][mode2] ??
-    []) as PersonalBest[];
-
-  ret =
-    personalBests.find(
-      (pb) =>
-        (pb.punctuation ?? false) === punctuation &&
-        (pb.numbers ?? false) === numbers &&
-        pb.difficulty === difficulty &&
-        pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode)),
-    )?.wpm ?? 0;
-
-  return ret;
-}
-
-export async function saveLocalTagPB<M extends Mode>(
-  tagId: string,
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: Language,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-  wpm: number,
-  acc: number,
-  raw: number,
-  consistency: number,
-): Promise<number | undefined> {
-  if (!dbSnapshot) return;
-  if (mode === "quote") return;
-  function cont(): void {
-    const filteredtag = dbSnapshot?.tags?.find(
-      (t) => t._id === tagId,
-    ) as SnapshotUserTag;
-
-    filteredtag.personalBests ??= {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
-
-    filteredtag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
-
-    filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as PersonalBests[M][Mode2<M>];
-
-    try {
-      let found = false;
-
-      (
-        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          (pb.punctuation ?? false) === punctuation &&
-          (pb.numbers ?? false) === numbers &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          found = true;
-          pb.wpm = wpm;
-          pb.acc = acc;
-          pb.raw = raw;
-          pb.timestamp = Date.now();
-          pb.consistency = consistency;
-          pb.lazyMode = lazyMode;
-        }
-      });
-      if (!found) {
-        //nothing found
-        (
-          filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
-        ).push({
-          language,
-          difficulty,
-          lazyMode,
-          punctuation,
-          numbers,
-          wpm,
-          acc,
-          raw,
-          timestamp: Date.now(),
-          consistency,
-        });
-      }
-    } catch (e) {
-      //that mode or mode2 is not found
-      filteredtag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      filteredtag.personalBests[mode][mode2] = [
-        {
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          numbers: numbers,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        },
-      ] as unknown as PersonalBests[M][Mode2<M>];
+export function removeTagFromResults(tagId: string): void {
+  getSnapshot()?.results?.forEach((result) => {
+    const tagIndex = result.tags.indexOf(tagId);
+    if (tagIndex > -1) {
+      result.tags.splice(tagIndex, 1);
     }
-  }
-
-  if (dbSnapshot !== null) {
-    cont();
-  }
-
-  return;
-}
-export async function updateLocalTagPB(
-  tagId: string,
-  mode: Mode,
-  mode2: Mode2<Mode>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: Language,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<void> {
-  if (dbSnapshot === null) return;
-
-  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
-
-  if (filteredtag === undefined) return;
-
-  const fastest = await findFastestResultByTagId({
-    tagId,
-    mode,
-    mode2,
-    punctuation,
-    numbers,
-    language,
-    difficulty,
-    lazyMode,
   });
-
-  const pb = {
-    wpm: fastest?.wpm ?? 0,
-    acc: fastest?.acc ?? 0,
-    rawWpm: fastest?.rawWpm ?? 0,
-    consistency: fastest?.consistency ?? 0,
-  };
-
-  await saveLocalTagPB(
-    tagId,
-    mode,
-    mode2,
-    punctuation,
-    numbers,
-    language,
-    difficulty,
-    lazyMode,
-    pb.wpm,
-    pb.acc,
-    pb.rawWpm,
-    pb.consistency,
-  );
 }
 
 export async function updateLbMemory<M extends Mode>(
