@@ -44,7 +44,10 @@ const tagsCollection = createCollection(
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useTagsLiveQuery() {
   return useLiveQuery((q) => {
-    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
+    return q
+      .from({ tag: tagsCollection })
+      .select(({ tag }) => ({ ...tag }))
+      .orderBy(({ tag }) => tag.name, "asc");
   });
 }
 
@@ -189,7 +192,9 @@ export async function deleteTag(
 }
 
 function getTags(): TagItem[] {
-  return [...tagsCollection.values()];
+  return [...tagsCollection.values()].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 }
 
 function getTag(id: string): TagItem | undefined {
@@ -197,19 +202,19 @@ function getTag(id: string): TagItem | undefined {
 }
 
 function getActiveTags(): TagItem[] {
-  return [...tagsCollection.values()].filter((tag) => tag.active);
+  return [...tagsCollection.values()]
+    .filter((tag) => tag.active)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function fillTagsCollection(userTags: UserTag[]): void {
   const activeIds = activeTagsLS.get();
 
-  const tagItems = userTags
-    .map((tag) => ({
-      ...tag,
-      name: tag.name.replace(/_/g, " "),
-      active: activeIds.includes(tag._id),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const tagItems = userTags.map((tag) => ({
+    ...tag,
+    name: tag.name.replace(/_/g, " "),
+    active: activeIds.includes(tag._id),
+  }));
 
   tagsCollection.utils.writeBatch(() => {
     tagsCollection.forEach((tag) => {
