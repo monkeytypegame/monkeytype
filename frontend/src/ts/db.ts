@@ -196,7 +196,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.customThemes = userData.customThemes ?? [];
 
-    await fillTagsCollection(userData.tags ?? []);
+    fillTagsCollection(userData.tags ?? []);
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {

@@ -207,9 +207,7 @@ function getActiveTags(): TagItem[] {
   return getTags().filter((tag) => tag.active);
 }
 
-export async function fillTagsCollection(userTags: UserTag[]): Promise<void> {
-  await tagsCollection.cleanup();
-
+export function fillTagsCollection(userTags: UserTag[]): void {
   const activeIds = activeTagsLS.get();
 
   const tagItems = userTags.map((tag) => ({
@@ -219,9 +217,6 @@ export async function fillTagsCollection(userTags: UserTag[]): Promise<void> {
   }));
 
   tagsCollection.utils.writeBatch(() => {
-    tagsCollection.forEach((tag) => {
-      tagsCollection.utils.writeDelete(tag._id);
-    });
     tagItems.forEach((item) => {
       tagsCollection.utils.writeInsert(item);
     });
