@@ -6,7 +6,7 @@ import {
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getActivePage, isLoggedIn } from "../../../states/core";
+import { getActivePage, isAuthenticated } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
 import { qs } from "../../../utils/dom";
@@ -36,7 +36,7 @@ export function AccountPage(): JSXElement {
   });
 
   const queryState = createMemo(() => {
-    if (!isOpen() || !isLoggedIn()) return undefined;
+    if (!isOpen() || !isAuthenticated()) return undefined;
 
     return createResultsQueryState(filters);
   });
@@ -49,7 +49,7 @@ export function AccountPage(): JSXElement {
   const data = useResultsLiveQuery({ queryState, sorting, limit });
 
   return (
-    <Show when={isLoggedIn() && isOpen()}>
+    <Show when={isAuthenticated() && isOpen()}>
       <div class="flex flex-col gap-8">
         <VerifyNotice />
         <MyProfile />
