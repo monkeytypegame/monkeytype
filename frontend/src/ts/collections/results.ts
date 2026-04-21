@@ -191,7 +191,7 @@ export async function insertLocalResult(
   }
 }
 
-export const resultsCollection = createCollection(
+const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
@@ -484,8 +484,28 @@ export function deleteLocalTag(tagId: string): void {
   }
 }
 
+export function isResultsReady(): boolean {
+  return resultsCollection.isReady();
+}
+export async function waitForResultsReady(): Promise<void> {
+  await resultsCollection.stateWhenReady();
+}
+
+/**
+ *
+ */
 createEffectOn(isAuthenticated, (hasUser) => {
   if (hasUser) {
     void resultsCollection.utils.refetch();
   }
 });
+
+function getResults(): SnapshotResult<Mode>[] {
+  return [...resultsCollection.values()];
+}
+/**
+ * Used for non reactive access. Do not use in Solid components.
+ */
+export const __nonReactive = {
+  getResults,
+};

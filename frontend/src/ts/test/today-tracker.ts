@@ -1,5 +1,5 @@
+import { __nonReactive } from "../collections/results";
 import * as DateTime from "../utils/date-and-time";
-import { resultsCollection } from "../collections/results";
 
 let seconds = 0;
 let addedAllToday = false;
@@ -31,7 +31,7 @@ export function addAllFromToday(): void {
   const todayDateMS = todayDate.getTime();
 
   seconds = 0;
-  const results = resultsCollection.values();
+  const results = __nonReactive.getResults();
 
   for (const result of results) {
     const resultDate = new Date(result.timestamp);

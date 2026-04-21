@@ -30,8 +30,8 @@ import {
 } from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
 import { getSnapshot } from "../db";
-import { resultsCollection } from "../collections/results";
 import * as TodayTracker from "../test/today-tracker";
+import { isResultsReady, waitForResultsReady } from "../collections/results";
 
 type ChangeOptions = {
   force?: boolean;
@@ -48,7 +48,7 @@ const pages = {
   account: solidPage("account", {
     loadingOptions: {
       loadingMode: () => {
-        if (resultsCollection.isReady()) {
+        if (isResultsReady()) {
           return "none";
         } else {
           return "sync";
@@ -60,7 +60,7 @@ const pages = {
             "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
           );
         }
-        await resultsCollection.stateWhenReady();
+        await waitForResultsReady();
         TodayTracker.addAllFromToday();
       },
       style: "bar",
