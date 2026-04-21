@@ -485,7 +485,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   if (!snapshot) return;
 
   if (data.result !== undefined) {
-    void insertLocalResult(data.result);
+    void insertLocalResult({ result: data.result });
     setLastResult(data.result);
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));

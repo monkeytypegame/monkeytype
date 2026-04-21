@@ -147,7 +147,7 @@ export function useResultsLiveQuery(options: {
 
 function normalizeResult(
   result: ResultMinified | SnapshotResult<Mode>,
-  knownTagIds?: Set<string>,
+  _knownTagIds?: Set<string>,
 ): SnapshotResult<Mode> {
   const resultDate = new Date(result.timestamp);
   resultDate.setSeconds(0);
@@ -171,10 +171,14 @@ function normalizeResult(
   result.restartCount ??= 0;
   result.incompleteTestSeconds ??= 0;
   result.afkDuration ??= 0;
+
   result.tags ??= [];
+  //TODO cleanup here or on display? join with tags collection?
+  /*
   if (knownTagIds !== undefined) {
     result.tags = result.tags.filter((tagId) => knownTagIds.has(tagId));
   }
+  */
   result.isPb ??= false;
   return {
     ...result,
@@ -182,14 +186,6 @@ function normalizeResult(
     words: Math.round((result.wpm / 60) * result.testDuration),
     dayTimestamp: resultDate.getTime(),
   } as SnapshotResult<Mode>;
-}
-
-export async function insertLocalResult(
-  result: SnapshotResult<Mode>,
-): Promise<void> {
-  if (resultsCollection.isReady()) {
-    resultsCollection.insert(result);
-  }
 }
 
 const resultsCollection = createCollection(
@@ -215,30 +211,6 @@ const resultsCollection = createCollection(
         normalizeResult(result, knownTagIds),
       );
     },
-    onInsert: async ({ transaction }) => {
-      //call to the backend to post a result is done outside, we just  insert the result as we get it
-      const newItems = transaction.mutations.map((m) => m.modified);
-
-      resultsCollection.utils.writeBatch(() => {
-        newItems.forEach((item) => {
-          resultsCollection.utils.writeInsert(normalizeResult(item));
-        });
-      });
-
-      //do not refetch after insert
-      return { refetch: false };
-    },
-    onUpdate: async ({ transaction }) => {
-      const updates = transaction.mutations.map((m) => m.modified);
-
-      resultsCollection.utils.writeBatch(() => {
-        updates.forEach((item) => {
-          resultsCollection.utils.writeUpdate(normalizeResult(item));
-        });
-      });
-      //we don't sync local changes back
-      return { refetch: false };
-    },
     queryClient,
     getKey: (it) => it._id,
   }),
@@ -251,11 +223,14 @@ type ActionType = {
     //TODO: remove when result page  is migrated to solidjs
     afterUpdate: (params: { tagPbs: string[] }) => void;
   };
+  insertLocalResult: {
+    result: SnapshotResult<Mode>;
+  };
 };
 
 const actions = {
   updateTags: createOptimisticAction<ActionType["updateTags"]>({
-    onMutate({ resultId, tagIds }) {
+    onMutate: ({ resultId, tagIds }) => {
       resultsCollection.update(resultId, (result) => {
         result.tags = tagIds;
       });
@@ -297,6 +272,14 @@ const actions = {
       afterUpdate({ tagPbs: response.body.data.tagPbs });
     },
   }),
+  insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
+    onMutate: ({ result }) => {
+      resultsCollection.insert(result);
+    },
+    mutationFn: async ({ result }) => {
+      resultsCollection.utils.writeInsert(normalizeResult(result));
+    },
+  }),
 };
 // --- Public API ---
 export async function updateTags(
@@ -305,6 +288,18 @@ export async function updateTags(
   const transaction = actions.updateTags(params);
   await transaction.isPersisted.promise;
 }
+
+export async function insertLocalResult(
+  params: ActionType["insertLocalResult"],
+): Promise<void> {
+  if (!resultsCollection.isReady()) {
+    //not loaded yet, don't need to insert
+    return;
+  }
+  const transaction = actions.insertLocalResult(params);
+  await transaction.isPersisted.promise;
+}
+
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function buildResultsQuery(state: ResultsQueryState) {
   const applyMode2Filter = <T extends "time" | "words">(
