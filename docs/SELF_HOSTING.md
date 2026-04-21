@@ -60,7 +60,7 @@ Stop the running docker containers using `docker compose down` before making any
   - navigate to the `Service accounts` tab
   - click `Generate new private key` to download the `.json` file.
   - save it as `serviceAccountKey.json`
-  - update `docker-compose.yml` and uncomment the volume block in the `monkeytype-backend` container to mount the Firebase service account:
+  - update [docker/docker-compose.yml](/docker/docker-compose.yml) and uncomment the volume block in the `monkeytype-backend` container to mount the Firebase service account:
     ```yaml
     #uncomment to enable the account system, check the SELF_HOSTING.md file
     - type: bind
