@@ -7,6 +7,7 @@ import {
   count,
   createCollection,
   createLiveQueryCollection,
+  createOptimisticAction,
   eq,
   gte,
   inArray,
@@ -24,7 +25,7 @@ import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { __nonReactive as tagsNonReactive } from "./tags";
+import { __nonReactive as tagsNonReactive, updateLocalTagPB } from "./tags";
 import { ExactlyOneTrue } from "../utils/types";
 import { isAuthenticated } from "../states/core";
 import { createEffectOn } from "../hooks/effects";
@@ -243,6 +244,67 @@ const resultsCollection = createCollection(
   }),
 );
 
+type ActionType = {
+  updateTags: {
+    resultId: string;
+    tagIds: string[];
+    //TODO: remove when result page  is migrated to solidjs
+    afterUpdate: (params: { tagPbs: string[] }) => void;
+  };
+};
+
+const actions = {
+  updateTags: createOptimisticAction<ActionType["updateTags"]>({
+    onMutate({ resultId, tagIds }) {
+      resultsCollection.update(resultId, (result) => {
+        result.tags = tagIds;
+      });
+    },
+    mutationFn: async ({ resultId, tagIds, afterUpdate }) => {
+      const response = await Ape.results.updateTags({
+        body: { resultId, tagIds },
+      });
+      if (response.status !== 200) {
+        throw new Error(
+          `Failed to update result tag: ${response.body.message}`,
+        );
+      }
+      const results = getResults();
+      const result = results.find((it) => it._id === resultId);
+
+      if (result === undefined) {
+        throw new Error(`Cannot find result with id ${resultId}`);
+      }
+
+      const tagsToUpdate = [
+        ...result.tags.filter((tag) => !tagIds.includes(tag)),
+        ...tagIds.filter((tag) => !result.tags.includes(tag)),
+      ];
+      tagsToUpdate.forEach((tag) => {
+        updateLocalTagPB(
+          tag,
+          result.mode,
+          result.mode2,
+          result.punctuation,
+          result.numbers,
+          result.language,
+          result.difficulty,
+          result.lazyMode,
+          results,
+        );
+      });
+
+      afterUpdate({ tagPbs: response.body.data.tagPbs });
+    },
+  }),
+};
+// --- Public API ---
+export async function updateTags(
+  params: ActionType["updateTags"],
+): Promise<void> {
+  const transaction = actions.updateTags(params);
+  await transaction.isPersisted.promise;
+}
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function buildResultsQuery(state: ResultsQueryState) {
   const applyMode2Filter = <T extends "time" | "words">(
@@ -487,8 +549,13 @@ export function deleteLocalTag(tagId: string): void {
 export function isResultsReady(): boolean {
   return resultsCollection.isReady();
 }
+
 export async function waitForResultsReady(): Promise<void> {
   await resultsCollection.stateWhenReady();
+}
+
+export function getResultsSize(): number {
+  return resultsCollection.size;
 }
 
 /**
