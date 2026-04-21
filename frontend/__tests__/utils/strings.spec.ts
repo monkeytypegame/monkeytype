@@ -242,7 +242,8 @@ describe("string utils", () => {
       ["rtl", "السلام", "Arabic phrase"],
       ["rtl", "العربية", "Arabic word"],
 
-      // digits without strong chars return fallback that defaults to ltr
+      // numerals without strong typed characters should return "ltr"
+      ["ltr", "0123456789", "digits with no strong typed chars"],
       ["ltr", "٠١٢٣٤٥٦٧٨٩", "Arabic-Indic digits with no strong typed chars"],
 
       // RTL characters should return "rtl" - Hebrew
