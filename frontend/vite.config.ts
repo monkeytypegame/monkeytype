@@ -106,14 +106,10 @@ function getPlugins({
     injectHTML() as PluginOption,
     tailwindcss(),
 
-    solidPlugin({ hot: env["NO_HMR"] === undefined }),
-    ...(env["NO_HMR"] === undefined
-      ? [
-          devtools({
-            autoname: true,
-          }),
-        ]
-      : []),
+    solidPlugin(),
+    devtools({
+      autoname: true,
+    }),
   ];
 
   const devPlugins: PluginOption[] = [
@@ -356,7 +352,6 @@ export default defineConfig(({ mode }): UserConfig => {
       open: env["SERVER_OPEN"] !== "false",
       port: 3000,
       host: env["BACKEND_URL"] !== undefined,
-      hmr: env["NO_HMR"] === undefined,
       watch: {
         //we rebuild the whole contracts package when a file changes
         //so we only want to watch one file
