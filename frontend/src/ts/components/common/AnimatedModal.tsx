@@ -77,12 +77,15 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
     await props.beforeShow?.(isChained);
 
+    // After await, the element may have been removed from the DOM
+    if (!dialogEl()?.native.isConnected) return;
+
     // Open the dialog
     dialogEl()?.show();
     if (props.mode === "dialog") {
       dialogEl()?.native.show();
     } else {
-      dialogEl()?.native.showModal();
+      dialogEl()?.native?.showModal();
     }
 
     const modalAnimDuration = applyReducedMotion(
