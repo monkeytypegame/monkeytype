@@ -25,6 +25,7 @@ export type ModalId =
   | "CustomWordAmount"
   | "MobileTestConfig"
   | "MiniResultChartModal";
+
 export type ModalVisibility = {
   visible: boolean;
   chained: boolean;
