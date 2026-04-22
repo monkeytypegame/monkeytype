@@ -13,7 +13,7 @@ First, you will have to make a personal copy of the Monkeytype repository, also 
 
 ## Creating Languages
 
-Once you have forked the repository you can now add your language. Create a new JSON file in `./frontend/static/languages/`, named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
+Once you have forked the repository you can now add your language. Create a new JSON file in [frontend/static/languages](/frontend/static/languages), named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
 
 The contents of the file should be as follows:
 
@@ -31,7 +31,7 @@ The contents of the file should be as follows:
 It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `rightToLeft` indicates how the language is written. If it is written right to left then put `true`, otherwise put `false`.
 `ligatures` A ligature occurs when multiple letters are joined together to form a character [more details](<https://en.wikipedia.org/wiki/Ligature_(writing)>). If there's joining in the words, which is the case in languages like (Arabic, Malayalam, Persian, Sanskrit, Central_Kurdish... etc.), then set the value to `true`, otherwise set it to `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). If the words you're adding are ordered by frequency (most common words at the top, least at the bottom) set the value of `orderedByFrequency` to `true`, otherwise `false`. Finally, add your list of words to the `words` field.
 
-Then, go to `packages/schemas/src/languages.ts` and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
+Then, go to [packages/schemas/src/languages.ts](/packages/schemas/src/languages.ts) and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 
 ```typescript
 export const LanguageSchema = z.enum([
@@ -42,7 +42,7 @@ export const LanguageSchema = z.enum([
 ]);
 ```
 
-Then, go to `frontend/src/ts/constants/language.ts` and add your new language name to the `LanguageGroups` map. You can either add it to an existing group or add a new one. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
+Then, go to [frontend/src/ts/constants/languages.ts](/frontend/src/ts/constants/languages.ts) and add your new language name to the `LanguageGroups` map. You can either add it to an existing group or add a new one. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 
 ```typescript
 export const LanguageGroups: Record<string, Language[]> = {
@@ -66,4 +66,6 @@ Create a pull request:
 
 ## Language Guidelines
 
-Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
+- Do not include expletive words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)

@@ -40,7 +40,7 @@ For types, we use the following:
 - `perf`: A code change that improves performance
 - `test`: Adding missing tests or correcting existing tests
 - `build`: Changes that affect the build system or external dependencies (example scopes: vite, tsup-node, npm)
-- `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Workflows)
+- `ci`: Changes to our CI configuration files and scripts (e.g., GitHub Workflows)
 - `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
 
@@ -50,44 +50,27 @@ For types, we use the following:
 - `impr(quotes): add english quotes (@username)`
 - `fix(leaderboard): show user rank correctly (@user1, @user2, @user3)`
 
-### Theme Guidelines
+### Adding Themes
 
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
 
-Before submitting a theme make sure...
-
-- your theme is unique and isn't visually similar to any we already have.
-- the text color is either black or white (or very close to these colors)
-- your theme has been added to the `_list` file and the `textColor` property is the theme's main color
-- your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
-
 If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md)
 
-### Language Guidelines
-
-- Do not include expletive words
-- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
-- Be sure to add your language to the `_list` and `_groups` files
-- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
+### Adding Languages
 
 If you want to contribute languages but don't know how, check [LANGUAGES.md](/docs/LANGUAGES.md)
 
-### Quote Guidelines
-
-- Do not include content that contains any libelous or otherwise unlawful, abusive, or obscene text.
-- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
-- Verify quotes added aren't duplicates of any already present
-- Verify the `length` property is correct (length of the text in characters)
-- Verify the `id` property is incremented correctly
-- Please do not add extremely short quotes (less than 60 characters)
-- For quotes not in English, please include translations of quotes in the description of your pull request. This assists in the verification process to ensure the integrity of the quotes.
-- Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
+### Adding Quotes
 
 If you want to contribute quotes but don't know how, check [QUOTES.md](/docs/QUOTES.md)
 
-### Layout Guidelines
+### Adding Layouts
 
 If you want to contribute layouts but don't know how, check [LAYOUTS.md](/docs/LAYOUTS.md)
+
+### Adding Fonts
+
+If you want to contribute fonts but don't know how, check [FONTS.md](/docs/FONTS.md)
 
 ## Questions
 

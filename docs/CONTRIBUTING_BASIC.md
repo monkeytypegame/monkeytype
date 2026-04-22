@@ -41,7 +41,7 @@ There are two methods for making a change in the code.
 
 #### Option 1 - Visual Studio Code Web Editor (Recommended)
 
-If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. To make complex edits without installing anything, we recommend using GitHub's VS Code web editor. In your fork of Monkeytype (fork it first), go to the `Code` tab of the repo and press <kbd>.</kbd>(the period/dot key). This will open up the repo in an online VS Code instance you can use to edit files in the browser. Once you are done making your changes, go to the Source Control tab in the activity bar with <kbd>Ctrl/Cmd + Shift + G</kbd>, click the `+` next to the files you've changed to stage them, type a brief message summarizing the changes made in the commit, and press <kbd>Ctrl/Cmd + Enter</kbd> to commit your changes to your fork.
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. To make complex edits without installing anything, we recommend using GitHub's VS Code web editor. In your fork of Monkeytype (fork it first), go to the `Code` tab of the repo and press <kbd>.</kbd> (the period/dot key). This will open up the repo in an online VS Code instance you can use to edit files in the browser. Once you are done making your changes, go to the Source Control tab in the activity bar with <kbd>Ctrl/Cmd + Shift + G</kbd>, click the `+` next to the files you've changed to stage them, type a brief message summarizing the changes made in the commit, and press <kbd>Ctrl/Cmd + Enter</kbd> to commit your changes to your fork.
 
 Once done, move on to the [next section to create a pull request](#creating-a-pull-request).
 
@@ -89,4 +89,4 @@ Once your PR is approved, all that is left to do is merge it!
 
 ## Questions
 
-If you have any questions, comments, concerns, or problems, don't hesitate to let us know via [email](mailto:jack@monkeytype.com)(to Miodec), on [GitHub](https://github.com/monkeytypegame/monkeytype/discussions) or on [Discord](https://discord.gg/monkeytype) in the [`#development`](https://discord.com/channels/713194177403420752/713196019206324306) channel and a contributor will be happy to assist you.
+If you have any questions, comments, concerns, or problems, don't hesitate to let us know via [email](mailto:jack@monkeytype.com) (to Miodec), on [GitHub](https://github.com/monkeytypegame/monkeytype/discussions) or on [Discord](https://discord.gg/monkeytype) in the [`#development`](https://discord.com/channels/713194177403420752/713196019206324306) channel and a contributor will be happy to assist you.

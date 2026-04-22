@@ -12,7 +12,7 @@ First, you will have to make a personal copy of the Monkeytype repository, also 
 
 ## Creating Layouts
 
-Once you have forked the repository you can now add your layout. Create a new JSON file in `./frontend/static/layouts/`, named as the layout name, e.g. `qwerty.json`.
+Once you have forked the repository you can now add your layout. Create a new JSON file in [frontend/static/layouts](/frontend/static/layouts), named as the layout name, e.g. `qwerty.json`.
 
 The contents of the file should be as follows:
 
@@ -94,7 +94,7 @@ For ansi layouts the number of keys need to be exactly thirteen for `row1` and `
 
 For iso the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and `row3`, eleven for `row4` and one or two for `row5`.
 
-In addition to the layout file you need to add your layout to the `packages/schemas/src/layouts.ts` file. Just append your layout name (without the `.json`) at the **end** of the `LayoutNameSchema`. Remember to add a comma like this:
+In addition to the layout file you need to add your layout to the [packages/schemas/src/layouts.ts](/packages/schemas/src/layouts.ts) file. Just append your layout name (without the `.json`) at the **end** of the `LayoutNameSchema`. Remember to add a comma like this:
 
 ```ts
 export const LayoutNameSchema = z.enum([
@@ -116,7 +116,3 @@ Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
 Make sure your PR title follow the syntax `feat(layout): add <YOUR_LAYOUT> layout (@<YOUR_GITHUB_NAME>)`, e.g. `feat(layout): add qwerty layout (@teddinotteddy)`
-
-## Layout Guidelines
-
-Make sure your layout follows the [Layout guidelines](./CONTRIBUTING.md#layout-guidelines).

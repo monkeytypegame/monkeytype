@@ -15,7 +15,7 @@ First you will have to make a personal copy of the Monkeytype repository, also k
 
 Pick a name for your theme. It must be all lowercase, with spaces replaced by underscores.
 
-Go to `./packages/schemas/src/themes.ts` and add your new theme name to the __end__ of the `ThemeNameSchema` enum. Make sure to end the line with a comma.
+Go to [packages/schemas/src/themes.ts](/packages/schemas/src/themes.ts) and add your new theme name to the __end__ of the `ThemeNameSchema` enum. Make sure to end the line with a comma.
 
 ```typescript
 export const ThemeNameSchema = z.enum([
@@ -26,7 +26,7 @@ export const ThemeNameSchema = z.enum([
 ]);
 ```
 
-Then, go to `./frontend/src/ts/constants/themes.ts` and add the following code to the __end__ of the `themes` object near to the very end of the file:
+Then, go to [frontend/src/ts/constants/themes.ts](/frontend/src/ts/constants/themes.ts) and add the following code to the __end__ of the `themes` object near to the very end of the file:
 
 ```typescript
 export const themes: Record<ThemeName, Theme>  = {
@@ -54,7 +54,7 @@ If you don't want to add any custom styling you can skip the next section.
 
 #### Adding custom CSS (optional)
 
-Create a CSS file in `./frontend/static/themes/` matching the name you picked earlier. Update the theme configuration in `./frontend/src/ts/constants/themes.ts`  and add `hasCss: true` like this:
+Create a CSS file in [frontend/static/themes](/frontend/static/themes) matching the name you picked earlier. Update the theme configuration in [frontend/src/ts/constants/themes.ts](/frontend/src/ts/constants/themes.ts)  and add `hasCss: true` like this:
 
 ```typescript
 export const themes: Record<ThemeName, Theme>  = {
@@ -90,4 +90,6 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 
 ## Theme Guidelines
 
-Make sure your theme follows the [Theme guidelines](./CONTRIBUTING.md#theme-guidelines).
+- your theme is unique and isn't visually similar to any we already have.
+- the text color is either black or white (or very close to these colors)
+- your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
