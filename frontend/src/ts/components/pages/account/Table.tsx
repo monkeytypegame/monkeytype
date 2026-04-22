@@ -227,17 +227,19 @@ function getColumns<M extends Mode>({
     defineColumn("tags", {
       header: "tags",
       cell: (info) => {
-        const hasTags = info.getValue().length > 0;
+        const hasTags = () => info.getValue().length > 0;
         return (
           <Button
             variant="text"
-            class={hasTags ? "[--themable-button-text:var(--text-color)]" : ""}
+            class={
+              hasTags() ? "[--themable-button-text:var(--text-color)]" : ""
+            }
             fa={{
               icon: info.getValue().length > 1 ? "fa-tags" : "fa-tag",
               fixedWidth: true,
             }}
             balloon={{
-              text: hasTags
+              text: hasTags()
                 ? info
                     .getValue()
                     .map(
