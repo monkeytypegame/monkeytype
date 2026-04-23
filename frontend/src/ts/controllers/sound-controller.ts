@@ -484,6 +484,64 @@ async function init(): Promise<void> {
         counter: 0,
       },
     ],
+    17: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_1.wav" }),
+          new Howl({ src: "../sound/click17/click17_1.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_2.wav" }),
+          new Howl({ src: "../sound/click17/click17_2.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_3.wav" }),
+          new Howl({ src: "../sound/click17/click17_3.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_4.wav" }),
+          new Howl({ src: "../sound/click17/click17_4.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_5.wav" }),
+          new Howl({ src: "../sound/click17/click17_5.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_6.wav" }),
+          new Howl({ src: "../sound/click17/click17_6.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_7.wav" }),
+          new Howl({ src: "../sound/click17/click17_7.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click17/click17_8.wav" }),
+          new Howl({ src: "../sound/click17/click17_8.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
   };
   Howler.volume(Config.soundVolume);
 }

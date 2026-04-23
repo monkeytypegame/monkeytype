@@ -393,6 +393,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           "14": "fist fight",
           "15": "rubber keys",
           "16": "fart",
+          "17": "chalk",
         };
         return map[value];
       },
