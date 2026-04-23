@@ -85,7 +85,23 @@ function updateThemeIndicator(nameOverride?: string): void {
   //text
   let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
-  if (Config.customTheme) str = "custom";
+
+  if (Config.customTheme && nameOverride === undefined) {
+    // Match current custom theme by colors since Config does not store custom theme IDs
+    const snapshot = DB.getSnapshot();
+    const matchedTheme = snapshot?.customThemes?.find(
+      (ct) =>
+        ct.colors.length === Config.customThemeColors.length &&
+        ct.colors.every((c, i) => c === Config.customThemeColors[i]),
+    );
+
+    if (matchedTheme) {
+      str = `${matchedTheme.name} (custom)`;
+    } else {
+      str = "custom";
+    }
+  }
+
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
 
