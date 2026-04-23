@@ -1,4 +1,3 @@
-import Ape from "../ape";
 import * as DB from "../db";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Settings from "../pages/settings";
@@ -13,7 +12,12 @@ import {
   PresetType,
   PresetTypeSchema,
 } from "@monkeytype/schemas/presets";
-import { getPreset } from "../controllers/preset-controller";
+import {
+  getPreset,
+  addPreset,
+  editPreset,
+  deletePreset,
+} from "../collections/presets";
 import {
   ConfigGroupName,
   ConfigGroupNameSchema,
@@ -21,7 +25,6 @@ import {
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-import { SnapshotPreset } from "../constants/default-snapshot";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { ElementWithUtils } from "../utils/dom";
 import { configMetadata } from "../config/metadata";
@@ -79,7 +82,7 @@ export function show(action: string, id?: string, name?: string): void {
         modalEl.qsr("label.changePresetToCurrentCheckbox").show();
         modalEl.qsr(".presetNameTitle").show();
         state.setPresetToCurrent = false;
-        await updateEditPresetUI();
+        updateEditPresetUI();
       } else if (
         action === "remove" &&
         id !== undefined &&
@@ -105,11 +108,11 @@ export function show(action: string, id?: string, name?: string): void {
   });
 }
 
-async function initializeEditState(id: string): Promise<void> {
+function initializeEditState(id: string): void {
   for (const key of state.checkboxes.keys()) {
     state.checkboxes.set(key, false);
   }
-  const edittedPreset = await getPreset(id);
+  const edittedPreset = getPreset(id);
   if (edittedPreset === undefined) {
     showErrorNotification("Preset not found");
     return;
@@ -147,9 +150,9 @@ function addCheckboxListeners(): void {
   const presetToCurrentCheckbox = modalEl.qsr<HTMLInputElement>(
     `.changePresetToCurrentCheckbox input`,
   );
-  presetToCurrentCheckbox.on("change", async () => {
+  presetToCurrentCheckbox.on("change", () => {
     state.setPresetToCurrent = presetToCurrentCheckbox.isChecked() as boolean;
-    await updateEditPresetUI();
+    updateEditPresetUI();
   });
 }
 
@@ -201,14 +204,14 @@ function updateUI(): void {
     modalEl.qsr(".partialPresetGroups").hide();
   }
 }
-async function updateEditPresetUI(): Promise<void> {
+function updateEditPresetUI(): void {
   const modalEl = modal.getModal();
   if (state.setPresetToCurrent) {
     modalEl
       .qsr<HTMLInputElement>("label.changePresetToCurrentCheckbox input")
       .setChecked(true);
     const presetId = modalEl.getAttribute("data-preset-id") as string;
-    await initializeEditState(presetId);
+    initializeEditState(presetId);
     modalEl.qsr(".inputs").show();
     modalEl.qsr(".presetType").show();
   } else {
@@ -235,8 +238,6 @@ async function apply(): Promise<void> {
   const updateConfig = modalEl
     .qsr<HTMLInputElement>("label.changePresetToCurrentCheckbox input")
     .isChecked();
-
-  const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
   if (action === null || action === "") {
     return;
@@ -276,84 +277,43 @@ async function apply(): Promise<void> {
 
   showLoaderBar();
 
-  if (action === "add") {
-    const configChanges = getConfigChanges();
-    const activeSettingGroups = getActiveSettingGroupsFromState();
-    const response = await Ape.presets.add({
-      body: {
+  try {
+    if (action === "add") {
+      const configChanges = getConfigChanges();
+      const activeSettingGroups = getActiveSettingGroupsFromState();
+      await addPreset({
         name: presetName,
         config: configChanges,
-        ...(state.presetType === "partial" && {
-          settingGroups: activeSettingGroups,
-        }),
-      },
-    });
-
-    if (response.status !== 200 || response.body.data === null) {
-      showErrorNotification("Failed to add preset: " + response.body.message);
-    } else {
-      showSuccessNotification("Preset added", { durationMs: 2000 });
-      snapshotPresets.push({
-        name: presetName,
-        config: configChanges,
-        ...(state.presetType === "partial" && {
-          settingGroups: activeSettingGroups,
-        }),
-        display: presetName.replace(/_/g, " "),
-        _id: response.body.data.presetId,
-      } as SnapshotPreset);
-    }
-  } else if (action === "edit") {
-    const preset = snapshotPresets.find(
-      (preset: SnapshotPreset) => preset._id === presetId,
-    ) as SnapshotPreset;
-    if (preset === undefined) {
-      showErrorNotification("Preset not found");
-      return;
-    }
-    const configChanges = getConfigChanges();
-    const activeSettingGroups: ConfigGroupName[] | null =
-      state.presetType === "partial" ? getActiveSettingGroupsFromState() : null;
-    const response = await Ape.presets.save({
-      body: {
-        _id: presetId,
-        name: presetName,
-        ...(updateConfig && {
-          config: configChanges,
-          settingGroups: activeSettingGroups,
-        }),
-      },
-    });
-
-    if (response.status !== 200) {
-      showErrorNotification("Failed to edit preset", { response });
-    } else {
-      showSuccessNotification("Preset updated");
-
-      preset.name = presetName;
-      preset.display = presetName.replace(/_/g, " ");
-      if (updateConfig) {
-        preset.config = configChanges;
-        if (state.presetType === "partial") {
-          preset.settingGroups = getActiveSettingGroupsFromState();
-        } else {
-          preset.settingGroups = null;
-        }
-      }
-    }
-  } else if (action === "remove") {
-    const response = await Ape.presets.delete({ params: { presetId } });
-
-    if (response.status !== 200) {
-      showErrorNotification("Failed to remove preset", { response });
-    } else {
-      showSuccessNotification("Preset removed");
-      snapshotPresets.forEach((preset: SnapshotPreset, index: number) => {
-        if (preset._id === presetId) {
-          snapshotPresets.splice(index, 1);
-        }
+        settingGroups:
+          state.presetType === "partial" ? activeSettingGroups : undefined,
       });
+      showSuccessNotification("Preset added", { durationMs: 2000 });
+    } else if (action === "edit") {
+      const existing = getPreset(presetId);
+      if (existing === undefined) {
+        showErrorNotification("Preset not found");
+        return;
+      }
+      const configChanges = getConfigChanges();
+      const activeSettingGroups: ConfigGroupName[] | null =
+        state.presetType === "partial"
+          ? getActiveSettingGroupsFromState()
+          : null;
+      await editPreset({
+        presetId,
+        name: presetName,
+        config: updateConfig ? configChanges : undefined,
+        settingGroups: updateConfig ? activeSettingGroups : undefined,
+      });
+      showSuccessNotification("Preset updated");
+    } else if (action === "remove") {
+      await deletePreset({ presetId });
+      showSuccessNotification("Preset removed");
     }
+  } catch (e) {
+    showErrorNotification(
+      e instanceof Error ? e.message : "Failed to update preset",
+    );
   }
 
   void Settings.update();

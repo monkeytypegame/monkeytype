@@ -33,7 +33,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
-import { SnapshotPreset } from "../constants/default-snapshot";
+import { getPresets, PresetItem } from "../collections/presets";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { ThemesList, ThemeWithName } from "../constants/themes";
@@ -558,7 +558,7 @@ function refreshPresetsSettingsSection(): void {
     const presetsEl = qs(
       ".pageSettings .section.presets .presetsList",
     )?.empty();
-    DB.getSnapshot()?.presets?.forEach((preset: SnapshotPreset) => {
+    getPresets().forEach((preset: PresetItem) => {
       presetsEl?.appendHtml(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
         <button class="presetButton">${preset.display}</button>
