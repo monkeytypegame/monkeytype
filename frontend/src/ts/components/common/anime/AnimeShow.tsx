@@ -59,18 +59,40 @@ export function AnimeShow(
     >
       <AnimePresence exitBeforeEnter>
         <Show when={props.when}>
-          <Anime
-            initial={{ height: 0 } as Partial<AnimationParams>}
-            animate={
-              { height: "auto", duration: duration() } as AnimationParams
-            }
-            exit={{ height: 0, duration: duration() } as AnimationParams}
-            style={{ overflow: "hidden" }}
-            {...props.animeProps}
-            class={props.class}
-          >
-            {props.children}
-          </Anime>
+          {(() => {
+            let ref: HTMLElement | undefined;
+            return (
+              <Anime
+                ref={(el) => (ref = el)}
+                initial={{ height: 0 } as Partial<AnimationParams>}
+                animate={
+                  {
+                    height: "auto",
+                    duration: duration(),
+                    onBegin: () => {
+                      if (ref) ref.style.overflow = "hidden";
+                    },
+                    onComplete: () => {
+                      if (ref) ref.style.overflow = "";
+                    },
+                  } as AnimationParams
+                }
+                exit={
+                  {
+                    height: 0,
+                    duration: duration(),
+                    onBegin: () => {
+                      if (ref) ref.style.overflow = "hidden";
+                    },
+                  } as AnimationParams
+                }
+                {...props.animeProps}
+                class={props.class}
+              >
+                {props.children}
+              </Anime>
+            );
+          })()}
         </Show>
       </AnimePresence>
     </Show>

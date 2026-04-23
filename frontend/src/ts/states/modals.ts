@@ -23,7 +23,8 @@ export type ModalId =
   | "TestDuration"
   | "ShareTestSettings"
   | "CustomWordAmount"
-  | "MobileTestConfig";
+  | "MobileTestConfig"
+  | "Cookies";
 
 export type ModalVisibility = {
   visible: boolean;

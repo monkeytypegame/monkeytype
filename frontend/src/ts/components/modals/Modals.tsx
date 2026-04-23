@@ -1,6 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { ContactModal } from "./ContactModal";
+import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
@@ -30,6 +31,7 @@ export function Modals(): JSXElement {
       <CustomWordAmountModal />
       <ShareTestSettings />
       <MobileTestConfigModal />
+      <CookiesModal />
     </>
   );
 }

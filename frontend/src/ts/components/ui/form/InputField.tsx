@@ -11,6 +11,8 @@ export function InputField(props: {
   autocomplete?: string;
   type?: string;
   disabled?: boolean;
+  readOnly?: boolean;
+  clickToSelect?: boolean;
   class?: string;
   dir?: "ltr" | "rtl" | "auto";
   maxLength?: number;
@@ -36,6 +38,10 @@ export function InputField(props: {
         onBlur={() => props.field().handleBlur()}
         onInput={(e) => props.field().handleChange(e.target.value)}
         disabled={props.disabled}
+        readOnly={props.readOnly}
+        onClick={(e) => {
+          if (props.clickToSelect) e.currentTarget.select();
+        }}
         onFocus={() => props.onFocus?.()}
         dir={props.dir}
         maxLength={props.maxLength}
