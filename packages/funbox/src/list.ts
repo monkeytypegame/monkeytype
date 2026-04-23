@@ -481,6 +481,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     name: "no_quit",
   },
+  tunnel_vision: {
+    name: "tunnel_vision",
+    description: "Only the area around the caret is visible.",
+    canGetPb: true,
+    difficultyLevel: 2,
+    properties: ["hasCssFile", "changesWordsVisibility"],
+    frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
+  },
 };
 
 export function getObject(): Record<FunboxName, FunboxMetadata> {

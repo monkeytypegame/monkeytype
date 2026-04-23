@@ -1,0 +1,18 @@
+body.fb-tunnel-vision #wordsWrapper {
+  isolation: isolate;
+}
+
+body.fb-tunnel-vision #wordsWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle var(--tunnel-radius, 150px) at var(--caret-left, 50%)
+      var(--caret-top, 50%),
+    transparent 0%,
+    transparent 50%,
+    var(--bg-color) 100%
+  );
+}

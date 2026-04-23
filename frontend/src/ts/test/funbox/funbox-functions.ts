@@ -166,6 +166,8 @@ export class PolyglotWordset extends Wordset {
   }
 }
 
+let tunnelVisionAnimationFrame: number | null = null;
+
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
     getWord(): string {
@@ -677,6 +679,55 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  tunnel_vision: {
+    applyGlobalCSS(): void {
+      const wordsWrapper = qs("#wordsWrapper");
+      if (!wordsWrapper) return;
+      const getTunnelVisionRadiusRem = (): number =>
+        Math.max(3, Math.min(13.75, Config.fontSize * 4.5));
+
+      const updateCaretPos = (): void => {
+        const caretElem = qs("#caret");
+        if (caretElem !== null) {
+          const wordsWrapperRect = wordsWrapper.native.getBoundingClientRect();
+          const caretRect = caretElem.native.getBoundingClientRect();
+          const wrapperCaretLeft =
+            caretRect.left - wordsWrapperRect.left + caretRect.width / 2;
+          const wrapperCaretTop =
+            caretRect.top - wordsWrapperRect.top + caretRect.height / 2;
+          const radius = `${getTunnelVisionRadiusRem()}rem`;
+
+          wordsWrapper.native.style.setProperty(
+            "--caret-left",
+            `${wrapperCaretLeft}px`,
+          );
+          wordsWrapper.native.style.setProperty(
+            "--caret-top",
+            `${wrapperCaretTop}px`,
+          );
+          wordsWrapper.native.style.setProperty("--tunnel-radius", radius);
+        }
+        tunnelVisionAnimationFrame = requestAnimationFrame(updateCaretPos);
+      };
+
+      if (tunnelVisionAnimationFrame !== null) {
+        cancelAnimationFrame(tunnelVisionAnimationFrame);
+      }
+      updateCaretPos();
+    },
+    clearGlobal(): void {
+      if (tunnelVisionAnimationFrame !== null) {
+        cancelAnimationFrame(tunnelVisionAnimationFrame);
+        tunnelVisionAnimationFrame = null;
+      }
+      const wordsWrapper = qs("#wordsWrapper");
+      if (wordsWrapper) {
+        wordsWrapper.native.style.removeProperty("--caret-left");
+        wordsWrapper.native.style.removeProperty("--caret-top");
+        wordsWrapper.native.style.removeProperty("--tunnel-radius");
+      }
     },
   },
   polyglot: {

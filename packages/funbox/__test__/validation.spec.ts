@@ -115,6 +115,26 @@ describe("validation", () => {
         true,
       );
     });
+
+    it("should reject multiple word visibility funboxes", () => {
+      //GIVEN
+      getFunboxMock.mockReturnValueOnce([
+        {
+          name: "plus_one",
+          properties: ["changesWordsVisibility"],
+        } as FunboxMetadata,
+        {
+          name: "tunnel_vision",
+          properties: ["changesWordsVisibility"],
+        } as FunboxMetadata,
+      ]);
+
+      //WHEN / THEN
+      expect(Validation.checkCompatibility(["plus_one", "tunnel_vision"])).toBe(
+        false,
+      );
+    });
+
     describe("should validate two funboxes modifying the wordset", () => {
       const testCases = [
         {
