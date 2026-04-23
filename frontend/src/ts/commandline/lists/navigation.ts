@@ -2,6 +2,9 @@ import { navigate } from "../../controllers/route-controller";
 import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
 import { Command } from "../types";
+import { Config } from "../../config/store";
+import * as TestState from "../../test/test-state";
+import * as TestLogic from "../../test/test-logic";
 
 const commands: Command[] = [
   {
@@ -56,6 +59,15 @@ const commands: Command[] = [
     icon: "fa-expand",
     exec: (): void => {
       toggleFullscreen();
+    },
+  },
+  {
+    id: "previousTest",
+    display: "Previous Test (Quotes)",
+    icon: "fa-undo-alt",
+    available: () => Config.mode === "quote" && TestState.quoteHistoryIndex > 0,
+    exec: (): void => {
+      TestLogic.restart({ isPrevious: true });
     },
   },
 ];

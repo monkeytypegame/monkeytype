@@ -11,6 +11,11 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+/** Max quotes remembered for "previous quote" navigation (per session). */
+export const MAX_QUOTE_HISTORY_LENGTH = 50;
+
+export const quoteHistory: number[] = [];
+export let quoteHistoryIndex = -1;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -75,4 +80,43 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+/**
+ * Id of the quote that would load if we navigate back, without mutating history.
+ * Call {@link commitPreviousNavigation} only after that quote was resolved successfully.
+ */
+export function peekPreviousQuoteId(): number | null {
+  if (quoteHistoryIndex <= 0) {
+    return null;
+  }
+  const val = quoteHistory[quoteHistoryIndex - 1];
+  return val ?? null;
+}
+
+/** Apply a successful "previous quote" navigation (decrements the history cursor). */
+export function commitPreviousNavigation(): void {
+  if (quoteHistoryIndex <= 0) {
+    return;
+  }
+  quoteHistoryIndex--;
+}
+
+export function pushQuoteToHistory(quoteId: number): void {
+  if (quoteHistoryIndex < quoteHistory.length - 1) {
+    quoteHistory.splice(quoteHistoryIndex + 1);
+  }
+
+  quoteHistory.push(quoteId);
+  quoteHistoryIndex++;
+
+  if (quoteHistory.length > MAX_QUOTE_HISTORY_LENGTH) {
+    quoteHistory.shift();
+    quoteHistoryIndex--;
+  }
+}
+
+export function resetQuoteHistory(): void {
+  quoteHistory.length = 0;
+  quoteHistoryIndex = -1;
 }

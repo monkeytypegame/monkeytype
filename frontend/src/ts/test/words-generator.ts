@@ -496,7 +496,8 @@ export function getLimit(): number {
 
 async function getQuoteWordList(
   language: LanguageObject,
-  wordOrder?: FunboxWordOrder,
+  wordOrder: FunboxWordOrder | undefined,
+  options: GenerateWordsOptions,
 ): Promise<string[]> {
   if (TestState.isRepeated) {
     if (currentWordset === null) {
@@ -534,33 +535,59 @@ async function getQuoteWordList(
   }
 
   let rq: Quote;
-  if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-    const targetQuote = QuotesController.getQuoteById(
-      TestState.selectedQuoteId,
-    );
-    if (targetQuote === undefined) {
-      setQuoteLengthAll();
-      throw new WordGenError(
-        `Quote ${TestState.selectedQuoteId} does not exist`,
+  let wasPrevious = false;
+
+  function pickQuoteFromCurrentSettings(): Quote {
+    if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
+      const targetQuote = QuotesController.getQuoteById(
+        TestState.selectedQuoteId,
       );
+      if (targetQuote === undefined) {
+        setQuoteLengthAll();
+        throw new WordGenError(
+          `Quote ${TestState.selectedQuoteId} does not exist`,
+        );
+      }
+      return targetQuote;
     }
-    rq = targetQuote;
-  } else if (Config.quoteLength.includes(-3)) {
-    const randomQuote = QuotesController.getRandomFavoriteQuote(
-      Config.language,
-    );
-    if (randomQuote === null) {
-      setQuoteLengthAll();
-      throw new WordGenError("No favorite quotes found");
+    if (Config.quoteLength.includes(-3)) {
+      const randomQuote = QuotesController.getRandomFavoriteQuote(
+        Config.language,
+      );
+      if (randomQuote === null) {
+        setQuoteLengthAll();
+        throw new WordGenError("No favorite quotes found");
+      }
+      return randomQuote;
     }
-    rq = randomQuote;
-  } else {
     const randomQuote = QuotesController.getRandomQuote();
     if (randomQuote === null) {
       setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
-    rq = randomQuote;
+    return randomQuote;
+  }
+
+  if (options.loadPreviousQuote) {
+    const prevQuoteId = TestState.peekPreviousQuoteId();
+    if (prevQuoteId !== null) {
+      const targetQuote = QuotesController.getQuoteById(prevQuoteId);
+      if (targetQuote === undefined) {
+        setQuoteLengthAll();
+        throw new WordGenError(`Quote ${prevQuoteId} does not exist`);
+      }
+      TestState.commitPreviousNavigation();
+      rq = targetQuote;
+      wasPrevious = true;
+    } else {
+      rq = pickQuoteFromCurrentSettings();
+    }
+  } else {
+    rq = pickQuoteFromCurrentSettings();
+  }
+
+  if (!TestState.isRepeated && !wasPrevious) {
+    TestState.pushQuoteToHistory(rq.id);
   }
 
   rq.language = Strings.removeLanguageSize(Config.language);
@@ -605,10 +632,17 @@ type GenerateWordsReturn = {
   allLigatures?: boolean;
 };
 
+/** Options for a single generation pass (explicit intent, not global test flags). */
+export type GenerateWordsOptions = {
+  /** Load the previous quote from session history (quote mode only). */
+  loadPreviousQuote?: boolean;
+};
+
 let previousRandomQuote: QuoteWithTextSplit | null = null;
 
 export async function generateWords(
   language: LanguageObject,
+  options: GenerateWordsOptions = {},
 ): Promise<GenerateWordsReturn> {
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
@@ -637,7 +671,7 @@ export async function generateWords(
   if (Config.mode === "custom") {
     wordList = CustomText.getText();
   } else if (Config.mode === "quote") {
-    wordList = await getQuoteWordList(language, wordOrder);
+    wordList = await getQuoteWordList(language, wordOrder, options);
   } else if (Config.mode === "zen") {
     wordList = [];
   }
