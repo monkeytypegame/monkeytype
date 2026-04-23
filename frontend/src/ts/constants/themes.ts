@@ -1049,6 +1049,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#ff9e3b",
     colorfulErrorExtra: "#e6c384",
   },
+  kanagawa_lotus: {
+    bg: "#f2ecbc",
+    caret: "#4d699b",
+    main: "#545464",
+    sub: "#716e61",
+    subAlt: "#8a8980",
+    text: "#545464",
+    error: "#c84053",
+    errorExtra: "#d7474b",
+    colorfulError: "#de9800",
+    colorfulErrorExtra: "#9fb5c9",
+  },
   laser: {
     bg: "#221b44",
     caret: "#009eaf",
