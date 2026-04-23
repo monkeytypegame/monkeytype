@@ -192,7 +192,7 @@ export const ThemeNameSchema = z.enum(
     "spiderman",
     "kanagawa_wave",
     "kanagawa_dragon",
-    "kanagawa_lotus"
+    "kanagawa_lotus",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),
