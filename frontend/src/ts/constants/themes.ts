@@ -1030,7 +1030,7 @@ export const themes: Record<ThemeName, Theme> = {
     caret: "#8ba4b0",
     main: "#dcd7ba",
     sub: "#a6a69c",
-    subAlt: "#8a9a7b",
+    subAlt: "#292727",
     text: "#dcd7ba",
     error: "#c4746e",
     errorExtra: "#e46876",
