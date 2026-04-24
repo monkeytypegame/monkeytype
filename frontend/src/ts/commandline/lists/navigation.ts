@@ -51,8 +51,18 @@ const commands: Command[] = [
     },
   },
   {
+    id: "searchProfile",
+    display: "Search Profile",
+    alias: "profile user search find lookup",
+    icon: "fa-search",
+    exec: (): void => {
+      void navigate("/profile");
+    },
+  },
+  {
     id: "toggleFullscreen",
     display: "Toggle Fullscreen",
+    alias: "fullscreen full screen toggle maximize exit escape",
     icon: "fa-expand",
     exec: (): void => {
       toggleFullscreen();
