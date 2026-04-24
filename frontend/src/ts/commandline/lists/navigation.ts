@@ -55,8 +55,11 @@ const commands: Command[] = [
     display: "Search Profile",
     alias: "profile user search find lookup",
     icon: "fa-search",
-    exec: (): void => {
-      void navigate("/profile");
+    input: true,
+    exec: ({ input }): void => {
+      const username = input?.trim();
+      if (username === undefined || username === "") return;
+      void navigate(`/profile/${username}`);
     },
   },
   {
