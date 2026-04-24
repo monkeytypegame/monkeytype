@@ -1,7 +1,7 @@
 import { Config } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import * as CustomText from "./custom-text";
-import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
+import { IWordset, Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
   Quote,
   QuoteWithTextSplit,
@@ -348,7 +348,7 @@ async function getFunboxSection(): Promise<string[]> {
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Wordset,
+  wordset?: IWordset,
 ): string {
   const funbox = findSingleActiveFunboxWithFunction("getWord");
 
@@ -495,8 +495,10 @@ async function getQuoteWordList(
   wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
   if (TestState.isRepeated) {
-    if (currentWordset === null) {
-      throw new WordGenError("Current wordset is null");
+    if (currentWordset === null || !(currentWordset instanceof Wordset)) {
+      throw new WordGenError(
+        "Current wordset is null or not instance of Wordset",
+      );
     }
 
     TestWords.setCurrentQuote(previousRandomQuote);
@@ -587,7 +589,7 @@ async function getQuoteWordList(
   return TestWords.currentQuote.textSplit;
 }
 
-let currentWordset: Wordset | null = null;
+let currentWordset: IWordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
@@ -655,9 +657,7 @@ export async function generateWords(
     // PolyglotWordset if polyglot otherwise Wordset
     if (currentWordset instanceof PolyglotWordset) {
       // set allLigatures if any language in languageProperties has ligatures true
-      ret.allLigatures = Array.from(
-        currentWordset.languageProperties.values(),
-      ).some((props) => !!props.ligatures);
+      ret.allLigatures = currentWordset.hasLigatures();
     }
   } else {
     currentWordset = await withWords(wordList);
@@ -704,12 +704,13 @@ export async function generateWords(
 
   ret.hasTab =
     ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
+    currentWordset.hasChar("\t") ||
     (Config.mode === "quote" &&
       (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
+
   ret.hasNewline =
     ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
+    currentWordset.hasChar("\n") ||
     (Config.mode === "quote" &&
       (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
 

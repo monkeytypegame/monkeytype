@@ -1,5 +1,5 @@
 import * as TestInput from "./test-input";
-import { Wordset } from "./wordset";
+import { IWordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
 // is based on last perCharCount occurrences. Make it smaller to adjust faster.
@@ -59,7 +59,7 @@ function score(word: string): number {
   return numChars === 0 ? 0.0 : total / numChars;
 }
 
-export function getWord(wordset: Wordset): string {
+export function getWord(wordset: IWordset): string {
   let highScore;
   let randomWord = "";
   for (let i = 0; i < wordSamples; i++) {
