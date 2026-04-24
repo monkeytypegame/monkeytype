@@ -601,9 +601,6 @@
     "type": "funbox",
     "parameters": [["ascii"], "time", 3600],
     "requirements": {
-      "wpm": {
-        "min": 100
-      },
       "time": {
         "min": 60
       },
