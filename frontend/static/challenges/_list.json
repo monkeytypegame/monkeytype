@@ -547,9 +547,6 @@
     "type": "funbox",
     "parameters": [["gibberish"], "time", 3600],
     "requirements": {
-      "wpm": {
-        "min": 100
-      },
       "time": {
         "min": 60
       },
@@ -565,9 +562,6 @@
     "type": "funbox",
     "parameters": [["specials"], "time", 3600],
     "requirements": {
-      "wpm": {
-        "min": 100
-      },
       "time": {
         "min": 60
       },
@@ -583,9 +577,6 @@
     "type": "funbox",
     "parameters": [["tts"], "time", 3600],
     "requirements": {
-      "wpm": {
-        "min": 100
-      },
       "time": {
         "min": 60
       },
@@ -616,9 +607,6 @@
     "type": "funbox",
     "parameters": [["sPoNgEcAsE"], "time", 3600],
     "requirements": {
-      "wpm": {
-        "min": 100
-      },
       "time": {
         "min": 60
       },
@@ -634,9 +622,6 @@
     "type": "funbox",
     "parameters": [["nausea"], "time", 3600],
     "requirements": {
-      "wpm": {
-        "min": 100
-      },
       "time": {
         "min": 60
       },
@@ -727,11 +712,8 @@
     "parameters": [],
     "message": "Complete a 10-word Master mode test using the Wingdings custom font. No keymap allowed. Minimum 60 WPM and 100% accuracy required.",
     "requirements": {
-      "wpm": {
-        "min": 60
-      },
       "acc": {
-        "min": 100
+        "exact": 100
       }
     }
   }
