@@ -21,6 +21,7 @@ const queryKeys = {
 const resultFilterPresetsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    startSync: true,
     queryKey: queryKeys.root(),
 
     queryClient,
