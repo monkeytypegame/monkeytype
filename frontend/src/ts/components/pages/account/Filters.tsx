@@ -5,12 +5,15 @@ import {
   ResultFiltersKeys,
   ResultFiltersSchema,
 } from "@monkeytype/schemas/users";
-import { useLiveQuery } from "@tanstack/solid-db";
-import { createSignal, createMemo, For, JSXElement, Show } from "solid-js";
+import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 import { SetStoreFunction, unwrap } from "solid-js/store";
 import { z } from "zod";
 
-import { resultFilterPresetsCollection } from "../../../collections/result-filter-presets";
+import {
+  deleteResultFilterPreset,
+  insertResultFilterPreset,
+  useResultFilterPresetsLiveQuery,
+} from "../../../collections/result-filter-presets";
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
@@ -62,15 +65,11 @@ const newFilterPresetModal = new SimpleModal({
     const filters = thisPopup.context as ResultFilters;
 
     try {
-      const tx = resultFilterPresetsCollection.insert({
-        ...structuredClone(filters),
-        name: normalizeName(name),
-      });
-      await tx.isPersisted.promise;
+      await insertResultFilterPreset({ name, filters });
       return { status: "success", message: "Filter preset created" };
     } catch (e) {
       let message: string = "Error creating filter preset";
-      return { status: "error", message, alwaysHide: true };
+      return { status: "error", message };
     }
   },
 });
@@ -103,7 +102,7 @@ export function Filters(props: {
                   <Button
                     fa={{ icon: "fa-trash", fixedWidth: true }}
                     onClick={() =>
-                      resultFilterPresetsCollection.delete(preset._id)
+                      void deleteResultFilterPreset({ presetId: preset._id })
                     }
                   />
                 </div>
@@ -245,9 +244,7 @@ export function Filters(props: {
     props.onChangeFilters(key, value);
   };
 
-  const presetsQuery = useLiveQuery((q) =>
-    q.from({ presets: resultFilterPresetsCollection }),
-  );
+  const presetsQuery = useResultFilterPresetsLiveQuery();
 
   return (
     <div class="flex flex-col gap-8">

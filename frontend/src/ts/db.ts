@@ -34,7 +34,7 @@ import {
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { insertLocalResult } from "./collections/results";
-import { resultFilterPresetsCollection } from "./collections/result-filter-presets";
+import { fillResultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
@@ -222,15 +222,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.connections = convertConnections(connectionsData);
 
-    if (userData.resultFilterPresets !== undefined) {
-      void resultFilterPresetsCollection.stateWhenReady().then(() => {
-        resultFilterPresetsCollection.utils.writeBatch(() => {
-          (userData.resultFilterPresets ?? []).forEach((it) =>
-            resultFilterPresetsCollection.utils.writeInsert(it),
-          );
-        });
-      });
-    }
+    fillResultFilterPresetsCollection(userData.resultFilterPresets ?? []);
 
     dbSnapshot = snap;
 

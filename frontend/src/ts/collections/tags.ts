@@ -20,6 +20,7 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
+import { tempId } from "./utils/misc";
 
 export type TagItem = UserTag & { active: boolean };
 
@@ -70,10 +71,7 @@ const actions = {
   insertTag: createOptimisticAction<ActionType["insertTag"]>({
     onMutate: ({ name }) => {
       tagsCollection.insert({
-        _id:
-          "temp-" +
-          Math.random().toString(36).slice(2) +
-          Date.now().toString(36),
+        _id: tempId(),
         name,
         personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
         active: false,
