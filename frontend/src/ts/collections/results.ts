@@ -218,7 +218,7 @@ type ActionType = {
     resultId: string;
     tagIds: string[];
     //TODO: remove when result page  is migrated to solidjs
-    afterUpdate: (params: { tagPbs: string[] }) => void;
+    afterUpdate?: (params: { tagPbs: string[] }) => void;
   };
   insertLocalResult: {
     result: SnapshotResult<Mode>;
@@ -266,7 +266,7 @@ const actions = {
         );
       });
 
-      afterUpdate({ tagPbs: response.body.data.tagPbs });
+      afterUpdate?.({ tagPbs: response.body.data.tagPbs });
     },
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
@@ -531,9 +531,9 @@ function buildSettingsResultsQuery(filter: CurrentSettingsFilter) {
 export function deleteLocalTag(tagId: string): void {
   for (const result of resultsCollection.values()) {
     if (!result.tags.includes(tagId)) continue;
-    resultsCollection.update(result._id, (old) => {
-      const tags = old.tags.filter((it) => it !== tagId);
-      old.tags = tags;
+    void updateTags({
+      resultId: result._id,
+      tagIds: result.tags.filter((it) => it !== tagId),
     });
   }
 }
