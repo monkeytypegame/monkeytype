@@ -262,7 +262,7 @@ export function Filters(props: {
         <div class="mb-4 grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full">
           <Button
             text="all"
-            onClick={() => props.onChangeFilters(defaultResultFilters)}
+            onClick={() => props.onChangeFilters(fromDefaultSettings(tags()))}
           />
           <Button
             text="current settings"
@@ -432,4 +432,16 @@ function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   filters.date.all = true;
 
   return filters;
+}
+
+function fromDefaultSettings(tags: TagItem[]): ResultFilters {
+  const tagFilters: Record<string, boolean> = {};
+  tagFilters["none"] = true;
+  tags.forEach((tag) => {
+    tagFilters[tag._id] = true;
+  });
+  return {
+    ...defaultResultFilters,
+    tags: tagFilters,
+  };
 }
