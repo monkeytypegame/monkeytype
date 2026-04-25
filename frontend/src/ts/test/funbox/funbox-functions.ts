@@ -1,4 +1,9 @@
-import { FunboxWordsFrequency, Wordset } from "../wordset";
+import {
+  FunboxWordsFrequency,
+  WordsetPick,
+  Wordset,
+  IWordset,
+} from "../wordset";
 import * as GetText from "../../utils/generate";
 import { Config } from "../../config/store";
 import { setConfig, toggleFunbox } from "../../config/setters";
@@ -30,9 +35,9 @@ import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
 
 export type FunboxFunctions = {
-  getWord?: (wordset?: Wordset, wordIndex?: number) => string;
+  getWord?: (wordset?: IWordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset | PolyglotWordset>;
+  withWords?: (words?: string[]) => Promise<IWordset>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
@@ -126,7 +131,7 @@ class PseudolangWordGenerator extends Wordset {
     }
   }
 
-  public override randomWord(): string {
+  public override randomWord(): WordsetPick {
     let word = "";
     for (;;) {
       const prefix = word.slice(-prefixSize);
@@ -145,24 +150,82 @@ class PseudolangWordGenerator extends Wordset {
       }
       word += nextChar;
     }
-    return word;
+    return { word };
   }
 }
 
-export class PolyglotWordset extends Wordset {
-  public wordsWithLanguage: Map<string, Language>;
-  public languageProperties: Map<Language, JSONData.LanguageProperties>;
+export class PolyglotWordset implements IWordset {
+  readonly wordsetMap: Map<Language, Wordset>;
+  readonly languageProperties: Map<Language, JSONData.LanguageProperties>;
+  readonly langs: Language[];
+  length: number;
 
-  constructor(
-    wordsWithLanguage: Map<string, Language>,
-    languageProperties: Map<Language, JSONData.LanguageProperties>,
-  ) {
-    // build and shuffle the word array
-    const wordArray = Array.from(wordsWithLanguage.keys());
-    Arrays.shuffle(wordArray);
-    super(wordArray);
-    this.wordsWithLanguage = wordsWithLanguage;
-    this.languageProperties = languageProperties;
+  constructor(languages: LanguageObject[]) {
+    this.languageProperties = new Map<Language, JSONData.LanguageProperties>();
+    this.wordsetMap = new Map<Language, Wordset>();
+    this.length = 0;
+    this.langs = [];
+
+    for (const lang of languages) {
+      const count = lang.words.length;
+      this.length += count;
+      this.langs.push(lang.name);
+      this.languageProperties.set(lang.name, {
+        noLazyMode: lang.noLazyMode,
+        ligatures: lang.ligatures,
+        rightToLeft: lang.rightToLeft,
+        additionalAccents: lang.additionalAccents,
+      });
+      this.wordsetMap.set(lang.name, new Wordset(lang.words));
+    }
+    this.resetIndexes();
+  }
+
+  resetIndexes(): void {
+    this.wordsetMap.forEach((ws) => {
+      ws.resetIndexes();
+    });
+  }
+
+  private pickLang(): Language {
+    const index = Math.floor(Math.random() * this.langs.length);
+    return this.langs[index] as Language;
+  }
+
+  private getWordsetAndLang(): { wordset: Wordset; language: Language } {
+    const language = this.pickLang();
+    return { wordset: this.wordsetMap.get(language) as Wordset, language };
+  }
+
+  randomWord(mode: FunboxWordsFrequency): WordsetPick {
+    const { wordset, language } = this.getWordsetAndLang();
+    return { word: wordset.randomWord(mode).word, language };
+  }
+
+  shuffledWord(): WordsetPick {
+    const { wordset, language } = this.getWordsetAndLang();
+    return { word: wordset.shuffledWord().word, language };
+  }
+
+  nextWord(): WordsetPick {
+    const { wordset, language } = this.getWordsetAndLang();
+    return { word: wordset.nextWord().word, language };
+  }
+
+  hasLigatures(): boolean {
+    for (const props of this.languageProperties.values()) {
+      if (props.ligatures) return true;
+    }
+    return false;
+  }
+
+  hasChar(char: string): boolean {
+    for (const wordset of this.wordsetMap.values()) {
+      if (wordset.hasChar(char)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -547,9 +610,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   weakspot: {
-    getWord(wordset?: Wordset): string {
+    getWord(wordset?: IWordset): string {
       if (wordset !== undefined) return WeakSpot.getWord(wordset);
-      else return "";
+      return "";
     },
   },
   pseudolang: {
@@ -680,7 +743,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   polyglot: {
-    async withWords(_words) {
+    async withWords(_words): Promise<PolyglotWordset> {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
           showNoticeNotification(
@@ -690,7 +753,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }),
       );
 
-      const languages = (await Promise.all(promises)).filter(
+      const languages: LanguageObject[] = (await Promise.all(promises)).filter(
         (lang): lang is LanguageObject => lang !== null,
       );
 
@@ -739,26 +802,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
-      // build languageProperties
-      const languageProperties = new Map(
-        languages.map((lang) => [
-          lang.name,
-          {
-            noLazyMode: lang.noLazyMode,
-            ligatures: lang.ligatures,
-            rightToLeft: lang.rightToLeft,
-            additionalAccents: lang.additionalAccents,
-          },
-        ]),
-      );
-
-      const wordsWithLanguage = new Map(
-        languages.flatMap((lang) =>
-          lang.words.map((word) => [word, lang.name]),
-        ),
-      );
-
-      return new PolyglotWordset(wordsWithLanguage, languageProperties);
+      return new PolyglotWordset(languages);
     },
   },
 };
