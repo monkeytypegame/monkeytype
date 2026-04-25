@@ -35,6 +35,9 @@ export function show(
     return;
   }
 
+  const knownTagIds = new Set(__nonReactive.getTags().map((it) => it._id));
+  tags = tags.filter((it) => knownTagIds.has(it));
+
   state.resultId = resultId;
   state.startingTags = [...tags];
   state.tags = [...tags];
