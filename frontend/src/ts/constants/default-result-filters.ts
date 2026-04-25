@@ -1,7 +1,6 @@
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { LanguageList } from "./languages";
 import { getFunboxNames } from "@monkeytype/funbox";
-import { addToGlobal } from "../utils/misc";
 
 const object: ResultFilters = {
   _id: "default",
@@ -68,5 +67,3 @@ const object: ResultFilters = {
 };
 
 export default structuredClone(object);
-
-addToGlobal({ df: object });
