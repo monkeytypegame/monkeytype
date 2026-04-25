@@ -331,7 +331,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           <Show when={props.title !== undefined && props.title !== ""}>
             <div class="text-2xl text-sub">{props.title}</div>
           </Show>
-          {props.children}
+          <Show when={visibility()}>{props.children}</Show>
         </div>
       </div>
     </dialog>

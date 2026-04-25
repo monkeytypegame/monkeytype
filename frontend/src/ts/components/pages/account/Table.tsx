@@ -46,7 +46,9 @@ export function Table<M extends Mode>(props: {
 
   return (
     <>
-      <MiniResultChart resultId={selectedResult()} />
+      <Show when={selectedResult() !== undefined}>
+        <MiniResultChart resultId={selectedResult() as string} />
+      </Show>
       <DataTable
         id="resultList"
         onSortingChange={(val) => {

@@ -11,13 +11,10 @@ import { AnimatedModal } from "../../common/AnimatedModal";
 import AsyncContent from "../../common/AsyncContent";
 import { ChartJs } from "../../common/ChartJs";
 
-export function MiniResultChart(props: {
-  resultId: string | undefined;
-}): JSXElement {
+export function MiniResultChart(props: { resultId: string }): JSXElement {
   const query = useQuery(() => ({
-    ...getSingleResultQueryOptions(props.resultId as string),
-    enabled:
-      isModalOpen("MiniResultChartModal") && props.resultId !== undefined,
+    ...getSingleResultQueryOptions(props.resultId),
+    enabled: isModalOpen("MiniResultChartModal"),
   }));
 
   const beginAtZero = createMemo(() => getConfig.startGraphsAtZero);
