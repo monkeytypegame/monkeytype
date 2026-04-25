@@ -185,7 +185,7 @@
     "ffmpeg",
     "mpv",
     "vlc",
-    "ffproble",
+    "ffprobe",
     "mplayer",
     "ip",
     "ifconfig",
