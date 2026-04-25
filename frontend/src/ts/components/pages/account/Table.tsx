@@ -228,7 +228,14 @@ function getColumns<M extends Mode>({
     defineColumn("tags", {
       header: "tags",
       cell: (info) => {
-        const hasTags = () => info.getValue().length > 0;
+        const tagNames = createMemo(() =>
+          info
+            .getValue()
+            .map((it) => tags.find((tag) => tag._id === it)?.name)
+            .filter((it) => it !== undefined),
+        );
+        const hasTags = () => tagNames().length > 0;
+
         return (
           <Button
             variant="text"
@@ -236,20 +243,11 @@ function getColumns<M extends Mode>({
               hasTags() ? "[--themable-button-text:var(--text-color)]" : ""
             }
             fa={{
-              icon: info.getValue().length > 1 ? "fa-tags" : "fa-tag",
+              icon: tagNames().length > 1 ? "fa-tags" : "fa-tag",
               fixedWidth: true,
             }}
             balloon={{
-              text: hasTags()
-                ? info
-                    .getValue()
-                    .map(
-                      (it) =>
-                        tags.find((tag) => tag._id === it)?.name ??
-                        "unknown tag",
-                    )
-                    .join(", ")
-                : "no tags",
+              text: hasTags() ? tagNames().join(", ") : "no tags",
             }}
             onClick={() => {
               EditResultTagsModal.show(
