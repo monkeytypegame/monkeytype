@@ -1,7 +1,10 @@
 import { navigate } from "../../controllers/route-controller";
 import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
-import { Command } from "../types";
+import { Command, withValidation } from "../types";
+import { remoteValidation } from "../../utils/remote-validation";
+import { UserNameSchema } from "@monkeytype/schemas/users";
+import Ape from "../../ape";
 
 const commands: Command[] = [
   {
@@ -50,6 +53,28 @@ const commands: Command[] = [
       isAuthenticated() ? void navigate("/account") : void navigate("/login");
     },
   },
+  withValidation({
+    id: "searchProfile",
+    display: "Search Profile",
+    alias: "profile user search find lookup",
+    icon: "fa-search",
+    input: true,
+    validation: {
+      schema: UserNameSchema,
+      debounceDelay: 1000,
+      isValid: remoteValidation(
+        async (name) => Ape.users.getProfile({ params: { uidOrName: name } }),
+        {
+          on4xx: () => "Unknown user",
+        },
+      ),
+    },
+    exec: ({ input }): void => {
+      const username = input?.trim();
+      if (username === undefined || username === "") return;
+      void navigate(`/profile/${username}`);
+    },
+  }),
   {
     id: "toggleFullscreen",
     display: "Toggle Fullscreen",
