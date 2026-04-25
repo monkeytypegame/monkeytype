@@ -20,6 +20,7 @@ import defaultResultFilters from "../../../constants/default-result-filters";
 import { SimpleModal } from "../../../elements/simple-modal";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";
+import { createErrorMessage } from "../../../utils/error";
 import {
   getLanguageDisplayString,
   normalizeName,
@@ -68,7 +69,7 @@ const newFilterPresetModal = new SimpleModal({
       await insertResultFilterPreset({ name, filters });
       return { status: "success", message: "Filter preset created" };
     } catch (e) {
-      let message: string = "Error creating filter preset";
+      const message = createErrorMessage(e, "Error creating filter preset");
       return { status: "error", message };
     }
   },
