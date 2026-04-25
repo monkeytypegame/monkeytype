@@ -155,8 +155,6 @@ function normalizeResult(
   resultDate.setHours(0);
   resultDate.setMilliseconds(0);
 
-  //@ts-expect-error without this somehow the collections is missing data
-  result.id = result._id;
   //results strip default values, add them back
   result.bailedOut ??= false;
   result.blindMode ??= false;
