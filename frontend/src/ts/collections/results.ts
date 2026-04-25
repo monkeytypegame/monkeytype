@@ -166,7 +166,6 @@ function normalizeResult(
   result.language ??= "english";
   result.numbers ??= false;
   result.punctuation ??= false;
-  result.numbers ??= false;
   result.quoteLength ??= -1;
   result.restartCount ??= 0;
   result.incompleteTestSeconds ??= 0;
