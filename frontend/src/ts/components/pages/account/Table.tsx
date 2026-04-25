@@ -54,8 +54,7 @@ export function Table<M extends Mode>(props: {
             props.onSortingChange({ field: "timestamp", direction: "desc" });
           } else {
             props.onSortingChange({
-              // oxlint-disable-next-line typescript/no-explicit-any
-              field: val[0]?.id as keyof SnapshotResult<any>,
+              field: val[0]?.id as keyof SnapshotResult<Mode>,
               direction: val[0]?.desc ? "desc" : "asc",
             });
           }

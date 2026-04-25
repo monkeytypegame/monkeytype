@@ -1,3 +1,4 @@
+import { Mode } from "@monkeytype/schemas/shared";
 import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import {
@@ -27,8 +28,7 @@ export function AccountPage(): JSXElement {
   const [limit, setLimit] = createSignal(10);
 
   const [sorting, setSorting] = createSignal<{
-    // oxlint-disable-next-line typescript/no-explicit-any
-    field: keyof SnapshotResult<any>;
+    field: keyof SnapshotResult<Mode>;
     direction: "asc" | "desc";
   }>({
     field: "timestamp",
