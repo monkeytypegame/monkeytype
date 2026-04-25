@@ -147,7 +147,7 @@ export function useResultsLiveQuery(options: {
 
 function normalizeResult(
   result: ResultMinified | SnapshotResult<Mode>,
-  _knownTagIds?: Set<string>,
+  knownTagIds?: Set<string>,
 ): SnapshotResult<Mode> {
   const resultDate = new Date(result.timestamp);
   resultDate.setSeconds(0);
@@ -170,12 +170,9 @@ function normalizeResult(
   result.afkDuration ??= 0;
 
   result.tags ??= [];
-  //TODO cleanup here or on display? join with tags collection?
-  /*
   if (knownTagIds !== undefined) {
     result.tags = result.tags.filter((tagId) => knownTagIds.has(tagId));
   }
-  */
   result.isPb ??= false;
   return {
     ...result,
