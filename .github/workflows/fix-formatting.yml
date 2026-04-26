@@ -34,7 +34,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Install formatter
-        run: pnpm install -D -w oxfmt
+        run: pnpm install -D -w oxfmt --ignore-scripts
 
       - name: Get changed files
         id: get-changed-files
@@ -52,10 +52,11 @@ jobs:
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
       - name: Fix formatting
+        env:
+          CHANGED_FILES: ${{ steps.get-changed-files.outputs.result }}
         run: |
-          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
-            pnpm oxfmt $CHANGED_FILES --no-error-on-unmatched-pattern
+            echo "$CHANGED_FILES" | tr ' ' '\n' | xargs pnpm oxfmt --no-error-on-unmatched-pattern
           fi
 
       - name: Commit changes
