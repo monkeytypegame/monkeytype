@@ -1,20 +1,15 @@
 import { ResultFilters, ResultFiltersSchema } from "@monkeytype/schemas/users";
-import { createEffect } from "solid-js";
 import { mergeWithDefaultFilters } from "../components/pages/account/utils";
 import defaultResultFilters from "../constants/default-result-filters";
 import { useLocalStorageStore } from "../hooks/useLocalStorageStore";
 import { isObject } from "../utils/misc";
 import { sanitize } from "../utils/sanitize";
-import { useTagsLiveQuery } from "../collections/tags";
-
-const tags = useTagsLiveQuery();
 
 export const [filters, setFilters] = useLocalStorageStore({
   key: "resultFilters",
   schema: ResultFiltersSchema,
   fallback: defaultResultFilters,
   migrate: migrateFilterStorage,
-  afterParse: updateFilterStorage,
 });
 
 function migrateFilterStorage(input: unknown): ResultFilters {
@@ -28,22 +23,22 @@ function migrateFilterStorage(input: unknown): ResultFilters {
   return mergeWithDefaultFilters(filters);
 }
 
-function updateFilterStorage(filters: ResultFilters): ResultFilters {
-  const result = mergeWithDefaultFilters(filters);
-  const newTags: Record<string, boolean> = { none: false };
-  const snapshotTags = tags().map((t) => t._id);
-  const allKnownTagIds = new Set(["none", ...snapshotTags]);
+export function updateTagsInFilterStorage(tagsIds: string[]): void {
+  setFilters((filters) => {
+    const result = mergeWithDefaultFilters(filters);
+    const snapshotTags = new Set(["none", ...tagsIds]);
 
-  for (const tag of allKnownTagIds) {
-    newTags[tag] = result.tags[tag] ?? true;
-  }
+    //remove tags that no longer exist.
+    let newTags = new Map(
+      Object.entries(result.tags).filter(([id]) => snapshotTags.has(id)),
+    );
 
-  result.tags = newTags;
+    //add new tags added
+    tagsIds
+      .filter((id) => !newTags.has(id))
+      .forEach((newId) => newTags.set(newId, true));
 
-  return result;
+    result.tags = Object.fromEntries(newTags.entries());
+    return result;
+  });
 }
-
-createEffect(() => {
-  tags();
-  setFilters(updateFilterStorage);
-});

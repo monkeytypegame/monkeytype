@@ -43,6 +43,7 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { fillTagsCollection, __nonReactive } from "./collections/tags";
+import { updateTagsInFilterStorage } from "./states/result-filters";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -197,6 +198,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.customThemes = userData.customThemes ?? [];
 
     fillTagsCollection(userData.tags ?? []);
+    updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
