@@ -657,6 +657,9 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 24.9.1
+        version: 24.9.1
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@6.0.2)
@@ -691,6 +694,9 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 24.9.1
+        version: 24.9.1
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@6.0.2)
@@ -750,6 +756,9 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 24.9.1
+        version: 24.9.1
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@6.0.2)
@@ -778,6 +787,9 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 24.9.1
+        version: 24.9.1
       oxlint:
         specifier: 1.60.0
         version: 1.60.0(oxlint-tsgolint@0.21.0)
@@ -798,6 +810,9 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 24.9.1
+        version: 24.9.1
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@6.0.2)
