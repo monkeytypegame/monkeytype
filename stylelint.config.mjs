@@ -72,5 +72,5 @@ export default {
       },
     },
   ],
-  ignoreFiles: ["**/dist/**"],
+  ignoreFiles: ["**/dist/**", "**/coverage/**"],
 };
