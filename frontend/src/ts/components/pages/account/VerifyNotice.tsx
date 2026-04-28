@@ -6,7 +6,7 @@ import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 
-export function VerifyNotice(props: { class: string }): JSXElement {
+export function VerifyNotice(props: { class?: string }): JSXElement {
   const [isProcessing, setProcessing] = createSignal(false);
 
   const resendVerificationEmail = () => {
@@ -17,7 +17,7 @@ export function VerifyNotice(props: { class: string }): JSXElement {
     <Show when={!isUserVerified()}>
       <div
         class={cn(
-          `grid items-center gap-4 rounded p-4 ring-4 ring-sub-alt md:grid-cols-[1fr_auto] ${props.class}`,
+          `grid items-center gap-4 rounded p-4 ring-4 ring-sub-alt md:grid-cols-[1fr_auto] ${props.class ?? ""}`,
         )}
       >
         <div class="grid grid-cols-[auto_1fr] items-center gap-4">
