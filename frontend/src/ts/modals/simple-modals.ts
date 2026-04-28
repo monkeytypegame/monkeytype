@@ -31,6 +31,7 @@ import {
 
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
+  CustomThemeNameSchema,
   PasswordSchema,
   UserEmailSchema,
   UserNameSchema,
@@ -40,6 +41,8 @@ import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
 import { list, PopupKey, showPopup } from "./simple-modals-base";
 import { getTheme } from "../states/theme";
+import { normalizeName } from "../utils/strings";
+import { IsValidResponse } from "../types/validation";
 
 export { list, showPopup };
 export type { PopupKey };
@@ -972,6 +975,14 @@ list.unlinkDiscord = new SimpleModal({
   },
 });
 
+const customThemeValidation = async (
+  name: string,
+): Promise<IsValidResponse> => {
+  const validationResult = CustomThemeNameSchema.safeParse(normalizeName(name));
+  if (validationResult.success) return true;
+  return validationResult.error.errors.map((err) => err.message).join(", ");
+};
+
 list.updateCustomTheme = new SimpleModal({
   id: "updateCustomTheme",
   title: "Update custom theme",
@@ -980,6 +991,7 @@ list.updateCustomTheme = new SimpleModal({
       type: "text",
       placeholder: "name",
       initVal: "",
+      validation: { isValid: customThemeValidation, debounceDelay: 0 },
     },
     {
       type: "checkbox",
@@ -1040,7 +1052,10 @@ list.updateCustomTheme = new SimpleModal({
       (t) => t._id === _thisPopup.parameters[0],
     );
     if (!customTheme) return;
-    (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name;
+    (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name.replace(
+      /_/g,
+      " ",
+    );
   },
 });
 
