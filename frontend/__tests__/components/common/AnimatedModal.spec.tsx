@@ -2,8 +2,10 @@ import { render } from "@solidjs/testing-library";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { AnimatedModal } from "../../../src/ts/components/common/AnimatedModal";
+import * as ModalState from "../../../src/ts/states/modals";
 
 describe("AnimatedModal", () => {
+  const isModalOpenMock = vi.spyOn(ModalState, "isModalOpen");
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -11,6 +13,8 @@ describe("AnimatedModal", () => {
     HTMLDialogElement.prototype.showModal = vi.fn();
     HTMLDialogElement.prototype.show = vi.fn();
     HTMLDialogElement.prototype.close = vi.fn();
+
+    isModalOpenMock.mockReturnValue(true);
   });
 
   function renderModal(props: {
@@ -84,5 +88,14 @@ describe("AnimatedModal", () => {
     });
 
     expect(dialog).toHaveAttribute("id", "SupportModal");
+  });
+
+  it("should not render when not visible", () => {
+    isModalOpenMock.mockReturnValue(false);
+
+    const { dialog, modalDiv } = renderModal({});
+
+    expect(dialog).toBeNull();
+    expect(modalDiv).toBeNull();
   });
 });
