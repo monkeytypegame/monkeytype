@@ -88,7 +88,7 @@ function groupIntoBuckets(
   const maxBucketStart = Math.floor(maxValue / bucketSize) * bucketSize;
 
   for (const item of arr) {
-    const bucketStart = Math.floor(item / bucketSize) * bucketSize;
+    const bucketStart = Math.floor(Math.round(item) / bucketSize) * bucketSize;
     buckets[bucketStart] = (buckets[bucketStart] ?? 0) + 1;
   }
 
