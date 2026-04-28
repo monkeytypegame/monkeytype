@@ -145,6 +145,7 @@ function getColumns<M extends Mode>({
     }),
     defineColumn("mode", {
       header: "mode",
+      enableSorting: false,
       cell: (info) =>
         `${info.getValue()} ${info.row.original.mode2 === "custom" ? "" : info.row.original.mode2}`,
       meta: {
@@ -227,6 +228,7 @@ function getColumns<M extends Mode>({
     }),
     defineColumn("tags", {
       header: "tags",
+      enableSorting: false,
       cell: (info) => {
         const hasTags = () => info.getValue().length > 0;
         return (
