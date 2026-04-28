@@ -91,7 +91,7 @@ export function DailyActivityChart(props: {
                 },
                 count: {
                   axis: "y",
-                  beginAtZero: props.beginAtZero,
+                  beginAtZero: true,
                   ticks: {
                     autoSkip: true,
                     autoSkipPadding: 20,
