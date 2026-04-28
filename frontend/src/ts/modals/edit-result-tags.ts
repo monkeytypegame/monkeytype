@@ -1,15 +1,13 @@
-import Ape from "../ape";
-import * as DB from "../db";
-
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../states/notifications";
-import * as AccountPage from "../pages/account";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
+import { __nonReactive } from "../collections/tags";
+import { updateTags } from "../collections/results";
 
 type State = {
   resultId: string;
@@ -36,6 +34,9 @@ export function show(
     );
     return;
   }
+
+  const knownTagIds = new Set(__nonReactive.getTags().map((it) => it._id));
+  tags = tags.filter((it) => knownTagIds.has(it));
 
   state.resultId = resultId;
   state.startingTags = [...tags];
@@ -65,17 +66,17 @@ function appendButtons(): void {
   }
 
   const tagIds = new Set([
-    ...(DB.getSnapshot()?.tags.map((tag) => tag._id) ?? []),
+    ...__nonReactive.getTags().map((tag) => tag._id),
     ...state.tags,
   ]);
 
   buttonsEl.empty();
   for (const tagId of tagIds) {
-    const tag = DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
+    const tag = __nonReactive.getTag(tagId);
     const button = document.createElement("button");
     button.classList.add("toggleTag");
     button.setAttribute("data-tag-id", tagId);
-    button.innerHTML = tag?.display ?? "unknown tag";
+    button.innerHTML = tag?.name ?? tag?._id ?? "unknown tag"; //this shouldnt happen?
     button.addEventListener("click", (e) => {
       toggleTag(tagId);
       updateActiveButtons();
@@ -106,8 +107,14 @@ function toggleTag(tagId: string): void {
 
 async function save(): Promise<void> {
   showLoaderBar();
-  const response = await Ape.results.updateTags({
-    body: { resultId: state.resultId, tagIds: state.tags },
+  await updateTags({
+    resultId: state.resultId,
+    tagIds: state.tags,
+    afterUpdate: ({ tagPbs }) => {
+      if (state.source === "resultPage") {
+        TestResult.updateTagsAfterEdit(state.tags, tagPbs);
+      }
+    },
   });
   hideLoaderBar();
 
@@ -115,44 +122,7 @@ async function save(): Promise<void> {
   //but update tags somehow adds undefined to the end of the array
   //i tried spreading, json parsing - nothing helped.
   state.tags = state.tags.filter((el) => el !== undefined);
-
-  if (response.status !== 200) {
-    showErrorNotification("Failed to update result tags", { response });
-    return;
-  }
-
-  //can do this because the response will not be null if the status is 200
-  const responseTagPbs = response.body.data?.tagPbs ?? [];
-
   showSuccessNotification("Tags updated", { durationMs: 2000 });
-
-  DB.getSnapshot()?.results?.forEach((result) => {
-    if (result._id === state.resultId) {
-      const tagsToUpdate = [
-        ...result.tags.filter((tag) => !state.tags.includes(tag)),
-        ...state.tags.filter((tag) => !result.tags.includes(tag)),
-      ];
-      result.tags = state.tags;
-      tagsToUpdate.forEach((tag) => {
-        void DB.updateLocalTagPB(
-          tag,
-          result.mode,
-          result.mode2,
-          result.punctuation,
-          result.numbers,
-          result.language,
-          result.difficulty,
-          result.lazyMode,
-        );
-      });
-    }
-  });
-
-  if (state.source === "accountPage") {
-    AccountPage.updateTagsForResult(state.resultId, state.tags);
-  } else if (state.source === "resultPage") {
-    TestResult.updateTagsAfterEdit(state.tags, responseTagPbs);
-  }
 }
 
 const modal = new AnimatedModal({

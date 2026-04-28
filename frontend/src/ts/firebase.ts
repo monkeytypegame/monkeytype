@@ -33,7 +33,7 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { googleSignUpEvent } from "./events/google-sign-up";
 import { addBanner } from "./states/banners";
-import { setUserId } from "./states/core";
+import { setUserId, setUserVerified } from "./states/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -69,7 +69,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
-        setUserId(user?.uid ?? null);
+        setUserState(user);
         await callback(true, user);
       }
     });
@@ -78,7 +78,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
     await callback(false, null);
-    setUserId(null);
+    setUserState(null);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
@@ -134,6 +134,21 @@ export async function signInWithEmailAndPassword(
   return result;
 }
 
+function setUserState(
+  options: {
+    uid: string;
+    emailVerified: boolean;
+  } | null,
+): void {
+  if (options === null) {
+    setUserId(null);
+    setUserVerified(false);
+  } else {
+    setUserId(options.uid);
+    setUserVerified(options.emailVerified);
+  }
+}
+
 export async function signInWithPopup(
   provider: AuthProvider,
   rememberMe: boolean,
@@ -151,11 +166,11 @@ export async function signInWithPopup(
     throw translateFirebaseError(error, "Failed to sign in with popup");
   }
   const additionalUserInfo = getAdditionalUserInfo(signedInUser);
+  setUserState(signedInUser.user);
   if (additionalUserInfo?.isNewUser) {
     googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
     ignoreAuthCallback = false;
-    setUserId(signedInUser.user.uid);
     await readyCallback?.(true, signedInUser.user);
   }
 }

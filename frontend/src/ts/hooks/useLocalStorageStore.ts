@@ -7,6 +7,7 @@ export type UseLocalStorageStoreOptions<T extends object> = {
   schema: LocalStorageWithSchema<T>["schema"];
   fallback: LocalStorageWithSchema<T>["fallback"];
   migrate?: LocalStorageWithSchema<T>["migrate"];
+  afterParse?: LocalStorageWithSchema<T>["afterParse"];
   /**
    * Whether to sync changes across tabs/windows using storage events.
    * @default true
@@ -32,7 +33,14 @@ export type UseLocalStorageStoreOptions<T extends object> = {
 export function useLocalStorageStore<T extends object>(
   options: UseLocalStorageStoreOptions<T>,
 ): [T, SetStoreFunction<T>] {
-  const { key, schema, fallback, migrate, syncAcrossTabs = true } = options;
+  const {
+    key,
+    schema,
+    fallback,
+    migrate,
+    afterParse,
+    syncAcrossTabs = true,
+  } = options;
 
   // Create the underlying localStorage manager
   const storage = new LocalStorageWithSchema({
@@ -40,6 +48,7 @@ export function useLocalStorageStore<T extends object>(
     schema,
     fallback,
     migrate,
+    afterParse,
   });
 
   // Create store with initial value from storage

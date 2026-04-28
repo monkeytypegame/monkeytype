@@ -1,7 +1,10 @@
-import * as DB from "../../db";
 import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
-import * as TagController from "../../controllers/tag-controller";
+import {
+  clearActiveTags,
+  toggleTagActive,
+  __nonReactive,
+} from "../../collections/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../states/core";
@@ -28,30 +31,17 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const snapshot = DB.getSnapshot();
+  const tags = __nonReactive.getTags();
   subgroup.list = [];
 
-  if (
-    snapshot !== undefined &&
-    snapshot.tags !== undefined &&
-    snapshot.tags.length > 0
-  ) {
+  if (tags.length > 0) {
     subgroup.list.push({
       id: "clearTags",
       display: `Clear tags`,
       icon: "fa-times",
       sticky: true,
       exec: async (): Promise<void> => {
-        const snapshot = DB.getSnapshot();
-        if (!snapshot) return;
-
-        snapshot.tags = snapshot.tags?.map((tag) => {
-          tag.active = false;
-
-          return tag;
-        });
-
-        DB.setSnapshot(snapshot);
+        clearActiveTags();
         if (
           Config.paceCaret === "average" ||
           Config.paceCaret === "tagPb" ||
@@ -60,23 +50,19 @@ function update(): void {
           await PaceCaret.init();
         }
         void ModesNotice.update();
-        TagController.saveActiveToLocalStorage();
       },
     });
 
-    for (const tag of snapshot.tags) {
+    for (const tag of tags) {
       subgroup.list.push({
         id: "toggleTag" + tag._id,
-        display: tag.display,
+        display: tag.name,
         sticky: true,
         active: () => {
-          return (
-            DB.getSnapshot()?.tags?.find((t) => t._id === tag._id)?.active ??
-            false
-          );
+          return __nonReactive.getTag(tag._id)?.active ?? false;
         },
         exec: async (): Promise<void> => {
-          TagController.toggle(tag._id);
+          toggleTagActive(tag._id);
 
           if (
             Config.paceCaret === "average" ||
@@ -97,7 +83,7 @@ function update(): void {
     shouldFocusTestUI: false,
     opensModal: true,
     exec: ({ commandlineModal }): void => {
-      EditTagsPopup.show("add", undefined, undefined, commandlineModal);
+      EditTagsPopup.show("add", undefined, commandlineModal);
     },
   });
 }

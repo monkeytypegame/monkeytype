@@ -2,13 +2,12 @@
 import "./dev/signal-tracker";
 
 //enable solidjs-devtools
-import "solid-devtools";
+//import "solid-devtools";
 
 import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
 import "./event-handlers/settings";
-import "./event-handlers/account";
 import "./modals/google-sign-up";
 
 import { init } from "./firebase";
@@ -29,7 +28,6 @@ import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
 import "./controllers/route-controller";
-import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
@@ -91,7 +89,6 @@ void init(onAuthStateChanged).then(() => {
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  toggleFilterDebug: Account.toggleFilterDebug,
   glarsesMode: enable,
   stats: TestStats.getStats,
   replay: Replay.getReplayExport,

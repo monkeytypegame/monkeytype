@@ -38,44 +38,6 @@
       }
     }
   }
-  .pageAccount {
-    .triplegroup.stats {
-      .title {
-        font-size: 0.75rem;
-      }
-      .val {
-        font-size: 1.5rem;
-      }
-    }
-    .group.estimatedWordsTyped {
-      .val {
-        font-size: 2rem;
-      }
-    }
-    .group.history table thead td:nth-child(7),
-    .group.history table tbody td:nth-child(7) {
-      display: none;
-    }
-    .group.filterButtons {
-      grid-template-columns: 1fr;
-    }
-  }
-  .pageAccountSettings {
-    .main {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      .tabs {
-        padding: 0;
-        display: grid;
-        grid-auto-flow: row;
-        button {
-          justify-content: center;
-          padding: 1em 0.5em;
-        }
-      }
-    }
-  }
-
   .pageSettings {
     .accountSettingsNotice {
       button {

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/solid-query";
-import { For, JSXElement, Show } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
-import { getConfig } from "../../config/store";
 import {
   getContributorsQueryOptions,
   getSpeedHistogramQueryOptions,
@@ -12,10 +11,10 @@ import { getActivePage } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { getTheme } from "../../states/theme";
 import { getNumberWithMagnitude } from "../../utils/numbers";
+import { Advertisement } from "../common/Advertisement";
 import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
-import { Fa } from "../common/Fa";
 import { H2, H3 } from "../common/Headers";
 import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
 import { QuickRestartHotkey } from "../hotkeys/QuickRestartHotkey";
@@ -240,26 +239,7 @@ export function AboutPage(): JSXElement {
           </dd>
         </dl>
       </section>
-      <Show when={getConfig.ads === "sellout"}>
-        <div
-          id="ad-about-1-wrapper"
-          class="ad full-width advertisement ad-h place-self-center"
-        >
-          <div class="icon">
-            <Fa icon="fa-ad" />
-          </div>
-          <div id="ad-about-1"></div>
-        </div>
-        <div
-          id="ad-about-1-small-wrapper"
-          class="ad advertisement ad-h-s place-self-center"
-        >
-          <div class="icon small">
-            <Fa icon="fa-ad" />
-          </div>
-          <div id="ad-about-1-small"></div>
-        </div>
-      </Show>
+      <Advertisement id="ad-about-1" visible="sellout" />
       <section>
         <H3 fa={{ icon: "fa-chart-area" }} text="results screen" />
         <p>
@@ -375,26 +355,7 @@ export function AboutPage(): JSXElement {
           themes and more
         </p>
       </section>
-      <Show when={getConfig.ads === "sellout"}>
-        <div
-          id="ad-about-2-wrapper"
-          class="ad full-width advertisement ad-h place-self-center"
-        >
-          <div class="icon">
-            <Fa icon="fa-ad" />
-          </div>
-          <div id="ad-about-2"></div>
-        </div>
-        <div
-          id="ad-about-2-small-wrapper"
-          class="ad advertisement ad-h-s place-self-center"
-        >
-          <div class="icon small">
-            <Fa icon="fa-ad" />
-          </div>
-          <div id="ad-about-2-small"></div>
-        </div>
-      </Show>
+      <Advertisement id="ad-about-2" visible="sellout" />
       <div></div>
       <section>
         <H2

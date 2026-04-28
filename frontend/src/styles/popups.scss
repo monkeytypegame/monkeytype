@@ -75,16 +75,6 @@ body.darkMode {
   }
 }
 
-#miniResultChartModal {
-  .modal {
-    overflow: hidden;
-    max-width: 70rem;
-    canvas {
-      max-height: 200px;
-    }
-  }
-}
-
 #forgotPasswordModal {
   .modal {
     max-width: 400px;

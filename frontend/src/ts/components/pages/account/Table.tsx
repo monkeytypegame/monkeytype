@@ -1,0 +1,295 @@
+import { Difficulty } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
+import { createColumnHelper } from "@tanstack/solid-table";
+import { format as dateFormat } from "date-fns/format";
+import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
+
+import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
+import { getConfig } from "../../../config/store";
+import { SnapshotResult } from "../../../constants/default-snapshot";
+import * as EditResultTagsModal from "../../../modals/edit-result-tags";
+import { showModal } from "../../../states/modals";
+import { cn } from "../../../utils/cn";
+import { Formatting } from "../../../utils/format";
+import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
+import { Button } from "../../common/Button";
+import { Fa, FaProps } from "../../common/Fa";
+import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import { MiniResultChart } from "./MiniResultChart";
+
+type Sorting = {
+  field: keyof SnapshotResult<Mode>;
+  direction: "asc" | "desc";
+};
+
+export function Table<M extends Mode>(props: {
+  data: SnapshotResult<M>[];
+  onSortingChange: (sorting: Sorting) => void;
+  selectedRowId: Accessor<string | null>;
+}): JSXElement {
+  const [selectedResult, setSelectedResult] = createSignal<string | undefined>(
+    undefined,
+  );
+
+  const tags = useTagsLiveQuery();
+
+  const columns = createMemo(() =>
+    getColumns<M>({
+      format: new Formatting(getConfig),
+      tags: tags(),
+      onMiniResultChartSelected: (id) => {
+        setSelectedResult(id);
+        if (id !== undefined) showModal("MiniResultChartModal");
+      },
+    }),
+  );
+
+  return (
+    <>
+      <Show when={selectedResult() !== undefined}>
+        <MiniResultChart resultId={selectedResult() as string} />
+      </Show>
+      <DataTable
+        id="resultList"
+        onSortingChange={(val) => {
+          if (val.length === 0) {
+            props.onSortingChange({ field: "timestamp", direction: "desc" });
+          } else {
+            props.onSortingChange({
+              field: val[0]?.id as keyof SnapshotResult<Mode>,
+              direction: val[0]?.desc ? "desc" : "asc",
+            });
+          }
+        }}
+        class={cn("table-auto", "text-xs md:text-sm lg:text-base")}
+        // headerCellClass="p-1"
+        // bodyCellClass="p-1"
+        data={props.data}
+        columns={columns()}
+        fallback=<span>No data found. Check your filters.</span>
+        rowSelection={{
+          getRowId: (row) => row._id,
+          activeRow: props.selectedRowId,
+          class: cn(
+            "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
+            "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+          ),
+        }}
+      />
+    </>
+  );
+}
+
+function getColumns<M extends Mode>({
+  format,
+  tags,
+  onMiniResultChartSelected,
+}: {
+  format: Formatting;
+  tags: TagItem[];
+  onMiniResultChartSelected(val: string): void;
+}): DataTableColumnDef<SnapshotResult<M>>[] {
+  const defineColumn = createColumnHelper<SnapshotResult<M>>().accessor;
+  const columns = [
+    defineColumn("isPb", {
+      header: "",
+      cell: (info) =>
+        info.getValue() ? (
+          <Fa icon="fa-crown" />
+        ) : (
+          <Fa icon="fa-crown" class="opacity-0" />
+        ),
+      enableSorting: false,
+      meta: {
+        cellMeta: {
+          class: cn("w-0", "xl:pr-6 xl:pl-8", "pl-4"),
+        },
+      },
+    }),
+    defineColumn("wpm", {
+      header: format.typingSpeedUnit,
+      cell: (info) =>
+        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+    }),
+    defineColumn("rawWpm", {
+      header: "raw",
+      cell: (info) =>
+        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+      meta: {
+        breakpoint: "xs",
+      },
+    }),
+    defineColumn("acc", {
+      header: "accuracy",
+      cell: (info) =>
+        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+      meta: {
+        breakpoint: "xs",
+      },
+    }),
+    defineColumn("consistency", {
+      header: "consistency",
+      cell: (info) =>
+        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+      meta: {
+        breakpoint: "xs",
+      },
+    }),
+    defineColumn("charStats", {
+      header: "chars",
+      cell: (info) =>
+        `${info.row.original.charStats[0]}/${info.row.original.charStats[1]}/${info.row.original.charStats[2]}/${info.row.original.charStats[3]}`,
+      meta: {
+        breakpoint: "lg",
+      },
+    }),
+    defineColumn("mode", {
+      header: "mode",
+      enableSorting: false,
+      cell: (info) =>
+        `${info.getValue()} ${info.row.original.mode2 === "custom" ? "" : info.row.original.mode2}`,
+      meta: {
+        breakpoint: "md",
+      },
+    }),
+    defineColumn("_id", {
+      header: "info",
+      enableSorting: false,
+      cell: (info) => {
+        const hasChart =
+          info.row.original.chartData !== "toolong" &&
+          info.row.original.testDuration <= 122;
+
+        return (
+          <div class="flex gap-0.5">
+            <span aria-label={info.row.original.language} data-balloon-pos="up">
+              <Fa icon="fa-globe-americas" fixedWidth={true} />
+            </span>
+            <span
+              aria-label={info.row.original.difficulty}
+              data-balloon-pos="up"
+            >
+              <Fa {...difficultyIcon(info.row.original.difficulty)} />
+            </span>
+            <Show when={info.row.original.punctuation}>
+              <span aria-label="punctuation" data-balloon-pos="up">
+                <Fa icon="fa-at" fixedWidth={true} />
+              </span>
+            </Show>
+            <Show when={info.row.original.numbers}>
+              <span aria-label="numbers" data-balloon-pos="up">
+                <Fa icon="fa-hashtag" fixedWidth={true} />
+              </span>
+            </Show>
+            <Show when={info.row.original.blindMode}>
+              <span aria-label="blind mode" data-balloon-pos="up">
+                <Fa icon="fa-eye-slash" fixedWidth={true} />
+              </span>
+            </Show>
+            <Show when={info.row.original.lazyMode}>
+              <span aria-label="lazy mode" data-balloon-pos="up">
+                <Fa icon="fa-couch" fixedWidth={true} />
+              </span>
+            </Show>
+            <Show when={(info.row.original.funbox ?? []).length > 0}>
+              <span
+                aria-label={info.row.original.funbox
+                  .map(replaceUnderscoresWithSpaces)
+                  .join(", ")}
+                data-balloon-pos="up"
+              >
+                <Fa icon="fa-gamepad" fixedWidth={true} />
+              </span>
+            </Show>
+            <span
+              data-balloon-pos="up"
+              aria-label={
+                hasChart
+                  ? "View graph"
+                  : "Graph history is not available for long tests"
+              }
+            >
+              <Button
+                disabled={!hasChart}
+                class="p-0 text-inherit"
+                variant="text"
+                fa={{ icon: "fa-chart-line", fixedWidth: true }}
+                onClick={() => {
+                  onMiniResultChartSelected(info.getValue());
+                }}
+              />
+            </span>
+          </div>
+        );
+      },
+      meta: {
+        breakpoint: "sm",
+      },
+    }),
+    defineColumn("tags", {
+      header: "tags",
+      enableSorting: false,
+      cell: (info) => {
+        const hasTags = () => info.getValue().length > 0;
+        return (
+          <Button
+            variant="text"
+            class={
+              hasTags() ? "[--themable-button-text:var(--text-color)]" : ""
+            }
+            fa={{
+              icon: info.getValue().length > 1 ? "fa-tags" : "fa-tag",
+              fixedWidth: true,
+            }}
+            balloon={{
+              text: hasTags()
+                ? info
+                    .getValue()
+                    .map(
+                      (it) =>
+                        tags.find((tag) => tag._id === it)?.name ??
+                        "unknown tag",
+                    )
+                    .join(", ")
+                : "no tags",
+            }}
+            onClick={() => {
+              EditResultTagsModal.show(
+                info.row.original._id,
+                info.getValue(),
+                "accountPage",
+              );
+            }}
+          />
+        );
+      },
+      meta: {
+        breakpoint: "sm",
+      },
+    }),
+    defineColumn("timestamp", {
+      header: "date",
+      cell: (info) => (
+        <>
+          <div class="text-em-sm">
+            {dateFormat(info.getValue(), "dd MMM yyyy")}
+          </div>
+          <div class="text-em-sm text-sub">
+            {dateFormat(info.getValue(), "HH:mm")}
+          </div>
+        </>
+      ),
+    }),
+  ];
+  return columns;
+}
+
+function difficultyIcon(difficulty: Difficulty): FaProps {
+  if (difficulty === "expert") {
+    return { variant: "solid", icon: "fa-star-half-alt", fixedWidth: true };
+  } else if (difficulty === "master") {
+    return { variant: "solid", icon: "fa-star", fixedWidth: true };
+  } else {
+    return { variant: "regular", icon: "fa-star", fixedWidth: true };
+  }
+}

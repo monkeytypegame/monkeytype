@@ -298,5 +298,16 @@ describe("local-storage-with-schema.ts", () => {
         expect(getItemMock).toHaveBeenCalledOnce();
       });
     });
+    it("should apply afterParse", () => {
+      const ls = new LocalStorageWithSchema({
+        key: "config",
+        schema: objectSchema,
+        fallback: defaultObject,
+        afterParse: (it) => ({ ...it, fontSize: it.fontSize * 2 }),
+      });
+
+      const res = ls.get();
+      expect(res.fontSize).toEqual(32);
+    });
   });
 });

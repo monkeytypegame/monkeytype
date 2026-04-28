@@ -248,6 +248,7 @@ export async function copyToClipboard(): Promise<void> {
     }
     try {
       // Attempt to copy using ClipboardItem API
+      // oxlint-disable-next-line compat/compat
       const clipItem = new ClipboardItem(
         Object.defineProperty({}, blob.type, {
           value: blob,

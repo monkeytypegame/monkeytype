@@ -1,8 +1,8 @@
-import * as DB from "../db";
 import * as Misc from "../utils/misc";
 import * as Numbers from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
+import { getUserAverage } from "../collections/results";
 
 let averageWPM = 0;
 let averageAcc = 0;
@@ -10,17 +10,13 @@ let averageAcc = 0;
 export async function update(): Promise<void> {
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
 
-  const [wpm, acc] = (
-    await DB.getUserAverage10(
-      Config.mode,
-      mode2 as never,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-    )
-  ).map(Numbers.roundTo2) as [number, number];
+  const average = await getUserAverage({
+    ...Config,
+    mode2,
+    last10Only: true,
+  });
+  const wpm = Numbers.roundTo2(average.wpm);
+  const acc = Numbers.roundTo2(average.acc);
 
   averageWPM = Config.alwaysShowDecimalPlaces ? wpm : Math.round(wpm);
   averageAcc = Config.alwaysShowDecimalPlaces ? acc : Math.floor(acc);

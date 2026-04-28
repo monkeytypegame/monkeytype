@@ -45,7 +45,12 @@ import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { SnapshotUserTag } from "../constants/default-snapshot";
+import {
+  getLocalTagPB,
+  saveLocalTagPB,
+  type TagItem,
+  __nonReactive,
+} from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
@@ -662,15 +667,8 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: SnapshotUserTag[] = [];
-  const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
-  try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTags.push(tag);
-      }
-    });
-  } catch (e) {}
+  const activeTags: TagItem[] = __nonReactive.getActiveTags();
+  const userTagsCount = __nonReactive.getTags().length;
 
   if (userTagsCount === 0) {
     qs("#result .stats .tags")?.hide();
@@ -697,7 +695,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   for (const tag of activeTags) {
-    const tpb = await DB.getLocalTagPB(
+    const tpb = getLocalTagPB(
       tag._id,
       Config.mode,
       result.mode2,
@@ -708,7 +706,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.lazyMode,
     );
     qs("#result .stats .tags .bottom")?.appendHtml(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
+      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
@@ -718,7 +716,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        await DB.saveLocalTagPB(
+        saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -763,7 +761,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             display: true,
-            content: `${tag.display} PB: ${Numbers.roundTo2(
+            content: `${tag.name} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb),
             ).toFixed(2)}`,
           },
@@ -1268,11 +1266,10 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames.push(snaptag.display);
-        }
-      });
+      const localTag = __nonReactive.getTag(tag);
+      if (localTag !== undefined) {
+        tagNames.push(localTag.name);
+      }
     }
   }
 

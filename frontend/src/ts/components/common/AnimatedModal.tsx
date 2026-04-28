@@ -1,9 +1,9 @@
 import {
   JSXElement,
-  createEffect,
-  onCleanup,
   ParentProps,
   Show,
+  createEffect,
+  onCleanup,
 } from "solid-js";
 
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
@@ -77,12 +77,15 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
     await props.beforeShow?.(isChained);
 
+    // After await, the element may have been removed from the DOM
+    if (!dialogEl()?.native.isConnected) return;
+
     // Open the dialog
     dialogEl()?.show();
     if (props.mode === "dialog") {
       dialogEl()?.native.show();
     } else {
-      dialogEl()?.native.showModal();
+      dialogEl()?.native?.showModal();
     }
 
     const modalAnimDuration = applyReducedMotion(
@@ -306,31 +309,33 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   });
 
   return (
-    <dialog
-      id={`${props.id as string}Modal`}
-      ref={dialogRef}
-      class={cn(
-        "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
-        props.wrapperClass,
-      )}
-      onKeyDown={handleKeyDown}
-      onMouseDown={handleBackdropClick}
-    >
-      <div class="pointer-events-none flex h-full w-full items-center justify-center">
-        <div
-          class={cn(
-            "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
-            props.modalClass,
-          )}
-          ref={modalRef}
-          onScroll={(e) => props.onScroll?.(e)}
-        >
-          <Show when={props.title !== undefined && props.title !== ""}>
-            <div class="text-2xl text-sub">{props.title}</div>
-          </Show>
-          {props.children}
+    <Show when={visibility()}>
+      <dialog
+        id={`${props.id as string}Modal`}
+        ref={dialogRef}
+        class={cn(
+          "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+          props.wrapperClass,
+        )}
+        onKeyDown={handleKeyDown}
+        onMouseDown={handleBackdropClick}
+      >
+        <div class="pointer-events-none flex h-full w-full items-center justify-center">
+          <div
+            class={cn(
+              "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+              props.modalClass,
+            )}
+            ref={modalRef}
+            onScroll={(e) => props.onScroll?.(e)}
+          >
+            <Show when={props.title !== undefined && props.title !== ""}>
+              <div class="text-2xl text-sub">{props.title}</div>
+            </Show>
+            {props.children}
+          </div>
         </div>
-      </div>
-    </dialog>
+      </dialog>
+    </Show>
   );
 }

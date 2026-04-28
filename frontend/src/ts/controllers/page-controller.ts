@@ -6,7 +6,6 @@ import {
   setSelectedProfileName,
 } from "../states/core";
 import * as Settings from "../pages/settings";
-import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
@@ -30,6 +29,9 @@ import {
   readGetParameters,
 } from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
+import { getSnapshot } from "../db";
+import * as TodayTracker from "../test/today-tracker";
+import { isResultsReady, waitForResultsReady } from "../collections/results";
 
 type ChangeOptions = {
   force?: boolean;
@@ -43,7 +45,34 @@ const pages = {
   test: PageTest.page,
   settings: Settings.page,
   about: solidPage("about"),
-  account: Account.page,
+  account: solidPage("account", {
+    loadingOptions: {
+      loadingMode: () => {
+        if (isResultsReady()) {
+          return "none";
+        } else {
+          return "sync";
+        }
+      },
+      loadingPromise: async () => {
+        if (getSnapshot() === null) {
+          throw new Error(
+            "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
+          );
+        }
+        await waitForResultsReady();
+        TodayTracker.addAllFromToday();
+      },
+      style: "bar",
+      keyframes: [
+        {
+          percentage: 90,
+          durationMs: 2000,
+          text: "Downloading results...",
+        },
+      ],
+    },
+  }),
   login: solidPage("login"),
   profile: solidPage("profile", {
     beforeShow: async (options) => {

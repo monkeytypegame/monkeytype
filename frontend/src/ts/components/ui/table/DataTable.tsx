@@ -60,6 +60,11 @@ export type DataTableProps<TData, TValue> = {
     activeRow: Accessor<string | null>;
   };
   class?: string;
+  headerClass?: string;
+  headerCellClass?: string;
+  bodyClass?: string;
+  bodyCellClass?: string;
+  onSortingChange?: (sorting: SortingState) => void;
   noDataRow?:
     | true
     | {
@@ -109,8 +114,15 @@ export function DataTable<TData, TValue = any>(
       return props.columns;
     },
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (it) => {
+      setSorting(it);
+      props.onSortingChange?.(sorting());
+    },
+
+    //oxlint-disable-next-line solid/reactivity
+    ...(props.onSortingChange
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
     enableRowSelection: () => props.rowSelection !== undefined,
     getRowId: (row, index) =>
       props.rowSelection !== undefined
@@ -196,7 +208,10 @@ export function DataTable<TData, TValue = any>(
                                   ? "descending"
                                   : "none"
                             }
-                            class={cn(columnVisibility()[header.column.id])}
+                            class={cn(
+                              "p-0",
+                              columnVisibility()[header.column.id],
+                            )}
                           >
                             <button
                               type="button"
@@ -217,6 +232,7 @@ export function DataTable<TData, TValue = any>(
                                     header.column.columnDef.meta?.align ===
                                     "right",
                                 },
+                                props.headerCellClass,
                                 header.column.columnDef.meta?.headerClass,
                               )}
                               {...(header.column.columnDef.meta?.headerMeta ??
@@ -268,6 +284,7 @@ export function DataTable<TData, TValue = any>(
                                   "right",
                               },
                               columnVisibility()[header.column.id],
+                              props.headerCellClass,
                             )}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
@@ -327,6 +344,7 @@ export function DataTable<TData, TValue = any>(
                               cell.column.columnDef.meta?.align === "right",
                           },
                           columnVisibility()[cell.column.id],
+                          props.bodyCellClass,
                           cellClass.class,
                         )}
                       >

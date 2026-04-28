@@ -22,6 +22,7 @@ import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
 import * as DB from "../db";
 import * as Replay from "./replay";
+import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
@@ -810,12 +811,9 @@ function buildCompletedEvent(
   }
 
   //tags
-  const activeTagsIds: string[] = [];
-  for (const tag of DB.getSnapshot()?.tags ?? []) {
-    if (tag.active === true) {
-      activeTagsIds.push(tag._id);
-    }
-  }
+  const activeTagsIds: string[] = __nonReactive
+    .getActiveTags()
+    .map((tag) => tag._id);
 
   const duration = parseFloat(stats.time.toString());
   const afkDuration = TestStats.calculateAfkSeconds(duration);
