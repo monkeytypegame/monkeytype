@@ -7,11 +7,63 @@ import { capsState } from "../test/caps-warning";
 import { showErrorNotification } from "../states/notifications";
 
 import type { Howl } from "howler";
-import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
+import {
+  PlaySoundOnClick,
+  PlaySoundOnError,
+} from "@monkeytype/schemas/configs";
 
 async function gethowler(): Promise<typeof import("howler")> {
   return await import("howler");
 }
+
+type ClickSoundConfig = {
+  numberOfSounds: number;
+  hasSecondVariant?: true;
+};
+
+type OscillatorSoundConfig = { oscillatorType: SupportedOscillatorTypes };
+
+type ScaleSoundConfig = {
+  validNotes: ValidNotes[];
+  scaleName: ValidScales; //TODO remove
+};
+
+type SoundConfigType = Record<
+  Exclude<PlaySoundOnClick, "off">,
+  ClickSoundConfig | OscillatorSoundConfig | ScaleSoundConfig
+>;
+
+const soundsConfig: SoundConfigType = {
+  1: { numberOfSounds: 3 },
+  2: { numberOfSounds: 3 },
+  3: { numberOfSounds: 3 },
+  4: { numberOfSounds: 6, hasSecondVariant: true },
+  5: { numberOfSounds: 6, hasSecondVariant: true },
+  6: { numberOfSounds: 3, hasSecondVariant: true },
+  7: { numberOfSounds: 3, hasSecondVariant: true },
+  8: { oscillatorType: "sine" },
+  9: { oscillatorType: "sawtooth" },
+  10: { oscillatorType: "square" },
+  11: { oscillatorType: "triangle" },
+  12: { validNotes: ["C", "D", "E", "G", "A"], scaleName: "pentatonic" },
+  13: { validNotes: ["C", "D", "E", "Gb", "Ab", "Bb"], scaleName: "wholetone" },
+  14: { numberOfSounds: 8 },
+  15: { numberOfSounds: 5 },
+  16: { numberOfSounds: 11 }, //TODO 5-7 were disabled
+};
+
+type ClickSoundConfigType = Partial<
+  Record<
+    Exclude<PlaySoundOnClick, "off">,
+    {
+      sounds: string[];
+      counter: number;
+    }[]
+  >
+>;
+
+export const clickSoundConfig: ClickSoundConfigType =
+  extractClickSounds(soundsConfig);
 
 type ClickSounds = Record<
   string,
@@ -20,9 +72,8 @@ type ClickSounds = Record<
     counter: number;
   }[]
 >;
-
 type ErrorSounds = Record<
-  string,
+  Exclude<PlaySoundOnError, "off">,
   {
     sounds: Howl[];
     counter: number;
@@ -58,44 +109,29 @@ async function initErrorSound(): Promise<void> {
   errorSounds = {
     1: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error1/error1_1.wav" }),
-          new Howl({ src: "../sound/error1/error1_1.wav" }),
-        ],
+        sounds: [new Howl({ src: "../sound/error1/error1_1.wav" })],
         counter: 0,
       },
     ],
     2: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error2/error2_1.wav" }),
-          new Howl({ src: "../sound/error2/error2_1.wav" }),
-        ],
+        sounds: [new Howl({ src: "../sound/error2/error2_1.wav" })],
         counter: 0,
       },
     ],
     3: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error3/error3_1.wav" }),
-          new Howl({ src: "../sound/error3/error3_1.wav" }),
-        ],
+        sounds: [new Howl({ src: "../sound/error3/error3_1.wav" })],
         counter: 0,
       },
     ],
     4: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error4/error4_1.wav" }),
-          new Howl({ src: "../sound/error4/error4_1.wav" }),
-        ],
+        sounds: [new Howl({ src: "../sound/error4/error4_1.wav" })],
         counter: 0,
       },
       {
-        sounds: [
-          new Howl({ src: "../sound/error4/error4_2.wav" }),
-          new Howl({ src: "../sound/error4/error4_2.wav" }),
-        ],
+        sounds: [new Howl({ src: "../sound/error4/error4_2.wav" })],
         counter: 0,
       },
     ],
@@ -106,397 +142,30 @@ async function initErrorSound(): Promise<void> {
 async function init(): Promise<void> {
   const Howl = (await gethowler()).Howl;
   if (clickSounds !== null) return;
-  clickSounds = {
-    1: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click1/click1_1.wav" }),
-          new Howl({ src: "../sound/click1/click1_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click1/click1_2.wav" }),
-          new Howl({ src: "../sound/click1/click1_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click1/click1_3.wav" }),
-          new Howl({ src: "../sound/click1/click1_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    2: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click2/click2_1.wav" }),
-          new Howl({ src: "../sound/click2/click2_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click2/click2_2.wav" }),
-          new Howl({ src: "../sound/click2/click2_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click2/click2_3.wav" }),
-          new Howl({ src: "../sound/click2/click2_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    3: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click3/click3_1.wav" }),
-          new Howl({ src: "../sound/click3/click3_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click3/click3_2.wav" }),
-          new Howl({ src: "../sound/click3/click3_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click3/click3_3.wav" }),
-          new Howl({ src: "../sound/click3/click3_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    4: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_1.wav" }),
-          new Howl({ src: "../sound/click4/click4_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_2.wav" }),
-          new Howl({ src: "../sound/click4/click4_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_3.wav" }),
-          new Howl({ src: "../sound/click4/click4_33.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_4.wav" }),
-          new Howl({ src: "../sound/click4/click4_44.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_5.wav" }),
-          new Howl({ src: "../sound/click4/click4_55.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_6.wav" }),
-          new Howl({ src: "../sound/click4/click4_66.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    5: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_1.wav" }),
-          new Howl({ src: "../sound/click5/click5_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_2.wav" }),
-          new Howl({ src: "../sound/click5/click5_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_3.wav" }),
-          new Howl({ src: "../sound/click5/click5_33.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_4.wav" }),
-          new Howl({ src: "../sound/click5/click5_44.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_5.wav" }),
-          new Howl({ src: "../sound/click5/click5_55.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_6.wav" }),
-          new Howl({ src: "../sound/click5/click5_66.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    6: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click6/click6_1.wav" }),
-          new Howl({ src: "../sound/click6/click6_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click6/click6_2.wav" }),
-          new Howl({ src: "../sound/click6/click6_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click6/click6_3.wav" }),
-          new Howl({ src: "../sound/click6/click6_33.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    7: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click7/click7_1.wav" }),
-          new Howl({ src: "../sound/click7/click7_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click7/click7_2.wav" }),
-          new Howl({ src: "../sound/click7/click7_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click7/click7_3.wav" }),
-          new Howl({ src: "../sound/click7/click7_33.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    14: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_1.wav" }),
-          new Howl({ src: "../sound/click14/click14_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_2.wav" }),
-          new Howl({ src: "../sound/click14/click14_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_3.wav" }),
-          new Howl({ src: "../sound/click14/click14_3.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_4.wav" }),
-          new Howl({ src: "../sound/click14/click14_4.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_5.wav" }),
-          new Howl({ src: "../sound/click14/click14_5.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_6.wav" }),
-          new Howl({ src: "../sound/click14/click14_6.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_7.wav" }),
-          new Howl({ src: "../sound/click14/click14_7.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_8.wav" }),
-          new Howl({ src: "../sound/click14/click14_8.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    15: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_1.wav" }),
-          new Howl({ src: "../sound/click15/click15_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_2.wav" }),
-          new Howl({ src: "../sound/click15/click15_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_3.wav" }),
-          new Howl({ src: "../sound/click15/click15_3.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_4.wav" }),
-          new Howl({ src: "../sound/click15/click15_4.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_5.wav" }),
-          new Howl({ src: "../sound/click15/click15_5.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    16: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_1.wav" }),
-          new Howl({ src: "../sound/click16/click16_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_2.wav" }),
-          new Howl({ src: "../sound/click16/click16_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_3.wav" }),
-          new Howl({ src: "../sound/click16/click16_3.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_4.wav" }),
-          new Howl({ src: "../sound/click16/click16_4.wav" }),
-        ],
-        counter: 0,
-      },
-      // {
-      //   sounds: [
-      //     new Howl({ src: "../sound/click16/click16_5.wav" }),
-      //     new Howl({ src: "../sound/click16/click16_5.wav" }),
-      //   ],
-      //   counter: 0,
-      // },
-      // {
-      //   sounds: [
-      //     new Howl({ src: "../sound/click16/click16_6.wav" }),
-      //     new Howl({ src: "../sound/click16/click16_6.wav" }),
-      //   ],
-      //   counter: 0,
-      // },
-      // {
-      //   sounds: [
-      //     new Howl({ src: "../sound/click16/click16_7.wav" }),
-      //     new Howl({ src: "../sound/click16/click16_7.wav" }),
-      //   ],
-      //   counter: 0,
-      // },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_8.wav" }),
-          new Howl({ src: "../sound/click16/click16_8.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_9.wav" }),
-          new Howl({ src: "../sound/click16/click16_9.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_10.wav" }),
-          new Howl({ src: "../sound/click16/click16_10.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_11.wav" }),
-          new Howl({ src: "../sound/click16/click16_11.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-  };
+  clickSounds = Object.fromEntries(
+    Object.entries(clickSoundConfig).map(([key, value]) => [
+      key,
+      value.map((it) => ({
+        ...it,
+        sounds: it.sounds.map((src) => new Howl({ src })),
+      })),
+    ]),
+  );
   Howler.volume(Config.soundVolume);
 }
 
 export async function previewClick(val: PlaySoundOnClick): Promise<void> {
-  if (["8", "9", "10", "11"].includes(val)) {
+  if (val === "off") return;
+
+  const config = soundsConfig[val];
+
+  if ("oscillatorType" in config) {
     playNote("KeyQ", clickSoundIdsToOscillatorType[val as DynamicClickSounds]);
     return;
   }
 
-  if (["12", "13"].includes(val)) {
-    scaleConfigurations[val as "12" | "13"].preview();
-    return;
+  if ("validNotes" in config) {
+    scaleConfigurations[val]?.preview();
   }
 
   if (clickSounds === null) await init();
@@ -510,7 +179,8 @@ export async function previewClick(val: PlaySoundOnClick): Promise<void> {
   safeClickSounds?.[val]?.[0]?.sounds[0]?.play();
 }
 
-export async function previewError(val: string): Promise<void> {
+export async function previewError(val: PlaySoundOnError): Promise<void> {
+  if (val === "off") return;
   if (errorSounds === null) await initErrorSound();
 
   const safeErrorSounds = errorSounds as ErrorSounds;
@@ -667,21 +337,19 @@ const defaultScaleData: ScaleData = {
   direction: 1,
 };
 
-export const scaleConfigurations: Record<
-  Extract<PlaySoundOnClick, "12" | "13">,
-  ScaleMeta
-> = {
-  "12": {
-    name: "pentatonic",
-    preview: createPreviewScale("pentatonic"),
-    meta: defaultScaleData,
-  },
-  "13": {
-    name: "wholetone",
-    preview: createPreviewScale("wholetone"),
-    meta: defaultScaleData,
-  },
-};
+export const scaleConfigurations: Partial<Record<PlaySoundOnClick, ScaleMeta>> =
+  {
+    "12": {
+      name: "pentatonic",
+      preview: createPreviewScale("pentatonic"),
+      meta: defaultScaleData,
+    },
+    "13": {
+      name: "wholetone",
+      preview: createPreviewScale("wholetone"),
+      meta: defaultScaleData,
+    },
+  };
 
 function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
@@ -778,19 +446,23 @@ function playNote(
 }
 
 export async function playClick(codeOverride?: string): Promise<void> {
-  if (Config.playSoundOnClick === "off") return;
+  const val = Config.playSoundOnClick;
+  if (val === "off") return;
 
-  if (Config.playSoundOnClick in scaleConfigurations) {
-    const { name, meta } =
-      scaleConfigurations[
-        Config.playSoundOnClick as keyof typeof scaleConfigurations
-      ];
-    playScale(name, meta);
+  const config = soundsConfig[val];
+
+  if ("oscillatorType" in config) {
+    playNote(codeOverride);
     return;
   }
 
-  if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
-    playNote(codeOverride ?? undefined);
+  if ("validNotes" in config) {
+    const scaleConfig = scaleConfigurations[val];
+    if (scaleConfig === undefined) {
+      //TODO
+      throw new Error("missing scale config");
+    }
+    playScale(scaleConfig.name, scaleConfig.meta);
     return;
   }
 
@@ -804,7 +476,9 @@ export async function playClick(codeOverride?: string): Promise<void> {
   const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
 
   randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
+  if (randomSound.counter === randomSound.sounds.length) {
+    randomSound.counter = 0;
+  }
   soundToPlay.seek(0);
   soundToPlay.play();
 }
@@ -820,7 +494,9 @@ export async function playError(): Promise<void> {
   const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
 
   randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
+  if (randomSound.counter === randomSound.sounds.length) {
+    randomSound.counter = 0;
+  }
   soundToPlay.seek(0);
   soundToPlay.play();
 }
@@ -831,6 +507,31 @@ function setVolume(val: number): void {
   } catch (e) {
     //
   }
+}
+
+function extractClickSounds(
+  shortConfig: SoundConfigType,
+): ClickSoundConfigType {
+  return Object.fromEntries(
+    Object.entries(shortConfig)
+      .filter(([_, cfg]) => "numberOfSounds" in cfg)
+      .map(([key, cfg]) => {
+        const config = cfg as ClickSoundConfig;
+        const fullConfig = new Array(config.numberOfSounds)
+          .fill(0)
+          .map((_, index) => {
+            const sounds = config.hasSecondVariant
+              ? [
+                  `../sound/click${key}/click${key}_${index + 1}.wav`,
+                  `../sound/click${key}/click${key}_${index + 1}_2.wav`,
+                ]
+              : [`../sound/click${key}/click${key}_${index + 1}.wav`];
+
+            return { sounds, counter: 0 };
+          });
+        return [key, fullConfig];
+      }),
+  );
 }
 
 configEvent.subscribe(({ key, newValue }) => {
