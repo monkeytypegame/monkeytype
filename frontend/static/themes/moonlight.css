@@ -2,8 +2,8 @@
 
 header[data-focused] {
   & [data-nav-item],
-  & nav:before,
-  & nav:after {
+  & nav::before,
+  & nav::after {
     background: var(--bg-color);
   }
 }
@@ -12,11 +12,11 @@ header[data-focused] {
 [data-nav-item="leaderboards"],
 [data-nav-item="about"],
 [data-nav-item="settings"] {
-  border-radius: rem !important;
+  /* border-radius: rem !important; this is doing nothing */
   color: #191f28 !important;
   background: #c69f68;
   &:hover {
-    border-radius: rem !important;
+    /* border-radius: rem !important; this is doing nothing */
     color: #4b5975 !important;
     transition: 0.25s;
   }
