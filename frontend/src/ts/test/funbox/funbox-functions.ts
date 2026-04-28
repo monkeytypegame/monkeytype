@@ -54,7 +54,7 @@ export type FunboxFunctions = {
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
-    .getCurrent()
+    .getCurrentText()
     .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
@@ -63,7 +63,7 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     !isCorrect &&
     (TestInput.input.current !== "" ||
       TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1) ||
+        TestWords.words.getText(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
     qs("#words")?.addClass("read_ahead_disabled");
@@ -452,7 +452,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+            TestWords.words
+              .getCurrentText()
+              .charAt(TestInput.input.current.length),
           );
         }, 1);
       }
