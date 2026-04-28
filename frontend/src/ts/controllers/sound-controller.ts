@@ -21,6 +21,7 @@ type ClickSoundConfig = {
   hasSecondVariant?: true;
 };
 
+type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
 type OscillatorSoundConfig = { oscillatorType: SupportedOscillatorTypes };
 
 type ScaleSoundConfig = {
@@ -160,7 +161,7 @@ export async function previewClick(val: PlaySoundOnClick): Promise<void> {
   const config = soundsConfig[val];
 
   if ("oscillatorType" in config) {
-    playNote("KeyQ", clickSoundIdsToOscillatorType[val as DynamicClickSounds]);
+    playNote({ codeOverride: "KeyQ", oscillatorType: config.oscillatorType });
     return;
   }
 
@@ -265,19 +266,6 @@ const codeToNote: Record<string, GetNoteFrequencyCallback> = {
   BracketLeft: bindToNote(notes.F, 2),
   Equal: bindToNote(notes.Gb, 2),
   BracketRight: bindToNote(notes.G, 2),
-};
-
-type DynamicClickSounds = Extract<PlaySoundOnClick, "8" | "9" | "10" | "11">;
-type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
-
-const clickSoundIdsToOscillatorType: Record<
-  DynamicClickSounds,
-  SupportedOscillatorTypes
-> = {
-  "8": "sine",
-  "9": "sawtooth",
-  "10": "square",
-  "11": "triangle",
 };
 
 let audioCtx: AudioContext | undefined | null;
@@ -408,16 +396,16 @@ export async function clearAllSounds(): Promise<void> {
   Howl.stop();
 }
 
-function playNote(
-  codeOverride?: string,
-  oscillatorTypeOverride?: SupportedOscillatorTypes,
-): void {
+function playNote(options: {
+  codeOverride?: string;
+  oscillatorType: SupportedOscillatorTypes;
+}): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
 
-  currentCode = codeOverride ?? currentCode;
+  currentCode = options.codeOverride ?? currentCode;
   if (!(currentCode in codeToNote)) {
     return;
   }
@@ -429,11 +417,7 @@ function playNote(
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
 
-  oscillatorNode.type =
-    oscillatorTypeOverride ??
-    clickSoundIdsToOscillatorType[
-      Config.playSoundOnClick as DynamicClickSounds
-    ];
+  oscillatorNode.type = options.oscillatorType;
   gainNode.gain.value = Config.soundVolume / 10;
 
   oscillatorNode.connect(gainNode);
@@ -452,7 +436,7 @@ export async function playClick(codeOverride?: string): Promise<void> {
   const config = soundsConfig[val];
 
   if ("oscillatorType" in config) {
-    playNote(codeOverride);
+    playNote({ codeOverride, oscillatorType: config.oscillatorType });
     return;
   }
 
