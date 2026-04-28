@@ -1026,7 +1026,7 @@ list.updateCustomTheme = new SimpleModal({
         : customTheme.colors;
 
     const newTheme = {
-      name: name.replaceAll(" ", "_"),
+      name: normalizeName(name),
       colors: newColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
