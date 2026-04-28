@@ -510,7 +510,7 @@ function extractScaleSounds(
           key,
           {
             preview: createPreviewScale(config.validNotes),
-            meta: defaultScaleData,
+            meta: { ...defaultScaleData },
           } as ScaleMeta,
         ];
       }),
