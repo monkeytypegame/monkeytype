@@ -42,6 +42,9 @@
     "@monkeytype/frontend#check-assets": {
       "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
     },
+    "//#lint-styles": {
+      "dependsOn": ["^parallel"]
+    },
     "@monkeytype/frontend#lint-json": {
       "dependsOn": ["^parallel"]
     },

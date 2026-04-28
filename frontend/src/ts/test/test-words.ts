@@ -12,9 +12,9 @@ class Words {
     this.length = 0;
   }
 
-  get(i?: undefined, raw?: boolean): string[];
-  get(i: number, raw?: boolean): string;
-  get(i?: number, raw = false): string | string[] | undefined {
+  getText(i?: undefined, raw?: boolean): string[];
+  getText(i: number, raw?: boolean): string;
+  getText(i?: number, raw = false): string | string[] | undefined {
     if (i === undefined) {
       return this.list;
     } else {
@@ -25,7 +25,7 @@ class Words {
       }
     }
   }
-  getCurrent(): string {
+  getCurrentText(): string {
     return this.list[TestState.activeWordIndex] ?? "";
   }
   getLast(): string {

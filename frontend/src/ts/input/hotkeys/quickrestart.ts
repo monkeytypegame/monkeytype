@@ -6,7 +6,7 @@ import { getActivePage } from "../../states/core";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { getConfig } from "../../config/store";
-import { isLongTest } from "../../states/test";
+import { isLongTest, wordsHaveNewline, wordsHaveTab } from "../../states/test";
 
 function quickRestart(e: KeyboardEvent): void {
   if (isAnyPopupVisible()) {
@@ -37,5 +37,10 @@ createHotkey(
 createHotkey(
   () => quickRestartHotkeyMap[getConfig.quickRestart],
   quickRestart,
-  () => ({ enabled: isLongTest() }),
+  () => ({
+    enabled:
+      isLongTest() &&
+      !(wordsHaveTab() && getConfig.quickRestart === "tab") &&
+      !(wordsHaveNewline() && getConfig.quickRestart === "enter"),
+  }),
 );
