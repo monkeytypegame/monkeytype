@@ -21,6 +21,7 @@ import { z } from "zod";
 import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
+import { clickSoundConfig } from "../src/ts/constants/sounds";
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -421,6 +422,57 @@ async function validateThemes(): Promise<void> {
   }
 }
 
+async function validateSounds(): Promise<void> {
+  const problems = new Problems<string, "_additional">("Sounds", {
+    _additional:
+      "Sound files present but missing in frontend/src/ts/constants/sounds",
+  });
+
+  const soundFiles = new Set(
+    fs
+      .readdirSync("./static/sound")
+      .filter((it) => it.startsWith("click"))
+      .flatMap((folder) =>
+        fs
+          .readdirSync(`./static/sound/${folder}`)
+          .map((it) => `${folder}/${it}`),
+      ),
+  );
+
+  //missing sound files
+  Object.entries(clickSoundConfig).forEach(([key, value]) => {
+    value
+      .flatMap((it) =>
+        it.sounds.map((file) => file.substring("../sound/".length)),
+      )
+
+      .filter((it) => !soundFiles.has(it))
+      .forEach((file) =>
+        problems.add(
+          "click" + key,
+          `missing file frontend/static/sound/${file}`,
+        ),
+      );
+  });
+
+  //additional files
+  const expectedSoundFiles = new Set(
+    Object.values(clickSoundConfig).flatMap((it) =>
+      it.flatMap((cfg) =>
+        cfg.sounds.map((file) => file.substring("../sound/".length)),
+      ),
+    ),
+  );
+  soundFiles
+    .values()
+    .filter((name) => !expectedSoundFiles.has(name))
+    .forEach((file) => problems.add("_additional", file));
+
+  console.log(problems.toString());
+
+  return;
+}
+
 type Validator = () => Promise<void>;
 
 async function main(): Promise<void> {
@@ -436,11 +488,13 @@ async function main(): Promise<void> {
     challenges: [validateChallenges],
     fonts: [validateFonts],
     themes: [validateThemes],
+    sounds: [validateSounds],
     others: [
       validateChallenges,
       validateLayouts,
       validateFonts,
       validateThemes,
+      validateSounds,
     ],
   };
 

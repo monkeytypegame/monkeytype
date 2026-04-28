@@ -10,59 +10,18 @@ import {
   PlaySoundOnClick,
   PlaySoundOnError,
 } from "@monkeytype/schemas/configs";
+import {
+  clickSoundConfig,
+  ScaleSoundConfig,
+  SoundConfigType,
+  soundsConfig,
+  SupportedOscillatorTypes,
+  ValidNotes,
+} from "../constants/sounds";
 
 async function gethowler(): Promise<typeof import("howler")> {
   return await import("howler");
 }
-
-type ClickSoundConfig = {
-  numberOfSounds: number;
-  hasSecondVariant?: true;
-};
-
-type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
-type OscillatorSoundConfig = { oscillatorType: SupportedOscillatorTypes };
-
-type ScaleSoundConfig = {
-  validNotes: ValidNotes[];
-};
-
-type SoundConfigType = Record<
-  Exclude<PlaySoundOnClick, "off">,
-  ClickSoundConfig | OscillatorSoundConfig | ScaleSoundConfig
->;
-
-const soundsConfig: SoundConfigType = {
-  1: { numberOfSounds: 3 },
-  2: { numberOfSounds: 3 },
-  3: { numberOfSounds: 3 },
-  4: { numberOfSounds: 6, hasSecondVariant: true },
-  5: { numberOfSounds: 6, hasSecondVariant: true },
-  6: { numberOfSounds: 3, hasSecondVariant: true },
-  7: { numberOfSounds: 3, hasSecondVariant: true },
-  8: { oscillatorType: "sine" },
-  9: { oscillatorType: "sawtooth" },
-  10: { oscillatorType: "square" },
-  11: { oscillatorType: "triangle" },
-  12: { validNotes: ["C", "D", "E", "G", "A"] },
-  13: { validNotes: ["C", "D", "E", "Gb", "Ab", "Bb"] },
-  14: { numberOfSounds: 8 },
-  15: { numberOfSounds: 5 },
-  16: { numberOfSounds: 11 }, //TODO 5-7 were disabled
-};
-
-type ClickSoundConfigType = Partial<
-  Record<
-    Exclude<PlaySoundOnClick, "off">,
-    {
-      sounds: string[];
-      counter: number;
-    }[]
-  >
->;
-
-export const clickSoundConfig: ClickSoundConfigType =
-  extractClickSounds(soundsConfig);
 
 type ClickSounds = Record<
   string,
@@ -197,7 +156,7 @@ document.addEventListener("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 
-const notes = {
+const notes: Record<ValidNotes, ValidFrequencies> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
   D: [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64],
@@ -212,8 +171,7 @@ const notes = {
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 } as const;
 
-type ValidNotes = keyof typeof notes;
-type ValidFrequencies = (typeof notes)[ValidNotes];
+type ValidFrequencies = number[];
 
 type GetNoteFrequencyCallback = (octave: number) => number;
 
@@ -470,31 +428,6 @@ function setVolume(val: number): void {
   } catch (e) {
     //
   }
-}
-
-function extractClickSounds(
-  shortConfig: SoundConfigType,
-): ClickSoundConfigType {
-  return Object.fromEntries(
-    Object.entries(shortConfig)
-      .filter(([_, cfg]) => "numberOfSounds" in cfg)
-      .map(([key, cfg]) => {
-        const config = cfg as ClickSoundConfig;
-        const fullConfig = new Array(config.numberOfSounds)
-          .fill(0)
-          .map((_, index) => {
-            const sounds = config.hasSecondVariant
-              ? [
-                  `../sound/click${key}/click${key}_${index + 1}.wav`,
-                  `../sound/click${key}/click${key}_${index + 1}_2.wav`,
-                ]
-              : [`../sound/click${key}/click${key}_${index + 1}.wav`];
-
-            return { sounds, counter: 0 };
-          });
-        return [key, fullConfig];
-      }),
-  );
 }
 
 function extractScaleSounds(
