@@ -38,7 +38,7 @@ export function DailyActivityChart(props: {
               datasets: [
                 {
                   yAxisID: "count",
-                  data: data.map((it) => Math.round(it.timeTyping / 60)),
+                  data: data.map((it) => it.timeTyping / 60),
                   backgroundColor: getTheme().main,
                   trendlineLinear: {
                     style: getTheme().sub,
@@ -92,6 +92,7 @@ export function DailyActivityChart(props: {
                 count: {
                   axis: "y",
                   beginAtZero: true,
+                  min: 0,
                   ticks: {
                     autoSkip: true,
                     autoSkipPadding: 20,
