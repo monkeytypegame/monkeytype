@@ -471,6 +471,9 @@ export async function getUserAverage(
       lastDayOnly: boolean;
     }>,
 ): Promise<{ wpm: number; acc: number }> {
+  //exit early if there is no user. Don't init the result collection
+  if (!isAuthenticated()) return { wpm: 0, acc: 0 };
+
   const activeTagIds = tagsNonReactive.getActiveTags().map((it) => it._id);
 
   const result = await createLiveQueryCollection((q) => {
