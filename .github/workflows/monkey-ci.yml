@@ -28,7 +28,7 @@ jobs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
       should-build-pkg: ${{ steps.export-changes.outputs.should-build-pkg }}
-      assets-json: ${{ steps.export-changes.outputs.assets-json }}
+      assets-or-styles: ${{ steps.export-changes.outputs.assets-or-styles }}
 
     steps:
       - name: Full checkout
@@ -41,8 +41,9 @@ jobs:
         id: filter
         with:
           filters: |
-            json:
+            assets-or-styles:
               - 'frontend/static/**/*'
+              - '**/*.{scss,css}'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
@@ -64,13 +65,13 @@ jobs:
           echo "should-build-pkg=${{ steps.filter.outputs.pkg-src }}" >> $GITHUB_OUTPUT
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
-          echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
+          echo "assets-or-styles=${{ steps.filter.outputs.assets-or-styles }}" >> $GITHUB_OUTPUT
 
   prime-cache:
     name: prime-cache
     runs-on: ubuntu-latest
     needs: [pre-ci]
-    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - name: Checkout pnpm-lock
         uses: actions/checkout@v4
@@ -216,7 +217,7 @@ jobs:
     name: ci-assets
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -228,6 +229,10 @@ jobs:
         id: filter
         with:
           filters: |
+            styles:
+              - '**/*.{scss,css}'
+            json:
+              - 'frontend/static/**/*.json'
             languages:
               - 'frontend/static/languages/**'
             quotes:
@@ -265,7 +270,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Lint styles
+        if: steps.filter.outputs.styles == 'true'
+        run: npm run lint-styles
+
       - name: Lint JSON
+        if: steps.filter.outputs.json == 'true'
         run: npm run lint-json-assets
 
       - name: Validate language assets

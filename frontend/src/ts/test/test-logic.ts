@@ -582,12 +582,13 @@ async function init(): Promise<boolean> {
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
-        [...TestWords.words.getCurrent()],
+        [...TestWords.words.getCurrentText()],
         0,
       ) as string,
     );
   }
-  Funbox.toggleScript(TestWords.words.getCurrent());
+  
+  Funbox.toggleScript(TestWords.words.getCurrentText());
   TestUI.setCursiveClass(allCursiveScript ?? language.cursiveScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
@@ -684,8 +685,8 @@ export async function addWord(): Promise<void> {
     const randomWord = await WordsGenerator.getNextWord(
       TestWords.words.length,
       bound,
-      TestWords.words.get(TestWords.words.length - 1),
-      TestWords.words.get(TestWords.words.length - 2),
+      TestWords.words.getText(TestWords.words.length - 1),
+      TestWords.words.getText(TestWords.words.length - 2),
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -1139,7 +1140,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
-      if (lastWordInputLength < TestWords.words.get(wordIndex).length) {
+      if (lastWordInputLength < TestWords.words.getText(wordIndex).length) {
         historyLength--;
       }
 
@@ -1470,7 +1471,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread
-            [...TestWords.words.getCurrent()],
+            [...TestWords.words.getCurrentText()],
             0,
           ) as string,
         );
