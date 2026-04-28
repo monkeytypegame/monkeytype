@@ -1704,15 +1704,17 @@ export function getActiveWordTopAndHeightWithDifferentData(data: string): {
 
   if (!activeWord) throw new Error("No active word element found");
 
+  const lettersEls = activeWord.qsa("letter");
+  const domLettersCount = lettersEls.length;
   const nodes = [];
-  for (let i = activeWord.getChildren().length; i < data.length; i++) {
+  for (let i = domLettersCount; i < data.length; i++) {
     const tempLetter = document.createElement("letter");
     const displayData = data[i] === " " ? "_" : data[i];
     tempLetter.textContent = displayData as string;
     nodes.push(tempLetter);
   }
 
-  activeWord.append(nodes);
+  lettersEls[domLettersCount - 1]?.native.after(...nodes);
 
   const top = activeWord.getOffsetTop();
   const height = activeWord.getOffsetHeight();
