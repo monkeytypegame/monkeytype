@@ -155,6 +155,9 @@ function normalizeResult(
   resultDate.setHours(0);
   resultDate.setMilliseconds(0);
 
+  // @ts-expect-error without this resorting the datatable causes wrong data e.g. tags to show up
+  result.id = result._id;
+
   //results strip default values, add them back
   result.bailedOut ??= false;
   result.blindMode ??= false;
