@@ -1,7 +1,6 @@
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import { randomElementFromArray } from "../utils/arrays";
-import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import { showErrorNotification } from "../states/notifications";
@@ -26,7 +25,6 @@ type OscillatorSoundConfig = { oscillatorType: SupportedOscillatorTypes };
 
 type ScaleSoundConfig = {
   validNotes: ValidNotes[];
-  scaleName: ValidScales; //TODO remove
 };
 
 type SoundConfigType = Record<
@@ -46,8 +44,8 @@ const soundsConfig: SoundConfigType = {
   9: { oscillatorType: "sawtooth" },
   10: { oscillatorType: "square" },
   11: { oscillatorType: "triangle" },
-  12: { validNotes: ["C", "D", "E", "G", "A"], scaleName: "pentatonic" },
-  13: { validNotes: ["C", "D", "E", "Gb", "Ab", "Bb"], scaleName: "wholetone" },
+  12: { validNotes: ["C", "D", "E", "G", "A"] },
+  13: { validNotes: ["C", "D", "E", "Gb", "Ab", "Bb"] },
   14: { numberOfSounds: 8 },
   15: { numberOfSounds: 5 },
   16: { numberOfSounds: 11 }, //TODO 5-7 were disabled
@@ -286,20 +284,13 @@ function initAudioContext(): void {
   }
 }
 
-type ValidScales = "pentatonic" | "wholetone";
-
-const scales: Record<ValidScales, ValidNotes[]> = {
-  pentatonic: ["C", "D", "E", "G", "A"],
-  wholetone: ["C", "D", "E", "Gb", "Ab", "Bb"],
-};
-
 type ScaleData = {
   octave: number; // current octave of scale
   direction: number; // whether scale is ascending or descending
   position: number; // current position in scale
 };
 
-function createPreviewScale(scaleName: ValidScales): () => void {
+function createPreviewScale(validNotes: ValidNotes[]): () => void {
   // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
   const scale: ScaleData = {
     position: 0,
@@ -309,12 +300,11 @@ function createPreviewScale(scaleName: ValidScales): () => void {
 
   return async () => {
     if (clickSounds === null) await init();
-    playScale(scaleName, scale);
+    playScale(validNotes, scale);
   };
 }
 
 type ScaleMeta = {
-  name: ValidScales;
   preview: ReturnType<typeof createPreviewScale>;
   meta: ScaleData;
 };
@@ -325,27 +315,16 @@ const defaultScaleData: ScaleData = {
   direction: 1,
 };
 
-export const scaleConfigurations: Partial<Record<PlaySoundOnClick, ScaleMeta>> =
-  {
-    "12": {
-      name: "pentatonic",
-      preview: createPreviewScale("pentatonic"),
-      meta: defaultScaleData,
-    },
-    "13": {
-      name: "wholetone",
-      preview: createPreviewScale("wholetone"),
-      meta: defaultScaleData,
-    },
-  };
+type ScaleConfigurationType = Partial<Record<PlaySoundOnClick, ScaleMeta>>;
 
-function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
+export const scaleConfigurations: ScaleConfigurationType =
+  extractScaleSounds(soundsConfig);
+
+function playScale(validNotes: ValidNotes[], scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
-
-  const randomNote = randomIntFromRange(0, scales[scale].length - 1);
 
   if (Math.random() < 0.5) {
     scaleMeta.octave += scaleMeta.direction;
@@ -358,7 +337,7 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
     scaleMeta.direction = 1;
   }
 
-  const note = scales[scale][randomNote] as ValidNotes;
+  const note = randomElementFromArray(validNotes);
 
   const currentFrequency = notes[note][scaleMeta.octave] as number;
 
@@ -446,7 +425,7 @@ export async function playClick(codeOverride?: string): Promise<void> {
       //TODO
       throw new Error("missing scale config");
     }
-    playScale(scaleConfig.name, scaleConfig.meta);
+    playScale(config.validNotes, scaleConfig.meta);
     return;
   }
 
@@ -514,6 +493,26 @@ function extractClickSounds(
             return { sounds, counter: 0 };
           });
         return [key, fullConfig];
+      }),
+  );
+}
+
+function extractScaleSounds(
+  shortConfig: SoundConfigType,
+): ScaleConfigurationType {
+  return Object.fromEntries(
+    Object.entries(shortConfig)
+      .filter(([_, cfg]) => "validNotes" in cfg)
+      .map(([key, cfg]) => {
+        const config = cfg as ScaleSoundConfig;
+
+        return [
+          key,
+          {
+            preview: createPreviewScale(config.validNotes),
+            meta: defaultScaleData,
+          } as ScaleMeta,
+        ];
       }),
   );
 }
