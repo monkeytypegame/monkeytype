@@ -188,8 +188,8 @@ export function HistoryChart(props: {
                 axis: "x",
                 type: "linear",
                 reverse: true,
-                min: 0,
-                max: wpm().length - 1,
+                min: -1,
+                max: wpm().length,
                 display: false,
                 grid: {
                   display: false,
