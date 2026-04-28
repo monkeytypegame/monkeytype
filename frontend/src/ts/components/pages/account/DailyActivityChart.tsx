@@ -41,9 +41,11 @@ export function DailyActivityChart(props: {
                   data: data.map((it) => it.timeTyping / 60),
                   backgroundColor: getTheme().main,
                   trendlineLinear: {
-                    style: getTheme().sub,
                     lineStyle: "dotted",
                     width: 2,
+                    //@ts-expect-error colorMin and colorMax missing from the type definition
+                    colorMin: getTheme().sub,
+                    colorMax: getTheme().sub,
                   },
                   order: 3,
                 },
