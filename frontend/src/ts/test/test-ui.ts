@@ -169,25 +169,25 @@ export function updateActiveElement(
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
 
-    updateWordsInputPosition();
+    if (previousActiveWordTop !== null) {
+      const isTimedTest =
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-    if (previousActiveWordTop === null) return;
-
-    const isTimedTest =
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-    if (isTimedTest || !Config.showAllLines) {
-      const newActiveWordTop = newActiveWord.getOffsetTop();
-      if (newActiveWordTop > previousActiveWordTop) {
-        await lineJump(previousActiveWordTop);
+      if (isTimedTest || !Config.showAllLines) {
+        const newActiveWordTop = newActiveWord.getOffsetTop();
+        if (newActiveWordTop > previousActiveWordTop) {
+          await lineJump(previousActiveWordTop);
+        }
       }
     }
 
     if (!initial && Config.tapeMode !== "off") {
       await scrollTape();
     }
+
+    updateWordsInputPosition();
   });
 }
 
@@ -955,6 +955,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   const widthRemovedFromLine: number[] = [];
   const afterNewlinesNewMargins: number[] = [];
   const toRemove: ElementWithUtils[] = [];
+  let removedAfterNewlines = 0;
 
   /* remove leading `.afterNewline` elements */
   for (const child of wordsChildrenArr) {
@@ -970,6 +971,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       toRemove.push(child);
       leadingNewLine = true;
       lastAfterNewLineElement = child;
+      removedAfterNewlines++;
     }
   }
 
@@ -978,7 +980,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   // index of the active word in all #words.children
   // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
   const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
-  // this will be 0 or 1
+  // this will between 0 and 2
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndex)
     .filter((child) => child.hasClass("afterNewline")).length;
@@ -1004,16 +1006,12 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     const child = wordsChildrenArr[i] as ElementWithUtils;
     if (child.hasClass("word")) {
       leadingNewLine = false;
-      const childComputedStyle = window.getComputedStyle(child.native);
-      const wordOuterWidth =
-        child.getOffsetWidth() +
-        parseFloat(childComputedStyle.marginRight) +
-        parseFloat(childComputedStyle.marginLeft);
-      const forWordLeft = Math.floor(child.getOffsetLeft());
-      const forWordWidth = Math.floor(child.getOffsetWidth());
+      const wordOuterWidth = child.getOuterWidth();
+      const wordLeft = Math.floor(child.getOffsetLeft());
+      const wordWidth = Math.floor(child.getOffsetWidth());
       if (
-        (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
-        (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
+        (!isTestRightToLeft && wordLeft < 0 - wordWidth) ||
+        (isTestRightToLeft && wordLeft > wordsWrapperWidth)
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
@@ -1051,6 +1049,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   /* remove overflown elements */
   if (toRemove.length > 0) {
     for (const el of toRemove) el.remove();
+    afterNewLineEls.splice(0, removedAfterNewlines);
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as ElementWithUtils;
       const currentLineIndent =
