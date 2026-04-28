@@ -34,7 +34,7 @@ export function onBeforeInsertText(data: string): boolean {
   const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
     data,
     inputValue,
-    targetWord: TestWords.words.getCurrent(),
+    targetWord: TestWords.words.getCurrentText(),
   });
 
   //prevent space from being inserted if input is empty
@@ -60,7 +60,7 @@ export function onBeforeInsertText(data: string): boolean {
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
   const overLimit = TestInput.input.current.length >= inputLimit;
   if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
     console.error("Hitting word limit");
@@ -71,7 +71,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    TestInput.input.current.length >= TestWords.words.getCurrent().length;
+    TestInput.input.current.length >= TestWords.words.getCurrentText().length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active

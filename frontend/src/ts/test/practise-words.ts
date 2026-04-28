@@ -55,7 +55,7 @@ export function init(
   let sortableMissedBiwords: [string, string, number][] = [];
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      const missedWord = TestWords.words.get(i);
+      const missedWord = TestWords.words.getText(i);
       const missedWordCount = TestInput.missedWords[missedWord];
       if (missedWordCount !== undefined) {
         if (i === 0) {
@@ -63,7 +63,7 @@ export function init(
         } else {
           sortableMissedBiwords.push([
             missedWord,
-            TestWords.words.get(i - 1),
+            TestWords.words.getText(i - 1),
             missedWordCount,
           ]);
         }
@@ -87,7 +87,7 @@ export function init(
   let sortableSlowWords: [string, number][] = [];
   if (slow) {
     const typedWords = TestWords.words
-      .get()
+      .getText()
       .slice(0, TestInput.input.getHistory().length - 1);
 
     sortableSlowWords = typedWords.map((e, i) => [

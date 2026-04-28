@@ -292,7 +292,6 @@ kbd {
     grid-column: 1/2;
     grid-row: 1/2;
     place-self: center center;
-    display: grid;
     place-content: center center;
     overflow: hidden;
     display: inline-block;
@@ -321,7 +320,6 @@ kbd {
   color: var(--text-color);
   border-radius: calc(var(--roundness) / 2);
   // padding: 0.15em 0.5em;
-  -webkit-user-select: none;
   user-select: none;
   display: grid;
   grid-template-columns: max-content auto;
@@ -375,7 +373,7 @@ kbd {
 }
 
 // mouseover texts
-[aria-label][data-balloon-pos]:after {
+[aria-label][data-balloon-pos]::after {
   font-family: var(--font);
   font-size: var(--balloon-font-size);
   line-height: var(--balloon-font-size);
@@ -401,7 +399,6 @@ table {
   z-index: 0;
   td.sortable:hover {
     cursor: pointer;
-    -webkit-user-select: none;
     user-select: none;
     background-color: var(--sub-alt-color);
   }
