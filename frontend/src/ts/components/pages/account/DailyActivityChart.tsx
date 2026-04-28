@@ -53,6 +53,7 @@ export function DailyActivityChart(props: {
                     props.typingSpeedUnit.fromWpm(it.avgWpm),
                   ),
                   borderColor: getTheme().sub,
+                  pointBackgroundColor: getTheme().sub,
                   type: "line",
                   order: 2,
                   tension: 0,
@@ -103,6 +104,7 @@ export function DailyActivityChart(props: {
                     display: true,
                     text: "Time typing (minutes)",
                   },
+                  grid: { display: false },
                 },
                 avgWpm: {
                   axis: "y",
