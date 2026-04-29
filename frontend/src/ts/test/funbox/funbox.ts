@@ -219,16 +219,41 @@ async function setFunboxBodyClasses(): Promise<boolean> {
   return true;
 }
 
-async function applyFunboxCSS(): Promise<boolean> {
+async function applyFunboxCSS(): Promise<void> {
   qsa(".funBoxTheme").remove();
+
+  await Promise.all(
+    getActiveFunboxesWithProperty("hasCssFile").map(
+      async (funbox) =>
+        new Promise<void>((resolve, reject) => {
+          const css = document.createElement("link");
+          css.classList.add("funBoxTheme");
+          css.rel = "stylesheet";
+          css.href = "funbox/" + funbox.name + ".css";
+          css.onload = () => resolve();
+          css.onerror = reject;
+          document.head.appendChild(css);
+        }),
+    ),
+  );
+
+  /*
+  const promises = [];
   for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
-    const css = document.createElement("link");
-    css.classList.add("funBoxTheme");
-    css.rel = "stylesheet";
-    css.href = "funbox/" + funbox.name + ".css";
-    document.head.appendChild(css);
+    promises.push(
+      new Promise<void>((resolve, reject) => {
+        const css = document.createElement("link");
+        css.classList.add("funBoxTheme");
+        css.rel = "stylesheet";
+        css.href = "funbox/" + funbox.name + ".css";
+        css.onload = () => resolve();
+        css.onerror = reject;
+        document.head.appendChild(css);
+      }),
+    );
   }
-  return true;
+  await Promise.all(promises);
+  */
 }
 
 configEvent.subscribe(async ({ key }) => {
